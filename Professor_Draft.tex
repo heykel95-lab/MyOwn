@@ -1,0 +1,181 @@
+\documentclass[12pt,a4paper,oneside]{report}
+
+\input{config/packages}
+\input{config/settings}
+\input{config/commands}
+
+% ============================================================
+% Professor draft selection
+% ============================================================
+% Change only the true/false lines below.
+% Example: use \ProfessorIncludeSystemSetuptrue to include Chapter 3,
+% or \ProfessorIncludeSystemSetupfalse to exclude it.
+
+\newif\ifProfessorIncludeTitlePage
+\newif\ifProfessorIncludeAbstract
+\newif\ifProfessorIncludeKurzfassung
+\newif\ifProfessorIncludeTableOfContents
+\newif\ifProfessorIncludeReferences
+
+\ProfessorIncludeTitlePagetrue
+\ProfessorIncludeAbstractfalse
+\ProfessorIncludeKurzfassungfalse
+\ProfessorIncludeTableOfContentstrue
+\ProfessorIncludeReferencesfalse
+
+% Main thesis chapters
+\newif\ifProfessorIncludeIntroduction
+\newif\ifProfessorIncludeStateOfTheArt
+\newif\ifProfessorIncludeSystemSetup
+\newif\ifProfessorIncludeSoftwareImplementation
+\newif\ifProfessorIncludeTheoreticalBackground
+\newif\ifProfessorIncludeExperiments
+\newif\ifProfessorIncludeConclusion
+
+\ProfessorIncludeIntroductiontrue
+\ProfessorIncludeStateOfTheArtfalse
+\ProfessorIncludeSystemSetupfalse
+\ProfessorIncludeSoftwareImplementationfalse
+\ProfessorIncludeTheoreticalBackgroundfalse
+\ProfessorIncludeExperimentsfalse
+\ProfessorIncludeConclusionfalse
+
+% Appendices
+\newif\ifProfessorIncludeAppendixA
+\newif\ifProfessorIncludeAppendixB
+\newif\ifProfessorIncludeAppendixC
+\newif\ifProfessorIncludeAppendixD
+\newif\ifProfessorIncludeAppendixE
+\newif\ifProfessorIncludeAppendixF
+\newif\ifProfessorIncludeAnyAppendix
+
+\ProfessorIncludeAppendixAfalse
+\ProfessorIncludeAppendixBfalse
+\ProfessorIncludeAppendixCfalse
+\ProfessorIncludeAppendixDfalse
+\ProfessorIncludeAppendixEfalse
+\ProfessorIncludeAppendixFfalse
+
+\ifProfessorIncludeAppendixA\ProfessorIncludeAnyAppendixtrue\fi
+\ifProfessorIncludeAppendixB\ProfessorIncludeAnyAppendixtrue\fi
+\ifProfessorIncludeAppendixC\ProfessorIncludeAnyAppendixtrue\fi
+\ifProfessorIncludeAppendixD\ProfessorIncludeAnyAppendixtrue\fi
+\ifProfessorIncludeAppendixE\ProfessorIncludeAnyAppendixtrue\fi
+\ifProfessorIncludeAppendixF\ProfessorIncludeAnyAppendixtrue\fi
+
+\begin{document}
+
+% These fallback labels keep chapter references readable when a related
+% chapter is excluded from the professor draft.
+\makeatletter
+\newcommand{\ProfessorFallbackLabel}[3]{%
+  \@ifundefined{r@#1}{\@namedef{r@#1}{{#2}{0}{#3}{}{}}}{}%
+}
+\ProfessorFallbackLabel{ch:intro}{1}{Introduction}
+\ProfessorFallbackLabel{ch:literature}{2}{State of the Art}
+\ProfessorFallbackLabel{ch:setup}{3}{System Setup}
+\ProfessorFallbackLabel{ch:implementation}{4}{Software Implementation}
+\ProfessorFallbackLabel{ch:theory}{5}{Theoretical Background}
+\ProfessorFallbackLabel{ch:experiments}{6}{Experiments}
+\ProfessorFallbackLabel{ch:conclusion}{7}{Conclusion}
+\makeatother
+
+\pagenumbering{Roman}
+
+\ifProfessorIncludeTitlePage
+  \input{frontmatter/titlepage}
+  \setcounter{page}{2}
+\fi
+
+\ifProfessorIncludeAbstract
+  \input{frontmatter/abstract}
+\fi
+
+\ifProfessorIncludeKurzfassung
+  \input{frontmatter/kurzfassung}
+\fi
+
+\ifProfessorIncludeTableOfContents
+  \tableofcontents
+  \cleardoublepage
+\fi
+
+\pagenumbering{arabic}
+
+\ifProfessorIncludeIntroduction
+  \setcounter{chapter}{0}
+  \input{chapters/01_introduction}
+\fi
+
+\ifProfessorIncludeStateOfTheArt
+  \setcounter{chapter}{1}
+  \input{chapters/02_state_of_the_art}
+\fi
+
+\ifProfessorIncludeSystemSetup
+  \setcounter{chapter}{2}
+  \input{chapters/03_system_setup}
+\fi
+
+\ifProfessorIncludeSoftwareImplementation
+  \setcounter{chapter}{3}
+  \input{chapters/04_software_implementation}
+\fi
+
+\ifProfessorIncludeTheoreticalBackground
+  \setcounter{chapter}{4}
+  \input{chapters/05_theoretical_background}
+\fi
+
+\ifProfessorIncludeExperiments
+  \setcounter{chapter}{5}
+  \input{chapters/06_experiments}
+\fi
+
+\ifProfessorIncludeConclusion
+  \setcounter{chapter}{6}
+  \input{chapters/07_conclusion}
+\fi
+
+\ifProfessorIncludeAnyAppendix
+  \appendix
+
+  \ifProfessorIncludeAppendixA
+    \setcounter{chapter}{0}
+    \input{backmatter/appendix_a_panda_example}
+  \fi
+
+  \ifProfessorIncludeAppendixB
+    \setcounter{chapter}{1}
+    \input{backmatter/appendix_b_data_logging}
+  \fi
+
+  \ifProfessorIncludeAppendixC
+    \setcounter{chapter}{2}
+    \input{backmatter/appendix_c_exp1_rotated_tracking}
+  \fi
+
+  \ifProfessorIncludeAppendixD
+    \setcounter{chapter}{3}
+    \input{backmatter/appendix_d_exp2_virtual_wall}
+  \fi
+
+  \ifProfessorIncludeAppendixE
+    \setcounter{chapter}{4}
+    \input{backmatter/appendix_e_exp3_stiffness}
+  \fi
+
+  \ifProfessorIncludeAppendixF
+    \setcounter{chapter}{5}
+    \input{backmatter/appendix_f_exp4_configuration}
+  \fi
+\fi
+
+\ifProfessorIncludeReferences
+  \cleardoublepage
+  \bibliographystyle{plainnat}
+  \bibliography{config/literature}
+  \addcontentsline{toc}{chapter}{References}
+\fi
+
+\end{document}
