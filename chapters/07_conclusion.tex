@@ -5,7 +5,7 @@
 \label{sec:summary}
 
 This thesis developed and evaluated a Cartesian impedance controller
-for the Franka Emika Panda, a 7-DOF collaborative manipulator.
+for the Franka Emika Panda, a 7-\abbr{DOF} collaborative manipulator.
 The work covered the complete pipeline from hardware commissioning to
 experimental evaluation, fulfilling all objectives stated in the thesis
 registration.
@@ -14,7 +14,7 @@ The key contributions are as follows:
 
 \begin{itemize}
   \item \textbf{System setup (Objective~2):} The workstation, real-time
-        Ubuntu kernel, network connection, Franka Desk and FCI access,
+        Ubuntu kernel, network connection, Franka Desk and \abbr{FCI} access,
         libfranka installation, and C++ build environment were
         successfully configured and verified.
         A deterministic 1\,ms control cycle was confirmed with
@@ -26,15 +26,15 @@ The key contributions are as follows:
         hardware/software stack.
   \item \textbf{Mathematical foundation (Objective~1, 4):}
         The controlled variable was formulated as the full end-effector
-        pose $\mathbf{T}_e\in SE(3)$.
+        pose $\mathbf{T}_e\in \SE$.
         The pose error $\mathbf{T}_d^{-1}\mathbf{T}_e$ yields both
         translational and rotational sub-errors from a single matrix
         product.
-        Stiffness and damping matrices were derived as full SPD matrices
+        Stiffness and damping matrices were derived as full \abbr{SPD} matrices
         via eigendecomposition and dyadic sums, valid for arbitrarily
         oriented task surfaces.
   \item \textbf{Stability (Objective~4):} A Lyapunov argument formally
-        proves asymptotic stability for any SPD stiffness and damping
+        proves asymptotic stability for any \abbr{SPD} stiffness and damping
         matrices, including the full off-diagonal matrices arising from
         the virtual wall task.
   \item \textbf{Experimental evaluation (Objective~4):} Three experiments
@@ -52,7 +52,7 @@ The following limitations of the present work should be noted:
 \begin{itemize}
   \item \textbf{No external force sensing:} The controller relies on
         the Jacobian transpose mapping to generate compliant behaviour.
-        True force measurement (e.g.\ via a wrist-mounted F/T sensor)
+        True force measurement (e.g.\ via a wrist-mounted \abbr{FT} sensor)
         would allow direct compensation of contact forces and improve
         accuracy under external loads.
   \item \textbf{Gravity and Coriolis from the robot model:} The
@@ -82,7 +82,7 @@ future work:
 
 \begin{itemize}
   \item \textbf{Null-space control:} The one-dimensional null space of
-        the 7-DOF Panda can be exploited to simultaneously optimise a
+        the 7-\abbr{DOF} Panda can be exploited to simultaneously optimise a
         secondary objective (joint-limit avoidance, preferred
         configuration) without disturbing the Cartesian task.
   \item \textbf{Adaptive impedance:} The stiffness and damping matrices
@@ -96,7 +96,7 @@ future work:
   \item \textbf{Tilted virtual wall:} The experiments used an
         axis-aligned wall ($\mathbf{W}=\mathbf{I}_3$).
         Repeating the experiments with a tilted wall (full off-diagonal
-        $\mathbf{K}_p$) would validate the general SPD matrix framework
+        $\mathbf{K}_p$) would validate the general \abbr{SPD} matrix framework
         derived in \cref{subsec:KD_matrices}.
   \item \textbf{Model-based inertia shaping:} Replacing the unit
         virtual inertia $\mathbf{M}=\mathbf{I}_6$ with the actual

@@ -12,20 +12,20 @@ registration.
 \label{sec:hw_network}
 
 The experimental platform consists of the Panda arm, its Franka Control
-Unit (FCU), a workstation PC, and an emergency stop device.
+Unit (\abbr{FCU}), a workstation PC, and an emergency stop device.
 The workstation is connected \textbf{directly} to the FCI Ethernet port
-of the FCU with a Cat\,6a cable---no intermediate switch is permitted,
-as any additional hop introduces latency sufficient to trigger an FCI
+of the \abbr{FCU} with a Cat\,6a cable---no intermediate switch is permitted,
+as any additional hop introduces latency sufficient to trigger an \abbr{FCI}
 communication timeout.
 
-Static IP addresses are assigned:
+Static \abbr{IP} addresses are assigned:
 
 \begin{center}
 \begin{tabular}{@{}lll@{}}
 \toprule
 Device & Interface & Address \\
 \midrule
-FCU (FCI port) & \texttt{eth0} & \texttt{172.16.0.2} \\
+\abbr{FCU} (\abbr{FCI} port) & \texttt{eth0} & \texttt{172.16.0.2} \\
 Workstation    & \texttt{eth1} & \texttt{172.16.0.1/24} \\
 \bottomrule
 \end{tabular}
@@ -44,28 +44,28 @@ required:
 
 \begin{enumerate}
   \item Unlock the robot joints via the Franka Desk \textit{Joints} page.
-  \item Activate FCI mode in \textit{Settings} $\to$ \textit{Network}.
+  \item Activate \abbr{FCI} mode in \textit{Settings} $\to$ \textit{Network}.
   \item Confirm that no error is shown on the status indicator.
   \item Place the emergency stop within reach of the operator.
 \end{enumerate}
 
-All experiments are conducted with FCI active and the emergency stop
+All experiments are conducted with \abbr{FCI} active and the emergency stop
 accessible at all times.
 
 \section{Real-Time Ubuntu Kernel}
 \label{sec:rt_kernel}
 
-The FCI requires that the control callback completes within 1\,ms.
+\abbr{FCI} requires that the control callback completes within 1\,ms.
 A standard Linux kernel cannot guarantee this because high-priority threads
 can be preempted by interrupt handlers.
-The PREEMPT\_RT patch makes all kernel threads and interrupt handlers fully
+The \abbr{PREEMPTRT} patch makes all kernel threads and interrupt handlers fully
 preemptible, reducing worst-case scheduling latency to below $50\,\mu s$.
 
 Installation steps:
 
 \begin{enumerate}
   \item Install Ubuntu 22.04 LTS on the workstation.
-  \item Download and apply the PREEMPT\_RT patch for the corresponding
+  \item Download and apply the \abbr{PREEMPTRT} patch for the corresponding
         kernel version.
   \item Compile and install the patched kernel:
         \texttt{make -j\$(nproc) deb-pkg}.
@@ -78,7 +78,7 @@ Installation steps:
 
 The maximum latency of the patched system is verified with
 \texttt{cyclictest}, which must show a worst-case latency below
-$200\,\mu s$ under load before any FCI experiments are conducted.
+$200\,\mu s$ under load before any \abbr{FCI} experiments are conducted.
 
 \section{libfranka Installation}
 \label{sec:libfranka}

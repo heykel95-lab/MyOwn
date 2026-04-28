@@ -1,0 +1,57 @@
+% ============================================================
+% Adaptive abbreviation handling
+% ============================================================
+
+\makeatletter
+
+\newcommand{\DeclareThesisAcronym}[3]{%
+  \expandafter\gdef\csname thesisacro@short@#1\endcsname{#2}%
+  \expandafter\gdef\csname thesisacro@long@#1\endcsname{#3}%
+}
+
+\DeclareRobustCommand{\ThesisAcronymUsed}[1]{%
+  \expandafter\gdef\csname thesisacro@used@#1\endcsname{}%
+}
+
+\DeclareRobustCommand{\UseThesisAcronym}[1]{%
+  \if@filesw
+    \begingroup
+    \protected@write\@auxout{}{\string\ThesisAcronymUsed{#1}}%
+    \endgroup
+  \fi
+}
+
+\DeclareRobustCommand{\abbr}[1]{%
+  \UseThesisAcronym{#1}%
+  \@ifundefined{thesisacro@short@#1}{#1}{\csname thesisacro@short@#1\endcsname}%
+}
+
+\newcommand{\PrintThesisAcronym}[1]{%
+  \@ifundefined{thesisacro@used@#1}{}{%
+    \csname thesisacro@short@#1\endcsname
+    & \csname thesisacro@long@#1\endcsname \\%
+  }%
+}
+
+\DeclareThesisAcronym{DOF}{DOF}{Degree of Freedom}
+\DeclareThesisAcronym{DH}{DH}{Denavit--Hartenberg}
+\DeclareThesisAcronym{DLS}{DLS}{Damped Least Squares}
+\DeclareThesisAcronym{ESTOP}{E-stop}{Emergency Stop}
+\DeclareThesisAcronym{FCI}{FCI}{Franka Control Interface}
+\DeclareThesisAcronym{FCU}{FCU}{Franka Control Unit}
+\DeclareThesisAcronym{FK}{FK}{Forward Kinematics}
+\DeclareThesisAcronym{FT}{F/T}{Force/Torque}
+\DeclareThesisAcronym{HM}{HM}{Hochschule M\"unchen}
+\DeclareThesisAcronym{IP}{IP}{Internet Protocol}
+\DeclareThesisAcronym{MUAS}{MUAS}{Munich University of Applied Sciences}
+\DeclareThesisAcronym{OS}{OS}{Operating System}
+\DeclareThesisAcronym{PDF}{PDF}{Portable Document Format}
+\DeclareThesisAcronym{PREEMPTRT}{PREEMPT\_RT}{Real-Time Preemption Patch}
+\DeclareThesisAcronym{ROS}{ROS}{Robot Operating System}
+\DeclareThesisAcronym{SE3}{SE(3)}{Special Euclidean Group in three dimensions}
+\DeclareThesisAcronym{SO3}{SO(3)}{Special Orthogonal Group in three dimensions}
+\DeclareThesisAcronym{SPD}{SPD}{Symmetric Positive Definite}
+\DeclareThesisAcronym{TCP}{TCP}{Tool Centre Point}
+\DeclareThesisAcronym{TBM}{TBM}{Technische Berechnung und Simulation}
+
+\makeatother

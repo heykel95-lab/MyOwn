@@ -14,7 +14,7 @@ The software is structured in three layers, illustrated in
 
 \begin{enumerate}
   \item \textbf{Communication layer}: establishes and maintains the
-        1\,kHz FCI connection via \texttt{libfranka}.
+        1\,kHz \abbr{FCI} connection via \texttt{libfranka}.
   \item \textbf{State and model layer}: reads joint positions, velocities,
         and the Jacobian; retrieves gravity and Coriolis vectors from the
         robot model.
@@ -30,7 +30,7 @@ The software is structured in three layers, illustrated in
   arr/.style={-{Latex}, thick}
 ]
   \node[box, fill=blue!10]  (hw)    at (0, 0.0) {Franka Panda\\(Hardware)};
-  \node[box, fill=orange!15](fci)   at (0,-1.8) {FCI / \texttt{libfranka}};
+  \node[box, fill=orange!15](fci)   at (0,-1.8) {\abbr{FCI} / \texttt{libfranka}};
   \node[box, fill=green!10] (state) at (0,-3.6) {State \& Model Layer\\($\mathbf{T}_e$, $\mathbf{J}$, $\bm{\tau}_g$)};
   \node[box, fill=red!10]   (ctrl)  at (0,-5.4) {Control Layer\\$\bm{\tau}=\mathbf{J}^\top\mathbf{F}$};
   \draw[arr] (hw)    -- (fci)   node[midway,right,font=\tiny]{1\,kHz};
@@ -53,7 +53,7 @@ Each 1\,ms control cycle extracts the following from
 
 \begin{itemize}
   \item \texttt{state.q}/\texttt{state.dq}: $\vq$ and $\vqd$.
-  \item \texttt{state.O\_T\_EE}: $\mathbf{T}_e\in SE(3)$
+  \item \texttt{state.O\_T\_EE}: $\mathbf{T}_e\in \SE$
         as a $4\times4$ column-major array of 16 doubles.
   \item \texttt{model.zeroJacobian(...)}: the $6\times7$ geometric
         Jacobian $\mathbf{J}(\vq)$ in the base frame.
@@ -146,7 +146,7 @@ All experiments are conducted following these safety procedures:
         before increasing to operating stiffness.
   \item Joint torques are clipped to manufacturer limits at all times.
   \item The emergency stop is held by an observer throughout each trial.
-  \item All stiffness matrices are verified to be SPD before controller
+  \item All stiffness matrices are verified to be \abbr{SPD} before controller
         activation (Cholesky factorisation check).
   \item Each experimental trial is repeated three times; results are
         averaged across repetitions to assess reproducibility.

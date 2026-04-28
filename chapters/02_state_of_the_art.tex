@@ -17,7 +17,7 @@ Both references are textbooks.
 Their treatment of impedance and force control is limited; for
 contemporary results, primary literature must be consulted
 \cite{Albu2003, Villani2016}.
-A formal $SE(3)$ perspective on robot kinematics is given in
+A formal $\SE$ perspective on robot kinematics is given in
 Murray et al.\ \cite{Murray1994}.
 
 \section{Impedance Control: Origins and Development}
@@ -64,7 +64,7 @@ control capability.
 However, it introduces an additional control loop with its own bandwidth
 limitation and typically requires an external force/torque sensor.
 
-The Panda's integrated joint torque sensing and FCI torque-control mode
+The Panda's integrated joint torque sensing and \abbr{FCI} torque-control mode
 make direct impedance control---as implemented in this thesis---the
 more natural and lower-latency choice for this platform.
 
@@ -85,10 +85,10 @@ Variable-impedance extension is identified as future work in
 \section{Franka Emika Platform and libfranka}
 \label{sec:lit_franka}
 
-The Franka Control Interface \cite{FCI2023} exposes a deterministic
+The Franka Control Interface (\abbr{FCI}) \cite{FCI2023} exposes a deterministic
 1\,kHz torque-control loop via the open-source \texttt{libfranka}
 C++ library.
-Unlike ROS-based frameworks, libfranka provides direct access to
+Unlike \abbr{ROS}-based frameworks, libfranka provides direct access to
 joint states, the geometric Jacobian, and model quantities (gravity,
 Coriolis, mass matrix) without any middleware overhead.
 
@@ -99,7 +99,7 @@ no payload), the model accuracy is sufficient.
 Payloads or high-speed motions would require re-identification of
 the dynamic parameters.
 
-The FCI imposes a strict 1\,ms callback deadline; violation triggers
+\abbr{FCI} imposes a strict 1\,ms callback deadline; violation triggers
 an immediate safety halt.
 This makes real-time Linux a prerequisite, as documented in
 \cref{sec:rt_kernel}.

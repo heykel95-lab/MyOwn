@@ -2,6 +2,7 @@
 
 \input{config/packages}
 \input{config/settings}
+\input{config/acronyms}
 \input{config/commands}
 
 % ============================================================
@@ -12,16 +13,24 @@
 % or \ProfessorIncludeSystemSetupfalse to exclude it.
 
 \newif\ifProfessorIncludeTitlePage
+\newif\ifProfessorIncludeDeclaration
 \newif\ifProfessorIncludeAbstract
 \newif\ifProfessorIncludeKurzfassung
 \newif\ifProfessorIncludeTableOfContents
+\newif\ifProfessorIncludeListOfFigures
+\newif\ifProfessorIncludeListOfTables
+\newif\ifProfessorIncludeAbbreviations
 \newif\ifProfessorIncludeReferences
 
 \ProfessorIncludeTitlePagetrue
-\ProfessorIncludeAbstractfalse
-\ProfessorIncludeKurzfassungfalse
+\ProfessorIncludeDeclarationtrue
+\ProfessorIncludeAbstracttrue
+\ProfessorIncludeKurzfassungtrue
 \ProfessorIncludeTableOfContentstrue
-\ProfessorIncludeReferencesfalse
+\ProfessorIncludeListOfFigurestrue
+\ProfessorIncludeListOfTablestrue
+\ProfessorIncludeAbbreviationstrue
+\ProfessorIncludeReferencestrue
 
 % Main thesis chapters
 \newif\ifProfessorIncludeIntroduction
@@ -33,7 +42,7 @@
 \newif\ifProfessorIncludeConclusion
 
 \ProfessorIncludeIntroductiontrue
-\ProfessorIncludeStateOfTheArtfalse
+\ProfessorIncludeStateOfTheArttrue
 \ProfessorIncludeSystemSetupfalse
 \ProfessorIncludeSoftwareImplementationfalse
 \ProfessorIncludeTheoreticalBackgroundfalse
@@ -78,6 +87,18 @@
 \ProfessorFallbackLabel{ch:theory}{5}{Theoretical Background}
 \ProfessorFallbackLabel{ch:experiments}{6}{Experiments}
 \ProfessorFallbackLabel{ch:conclusion}{7}{Conclusion}
+\ProfessorFallbackLabel{sec:rt_kernel}{3.3}{Real-Time Ubuntu Kernel}
+\ProfessorFallbackLabel{sec:exp_stability}{6.1}{Preliminary: Stability Analysis}
+\ProfessorFallbackLabel{sec:future}{7.3}{Future Work}
+\@ifundefined{r@sec:rt_kernel@cref}{%
+  \@namedef{r@sec:rt_kernel@cref}{{[section][3][3]3.3}{[1][0][]0}{}{}{}}%
+}{}%
+\@ifundefined{r@sec:exp_stability@cref}{%
+  \@namedef{r@sec:exp_stability@cref}{{[section][1][6]6.1}{[1][0][]0}{}{}{}}%
+}{}%
+\@ifundefined{r@sec:future@cref}{%
+  \@namedef{r@sec:future@cref}{{[section][3][7]7.3}{[1][0][]0}{}{}{}}%
+}{}%
 \makeatother
 
 \pagenumbering{Roman}
@@ -85,6 +106,11 @@
 \ifProfessorIncludeTitlePage
   \input{frontmatter/titlepage}
   \setcounter{page}{2}
+\fi
+
+\ifProfessorIncludeDeclaration
+  \input{backmatter/declaration}
+  \clearpage
 \fi
 
 \ifProfessorIncludeAbstract
@@ -97,6 +123,21 @@
 
 \ifProfessorIncludeTableOfContents
   \tableofcontents
+  \cleardoublepage
+\fi
+
+\ifProfessorIncludeListOfFigures
+  \listoffigures
+  \cleardoublepage
+\fi
+
+\ifProfessorIncludeListOfTables
+  \listoftables
+  \cleardoublepage
+\fi
+
+\ifProfessorIncludeAbbreviations
+  \input{config/abbreviations}
   \cleardoublepage
 \fi
 

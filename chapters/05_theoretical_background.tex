@@ -6,7 +6,7 @@ understand the Cartesian impedance controller used in this thesis.
 The presentation follows a deliberate step-by-step order:
 it begins with the geometry of coordinate frames, builds up the algebraic
 tools for transformations, defines the controlled variable as a pose in
-$SE(3)$, derives the error signal, and then develops the kinematic
+$\SE$, derives the error signal, and then develops the kinematic
 and dynamic machinery that connects joint torques to Cartesian forces.
 Every mathematical symbol is introduced at the point of first use.
 
@@ -170,7 +170,7 @@ the \textbf{special orthogonal group}:
 
 \begin{equation}
 \label{eq:rot}
-\mathbf{R} \in SO(3)
+\mathbf{R} \in \SO
 \;\;\Longleftrightarrow\;\;
 \mathbf{R}^\top\mathbf{R} = \mathbf{I}
 \;\;\text{and}\;\;
@@ -628,7 +628,7 @@ individual link transformations:
   \item $\vq=[q_1,\ldots,q_n]^\top\in\mathbb{R}^n$: the
         \textbf{joint angle vector}; each $q_i\in\mathbb{R}$ in radians.
   \item $\mathbf{T}_{i-1}^{i}(q_i)\in\mathbb{R}^{4\times4}$:
-        the DH link transformation with parameters
+        the \abbr{DH} link transformation with parameters
         $\theta_i=q_i$, $d_i$, $a_i$, $\alpha_i$ \cite{Denavit1955}.
   \item $\mathbf{T}_{0}^{n}(\vq)$: the resulting transformation.
         Its upper-left $3\times3$ block is the end-effector
@@ -637,7 +637,7 @@ individual link transformations:
 \end{itemize}
 
 The mapping $\mathbf{T}_e=f(\vq)$ is \emph{nonlinear} because each
-DH transformation contains trigonometric functions of the joint angle.
+\abbr{DH} transformation contains trigonometric functions of the joint angle.
 A fully numerical evaluation of forward kinematics for the Panda at the
 home configuration is worked through step by step in
 Appendix~\ref{app:panda_fk} (parameters in \cref{app:panda_params}).
@@ -1118,7 +1118,7 @@ end-effector is commanded to stay on the surface.
 Let $\hat{\mathbf{t}}_1,\hat{\mathbf{t}}_2$ be two orthogonal
 unit vectors in the plane, with
 $\hat{\mathbf{n}}=\hat{\mathbf{t}}_1\times\hat{\mathbf{t}}_2$.
-The wall partitions the six end-effector DOFs as follows:
+The wall partitions the six end-effector \abbr{DOF}s as follows:
 
 \begin{center}
 \renewcommand{\arraystretch}{1.4}
@@ -1170,7 +1170,7 @@ set.
 
 \begin{remark}
 This is the key question that often causes confusion.
-The stiffness matrix \textbf{is always a full SPD matrix in general}
+The stiffness matrix \textbf{is always a full \abbr{SPD} matrix in general}
 (as derived in \cref{subsec:KD_matrices}).
 It is diagonal \emph{only in the wall frame}, and for a very specific
 geometric reason explained here.
