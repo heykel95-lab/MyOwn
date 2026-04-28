@@ -8,6 +8,26 @@ pdflatex Thesis.tex
 If MiKTeX stops with a missing package dialog, install the package.
 If LaTeX stops with a missing figure, make sure the file exists in the figures/ folder.
 
+Clean LaTeX build clutter when the root folder gets crowded:
+
+.\cleanup_build.ps1
+
+Preview the cleanup without deleting anything:
+
+.\cleanup_build.ps1 -WhatIf
+
+Remove old generated draft/check PDFs too, while keeping Thesis.pdf and Professor_Draft.pdf:
+
+.\cleanup_build.ps1 -RemoveGeneratedPdfs
+
+Build the professor draft and automatically commit saved Git changes only if the build succeeds:
+
+.\build_professor_commit.ps1
+
+Use a custom commit message:
+
+.\build_professor_commit.ps1 -Message "Update introduction draft"
+
 This package includes placeholder PDF figures for:
 - lyapunov.pdf
 - exp1_comparison.pdf

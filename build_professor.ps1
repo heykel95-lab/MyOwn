@@ -15,8 +15,8 @@ function Close-PdfViewerForFile {
 
   Get-Process -ErrorAction SilentlyContinue |
     Where-Object {
-      $_.MainWindowTitle -match $escapedName -or
-      ($viewerNames -contains $_.ProcessName -and $_.MainWindowTitle -match "Professor_Draft")
+      $viewerNames -contains $_.ProcessName -and
+      ($_.MainWindowTitle -match $escapedName -or $_.MainWindowTitle -match "Professor_Draft")
     } |
     ForEach-Object {
       $null = $_.CloseMainWindow()
