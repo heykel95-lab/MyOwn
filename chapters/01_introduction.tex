@@ -1,96 +1,63 @@
 \chapter{Introduction}
 \label{ch:intro}
 
-\section{Motivation}
 \label{sec:motivation}
-
-Collaborative robotic manipulators have become central platforms for
-research and prototyping in flexible automation and human-robot
-interaction.
+Robotic manipulators are traditionally designed for accurate and
+repeatable motion. In many industrial applications, this is sufficient
+because the environment is structured and contact with humans or
+unknown obstacles is avoided. In collaborative and interaction-based
+tasks, however, purely rigid position control is not always suitable.
 Unlike classical industrial robots, which operate in fenced-off cells
 and prioritise rigid trajectory tracking, collaborative robots must be
 capable of reacting safely and predictably to contact with their
-environment.
-The Franka Emika Panda represents this class of robot: a seven-degree-of-freedom
-arm with integrated joint torque sensing, designed to run at 1\,kHz in
-torque-control mode through the Franka Control Interface (\abbr{FCI}).
+environment. A robot that reacts compliantly to contact can reduce
+interaction forces and can be guided more naturally by a human
+operator. Collaborative robots account for a growing share of
+industrial robot deployments, since their inherent compliance and
+sensor capabilities enable safe human--robot collaboration
+\citep{IFR2023WorldRobotics}.
 
-Achieving compliant, force-aware behaviour on such a platform requires
-moving beyond position control to an impedance-based approach in which
-the robot's dynamic relationship with the environment is explicitly
-designed and parameterised.
-This is technically demanding: it requires a verified real-time software
-stack, a mathematically sound controller formulation, and a systematic
-experimental evaluation.
-The present thesis addresses all three aspects for the Panda, using
-Cartesian impedance control in the group $\SE$.
+Cartesian impedance control, introduced by Hogan in 1985
+\citep{Hogan1985}, addresses this problem by describing the dynamic
+behaviour of the robot arm as a mass--spring--damper system in
+Cartesian coordinates. By deliberately choosing stiffness and damping
+parameters, the compliance of the end-effector along each Cartesian
+axis can be set individually. Implementing this control strategy
+requires precise knowledge of the Jacobian matrix of the manipulator,
+which establishes the relationship between Cartesian velocities and
+joint angular velocities and additionally enables the mapping of
+Cartesian forces to joint torques \citep{Siciliano2009,Khatib1987}.
+The main goal of this thesis is therefore to formulate and analyse a
+Cartesian impedance controller for a 7-\abbr{DOF} manipulator.
 
-\section{Objectives}
-\label{sec:objectives}
+The Franka Emika Panda represents this class of robot: a
+7-\abbr{DOF} arm with integrated joint torque sensing, designed to run
+at 1\,kHz in torque-control mode through the Franka Control Interface
+(\abbr{FCI}) \citep{FCI2023}. Achieving compliant, force-aware
+behaviour on such a platform requires moving beyond position control to
+an impedance-based approach in which the robot's dynamic relationship
+with the environment is explicitly designed and parameterised.
 
-The objectives of this thesis, as approved by the examination board, are:
+This is technically demanding: it requires a verified real-time
+software stack, a mathematically sound controller formulation, and a
+systematic experimental evaluation. The present thesis addresses these
+aspects for the Panda by developing and evaluating a Cartesian
+impedance-control approach in the group $\SE$. The work focuses on the
+compliant behaviour of the manipulator, the influence of controller
+parameters, and the practical conditions required for stable execution
+on the real-time Franka control stack.
 
-\begin{enumerate}
-  \item \textbf{Literature research} on robot kinematics, robot dynamics,
-        Franka Emika control, \abbr{FCI}/libfranka, and impedance control,
-        including scientific analysis and discussion of this research in
-        the report.
-  \item \textbf{Setup and documentation} of the robot/workstation
-        configuration, including network settings, real-time Linux
-        requirements, \abbr{FCI} access, and the C++/libfranka development
-        environment.
-  \item \textbf{Development} of a modular C++ software structure for
-        reading robot states, accessing model information, and executing
-        basic motion/control examples in a reproducible manner.
-  \item \textbf{Implementation and experimental evaluation} of a
-        Cartesian impedance-control approach, including analysis of
-        stability, tracking performance, compliance, limitations, and
-        practical usability.
-  \item \textbf{Public presentation} (approx.\ 30--45 minutes
-        presentation and approx.\ 15 minutes discussion).
-  \item \textbf{Compilation} of a comprehensible report in English
-        (approx.\ 50--100 pages, plus appendix if necessary).
-\end{enumerate}
+Chapter~\ref{ch:literature} reviews the theoretical background and
+related work on robot kinematics, dynamics, and impedance control.
+Chapter~\ref{ch:setup} describes the hardware and software setup.
+Chapter~\ref{ch:implementation} presents the implementation framework.
+Chapter~\ref{ch:theory} develops the controller formulation.
+Chapter~\ref{ch:experiments} defines the experimental design and
+evaluation procedure, and Chapter~\ref{ch:conclusion} summarises the
+results and limitations.
 
-\section{Thesis Structure}
-\label{sec:structure}
 
-The thesis is organised as follows, each chapter building directly on
-the previous one:
 
-\begin{itemize}
-  \item \textbf{Chapter~\ref{ch:literature} --- State of the Art:}
-        Reviews robot kinematics, impedance control, and the Franka
-        platform; positions this work in the research landscape.
-  \item \textbf{Chapter~\ref{ch:setup} --- System Setup:}
-        Documents the complete hardware and software stack required to
-        run real-time torque control on the Panda: network connection,
-        Franka Desk access, real-time Ubuntu kernel, libfranka, and
-        the C++ build environment.
-  \item \textbf{Chapter~\ref{ch:theory} --- Theoretical Background:}
-        Develops the full mathematical theory of Cartesian impedance
-        control in $\SE$: coordinate frames, homogeneous
-        transformations, pose error, forward and differential
-        kinematics, the Jacobian, and the impedance control law with
-        full \abbr{SPD} stiffness and damping matrices.
-  \item \textbf{Chapter~\ref{ch:implementation} --- Software Implementation:}
-        Describes the modular C++ structure that implements the theory:
-        state acquisition, model access, the 1\,ms control callback,
-        and safety mechanisms.
-  \item \textbf{Chapter~\ref{ch:experiments} --- Experiments:}
-        Presents four experiments --- Experiment~1 (Cartesian pose
-        tracking), Experiment~2 (virtual wall constraint),
-        Experiment~3 (stiffness variation), and Experiment~4
-        (configuration dependence) --- evaluating stability, tracking
-        behaviour, and compliant interaction.
-  \item \textbf{Chapter~\ref{ch:conclusion} --- Conclusion:}
-        Summarises results, discusses limitations, and outlines
-        directions for future work.
-\end{itemize}
-
-The appendix provides a step-by-step numerical worked example for the
-Panda (Appendix~A) and the complete simulation code and C++ listings
-for each experiment (Appendices B--E).
 
 %% =============================================================
 %%  CHAPTER 2: LITERATURE REVIEW
