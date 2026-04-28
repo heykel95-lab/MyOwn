@@ -1,0 +1,626 @@
+\chapter{Experimental Design and Evaluation}
+\label{ch:experiments}
+
+The Cartesian impedance-control strategy developed in this thesis is
+evaluated with respect to three criteria:
+
+\begin{enumerate}
+  \item \textbf{Stability} --- Does the closed-loop system remain stable
+        for all tested stiffness and damping parameters?
+        Can stability be guaranteed analytically?
+  \item \textbf{Tracking behavior} --- How accurately and quickly does the
+        end-effector converge to the desired pose after a step change?
+        What are the settling time and steady-state error as functions of
+        the stiffness matrix $\mathbf{K}_p$?
+  \item \textbf{Compliant interaction} --- Does the controller correctly
+        implement the virtual wall constraint?
+        Is the end-effector free to slide within the plane and to tilt
+        until the tool face makes full contact with the surface,
+        while being stiff against normal penetration and spinning?
+\end{enumerate}
+
+The theoretical basis for all three criteria is developed in
+\cref{ch:theory}.
+This chapter translates those criteria into four concrete experiments:
+
+\begin{itemize}
+  \item \textbf{Experiment~1} (\cref{sec:exp_tracking}): fixed-point tracking with rotated stiffness directions.
+  \item \textbf{Experiment~2} (\cref{sec:exp_wall}): Virtual wall
+        constraint --- normal stiffness, in-plane sliding, tilt-to-contact.
+  \item \textbf{Experiment~3} (\cref{sec:exp_stiffness}): Normal stiffness
+        variation --- validates the compliance law $d_{ss}=F_n/k$.
+  \item \textbf{Experiment~4} (\cref{sec:exp_config}): Configuration
+        dependence --- same wrench at three different arm poses.
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────────────
+\section{Preliminary: Stability Analysis}
+\label{sec:exp_stability}
+% ─────────────────────────────────────────────────────────────────
+
+\subsection{Lyapunov Stability Proof}
+
+The closed-loop stability of the Cartesian impedance controller is
+established using a \textbf{Lyapunov argument} \cite{Siciliano2009}.
+Consider the total mechanical energy of the virtual mass-spring-damper
+system as a candidate Lyapunov function:
+
+\begin{equation}
+\label{eq:lyapunov}
+V(\mathbf{e}_p, \dot{\mathbf{p}}_e) =
+\underbrace{\tfrac{1}{2}\,\mathbf{e}_p^\top\,\mathbf{K}_p\,\mathbf{e}_p}_{\text{potential energy}}
++
+\underbrace{\tfrac{1}{2}\,\dot{\mathbf{p}}_e^\top\,\mathbf{M}_p\,\dot{\mathbf{p}}_e}_{\text{kinetic energy}}
+> 0
+\end{equation}
+
+$V > 0$ for all $(\mathbf{e}_p, \dot{\mathbf{p}}_e) \neq (\mathbf{0},\mathbf{0})$
+because both $\mathbf{K}_p$ and $\mathbf{M}_p$ are SPD.
+This is precisely why SPD is required for both matrices: positive definiteness
+of $\mathbf{K}_p$ ensures the potential energy is zero only at the desired
+position, and positive definiteness of $\mathbf{M}_p$ ensures the kinetic
+energy is zero only when the end-effector is at rest.
+
+Taking the time derivative along the system trajectories and substituting the
+translational impedance law \cref{eq:imp_trans}:
+
+\begin{align}
+\dot{V}
+&= \mathbf{e}_p^\top\,\mathbf{K}_p\,\dot{\mathbf{e}}_p
+ + \dot{\mathbf{p}}_e^\top\,\mathbf{M}_p\,\ddot{\mathbf{p}}_e
+\notag\\
+&= -\,\mathbf{e}_p^\top\,\mathbf{K}_p\,\dot{\mathbf{p}}_e
+ + \dot{\mathbf{p}}_e^\top\bigl(\mathbf{K}_p\,\mathbf{e}_p
+   - \mathbf{D}_p\,\dot{\mathbf{p}}_e\bigr)
+\notag\\
+\label{eq:Vdot}
+&= -\,\dot{\mathbf{p}}_e^\top\,\mathbf{D}_p\,\dot{\mathbf{p}}_e
+\;\leq\; 0
+\end{align}
+
+where $\dot{\mathbf{e}}_p = -\dot{\mathbf{p}}_e$ (error decreases when
+the end-effector moves towards $\mathbf{p}_d$).
+The spring terms cancel exactly, leaving only the damping dissipation.
+
+\paragraph{Why $\mathbf{D}_p$ must be SPD.}
+$\dot{V} \leq 0$ requires the quadratic form
+$\dot{\mathbf{p}}_e^\top\mathbf{D}_p\dot{\mathbf{p}}_e \geq 0$.
+Strict inequality ($\dot{V} < 0$ for $\dot{\mathbf{p}}_e \neq \mathbf{0}$)
+requires $\mathbf{D}_p$ to be positive definite.
+This is the formal reason why a damping matrix with negative or zero
+eigenvalues would destabilise the controller: it would allow $\dot{V}>0$
+along some velocity direction, meaning the system gains energy in that
+direction.
+
+\paragraph{Conclusion.}
+Since $V > 0$ and $\dot{V} \leq 0$, Lyapunov's theorem guarantees that
+the equilibrium $(\mathbf{e}_p, \dot{\mathbf{p}}_e) = (\mathbf{0},\mathbf{0})$ is
+\textbf{stable}.
+Asymptotic stability (convergence to zero) follows from LaSalle's
+invariance principle: the only trajectory along which $\dot{V} = 0$
+permanently (i.e.\ $\dot{\mathbf{p}}_e \equiv \mathbf{0}$) is the
+equilibrium itself.
+The same argument applies to the rotational subsystem with $\mathbf{e}_R$,
+$\mathbf{K}_R$, $\boldsymbol{\omega}_e$, $\mathbf{D}_R$.
+
+\begin{remark}
+This proof holds for \emph{any} SPD $\mathbf{K}_p$ and $\mathbf{D}_p$,
+including the full off-diagonal matrices arising from the virtual wall
+task.
+The diagonal special case is not required for stability.
+\end{remark}
+
+\subsection{Experimental Stability Verification}
+
+To confirm stability experimentally, the following protocol is executed:
+
+\begin{enumerate}
+  \item The robot is held at the desired pose $\mathbf{p}_d$.
+  \item The controller is activated with stiffness values ranging from
+        $k_{\min}=50\,\mathrm{N/m}$ to $k_{\max}=1000\,\mathrm{N/m}$.
+  \item A step disturbance is applied: the robot is manually displaced
+        by $\Delta p = 30\,\mathrm{mm}$ and released.
+  \item The system must return to equilibrium without oscillation
+        (critical damping defined by \cref{eq:D_base_local}).
+  \item Joint torques and end-effector position are recorded.
+        Divergence, sustained oscillation, or saturation of joint torques
+        at their limits would indicate instability.
+\end{enumerate}
+
+\textbf{Success criterion:} The position error $\|\mathbf{e}_p(t)\|$
+converges monotonically to zero for all tested values of $\mathbf{K}_p$
+designed according to \cref{subsec:KD_matrices}.
+
+
+For later comparison, the critically damped single-axis response is described by
+
+\begin{equation}
+\label{eq:settling}
+t_s \approx \frac{4}{\omega_n}=\frac{4}{\sqrt{K_i}},
+\qquad \omega_n=\sqrt{K_i},
+\end{equation}
+
+where \(t_s\) is the approximate 2\,\% settling time and \(K_i\) is the
+stiffness in the investigated principal direction for unit virtual mass. Under
+a constant external force \(F_i\), the steady-state error is
+
+\begin{equation}
+\label{eq:ss_error}
+e_{p,\infty}=\frac{F_i}{K_i}.
+\end{equation}
+
+These two relations are used to interpret the tracking and stiffness-variation
+experiments.
+
+\cref{fig:lyapunov} shows the simulated Lyapunov function $V(t)$ and
+its time derivative $\dot{V}(t)$ for a 50\,mm step error with
+$K=200\,\mathrm{N/m}$.
+$V(t)$ decreases monotonically and $\dot{V}(t)\leq0$ throughout,
+confirming the stability proof analytically.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=\textwidth]{lyapunov.pdf}
+\caption{Stability verification: Lyapunov function $V(t)$ (left) and its
+         time derivative $\dot{V}(t)=-\mathbf{D}_p\dot{p}_e^2\leq0$ (right)
+         for a 50\,mm step error with $K=200\,\mathrm{N/m}$.
+         The monotone decrease of $V$ and the non-positive $\dot{V}$ confirm
+         asymptotic stability.}
+\label{fig:lyapunov}
+\end{figure}
+
+% ─────────────────────────────────────────────────────────────────
+\section{Experiment~1 --- Fixed-Point Tracking with Rotated Stiffness Directions}
+\label{sec:exp_tracking}
+% ─────────────────────────────────────────────────────────────────
+
+This experiment evaluates the tracking behaviour of the impedance controller
+for a single fixed Cartesian target point. In contrast to a purely diagonal
+axis-aligned test, the stiffness and damping matrices are intentionally
+constructed in a rotated local stiffness frame and then transformed into the
+base frame using \cref{eq:K_base_local,eq:D_base_local}. This experiment
+therefore demonstrates that full matrices are meaningful even when the task is
+only to track one fixed point.
+
+The complete C++ implementation, simulation code, and parameter table are
+given in Appendix~\ref{app:exp1}.
+
+\subsection{Objective}
+
+The objective is to show that the desired point \(\mathbf{p}_d\) defines the
+centre of the virtual spring, while \(\mathbf{K}_{p,\mathrm{base}}\) defines
+the shape and orientation of the restoring behaviour around that point. If the
+principal stiffness directions are rotated relative to the base frame and the
+stiffness values are not equal, the base-frame stiffness matrix becomes full.
+
+\subsection{Task Setup}
+
+The desired fixed point is chosen as
+
+\begin{equation}
+\label{eq:exp1_pd}
+\mathbf{p}_d =
+\begin{bmatrix}
+0.50\\0.00\\0.40
+\end{bmatrix}
+\mathrm{m}.
+\end{equation}
+
+The initial position is offset by \(10\,\mathrm{mm}\) in the base \(x\)-direction:
+
+\begin{equation}
+\label{eq:exp1_initial}
+\mathbf{p}_e(0) =
+\begin{bmatrix}
+0.49\\0.00\\0.40
+\end{bmatrix}
+\mathrm{m}.
+\end{equation}
+
+Thus, the initial position error is
+
+\begin{equation}
+\label{eq:exp1_error}
+\mathbf{e}_p(0)
+=
+\mathbf{p}_d-\mathbf{p}_e(0)
+=
+\begin{bmatrix}
+0.01\\0\\0
+\end{bmatrix}
+\mathrm{m}.
+\end{equation}
+
+\subsection{Rotated Stiffness Field}
+
+The local stiffness frame is rotated relative to the base frame using
+
+\begin{equation}
+\label{eq:exp1_W}
+\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}
+=
+\mathbf{R}_z(40^\circ)\mathbf{R}_y(30^\circ)\mathbf{R}_x(20^\circ).
+\end{equation}
+
+The local stiffness and damping matrices are
+
+\begin{equation}
+\label{eq:exp1_KD_local}
+\mathbf{K}_{p,\mathrm{local}}
+=
+\operatorname{diag}(1000,300,100)\;\mathrm{N/m},
+\qquad
+\mathbf{D}_{p,\mathrm{local}}
+=
+2\,\operatorname{diag}(\sqrt{1000},\sqrt{300},\sqrt{100}).
+\end{equation}
+
+They are transformed into the base frame as
+
+\begin{equation}
+\label{eq:exp1_KD_base}
+\mathbf{K}_{p,\mathrm{base}}
+=
+\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}
+\mathbf{K}_{p,\mathrm{local}}
+\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}^{T},
+\qquad
+\mathbf{D}_{p,\mathrm{base}}
+=
+\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}
+\mathbf{D}_{p,\mathrm{local}}
+\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}^{T}.
+\end{equation}
+
+The expected base-frame stiffness matrix is approximately
+
+\begin{equation}
+\label{eq:exp1_Kbase_expected}
+\mathbf{K}_{p,\mathrm{base}}
+\approx
+\begin{bmatrix}
+605.1 & 359.0 & -205.6\\
+359.0 & 500.2 & 138.9\\
+-205.6 & 138.9 & 294.7
+\end{bmatrix}
+\;\mathrm{N/m}.
+\end{equation}
+
+\subsection{Expected Behaviour}
+
+At the beginning of the experiment the robot is momentarily at rest, so the
+initial damping force is zero. The initial restoring force is therefore
+
+\begin{equation}
+\label{eq:exp1_initial_force}
+\mathbf{f}(0)
+=
+\mathbf{K}_{p,\mathrm{base}}\mathbf{e}_p(0)
+\approx
+\begin{bmatrix}
+6.05\\3.59\\-2.06
+\end{bmatrix}
+\mathrm{N}.
+\end{equation}
+
+This is the key result of the experiment. Although the initial error is only in
+the base \(x\)-direction, the restoring force contains \(x\)-, \(y\)-, and
+\(z\)-components. This demonstrates that the full stiffness matrix defines a
+rotated spring field around the fixed target point.
+
+\subsection{Protocol}
+
+\begin{enumerate}
+  \item Move the end-effector to the initial position given in
+        \cref{eq:exp1_initial}.
+  \item Define the desired point \(\mathbf{p}_d\) according to
+        \cref{eq:exp1_pd}.
+  \item Construct \(\mathbf{K}_{p,\mathrm{base}}\) and
+        \(\mathbf{D}_{p,\mathrm{base}}\) using
+        \cref{eq:exp1_KD_base}.
+  \item Activate the impedance controller and record
+        \(\mathbf{p}_e(t)\), \(\dot{\mathbf{p}}_e(t)\),
+        \(\mathbf{f}(t)\), and \(\boldsymbol{\tau}(t)\) at 1\,kHz.
+  \item Compare the measured initial force direction with the predicted
+        vector in \cref{eq:exp1_initial_force}.
+\end{enumerate}
+
+\subsection{Measured Variables and Expected Plots}
+
+The following quantities are evaluated:
+\begin{itemize}
+  \item position error components \(e_x(t),e_y(t),e_z(t)\);
+  \item Cartesian force components \(f_x(t),f_y(t),f_z(t)\);
+  \item joint torques \(\tau_1(t),\ldots,\tau_7(t)\);
+  \item comparison between diagonal stiffness and rotated full stiffness.
+\end{itemize}
+
+A diagonal axis-aligned stiffness matrix would generate only an \(x\)-force for
+the initial condition in \cref{eq:exp1_error}. The rotated full matrix generates
+a coupled 3D restoring force. This difference is the central observation of the
+experiment.
+
+
+% ─────────────────────────────────────────────────────────────────
+\section{Experiment~2 --- Virtual Wall Constraint}
+\label{sec:exp_wall}
+% ─────────────────────────────────────────────────────────────────
+
+This experiment evaluates whether the Cartesian impedance controller can create
+an anisotropic interaction behaviour. The end-effector should remain close to a
+virtual wall, resist motion in the wall-normal direction, and remain compliant
+in tangential directions. The task is formulated using the local/base matrix
+notation introduced in \cref{subsec:KD_matrices}.
+
+\subsection{Protocol}
+
+\begin{enumerate}
+  \item The robot is moved to the initial pose on the wall surface
+        ($d = 0$, desired orientation $\mathbf{R}_d$ such that the
+        end-effector $z$-axis aligns with $\hat{\mathbf{n}}$).
+  \item The impedance controller is activated.
+  \item A human operator applies forces by hand in three separate trials:
+    \begin{itemize}
+      \item \textbf{Trial A --- Normal push:}
+            Force applied along $\hat{\mathbf{n}}$.
+            Expected result: small displacement ($<1\,\mathrm{mm}$),
+            large restoring force.
+      \item \textbf{Trial B --- In-plane slide:}
+            Force applied along $\hat{\mathbf{t}}_1$ or $\hat{\mathbf{t}}_2$.
+            Expected result: end-effector slides freely in the plane;
+            no normal displacement.
+      \item \textbf{Trial C --- Tilt to contact:}
+            Tool starts at an angle to the surface (touching at one point).
+            The controller is activated with free tilt
+            ($k_{R,\mathrm{free}}$ about $\hat{\mathbf{t}}_1$,
+            $\hat{\mathbf{t}}_2$).
+            Expected result: the tool tilts freely until its face is
+            parallel to the surface (full contact); spinning about
+            $\hat{\mathbf{n}}$ is resisted.
+    \end{itemize}
+  \item Joint torques, end-effector position, and orientation are recorded
+        at 1\,kHz throughout each trial.
+\end{enumerate}
+
+\subsection{Simulated Results}
+
+The three trials are simulated using the single-degree-of-freedom
+impedance model with the parameter values from the previous subsection.
+\Cref{fig:exp2_wall_trials} shows the displacement and rotation angle
+for each trial.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=\textwidth]{exp2_wall_trials.pdf}
+\caption{Simulation of the three virtual wall trials.
+         \textbf{Top (Trial A):} a 10\,N normal push causes a
+         $d_{\max}\approx9.8\,\mathrm{mm}$ displacement; after release
+         the end-effector returns to $d=0$ within $0.13\,\mathrm{s}$.
+         \textbf{Middle (Trial B):} a 2\,N in-plane force causes free
+         sliding ($k_{\mathrm{free}}=50\,\mathrm{N/m}$) while the
+         normal displacement remains near zero.
+         \textbf{Bottom (Trial C):} a 0.5\,Nm roll torque rotates
+         the tool freely ($k_{R,\mathrm{free}}=5\,\mathrm{Nm/rad}$)
+         while spinning about $\hat{\mathbf{n}}$ is blocked ($k_{R,\mathrm{stiff}}=200\,\mathrm{Nm/rad}$).}
+\label{fig:exp2_wall_trials}
+\end{figure}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=\textwidth]{exp2_joint_torques.pdf}
+\caption{Joint torques during Trial A (10\,N normal push at $t=0.5$--$1.5\,\mathrm{s}$).
+         Each torque $\tau_k = J_{k,z}\cdot F_z$ is proportional to the
+         $z$-component of the $k$-th Jacobian column at the home
+         configuration.
+         Joint~3 contributes most strongly; joint~7 contributes zero
+         because its rotation axis is perpendicular to the $z$-force.}
+\label{fig:exp2_joint_torques}
+\end{figure}
+
+\subsection{Measured Variables}
+
+\begin{itemize}
+  \item \textbf{Normal displacement $d(t)$} from \cref{eq:wall_dist}:
+        should remain near zero during in-plane trials and return to zero
+        after a normal push.
+  \item \textbf{In-plane position} $\mathbf{p}_e \cdot \hat{\mathbf{t}}_1$
+        and $\mathbf{p}_e \cdot \hat{\mathbf{t}}_2$ vs.\ time:
+        should show free motion during in-plane trials.
+  \item \textbf{Tilt angles} about $\hat{\mathbf{t}}_1$ and $\hat{\mathbf{t}}_2$
+        extracted from $\mathbf{R}_e$ vs.\ time: should converge freely to
+        the angle that brings the tool face parallel to the surface.
+  \item \textbf{Spin angle} about $\hat{\mathbf{n}}$ vs.\ time: should
+        remain near zero ($< 2^{\circ}$) in all trials.
+  \item \textbf{Joint torques} $\tau_1, \ldots, \tau_7$ vs.\ time:
+        should reveal which joints contribute most to normal stiffness
+        vs.\ in-plane compliance.
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────────────
+
+\section{Experiment~3 --- Stiffness Variation in the Normal Direction}
+\label{sec:exp_stiffness}
+% ─────────────────────────────────────────────────────────────────
+
+The normal stiffness $k_{\mathrm{stiff}}$ is varied while keeping the
+in-plane and rotational parameters fixed.
+A constant force of approximately $5\,\mathrm{N}$ is applied along
+$\hat{\mathbf{n}}$ by the operator.
+The steady-state displacement $d_{\mathrm{ss}}$ is measured for three values:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}lll@{}}
+\toprule
+$k_{\mathrm{stiff}}$ [N/m] & Expected $d_{\mathrm{ss}}$ [mm]
+  & Behaviour \\
+\midrule
+$200$  & $25.0$ & Compliant: wall yields under load \\
+$500$  & $10.0$ & Moderate stiffness \\
+$1000$ & $5.0$  & Stiff: wall barely moves \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+This experiment validates the linear compliance law
+$d_{\mathrm{ss}} = F_n / k_{\mathrm{stiff}}$ predicted by the impedance model
+(\cref{eq:ss_error}).
+\Cref{fig:exp2_stiffness,fig:compliance_law} show the simulated
+results and the theoretical compliance curve.
+The complete simulation code and parameter table are in
+Appendix~\ref{app:exp3}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=\textwidth]{exp2_stiffness_variation.pdf}
+\caption{Stiffness variation experiment.
+         \textbf{Left:} Time response of the normal displacement for three
+         stiffness values ($F_n=5\,\mathrm{N}$ applied at $t=0.5\,\mathrm{s}$).
+         Higher stiffness gives faster response and smaller steady-state
+         displacement.
+         \textbf{Right:} Comparison of theoretical ($F/k$) and simulated
+         steady-state displacements --- agreement is within 1\,\%.}
+\label{fig:exp2_stiffness}
+\end{figure}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.72\textwidth]{compliance_law.pdf}
+\caption{Compliance law $d_{ss}=F_n/k_{\mathrm{stiff}}$ for four force
+         levels.
+         Red dots mark the three stiffness values tested experimentally.
+         The linear relationship between compliance and inverse stiffness
+         is the defining characteristic of the impedance model.}
+\label{fig:compliance_law}
+\end{figure}
+
+% ─────────────────────────────────────────────────────────────────
+\section{Experiment~4 --- Configuration Dependence of Joint Torques}
+\label{sec:exp_config}
+% ─────────────────────────────────────────────────────────────────
+
+The virtual wall task is repeated at three different base configurations
+$\vq^{(1)}, \vq^{(2)}, \vq^{(3)}$ while keeping the same Cartesian
+end-effector pose and the same stiffness parameters.
+For a fixed Cartesian force $\mathbf{F}$, the joint torques
+$\vtau = \mathbf{J}^\top(\vq)\mathbf{F}$ differ because the Jacobian
+$\mathbf{J}$ depends on the configuration.
+
+The torque distribution across the seven joints is recorded for each
+configuration and compared as a bar chart, illustrating how redundancy
+allows the same Cartesian task to be distributed differently across the
+joints depending on arm pose.
+The complete simulation code is in Appendix~\ref{app:exp4}.
+
+% ─────────────────────────────────────────────────────────────────
+\section{Sensitivity Analysis}
+\label{sec:sensitivity}
+
+A sensitivity analysis investigates how variations in the controller
+parameters affect the system response, providing insight into the
+robustness of the design and the consequences of parameter
+mis-specification.
+
+\subsection{Sensitivity to Stiffness}
+
+The steady-state error under a constant force $F_n$ along the normal
+direction is $e_{p,\infty} = F_n / k_{\mathrm{stiff}}$ (from
+\cref{eq:ss_error}).
+The sensitivity of the steady-state error to a relative change in
+$k_{\mathrm{stiff}}$ is:
+
+\begin{equation}
+\frac{\partial e_{p,\infty}}{\partial k_{\mathrm{stiff}}}
+= -\frac{F_n}{k_{\mathrm{stiff}}^2}
+\end{equation}
+
+At $k_{\mathrm{stiff}}=1000\,\mathrm{N/m}$ and $F_n=5\,\mathrm{N}$,
+a $\pm10\%$ variation in stiffness changes the steady-state error by
+$\pm0.05\,\mathrm{mm}$, which is negligible for the surface-following
+task.
+At $k_{\mathrm{stiff}}=200\,\mathrm{N/m}$, the same $\pm10\%$
+variation changes the error by $\pm1.25\,\mathrm{mm}$, which may
+be perceptible.
+This shows that \textbf{low stiffness values are more sensitive to
+parameter uncertainty} than high stiffness values.
+
+\subsection{Sensitivity to Damping}
+
+Under-damping ($D_i < 2\sqrt{K_i}$) causes oscillatory transients;
+over-damping ($D_i > 2\sqrt{K_i}$) increases settling time without
+improving steady-state accuracy.
+The optimal critical-damping condition $D_i = 2\sqrt{K_i}$ (with
+$M_i=1$) is computed analytically.
+In practice, a $\pm20\%$ deviation from the critical value is
+acceptable: under-damping by 20\% produces a peak overshoot of
+approximately 1.5\%, which is within the positioning tolerance of
+the FCI sensor.
+
+\subsection{Sensitivity to Model Errors}
+
+The gravity and Coriolis compensation terms $\bm{\tau}_g$ and
+$\bm{\tau}_c$ are computed from the libfranka model.
+An error in these terms appears as a constant force offset in the
+Cartesian space:
+
+\begin{equation}
+\delta\mathbf{F}_{\mathrm{model}} =
+(\mathbf{J}^\top)^{-1}\,\delta\bm{\tau}_{\mathrm{model}}
+\end{equation}
+
+For the Panda without payload, manufacturer specifications state
+a gravity model accuracy of $\pm0.5\,\mathrm{Nm}$ per joint.
+Propagated through the Jacobian at the home configuration, this
+corresponds to a worst-case Cartesian force offset of approximately
+$0.3\,\mathrm{N}$, producing a position offset of
+$0.3/k_{\mathrm{stiff}} = 0.3\,\mathrm{mm}$ at
+$k_{\mathrm{stiff}}=1000\,\mathrm{N/m}$.
+This is within the positioning tolerance and confirms that the
+libfranka model is sufficiently accurate for the tasks considered.
+
+\section{Result Interpretation Guide}
+\label{sec:exp_results}
+% ─────────────────────────────────────────────────────────────────
+
+The result interpretation connects every observation directly to the theory
+and to one of the three evaluation criteria.
+Example formulations organised by criterion:
+
+\paragraph{Stability.}
+\begin{itemize}
+  \item \textit{``The position error $\|\mathbf{e}_p(t)\|$ converged
+        monotonically to zero in all trials without oscillation, confirming
+        the critical-damping condition $\mathbf{D}_p = 2\mathbf{K}_p^{1/2}$
+        derived in \cref{subsec:KD_matrices}.''}
+  \item \textit{``No saturation of the joint torque limits was observed,
+        indicating that the stiffness values lie within the dynamically
+        feasible range of the Panda actuators.''}
+\end{itemize}
+
+\paragraph{Tracking behavior.}
+\begin{itemize}
+  \item \textit{``The measured settling time at $K_x=200\,\mathrm{N/m}$
+        was $t_s = 0.29\,\mathrm{s}$, consistent with the theoretical
+        prediction $4/\omega_n = 4/\sqrt{200} \approx 0.28\,\mathrm{s}$
+        from \cref{eq:settling}.''}
+  \item \textit{``The steady-state error under a $3\,\mathrm{N}$ external
+        force at $K_x = 500\,\mathrm{N/m}$ was $6.1\,\mathrm{mm}$,
+        matching the predicted value $F/K = 3/500 = 6.0\,\mathrm{mm}$.''}
+\end{itemize}
+
+\paragraph{Compliant interaction.}
+\begin{itemize}
+  \item \textit{``The normal displacement remained below $1\,\mathrm{mm}$
+        during in-plane sliding (Experiment~2, Trial B), confirming that
+        $k_{\mathrm{stiff}} = 1000\,\mathrm{N/m}$ is sufficient to maintain
+        wall contact within the positioning accuracy of the sensor.''}
+  \item \textit{``The roll angle increased freely to $\phi_{\mathrm{roll}} = 25^{\circ}$
+        without any resistance above the noise floor, consistent with the
+        prescribed $k_{R,\mathrm{free}} = 5\,\mathrm{Nm/rad}$.''}
+  \item \textit{``Pitch and yaw remained within $\pm 1.5^{\circ}$ throughout all
+        trials, confirming that $k_{R,\mathrm{stiff}} = 200\,\mathrm{Nm/rad}$
+        prevents any spinning of the tool about the wall normal.''}
+  \item \textit{``The torque distribution changed significantly across the
+        three configurations even for the same Cartesian wrench, demonstrating
+        the configuration dependence of the Jacobian transpose mapping.''}
+\end{itemize}

@@ -1,0 +1,260 @@
+\chapter{Data Logging and Analysis Workflow}
+\label{app:data_logging}
+
+This appendix explains the complete pipeline from recording measurements
+on the robot to producing publication-quality plots on any computer.
+The same pattern is used in all four experiments.
+
+%% ─────────────────────────────────────────────────────────────────
+\section{Overview}
+%% ─────────────────────────────────────────────────────────────────
+
+\begin{figure}[htb]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners=3pt, minimum width=4.5cm,
+              minimum height=0.85cm, align=center, font=\small},
+  arr/.style={-{Latex}, thick}
+]
+  \node[box, fill=blue!10]   (robot) at (0,0)    {Franka Panda\\(Robot PC, RT-Linux)};
+  \node[box, fill=orange!15] (cpp)   at (0,-1.8) {C++ Controller\\(1 ms callback)};
+  \node[box, fill=green!10]  (csv)   at (0,-3.6) {CSV File\\(\texttt{exp1\_data.csv})};
+  \node[box, fill=red!10]    (pc)    at (0,-5.4) {Analysis Machine\\(any OS, no robot)};
+  \node[box, fill=purple!10] (plots) at (0,-7.2) {PDF Plots\\(\texttt{plot\_exp1.py})};
+
+  \draw[arr] (robot) -- (cpp)   node[midway,right,font=\tiny]{state at 1 kHz};
+  \draw[arr] (cpp)   -- (csv)   node[midway,right,font=\tiny]{append row per ms};
+  \draw[arr] (csv)   -- node[midway,right,font=\small]{\texttt{scp}} (pc);
+  \draw[arr] (pc)    -- (plots) node[midway,right,font=\tiny]{\texttt{pandas.read\_csv()}};
+\end{tikzpicture}
+\caption{Data logging and analysis pipeline.
+         Measurements are written to CSV during the experiment, copied
+         to an analysis machine via \texttt{scp}, and plotted with Python.
+         The robot PC and the analysis machine can be completely separate.}
+\label{fig:data_pipeline}
+\end{figure}
+
+%% ─────────────────────────────────────────────────────────────────
+\section{Step 1 --- Writing CSV in C++ (Robot PC)}
+%% ─────────────────────────────────────────────────────────────────
+
+The C++ controller opens a CSV file before the control loop starts,
+writes one row per millisecond inside the callback, and closes the file
+after the loop ends.
+No additional libraries are required --- standard C++ \texttt{<fstream>}
+is used.
+
+\begin{lstlisting}[style=cppstyle,
+  caption={C++ CSV logging pattern used in all experiments},
+  label={lst:csv_write}]
+#include <fstream>   // standard library -- no extra dependency
+
+// -- BEFORE the control loop: open file and write header --------
+std::ofstream csv("exp1_data.csv");   // file created in current dir
+csv << "time,e_px,e_py,e_pz,"        // header row
+       "fx,fy,fz,"
+       "tau1,tau2,tau3,tau4,tau5,tau6,tau7\n";
+
+// -- INSIDE the 1 ms callback: append one row -------------------
+robot.control([&](const franka::RobotState& state,
+    franka::Duration dt) -> franka::Torques
+{
+    time += dt.toSec();
+
+    // ... compute e_p, f, tau as usual ...
+
+    // Write one row every millisecond
+    csv << time
+        << "," << e_p(0) << "," << e_p(1) << "," << e_p(2)
+        << "," << f(0)   << "," << f(1)   << "," << f(2);
+    for (int i = 0; i < 7; ++i) csv << "," << tau(i);
+    csv << "\n";          // flush happens automatically at close
+
+    // ... return torques as usual ...
+});
+
+// -- AFTER the control loop: close file -------------------------
+csv.close();
+std::cout << "Data saved to exp1_data.csv\n";
+\end{lstlisting}
+
+\subsection{CSV File Format}
+
+Each row contains one measurement at one time step (1\,ms interval).
+The first row is a header with column names.
+A typical file after a 5\,s run contains $5{,}000$ rows and is
+approximately 300\,KB --- small enough to transfer instantly.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}llll@{}}
+\toprule
+Column & Type & Unit & Description \\
+\midrule
+\texttt{time}     & float & s   & Time since controller start \\
+\texttt{e\_px/y/z} & float & m   & Translational error $\mathbf{e}_p$ \\
+\texttt{p\_ex/y/z} & float & m   & End-effector position $\mathbf{p}_e$ \\
+\texttt{phi\_err}  & float & rad & Rotation error magnitude $\phi$ \\
+\texttt{fx/y/z}   & float & N   & Cartesian restoring force \\
+\texttt{mx/y/z}   & float & Nm  & Cartesian restoring moment \\
+\texttt{tau1--7}  & float & Nm  & Joint torques \\
+\texttt{tau\_g1--7}& float & Nm  & Gravity compensation torques \\
+\texttt{F\_ext\_x/y/z}& float & N & libfranka external force estimate \\
+\texttt{d\_wall\_mm}  & float & mm & Signed distance from wall \\
+\texttt{phi\_tilt\_deg}& float & deg & Tilt angle (free DOF) \\
+\texttt{phi\_spin\_deg}& float & deg & Spin angle (stiff DOF) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%% ─────────────────────────────────────────────────────────────────
+\section{Step 2 --- Copying Files to the Analysis Machine}
+%% ─────────────────────────────────────────────────────────────────
+
+After the experiment, copy the CSV files from the robot PC to any
+machine (laptop, desktop) using \texttt{scp}:
+
+\begin{lstlisting}[style=cppstyle, language=bash,
+  caption={Copy CSV files from the robot workstation},
+  label={lst:scp}]
+# From the analysis machine (not the robot PC):
+scp ubuntu@172.16.0.1:~/exp1_data.csv  ./data/
+scp ubuntu@172.16.0.1:~/exp2_data.csv  ./data/
+scp ubuntu@172.16.0.1:~/exp3_*.csv     ./data/
+scp ubuntu@172.16.0.1:~/exp4_*.csv     ./data/
+
+# Or copy all CSV files at once:
+scp ubuntu@172.16.0.1:~/*.csv          ./data/
+\end{lstlisting}
+
+The analysis machine does not need libfranka, a real-time kernel,
+or any connection to the robot.
+It only needs Python with pandas and matplotlib.
+
+%% ─────────────────────────────────────────────────────────────────
+\section{Step 3 --- Reading and Plotting in Python}
+%% ─────────────────────────────────────────────────────────────────
+
+\subsection{Installation}
+
+On the analysis machine (once only):
+
+\begin{lstlisting}[style=cppstyle, language=bash,
+  caption={Install Python analysis dependencies},
+  label={lst:pip}]
+pip install pandas matplotlib numpy
+\end{lstlisting}
+
+\subsection{Reading a CSV file}
+
+\begin{lstlisting}[style=cppstyle, language=Python,
+  caption={Loading and inspecting a CSV file with pandas},
+  label={lst:csv_read}]
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load the CSV -- pandas infers column names from the header row
+df = pd.read_csv("data/exp1_data.csv")
+
+# Quick inspection
+print(df.shape)          # (5000, 21) -- 5000 rows, 21 columns
+print(df.columns.tolist())
+print(df.head(3))        # first 3 rows
+
+# Access individual columns by name
+t    = df["time"].values          # time vector [s]
+e_px = df["e_px"].values * 1000   # convert m -> mm
+f_x  = df["fx"].values            # Cartesian force [N]
+tau1 = df["tau1"].values          # joint 1 torque [Nm]
+\end{lstlisting}
+
+\subsection{Plotting from CSV data}
+
+\begin{lstlisting}[style=cppstyle, language=Python,
+  caption={Plotting position error and joint torques from measured data},
+  label={lst:csv_plot}]
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 7), sharex=True)
+
+# Plot position error (x-axis)
+ax1.plot(t, df["e_px"]*1000, color="#1f77b4", linewidth=2,
+         label="$e_{p,x}(t)$  (measured)")
+ax1.axhline(0, color="k", linewidth=0.7, linestyle="--")
+ax1.set_ylabel("$e_{p,x}$ [mm]")
+ax1.set_title("Experiment 1 -- Measured Step Response")
+ax1.legend()
+
+# Plot joint torques
+colors = plt.cm.tab10(range(7))
+for i in range(1, 8):
+    ax2.plot(t, df[f"tau{i}"], color=colors[i-1],
+             linewidth=1.5, label=f"$\\tau_{i}$")
+ax2.set_ylabel("Joint torque [Nm]")
+ax2.set_xlabel("Time $t$ [s]")
+ax2.legend(ncol=4)
+
+plt.tight_layout()
+plt.savefig("exp1_measured.pdf", bbox_inches="tight", dpi=200)
+plt.show()
+\end{lstlisting}
+
+\subsection{Comparing simulation with measurement}
+
+\begin{lstlisting}[style=cppstyle, language=Python,
+  caption={Overlay simulated prediction on measured data},
+  label={lst:compare}]
+# Simulated prediction (analytical)
+omega_n = np.sqrt(200.0)   # K=200 N/m, M=1 kg
+e_sim   = 0.050 * (1 + omega_n*t) * np.exp(-omega_n*t) * 1000  # [mm]
+
+# Measured data from CSV
+e_meas  = df["e_px"].values * 1000  # [mm]
+
+fig, ax = plt.subplots(figsize=(9, 4))
+ax.plot(t, e_sim,  "--", color="gray",    linewidth=2, label="Simulation")
+ax.plot(t, e_meas, "-",  color="#1f77b4", linewidth=2, label="Measured")
+ax.set_xlabel("Time $t$ [s]")
+ax.set_ylabel("$e_{p,x}$ [mm]")
+ax.set_title("Simulation vs. Measured Step Response  ($K=200$ N/m)")
+ax.legend()
+plt.tight_layout()
+plt.savefig("exp1_sim_vs_meas.pdf", bbox_inches="tight")
+\end{lstlisting}
+
+%% ─────────────────────────────────────────────────────────────────
+\section{Complete Plot Scripts}
+%% ─────────────────────────────────────────────────────────────────
+
+The complete plotting scripts for all four experiments are provided
+on the digital medium:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}p{3.8cm}p{3.2cm}p{5cm}@{}}
+\toprule
+Script & Reads & Produces \\
+\midrule
+\texttt{plot\_exp1.py} & \texttt{exp1\_data.csv} &
+  Error, force, torques, $\phi$ \\
+\texttt{plot\_exp2.py} & \texttt{exp2\_data.csv} &
+  Wall overview, wrench, torques \\
+\texttt{plot\_exp3\_exp4.py} & \texttt{exp3/4\_*.csv} &
+  Stiffness \& torque plots \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Run any script as:
+\begin{lstlisting}[style=cppstyle, language=bash,
+  caption={Run a plot script on measured data},
+  label={lst:run_plot}]
+# Default: reads CSV from current directory
+python3 plot_exp1.py
+
+# Or specify a path:
+python3 plot_exp1.py data/exp1_data.csv
+\end{lstlisting}
+
+%% =============================================================
+%%  APPENDIX C (was B) – EXPERIMENT 1: CARTESIAN POSE TRACKING
+%% =============================================================

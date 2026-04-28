@@ -1,0 +1,1370 @@
+\chapter{Theoretical Background}
+\label{ch:theory}
+
+This chapter introduces all mathematical concepts required to derive and
+understand the Cartesian impedance controller used in this thesis.
+The presentation follows a deliberate step-by-step order:
+it begins with the geometry of coordinate frames, builds up the algebraic
+tools for transformations, defines the controlled variable as a pose in
+$SE(3)$, derives the error signal, and then develops the kinematic
+and dynamic machinery that connects joint torques to Cartesian forces.
+Every mathematical symbol is introduced at the point of first use.
+
+\paragraph{Notation.}
+Bold lowercase letters denote \textbf{column vectors}
+(e.g.\ $\vp,\vq$); bold uppercase letters denote \textbf{matrices}
+(e.g.\ $\mJ,\mR,\mK$); a dot denotes the \textbf{time derivative}
+(e.g.\ $\vxd = d\vx/dt$); $\mathbb{R}^{m\times n}$ is the set of
+real $m\times n$ matrices.
+
+%% ─────────────────────────────────────────────────────────────
+\section{Coordinate Systems}
+\label{sec:coord_systems}
+%% ─────────────────────────────────────────────────────────────
+
+To describe the motion of a robotic manipulator, multiple coordinate
+frames are used simultaneously \cite{Siciliano2009, Craig2005}.
+A \textbf{coordinate frame} is a right-handed orthogonal system of
+three mutually perpendicular unit vectors anchored at a chosen origin.
+Three frames are central to this work:
+
+\begin{itemize}
+  \item \textbf{Base frame} $\{0\}$: fixed to the robot mounting
+        surface.
+        All positions, forces, and poses are ultimately expressed in
+        this frame unless stated otherwise.
+  \item \textbf{Joint frames} $\{1\},\{2\},\ldots,\{n\}$: rigidly
+        attached to the successive links of the kinematic chain.
+        They move with the robot and encode the relative geometry
+        between consecutive links.
+  \item \textbf{End-effector frame} $\{e\}$: attached to the tool
+        centre point.
+        Its position and orientation in the base frame constitute the
+        controlled pose of the robot.
+\end{itemize}
+
+%% ─────────────────────────────────────────────────────────────
+\section{Coordinate Transformations}
+\label{sec:coord_transf}
+%% ─────────────────────────────────────────────────────────────
+
+The relationship between any two coordinate frames is described by a
+combination of \textbf{translation} and \textbf{rotation}
+\cite{Denavit1955, Craig2005}.
+
+\subsection{Translation}
+
+A pure translation moves the origin of one frame to a new location
+without changing its orientation.
+It is represented by a position vector:
+
+\begin{equation}
+\label{eq:trans}
+\mathbf{p} =
+\begin{bmatrix} x \\ y \\ z \end{bmatrix}
+\in \mathbb{R}^3
+\end{equation}
+
+where $x,y,z\in\mathbb{R}$ are the scalar displacements along the
+three coordinate axes, measured in metres.
+
+\subsection{Rotation}
+\label{subsec:rotation}
+
+A rotation changes the orientation of a frame without moving its
+origin.
+Any spatial rotation can be decomposed into three successive elementary
+rotations, one about each coordinate axis
+\cite{Siciliano2009, Craig2005}:
+
+\begin{equation}
+\label{eq:Rx}
+\mathbf{R}_x(\alpha) =
+\begin{bmatrix}
+1 & 0          & 0           \\
+0 & \cos\alpha & -\sin\alpha \\
+0 & \sin\alpha &  \cos\alpha
+\end{bmatrix}
+\end{equation}
+
+\begin{equation}
+\label{eq:Ry}
+\mathbf{R}_y(\beta) =
+\begin{bmatrix}
+ \cos\beta & 0 & \sin\beta \\
+ 0         & 1 & 0         \\
+-\sin\beta & 0 & \cos\beta
+\end{bmatrix}
+\end{equation}
+
+\begin{equation}
+\label{eq:Rz}
+\mathbf{R}_z(\gamma) =
+\begin{bmatrix}
+\cos\gamma & -\sin\gamma & 0 \\
+\sin\gamma &  \cos\gamma & 0 \\
+0          &  0          & 1
+\end{bmatrix}
+\end{equation}
+
+where $\alpha,\beta,\gamma\in\mathbb{R}$ are the rotation angles about the
+$x$- (roll), $y$- (pitch), and $z$- (yaw) axes respectively, in radians.
+In each matrix the $1$ sits on the diagonal entry corresponding to the
+rotation axis, while the $2\times2$ cosine-sine block acts on the two
+perpendicular axes.
+
+The general rotation matrix for an arbitrary orientation is obtained as
+the product of these three elementary rotations.
+Using the $ZYX$ (yaw-pitch-roll) convention, standard in robotics
+\cite{Siciliano2009}:
+
+\begin{equation}
+\label{eq:rot_general}
+\mathbf{R} = \mathbf{R}_z(\gamma)\;\mathbf{R}_y(\beta)\;\mathbf{R}_x(\alpha)
+\end{equation}
+
+Expanding this product explicitly, using $c_\theta=\cos\theta$,
+$s_\theta=\sin\theta$:
+
+\begin{equation}
+\label{eq:rot_full}
+\mathbf{R} =
+\begin{bmatrix}
+\cos\gamma\cos\beta &
+  \cos\gamma\sin\beta\sin\alpha - \sin\gamma\cos\alpha &
+  \cos\gamma\sin\beta\cos\alpha + \sin\gamma\sin\alpha \\[6pt]
+\sin\gamma\cos\beta &
+  \sin\gamma\sin\beta\sin\alpha + \cos\gamma\cos\alpha &
+  \sin\gamma\sin\beta\cos\alpha - \cos\gamma\sin\alpha \\[6pt]
+-\sin\beta &
+  \cos\beta\sin\alpha &
+  \cos\beta\cos\alpha
+\end{bmatrix}
+\end{equation}
+
+The nine entries are the \textbf{direction cosines}: $R_{ij}$ equals
+the cosine of the angle between the $i$-th axis of the target frame
+and the $j$-th axis of the source frame \cite{Craig2005}.
+The shorthand $c_\theta=\cos\theta$, $s_\theta=\sin\theta$ is
+\emph{not} used here so that every entry is unambiguous.
+
+\paragraph{Properties of a valid rotation matrix.}
+Not every $3\times3$ real matrix is a valid rotation.
+A rotation matrix must satisfy three properties \cite{Siciliano2009}:
+
+\begin{itemize}
+  \item \textbf{Orthonormal columns:} each column has unit length and
+        any two columns are perpendicular.
+        The matrix therefore preserves lengths and angles.
+  \item \textbf{Transpose equals inverse:}
+        $\mathbf{R}^\top = \mathbf{R}^{-1}$, i.e.\
+        $\mathbf{R}^\top\mathbf{R} = \mathbf{I}$.
+        Inversion costs only a transpose.
+  \item \textbf{Positive determinant:} $\det(\mathbf{R}) = +1$,
+        which distinguishes a proper rotation from a reflection
+        ($\det=-1$).
+\end{itemize}
+
+The set of all $3\times3$ matrices satisfying these three properties is
+the \textbf{special orthogonal group}:
+
+\begin{equation}
+\label{eq:rot}
+\mathbf{R} \in SO(3)
+\;\;\Longleftrightarrow\;\;
+\mathbf{R}^\top\mathbf{R} = \mathbf{I}
+\;\;\text{and}\;\;
+\det(\mathbf{R}) = +1
+\end{equation}
+
+$SO(3)$ serves as compact shorthand throughout this thesis:
+writing $\mathbf{R}\in SO(3)$ means all three properties hold
+simultaneously.
+One can verify: for $\mathbf{R}_z(\gamma)$, $\det = \cos^2\gamma +
+\sin^2\gamma = 1\checkmark$, and its three columns are orthonormal
+$\checkmark$.
+
+%% ─────────────────────────────────────────────────────────────
+\section{Homogeneous Transformation and the Group SE(3)}
+\label{sec:homogeneous}
+%% ─────────────────────────────────────────────────────────────
+
+\subsection{Homogeneous Transformation Matrix}
+
+Rotation and translation can be combined into a single $4\times4$
+matrix, called the \textbf{homogeneous transformation matrix}, which
+allows sequential frame changes to be computed as simple matrix
+products \cite{Hartley2003, Craig2005}:
+
+\begin{equation}
+\label{eq:homogeneous}
+\mathbf{T}_{a}^{b} =
+\begin{bmatrix}
+\mathbf{R}_{a}^{b} & \mathbf{p}_{a}^{b} \\[3pt]
+\mathbf{0}^\top    & 1
+\end{bmatrix}
+\in \mathbb{R}^{4\times4}
+\end{equation}
+
+Here:
+
+\begin{itemize}
+  \item $\mathbf{T}_{a}^{b}$: maps from frame $\{a\}$ to frame $\{b\}$
+        (subscript = source, superscript = target).
+  \item $\mathbf{R}_{a}^{b}\in SO(3)$: the rotation from $\{a\}$ to
+        $\{b\}$.
+  \item $\mathbf{p}_{a}^{b}\in\mathbb{R}^3$: origin of $\{b\}$ in $\{a\}$.
+  \item $\mathbf{0}^\top=[0\;0\;0]$, $1$: the homogeneous row that
+        enables composition $\mT_a^c=\mT_a^b\mT_b^c$
+        \cite{Hartley2003}.
+\end{itemize}
+
+A point $\mathbf{p}^{(a)}\in\mathbb{R}^3$ is lifted to homogeneous
+coordinates as $\tilde{\mathbf{p}}^{(a)}=[p_x\;p_y\;p_z\;1]^\top$;
+its representation in $\{b\}$ is then simply
+$\tilde{\mathbf{p}}^{(b)}=\mathbf{T}_a^b\,\tilde{\mathbf{p}}^{(a)}$.
+
+\subsection{The Special Euclidean Group SE(3)}
+\label{subsec:SE3}
+
+The set of all valid homogeneous transformation matrices forms the
+\textbf{Special Euclidean group of dimension 3}:
+
+\begin{equation}
+\label{eq:SE3_def}
+SE(3) = \left\{
+\mathbf{T} =
+\begin{bmatrix}
+\mathbf{R} & \mathbf{p} \\
+\mathbf{0}^\top & 1
+\end{bmatrix}
+\;\middle|\;
+\mathbf{R}\in SO(3),\;\mathbf{p}\in\mathbb{R}^3
+\right\}
+\subset \mathbb{R}^{4\times4}
+\end{equation}
+
+\emph{Euclidean} because it encodes rigid-body motions (rotation and
+translation) that preserve distances.
+\emph{Special} because $\det(\mathbf{R})=+1$.
+$SO(3)$ is the subgroup of pure rotations ($\mathbf{p}=\mathbf{0}$).
+
+A key property is that the inverse of any $\mathbf{T}\in SE(3)$ is
+also in $SE(3)$ and is computed cheaply:
+
+\begin{equation}
+\label{eq:SE3_inv}
+\mathbf{T}^{-1} =
+\begin{bmatrix}
+\mathbf{R}^\top & -\mathbf{R}^\top\mathbf{p} \\
+\mathbf{0}^\top & 1
+\end{bmatrix}
+\end{equation}
+
+which requires only a transpose and a matrix-vector product — no
+general matrix inversion.
+
+%% ─────────────────────────────────────────────────────────────
+\section{The Controlled Variable: End-Effector Pose in SE(3)}
+\label{sec:pose}
+%% ─────────────────────────────────────────────────────────────
+
+\subsection{Why SE(3)?}
+\label{subsec:ctrl_vars}
+
+The task of the controller is to bring the end-effector to a desired
+position \emph{and} orientation.
+Position is described by a vector
+$\mathbf{p}_e\in\mathbb{R}^3$:
+
+\begin{equation}
+\label{eq:pos_vec}
+\mathbf{p}_e =
+\begin{bmatrix} p_x \\ p_y \\ p_z \end{bmatrix}
+\in\mathbb{R}^3
+\end{equation}
+
+Orientation is described by a rotation matrix
+$\mathbf{R}_e\in SO(3)$.
+Because both are already encoded in the homogeneous transformation
+$\mathbf{T}_e\in SE(3)$ provided by libfranka, the most natural and
+algebraically consistent choice is to take $\mathbf{T}_e$ itself as
+the \textbf{single unified controlled variable}:
+
+\begin{equation}
+\label{eq:pose}
+\mathbf{T}_e =
+\begin{bmatrix}
+\mathbf{R}_e & \mathbf{p}_e \\
+\mathbf{0}^\top & 1
+\end{bmatrix}
+\in SE(3)
+\end{equation}
+
+\begin{itemize}
+  \item $\mathbf{R}_e\in SO(3)$: end-effector orientation in the base
+        frame.
+        The rotation matrix is chosen over Euler angles because it
+        avoids \emph{gimbal lock}---the loss of a degree of freedom when
+        two rotation axes align---and is available directly from
+        libfranka as the upper-left $3{\times}3$ block of
+        \mbox{\texttt{state.O\_T\_EE}} without conversion.
+  \item $\mathbf{p}_e\in\mathbb{R}^3$: end-effector position in the
+        base frame (upper-right column), in metres.
+\end{itemize}
+
+\subsection{Pose Error in SE(3)}
+\label{subsec:pose_error}
+
+\subsubsection*{Step 1 --- Why you cannot subtract poses directly}
+
+For ordinary scalars or vectors, ``error'' means subtraction:
+$e = x_d - x$.
+The key question is: why does this not work for poses?
+
+The answer is that $SE(3)$ is not a vector space.
+Two transformation matrices cannot be meaningfully subtracted because
+the result is not a member of $SE(3)$:
+$\mathbf{T}_d - \mathbf{T}_e$ is in general just an arbitrary $4\times4$
+matrix with no geometric meaning---its rotation block would not belong
+to $SO(3)$, so it would not represent any rigid-body pose at all.
+
+The correct notion of ``how far is $\mathbf{T}_e$ from $\mathbf{T}_d$?''
+in $SE(3)$ is the \textbf{relative transformation}: the unique element
+of $SE(3)$ that maps one pose into the other.
+
+\subsubsection*{Step 2 --- The relative transformation as an error}
+
+Recall from \cref{eq:homogeneous} that if we chain two transformations,
+the result describes a composed motion.
+In particular, consider what happens when we compose $\mathbf{T}_d^{-1}$
+(the inverse of the desired pose) with $\mathbf{T}_e$ (the current pose):
+
+\begin{equation}
+\label{eq:T_error}
+\mathbf{T}_{\mathrm{err}} = \mathbf{T}_d^{-1}\,\mathbf{T}_e \in SE(3)
+\end{equation}
+
+To understand what this means geometrically, read it as a chain of frames:
+
+\begin{enumerate}
+  \item Start in the \textbf{base frame} $\{0\}$.
+  \item Apply $\mathbf{T}_e$: move to the \textbf{current
+        end-effector frame} $\{e\}$.
+  \item Apply $\mathbf{T}_d^{-1}$: move from the current end-effector
+        frame \emph{back to the desired frame} $\{d\}$.
+\end{enumerate}
+
+The product $\mathbf{T}_d^{-1}\mathbf{T}_e$ therefore describes the
+pose of $\{e\}$ as seen from $\{d\}$---it is the transformation you
+would need to apply \emph{inside the desired frame} to go from the
+desired pose to the actual pose.
+
+\paragraph{Why this is zero at perfect tracking.}
+When $\mathbf{T}_e = \mathbf{T}_d$:
+
+\begin{equation}
+\mathbf{T}_{\mathrm{err}}
+= \mathbf{T}_d^{-1}\,\mathbf{T}_d
+= \mathbf{I}_4
+\end{equation}
+
+The $4\times4$ identity matrix represents ``no motion from $\{d\}$ to
+$\{e\}$'', i.e.\ the end-effector is exactly at the desired pose.
+This is the correct generalisation of ``error $= 0$'' for poses in $SE(3)$.
+
+\subsubsection*{Step 3 --- Full algebraic expansion}
+
+To compute $\mathbf{T}_{\mathrm{err}}$ explicitly, substitute the
+inverse formula from \cref{eq:SE3_inv} and the definition of
+$\mathbf{T}_e$:
+
+\begin{equation}
+\mathbf{T}_d^{-1} =
+\begin{bmatrix}
+\mathbf{R}_d^\top & -\mathbf{R}_d^\top\mathbf{p}_d \\
+\mathbf{0}^\top & 1
+\end{bmatrix},
+\qquad
+\mathbf{T}_e =
+\begin{bmatrix}
+\mathbf{R}_e & \mathbf{p}_e \\
+\mathbf{0}^\top & 1
+\end{bmatrix}
+\end{equation}
+
+Carrying out the $4\times4$ matrix multiplication block by block:
+
+\begin{align}
+\mathbf{T}_{\mathrm{err}}
+&= \mathbf{T}_d^{-1}\,\mathbf{T}_e \notag\\[6pt]
+&=
+\begin{bmatrix}
+\mathbf{R}_d^\top & -\mathbf{R}_d^\top\mathbf{p}_d \\
+\mathbf{0}^\top & 1
+\end{bmatrix}
+\begin{bmatrix}
+\mathbf{R}_e & \mathbf{p}_e \\
+\mathbf{0}^\top & 1
+\end{bmatrix}
+\notag\\[8pt]
+&=
+\begin{bmatrix}
+\mathbf{R}_d^\top\mathbf{R}_e + (-\mathbf{R}_d^\top\mathbf{p}_d)\,\mathbf{0}^\top
+&\quad
+\mathbf{R}_d^\top\mathbf{p}_e + (-\mathbf{R}_d^\top\mathbf{p}_d)\cdot 1 \\[4pt]
+\mathbf{0}^\top\mathbf{R}_e + 1\cdot\mathbf{0}^\top
+&\quad
+\mathbf{0}^\top\mathbf{p}_e + 1\cdot 1
+\end{bmatrix}
+\notag\\[8pt]
+\label{eq:T_err_expanded}
+&=
+\begin{bmatrix}
+\mathbf{R}_d^\top\mathbf{R}_e &
+\mathbf{R}_d^\top(\mathbf{p}_e - \mathbf{p}_d) \\[4pt]
+\mathbf{0}^\top & 1
+\end{bmatrix}
+\end{align}
+
+Note that $(-\mathbf{R}_d^\top\mathbf{p}_d)\cdot\mathbf{0}^\top = \mathbf{0}$
+(a matrix times the zero row vector from the lower row of $\mathbf{T}_e$
+is zero), so the rotation block is simply $\mathbf{R}_d^\top\mathbf{R}_e$.
+The translational block collects as $\mathbf{R}_d^\top\mathbf{p}_e
+- \mathbf{R}_d^\top\mathbf{p}_d = \mathbf{R}_d^\top(\mathbf{p}_e-\mathbf{p}_d)$.
+
+\subsubsection*{Step 4 --- Reading off the two sub-errors}
+
+The result \cref{eq:T_err_expanded} has the same $SE(3)$ structure as
+any homogeneous transformation: a rotation block (upper-left) and a
+translation block (upper-right).
+Each block carries exactly one of the two sub-errors:
+
+\paragraph{Translational error.}
+The upper-right $3\times1$ block of $\mathbf{T}_{\mathrm{err}}$ is:
+
+\begin{equation}
+\label{eq:pos_error}
+\mathbf{e}_p
+= \mathbf{R}_d^\top(\mathbf{p}_e - \mathbf{p}_d)
+\in\mathbb{R}^3
+\end{equation}
+
+This is the position error $(\mathbf{p}_e-\mathbf{p}_d)$ rotated
+into the \textbf{desired frame} by $\mathbf{R}_d^\top$.
+Expressing the error in the desired frame removes the
+orientation-dependent coupling: the three components of $\mathbf{e}_p$
+are the displacement errors measured along the axes of $\{d\}$, not
+the base frame.
+
+\paragraph{Rotational error.}
+The upper-left $3\times3$ block of $\mathbf{T}_{\mathrm{err}}$ is:
+
+\begin{equation}
+\label{eq:R_error}
+\Delta\mathbf{R} = \mathbf{R}_d^\top\,\mathbf{R}_e \in SO(3)
+\end{equation}
+
+$\Delta\mathbf{R}$ is the rotation matrix that takes the desired frame
+into the current frame.
+When $\mathbf{R}_e = \mathbf{R}_d$, then
+$\Delta\mathbf{R}=\mathbf{R}_d^\top\mathbf{R}_d=\mathbf{I}$ (no
+orientation error), confirming the formula is consistent.
+
+To feed the orientation error into the impedance law (which operates
+on vectors, not matrices), $\Delta\mathbf{R}$ must be converted to a
+three-dimensional vector.
+This is done using the \textbf{axis-angle representation}: every rotation
+matrix $\Delta\mathbf{R}\in SO(3)$ describes a rotation by a single
+angle $\phi$ about a single unit axis $\hat{\mathbf{k}}\in\mathbb{R}^3$.
+The goal is to recover both from the entries of $\Delta\mathbf{R}$.
+
+\smallskip
+\noindent\textbf{Recovering the angle $\phi$.}
+The trace of any rotation matrix by angle $\phi$ satisfies
+$\mathrm{tr}(\mathbf{R})=1+2\cos\phi$, which can be shown by writing
+$\mathbf{R}$ in the eigenbasis of the rotation.
+Solving for $\phi$:
+
+\begin{equation}
+\label{eq:phi}
+\phi = \arccos\!\left(\frac{\mathrm{tr}(\Delta\mathbf{R})-1}{2}\right)
+\in [0,\pi]
+\end{equation}
+
+\smallskip
+\noindent\textbf{Recovering the rotation axis $\hat{\mathbf{k}}$.}
+Every rotation matrix can be decomposed as:
+
+\begin{equation}
+\label{eq:rodrigues}
+\Delta\mathbf{R}
+= \mathbf{I} + \sin\phi\,[\hat{\mathbf{k}}]_\times
++ (1-\cos\phi)\,[\hat{\mathbf{k}}]_\times^2
+\end{equation}
+
+where $[\hat{\mathbf{k}}]_\times$ is the \textbf{skew-symmetric matrix}
+of the axis vector $\hat{\mathbf{k}}=[k_x,k_y,k_z]^\top$:
+
+\begin{equation}
+\label{eq:skew}
+[\hat{\mathbf{k}}]_\times =
+\begin{bmatrix}
+ 0   & -k_z &  k_y \\
+ k_z &  0   & -k_x \\
+-k_y &  k_x &  0
+\end{bmatrix}
+\end{equation}
+
+Taking the skew-symmetric part of both sides of \cref{eq:rodrigues}
+(i.e.\ computing $\tfrac{1}{2}(\Delta\mathbf{R}-\Delta\mathbf{R}^\top)$)
+the symmetric terms $\mathbf{I}$ and $(1-\cos\phi)[\hat{\mathbf{k}}]_\times^2$
+both cancel, leaving:
+
+\begin{equation}
+\frac{1}{2}(\Delta\mathbf{R}-\Delta\mathbf{R}^\top)
+= \sin\phi\,[\hat{\mathbf{k}}]_\times
+\end{equation}
+
+Reading off the three independent entries of this skew-symmetric matrix
+and dividing by $\sin\phi$ recovers $\hat{\mathbf{k}}$:
+
+\begin{equation}
+\label{eq:axis}
+\hat{\mathbf{k}} = \frac{1}{2\sin\phi}
+\begin{bmatrix}
+\Delta R_{32}-\Delta R_{23} \\
+\Delta R_{13}-\Delta R_{31} \\
+\Delta R_{21}-\Delta R_{12}
+\end{bmatrix}
+\end{equation}
+
+Here $\Delta R_{ij}$ is entry $(i,j)$ of $\Delta\mathbf{R}$, and the
+three differences are exactly the upper-right entries of
+$\Delta\mathbf{R}-\Delta\mathbf{R}^\top$ (each multiplied by
+$\sin\phi$), corresponding to $k_z$, $k_y$, $k_x$ respectively.
+This unit vector $\hat{\mathbf{k}}$ points along the physical rotation
+axis of $\Delta\mathbf{R}$.
+
+\smallskip
+\noindent\textbf{Combining angle and axis into the error vector.}
+The rotation error vector $\mathbf{e}_R$ is defined as the axis scaled
+by the angle:
+
+\begin{equation}
+\label{eq:rot_error_vec}
+\mathbf{e}_R = \phi\,\hat{\mathbf{k}}
+=
+\frac{\phi}{2\sin\phi}
+\begin{bmatrix}
+\Delta R_{32}-\Delta R_{23} \\
+\Delta R_{13}-\Delta R_{31} \\
+\Delta R_{21}-\Delta R_{12}
+\end{bmatrix}
+\in\mathbb{R}^3
+\end{equation}
+
+\begin{itemize}
+  \item \textbf{Direction of $\mathbf{e}_R$}: the unit axis
+        $\hat{\mathbf{k}}$, pointing along the rotation axis that
+        takes the desired frame to the current frame.
+  \item \textbf{Magnitude of $\mathbf{e}_R$}: the angle
+        $\phi=\|\mathbf{e}_R\|$, measuring how far the current
+        orientation deviates from the desired one in radians.
+  \item When $\phi=0$ (orientations match): $\mathbf{e}_R=\mathbf{0}$.
+  \item When $\phi\to\pi$: $\sin\phi\to0$ and \cref{eq:rot_error_vec}
+        becomes numerically ill-conditioned; a special-case branch is
+        used in the implementation.
+        In practice $\phi\ll\pi$ since the robot always starts near
+        the desired orientation.
+\end{itemize}
+
+\subsubsection*{Step 5 --- Combined error vector}
+
+Stacking the two sub-errors gives the six-dimensional error that
+drives the impedance controller:
+
+\begin{equation}
+\label{eq:error}
+\mathbf{e} =
+\begin{bmatrix}
+\mathbf{e}_p \\[2pt] \mathbf{e}_R
+\end{bmatrix}
+\in\mathbb{R}^6
+\end{equation}
+
+\begin{remark}
+The entire computation reduces to a single $4{\times}4$ matrix product.
+The inverse $\mathbf{T}_d^{-1}$ is free in $SE(3)$: one transpose and
+one matrix-vector product (see \cref{eq:SE3_inv}).
+Both $\mathbf{e}_p$ and $\mathbf{e}_R$ are then \emph{read off} from
+the blocks of the result---no additional computation is needed.
+libfranka provides $\mathbf{T}_e$ directly as
+\texttt{state.O\_T\_EE} at every 1\,ms control cycle.
+A fully numerical worked example of this computation for the
+Franka Emika Panda at the home configuration is given in
+Appendix~\ref{app:panda}.
+\end{remark}
+
+%% ─────────────────────────────────────────────────────────────
+\section{Forward Kinematics}
+\label{sec:fk}
+%% ─────────────────────────────────────────────────────────────
+
+\textbf{Forward kinematics} computes the end-effector pose
+$\mathbf{T}_e=\mathbf{T}_0^n$ from the joint angles by chaining the
+individual link transformations:
+
+\begin{equation}
+\label{eq:fk}
+\mathbf{T}_{0}^{n}(\vq) =
+\mathbf{T}_{0}^{1}(q_1)\;
+\mathbf{T}_{1}^{2}(q_2)\;
+\cdots\;
+\mathbf{T}_{n-1}^{n}(q_n)
+\end{equation}
+
+\begin{itemize}
+  \item $\vq=[q_1,\ldots,q_n]^\top\in\mathbb{R}^n$: the
+        \textbf{joint angle vector}; each $q_i\in\mathbb{R}$ in radians.
+  \item $\mathbf{T}_{i-1}^{i}(q_i)\in\mathbb{R}^{4\times4}$:
+        the DH link transformation with parameters
+        $\theta_i=q_i$, $d_i$, $a_i$, $\alpha_i$ \cite{Denavit1955}.
+  \item $\mathbf{T}_{0}^{n}(\vq)$: the resulting transformation.
+        Its upper-left $3\times3$ block is the end-effector
+        orientation $\mathbf{R}_e(\vq)$; its upper-right $3\times1$
+        column is the end-effector position $\mathbf{p}_e(\vq)$.
+\end{itemize}
+
+The mapping $\mathbf{T}_e=f(\vq)$ is \emph{nonlinear} because each
+DH transformation contains trigonometric functions of the joint angle.
+A fully numerical evaluation of forward kinematics for the Panda at the
+home configuration is worked through step by step in
+Appendix~\ref{app:panda_fk} (parameters in \cref{app:panda_params}).
+
+%% ─────────────────────────────────────────────────────────────
+\section{Differential Kinematics}
+\label{sec:dk}
+%% ─────────────────────────────────────────────────────────────
+
+\textbf{Differential kinematics} relates joint \emph{velocities} to
+Cartesian \emph{velocities}.
+Differentiating $\vx=f(\vq)$ with respect to time yields:
+
+\begin{equation}
+\label{eq:diff_kin}
+\dot{\mathbf{x}} = \mathbf{J}(\mathbf{q})\,\dot{\mathbf{q}}
+\end{equation}
+
+\begin{itemize}
+  \item $\dot{\mathbf{x}}\in\mathbb{R}^6$: the \textbf{Cartesian
+        velocity}.
+        Upper three components: linear velocity
+        $\dot{\mathbf{p}}_e\in\mathbb{R}^3$.
+        Lower three components: angular velocity
+        $\boldsymbol{\omega}_e\in\mathbb{R}^3$.
+  \item $\dot{\mathbf{q}}\in\mathbb{R}^n$: the \textbf{joint velocity
+        vector}; each $\dot{q}_i$ in rad/s.
+  \item $\mathbf{J}(\mathbf{q})\in\mathbb{R}^{6\times n}$: the
+        \textbf{Jacobian matrix} (derived in \cref{sec:jacobian}),
+        encoding the first-order sensitivity of end-effector motion to
+        joint velocities at the current configuration $\vq$.
+\end{itemize}
+
+%% ─────────────────────────────────────────────────────────────
+\section{Jacobian Matrix}
+\label{sec:jacobian}
+%% ─────────────────────────────────────────────────────────────
+
+\subsection{Column Construction}
+
+The geometric Jacobian is assembled column by column:
+
+\begin{equation}
+\label{eq:jacobian_full}
+\mathbf{J} =
+\bigl[\mathbf{J}_1\;\mathbf{J}_2\;\cdots\;\mathbf{J}_n\bigr]
+\in\mathbb{R}^{6\times n}
+\end{equation}
+
+For revolute joint $k$:
+
+\begin{equation}
+\label{eq:jacobian_col}
+\mathbf{J}_k =
+\begin{bmatrix}
+\mathbf{z}_k\times(\mathbf{p}_e-\mathbf{p}_k) \\[4pt]
+\mathbf{z}_k
+\end{bmatrix}
+\in\mathbb{R}^6
+\end{equation}
+
+\begin{itemize}
+  \item $\mathbf{z}_k\in\mathbb{R}^3$: unit vector along the rotation
+        axis of joint $k$ in the base frame (third column of
+        $\mathbf{R}_0^k$).
+  \item $\mathbf{p}_k\in\mathbb{R}^3$: position of joint frame $\{k\}$
+        in the base frame (upper-right column of $\mathbf{T}_0^k$).
+  \item $\mathbf{p}_e-\mathbf{p}_k$: lever arm from joint $k$ to the
+        end-effector.
+  \item $\times$: cross product in $\mathbb{R}^3$.
+  \item \textbf{Upper block} $\mathbf{z}_k\times(\mathbf{p}_e-\mathbf{p}_k)$:
+        linear velocity that joint $k$ induces at the end-effector
+        (rotation-axis crossed with lever arm).
+  \item \textbf{Lower block} $\mathbf{z}_k$:
+        angular velocity contribution (simply the joint axis).
+\end{itemize}
+
+Because $\mJ$ depends on $\vq$, the contribution of each joint to
+Cartesian motion changes with configuration.
+The complete $6\times7$ Jacobian matrix for the Panda at the home
+configuration is computed numerically in Appendix~\ref{app:panda_jacobian}.
+
+\subsection{Why the Jacobian Cannot Simply Be Inverted}
+\label{subsec:pinv}
+
+The control law uses $\mJ^\top$, not $\mJ^{-1}$.
+Two reasons:
+
+\paragraph{Part 1 --- J is not square.}
+The Panda has $n=7$ joints acting in $m=6$-dimensional Cartesian space.
+$\mJ\in\mathbb{R}^{6\times7}$ has more columns than rows; a regular
+inverse $\mJ^{-1}$ does not exist.
+
+\paragraph{Part 2 --- The transpose is the exact force-mapping tool.}
+The relationship between Cartesian forces and joint torques follows
+from the principle of virtual work and is \emph{exact}:
+
+\begin{equation}
+\label{eq:jT_use}
+\bm{\tau} = \mJ^\top(\vq)\,\vF
+\end{equation}
+
+No inversion is needed.
+$\mJ^\top\in\mathbb{R}^{7\times6}$ distributes the wrench $\vF$
+across the seven joints correctly at every configuration, including
+near singularities.
+\textbf{This is the only Jacobian operation used in the control law
+of this thesis.}
+
+\paragraph{The pseudo-inverse and null space (for reference).}
+Because $7>6$, there is a one-dimensional \textbf{null space}: a
+direction of joint motion that produces \emph{zero} end-effector
+velocity.
+This redundancy is characterised by the Moore--Penrose pseudo-inverse:
+
+\begin{equation}
+\label{eq:pinv}
+\mathbf{J}^+ = \mathbf{J}^\top(\mathbf{J}\mathbf{J}^\top)^{-1}
+\in\mathbb{R}^{7\times6}
+\end{equation}
+
+$\mathbf{J}^+$ gives the minimum-norm joint velocity solution for a
+given Cartesian velocity.
+Together with the null-space projector
+$\mathbf{N}=\mathbf{I}_7-\mathbf{J}^+\mathbf{J}$, it could be used
+for secondary objectives (joint-limit avoidance).
+However, $\mathbf{J}^+$ and $\mathbf{N}$ are \textbf{not used in the
+controller of this thesis}; they are computed in
+Appendix~\ref{app:panda_pinv} for mathematical completeness only.
+
+%% ─────────────────────────────────────────────────────────────
+\section{Impedance Control}
+\label{sec:impedance}
+%% ─────────────────────────────────────────────────────────────
+
+Impedance control \cite{Hogan1985} imposes a desired dynamic
+relationship between the motion of the end-effector and the forces
+acting on it, making the robot behave like a virtual mass-spring-damper
+system in Cartesian space.
+The error signal $\mathbf{e}=[\mathbf{e}_p^\top,\mathbf{e}_R^\top]^\top$
+defined in \cref{eq:error} drives two impedance laws: one translational,
+one rotational.
+
+\subsection{Impedance Wrench}
+
+The \textbf{translational impedance force} is:
+
+\begin{equation}
+\label{eq:imp_trans}
+\mathbf{f} = \mathbf{K}_p\,\mathbf{e}_p
+           - \mathbf{D}_p\,\dot{\mathbf{p}}_e
+\in\mathbb{R}^3
+\end{equation}
+
+The \textbf{rotational impedance moment} is:
+
+\begin{equation}
+\label{eq:imp_rot}
+\mathbf{m} = \mathbf{K}_R\,\mathbf{e}_R
+           - \mathbf{D}_R\,\boldsymbol{\omega}_e
+\in\mathbb{R}^3
+\end{equation}
+
+The combined \textbf{Cartesian impedance wrench} is:
+
+\begin{equation}
+\label{eq:impedance}
+\mathbf{F} =
+\begin{bmatrix}
+\mathbf{f} \\[2pt] \mathbf{m}
+\end{bmatrix}
+=
+\begin{bmatrix}
+\mathbf{K}_p\,\mathbf{e}_p - \mathbf{D}_p\,\dot{\mathbf{p}}_e \\[4pt]
+\mathbf{K}_R\,\mathbf{e}_R - \mathbf{D}_R\,\boldsymbol{\omega}_e
+\end{bmatrix}
+\in\mathbb{R}^6
+\end{equation}
+
+
+\subsection{Stiffness and Damping Matrices in Local and Base Frames}
+\label{subsec:KD_matrices}
+
+The translational stiffness matrix \(\mathbf{K}_p\) and damping matrix
+\(\mathbf{D}_p\) are not restricted to diagonal form. A diagonal matrix is only
+obtained when the principal stiffness directions are aligned with the coordinate
+frame in which the controller is written. For a general Cartesian task, it is
+clearer to distinguish between a \emph{local stiffness frame} and the robot
+\emph{base frame}.
+
+\subsubsection*{Local stiffness frame}
+
+Let the three principal stiffness directions around the desired point be
+collected in the orthonormal matrix
+
+\begin{equation}
+\label{eq:W_local_base}
+\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}
+=
+\begin{bmatrix}
+\hat{\mathbf{a}}_1 & \hat{\mathbf{a}}_2 & \hat{\mathbf{a}}_3
+\end{bmatrix}
+\in SO(3).
+\end{equation}
+
+The variables in \cref{eq:W_local_base} are:
+\begin{itemize}
+  \item \(\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}\): orientation
+        matrix of the local stiffness frame expressed in the base frame.
+  \item \(\hat{\mathbf{a}}_1,\hat{\mathbf{a}}_2,\hat{\mathbf{a}}_3\in
+        \mathbb{R}^3\): unit vectors defining the principal stiffness
+        directions.
+  \item \(SO(3)\): the set of valid three-dimensional rotation matrices.
+        Thus the three columns are orthonormal and form a right-handed frame.
+\end{itemize}
+
+In this local frame, the stiffness matrix is chosen diagonal:
+
+\begin{equation}
+\label{eq:K_local}
+\mathbf{K}_{p,\mathrm{local}}
+=
+\operatorname{diag}(K_1,K_2,K_3)
+=
+\begin{bmatrix}
+K_1 & 0 & 0\\
+0 & K_2 & 0\\
+0 & 0 & K_3
+\end{bmatrix}.
+\end{equation}
+
+Here \(K_1,K_2,K_3>0\) are the stiffness values along the three local
+principal directions. Physically, they define the shape of the virtual
+spring around the desired point. If all three values are equal, the
+spring is spherical. If the values are different, the spring is
+ellipsoidal.
+
+\subsubsection*{Transformation to the base frame}
+
+The controller computes Cartesian forces in the base frame. Therefore, the
+local stiffness matrix must be expressed in the base frame:
+
+\begin{equation}
+\label{eq:K_base_local}
+\mathbf{K}_{p,\mathrm{base}}
+=
+\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}\,
+\mathbf{K}_{p,\mathrm{local}}\,
+\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}^{T}.
+\end{equation}
+
+This equation is the most important form used throughout the remainder of the
+thesis. It says that the matrix is simple and diagonal in the local stiffness
+frame, but may become a full matrix in the base frame. The off-diagonal
+entries are not numerical errors. They describe coupling between the
+base-frame directions caused by the rotation of the stiffness field.
+
+Equivalently, \cref{eq:K_base_local} can be written as a sum of dyadic
+products:
+
+\begin{equation}
+\label{eq:K_base_dyadic}
+\mathbf{K}_{p,\mathrm{base}}
+=
+K_1\,\hat{\mathbf{a}}_1\hat{\mathbf{a}}_1^{T}
++
+K_2\,\hat{\mathbf{a}}_2\hat{\mathbf{a}}_2^{T}
++
+K_3\,\hat{\mathbf{a}}_3\hat{\mathbf{a}}_3^{T}.
+\end{equation}
+
+This form shows directly how each principal direction contributes to the
+entries of the full base-frame matrix.
+
+\subsubsection*{Damping matrix}
+
+The damping matrix is constructed in the same way. In the local frame:
+
+\begin{equation}
+\label{eq:D_local}
+\mathbf{D}_{p,\mathrm{local}}
+=
+\operatorname{diag}(D_1,D_2,D_3).
+\end{equation}
+
+For a unit virtual mass in each principal direction, critical damping gives
+
+\begin{equation}
+\label{eq:D_i_critical}
+D_i = 2\sqrt{K_i},
+\qquad i=1,2,3.
+\end{equation}
+
+Thus,
+
+\begin{equation}
+\label{eq:D_local_critical}
+\mathbf{D}_{p,\mathrm{local}}
+=
+2\,\operatorname{diag}
+\left(
+\sqrt{K_1},\sqrt{K_2},\sqrt{K_3}
+\right).
+\end{equation}
+
+The damping matrix in the base frame is then
+
+\begin{equation}
+\label{eq:D_base_local}
+\mathbf{D}_{p,\mathrm{base}}
+=
+\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}\,
+\mathbf{D}_{p,\mathrm{local}}\,
+\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}^{T}.
+\end{equation}
+
+The same construction is used for the rotational stiffness and damping
+matrices \(\mathbf{K}_{R,\mathrm{base}}\) and \(\mathbf{D}_{R,\mathrm{base}}\),
+using rotational stiffness values in \(\mathrm{Nm/rad}\) instead of
+\(\mathrm{N/m}\).
+
+\subsubsection*{Application to fixed-point tracking}
+
+For tracking a single fixed Cartesian point, the desired point defines only the
+\emph{centre} of the virtual spring:
+
+\begin{equation}
+\label{eq:fixed_point_center}
+\mathbf{p}_d =
+\begin{bmatrix}
+x_d\\y_d\\z_d
+\end{bmatrix}.
+\end{equation}
+
+The stiffness matrix defines the shape and orientation of the restoring
+behaviour around this point. Therefore, even for a single fixed target point,
+\(\mathbf{K}_{p,\mathrm{base}}\) and \(\mathbf{D}_{p,\mathrm{base}}\) may be
+full matrices if the desired principal stiffness directions are rotated
+relative to the base frame.
+
+The translational tracking law becomes
+
+\begin{equation}
+\label{eq:tracking_full_KD}
+\mathbf{f}
+=
+\mathbf{K}_{p,\mathrm{base}}
+(\mathbf{p}_d-\mathbf{p}_e)
++
+\mathbf{D}_{p,\mathrm{base}}
+(\dot{\mathbf{p}}_d-\dot{\mathbf{p}}_e).
+\end{equation}
+
+For a fixed point, \(\dot{\mathbf{p}}_d=\mathbf{0}\), and therefore
+
+\begin{equation}
+\label{eq:tracking_fixed_point_full_KD}
+\mathbf{f}
+=
+\mathbf{K}_{p,\mathrm{base}}
+(\mathbf{p}_d-\mathbf{p}_e)
+-
+\mathbf{D}_{p,\mathrm{base}}
+\dot{\mathbf{p}}_e.
+\end{equation}
+
+Here:
+\begin{itemize}
+  \item \(\mathbf{f}\in\mathbb{R}^3\): commanded translational force.
+  \item \(\mathbf{p}_d\in\mathbb{R}^3\): desired fixed point.
+  \item \(\mathbf{p}_e\in\mathbb{R}^3\): current end-effector position.
+  \item \(\dot{\mathbf{p}}_e\in\mathbb{R}^3\): current end-effector velocity.
+  \item \(\mathbf{K}_{p,\mathrm{base}}\): full stiffness matrix in the base frame.
+  \item \(\mathbf{D}_{p,\mathrm{base}}\): full damping matrix in the base frame.
+\end{itemize}
+
+\subsubsection*{Numerical 3D example for point tracking}
+
+Consider a fixed target point and a local stiffness frame rotated relative to
+the base frame by roll, pitch, and yaw angles
+
+\begin{equation}
+\alpha = 20^{\circ},\qquad
+\beta = 30^{\circ},\qquad
+\gamma = 40^{\circ}.
+\end{equation}
+
+Using the \(ZYX\) convention, the local-to-base orientation matrix is
+
+\begin{equation}
+\label{eq:W_rpy}
+\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}
+=
+\mathbf{R}_z(\gamma)\,\mathbf{R}_y(\beta)\,\mathbf{R}_x(\alpha).
+\end{equation}
+
+Choose the local stiffness values
+
+\begin{equation}
+\label{eq:K_local_numeric}
+\mathbf{K}_{p,\mathrm{local}}
+=
+\operatorname{diag}(1000,\;300,\;100)\;\mathrm{N/m}.
+\end{equation}
+
+Substitution into \cref{eq:K_base_local} gives approximately
+
+\begin{equation}
+\label{eq:K_base_numeric_tracking}
+\mathbf{K}_{p,\mathrm{base}}
+\approx
+\begin{bmatrix}
+605.1 & 359.0 & -205.6\\
+359.0 & 500.2 & 138.9\\
+-205.6 & 138.9 & 294.7
+\end{bmatrix}
+\;\mathrm{N/m}.
+\end{equation}
+
+The matrix is symmetric and positive definite, but it is no longer diagonal.
+Therefore, a position error in one base direction can produce a restoring
+force with components in several base directions.
+
+For example, if
+
+\begin{equation}
+\label{eq:tracking_error_numeric}
+\mathbf{p}_d-\mathbf{p}_e
+=
+\begin{bmatrix}
+0.01\\0\\0
+\end{bmatrix}
+\mathrm{m},
+\end{equation}
+
+and the end-effector is momentarily at rest, then
+
+\begin{equation}
+\label{eq:tracking_force_numeric}
+\mathbf{f}
+=
+\mathbf{K}_{p,\mathrm{base}}
+(\mathbf{p}_d-\mathbf{p}_e)
+\approx
+\begin{bmatrix}
+6.05\\3.59\\-2.06
+\end{bmatrix}
+\mathrm{N}.
+\end{equation}
+
+Although the position error is purely in the base \(x\)-direction, the force
+contains \(x\)-, \(y\)-, and \(z\)-components. This is the clearest physical
+interpretation of a full stiffness matrix for tracking a single point.
+
+\subsection{Virtual Wall Constraint: Task Definition}
+\label{subsec:virtual_wall}
+
+The task studied in this thesis is \textbf{constrained interaction
+with a virtual plane}.
+The virtual wall is not a physical barrier; its effect is encoded
+entirely through the stiffness and damping matrices.
+
+\paragraph{Geometry.}
+The wall is defined by a unit \textbf{normal vector}
+$\hat{\mathbf{n}}\in\mathbb{R}^3$ and a \textbf{support point}
+$\mathbf{p}_0\in\mathbb{R}^3$ on the plane.
+The signed distance from the end-effector to the wall is:
+
+\begin{equation}
+\label{eq:wall_dist}
+d = \hat{\mathbf{n}}^\top(\mathbf{p}_e-\mathbf{p}_0)\in\mathbb{R}
+\end{equation}
+
+The desired position $\mathbf{p}_d$ is chosen so that $d=0$: the
+end-effector is commanded to stay on the surface.
+
+\paragraph{Degrees of freedom.}
+Let $\hat{\mathbf{t}}_1,\hat{\mathbf{t}}_2$ be two orthogonal
+unit vectors in the plane, with
+$\hat{\mathbf{n}}=\hat{\mathbf{t}}_1\times\hat{\mathbf{t}}_2$.
+The wall partitions the six end-effector DOFs as follows:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{}llp{6cm}@{}}
+\toprule
+DOF & Compliance & Physical meaning \\
+\midrule
+Translation along $\hat{\mathbf{t}}_1$
+  & \textbf{Free} (low $k$)
+  & Sliding left--right in the plane \\
+Translation along $\hat{\mathbf{t}}_2$
+  & \textbf{Free} (low $k$)
+  & Sliding up--down in the plane \\
+Translation along $\hat{\mathbf{n}}$
+  & \textbf{Stiff} (high $k$)
+  & Normal direction: stays on the wall \\
+Rotation about $\hat{\mathbf{n}}$ (spin)
+  & \textbf{Stiff} (high $k_R$)
+  & Spinning blocked --- useless for surface contact \\
+Rotation about $\hat{\mathbf{t}}_1$ (tilt)
+  & \textbf{Free} (low $k_R$)
+  & Tilt to bring tool face flat against surface \\
+Rotation about $\hat{\mathbf{t}}_2$ (tilt)
+  & \textbf{Free} (low $k_R$)
+  & Tilt to bring tool face flat against surface \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Step 1 --- Define the wall frame $\mathbf{W}$.}
+The wall orientation matrix is assembled from the three task vectors:
+
+\begin{equation}
+\label{eq:W_matrix}
+\mathbf{W} =
+\begin{bmatrix}
+\hat{\mathbf{t}}_1 & \hat{\mathbf{t}}_2 & \hat{\mathbf{n}}
+\end{bmatrix}
+\in SO(3)
+\end{equation}
+
+The columns of $\mathbf{W}$ are the three unit vectors of the wall frame
+expressed in the base frame.
+$\mathbf{W}$ is a rotation matrix because $\hat{\mathbf{t}}_1$,
+$\hat{\mathbf{t}}_2$, $\hat{\mathbf{n}}$ form a right-handed orthonormal
+set.
+
+\paragraph{Step 2 --- Stiffness matrices in the wall frame: why diagonal here?}
+
+\begin{remark}
+This is the key question that often causes confusion.
+The stiffness matrix \textbf{is always a full SPD matrix in general}
+(as derived in \cref{subsec:KD_matrices}).
+It is diagonal \emph{only in the wall frame}, and for a very specific
+geometric reason explained here.
+In the base frame it is a full matrix with non-zero off-diagonals
+(unless the wall happens to be axis-aligned).
+\end{remark}
+
+The wall frame $\mathbf{W} = [\hat{\mathbf{t}}_1\;\hat{\mathbf{t}}_2\;\hat{\mathbf{n}}]$
+is defined \emph{precisely so that} its three coordinate axes coincide
+with the three mechanically distinct directions of the task:
+$\hat{\mathbf{t}}_1$, $\hat{\mathbf{t}}_2$ are the free sliding directions,
+and $\hat{\mathbf{n}}$ is the stiff normal direction.
+
+In this frame, a pure displacement along $\hat{\mathbf{t}}_1$ should
+produce a restoring force \emph{only} along $\hat{\mathbf{t}}_1$, because
+that direction is decoupled from the others by the task geometry.
+There is no physical reason for a displacement along the sliding direction
+to generate a force in the normal direction.
+This one-to-one mapping between displacement direction and restoring force
+direction is exactly what a \textbf{diagonal matrix} encodes: each diagonal
+entry $k_i$ maps displacement along axis $i$ to force along the same axis $i$,
+with zero off-diagonal coupling.
+
+In contrast, if we worked in the base frame from the start, the axes $x$,
+$y$, $z$ would generally not coincide with $\hat{\mathbf{t}}_1$,
+$\hat{\mathbf{t}}_2$, $\hat{\mathbf{n}}$.
+A displacement in $x$ would contain components in both the free and stiff
+directions, so the stiffness matrix in the base frame must couple $x$, $y$,
+and $z$ to correctly implement the task constraint.
+That coupling is captured by the off-diagonal entries of
+$\mathbf{K}_p = \mathbf{W}\mathbf{K}_{p,\mathrm{local}}\mathbf{W}^\top$,
+which are \textbf{non-zero} unless $\mathbf{W}=\mathbf{I}$.
+
+\textbf{In summary:} the matrix is diagonal in the wall frame because the
+wall frame was specifically designed to align with the task.
+The same matrix, when rotated to the base frame, becomes full.
+Diagonal does not mean simpler — it is simply a convenient representation
+in the right basis.
+
+The stiffness matrix in the wall frame is:
+
+\begin{equation}
+\label{eq:K_wall}
+\mathbf{K}_{p,\mathrm{local}} =
+\begin{bmatrix}
+k_{\mathrm{free}}  & 0 & 0 \\
+0 & k_{\mathrm{free}}  & 0 \\
+0 & 0 & k_{\mathrm{stiff}}
+\end{bmatrix},
+\quad
+\mathbf{K}_{R,\mathrm{local}} =
+\begin{bmatrix}
+k_{R,\mathrm{free}}  & 0 & 0 \\
+0 & k_{R,\mathrm{free}}  & 0 \\
+0 & 0 & k_{R,\mathrm{stiff}}
+\end{bmatrix}
+\end{equation}
+
+where the ordering of columns follows $(\hat{\mathbf{t}}_1,
+\hat{\mathbf{t}}_2, \hat{\mathbf{n}})$ and $K_{R,\mathrm{local}}$
+is arranged as (tilt-free, tilt-free, spin-stiff):
+rotation about $\hat{\mathbf{t}}_1$ and $\hat{\mathbf{t}}_2$ is free
+(tool tilts to make full contact); rotation about $\hat{\mathbf{n}}$
+(spinning) is stiff.
+
+\paragraph{Step 3 --- Rotating to the base frame.}
+The impedance controller computes forces and torques in the base frame,
+so $\mathbf{K}_{p,\mathrm{local}}$ must be expressed there.
+Whenever a matrix defined in one frame is rotated into another frame,
+the correct transformation is the \textbf{congruence transformation}
+$\mathbf{A} \mapsto \mathbf{W}\mathbf{A}\mathbf{W}^\top$.
+Applied to the stiffness matrices:
+
+\begin{equation}
+\label{eq:K_base}
+\mathbf{K}_p = \mathbf{W}\,\mathbf{K}_{p,\mathrm{local}}\,\mathbf{W}^\top
+\qquad
+\mathbf{K}_R = \mathbf{W}\,\mathbf{K}_{R,\mathrm{local}}\,\mathbf{W}^\top
+\end{equation}
+
+and analogously $\mathbf{D}_p = \mathbf{W}\mathbf{D}_{p,\mathrm{local}}\mathbf{W}^\top$,
+$\mathbf{D}_R = \mathbf{W}\mathbf{D}_{R,\mathrm{local}}\mathbf{W}^\top$.
+
+\paragraph{Why $\mathbf{K}_p$ is a full matrix in the base frame.}
+Unless $\mathbf{W}=\mathbf{I}$ (the wall frame happens to coincide with
+the base frame), the product $\mathbf{W}\mathbf{K}_{p,\mathrm{local}}\mathbf{W}^\top$
+is a \textbf{full} $3\times3$ SPD matrix with non-zero off-diagonal entries.
+To see why, expand the product for a simple $2\times2$ example: if
+$\mathbf{W}=\bigl[\begin{smallmatrix}\cos\theta&-\sin\theta\\\sin\theta&\cos\theta\end{smallmatrix}\bigr]$
+and $\mathbf{K}^{\mathrm{wall}}=\mathrm{diag}(k_1,k_2)$, then:
+
+\begin{equation}
+\mathbf{W}\mathbf{K}^{\mathrm{wall}}\mathbf{W}^\top
+=
+\begin{bmatrix}
+k_1\cos^2\theta + k_2\sin^2\theta & (k_1-k_2)\cos\theta\sin\theta \\
+(k_1-k_2)\cos\theta\sin\theta     & k_1\sin^2\theta + k_2\cos^2\theta
+\end{bmatrix}
+\end{equation}
+
+The off-diagonal term $(k_1-k_2)\cos\theta\sin\theta$ is non-zero
+whenever $k_1\neq k_2$ (different stiffnesses) and $\theta\neq 0$
+(wall is not aligned with the base frame).
+Physically, this off-diagonal entry means: in the base frame, a
+displacement along $x$ produces a restoring force with a component
+along $y$, because neither $x$ nor $y$ coincides with a wall-frame
+axis---both contain parts of the free and stiff directions mixed together.
+This coupling is not a problem; it is the correct physical behaviour.
+The congruence transformation $\mathbf{WKW}^\top$ preserves positive
+definiteness: if $\mathbf{K}^{\mathrm{wall}}$ is SPD and $\mathbf{W}$
+is invertible (which it is, as $\mathbf{W}\in SO(3)$), then
+$\mathbf{WKW}^\top$ is also SPD.
+
+\paragraph{Physical interpretation.}
+A force applied along $\hat{\mathbf{t}}_1$ or $\hat{\mathbf{t}}_2$
+meets only $k_{\mathrm{free}}$ resistance: the end-effector slides
+freely in the plane.
+A force along $\hat{\mathbf{n}}$ meets $k_{\mathrm{stiff}}$: the
+robot stays on the wall.
+Torques about $\hat{\mathbf{t}}_1$ and $\hat{\mathbf{t}}_2$
+are barely resisted ($k_{R,\mathrm{free}}$): the tool is free to tilt
+until its face lies flat and parallel to the surface, making full contact.
+A torque about $\hat{\mathbf{n}}$ (spinning) is strongly resisted
+by $k_{R,\mathrm{stiff}}$: spinning the tool about the wall normal does
+not improve contact and is therefore blocked.
+
+%% ─────────────────────────────────────────────────────────────
+\section{Control Law}
+\label{sec:control_law}
+%% ─────────────────────────────────────────────────────────────
+
+The final step maps the desired Cartesian wrench $\mathbf{F}$ to the
+joint torques $\vtau$ that the actuators must produce.
+From the principle of virtual work \cite{Khatib1987}:
+
+\begin{equation}
+\label{eq:control_law}
+\bm{\tau} = \mathbf{J}^\top(\mathbf{q})\,\mathbf{F}
+\end{equation}
+
+\begin{itemize}
+  \item $\bm{\tau}=[\tau_1,\ldots,\tau_n]^\top\in\mathbb{R}^n$:
+        the \textbf{joint torque vector}; each $\tau_i$ in Nm.
+  \item $\mathbf{J}^\top\in\mathbb{R}^{n\times6}$: the Jacobian
+        transpose, which maps the 6-dimensional wrench to $n$ joint
+        torques exactly (no inversion required; see \cref{subsec:pinv}).
+  \item $\mathbf{F}\in\mathbb{R}^6$: the impedance wrench from
+        \cref{eq:impedance}.
+\end{itemize}
+
+Substituting \cref{eq:impedance} into \cref{eq:control_law} gives the
+\textbf{complete Cartesian impedance control law}:
+
+\begin{equation}
+\label{eq:full_cl}
+\boxed{
+\bm{\tau} = \mathbf{J}^\top(\mathbf{q})
+\begin{bmatrix}
+\mathbf{K}_p\,\mathbf{e}_p - \mathbf{D}_p\,\dot{\mathbf{p}}_e \\[4pt]
+\mathbf{K}_R\,\mathbf{e}_R - \mathbf{D}_R\,\boldsymbol{\omega}_e
+\end{bmatrix}
+}
+\end{equation}
+
+This boxed equation is the computational core of the controller:
+at every 1\,ms cycle, the pose error $\mathbf{T}_d^{-1}\mathbf{T}_e$
+is formed, $\mathbf{e}_p$ and $\mathbf{e}_R$ are extracted, the
+wrench is evaluated, and $\vtau$ is sent to the actuators.
+Appendix~\ref{app:panda} traces every step numerically, including
+the Jacobian (\cref{app:panda_jacobian}), impedance wrench
+(\cref{app:panda_force}), impedance parameters
+(\cref{app:panda_matrices}), joint torques (\cref{app:panda_torques}),
+and the complete loop summary (\cref{app:panda_loop},
+\cref{app:panda_stiffness}).
+
+\subsection{Gravity and Coriolis Compensation}
+
+In practice, the impedance torques are augmented with model-based
+compensation to cancel gravitational and velocity-dependent forces:
+
+\begin{equation}
+\label{eq:full_with_comp}
+\bm{\tau}_{\mathrm{cmd}} =
+\mathbf{J}^\top(\mathbf{q})\,\mathbf{F}
++ \bm{\tau}_g(\mathbf{q})
++ \bm{\tau}_c(\mathbf{q},\dot{\mathbf{q}})
+\end{equation}
+
+\begin{itemize}
+  \item $\bm{\tau}_g(\vq)\in\mathbb{R}^n$: gravity compensation,
+        depends only on $\vq$.
+  \item $\bm{\tau}_c(\vq,\vqd)\in\mathbb{R}^n$: Coriolis
+        and centrifugal compensation (depends on $\vq$ and $\vqd$).
+        Neglecting it corrupts the impedance behaviour.
+  \item Both are provided by the \texttt{libfranka} model interface
+        and recomputed at every control step.
+\end{itemize}

@@ -1,0 +1,98 @@
+\chapter{Experiment 3: Normal Stiffness Variation}
+\label{app:exp3}
+
+\section{Overview}
+
+Experiment~3 varies the normal stiffness $k_{\mathrm{stiff}}$ while
+holding all other parameters fixed, and measures the resulting
+steady-state normal displacement under a constant 5\,N force.
+It validates the compliance law $d_{ss} = F_n/k_{\mathrm{stiff}}$
+from \cref{eq:ss_error}.
+
+\section{Simulated Results}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=\textwidth]{exp2_stiffness_variation.pdf}
+\caption{Experiment~3 --- Stiffness variation.
+         \textbf{Left:} time response of normal displacement for three
+         stiffness values ($F_n=5\,\mathrm{N}$ at $t=0.5\,\mathrm{s}$).
+         \textbf{Right:} theory vs.\ simulation --- agreement within 1\,\%.}
+\label{fig:app_exp3}
+\end{figure}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.75\textwidth]{compliance_law.pdf}
+\caption{Compliance law $d_{ss}=F_n/k_{\mathrm{stiff}}$ for four force
+         levels. Orange markers show the three tested stiffness values.}
+\label{fig:app_compliance}
+\end{figure}
+
+\section{C++ Controller}
+
+The controller \texttt{impedance\_stiffness\_variation.cpp} loops over
+three stiffness values, runs the wall controller for 5\,s each, and
+prints measured vs.\ theoretical $d_{ss}$:
+
+\begin{lstlisting}[style=cppstyle,
+  caption={Experiment~3: stiffness variation loop (C++)},
+  label={lst:exp3_cpp}]
+const std::array<double,3> k_stiff_vals = {200.0, 500.0, 1000.0};
+for (double k_stiff : k_stiff_vals) {
+    // K_p = W*diag(k_free,k_free,k_stiff)*W^T  (full SPD in general)
+    Kp = rotate_diagonal(W, k_free, k_free, k_stiff);
+    Dp = rotate_diagonal(W, 2*sqrt(k_free), 2*sqrt(k_free),
+                            2*sqrt(k_stiff));
+    double d_ss   = run_trial(robot, model, R_d, p_d, n_hat,
+                              k_stiff, k_free, T_run, csv_file);
+    double theory = 5.0 / k_stiff * 1000.0;  // mm
+    std::cout << "k=" << k_stiff << " N/m: d_ss=" << d_ss
+              << " mm  theory=" << theory << " mm\n";
+}
+\end{lstlisting}
+
+\section{Simulation Code (Python)}
+
+\begin{lstlisting}[style=cppstyle, language=Python,
+  caption={Simulation for Experiment~3: stiffness variation},
+  label={lst:exp3_sim}]
+import numpy as np
+
+def simulate_sdof(K, D, M, F_fn, dt=0.001, T=4.0):
+    t = np.arange(0, T, dt)
+    x, xd = np.zeros(len(t)), np.zeros(len(t))
+    for i in range(1, len(t)):
+        xdd = (F_fn(t[i-1]) - D*xd[i-1] - K*x[i-1]) / M
+        xd[i] = xd[i-1] + dt*xdd
+        x[i]  = x[i-1]  + dt*xd[i-1]
+    return t, x
+
+F_n = 5.0
+F_fn = lambda t: F_n if t > 0.5 else 0.0
+for K in [200, 500, 1000]:
+    D = 2.0 * np.sqrt(K)
+    t, x = simulate_sdof(K, D, 1.0, F_fn)
+    print(f"K={K} N/m: d_ss_sim={x[-1]*1000:.2f} mm, "
+          f"theory={F_n/K*1000:.2f} mm")
+\end{lstlisting}
+
+\section{Parameter Table}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}llll@{}}
+\toprule
+Parameter & Symbol & Values & Unit \\
+\midrule
+Applied force & $F_n$ & $5$ & N \\
+Normal stiffness & $k_{\mathrm{stiff}}$ & $200,\ 500,\ 1000$ & N/m \\
+Critical damping & $D_n=2\sqrt{k}$ & $28.3,\ 44.7,\ 63.2$ & Ns/m \\
+Predicted $d_{ss}$ & $F_n/k$ & $25.0,\ 10.0,\ 5.0$ & mm \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%% =============================================================
+%%  APPENDIX D - EXPERIMENT 4: CONFIGURATION DEPENDENCE
+%% =============================================================

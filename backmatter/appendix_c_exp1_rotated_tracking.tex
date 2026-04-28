@@ -1,0 +1,198 @@
+\chapter{Experiment 1: Fixed-Point Tracking with Rotated Stiffness Directions}
+\label{app:exp1}
+
+\section{Overview}
+
+This appendix provides the implementation details for
+Experiment~1. The experiment tracks a single fixed Cartesian point using a full
+base-frame stiffness matrix. The matrix is built from a diagonal local stiffness
+matrix and a rotated local stiffness frame:
+
+\begin{equation}
+\mathbf{K}_{p,\mathrm{base}}
+=
+\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}
+\mathbf{K}_{p,\mathrm{local}}
+\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}^T.
+\end{equation}
+
+The purpose is to demonstrate that full stiffness and damping matrices are not
+only relevant for surface or wall tasks. They also appear naturally in fixed
+point tracking when the desired principal stiffness directions are rotated
+relative to the base frame.
+
+\section{C++ Implementation}
+
+The listing below shows the core of the controller. The same indexing style is
+used throughout the implementation: matrices with the suffix
+\texttt{\_local} are defined in the local stiffness frame; matrices with the
+suffix \texttt{\_base} are used in the controller.
+
+\begin{lstlisting}[style=cppstyle,
+  caption={Experiment 1: fixed-point tracking with rotated stiffness directions},
+  label={lst:exp1_rotated_cpp}]
+#include <Eigen/Dense>
+#include <franka/model.h>
+#include <franka/robot.h>
+#include <cmath>
+
+// Desired fixed point
+Eigen::Vector3d p_des(0.50, 0.00, 0.40);
+
+// Rotation of local stiffness frame relative to base frame
+double alpha = 20.0 * M_PI / 180.0;  // roll
+double beta  = 30.0 * M_PI / 180.0;  // pitch
+double gamma = 40.0 * M_PI / 180.0;  // yaw
+
+Eigen::AngleAxisd Rx(alpha, Eigen::Vector3d::UnitX());
+Eigen::AngleAxisd Ry(beta,  Eigen::Vector3d::UnitY());
+Eigen::AngleAxisd Rz(gamma, Eigen::Vector3d::UnitZ());
+
+Eigen::Matrix3d W_local_to_base =
+    (Rz * Ry * Rx).toRotationMatrix();
+
+// Local stiffness and damping
+Eigen::Matrix3d Kp_local;
+Kp_local << 1000.0, 0.0,   0.0,
+            0.0,    300.0, 0.0,
+            0.0,    0.0,   100.0;
+
+Eigen::Matrix3d Dp_local;
+Dp_local << 2.0*std::sqrt(1000.0), 0.0, 0.0,
+            0.0, 2.0*std::sqrt(300.0), 0.0,
+            0.0, 0.0, 2.0*std::sqrt(100.0);
+
+// Transform local matrices into base frame
+Eigen::Matrix3d Kp_base =
+    W_local_to_base * Kp_local * W_local_to_base.transpose();
+
+Eigen::Matrix3d Dp_base =
+    W_local_to_base * Dp_local * W_local_to_base.transpose();
+
+// Inside the 1 ms torque callback:
+// p_e: current end-effector position
+// pdot: current end-effector translational velocity
+// J: 6x7 geometric Jacobian
+// tau_g, tau_c: gravity and Coriolis compensation
+
+Eigen::Vector3d e_p = p_des - p_e;
+Eigen::Vector3d f = Kp_base * e_p - Dp_base * pdot;
+
+Eigen::Matrix<double,6,1> F;
+F.head<3>() = f;
+F.tail<3>().setZero();
+
+Eigen::Matrix<double,7,1> tau_task = J.transpose() * F;
+Eigen::Matrix<double,7,1> tau_cmd  = tau_task + tau_g + tau_c;
+\end{lstlisting}
+
+\section{Expected Numerical Values}
+
+Using the angles
+\(\alpha=20^\circ\), \(\beta=30^\circ\), and \(\gamma=40^\circ\), the
+base-frame stiffness matrix is approximately
+
+\begin{equation}
+\mathbf{K}_{p,\mathrm{base}}
+\approx
+\begin{bmatrix}
+605.1 & 359.0 & -205.6\\
+359.0 & 500.2 & 138.9\\
+-205.6 & 138.9 & 294.7
+\end{bmatrix}
+\;\mathrm{N/m}.
+\end{equation}
+
+For an initial error
+
+\begin{equation}
+\mathbf{e}_p(0)=
+\begin{bmatrix}
+0.01\\0\\0
+\end{bmatrix}
+\mathrm{m},
+\end{equation}
+
+and zero initial velocity, the expected initial force is
+
+\begin{equation}
+\mathbf{f}(0)
+=
+\mathbf{K}_{p,\mathrm{base}}\mathbf{e}_p(0)
+\approx
+\begin{bmatrix}
+6.05\\3.59\\-2.06
+\end{bmatrix}
+\mathrm{N}.
+\end{equation}
+
+This confirms that a pure \(x\)-error in the base frame does not necessarily
+lead to a pure \(x\)-force. The force follows the rotated stiffness field.
+
+\section{Python Verification Code}
+
+The following Python script verifies the matrix construction and force
+calculation.
+
+\begin{lstlisting}[style=cppstyle, language=Python,
+  caption={Python verification of the rotated stiffness matrix},
+  label={lst:exp1_rotated_python}]
+import numpy as np
+
+def Rx(a):
+    c, s = np.cos(a), np.sin(a)
+    return np.array([[1,0,0],[0,c,-s],[0,s,c]])
+
+def Ry(b):
+    c, s = np.cos(b), np.sin(b)
+    return np.array([[c,0,s],[0,1,0],[-s,0,c]])
+
+def Rz(g):
+    c, s = np.cos(g), np.sin(g)
+    return np.array([[c,-s,0],[s,c,0],[0,0,1]])
+
+alpha = np.deg2rad(20.0)
+beta  = np.deg2rad(30.0)
+gamma = np.deg2rad(40.0)
+
+W = Rz(gamma) @ Ry(beta) @ Rx(alpha)
+
+K_local = np.diag([1000.0, 300.0, 100.0])
+K_base = W @ K_local @ W.T
+
+e = np.array([0.01, 0.0, 0.0])
+f = K_base @ e
+
+print("K_base =")
+print(np.round(K_base, 2))
+print("f =", np.round(f, 2), "N")
+\end{lstlisting}
+
+\section{Parameter Table}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}llll@{}}
+\toprule
+Parameter & Symbol & Value & Unit \\
+\midrule
+Desired point & \(\mathbf{p}_d\) & \([0.50,0.00,0.40]^T\) & m \\
+Initial error & \(\mathbf{e}_p(0)\) & \([0.01,0,0]^T\) & m \\
+Roll angle & \(\alpha\) & 20 & deg \\
+Pitch angle & \(\beta\) & 30 & deg \\
+Yaw angle & \(\gamma\) & 40 & deg \\
+Local stiffness & \(\mathbf{K}_{p,\mathrm{local}}\) & \(\operatorname{diag}(1000,300,100)\) & N/m \\
+Virtual mass & \(\mathbf{M}_p\) & \(\mathbf{I}_3\) & kg \\
+Control frequency & \(f_s\) & 1000 & Hz \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Relation to the Main Thesis}
+
+This experiment is intentionally simple: the desired point is fixed, and no
+external force is applied. The important point is not the position itself but
+the force direction generated by the full stiffness matrix. It demonstrates
+that the desired point defines the centre of the virtual spring, whereas
+\(\mathbf{K}_{p,\mathrm{base}}\) defines the shape and orientation of the
+spring behaviour around that point.

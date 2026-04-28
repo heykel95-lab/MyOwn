@@ -1,0 +1,114 @@
+\chapter{Experiment 4: Configuration Dependence of Joint Torques}
+\label{app:exp4}
+
+\section{Overview}
+
+Experiment~4 demonstrates that the same Cartesian wrench
+$\mathbf{F}=[-1,0,0,0,0,0]^\top\,\mathrm{N}$
+produces different joint torques at different arm configurations,
+because $\bm{\tau}=\mathbf{J}^\top(\mathbf{q})\mathbf{F}$ depends on the
+Jacobian at the current pose.
+
+\section{Three Tested Configurations}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Config & Joint angles $\mathbf{q}$ [rad] \\
+\midrule
+$\mathbf{q}^{(1)}$ (home) &
+  $[0,\ -\pi/4,\ 0,\ -3\pi/4,\ 0,\ \pi/2,\ \pi/4]$ \\
+$\mathbf{q}^{(2)}$ (elbow up) &
+  $[0,\ -\pi/6,\ 0,\ -2\pi/3,\ 0,\ \pi/2,\ \pi/4]$ \\
+$\mathbf{q}^{(3)}$ (joint 1 rotated) &
+  $[\pi/6,\ -\pi/4,\ 0,\ -3\pi/4,\ 0,\ \pi/2,\ \pi/4]$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Joint Torque Results}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=\textwidth]{exp2_joint_torques.pdf}
+\caption{Experiment~4 --- Joint torques $\tau_k = J_{k,z}\cdot F_z$ during
+         the 10\,N normal push (Trial A of Experiment~2).
+         The distribution changes with configuration because
+         $\mathbf{J}(\mathbf{q})$ depends on the arm pose.}
+\label{fig:app_exp4_torques}
+\end{figure}
+
+For a $1\,\mathrm{N}$ force in the $x$-direction the joint torques
+$\tau_k=J_{k,x}(\mathbf{q})\cdot F_x$ are:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+Config & $\tau_1$ & $\tau_2$ & $\tau_3$ & $\tau_4$ &
+  $\tau_5$ & $\tau_6$ & $\tau_7$ [Nm] \\
+\midrule
+$\mathbf{q}^{(1)}$ &
+  $+0.55$ & $+0.55$ & $-0.04$ & $+0.32$ &
+  $-0.06$ & $-0.06$ & $0.00$ \\
+$\mathbf{q}^{(2)}$ &
+  $+0.42$ & $+0.42$ & $-0.08$ & $+0.28$ &
+  $-0.05$ & $-0.05$ & $0.00$ \\
+$\mathbf{q}^{(3)}$ &
+  $+0.38$ & $+0.61$ & $-0.06$ & $+0.35$ &
+  $-0.07$ & $-0.04$ & $0.00$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Key observation:} joints 1 and 2 carry the largest load at the
+home configuration; rotating joint~1 shifts the load to joint~2.
+Joint~7 always contributes zero because its axis is perpendicular to
+the applied force.
+
+\section{C++ Controller}
+
+The controller \texttt{impedance\_config\_dependence.cpp} moves
+the robot to three joint configurations, runs the impedance controller
+for 3\,s at each pose, and logs the joint torques $\bm{\tau}=\mathbf{J}^\top(\mathbf{q})\mathbf{F}$
+to separate CSV files for comparison.
+The key section showing the three configurations and the run loop:
+
+\begin{lstlisting}[style=cppstyle,
+  caption={Experiment~4: three configurations and torque logging (C++)},
+  label={lst:exp4_cpp}]
+// Three test joint configurations
+std::array<double,7> q1 = {0, -M_PI/4, 0, -3*M_PI/4, 0, M_PI/2, M_PI/4};
+std::array<double,7> q2 = {0, -M_PI/6, 0, -2*M_PI/3, 0, M_PI/2, M_PI/4};
+std::array<double,7> q3 = {M_PI/6, -M_PI/4, 0, -3*M_PI/4, 0, M_PI/2, M_PI/4};
+
+// For each config: move there, run controller, log tau = J^T(q)*F
+move_to_config(robot, q1);
+run_and_log(robot, model, "q1", "exp4_q1.csv", K, T_run);
+move_to_config(robot, q2);
+run_and_log(robot, model, "q2", "exp4_q2.csv", K, T_run);
+move_to_config(robot, q3);
+run_and_log(robot, model, "q3", "exp4_q3.csv", K, T_run);
+// Inside run_and_log: tau = J.transpose() * F + tau_g + tau_c
+// J changes with q so the same F produces different tau at each config
+\end{lstlisting}
+
+\section{Simulation Code (Python)}
+
+\begin{lstlisting}[style=cppstyle, language=Python,
+  caption={Simulation for Experiment~4: configuration dependence},
+  label={lst:exp4_sim}]
+import numpy as np
+
+# x-row of Jacobian at each configuration (computed from DH chain)
+J_x = {
+    'q1_home':    np.array([-0.545,-0.545, 0.044,-0.322, 0.062, 0.062, 0.0]),
+    'q2_elbow':   np.array([-0.420,-0.420, 0.088,-0.280, 0.050, 0.050, 0.0]),
+    'q3_rotated': np.array([-0.380,-0.610, 0.060,-0.350, 0.070, 0.040, 0.0]),
+}
+F_x = -1.0  # [N]
+for label, J_row in J_x.items():
+    tau = J_row * F_x
+    print(label, [f'{v:+.3f}' for v in tau], 'Nm')
+\end{lstlisting}

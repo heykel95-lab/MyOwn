@@ -1,0 +1,138 @@
+\chapter{System Setup and Commissioning}
+\label{ch:setup}
+
+Before the impedance controller can be executed on the Franka Emika Panda,
+the complete hardware and software environment must be correctly configured.
+This chapter covers the setup of the workstation, network connection,
+Franka Desk and FCI access, real-time Ubuntu kernel, libfranka installation,
+and C++ build environment, as specified in Objective~2 of the thesis
+registration.
+
+\section{Hardware Architecture and Network Connection}
+\label{sec:hw_network}
+
+The experimental platform consists of the Panda arm, its Franka Control
+Unit (FCU), a workstation PC, and an emergency stop device.
+The workstation is connected \textbf{directly} to the FCI Ethernet port
+of the FCU with a Cat\,6a cable---no intermediate switch is permitted,
+as any additional hop introduces latency sufficient to trigger an FCI
+communication timeout.
+
+Static IP addresses are assigned:
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Device & Interface & Address \\
+\midrule
+FCU (FCI port) & \texttt{eth0} & \texttt{172.16.0.2} \\
+Workstation    & \texttt{eth1} & \texttt{172.16.0.1/24} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Connectivity is verified with \texttt{ping 172.16.0.2}; the round-trip
+time must be consistently below $1\,\mathrm{ms}$.
+
+\section{Franka Desk and FCI Access}
+\label{sec:franka_desk}
+
+Franka Desk is the web-based configuration interface, accessible
+at \url{https://172.16.0.2} from any browser on the workstation.
+Before real-time torque commands can be sent, the following steps are
+required:
+
+\begin{enumerate}
+  \item Unlock the robot joints via the Franka Desk \textit{Joints} page.
+  \item Activate FCI mode in \textit{Settings} $\to$ \textit{Network}.
+  \item Confirm that no error is shown on the status indicator.
+  \item Place the emergency stop within reach of the operator.
+\end{enumerate}
+
+All experiments are conducted with FCI active and the emergency stop
+accessible at all times.
+
+\section{Real-Time Ubuntu Kernel}
+\label{sec:rt_kernel}
+
+The FCI requires that the control callback completes within 1\,ms.
+A standard Linux kernel cannot guarantee this because high-priority threads
+can be preempted by interrupt handlers.
+The PREEMPT\_RT patch makes all kernel threads and interrupt handlers fully
+preemptible, reducing worst-case scheduling latency to below $50\,\mu s$.
+
+Installation steps:
+
+\begin{enumerate}
+  \item Install Ubuntu 22.04 LTS on the workstation.
+  \item Download and apply the PREEMPT\_RT patch for the corresponding
+        kernel version.
+  \item Compile and install the patched kernel:
+        \texttt{make -j\$(nproc) deb-pkg}.
+  \item Grant real-time scheduling priority to the control user:
+        add \texttt{@realtime soft rtprio 99} to
+        \texttt{/etc/security/limits.conf}.
+  \item Set CPU governor to performance:
+        \texttt{cpufreq-set -g performance}.
+\end{enumerate}
+
+The maximum latency of the patched system is verified with
+\texttt{cyclictest}, which must show a worst-case latency below
+$200\,\mu s$ under load before any FCI experiments are conducted.
+
+\section{libfranka Installation}
+\label{sec:libfranka}
+
+\texttt{libfranka} is built from source to match the firmware version of
+the robot controller:
+
+\begin{lstlisting}[style=cppstyle, language=bash,
+  caption={Build and install libfranka from source},
+  label={lst:libfranka}]
+sudo apt install build-essential cmake git libpoco-dev libeigen3-dev
+git clone --recursive https://github.com/frankaemika/libfranka
+cd libfranka && git checkout 0.9.2
+mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF ..
+cmake --build . -j$(nproc)
+sudo make install
+\end{lstlisting}
+
+The installation is verified by running the
+\texttt{communication\_test} example program provided with libfranka,
+which must report zero packet losses over a 60-second run.
+
+\section{C++ Build Environment}
+\label{sec:cpp_env}
+
+All controller code is built with CMake in Release mode (\texttt{-O3}),
+which provides approximately three times faster matrix operations compared
+to Debug mode.
+The following libraries are required:
+
+\begin{itemize}
+  \item \textbf{Eigen\,3}: header-only linear algebra library for all
+        matrix and vector operations.
+  \item \textbf{libfranka}: robot communication and model interface.
+  \item \textbf{Poco}: network and threading utilities (dependency of
+        libfranka).
+\end{itemize}
+
+A minimal \texttt{CMakeLists.txt}:
+
+\begin{lstlisting}[style=cppstyle, language=bash,
+  caption={Minimal CMakeLists.txt for a libfranka controller},
+  label={lst:cmake}]
+cmake_minimum_required(VERSION 3.10)
+project(impedance_controller)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_BUILD_TYPE Release)
+find_package(Franka REQUIRED)
+find_package(Eigen3 REQUIRED)
+add_executable(impedance_ctrl src/impedance_controller.cpp)
+target_link_libraries(impedance_ctrl Franka::Franka Eigen3::Eigen)
+\end{lstlisting}
+
+%% =============================================================
+%%  CHAPTER 4: SOFTWARE IMPLEMENTATION
+%% =============================================================

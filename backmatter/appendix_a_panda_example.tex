@@ -1,0 +1,724 @@
+\chapter{Worked Example: Franka Emika Panda (7-DOF)}
+\label{app:panda}
+
+This appendix contains three parts:
+\textbf{Part A} traces one complete 1\,ms control cycle numerically for
+a concrete Panda configuration.
+\textbf{Part B} provides the complete C++ implementation of Experiment~1
+(Cartesian pose tracking) with simulation results.
+\textbf{Part C} provides the complete C++ implementation of Experiment~2
+(virtual wall constraint) with simulation results.
+
+The numerical worked example in Part~A covers every quantity required for
+one 1\,ms cycle — position vector, Jacobian, pose error, impedance force,
+and joint torques.
+
+% ─────────────────────────────────────────────────────────────────
+\section{Robot Parameters and Configuration}
+\label{app:panda_params}
+% ─────────────────────────────────────────────────────────────────
+
+\subsection{Denavit--Hartenberg Parameters}
+
+The Panda's kinematic chain consists of seven revolute joints.
+The Denavit--Hartenberg parameters published by Franka Emika \cite{FCI2023}
+are reproduced in \cref{tab:panda_dh}.
+
+\begin{table}[htb]
+\centering
+\caption{DH parameters of the Franka Emika Panda.
+         The flange offset (joint\,7 to tool centre) is included in joint\,7.}
+\label{tab:panda_dh}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+Joint $i$ & $a_i$ [m] & $d_i$ [m] & $\alpha_i$ [rad] & $\theta_i$ [rad] \\
+\midrule
+1 & $0$        & $0.333$  & $0$           & $q_1$ \\
+2 & $0$        & $0$      & $-\pi/2$      & $q_2$ \\
+3 & $0$        & $0.316$  & $+\pi/2$      & $q_3$ \\
+4 & $+0.0825$  & $0$      & $+\pi/2$      & $q_4$ \\
+5 & $-0.0825$  & $0.384$  & $-\pi/2$      & $q_5$ \\
+6 & $0$        & $0$      & $+\pi/2$      & $q_6$ \\
+7 & $+0.088$   & $0.107$  & $+\pi/2$      & $q_7$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Home Configuration}
+
+The home configuration used throughout this thesis is:
+
+\begin{equation}
+\label{eq:q0}
+\vq_0 =
+\begin{bmatrix}
+0 \\ -\pi/4 \\ 0 \\ -3\pi/4 \\ 0 \\ \pi/2 \\ \pi/4
+\end{bmatrix}
+\approx
+\begin{bmatrix}
+0^\circ \\ -45^\circ \\ 0^\circ \\ -135^\circ \\ 0^\circ \\ 90^\circ \\ 45^\circ
+\end{bmatrix}
+\end{equation}
+
+This configuration places the end-effector approximately 0.47\,m in front of
+the base with the gripper pointing downward.
+It avoids the zero-angle singularity (joints 1, 3, 5 collinear) and provides
+good Jacobian conditioning across the workspace.
+
+% ─────────────────────────────────────────────────────────────────
+\section{Step 1 --- Forward Kinematics: End-Effector Position}
+\label{app:panda_fk}
+% ─────────────────────────────────────────────────────────────────
+
+Applying the DH transformation chain of \cref{eq:fk} with $\vq = \vq_0$:
+
+\begin{equation}
+\mT_0^7(\vq_0) =
+\mT_0^1(q_1)\;\mT_1^2(q_2)\;\mT_2^3(q_3)\;\mT_3^4(q_4)\;
+\mT_4^5(q_5)\;\mT_5^6(q_6)\;\mT_6^7(q_7)
+\end{equation}
+
+The computation is performed numerically by evaluating each $4\times4$ DH
+matrix and multiplying left to right.
+The resulting end-effector position vector (the controlled variable
+from \cref{eq:pos_vec}) is extracted from the upper-right column of
+$\mT_0^7$:
+
+\begin{equation}
+\label{eq:pe_panda}
+\mathbf{p}_e(\vq_0) =
+\begin{bmatrix}
+0.1164 \\ 0.5452 \\ 0.3952
+\end{bmatrix}
+\;\mathrm{m}
+\end{equation}
+
+Here:
+
+\begin{itemize}
+  \item $p_x = 0.1164\,\mathrm{m}$: position along the base-frame $x$-axis.
+  \item $p_y = 0.5452\,\mathrm{m}$: position along the base-frame $y$-axis.
+  \item $p_z = 0.3952\,\mathrm{m}$: height above the mounting surface.
+\end{itemize}
+
+\subsection{Intermediate Joint Origins and Axes}
+
+\cref{tab:panda_fk} lists the joint frame origins $\mathbf{p}_k$ and rotation
+axes $\mathbf{z}_k$ in the base frame, extracted from the cumulative
+transformation matrices $\mT_0^k(\vq_0)$ for $k = 1,\ldots,7$.
+These are required to construct the Jacobian columns in Step 2.
+
+\begin{table}[htb]
+\centering
+\caption{Joint frame origins $\mathbf{p}_k$ and rotation axes $\mathbf{z}_k$
+         at the home configuration $\vq_0$.}
+\label{tab:panda_fk}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}cp{3.0cm}p{1.8cm}p{6.5cm}@{}}
+\toprule
+$k$ & $p_{k,x}$ [m] & $p_{k,y}$ [m] & $p_{k,z}$ [m] \\
+\midrule
+1 & $0.0000$ & $0.0000$ & $0.0000$ \\
+2 & $0.0000$ & $0.0000$ & $0.3330$ \\
+3 & $0.0000$ & $0.0000$ & $0.3330$ \\
+4 & $0.2234$ & $0.2234$ & $0.3330$ \\
+5 & $0.1409$ & $0.2234$ & $0.3330$ \\
+6 & $0.2234$ & $0.6074$ & $0.3330$ \\
+7 & $0.2234$ & $0.6074$ & $0.3330$ \\
+\midrule
+$k$ & $z_{k,x}$ & $z_{k,y}$ & $z_{k,z}$ \\
+\midrule
+1 & $\phantom{-}0.0000$ & $\phantom{-}0.0000$ & $+1.0000$ \\
+2 & $\phantom{-}0.0000$ & $\phantom{-}0.0000$ & $+1.0000$ \\
+3 & $+0.7071$ & $+0.7071$ & $\phantom{-}0.0000$ \\
+4 & $\phantom{-}0.0000$ & $\phantom{-}0.0000$ & $+1.0000$ \\
+5 & $\phantom{-}0.0000$ & $+1.0000$ & $\phantom{-}0.0000$ \\
+6 & $\phantom{-}0.0000$ & $\phantom{-}0.0000$ & $+1.0000$ \\
+7 & $-1.0000$ & $\phantom{-}0.0000$ & $\phantom{-}0.0000$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ─────────────────────────────────────────────────────────────────
+\section{Step 2 --- Jacobian Matrix \texorpdfstring{$\mathbf{J} \in \mathbb{R}^{6\times7}$}{J in R(6x7)}}
+\label{app:panda_jacobian}
+% ─────────────────────────────────────────────────────────────────
+
+Applying \cref{eq:jacobian_col} for each joint using the values from
+\cref{tab:panda_fk} and the end-effector position \cref{eq:pe_panda}:
+
+\begin{equation}
+\mJ_k =
+\begin{bmatrix}
+\mathbf{z}_k \times (\mathbf{p}_e - \mathbf{p}_k) \\[3pt]
+\mathbf{z}_k
+\end{bmatrix}
+\end{equation}
+
+The numerical result is the $6\times7$ geometric Jacobian at $\vq_0$:
+
+\begin{equation}
+\label{eq:J_panda}
+\mJ(\vq_0) =
+\begin{bmatrix}
+-0.5452 & -0.5452 &  0.0440 & -0.3218 &  0.0622 &  0.0622 &  0.0000 \\[3pt]
+ 0.1164 &  0.1164 & -0.0440 & -0.1070 &  0.0000 & -0.1070 &  0.0622 \\[3pt]
+ 0.0000 &  0.0000 &  0.3032 &  0.0000 &  0.0245 &  0.0000 &  0.0622 \\[3pt]
+ 0.0000 &  0.0000 &  0.7071 &  0.0000 &  0.0000 &  0.0000 & -1.0000 \\[3pt]
+ 0.0000 &  0.0000 &  0.7071 &  0.0000 &  1.0000 &  0.0000 &  0.0000 \\[3pt]
+ 1.0000 &  1.0000 &  0.0000 &  1.0000 &  0.0000 &  1.0000 &  0.0000
+\end{bmatrix}
+\end{equation}
+
+The rows correspond to $[v_x,\;v_y,\;v_z,\;\omega_x,\;\omega_y,\;\omega_z]$
+and the columns to joints 1 through 7.
+
+\begin{remark}
+Columns 1 and 2 of $\mJ(\vq_0)$ are nearly identical, because joints 1 and 2
+share the same rotation axis direction ($+z_0$) at the home configuration and
+have the same lever arm to the end-effector.
+This is characteristic of the Panda's geometry at $\vq_0$; it changes with the
+robot's pose.
+\end{remark}
+
+% ─────────────────────────────────────────────────────────────────
+\section{Step 3 --- Pseudo-Inverse and Null-Space Projector}
+\label{app:panda_pinv}
+% ─────────────────────────────────────────────────────────────────
+
+As explained in \cref{subsec:pinv}, the pseudo-inverse $\mJ^+$ is
+\emph{not} required for the primary torque computation.
+It is computed here for the null-space controller only.
+
+\subsection{Computing $\mathbf{J}^+$}
+
+From \cref{eq:pinv}:
+
+\begin{equation}
+\mathbf{J}^+ = \mJ^\top\bigl(\mJ\mJ^\top\bigr)^{-1} \in \R{7\times6}
+\end{equation}
+
+The product $\mJ\mJ^\top \in \R{6\times6}$ is formed first, then inverted.
+At the home configuration the result is:
+
+\begin{equation}
+\label{eq:Jp_panda}
+\mathbf{J}^+(\vq_0) \approx
+\begin{bmatrix}
+ 0.0000 &  2.2377 &  0.0000 &  0.1392 &  0.0000 &  0.2394 \\[2pt]
+ 0.0000 &  2.2377 &  0.0000 &  0.1392 &  0.0000 &  0.2394 \\[2pt]
+ 0.0000 &  0.0000 &  3.0315 &  0.1886 & -0.0743 &  0.0000 \\[2pt]
+-2.6042 & -7.0795 &  0.0000 & -0.4405 &  0.1620 & -0.5955 \\[2pt]
+ 0.0000 &  0.0000 & -2.1436 & -0.1334 &  1.0525 &  0.0000 \\[2pt]
+ 2.6042 &  2.6042 &  0.0000 &  0.1620 & -0.1620 &  1.1166 \\[2pt]
+ 0.0000 &  0.0000 &  2.1436 & -0.8666 & -0.0525 &  0.0000
+\end{bmatrix}
+\end{equation}
+
+\paragraph{Verification.}
+The defining property $\mJ\,\mathbf{J}^+ = \mI_6$ can be confirmed:
+
+\begin{equation}
+\mJ\,\mathbf{J}^+ = \mI_6 \quad \checkmark
+\end{equation}
+
+\subsection{Null-Space Projector}
+
+The null-space projector is defined as:
+
+\begin{equation}
+\label{eq:nullspace}
+\mathbf{N} = \mI_7 - \mathbf{J}^+\mJ \in \R{7\times7}
+\end{equation}
+
+The diagonal entries of $\mathbf{N}$ at $\vq_0$ are:
+
+\begin{equation}
+\mathrm{diag}(\mathbf{N}) =
+[0.5,\;\; 0.5,\;\; 0.0,\;\; 0.0,\;\; 0.0,\;\; 0.0,\;\; 0.0]
+\end{equation}
+
+Here:
+
+\begin{itemize}
+  \item Joints\,1 and\,2 have the largest null-space contribution (0.5 each).
+        This makes sense: at $\vq_0$ their columns in $\mJ$ are nearly
+        identical (see the remark above), so a motion along their
+        \emph{difference} direction produces no end-effector velocity.
+  \item Joints\,3–7 have zero diagonal entries in $\mathbf{N}$ at this
+        configuration, meaning their individual motions are fully
+        task-relevant and cannot be independently redirected without
+        affecting the end-effector.
+\end{itemize}
+
+As noted in \cref{subsec:pinv}, this thesis does not implement a null-space
+controller.
+The projector $\mathbf{N}$ is computed here purely to illustrate the
+structure of the redundancy.
+Physically, the non-zero entries in $\mathrm{diag}(\mathbf{N})$ at joints
+1 and 2 mean that a motion along the \emph{difference} of those two joint
+angles moves no Cartesian end-effector coordinate --- it is the one degree
+of freedom that is ``invisible'' to the task.
+
+% ─────────────────────────────────────────────────────────────────
+\section{Step 4 --- Impedance Parameter Matrices}
+\label{app:panda_matrices}
+% ─────────────────────────────────────────────────────────────────
+
+For the Panda, the controlled variable is the full end-effector pose
+$\mathbf{T}_e\in SE(3)$ with translational error
+$\mathbf{e}_p\in\mathbb{R}^3$ and rotational error
+$\mathbf{e}_R\in\mathbb{R}^3$ (see \cref{subsec:pose_error}).
+The impedance matrices are $3\times3$ SPD matrices as defined in
+\cref{subsec:KD_matrices}.
+
+\subsection{Virtual Inertia Matrix $\mathbf{M}$}
+
+\begin{equation}
+\label{eq:M_panda}
+\mathbf{M} = \mI_6 =
+\mathrm{diag}(1,\,1,\,1,\,1,\,1,\,1)
+\end{equation}
+
+\begin{itemize}
+  \item $M_{11} = M_{22} = M_{33} = 1\,\mathrm{kg}$: virtual translational mass.
+  \item $M_{44} = M_{55} = M_{66} = 1\,\mathrm{kg\,m^2}$: virtual rotational inertia.
+  \item Setting $\mM = \mI_6$ decouples all axes and simplifies the
+        critical-damping formula to $D_i = 2\sqrt{K_i}$ for each axis $i$.
+        The real link inertia and Coriolis effects are handled separately by
+        $\bm{\tau}_g$ and $\bm{\tau}_c$ (see \cref{eq:full_with_comp}).
+\end{itemize}
+
+\subsection{Stiffness Matrices $\mathbf{K}_p$ and $\mathbf{K}_R$}
+
+Following the virtual wall design of \cref{subsec:virtual_wall}, the
+stiffness values in the wall frame are chosen as:
+$k_{\mathrm{free}}=50\,\mathrm{N/m}$,
+$k_{\mathrm{stiff}}=1000\,\mathrm{N/m}$,
+$k_{R,\mathrm{free}}=5\,\mathrm{Nm/rad}$,
+$k_{R,\mathrm{stiff}}=200\,\mathrm{Nm/rad}$.
+For this example the wall normal is $\hat{\mathbf{n}}=[0,0,1]^\top$
+and the wall frame equals the base frame ($\mathbf{W}=\mathbf{I}_3$),
+so the base-frame matrices coincide with the wall-frame matrices:
+
+\begin{equation}
+\label{eq:K_panda}
+\mathbf{K}_p =
+\begin{bmatrix}
+50   & 0  & 0    \\
+0    & 50 & 0    \\
+0    & 0  & 1000
+\end{bmatrix}
+\mathrm{N/m},
+\qquad
+\mathbf{K}_R =
+\begin{bmatrix}
+200 & 0   & 0 \\
+0   & 200 & 0 \\
+0   & 0   & 5
+\end{bmatrix}
+\mathrm{Nm/rad}
+\end{equation}
+
+These are diagonal here \emph{only} because $\mathbf{W}=\mathbf{I}_3$
+for this axis-aligned wall.
+For a tilted wall with $\mathbf{W}\neq\mathbf{I}$, applying
+$\mathbf{K}_p=\mathbf{W}\mathbf{K}_{p,\mathrm{local}}\mathbf{W}^\top$
+would produce a \textbf{full} $3\times3$ SPD matrix with non-zero
+off-diagonal entries, as derived in \cref{eq:K_base}.
+
+\subsection{Damping Matrices $\mathbf{D}_p$ and $\mathbf{D}_R$}
+
+Critical damping with $\mathbf{M}_p=\mathbf{M}_R=\mathbf{I}_3$:
+
+\begin{equation}
+\label{eq:D_panda}
+\mathbf{D}_p =
+\begin{bmatrix}
+2\sqrt{50}   & 0           & 0             \\
+0            & 2\sqrt{50}  & 0             \\
+0            & 0           & 2\sqrt{1000}
+\end{bmatrix}
+\approx
+\begin{bmatrix}
+14.14 & 0     & 0     \\
+0     & 14.14 & 0     \\
+0     & 0     & 63.25
+\end{bmatrix}
+\mathrm{Ns/m}
+\end{equation}
+
+\begin{equation}
+\label{eq:DR_panda}
+\mathbf{D}_R =
+\begin{bmatrix}
+2\sqrt{200} & 0           & 0         \\
+0           & 2\sqrt{200} & 0         \\
+0           & 0           & 2\sqrt{5}
+\end{bmatrix}
+\approx
+\begin{bmatrix}
+28.28 & 0     & 0    \\
+0     & 28.28 & 0    \\
+0     & 0     & 4.47
+\end{bmatrix}
+\mathrm{Nm\,s/rad}
+\end{equation}
+
+Again, diagonal here only because $\mathbf{W}=\mathbf{I}_3$.
+For a general wall orientation all four matrices $\mathbf{K}_p$,
+$\mathbf{K}_R$, $\mathbf{D}_p$, $\mathbf{D}_R$ would be full SPD
+$3\times3$ matrices in the base frame.
+
+% ─────────────────────────────────────────────────────────────────
+\section{Step 5 --- Pose Error and Impedance Wrench}
+\label{app:panda_force}
+% ─────────────────────────────────────────────────────────────────
+
+\subsection*{Pose Error via $\mathbf{T}_d^{-1}\mathbf{T}_e$}
+
+Suppose the desired pose is $\mathbf{T}_d$ with $\mathbf{R}_d=\mathbf{I}_3$
+and $\mathbf{p}_d=[0.136,\;0.545,\;0.395]^\top\,\mathrm{m}$
+(the home position shifted $20\,\mathrm{mm}$ in $x$).
+The current pose at $\vq_0$ is $\mathbf{T}_e$ with $\mathbf{R}_e$ (from FK)
+and $\mathbf{p}_e=[0.116,\;0.545,\;0.395]^\top\,\mathrm{m}$.
+
+Following \cref{eq:T_err_expanded}, the pose error matrix is:
+
+\begin{equation}
+\mathbf{T}_{\mathrm{err}} = \mathbf{T}_d^{-1}\mathbf{T}_e =
+\begin{bmatrix}
+\mathbf{R}_d^\top\mathbf{R}_e &
+\mathbf{R}_d^\top(\mathbf{p}_e - \mathbf{p}_d) \\
+\mathbf{0}^\top & 1
+\end{bmatrix}
+=
+\begin{bmatrix}
+\mathbf{R}_e & [-0.020,\;0,\;0]^\top \\
+\mathbf{0}^\top & 1
+\end{bmatrix}
+\end{equation}
+
+since $\mathbf{R}_d=\mathbf{I}_3$ so $\mathbf{R}_d^\top=\mathbf{I}_3$.
+
+Reading off the sub-errors from the two blocks:
+
+\paragraph{Translational error (upper-right column):}
+\begin{equation}
+\label{eq:panda_error}
+\mathbf{e}_p = \mathbf{R}_d^\top(\mathbf{p}_e - \mathbf{p}_d) =
+\begin{bmatrix}
+0.116 - 0.136 \\ 0 \\ 0
+\end{bmatrix}
+=
+\begin{bmatrix}
+-0.020 \\ 0 \\ 0
+\end{bmatrix}
+\mathrm{m}
+\end{equation}
+
+\paragraph{Rotational error (upper-left block):}
+$\Delta\mathbf{R} = \mathbf{R}_d^\top\mathbf{R}_e = \mathbf{R}_e$.
+Since the robot is at the desired orientation ($\mathbf{R}_e\approx\mathbf{R}_d$),
+$\Delta\mathbf{R}\approx\mathbf{I}$, giving
+$\phi = \arccos\!\bigl(\tfrac{\mathrm{tr}(\mathbf{I})-1}{2}\bigr) = 0$
+and $\mathbf{e}_R = \mathbf{0}$.
+
+\subsection*{Impedance Wrench}
+
+Assuming the robot is momentarily at rest
+($\dot{\mathbf{p}}_e=\mathbf{0}$, $\boldsymbol{\omega}_e=\mathbf{0}$),
+the translational force and rotational moment from \cref{eq:imp_trans,eq:imp_rot} are:
+
+\begin{equation}
+\label{eq:F_panda}
+\mathbf{f} = \mathbf{K}_p\,\mathbf{e}_p - \mathbf{D}_p\,\dot{\mathbf{p}}_e
+=
+\begin{bmatrix}
+50   & 0  & 0    \\
+0    & 50 & 0    \\
+0    & 0  & 1000
+\end{bmatrix}
+\begin{bmatrix}
+-0.020 \\ 0 \\ 0
+\end{bmatrix}
+=
+\begin{bmatrix}
+-1.0\,\mathrm{N} \\ 0 \\ 0
+\end{bmatrix}
+\end{equation}
+
+\begin{equation}
+\mathbf{m} = \mathbf{K}_R\,\mathbf{e}_R = \mathbf{0}
+\end{equation}
+
+The combined wrench is:
+
+\begin{equation}
+\mathbf{F} =
+\begin{bmatrix}
+\mathbf{f} \\ \mathbf{m}
+\end{bmatrix}
+=
+\begin{bmatrix}
+-1.0\,\mathrm{N} \\ 0 \\ 0 \\ 0 \\ 0 \\ 0
+\end{bmatrix}
+\in\mathbb{R}^6
+\end{equation}
+
+The $-1\,\mathrm{N}$ in the $x$-direction is a restoring force pulling the
+end-effector $20\,\mathrm{mm}$ back to the desired position.
+The low in-plane stiffness $k_{\mathrm{free}}=50\,\mathrm{N/m}$ means this
+restoring force is gentle: the wall yields compliantly under applied loads.
+
+% ─────────────────────────────────────────────────────────────────
+\section{Step 6 --- Joint Torques via \texorpdfstring{$\bm{\tau} = \mathbf{J}^\top\mathbf{F}$}{tau = J\^{}T F}}
+\label{app:panda_torques}
+% ─────────────────────────────────────────────────────────────────
+
+Applying the control law \cref{eq:control_law} with $\mJ^\top \in \R{7\times6}$
+from \cref{eq:J_panda}:
+
+\begin{equation}
+\label{eq:panda_torque_calc}
+\bm{\tau} = \mJ^\top\,\vF
+\end{equation}
+
+Since $\mathbf{F} = [-1,\;0,\;0,\;0,\;0,\;0]^\top\,\mathrm{N}$,
+only the first row of $\mJ$ (the $v_x$ row) contributes to $\vtau$:
+
+\begin{equation}
+\label{eq:panda_tau}
+\bm{\tau} = \mJ^\top\,\vF =
+\begin{bmatrix}
+J_{11}\cdot(-1) \\[2pt]
+J_{21}\cdot(-1) \\[2pt]
+J_{31}\cdot(-1) \\[2pt]
+J_{41}\cdot(-1) \\[2pt]
+J_{51}\cdot(-1) \\[2pt]
+J_{61}\cdot(-1) \\[2pt]
+J_{71}\cdot(-1)
+\end{bmatrix}
+=
+\begin{bmatrix}
+(-0.5452)(-1) \\[2pt]
+(-0.5452)(-1) \\[2pt]
+( 0.0440)(-1) \\[2pt]
+(-0.3218)(-1) \\[2pt]
+( 0.0622)(-1) \\[2pt]
+( 0.0622)(-1) \\[2pt]
+( 0.0000)(-1)
+\end{bmatrix}
+=
+\begin{bmatrix}
++0.545\,\mathrm{Nm} \\[2pt]
++0.545\,\mathrm{Nm} \\[2pt]
+-0.044\,\mathrm{Nm} \\[2pt]
++0.322\,\mathrm{Nm} \\[2pt]
+-0.062\,\mathrm{Nm} \\[2pt]
+-0.062\,\mathrm{Nm} \\[2pt]
+\phantom{+}0.000\,\mathrm{Nm}
+\end{bmatrix}
+\end{equation}
+
+\begin{itemize}
+  \item $\tau_1 = \tau_2 = +0.545\,\mathrm{Nm}$:
+        joints 1 and 2 contribute equally (consistent with their
+        nearly identical Jacobian columns).
+        The positive sign means both joints rotate to pull the
+        end-effector in the $+x$ direction (restoring towards $\mathbf{p}_d$).
+  \item $\tau_3 = -0.044\,\mathrm{Nm}$:
+        joint 3 contributes a small opposing torque because its rotation
+        axis ($\mathbf{z}_3 \approx [0.707,\;0.707,\;0]^\top$) is
+        at $45^\circ$ to the $x$-direction.
+  \item $\tau_4 = +0.322\,\mathrm{Nm}$:
+        the elbow joint contributes positively; it has the largest
+        translational lever arm to the end-effector.
+  \item $\tau_5 = \tau_6 = -0.062\,\mathrm{Nm}$:
+        the wrist joints contribute small opposing torques.
+  \item $\tau_7 = 0$:
+        joint 7's rotation axis ($-x_0$) is perpendicular to the
+        applied force direction, so it cannot contribute to an $x$-directed
+        Cartesian force.
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────────────
+\section{Step 7 --- Complete Control Loop Summary}
+\label{app:panda_loop}
+% ─────────────────────────────────────────────────────────────────
+
+\begin{table}[htb]
+\centering
+\caption{Complete signal flow for one 1\,ms control cycle of the
+         Panda impedance controller at the home configuration $\vq_0$.}
+\label{tab:panda_loop}
+\renewcommand{\arraystretch}{1.45}
+\begin{tabular}{@{}cp{3.2cm}p{1.6cm}p{6.4cm}@{}}
+\toprule
+Step & Quantity & Symbol & Value \\
+\midrule
+1  & Joint configuration   & $\vq$          & $[0, -45, 0, -135, 0, 90, 45]^\top$ deg \\
+2  & EE position           & $\mathbf{p}_e$ & $[0.116,\;0.545,\;0.395]^\top\,\mathrm{m}$ \\
+3  & Jacobian ($6\times7$) & $\mathbf{J}$   & See \cref{eq:J_panda} \\
+4  & $\mathbf{T}_{\mathrm{err}}$ blocks & $\mathbf{e}_p,\mathbf{e}_R$ & $[-0.020,0,0]^\top$ m, $\mathbf{0}$ \\
+5  & Virtual inertia       & $\mathbf{M}$   & $\mI_6$ \\
+6  & Stiffness matrices    & $\mathbf{K}_p, \mathbf{K}_R$ & See \cref{eq:K_panda} \\
+7  & Damping matrices      & $\mathbf{D}_p, \mathbf{D}_R$ & See \cref{eq:D_panda} \\
+8  & Impedance wrench      & $\mathbf{f},\mathbf{m}$ & $[-1.0,0,0]^\top$ N, $\mathbf{0}$ \\
+9  & Pseudo-inverse        & $\mathbf{J}^+$ & See Eq.~(\ref{eq:Jp_panda}) \\
+10 & Null-space projector  & $\mathbf{N}$   & $\mI_7 - \mathbf{J}^+\mJ$ \\
+11 & Joint torques         & $\bm{\tau}$    & $[+0.55, +0.55, -0.04, +0.32,$\newline$-0.06, -0.06, 0.00]^\top$ Nm \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The C++ implementation of this control cycle is shown in Listing~\ref{lst:panda}:
+
+\begin{lstlisting}[style=cppstyle,
+  caption={One iteration of the Panda 7-DOF impedance control loop
+           (\texttt{libfranka} torque callback, 1\,ms period)},
+  label={lst:panda}]
+// -- READ ROBOT STATE ---------------------------------------------
+Eigen::Map<const Eigen::Matrix<double,7,1>> q(state.q.data());
+Eigen::Map<const Eigen::Matrix<double,7,1>> dq(state.dq.data());
+
+// -- STEP 2: End-effector pose from libfranka ----------------------
+Eigen::Affine3d T(Eigen::Matrix4d::Map(state.O_T_EE.data()));
+Eigen::Vector3d p_e   = T.translation();    // [3x1] position
+Eigen::Matrix3d R_e   = T.rotation();       // [3x3] orientation
+
+// -- STEP 3: Jacobian J(q) from libfranka model --------------------
+std::array<double,42> jac_arr =
+    model.zeroJacobian(franka::Frame::kEndEffector, state);
+Eigen::Map<const Eigen::Matrix<double,6,7>> J(jac_arr.data());
+
+// -- STEP 4: Cartesian velocity  x_dot = J * q_dot ----------------
+Eigen::Matrix<double,6,1> xdot = J * dq;
+
+// (pose error is now computed in STEP 5 via T_err; see below)
+
+// -- STEP 5: Pose error via T_err = T_d^{-1} * T_e ---------------
+Eigen::Matrix3d R_d = T_des.rotation();
+Eigen::Vector3d p_d = T_des.translation();
+
+// Translational error in desired frame
+Eigen::Vector3d e_p = R_d.transpose() * (p_e - p_d);
+
+// Rotational error: Delta_R = R_d^T * R_e
+Eigen::Matrix3d Delta_R = R_d.transpose() * R_e;
+double trace = Delta_R.trace();
+double phi   = std::acos(std::clamp(0.5*(trace-1.0), -1.0, 1.0));
+Eigen::Vector3d e_R = Eigen::Vector3d::Zero();
+if (phi > 1e-6)
+    e_R = (phi/(2.0*std::sin(phi))) *
+          Eigen::Vector3d(Delta_R(2,1)-Delta_R(1,2),
+                          Delta_R(0,2)-Delta_R(2,0),
+                          Delta_R(1,0)-Delta_R(0,1));
+
+// -- STEPS 6-8: Full SPD impedance matrices (wall-frame, W=I here) -
+// K_p and K_R: full 3x3 SPD stiffness matrices
+// (diagonal here only because wall axes align with base axes)
+Eigen::Matrix3d Kp = Eigen::Vector3d{50,50,1000}.asDiagonal();
+Eigen::Matrix3d KR = Eigen::Vector3d{200,200,5}.asDiagonal();
+Eigen::Matrix3d Dp = Eigen::Vector3d{14.14,14.14,63.25}.asDiagonal();
+Eigen::Matrix3d DR = Eigen::Vector3d{28.28,28.28,4.47}.asDiagonal();
+// For a tilted wall: Kp = W * Kp_wall * W.T (full matrix)
+
+// Cartesian velocity split
+Eigen::Vector3d pdot  = xdot.head<3>();
+Eigen::Vector3d omega = xdot.tail<3>();
+
+// Translational force and rotational moment
+Eigen::Vector3d f = Kp * e_p - Dp * pdot;
+Eigen::Vector3d m = KR * e_R - DR * omega;
+
+// Combined 6D wrench
+Eigen::Matrix<double,6,1> F;
+F.head<3>() = f;  F.tail<3>() = m;
+
+// -- STEP 9-10: Pseudo-inverse and null-space ---------------------
+//  (needed ONLY for null-space controller, NOT for primary torques)
+// Pseudo-inverse and null-space projector (shown for completeness only).
+// This thesis does NOT implement null-space control.
+// The primary control law needs only J.transpose(), not J+.
+Eigen::Matrix<double,7,6> Jp =
+    J.transpose() * (J * J.transpose()).inverse();    // J+ [7x6]
+// N = I7 - Jp*J  is the null-space projector; omitted here.
+
+// -- STEP 11: Primary torque  tau = J^T * F -----------------------
+//  (J^T is exact, no pseudo-inverse needed here)
+Eigen::Matrix<double,7,1> tau_task = J.transpose() * F;
+
+// -- GRAVITY + CORIOLIS COMPENSATION ------------------------------
+Eigen::Map<const Eigen::Matrix<double,7,1>> tau_g(state.gravity.data());
+Eigen::Map<const Eigen::Matrix<double,7,1>> tau_c(state.coriolis.data());
+
+// -- FINAL COMMAND ------------------------------------------------
+// Final command: primary impedance + gravity + Coriolis only
+Eigen::Matrix<double,7,1> tau_cmd = tau_task + tau_g + tau_c;
+//  (tau_null omitted: null-space control not implemented in this thesis)
+
+// -- SAFETY CLIPPING ----------------------------------------------
+const std::array<double,7> tau_max = {87,87,87,87,12,12,12};
+std::array<double,7> tau_out{};
+for (size_t i=0; i<7; ++i)
+  tau_out[i] = std::max(-tau_max[i], std::min(tau_max[i], tau_cmd(i)));
+
+return franka::Torques(tau_out);
+\end{lstlisting}
+
+% ─────────────────────────────────────────────────────────────────
+\section{Step 8 --- Effect of Stiffness on Torque Distribution}
+\label{app:panda_stiffness}
+% ─────────────────────────────────────────────────────────────────
+
+To illustrate how $\mathbf{K}_p$ scales the torque command, the
+normal stiffness $k_{\mathrm{stiff}}$ is varied while keeping the
+same $x$-direction error of $20\,\mathrm{mm}$
+(here $x$ is aligned with $\hat{\mathbf{n}}$, the stiff direction):
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+$k_{\mathrm{stiff}}\;[\mathrm{N/m}]$
+  & $\tau_1$ & $\tau_2$ & $\tau_3$ & $\tau_4$
+  & $\tau_5$ & $\tau_6$ & $\tau_7$ [Nm] \\
+\midrule
+$200$
+  & $+0.218$ & $+0.218$ & $-0.018$ & $+0.129$
+  & $-0.025$ & $-0.025$ & $0.000$ \\
+$500$
+  & $+0.545$ & $+0.545$ & $-0.044$ & $+0.322$
+  & $-0.062$ & $-0.062$ & $0.000$ \\
+$1000$
+  & $+1.090$ & $+1.090$ & $-0.088$ & $+0.644$
+  & $-0.124$ & $-0.124$ & $0.000$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Key observations.}
+\begin{itemize}
+  \item The torque magnitudes scale linearly with $K_x$, since
+        $F_x = K_x \times 0.020$ and $\tau = \mJ^\top\vF$.
+  \item The \emph{ratio} between the torques of different joints is
+        constant across all three rows: it depends only on the Jacobian
+        $\mJ$ at the current configuration, not on $\mK$.
+  \item Joint\,7 always produces zero torque for an $x$-directed force
+        at this configuration, regardless of stiffness.
+\end{itemize}
+
+\bigskip
+\noindent
+This completes the 7-DOF Panda worked example.
+Every quantity computed here—from the DH chain to the final torque vector—
+corresponds directly to one iteration of the C++ callback in
+Listing~\ref{lst:panda} and is executed 1000 times per second during
+operation.
+
+
+%% =============================================================
+%%  APPENDIX B – DATA LOGGING AND ANALYSIS WORKFLOW
+%% =============================================================
