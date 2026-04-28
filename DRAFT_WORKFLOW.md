@@ -1,19 +1,19 @@
 # Draft / Main Git Workflow
 
 Use `main` as the clean thesis version.
-Use `appendix-draft` as the sandbox branch for appendix experiments.
+Use `sandbox` as the sandbox branch for experiments.
 
 ## Switch Between Versions
 
 ```powershell
 git switch main
-git switch appendix-draft
+git switch sandbox
 ```
 
 ## Work In The Sandbox
 
 ```powershell
-git switch appendix-draft
+git switch sandbox
 ```
 
 Edit the appendix files, then save a checkpoint:
@@ -23,14 +23,14 @@ git add .
 git commit -m "Update appendix draft"
 ```
 
-These changes stay in `appendix-draft` and do not affect `main`.
+These changes stay in `sandbox` and do not affect `main`.
 
 ## Pull New Main Changes Into The Draft
 
 Use this when `main` has newer thesis changes and you want them inside the sandbox:
 
 ```powershell
-git switch appendix-draft
+git switch sandbox
 git merge main
 ```
 
@@ -40,7 +40,7 @@ Use this only when you decide the draft changes are good enough for the real the
 
 ```powershell
 git switch main
-git merge appendix-draft
+git merge sandbox
 ```
 
 ## Take Only One Draft Commit Into Main
@@ -60,7 +60,7 @@ git log --oneline
 
 ## Undo A Bad Draft Experiment
 
-If you are on `appendix-draft` and want to throw away only uncommitted changes:
+If you are on `sandbox` and want to throw away only uncommitted changes:
 
 ```powershell
 git restore .
