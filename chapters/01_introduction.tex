@@ -37,6 +37,23 @@ behaviour on such a platform requires moving beyond position control to
 an impedance-based approach in which the robot's dynamic relationship
 with the environment is explicitly designed and parameterised.
 
+The theoretical background of this work builds on standard treatments
+of serial-manipulator kinematics and dynamics, including homogeneous
+transformations, the geometric and analytic Jacobian, redundancy, and
+operational-space modelling \citep{Siciliano2009,Craig2005,Murray1994}.
+In this context, impedance control is chosen over admittance control
+because the Panda can command joint torques directly through
+\abbr{FCI}; an admittance architecture would instead require an
+outer force-based motion loop and typically an additional force/torque
+sensor. The controller developed in this thesis therefore follows the
+Jacobian-transpose mapping from Cartesian wrench to joint torques
+\citep{Khatib1987}, while using a fixed-parameter, quasi-static
+impedance model. This choice avoids the complexity and model sensitivity
+of full operational-space dynamic inversion, remains suitable for the
+low-velocity interaction tasks considered here, and leaves adaptive or
+variable-impedance extensions as future work
+\citep{Albu2003,Ott2008,Villani2016}.
+
 This is technically demanding: it requires a verified real-time
 software stack, a mathematically sound controller formulation, and a
 systematic experimental evaluation. The present thesis addresses these
