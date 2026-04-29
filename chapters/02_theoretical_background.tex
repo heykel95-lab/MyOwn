@@ -5,18 +5,10 @@ This chapter introduces all mathematical concepts required to derive and
 understand the Cartesian impedance controller used in this thesis.
 The presentation follows a deliberate step-by-step order:
 it begins with the geometry of coordinate frames, builds up the algebraic
-tools for transformations, defines the controlled variable as a pose in
-$\SE$, derives the error signal, and then develops the kinematic
-and dynamic machinery that connects joint torques to Cartesian forces.
-Every mathematical symbol is introduced at the point of first use.
-
-\paragraph{Notation.}
-Bold lowercase letters denote \textbf{column vectors}
-(e.g.\ $\vp,\vq$); bold uppercase letters denote \textbf{matrices}
-(e.g.\ $\mJ,\mR,\mK$); a dot denotes the \textbf{time derivative}
-(e.g.\ $\vxd = d\vx/dt$); $\mathbb{R}^{m\times n}$ is the set of
-real $m\times n$ matrices.
-
+tools for transformations, defines the controlled variable as the
+end-effector position and orientation, derives the error signal, and then
+develops the kinematic and dynamic machinery that connects joint torques
+to Cartesian forces.
 %% ─────────────────────────────────────────────────────────────
 \section{Coordinate Systems}
 \label{sec:coord_systems}
@@ -30,17 +22,29 @@ Three frames are central to this work:
 
 \begin{itemize}
   \item \textbf{Base frame} $\{0\}$: fixed to the robot mounting
-        surface.
+        surface. Its origin is the robot base reference point used by
+        the kinematic model. For the upright Panda configuration used in
+        this thesis, the $z_0$-axis points normal to the mounting surface
+        and is aligned with the first joint axis, while the $x_0$- and
+        $y_0$-axes lie in the mounting plane and complete a right-handed
+        coordinate system according to the manufacturer convention.
         All positions, forces, and poses are ultimately expressed in
         this frame unless stated otherwise.
   \item \textbf{Joint frames} $\{1\},\{2\},\ldots,\{n\}$: rigidly
         attached to the successive links of the kinematic chain.
-        They move with the robot and encode the relative geometry
-        between consecutive links.
+        The origin of frame $\{i\}$ is placed at the reference point of
+        joint $i$ used by the Denavit--Hartenberg model. Its $z_i$-axis
+        is the rotation axis of joint $i$; its $x_i$-axis is chosen along
+        the common normal to the neighbouring joint axes, and $y_i$
+        completes the right-handed frame. These frames move with the
+        robot and encode the relative geometry between consecutive links.
   \item \textbf{End-effector frame} $\{e\}$: attached to the tool
-        centre point.
-        Its position and orientation in the base frame constitute the
-        controlled pose of the robot.
+        centre point. Its origin is the controlled point at the tool tip
+        or flange, depending on the selected tool definition. The axes
+        describe the tool orientation: $z_e$ is taken as the tool approach
+        direction, while $x_e$ and $y_e$ span the tool plane and complete
+        a right-handed frame. The position and orientation of $\{e\}$
+        relative to $\{0\}$ constitute the controlled pose of the robot.
 \end{itemize}
 
 %% ─────────────────────────────────────────────────────────────
