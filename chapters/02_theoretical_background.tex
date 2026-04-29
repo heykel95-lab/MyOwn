@@ -18,6 +18,10 @@ To describe the motion of a robotic manipulator, multiple coordinate
 frames are used simultaneously \cite{Siciliano2009, Craig2005}.
 A \textbf{coordinate frame} is a right-handed orthogonal system of
 three mutually perpendicular unit vectors anchored at a chosen origin.
+For the joint frames, this thesis follows the
+\textbf{Denavit--Hartenberg} (\abbr{DH}) convention, a standard robotics
+method for assigning coordinate frames to consecutive links in a kinematic
+chain \cite{Denavit1955, Craig2005}.
 Three frames are central to this work:
 
 \begin{itemize}
@@ -47,93 +51,221 @@ Three frames are central to this work:
         relative to $\{0\}$ constitute the controlled pose of the robot.
 \end{itemize}
 
-\begin{figure}[htb]
+\begin{figure}[H]
 \centering
-\resizebox{\textwidth}{!}{%
+\begin{minipage}{0.94\textwidth}
+\centering
+\textbf{(a) Coordinate frames on the robot}\par\vspace{1mm}
+\resizebox{0.90\textwidth}{!}{%
 \begin{tikzpicture}[
   >=Latex,
-  frameaxis/.style={-{Latex[length=2.4mm]}, thick},
-  baseaxis/.style={frameaxis, line width=1pt},
-  link/.style={line width=2.2pt, draw=gray!70!black, rounded corners=4pt},
-  joint/.style={circle, draw=black, fill=white, line width=0.8pt, minimum size=4.5mm},
-  paneltitle/.style={font=\bfseries\small},
-  note/.style={font=\scriptsize, align=center},
-  callout/.style={font=\scriptsize, align=left}
+  axis/.style={-{Latex[length=2.5mm]}, thick},
+  link/.style={line width=2.3pt, draw=gray!70!black, rounded corners=5pt},
+  joint/.style={circle, draw=black, fill=white, line width=0.8pt, minimum size=5mm},
+  label/.style={font=\scriptsize},
+  axislabel/.style={font=\scriptsize},
+  smalllabel/.style={font=\scriptsize}
 ]
-% Left panel: manipulator overview
-\node[paneltitle] at (2.0,3.2) {(a) Frames along the robot chain};
-\draw[fill=gray!15, draw=gray!60] (-0.7,-0.25) rectangle (4.3,-0.45);
-\node[note] at (3.4,-0.75) {mounting surface};
+\path[use as bounding box] (-1.0,-0.95) rectangle (8.3,2.95);
+\draw[fill=gray!15, draw=gray!60] (-0.9,-0.25) rectangle (7.4,-0.5);
+\node[smalllabel] at (6.35,-0.75) {mounting surface};
 
 \coordinate (O0) at (0,0);
-\coordinate (J1) at (0.95,1.05);
-\coordinate (J2) at (2.05,1.85);
-\coordinate (J3) at (3.15,1.35);
-\coordinate (TCP) at (3.75,1.35);
+\coordinate (J1) at (1.25,1.05);
+\coordinate (J2) at (2.75,1.95);
+\coordinate (J3) at (4.35,1.45);
+\coordinate (TCP) at (5.45,1.45);
 
 \draw[link] (O0) -- (J1) -- (J2) -- (J3) -- (TCP);
 \node[joint] at (O0) {};
 \node[joint] at (J1) {};
 \node[joint] at (J2) {};
 \node[joint] at (J3) {};
-\fill (TCP) circle (1.6pt);
+\fill (TCP) circle (1.8pt);
 
-% Base frame
-\draw[baseaxis, red!70!black] (O0) -- ++(0.9,0) node[below right] {$x_0$};
-\draw[baseaxis, blue!70!black] (O0) -- ++(-0.55,-0.32) node[left] {$y_0$};
-\draw[baseaxis, green!55!black] (O0) -- ++(0,0.95) node[left] {$z_0$};
-\node[callout, anchor=north west] at (-0.4,-0.05) {$\{0\}$ base frame\\origin at robot base\\reference point};
+\draw[axis] (O0) -- ++(1.0,0) node[axislabel, below right] {$x_0$};
+\draw[axis] (O0) -- ++(-0.55,-0.35) node[axislabel, left] {$y_0$};
+\draw[axis] (O0) -- ++(0,1.0) node[axislabel, left] {$z_0$};
+\node[label, below=5mm of O0] {base frame $\{0\}$};
 
-% Joint frames
-\draw[frameaxis, red!70!black] (J1) -- ++(0.45,0.18) node[right] {$x_i$};
-\draw[frameaxis, green!55!black] (J1) -- ++(-0.08,0.55) node[above] {$z_i$};
-\draw[frameaxis, blue!70!black] (J1) -- ++(-0.34,-0.24) node[left] {$y_i$};
-\draw[-{Latex[length=2mm]}, gray!70!black] ($(J1)+(-0.25,0.28)$)
-  arc[start angle=140,end angle=415,radius=0.22];
-\node[note] at (1.25,0.55) {$\{i\}$\\joint frame};
+\draw[axis] (J1) -- ++(0.55,0.2) node[axislabel, right] {$x_i$};
+\draw[axis] (J1) -- ++(-0.38,-0.28) node[axislabel, left] {$y_i$};
+\draw[axis] (J1) -- ++(-0.08,0.65) node[axislabel, above] {$z_i$};
+\node[label] at (1.55,0.55) {$\{i\}$};
 
-% End-effector frame and tool
-\draw[fill=gray!20, draw=gray!70] ($(J3)+(0.08,0.2)$) -- ($(TCP)+(0.15,0.2)$)
-  -- ($(TCP)+(0.15,-0.2)$) -- ($(J3)+(0.08,-0.2)$) -- cycle;
-\draw[frameaxis, green!55!black] (TCP) -- ++(0.75,0) node[right] {$z_{EE}$};
-\draw[frameaxis, red!70!black] (TCP) -- ++(0.35,0.52) node[above] {$x_{EE}$};
-\draw[frameaxis, blue!70!black] (TCP) -- ++(0.35,-0.42) node[below] {$y_{EE}$};
-\node[callout, anchor=west] at (3.95,2.25) {$\{EE\}$ end-effector frame\\origin at TCP or flange\\controlled pose relative to $\{0\}$};
-
-% Right panel: DH frame zoom
-\begin{scope}[xshift=5.2cm]
-  \node[paneltitle] at (2.1,3.2) {(b) DH joint-frame convention};
-  \draw[gray!45, line width=1pt] (0.6,-0.2) -- (0.6,2.6);
-  \draw[gray!45, line width=1pt] (3.0,-0.2) -- (3.0,2.6);
-  \node[note] at (0.6,2.85) {axis of\\joint $i-1$};
-  \node[note] at (3.0,2.85) {axis of\\joint $i$};
-
-  \coordinate (Oi) at (3.0,1.05);
-  \coordinate (Prev) at (0.6,1.05);
-  \draw[frameaxis, green!55!black] (Oi) -- ++(0,1.0) node[right] {$z_i$};
-  \draw[frameaxis, red!70!black] (Oi) -- (Prev) node[midway, below] {$x_i$};
-  \draw[blue!70!black, line width=1pt] (Oi) circle (0.14);
-  \fill[blue!70!black] (Oi) circle (0.035);
-  \node[blue!70!black, right=2mm of Oi] {$y_i$};
-  \node[joint] at (Oi) {};
-  \node[callout, anchor=west] at (3.35,1.25) {$z_i$: revolute joint axis\\$x_i$: common normal\\$y_i$: completes right hand rule};
-  \node[note] at (1.8,0.35) {origin of $\{i\}$ is placed on\\the joint reference point used\\by the kinematic model};
-\end{scope}
+\draw[fill=gray!20, draw=gray!70] ($(J3)+(0.1,0.22)$) -- ($(TCP)+(0.2,0.22)$)
+  -- ($(TCP)+(0.2,-0.22)$) -- ($(J3)+(0.1,-0.22)$) -- cycle;
+\draw[axis] (TCP) -- ++(1.0,0) node[axislabel, right] {$z_{EE}$};
+\draw[axis] (TCP) -- ++(0.45,0.62) node[axislabel, above] {$x_{EE}$};
+\draw[axis] (TCP) -- ++(0.45,-0.52) node[axislabel, below] {$y_{EE}$};
+\node[label, align=left, anchor=west] at ($(TCP)+(1.18,0.82)$)
+  {End-effector\\frame $\{EE\}$};
 \end{tikzpicture}%
 }
-\caption{Coordinate-frame conventions used in this thesis.
-Panel (a) shows how the base frame, intermediate joint frames, and the
-end-effector frame are attached to the robot. Panel (b) shows the
-Denavit--Hartenberg convention used for joint frames: the $z_i$-axis is the
-joint rotation axis, $x_i$ follows the common normal to neighbouring joint
-axes, and $y_i$ completes the right-handed frame. The sketch is schematic
-and not drawn to scale.}
+\end{minipage}
+
+\vspace{6mm}
+
+\begin{minipage}{0.94\textwidth}
+\centering
+\textbf{(b) DH joint-frame convention}\par\vspace{2mm}
+\resizebox{0.86\textwidth}{!}{%
+\begin{tikzpicture}[
+  >=Latex,
+  axis/.style={-{Latex[length=2.5mm]}, thick},
+  line/.style={line width=1pt, draw=gray!55},
+  joint/.style={circle, draw=black, fill=white, line width=0.8pt, minimum size=5mm},
+  label/.style={font=\scriptsize},
+  axislabel/.style={font=\tiny},
+  note/.style={font=\scriptsize, align=center},
+  legend/.style={font=\scriptsize, align=left}
+]
+\path[use as bounding box] (-3.65,-0.15) rectangle (5.25,4.15);
+\draw[line] (0,0) -- (0,3.2);
+\draw[line] (4.4,0) -- (4.4,3.2);
+\node[note] at (0,3.55) {axis of\\joint $i-1$};
+\node[note] at (4.4,3.55) {axis of\\joint $i$};
+
+\coordinate (Oi) at (4.4,1.45);
+\coordinate (Prev) at (0,1.45);
+\node[joint] at (Oi) {};
+\draw[axis] (Oi) -- ++(0,1.25) node[axislabel, right] {$z_i$};
+\draw[axis] (Oi) -- (Prev) node[axislabel, midway, above] {$x_i$};
+\draw[black, line width=1pt] (Oi) circle (0.17);
+\fill[black] (Oi) circle (0.04);
+\node[axislabel] at (4.82,1.12) {$y_i$};
+
+\node[legend, anchor=east] at (-0.45,1.45) {%
+  \renewcommand{\arraystretch}{1.08}%
+  \begin{tabular}{@{}r@{\quad}l@{}}
+    $x_i$ & common normal\\
+    $y_i$ & right-hand axis\\
+    $z_i$ & rotation axis
+  \end{tabular}
+};
+\end{tikzpicture}%
+}
+\end{minipage}
+
+\caption[Coordinate-frame conventions]{Coordinate-frame conventions.
+Panel (a) shows frame placement; panel (b) shows the DH axis convention.}
 \label{fig:coordinate_frames}
 \end{figure}
 
-The schematic in \cref{fig:coordinate_frames} separates two ideas that are
-often confused: the physical attachment of a frame to a robot part, and the
-axis convention used to orient that frame.
+\begin{figure}[H]
+\centering
+\resizebox{0.92\textwidth}{!}{%
+\begin{tikzpicture}[
+  >=Latex,
+  axis/.style={-{Latex[length=2.5mm]}, line width=0.8pt},
+  robot/.style={line width=2.4pt, draw=gray!70!black, rounded corners=5pt},
+  joint/.style={circle, draw=black, fill=white, line width=0.8pt, minimum size=5.5mm},
+  focusjoint/.style={circle, draw=black, fill=white, line width=1.2pt, minimum size=6.5mm},
+  tool/.style={fill=gray!20, draw=gray!70},
+  point/.style={circle, fill=black, inner sep=1.3pt},
+  note/.style={font=\scriptsize, align=center},
+  label/.style={font=\scriptsize},
+  axislabel/.style={font=\scriptsize}
+]
+\path[use as bounding box] (-0.45,-1.25) rectangle (10.65,4.15);
+
+\coordinate (B) at (0.85,0.62);
+\coordinate (J1) at (2.35,1.35);
+\coordinate (J) at (4.2,2.28);
+\coordinate (J3) at (5.9,1.92);
+\coordinate (E) at (7.55,1.72);
+
+\draw[fill=gray!12, draw=gray!55] (-0.15,0.0) rectangle (9.25,-0.18);
+\node[label] at (8.1,-0.48) {mounting surface};
+
+\draw[robot] (B) -- (J1) -- (J) -- (J3) -- (E);
+\node[joint] at (B) {};
+\node[joint] at (J1) {};
+\node[focusjoint] at (J) {};
+\node[joint] at (J3) {};
+\draw[tool] ($(J3)+(0.08,0.22)$) -- ($(E)+(0.18,0.22)$)
+  -- ($(E)+(0.18,-0.22)$) -- ($(J3)+(0.08,-0.22)$) -- cycle;
+\node[point] at (E) {};
+
+\draw[axis] (B) -- ++(1.0,0) node[axislabel, below right] {$x_0$};
+\draw[axis] (B) -- ++(-0.58,-0.32) node[axislabel, left] {$y_0$};
+\draw[axis] (B) -- ++(0,1.05) node[axislabel, left] {$z_0$};
+\node[note, anchor=north] at ($(B)+(0,-0.95)$) {base frame $\{0\}$\\origin at robot base};
+
+\draw[axis] (J) -- ++(0.95,0.23) node[axislabel, right] {$x_i$};
+\draw[axis] (J) -- ++(-0.48,-0.35) node[axislabel, left] {$y_i$};
+\draw[axis] (J) -- ++(0,1.0) node[axislabel, above] {$z_i$};
+\node[note, anchor=south east] at ($(J)+(-0.18,1.08)$) {joint $i$};
+\node[note, anchor=north] at ($(J)+(0.48,-0.48)$) {frame $\{i\}$};
+
+\draw[axis] (E) -- ++(1.12,0) node[axislabel, right] {$z_{EE}$};
+\draw[axis] (E) -- ++(0.52,0.72) node[axislabel, above] {$x_{EE}$};
+\draw[axis] (E) -- ++(0.52,-0.58) node[axislabel, below] {$y_{EE}$};
+\node[note, anchor=west] at ($(E)+(1.25,0.52)$)
+  {End-effector frame $\{EE\}$\\origin at tool centre point};
+
+\draw[dashed, -{Latex[length=2.2mm]}, line width=0.75pt, gray!70!black]
+  ($(B)+(0.35,0.95)$) to[out=28,in=160] ($(E)+(-0.22,0.72)$);
+\node[label, align=center, fill=white, inner sep=1pt] at (5.55,3.12)
+  {$\{EE\}$ pose\\relative to $\{0\}$};
+\end{tikzpicture}%
+}
+\caption[Alternative coordinate-frame illustration]{Alternative
+coordinate-frame illustration.}
+\label{fig:coordinate_frames_alternative}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\resizebox{0.78\textwidth}{!}{%
+\begin{tikzpicture}[
+  >=Latex,
+  axis/.style={-{Latex[length=2.5mm]}, line width=0.8pt},
+  line/.style={line width=1pt, draw=gray!55},
+  joint/.style={circle, draw=black, fill=white, line width=1pt, minimum size=6mm},
+  note/.style={font=\scriptsize, align=center},
+  label/.style={font=\scriptsize},
+  legend/.style={font=\scriptsize, align=left, text width=4.6cm},
+  axislabel/.style={font=\scriptsize}
+]
+\path[use as bounding box] (-0.55,-0.35) rectangle (8.25,4.05);
+
+\coordinate (Aprev) at (1.0,0.75);
+\coordinate (Anext) at (1.0,3.35);
+\coordinate (Oi) at (5.75,1.95);
+\coordinate (Prev) at (1.0,1.95);
+
+\draw[line] (Aprev) -- (Anext);
+\draw[line] ($(Oi)+(0,-1.15)$) -- ($(Oi)+(0,1.45)$);
+\node[note] at (1.0,3.68) {axis of\\joint $i-1$};
+\node[note] at (5.75,3.68) {axis of\\joint $i$};
+\node[joint] at (Oi) {};
+
+\draw[axis] (Oi) -- (Prev) node[axislabel, midway, above] {$x_i$};
+\draw[axis] (Oi) -- ++(0,1.18) node[axislabel, right] {$z_i$};
+\draw[black, line width=1pt] (Oi) circle (0.18);
+\fill[black] (Oi) circle (0.045);
+\node[axislabel] at ($(Oi)+(0.43,-0.34)$) {$y_i$};
+
+\draw[densely dashed, gray!70] (Prev) -- ++(0,-0.48);
+\draw[densely dashed, gray!70] (Oi) -- ++(0,-0.48);
+\node[label, align=center] at (3.35,0.48)
+  {$x_i$ lies on the common normal\\between neighbouring joint axes};
+
+\node[legend, anchor=west] at (6.35,2.55)
+  {$z_i$: axis of joint $i$\\
+   $y_i$: completes the right-handed frame};
+\end{tikzpicture}%
+}
+\caption[Alternative DH axis convention]{Alternative illustration of the
+Denavit--Hartenberg axis convention.}
+\label{fig:dh_axis_alternative}
+\end{figure}
+
+The schematics in
+\cref{fig:coordinate_frames,fig:coordinate_frames_alternative,fig:dh_axis_alternative}
+separate two ideas that are often confused: the physical attachment of a frame
+to a robot part, and the axis convention used to orient that frame.
 
 %% ─────────────────────────────────────────────────────────────
 \section{Coordinate Transformations}
