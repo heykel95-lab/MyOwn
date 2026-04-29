@@ -85,121 +85,96 @@ It is represented by a position vector:
 where $x,y,z\in\mathbb{R}$ are the scalar displacements along the
 three coordinate axes, measured in metres.
 
-\subsection{Rotation}
+\subsection{Rotation Matrices}
 \label{subsec:rotation}
 
-A rotation changes the orientation of a frame without moving its
-origin.
-Any spatial rotation can be decomposed into three successive elementary
-rotations, one about each coordinate axis
-\cite{Siciliano2009, Craig2005}:
+A rotation matrix describes the orientation of one coordinate frame relative to another while leaving the origin unchanged. It therefore represents a pure change in orientation, without translation, scaling, or deformation. In three-dimensional space, rotations are commonly expressed by three successive elementary rotations about the coordinate axes.
+
+The elementary rotations about the \(x\)-, \(y\)-, and \(z\)-axes are given by~\cite{Siciliano2009,Craig2005}:
 
 \begin{equation}
+R_x(\alpha)=
+\begin{bmatrix}
+1 & 0 & 0\\
+0 & \cos\alpha & -\sin\alpha\\
+0 & \sin\alpha & \cos\alpha
+\end{bmatrix},
 \label{eq:Rx}
-\mathbf{R}_x(\alpha) =
-\begin{bmatrix}
-1 & 0          & 0           \\
-0 & \cos\alpha & -\sin\alpha \\
-0 & \sin\alpha &  \cos\alpha
-\end{bmatrix}
 \end{equation}
 
 \begin{equation}
-\label{eq:Ry}
-\mathbf{R}_y(\beta) =
+R_y(\beta)=
 \begin{bmatrix}
- \cos\beta & 0 & \sin\beta \\
- 0         & 1 & 0         \\
+\cos\beta & 0 & \sin\beta\\
+0 & 1 & 0\\
 -\sin\beta & 0 & \cos\beta
-\end{bmatrix}
+\end{bmatrix},
+\label{eq:Ry}
 \end{equation}
 
 \begin{equation}
-\label{eq:Rz}
-\mathbf{R}_z(\gamma) =
+R_z(\gamma)=
 \begin{bmatrix}
-\cos\gamma & -\sin\gamma & 0 \\
-\sin\gamma &  \cos\gamma & 0 \\
-0          &  0          & 1
-\end{bmatrix}
+\cos\gamma & -\sin\gamma & 0\\
+\sin\gamma & \cos\gamma & 0\\
+0 & 0 & 1
+\end{bmatrix}.
+\label{eq:Rz}
 \end{equation}
 
-where $\alpha,\beta,\gamma\in\mathbb{R}$ are the rotation angles about the
-$x$- (roll), $y$- (pitch), and $z$- (yaw) axes respectively, in radians.
-In each matrix the $1$ sits on the diagonal entry corresponding to the
-rotation axis, while the $2\times2$ cosine-sine block acts on the two
-perpendicular axes.
+Here, \(\alpha\), \(\beta\), and \(\gamma\) denote rotations about the \(x\)-, \(y\)-, and \(z\)-axes, respectively. These angles are commonly referred to as roll, pitch, and yaw. In each elementary rotation matrix, the axis of rotation remains unchanged, while the two perpendicular axes are rotated within their plane.
 
-The general rotation matrix for an arbitrary orientation is obtained as
-the product of these three elementary rotations.
-Using the $ZYX$ (yaw-pitch-roll) convention, standard in robotics
-\cite{Siciliano2009}:
+In this work, the ZYX convention is used. This corresponds to applying a roll rotation about the \(x\)-axis, followed by a pitch rotation about the \(y\)-axis, and finally a yaw rotation about the \(z\)-axis~\cite{Siciliano2009,Craig2005}. The resulting rotation matrix is therefore
 
 \begin{equation}
-\label{eq:rot_general}
-\mathbf{R} = \mathbf{R}_z(\gamma)\;\mathbf{R}_y(\beta)\;\mathbf{R}_x(\alpha)
+R = R_z(\gamma)R_y(\beta)R_x(\alpha).
+\label{eq:ZYX_rotation}
 \end{equation}
 
-Expanding this product explicitly, using $c_\theta=\cos\theta$,
-$s_\theta=\sin\theta$:
+Expanding this product yields
 
 \begin{equation}
-\label{eq:rot_full}
-\mathbf{R} =
+R =
 \begin{bmatrix}
 \cos\gamma\cos\beta &
-  \cos\gamma\sin\beta\sin\alpha - \sin\gamma\cos\alpha &
-  \cos\gamma\sin\beta\cos\alpha + \sin\gamma\sin\alpha \\[6pt]
+\cos\gamma\sin\beta\sin\alpha - \sin\gamma\cos\alpha &
+\cos\gamma\sin\beta\cos\alpha + \sin\gamma\sin\alpha \\
+
 \sin\gamma\cos\beta &
-  \sin\gamma\sin\beta\sin\alpha + \cos\gamma\cos\alpha &
-  \sin\gamma\sin\beta\cos\alpha - \cos\gamma\sin\alpha \\[6pt]
+\sin\gamma\sin\beta\sin\alpha + \cos\gamma\cos\alpha &
+\sin\gamma\sin\beta\cos\alpha - \cos\gamma\sin\alpha \\
+
 -\sin\beta &
-  \cos\beta\sin\alpha &
-  \cos\beta\cos\alpha
-\end{bmatrix}
+\cos\beta\sin\alpha &
+\cos\beta\cos\alpha
+\end{bmatrix}.
+\label{eq:expanded_ZYX_rotation}
 \end{equation}
 
-The nine entries are the \textbf{direction cosines}: $R_{ij}$ equals
-the cosine of the angle between the $i$-th axis of the target frame
-and the $j$-th axis of the source frame \cite{Craig2005}.
-The shorthand $c_\theta=\cos\theta$, $s_\theta=\sin\theta$ is
-\emph{not} used here so that every entry is unambiguous.
+Each element of \(R\) can be interpreted as a direction cosine. The entry \(R_{ij}\) gives the cosine of the angle between the \(i\)-th axis of the rotated frame and the \(j\)-th axis of the reference frame~\cite{Craig2005}. This interpretation is useful because it shows that the columns of \(R\) represent the rotated coordinate axes expressed in the reference frame.
 
-\paragraph{Properties of a valid rotation matrix.}
-Not every $3\times3$ real matrix is a valid rotation.
-A rotation matrix must satisfy three properties \cite{Siciliano2009}:
-
-\begin{itemize}
-  \item \textbf{Orthonormal columns:} each column has unit length and
-        any two columns are perpendicular.
-        The matrix therefore preserves lengths and angles.
-  \item \textbf{Transpose equals inverse:}
-        $\mathbf{R}^\top = \mathbf{R}^{-1}$, i.e.\
-        $\mathbf{R}^\top\mathbf{R} = \mathbf{I}$.
-        Inversion costs only a transpose.
-  \item \textbf{Positive determinant:} $\det(\mathbf{R}) = +1$,
-        which distinguishes a proper rotation from a reflection
-        ($\det=-1$).
-\end{itemize}
-
-The set of all $3\times3$ matrices satisfying these three properties is
-the \textbf{special orthogonal group}:
+A valid rotation matrix must preserve lengths and angles. This requirement leads to the orthogonality condition
 
 \begin{equation}
-\label{eq:rot}
-\mathbf{R} \in \SO
-\;\;\Longleftrightarrow\;\;
-\mathbf{R}^\top\mathbf{R} = \mathbf{I}
-\;\;\text{and}\;\;
-\det(\mathbf{R}) = +1
+R^\top R = I.
+\label{eq:orthogonality_condition}
 \end{equation}
 
-$SO(3)$ serves as compact shorthand throughout this thesis:
-writing $\mathbf{R}\in SO(3)$ means all three properties hold
-simultaneously.
-One can verify: for $\mathbf{R}_z(\gamma)$, $\det = \cos^2\gamma +
-\sin^2\gamma = 1\checkmark$, and its three columns are orthonormal
-$\checkmark$.
+As a consequence, the inverse of a rotation matrix is equal to its transpose~\cite{Siciliano2009,Murray1994},
+
+\begin{equation}
+R^{-1}=R^\top.
+\label{eq:rotation_inverse}
+\end{equation}
+
+In addition, a proper rotation must have a determinant equal to one,
+
+\begin{equation}
+\det(R)=+1.
+\label{eq:rotation_determinant}
+\end{equation}
+
+The determinant condition excludes reflections, which also preserve lengths and angles but reverse the handedness of the coordinate system. Together, these conditions ensure that \(R\) represents a pure rotation only.
 
 %% ─────────────────────────────────────────────────────────────
 \section{Homogeneous Transformation and the Group SE(3)}
