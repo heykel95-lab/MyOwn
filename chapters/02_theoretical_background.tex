@@ -175,86 +175,116 @@ In addition, a proper rotation must have a determinant equal to one,
 \end{equation}
 
 The determinant condition excludes reflections, which also preserve lengths and angles but reverse the handedness of the coordinate system. Together, these conditions ensure that \(R\) represents a pure rotation only.
-
+The previous sections introduced the rotation matrix for describing orientation and the translation vector for describing position. For coordinate transformations and kinematic calculations, it is often convenient to combine rotation and translation into a single representation: the homogeneous transformation matrix. This representation is particularly useful because it allows coordinate transformations and chains of frame changes to be expressed as matrix products.
 %% ─────────────────────────────────────────────────────────────
-\section{Homogeneous Transformation and the Group SE(3)}
+\section{Homogeneous Transformation Matrices}
 \label{sec:homogeneous}
 %% ─────────────────────────────────────────────────────────────
 
-\subsection{Homogeneous Transformation Matrix}
+A rigid-body motion in three-dimensional space consists of a rotation and a translation.
+While a rotation matrix describes only the relative orientation between two coordinate frames, a homogeneous transformation matrix combines both the orientation and the position of a frame in a single matrix.
+This representation is widely used in robotics and kinematics because it allows consecutive coordinate transformations to be expressed as simple matrix products~\cite{Craig2005,Siciliano2009}.
 
-Rotation and translation can be combined into a single $4\times4$
-matrix, called the \textbf{homogeneous transformation matrix}, which
-allows sequential frame changes to be computed as simple matrix
-products \cite{Hartley2003, Craig2005}:
-
-\begin{equation}
-\label{eq:homogeneous}
-\mathbf{T}_{a}^{b} =
-\begin{bmatrix}
-\mathbf{R}_{a}^{b} & \mathbf{p}_{a}^{b} \\[3pt]
-\mathbf{0}^\top    & 1
-\end{bmatrix}
-\in \mathbb{R}^{4\times4}
-\end{equation}
-
-Here:
-
-\begin{itemize}
-  \item $\mathbf{T}_{a}^{b}$: maps from frame $\{a\}$ to frame $\{b\}$
-        (subscript = source, superscript = target).
-  \item $\mathbf{R}_{a}^{b}\in SO(3)$: the rotation from $\{a\}$ to
-        $\{b\}$.
-  \item $\mathbf{p}_{a}^{b}\in\mathbb{R}^3$: origin of $\{b\}$ in $\{a\}$.
-  \item $\mathbf{0}^\top=[0\;0\;0]$, $1$: the homogeneous row that
-        enables composition $\mT_a^c=\mT_a^b\mT_b^c$
-        \cite{Hartley2003}.
-\end{itemize}
-
-A point $\mathbf{p}^{(a)}\in\mathbb{R}^3$ is lifted to homogeneous
-coordinates as $\tilde{\mathbf{p}}^{(a)}=[p_x\;p_y\;p_z\;1]^\top$;
-its representation in $\{b\}$ is then simply
-$\tilde{\mathbf{p}}^{(b)}=\mathbf{T}_a^b\,\tilde{\mathbf{p}}^{(a)}$.
-
-\subsection{The Special Euclidean Group SE(3)}
-\label{subsec:SE3}
-
-The set of all valid homogeneous transformation matrices forms the
-\textbf{Special Euclidean group of dimension 3}:
+The homogeneous transformation from frame \(\{a\}\) to frame \(\{b\}\) is written as
 
 \begin{equation}
-\label{eq:SE3_def}
-SE(3) = \left\{
-\mathbf{T} =
+{}^bT_a =
 \begin{bmatrix}
-\mathbf{R} & \mathbf{p} \\
-\mathbf{0}^\top & 1
+{}^bR_a & {}^bp_a\\
+0^\top & 1
 \end{bmatrix}
-\;\middle|\;
-\mathbf{R}\in SO(3),\;\mathbf{p}\in\mathbb{R}^3
-\right\}
-\subset \mathbb{R}^{4\times4}
+\in \mathbb{R}^{4 \times 4}.
+\label{eq:homogeneous_transformation}
 \end{equation}
 
-\emph{Euclidean} because it encodes rigid-body motions (rotation and
-translation) that preserve distances.
-\emph{Special} because $\det(\mathbf{R})=+1$.
-$SO(3)$ is the subgroup of pure rotations ($\mathbf{p}=\mathbf{0}$).
+Here, \({}^bR_a\) is the rotation matrix that describes the orientation of frame \(\{a\}\) with respect to frame \(\{b\}\).
+The vector \({}^bp_a\) describes the position of the origin of frame \(\{a\}\), expressed in frame \(\{b\}\).
+The last row, \(0^\top = [0 \; 0 \; 0]\) and \(1\), is introduced by the homogeneous-coordinate representation and allows rotation and translation to be combined in one matrix equation.
 
-A key property is that the inverse of any $\mathbf{T}\in SE(3)$ is
-also in $SE(3)$ and is computed cheaply:
+A point expressed in frame \(\{a\}\) can be written in homogeneous coordinates as
 
 \begin{equation}
-\label{eq:SE3_inv}
-\mathbf{T}^{-1} =
+{}^a\tilde{p}
+=
 \begin{bmatrix}
-\mathbf{R}^\top & -\mathbf{R}^\top\mathbf{p} \\
-\mathbf{0}^\top & 1
-\end{bmatrix}
+{}^ap \\
+1
+\end{bmatrix}.
+\label{eq:homogeneous_point_a}
 \end{equation}
 
-which requires only a transpose and a matrix-vector product — no
-general matrix inversion.
+The coordinates of the same point expressed in frame \(\{b\}\) are then obtained by
+
+\begin{equation}
+{}^b\tilde{p}
+=
+{}^bT_a \, {}^a\tilde{p}.
+\label{eq:homogeneous_point_transform}
+\end{equation}
+
+In non-homogeneous form, this corresponds to
+
+\begin{equation}
+{}^bp
+=
+{}^bR_a \, {}^ap
++
+{}^bp_a.
+\label{eq:non_homogeneous_transform}
+\end{equation}
+
+This equation shows that the point coordinates are first rotated into the target frame and then shifted by the translation vector between the two frame origins.
+
+One advantage of homogeneous transformations is that several frame transformations can be composed by matrix multiplication.
+For example, if a transformation from frame \(\{a\}\) to frame \(\{b\}\) is followed by a transformation from frame \(\{b\}\) to frame \(\{c\}\), the combined transformation from frame \(\{a\}\) to frame \(\{c\}\) is
+
+\begin{equation}
+{}^cT_a
+=
+{}^cT_b \, {}^bT_a.
+\label{eq:homogeneous_composition}
+\end{equation}
+
+This property is particularly useful for kinematic chains, where the pose of one frame is often obtained through a sequence of intermediate frames.
+
+For a homogeneous transformation to describe a valid rigid-body motion, the rotation part must satisfy
+
+\begin{equation}
+R^\top R = I,
+\qquad
+\det(R)=1.
+\label{eq:valid_rotation_conditions}
+\end{equation}
+
+These conditions ensure that the transformation preserves lengths, angles, and the handedness of the coordinate system.
+Therefore, the transformation can change the position and orientation of a frame, but it cannot introduce scaling, shearing, or reflection.
+
+The inverse transformation can also be computed efficiently.
+For
+
+\begin{equation}
+T =
+\begin{bmatrix}
+R & p\\
+0^\top & 1
+\end{bmatrix},
+\label{eq:general_homogeneous_transformation}
+\end{equation}
+
+the inverse is given by~\cite{Murray1994}
+
+\begin{equation}
+T^{-1}
+=
+\begin{bmatrix}
+R^\top & -R^\top p\\
+0^\top & 1
+\end{bmatrix}.
+\label{eq:homogeneous_inverse}
+\end{equation}
+
+This follows from the orthogonality of the rotation matrix, since \(R^{-1}=R^\top\).
+As a result, inverting a homogeneous transformation requires only a transpose of the rotation matrix and one matrix-vector multiplication, rather than a general \(4 \times 4\) matrix inversion.
 
 %% ─────────────────────────────────────────────────────────────
 \section{The Controlled Variable: End-Effector Pose in SE(3)}
@@ -327,7 +357,7 @@ of $SE(3)$ that maps one pose into the other.
 
 \subsubsection*{Step 2 --- The relative transformation as an error}
 
-Recall from \cref{eq:homogeneous} that if we chain two transformations,
+Recall from \cref{eq:homogeneous_composition} that if we chain two transformations,
 the result describes a composed motion.
 In particular, consider what happens when we compose $\mathbf{T}_d^{-1}$
 (the inverse of the desired pose) with $\mathbf{T}_{EE}$ (the current pose):
@@ -368,7 +398,7 @@ This is the correct generalisation of ``error $= 0$'' for poses in $SE(3)$.
 \subsubsection*{Step 3 --- Full algebraic expansion}
 
 To compute $\mathbf{T}_{\mathrm{err}}$ explicitly, substitute the
-inverse formula from \cref{eq:SE3_inv} and the definition of
+inverse formula from \cref{eq:homogeneous_inverse} and the definition of
 $\mathbf{T}_{EE}$:
 
 \begin{equation}
@@ -588,7 +618,7 @@ drives the impedance controller:
 \begin{remark}
 The entire computation reduces to a single $4{\times}4$ matrix product.
 The inverse $\mathbf{T}_d^{-1}$ is free in $SE(3)$: one transpose and
-one matrix-vector product (see \cref{eq:SE3_inv}).
+one matrix-vector product (see \cref{eq:homogeneous_inverse}).
 Both $\mathbf{e}_p$ and $\mathbf{e}_R$ are then \emph{read off} from
 the blocks of the result---no additional computation is needed.
 libfranka provides $\mathbf{T}_{EE}$ directly as
