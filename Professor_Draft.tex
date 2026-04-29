@@ -9,8 +9,8 @@
 % Professor draft selection
 % ============================================================
 % Change only the true/false lines below.
-% Example: use \ProfessorIncludeSystemSetuptrue to include Chapter 3,
-% or \ProfessorIncludeSystemSetupfalse to exclude it.
+% Example: use \ProfessorIncludeTheoreticalBackgroundtrue to include Chapter 2,
+% or \ProfessorIncludeTheoreticalBackgroundfalse to exclude it.
 
 \newif\ifProfessorIncludeTitlePage
 \newif\ifProfessorIncludeDeclaration
@@ -34,18 +34,14 @@
 
 % Main thesis chapters
 \newif\ifProfessorIncludeIntroduction
-\newif\ifProfessorIncludeStateOfTheArt
-\newif\ifProfessorIncludeSystemSetup
-\newif\ifProfessorIncludeSoftwareImplementation
 \newif\ifProfessorIncludeTheoreticalBackground
+\newif\ifProfessorIncludeSoftwareImplementation
 \newif\ifProfessorIncludeExperiments
 \newif\ifProfessorIncludeConclusion
 
 \ProfessorIncludeIntroductiontrue
-\ProfessorIncludeStateOfTheArtfalse
-\ProfessorIncludeSystemSetupfalse
-\ProfessorIncludeSoftwareImplementationfalse
-\ProfessorIncludeTheoreticalBackgroundfalse
+\ProfessorIncludeTheoreticalBackgroundtrue
+\ProfessorIncludeSoftwareImplementationtrue
 \ProfessorIncludeExperimentsfalse
 \ProfessorIncludeConclusionfalse
 
@@ -81,23 +77,27 @@
   \@ifundefined{r@#1}{\@namedef{r@#1}{{#2}{0}{#3}{}{}}}{}%
 }
 \ProfessorFallbackLabel{ch:intro}{1}{Introduction}
-\ProfessorFallbackLabel{ch:literature}{2}{State of the Art}
-\ProfessorFallbackLabel{ch:setup}{3}{System Setup}
-\ProfessorFallbackLabel{ch:implementation}{4}{Software Implementation}
-\ProfessorFallbackLabel{ch:theory}{5}{Theoretical Background}
-\ProfessorFallbackLabel{ch:experiments}{6}{Experiments}
-\ProfessorFallbackLabel{ch:conclusion}{7}{Conclusion}
-\ProfessorFallbackLabel{sec:rt_kernel}{3.3}{Real-Time Ubuntu Kernel}
-\ProfessorFallbackLabel{sec:exp_stability}{6.1}{Preliminary: Stability Analysis}
-\ProfessorFallbackLabel{sec:future}{7.3}{Future Work}
-\@ifundefined{r@sec:rt_kernel@cref}{%
-  \@namedef{r@sec:rt_kernel@cref}{{[section][3][3]3.3}{[1][0][]0}{}{}{}}%
-}{}%
+\ProfessorFallbackLabel{ch:theory}{2}{Theoretical Background}
+\ProfessorFallbackLabel{ch:implementation}{3}{Software Implementation}
+\ProfessorFallbackLabel{ch:experiments}{4}{Experiments}
+\ProfessorFallbackLabel{ch:conclusion}{5}{Conclusion}
+\ProfessorFallbackLabel{sec:exp_stability}{4.1}{Preliminary: Stability Analysis}
+\ProfessorFallbackLabel{sec:future}{5.3}{Future Work}
+\ProfessorFallbackLabel{app:panda}{A}{Panda Numerical Example}
+\ProfessorFallbackLabel{app:panda_params}{A.1}{Panda Parameters}
+\ProfessorFallbackLabel{app:panda_fk}{A.2}{Forward Kinematics}
+\ProfessorFallbackLabel{app:panda_jacobian}{A.3}{Jacobian}
+\ProfessorFallbackLabel{app:panda_pinv}{A.4}{Pseudoinverse}
+\ProfessorFallbackLabel{app:panda_matrices}{A.5}{Impedance Matrices}
+\ProfessorFallbackLabel{app:panda_force}{A.6}{Cartesian Force}
+\ProfessorFallbackLabel{app:panda_torques}{A.7}{Joint Torques}
+\ProfessorFallbackLabel{app:panda_loop}{A.8}{Control Loop}
+\ProfessorFallbackLabel{app:panda_stiffness}{A.9}{Stiffness Variation}
 \@ifundefined{r@sec:exp_stability@cref}{%
-  \@namedef{r@sec:exp_stability@cref}{{[section][1][6]6.1}{[1][0][]0}{}{}{}}%
+  \@namedef{r@sec:exp_stability@cref}{{[section][1][4]4.1}{[1][0][]0}{}{}{}}%
 }{}%
 \@ifundefined{r@sec:future@cref}{%
-  \@namedef{r@sec:future@cref}{{[section][3][7]7.3}{[1][0][]0}{}{}{}}%
+  \@namedef{r@sec:future@cref}{{[section][3][5]5.3}{[1][0][]0}{}{}{}}%
 }{}%
 \makeatother
 
@@ -148,33 +148,23 @@
   \input{chapters/01_introduction}
 \fi
 
-\ifProfessorIncludeStateOfTheArt
+\ifProfessorIncludeTheoreticalBackground
   \setcounter{chapter}{1}
-  \input{chapters/02_state_of_the_art}
-\fi
-
-\ifProfessorIncludeSystemSetup
-  \setcounter{chapter}{2}
-  \input{chapters/03_system_setup}
+  \input{chapters/02_theoretical_background}
 \fi
 
 \ifProfessorIncludeSoftwareImplementation
-  \setcounter{chapter}{3}
-  \input{chapters/04_software_implementation}
-\fi
-
-\ifProfessorIncludeTheoreticalBackground
-  \setcounter{chapter}{4}
-  \input{chapters/05_theoretical_background}
+  \setcounter{chapter}{2}
+  \input{chapters/03_software_implementation}
 \fi
 
 \ifProfessorIncludeExperiments
-  \setcounter{chapter}{5}
+  \setcounter{chapter}{3}
   \input{chapters/06_experiments}
 \fi
 
 \ifProfessorIncludeConclusion
-  \setcounter{chapter}{6}
+  \setcounter{chapter}{4}
   \input{chapters/07_conclusion}
 \fi
 

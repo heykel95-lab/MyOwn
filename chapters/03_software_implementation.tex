@@ -1,0 +1,182 @@
+\chapter{Software Implementation}
+\label{ch:implementation}
+
+This chapter describes how the Cartesian impedance-control law derived in
+\cref{ch:theory} is implemented for the Franka Emika Panda. The focus is not
+on a general software framework, but on the parts needed for the thesis
+experiments: acquiring the robot state, evaluating the controller within the
+1\,ms \abbr{FCI} cycle, mapping Cartesian forces to joint torques, and logging
+the quantities required for later evaluation.
+
+\section{Implementation Scope}
+\label{sec:implementation_scope}
+
+The implementation is written in C++ using \texttt{libfranka} and Eigen. It
+uses the Panda model interface for kinematic and dynamic quantities and sends
+torque commands through the \texttt{robot.control(...)} callback. The code is
+therefore organised around the real-time callback rather than around a large
+application architecture. Each experiment uses the same control structure and
+changes only the desired pose, stiffness matrix, damping matrix, and logging
+signals.
+
+The implementation follows four requirements:
+
+\begin{itemize}
+  \item The measured end-effector pose, joint velocities, Jacobian, gravity,
+        and Coriolis terms are read every control cycle.
+  \item The Cartesian impedance law is evaluated in the same frame as the
+        selected stiffness and damping matrices.
+  \item Cartesian forces are mapped to joint torques using
+        $\vtau_{\mathrm{task}} = \mathbf{J}^{\top}\mathbf{F}$.
+  \item The final command is limited before it is returned to the robot.
+\end{itemize}
+
+\section{Control-Loop Structure}
+\label{sec:control_loop_structure}
+
+\cref{fig:sw_arch} shows the data flow used in the implementation. The
+\abbr{FCI} provides the measured robot state and model quantities. The
+controller computes the pose error, evaluates the Cartesian impedance law, and
+returns joint torques before the 1\,ms cycle deadline.
+
+\begin{figure}[htb]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners=3pt, minimum width=4.5cm,
+               minimum height=0.9cm, align=center, font=\small},
+  arr/.style={-{Latex}, thick}
+]
+  \node[box, fill=blue!10]  (state) at (0, 0.0) {Robot State\\$\vq,\dot{\vq},\mathbf{T}_e$};
+  \node[box, fill=green!10] (model) at (0,-1.7) {Model Interface\\$\mathbf{J},\vtau_g,\vtau_c$};
+  \node[box, fill=orange!15](ctrl)  at (0,-3.4) {Impedance Controller\\$\mathbf{F}=\mathbf{K}\mathbf{e}-\mathbf{D}\dot{\mathbf{x}}$};
+  \node[box, fill=red!10]   (torq)  at (0,-5.1) {Torque Command\\$\vtau=\mathbf{J}^{\top}\mathbf{F}+\vtau_g+\vtau_c$};
+  \draw[arr] (state) -- (model);
+  \draw[arr] (model) -- (ctrl);
+  \draw[arr] (ctrl) -- (torq);
+\end{tikzpicture}
+\caption{Software data flow of the impedance controller implemented with
+         \texttt{libfranka}.}
+\label{fig:sw_arch}
+\end{figure}
+
+\section{State Acquisition and Model Access}
+\label{sec:state_model}
+
+At the beginning of each callback, the current joint configuration and joint
+velocities are mapped from \texttt{franka::RobotState} to Eigen vectors. The
+end-effector pose is read from \texttt{state.O\_T\_EE}, which provides the
+homogeneous transformation $\mathbf{T}_e$. The Jacobian is obtained from
+\texttt{model.zeroJacobian(franka::Frame::kEndEffector, state)} and is used
+both for Cartesian velocity computation and for the torque mapping.
+
+Gravity and Coriolis terms are obtained from the \texttt{libfranka} model
+interface. They are added after the task torque has been computed, so the
+commanded torque has the form
+
+\begin{equation}
+  \vtau_{\mathrm{cmd}}
+  =
+  \mathbf{J}^{\top}\mathbf{F}
+  +
+  \vtau_g
+  +
+  \vtau_c .
+  \label{eq:implemented_torque_command}
+\end{equation}
+
+This is the same torque structure derived in \cref{ch:theory}; the software
+chapter only specifies how the quantities are accessed and combined in the
+real-time callback.
+
+\section{Controller Evaluation}
+\label{sec:control_impl}
+
+The implemented control loop uses the following sequence:
+
+\begin{enumerate}
+  \item Read $\vq$, $\dot{\vq}$, and $\mathbf{T}_e$ from the robot state.
+  \item Compute the geometric Jacobian $\mathbf{J}(\vq)$.
+  \item Compute the Cartesian velocity
+        $\dot{\mathbf{x}} = \mathbf{J}\dot{\vq}$.
+  \item Evaluate the position and orientation errors.
+  \item Compute the Cartesian forces from the selected stiffness and damping
+        matrices.
+  \item Map Cartesian forces to joint torques and add model compensation.
+  \item Clip the torque command before returning it to \texttt{libfranka}.
+\end{enumerate}
+
+The core implementation pattern is shown in \cref{lst:control_callback}. The
+listing is shortened to the essential operations; the experiment-specific
+files add parameter selection and CSV logging.
+
+\begin{lstlisting}[style=cppstyle,
+  caption={Core structure of the real-time impedance-control callback},
+  label={lst:control_callback}]
+robot.control([&](const franka::RobotState& state,
+                  franka::Duration period) -> franka::Torques {
+  Eigen::Map<const Eigen::Matrix<double, 7, 1>> dq(state.dq.data());
+
+  std::array<double, 42> jacobian_array =
+      model.zeroJacobian(franka::Frame::kEndEffector, state);
+  Eigen::Map<const Eigen::Matrix<double, 6, 7>> J(jacobian_array.data());
+
+  Eigen::Matrix<double, 6, 1> xdot = J * dq;
+  Eigen::Vector3d pdot = xdot.head<3>();
+
+  Eigen::Map<const Eigen::Matrix<double, 4, 4>> T_EE(state.O_T_EE.data());
+  Eigen::Vector3d p_e = T_EE.block<3, 1>(0, 3);
+
+  Eigen::Vector3d e_p = p_des - p_e;
+  Eigen::Vector3d f = Kp_base * e_p - Dp_base * pdot;
+
+  Eigen::Matrix<double, 6, 1> F;
+  F.head<3>() = f;
+  F.tail<3>().setZero();
+
+  Eigen::Matrix<double, 7, 1> tau_task = J.transpose() * F;
+
+  std::array<double, 7> gravity_array = model.gravity(state);
+  std::array<double, 7> coriolis_array = model.coriolis(state);
+  Eigen::Map<const Eigen::Matrix<double, 7, 1>> tau_g(gravity_array.data());
+  Eigen::Map<const Eigen::Matrix<double, 7, 1>> tau_c(coriolis_array.data());
+
+  Eigen::Matrix<double, 7, 1> tau = tau_task + tau_g + tau_c;
+  return franka::Torques(eigenToArray(limitTorques(tau)));
+});
+\end{lstlisting}
+
+\section{Experiment-Specific Variants}
+\label{sec:experiment_variants}
+
+The four experiments evaluated later in the thesis share the same callback
+structure, but they differ in their parameterisation:
+
+\begin{itemize}
+  \item Experiment~1 rotates the stiffness frame and evaluates fixed-point
+        tracking.
+  \item Experiment~2 implements the virtual-wall behaviour by assigning high
+        stiffness in the surface-normal direction and lower stiffness in the
+        free directions.
+  \item Experiment~3 varies the normal stiffness to test the compliance law.
+  \item Experiment~4 evaluates how the same Cartesian force maps to different
+        joint torques at different robot configurations.
+\end{itemize}
+
+For each experiment, the controller logs time, pose error, measured pose,
+Cartesian forces, and commanded joint torques. These CSV files form the basis
+for the plots and quantitative comparisons in the evaluation chapter.
+
+\section{Safety and Reproducibility}
+\label{sec:safety}
+
+The implementation includes several practical safety checks. Stiffness and
+damping matrices are selected before the control loop starts and are checked
+for positive definiteness. Torque commands are limited before they are returned
+to the robot. Experiments begin with conservative stiffness values and are only
+increased after the controller behaviour is verified.
+
+Reproducibility is supported by keeping each experiment in a separate source
+file with fixed parameter values and a deterministic CSV output format. This
+keeps the implementation directly connected to the experimental results while
+avoiding unnecessary software abstractions that are not needed for the thesis
+evaluation.
