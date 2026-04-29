@@ -88,7 +88,7 @@ $\mT_0^7$:
 
 \begin{equation}
 \label{eq:pe_panda}
-\mathbf{p}_e(\vq_0) =
+\mathbf{p}_{EE}(\vq_0) =
 \begin{bmatrix}
 0.1164 \\ 0.5452 \\ 0.3952
 \end{bmatrix}
@@ -152,7 +152,7 @@ Applying \cref{eq:jacobian_col} for each joint using the values from
 \begin{equation}
 \mJ_k =
 \begin{bmatrix}
-\mathbf{z}_k \times (\mathbf{p}_e - \mathbf{p}_k) \\[3pt]
+\mathbf{z}_k \times (\mathbf{p}_{EE} - \mathbf{p}_k) \\[3pt]
 \mathbf{z}_k
 \end{bmatrix}
 \end{equation}
@@ -268,7 +268,7 @@ of freedom that is ``invisible'' to the task.
 % ─────────────────────────────────────────────────────────────────
 
 For the Panda, the controlled variable is the full end-effector pose
-$\mathbf{T}_e\in SE(3)$ with translational error
+$\mathbf{T}_{EE}\in SE(3)$ with translational error
 $\mathbf{e}_p\in\mathbb{R}^3$ and rotational error
 $\mathbf{e}_R\in\mathbb{R}^3$ (see \cref{subsec:pose_error}).
 The impedance matrices are $3\times3$ SPD matrices as defined in
@@ -377,26 +377,26 @@ $3\times3$ matrices in the base frame.
 \label{app:panda_force}
 % ─────────────────────────────────────────────────────────────────
 
-\subsection*{Pose Error via $\mathbf{T}_d^{-1}\mathbf{T}_e$}
+\subsection*{Pose Error via $\mathbf{T}_d^{-1}\mathbf{T}_{EE}$}
 
 Suppose the desired pose is $\mathbf{T}_d$ with $\mathbf{R}_d=\mathbf{I}_3$
 and $\mathbf{p}_d=[0.136,\;0.545,\;0.395]^\top\,\mathrm{m}$
 (the home position shifted $20\,\mathrm{mm}$ in $x$).
-The current pose at $\vq_0$ is $\mathbf{T}_e$ with $\mathbf{R}_e$ (from \abbr{FK})
-and $\mathbf{p}_e=[0.116,\;0.545,\;0.395]^\top\,\mathrm{m}$.
+The current pose at $\vq_0$ is $\mathbf{T}_{EE}$ with $\mathbf{R}_{EE}$ (from \abbr{FK})
+and $\mathbf{p}_{EE}=[0.116,\;0.545,\;0.395]^\top\,\mathrm{m}$.
 
 Following \cref{eq:T_err_expanded}, the pose error matrix is:
 
 \begin{equation}
-\mathbf{T}_{\mathrm{err}} = \mathbf{T}_d^{-1}\mathbf{T}_e =
+\mathbf{T}_{\mathrm{err}} = \mathbf{T}_d^{-1}\mathbf{T}_{EE} =
 \begin{bmatrix}
-\mathbf{R}_d^\top\mathbf{R}_e &
-\mathbf{R}_d^\top(\mathbf{p}_e - \mathbf{p}_d) \\
+\mathbf{R}_d^\top\mathbf{R}_{EE} &
+\mathbf{R}_d^\top(\mathbf{p}_{EE} - \mathbf{p}_d) \\
 \mathbf{0}^\top & 1
 \end{bmatrix}
 =
 \begin{bmatrix}
-\mathbf{R}_e & [-0.020,\;0,\;0]^\top \\
+\mathbf{R}_{EE} & [-0.020,\;0,\;0]^\top \\
 \mathbf{0}^\top & 1
 \end{bmatrix}
 \end{equation}
@@ -408,7 +408,7 @@ Reading off the sub-errors from the two blocks:
 \paragraph{Translational error (upper-right column):}
 \begin{equation}
 \label{eq:panda_error}
-\mathbf{e}_p = \mathbf{R}_d^\top(\mathbf{p}_e - \mathbf{p}_d) =
+\mathbf{e}_p = \mathbf{R}_d^\top(\mathbf{p}_{EE} - \mathbf{p}_d) =
 \begin{bmatrix}
 0.116 - 0.136 \\ 0 \\ 0
 \end{bmatrix}
@@ -420,8 +420,8 @@ Reading off the sub-errors from the two blocks:
 \end{equation}
 
 \paragraph{Rotational error (upper-left block):}
-$\Delta\mathbf{R} = \mathbf{R}_d^\top\mathbf{R}_e = \mathbf{R}_e$.
-Since the robot is at the desired orientation ($\mathbf{R}_e\approx\mathbf{R}_d$),
+$\Delta\mathbf{R} = \mathbf{R}_d^\top\mathbf{R}_{EE} = \mathbf{R}_{EE}$.
+Since the robot is at the desired orientation ($\mathbf{R}_{EE}\approx\mathbf{R}_d$),
 $\Delta\mathbf{R}\approx\mathbf{I}$, giving
 $\phi = \arccos\!\bigl(\tfrac{\mathrm{tr}(\mathbf{I})-1}{2}\bigr) = 0$
 and $\mathbf{e}_R = \mathbf{0}$.
@@ -429,12 +429,12 @@ and $\mathbf{e}_R = \mathbf{0}$.
 \subsection*{Impedance Wrench}
 
 Assuming the robot is momentarily at rest
-($\dot{\mathbf{p}}_e=\mathbf{0}$, $\boldsymbol{\omega}_e=\mathbf{0}$),
+($\dot{\mathbf{p}}_{EE}=\mathbf{0}$, $\boldsymbol{\omega}_{EE}=\mathbf{0}$),
 the translational force and rotational moment from \cref{eq:imp_trans,eq:imp_rot} are:
 
 \begin{equation}
 \label{eq:F_panda}
-\mathbf{f} = \mathbf{K}_p\,\mathbf{e}_p - \mathbf{D}_p\,\dot{\mathbf{p}}_e
+\mathbf{f} = \mathbf{K}_p\,\mathbf{e}_p - \mathbf{D}_p\,\dot{\mathbf{p}}_{EE}
 =
 \begin{bmatrix}
 50   & 0  & 0    \\
@@ -560,7 +560,7 @@ J_{71}\cdot(-1)
 Step & Quantity & Symbol & Value \\
 \midrule
 1  & Joint configuration   & $\vq$          & $[0, -45, 0, -135, 0, 90, 45]^\top$ deg \\
-2  & EE position           & $\mathbf{p}_e$ & $[0.116,\;0.545,\;0.395]^\top\,\mathrm{m}$ \\
+2  & EE position           & $\mathbf{p}_{EE}$ & $[0.116,\;0.545,\;0.395]^\top\,\mathrm{m}$ \\
 3  & Jacobian ($6\times7$) & $\mathbf{J}$   & See \cref{eq:J_panda} \\
 4  & $\mathbf{T}_{\mathrm{err}}$ blocks & $\mathbf{e}_p,\mathbf{e}_R$ & $[-0.020,0,0]^\top$ m, $\mathbf{0}$ \\
 5  & Virtual inertia       & $\mathbf{M}$   & $\mI_6$ \\
@@ -586,8 +586,8 @@ Eigen::Map<const Eigen::Matrix<double,7,1>> dq(state.dq.data());
 
 // -- STEP 2: End-effector pose from libfranka ----------------------
 Eigen::Affine3d T(Eigen::Matrix4d::Map(state.O_T_EE.data()));
-Eigen::Vector3d p_e   = T.translation();    // [3x1] position
-Eigen::Matrix3d R_e   = T.rotation();       // [3x3] orientation
+Eigen::Vector3d p_EE  = T.translation();    // [3x1] position
+Eigen::Matrix3d R_EE  = T.rotation();       // [3x3] orientation
 
 // -- STEP 3: Jacobian J(q) from libfranka model --------------------
 std::array<double,42> jac_arr =
@@ -599,15 +599,15 @@ Eigen::Matrix<double,6,1> xdot = J * dq;
 
 // (pose error is now computed in STEP 5 via T_err; see below)
 
-// -- STEP 5: Pose error via T_err = T_d^{-1} * T_e ---------------
+// -- STEP 5: Pose error via T_err = T_d^{-1} * T_EE --------------
 Eigen::Matrix3d R_d = T_des.rotation();
 Eigen::Vector3d p_d = T_des.translation();
 
 // Translational error in desired frame
-Eigen::Vector3d e_p = R_d.transpose() * (p_e - p_d);
+Eigen::Vector3d e_p = R_d.transpose() * (p_EE - p_d);
 
-// Rotational error: Delta_R = R_d^T * R_e
-Eigen::Matrix3d Delta_R = R_d.transpose() * R_e;
+// Rotational error: Delta_R = R_d^T * R_EE
+Eigen::Matrix3d Delta_R = R_d.transpose() * R_EE;
 double trace = Delta_R.trace();
 double phi   = std::acos(std::clamp(0.5*(trace-1.0), -1.0, 1.0));
 Eigen::Vector3d e_R = Eigen::Vector3d::Zero();

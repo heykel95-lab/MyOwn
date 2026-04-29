@@ -38,14 +38,102 @@ Three frames are central to this work:
         the common normal to the neighbouring joint axes, and $y_i$
         completes the right-handed frame. These frames move with the
         robot and encode the relative geometry between consecutive links.
-  \item \textbf{End-effector frame} $\{e\}$: attached to the tool
+  \item \textbf{End-effector frame} $\{EE\}$: attached to the tool
         centre point. Its origin is the controlled point at the tool tip
         or flange, depending on the selected tool definition. The axes
-        describe the tool orientation: $z_e$ is taken as the tool approach
-        direction, while $x_e$ and $y_e$ span the tool plane and complete
-        a right-handed frame. The position and orientation of $\{e\}$
+        describe the tool orientation: $z_{EE}$ is taken as the tool approach
+        direction, while $x_{EE}$ and $y_{EE}$ span the tool plane and complete
+        a right-handed frame. The position and orientation of $\{EE\}$
         relative to $\{0\}$ constitute the controlled pose of the robot.
 \end{itemize}
+
+\begin{figure}[htb]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  >=Latex,
+  frameaxis/.style={-{Latex[length=2.4mm]}, thick},
+  baseaxis/.style={frameaxis, line width=1pt},
+  link/.style={line width=2.2pt, draw=gray!70!black, rounded corners=4pt},
+  joint/.style={circle, draw=black, fill=white, line width=0.8pt, minimum size=4.5mm},
+  paneltitle/.style={font=\bfseries\small},
+  note/.style={font=\scriptsize, align=center},
+  callout/.style={font=\scriptsize, align=left}
+]
+% Left panel: manipulator overview
+\node[paneltitle] at (2.0,3.2) {(a) Frames along the robot chain};
+\draw[fill=gray!15, draw=gray!60] (-0.7,-0.25) rectangle (4.3,-0.45);
+\node[note] at (3.4,-0.75) {mounting surface};
+
+\coordinate (O0) at (0,0);
+\coordinate (J1) at (0.95,1.05);
+\coordinate (J2) at (2.05,1.85);
+\coordinate (J3) at (3.15,1.35);
+\coordinate (TCP) at (3.75,1.35);
+
+\draw[link] (O0) -- (J1) -- (J2) -- (J3) -- (TCP);
+\node[joint] at (O0) {};
+\node[joint] at (J1) {};
+\node[joint] at (J2) {};
+\node[joint] at (J3) {};
+\fill (TCP) circle (1.6pt);
+
+% Base frame
+\draw[baseaxis, red!70!black] (O0) -- ++(0.9,0) node[below right] {$x_0$};
+\draw[baseaxis, blue!70!black] (O0) -- ++(-0.55,-0.32) node[left] {$y_0$};
+\draw[baseaxis, green!55!black] (O0) -- ++(0,0.95) node[left] {$z_0$};
+\node[callout, anchor=north west] at (-0.4,-0.05) {$\{0\}$ base frame\\origin at robot base\\reference point};
+
+% Joint frames
+\draw[frameaxis, red!70!black] (J1) -- ++(0.45,0.18) node[right] {$x_i$};
+\draw[frameaxis, green!55!black] (J1) -- ++(-0.08,0.55) node[above] {$z_i$};
+\draw[frameaxis, blue!70!black] (J1) -- ++(-0.34,-0.24) node[left] {$y_i$};
+\draw[-{Latex[length=2mm]}, gray!70!black] ($(J1)+(-0.25,0.28)$)
+  arc[start angle=140,end angle=415,radius=0.22];
+\node[note] at (1.25,0.55) {$\{i\}$\\joint frame};
+
+% End-effector frame and tool
+\draw[fill=gray!20, draw=gray!70] ($(J3)+(0.08,0.2)$) -- ($(TCP)+(0.15,0.2)$)
+  -- ($(TCP)+(0.15,-0.2)$) -- ($(J3)+(0.08,-0.2)$) -- cycle;
+\draw[frameaxis, green!55!black] (TCP) -- ++(0.75,0) node[right] {$z_{EE}$};
+\draw[frameaxis, red!70!black] (TCP) -- ++(0.35,0.52) node[above] {$x_{EE}$};
+\draw[frameaxis, blue!70!black] (TCP) -- ++(0.35,-0.42) node[below] {$y_{EE}$};
+\node[callout, anchor=west] at (3.95,2.25) {$\{EE\}$ end-effector frame\\origin at TCP or flange\\controlled pose relative to $\{0\}$};
+
+% Right panel: DH frame zoom
+\begin{scope}[xshift=5.2cm]
+  \node[paneltitle] at (2.1,3.2) {(b) DH joint-frame convention};
+  \draw[gray!45, line width=1pt] (0.6,-0.2) -- (0.6,2.6);
+  \draw[gray!45, line width=1pt] (3.0,-0.2) -- (3.0,2.6);
+  \node[note] at (0.6,2.85) {axis of\\joint $i-1$};
+  \node[note] at (3.0,2.85) {axis of\\joint $i$};
+
+  \coordinate (Oi) at (3.0,1.05);
+  \coordinate (Prev) at (0.6,1.05);
+  \draw[frameaxis, green!55!black] (Oi) -- ++(0,1.0) node[right] {$z_i$};
+  \draw[frameaxis, red!70!black] (Oi) -- (Prev) node[midway, below] {$x_i$};
+  \draw[blue!70!black, line width=1pt] (Oi) circle (0.14);
+  \fill[blue!70!black] (Oi) circle (0.035);
+  \node[blue!70!black, right=2mm of Oi] {$y_i$};
+  \node[joint] at (Oi) {};
+  \node[callout, anchor=west] at (3.35,1.25) {$z_i$: revolute joint axis\\$x_i$: common normal\\$y_i$: completes right hand rule};
+  \node[note] at (1.8,0.35) {origin of $\{i\}$ is placed on\\the joint reference point used\\by the kinematic model};
+\end{scope}
+\end{tikzpicture}%
+}
+\caption{Coordinate-frame conventions used in this thesis.
+Panel (a) shows how the base frame, intermediate joint frames, and the
+end-effector frame are attached to the robot. Panel (b) shows the
+Denavit--Hartenberg convention used for joint frames: the $z_i$-axis is the
+joint rotation axis, $x_i$ follows the common normal to neighbouring joint
+axes, and $y_i$ completes the right-handed frame. The sketch is schematic
+and not drawn to scale.}
+\label{fig:coordinate_frames}
+\end{figure}
+
+The schematic in \cref{fig:coordinate_frames} separates two ideas that are
+often confused: the physical attachment of a frame to a robot part, and the
+axis convention used to orient that frame.
 
 %% ─────────────────────────────────────────────────────────────
 \section{Coordinate Transformations}
@@ -279,41 +367,41 @@ general matrix inversion.
 The task of the controller is to bring the end-effector to a desired
 position \emph{and} orientation.
 Position is described by a vector
-$\mathbf{p}_e\in\mathbb{R}^3$:
+$\mathbf{p}_{EE}\in\mathbb{R}^3$:
 
 \begin{equation}
 \label{eq:pos_vec}
-\mathbf{p}_e =
+\mathbf{p}_{EE} =
 \begin{bmatrix} p_x \\ p_y \\ p_z \end{bmatrix}
 \in\mathbb{R}^3
 \end{equation}
 
 Orientation is described by a rotation matrix
-$\mathbf{R}_e\in SO(3)$.
+$\mathbf{R}_{EE}\in SO(3)$.
 Because both are already encoded in the homogeneous transformation
-$\mathbf{T}_e\in SE(3)$ provided by libfranka, the most natural and
-algebraically consistent choice is to take $\mathbf{T}_e$ itself as
+$\mathbf{T}_{EE}\in SE(3)$ provided by libfranka, the most natural and
+algebraically consistent choice is to take $\mathbf{T}_{EE}$ itself as
 the \textbf{single unified controlled variable}:
 
 \begin{equation}
 \label{eq:pose}
-\mathbf{T}_e =
+\mathbf{T}_{EE} =
 \begin{bmatrix}
-\mathbf{R}_e & \mathbf{p}_e \\
+\mathbf{R}_{EE} & \mathbf{p}_{EE} \\
 \mathbf{0}^\top & 1
 \end{bmatrix}
 \in SE(3)
 \end{equation}
 
 \begin{itemize}
-  \item $\mathbf{R}_e\in SO(3)$: end-effector orientation in the base
+  \item $\mathbf{R}_{EE}\in SO(3)$: end-effector orientation in the base
         frame.
         The rotation matrix is chosen over Euler angles because it
         avoids \emph{gimbal lock}---the loss of a degree of freedom when
         two rotation axes align---and is available directly from
         libfranka as the upper-left $3{\times}3$ block of
         \mbox{\texttt{state.O\_T\_EE}} without conversion.
-  \item $\mathbf{p}_e\in\mathbb{R}^3$: end-effector position in the
+  \item $\mathbf{p}_{EE}\in\mathbb{R}^3$: end-effector position in the
         base frame (upper-right column), in metres.
 \end{itemize}
 
@@ -329,11 +417,11 @@ The key question is: why does this not work for poses?
 The answer is that $SE(3)$ is not a vector space.
 Two transformation matrices cannot be meaningfully subtracted because
 the result is not a member of $SE(3)$:
-$\mathbf{T}_d - \mathbf{T}_e$ is in general just an arbitrary $4\times4$
+$\mathbf{T}_d - \mathbf{T}_{EE}$ is in general just an arbitrary $4\times4$
 matrix with no geometric meaning---its rotation block would not belong
 to $SO(3)$, so it would not represent any rigid-body pose at all.
 
-The correct notion of ``how far is $\mathbf{T}_e$ from $\mathbf{T}_d$?''
+The correct notion of ``how far is $\mathbf{T}_{EE}$ from $\mathbf{T}_d$?''
 in $SE(3)$ is the \textbf{relative transformation}: the unique element
 of $SE(3)$ that maps one pose into the other.
 
@@ -342,30 +430,30 @@ of $SE(3)$ that maps one pose into the other.
 Recall from \cref{eq:homogeneous} that if we chain two transformations,
 the result describes a composed motion.
 In particular, consider what happens when we compose $\mathbf{T}_d^{-1}$
-(the inverse of the desired pose) with $\mathbf{T}_e$ (the current pose):
+(the inverse of the desired pose) with $\mathbf{T}_{EE}$ (the current pose):
 
 \begin{equation}
 \label{eq:T_error}
-\mathbf{T}_{\mathrm{err}} = \mathbf{T}_d^{-1}\,\mathbf{T}_e \in SE(3)
+\mathbf{T}_{\mathrm{err}} = \mathbf{T}_d^{-1}\,\mathbf{T}_{EE} \in SE(3)
 \end{equation}
 
 To understand what this means geometrically, read it as a chain of frames:
 
 \begin{enumerate}
   \item Start in the \textbf{base frame} $\{0\}$.
-  \item Apply $\mathbf{T}_e$: move to the \textbf{current
-        end-effector frame} $\{e\}$.
+  \item Apply $\mathbf{T}_{EE}$: move to the \textbf{current
+        end-effector frame} $\{EE\}$.
   \item Apply $\mathbf{T}_d^{-1}$: move from the current end-effector
         frame \emph{back to the desired frame} $\{d\}$.
 \end{enumerate}
 
-The product $\mathbf{T}_d^{-1}\mathbf{T}_e$ therefore describes the
-pose of $\{e\}$ as seen from $\{d\}$---it is the transformation you
+The product $\mathbf{T}_d^{-1}\mathbf{T}_{EE}$ therefore describes the
+pose of $\{EE\}$ as seen from $\{d\}$---it is the transformation you
 would need to apply \emph{inside the desired frame} to go from the
 desired pose to the actual pose.
 
 \paragraph{Why this is zero at perfect tracking.}
-When $\mathbf{T}_e = \mathbf{T}_d$:
+When $\mathbf{T}_{EE} = \mathbf{T}_d$:
 
 \begin{equation}
 \mathbf{T}_{\mathrm{err}}
@@ -374,14 +462,14 @@ When $\mathbf{T}_e = \mathbf{T}_d$:
 \end{equation}
 
 The $4\times4$ identity matrix represents ``no motion from $\{d\}$ to
-$\{e\}$'', i.e.\ the end-effector is exactly at the desired pose.
+$\{EE\}$'', i.e.\ the end-effector is exactly at the desired pose.
 This is the correct generalisation of ``error $= 0$'' for poses in $SE(3)$.
 
 \subsubsection*{Step 3 --- Full algebraic expansion}
 
 To compute $\mathbf{T}_{\mathrm{err}}$ explicitly, substitute the
 inverse formula from \cref{eq:SE3_inv} and the definition of
-$\mathbf{T}_e$:
+$\mathbf{T}_{EE}$:
 
 \begin{equation}
 \mathbf{T}_d^{-1} =
@@ -390,9 +478,9 @@ $\mathbf{T}_e$:
 \mathbf{0}^\top & 1
 \end{bmatrix},
 \qquad
-\mathbf{T}_e =
+\mathbf{T}_{EE} =
 \begin{bmatrix}
-\mathbf{R}_e & \mathbf{p}_e \\
+\mathbf{R}_{EE} & \mathbf{p}_{EE} \\
 \mathbf{0}^\top & 1
 \end{bmatrix}
 \end{equation}
@@ -401,41 +489,41 @@ Carrying out the $4\times4$ matrix multiplication block by block:
 
 \begin{align}
 \mathbf{T}_{\mathrm{err}}
-&= \mathbf{T}_d^{-1}\,\mathbf{T}_e \notag\\[6pt]
+&= \mathbf{T}_d^{-1}\,\mathbf{T}_{EE} \notag\\[6pt]
 &=
 \begin{bmatrix}
 \mathbf{R}_d^\top & -\mathbf{R}_d^\top\mathbf{p}_d \\
 \mathbf{0}^\top & 1
 \end{bmatrix}
 \begin{bmatrix}
-\mathbf{R}_e & \mathbf{p}_e \\
+\mathbf{R}_{EE} & \mathbf{p}_{EE} \\
 \mathbf{0}^\top & 1
 \end{bmatrix}
 \notag\\[8pt]
 &=
 \begin{bmatrix}
-\mathbf{R}_d^\top\mathbf{R}_e + (-\mathbf{R}_d^\top\mathbf{p}_d)\,\mathbf{0}^\top
+\mathbf{R}_d^\top\mathbf{R}_{EE} + (-\mathbf{R}_d^\top\mathbf{p}_d)\,\mathbf{0}^\top
 &\quad
-\mathbf{R}_d^\top\mathbf{p}_e + (-\mathbf{R}_d^\top\mathbf{p}_d)\cdot 1 \\[4pt]
-\mathbf{0}^\top\mathbf{R}_e + 1\cdot\mathbf{0}^\top
+\mathbf{R}_d^\top\mathbf{p}_{EE} + (-\mathbf{R}_d^\top\mathbf{p}_d)\cdot 1 \\[4pt]
+\mathbf{0}^\top\mathbf{R}_{EE} + 1\cdot\mathbf{0}^\top
 &\quad
-\mathbf{0}^\top\mathbf{p}_e + 1\cdot 1
+\mathbf{0}^\top\mathbf{p}_{EE} + 1\cdot 1
 \end{bmatrix}
 \notag\\[8pt]
 \label{eq:T_err_expanded}
 &=
 \begin{bmatrix}
-\mathbf{R}_d^\top\mathbf{R}_e &
-\mathbf{R}_d^\top(\mathbf{p}_e - \mathbf{p}_d) \\[4pt]
+\mathbf{R}_d^\top\mathbf{R}_{EE} &
+\mathbf{R}_d^\top(\mathbf{p}_{EE} - \mathbf{p}_d) \\[4pt]
 \mathbf{0}^\top & 1
 \end{bmatrix}
 \end{align}
 
 Note that $(-\mathbf{R}_d^\top\mathbf{p}_d)\cdot\mathbf{0}^\top = \mathbf{0}$
-(a matrix times the zero row vector from the lower row of $\mathbf{T}_e$
-is zero), so the rotation block is simply $\mathbf{R}_d^\top\mathbf{R}_e$.
-The translational block collects as $\mathbf{R}_d^\top\mathbf{p}_e
-- \mathbf{R}_d^\top\mathbf{p}_d = \mathbf{R}_d^\top(\mathbf{p}_e-\mathbf{p}_d)$.
+(a matrix times the zero row vector from the lower row of $\mathbf{T}_{EE}$
+is zero), so the rotation block is simply $\mathbf{R}_d^\top\mathbf{R}_{EE}$.
+The translational block collects as $\mathbf{R}_d^\top\mathbf{p}_{EE}
+- \mathbf{R}_d^\top\mathbf{p}_d = \mathbf{R}_d^\top(\mathbf{p}_{EE}-\mathbf{p}_d)$.
 
 \subsubsection*{Step 4 --- Reading off the two sub-errors}
 
@@ -450,11 +538,11 @@ The upper-right $3\times1$ block of $\mathbf{T}_{\mathrm{err}}$ is:
 \begin{equation}
 \label{eq:pos_error}
 \mathbf{e}_p
-= \mathbf{R}_d^\top(\mathbf{p}_e - \mathbf{p}_d)
+= \mathbf{R}_d^\top(\mathbf{p}_{EE} - \mathbf{p}_d)
 \in\mathbb{R}^3
 \end{equation}
 
-This is the position error $(\mathbf{p}_e-\mathbf{p}_d)$ rotated
+This is the position error $(\mathbf{p}_{EE}-\mathbf{p}_d)$ rotated
 into the \textbf{desired frame} by $\mathbf{R}_d^\top$.
 Expressing the error in the desired frame removes the
 orientation-dependent coupling: the three components of $\mathbf{e}_p$
@@ -466,12 +554,12 @@ The upper-left $3\times3$ block of $\mathbf{T}_{\mathrm{err}}$ is:
 
 \begin{equation}
 \label{eq:R_error}
-\Delta\mathbf{R} = \mathbf{R}_d^\top\,\mathbf{R}_e \in SO(3)
+\Delta\mathbf{R} = \mathbf{R}_d^\top\,\mathbf{R}_{EE} \in SO(3)
 \end{equation}
 
 $\Delta\mathbf{R}$ is the rotation matrix that takes the desired frame
 into the current frame.
-When $\mathbf{R}_e = \mathbf{R}_d$, then
+When $\mathbf{R}_{EE} = \mathbf{R}_d$, then
 $\Delta\mathbf{R}=\mathbf{R}_d^\top\mathbf{R}_d=\mathbf{I}$ (no
 orientation error), confirming the formula is consistent.
 
@@ -603,7 +691,7 @@ The inverse $\mathbf{T}_d^{-1}$ is free in $SE(3)$: one transpose and
 one matrix-vector product (see \cref{eq:SE3_inv}).
 Both $\mathbf{e}_p$ and $\mathbf{e}_R$ are then \emph{read off} from
 the blocks of the result---no additional computation is needed.
-libfranka provides $\mathbf{T}_e$ directly as
+libfranka provides $\mathbf{T}_{EE}$ directly as
 \texttt{state.O\_T\_EE} at every 1\,ms control cycle.
 A fully numerical worked example of this computation for the
 Franka Emika Panda at the home configuration is given in
@@ -616,7 +704,7 @@ Appendix~\ref{app:panda}.
 %% ─────────────────────────────────────────────────────────────
 
 \textbf{Forward kinematics} computes the end-effector pose
-$\mathbf{T}_e=\mathbf{T}_0^n$ from the joint angles by chaining the
+$\mathbf{T}_{EE}=\mathbf{T}_0^n$ from the joint angles by chaining the
 individual link transformations:
 
 \begin{equation}
@@ -636,11 +724,11 @@ individual link transformations:
         $\theta_i=q_i$, $d_i$, $a_i$, $\alpha_i$ \cite{Denavit1955}.
   \item $\mathbf{T}_{0}^{n}(\vq)$: the resulting transformation.
         Its upper-left $3\times3$ block is the end-effector
-        orientation $\mathbf{R}_e(\vq)$; its upper-right $3\times1$
-        column is the end-effector position $\mathbf{p}_e(\vq)$.
+        orientation $\mathbf{R}_{EE}(\vq)$; its upper-right $3\times1$
+        column is the end-effector position $\mathbf{p}_{EE}(\vq)$.
 \end{itemize}
 
-The mapping $\mathbf{T}_e=f(\vq)$ is \emph{nonlinear} because each
+The mapping $\mathbf{T}_{EE}=f(\vq)$ is \emph{nonlinear} because each
 \abbr{DH} transformation contains trigonometric functions of the joint angle.
 A fully numerical evaluation of forward kinematics for the Panda at the
 home configuration is worked through step by step in
@@ -664,9 +752,9 @@ Differentiating $\vx=f(\vq)$ with respect to time yields:
   \item $\dot{\mathbf{x}}\in\mathbb{R}^6$: the \textbf{Cartesian
         velocity}.
         Upper three components: linear velocity
-        $\dot{\mathbf{p}}_e\in\mathbb{R}^3$.
+        $\dot{\mathbf{p}}_{EE}\in\mathbb{R}^3$.
         Lower three components: angular velocity
-        $\boldsymbol{\omega}_e\in\mathbb{R}^3$.
+        $\boldsymbol{\omega}_{EE}\in\mathbb{R}^3$.
   \item $\dot{\mathbf{q}}\in\mathbb{R}^n$: the \textbf{joint velocity
         vector}; each $\dot{q}_i$ in rad/s.
   \item $\mathbf{J}(\mathbf{q})\in\mathbb{R}^{6\times n}$: the
@@ -697,7 +785,7 @@ For revolute joint $k$:
 \label{eq:jacobian_col}
 \mathbf{J}_k =
 \begin{bmatrix}
-\mathbf{z}_k\times(\mathbf{p}_e-\mathbf{p}_k) \\[4pt]
+\mathbf{z}_k\times(\mathbf{p}_{EE}-\mathbf{p}_k) \\[4pt]
 \mathbf{z}_k
 \end{bmatrix}
 \in\mathbb{R}^6
@@ -709,10 +797,10 @@ For revolute joint $k$:
         $\mathbf{R}_0^k$).
   \item $\mathbf{p}_k\in\mathbb{R}^3$: position of joint frame $\{k\}$
         in the base frame (upper-right column of $\mathbf{T}_0^k$).
-  \item $\mathbf{p}_e-\mathbf{p}_k$: lever arm from joint $k$ to the
+  \item $\mathbf{p}_{EE}-\mathbf{p}_k$: lever arm from joint $k$ to the
         end-effector.
   \item $\times$: cross product in $\mathbb{R}^3$.
-  \item \textbf{Upper block} $\mathbf{z}_k\times(\mathbf{p}_e-\mathbf{p}_k)$:
+  \item \textbf{Upper block} $\mathbf{z}_k\times(\mathbf{p}_{EE}-\mathbf{p}_k)$:
         linear velocity that joint $k$ induces at the end-effector
         (rotation-axis crossed with lever arm).
   \item \textbf{Lower block} $\mathbf{z}_k$:
@@ -792,7 +880,7 @@ The \textbf{translational impedance force} is:
 \begin{equation}
 \label{eq:imp_trans}
 \mathbf{f} = \mathbf{K}_p\,\mathbf{e}_p
-           - \mathbf{D}_p\,\dot{\mathbf{p}}_e
+           - \mathbf{D}_p\,\dot{\mathbf{p}}_{EE}
 \in\mathbb{R}^3
 \end{equation}
 
@@ -801,7 +889,7 @@ The \textbf{rotational impedance moment} is:
 \begin{equation}
 \label{eq:imp_rot}
 \mathbf{m} = \mathbf{K}_R\,\mathbf{e}_R
-           - \mathbf{D}_R\,\boldsymbol{\omega}_e
+           - \mathbf{D}_R\,\boldsymbol{\omega}_{EE}
 \in\mathbb{R}^3
 \end{equation}
 
@@ -815,8 +903,8 @@ The combined \textbf{Cartesian impedance wrench} is:
 \end{bmatrix}
 =
 \begin{bmatrix}
-\mathbf{K}_p\,\mathbf{e}_p - \mathbf{D}_p\,\dot{\mathbf{p}}_e \\[4pt]
-\mathbf{K}_R\,\mathbf{e}_R - \mathbf{D}_R\,\boldsymbol{\omega}_e
+\mathbf{K}_p\,\mathbf{e}_p - \mathbf{D}_p\,\dot{\mathbf{p}}_{EE} \\[4pt]
+\mathbf{K}_R\,\mathbf{e}_R - \mathbf{D}_R\,\boldsymbol{\omega}_{EE}
 \end{bmatrix}
 \in\mathbb{R}^6
 \end{equation}
@@ -989,10 +1077,10 @@ The translational tracking law becomes
 \mathbf{f}
 =
 \mathbf{K}_{p,\mathrm{base}}
-(\mathbf{p}_d-\mathbf{p}_e)
+(\mathbf{p}_d-\mathbf{p}_{EE})
 +
 \mathbf{D}_{p,\mathrm{base}}
-(\dot{\mathbf{p}}_d-\dot{\mathbf{p}}_e).
+(\dot{\mathbf{p}}_d-\dot{\mathbf{p}}_{EE}).
 \end{equation}
 
 For a fixed point, \(\dot{\mathbf{p}}_d=\mathbf{0}\), and therefore
@@ -1002,18 +1090,18 @@ For a fixed point, \(\dot{\mathbf{p}}_d=\mathbf{0}\), and therefore
 \mathbf{f}
 =
 \mathbf{K}_{p,\mathrm{base}}
-(\mathbf{p}_d-\mathbf{p}_e)
+(\mathbf{p}_d-\mathbf{p}_{EE})
 -
 \mathbf{D}_{p,\mathrm{base}}
-\dot{\mathbf{p}}_e.
+\dot{\mathbf{p}}_{EE}.
 \end{equation}
 
 Here:
 \begin{itemize}
   \item \(\mathbf{f}\in\mathbb{R}^3\): commanded translational force.
   \item \(\mathbf{p}_d\in\mathbb{R}^3\): desired fixed point.
-  \item \(\mathbf{p}_e\in\mathbb{R}^3\): current end-effector position.
-  \item \(\dot{\mathbf{p}}_e\in\mathbb{R}^3\): current end-effector velocity.
+  \item \(\mathbf{p}_{EE}\in\mathbb{R}^3\): current end-effector position.
+  \item \(\dot{\mathbf{p}}_{EE}\in\mathbb{R}^3\): current end-effector velocity.
   \item \(\mathbf{K}_{p,\mathrm{base}}\): full stiffness matrix in the base frame.
   \item \(\mathbf{D}_{p,\mathrm{base}}\): full damping matrix in the base frame.
 \end{itemize}
@@ -1069,7 +1157,7 @@ For example, if
 
 \begin{equation}
 \label{eq:tracking_error_numeric}
-\mathbf{p}_d-\mathbf{p}_e
+\mathbf{p}_d-\mathbf{p}_{EE}
 =
 \begin{bmatrix}
 0.01\\0\\0
@@ -1084,7 +1172,7 @@ and the end-effector is momentarily at rest, then
 \mathbf{f}
 =
 \mathbf{K}_{p,\mathrm{base}}
-(\mathbf{p}_d-\mathbf{p}_e)
+(\mathbf{p}_d-\mathbf{p}_{EE})
 \approx
 \begin{bmatrix}
 6.05\\3.59\\-2.06
@@ -1112,7 +1200,7 @@ The signed distance from the end-effector to the wall is:
 
 \begin{equation}
 \label{eq:wall_dist}
-d = \hat{\mathbf{n}}^\top(\mathbf{p}_e-\mathbf{p}_0)\in\mathbb{R}
+d = \hat{\mathbf{n}}^\top(\mathbf{p}_{EE}-\mathbf{p}_0)\in\mathbb{R}
 \end{equation}
 
 The desired position $\mathbf{p}_d$ is chosen so that $d=0$: the
@@ -1333,14 +1421,14 @@ Substituting \cref{eq:impedance} into \cref{eq:control_law} gives the
 \boxed{
 \bm{\tau} = \mathbf{J}^\top(\mathbf{q})
 \begin{bmatrix}
-\mathbf{K}_p\,\mathbf{e}_p - \mathbf{D}_p\,\dot{\mathbf{p}}_e \\[4pt]
-\mathbf{K}_R\,\mathbf{e}_R - \mathbf{D}_R\,\boldsymbol{\omega}_e
+\mathbf{K}_p\,\mathbf{e}_p - \mathbf{D}_p\,\dot{\mathbf{p}}_{EE} \\[4pt]
+\mathbf{K}_R\,\mathbf{e}_R - \mathbf{D}_R\,\boldsymbol{\omega}_{EE}
 \end{bmatrix}
 }
 \end{equation}
 
 This boxed equation is the computational core of the controller:
-at every 1\,ms cycle, the pose error $\mathbf{T}_d^{-1}\mathbf{T}_e$
+at every 1\,ms cycle, the pose error $\mathbf{T}_d^{-1}\mathbf{T}_{EE}$
 is formed, $\mathbf{e}_p$ and $\mathbf{e}_R$ are extracted, the
 wrench is evaluated, and $\vtau$ is sent to the actuators.
 Appendix~\ref{app:panda} traces every step numerically, including

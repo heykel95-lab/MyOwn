@@ -74,7 +74,7 @@ Eigen::Matrix<double,7,1> tau = J.transpose() * F;
 tau += tau_g + tau_c;
 
 // Log wall-specific quantities to CSV
-double d_wall = n_hat.dot(p_e - p0) * 1000.0;  // [mm]
+double d_wall = n_hat.dot(p_EE - p0) * 1000.0;  // [mm]
 double phi_tilt = std::sqrt(e_R(0)*e_R(0)+e_R(1)*e_R(1)) * 180.0/M_PI;
 double phi_spin = std::abs(e_R(2)) * 180.0/M_PI;
 csv << time << "," << d_wall << "," << phi_tilt << "," << phi_spin;

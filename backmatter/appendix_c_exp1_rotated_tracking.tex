@@ -70,12 +70,12 @@ Eigen::Matrix3d Dp_base =
     W_local_to_base * Dp_local * W_local_to_base.transpose();
 
 // Inside the 1 ms torque callback:
-// p_e: current end-effector position
+// p_EE: current end-effector position
 // pdot: current end-effector translational velocity
 // J: 6x7 geometric Jacobian
 // tau_g, tau_c: gravity and Coriolis compensation
 
-Eigen::Vector3d e_p = p_des - p_e;
+Eigen::Vector3d e_p = p_des - p_EE;
 Eigen::Vector3d f = Kp_base * e_p - Dp_base * pdot;
 
 Eigen::Matrix<double,6,1> F;

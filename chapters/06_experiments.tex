@@ -47,14 +47,14 @@ system as a candidate Lyapunov function:
 
 \begin{equation}
 \label{eq:lyapunov}
-V(\mathbf{e}_p, \dot{\mathbf{p}}_e) =
+V(\mathbf{e}_p, \dot{\mathbf{p}}_{EE}) =
 \underbrace{\tfrac{1}{2}\,\mathbf{e}_p^\top\,\mathbf{K}_p\,\mathbf{e}_p}_{\text{potential energy}}
 +
-\underbrace{\tfrac{1}{2}\,\dot{\mathbf{p}}_e^\top\,\mathbf{M}_p\,\dot{\mathbf{p}}_e}_{\text{kinetic energy}}
+\underbrace{\tfrac{1}{2}\,\dot{\mathbf{p}}_{EE}^\top\,\mathbf{M}_p\,\dot{\mathbf{p}}_{EE}}_{\text{kinetic energy}}
 > 0
 \end{equation}
 
-$V > 0$ for all $(\mathbf{e}_p, \dot{\mathbf{p}}_e) \neq (\mathbf{0},\mathbf{0})$
+$V > 0$ for all $(\mathbf{e}_p, \dot{\mathbf{p}}_{EE}) \neq (\mathbf{0},\mathbf{0})$
 because both $\mathbf{K}_p$ and $\mathbf{M}_p$ are \abbr{SPD}.
 This is precisely why \abbr{SPD} is required for both matrices: positive definiteness
 of $\mathbf{K}_p$ ensures the potential energy is zero only at the desired
@@ -67,25 +67,25 @@ translational impedance law \cref{eq:imp_trans}:
 \begin{align}
 \dot{V}
 &= \mathbf{e}_p^\top\,\mathbf{K}_p\,\dot{\mathbf{e}}_p
- + \dot{\mathbf{p}}_e^\top\,\mathbf{M}_p\,\ddot{\mathbf{p}}_e
+ + \dot{\mathbf{p}}_{EE}^\top\,\mathbf{M}_p\,\ddot{\mathbf{p}}_{EE}
 \notag\\
-&= -\,\mathbf{e}_p^\top\,\mathbf{K}_p\,\dot{\mathbf{p}}_e
- + \dot{\mathbf{p}}_e^\top\bigl(\mathbf{K}_p\,\mathbf{e}_p
-   - \mathbf{D}_p\,\dot{\mathbf{p}}_e\bigr)
+&= -\,\mathbf{e}_p^\top\,\mathbf{K}_p\,\dot{\mathbf{p}}_{EE}
+ + \dot{\mathbf{p}}_{EE}^\top\bigl(\mathbf{K}_p\,\mathbf{e}_p
+   - \mathbf{D}_p\,\dot{\mathbf{p}}_{EE}\bigr)
 \notag\\
 \label{eq:Vdot}
-&= -\,\dot{\mathbf{p}}_e^\top\,\mathbf{D}_p\,\dot{\mathbf{p}}_e
+&= -\,\dot{\mathbf{p}}_{EE}^\top\,\mathbf{D}_p\,\dot{\mathbf{p}}_{EE}
 \;\leq\; 0
 \end{align}
 
-where $\dot{\mathbf{e}}_p = -\dot{\mathbf{p}}_e$ (error decreases when
+where $\dot{\mathbf{e}}_p = -\dot{\mathbf{p}}_{EE}$ (error decreases when
 the end-effector moves towards $\mathbf{p}_d$).
 The spring terms cancel exactly, leaving only the damping dissipation.
 
 \paragraph{Why $\mathbf{D}_p$ must be SPD.}
 $\dot{V} \leq 0$ requires the quadratic form
-$\dot{\mathbf{p}}_e^\top\mathbf{D}_p\dot{\mathbf{p}}_e \geq 0$.
-Strict inequality ($\dot{V} < 0$ for $\dot{\mathbf{p}}_e \neq \mathbf{0}$)
+$\dot{\mathbf{p}}_{EE}^\top\mathbf{D}_p\dot{\mathbf{p}}_{EE} \geq 0$.
+Strict inequality ($\dot{V} < 0$ for $\dot{\mathbf{p}}_{EE} \neq \mathbf{0}$)
 requires $\mathbf{D}_p$ to be positive definite.
 This is the formal reason why a damping matrix with negative or zero
 eigenvalues would destabilise the controller: it would allow $\dot{V}>0$
@@ -94,14 +94,14 @@ direction.
 
 \paragraph{Conclusion.}
 Since $V > 0$ and $\dot{V} \leq 0$, Lyapunov's theorem guarantees that
-the equilibrium $(\mathbf{e}_p, \dot{\mathbf{p}}_e) = (\mathbf{0},\mathbf{0})$ is
+the equilibrium $(\mathbf{e}_p, \dot{\mathbf{p}}_{EE}) = (\mathbf{0},\mathbf{0})$ is
 \textbf{stable}.
 Asymptotic stability (convergence to zero) follows from LaSalle's
 invariance principle: the only trajectory along which $\dot{V} = 0$
-permanently (i.e.\ $\dot{\mathbf{p}}_e \equiv \mathbf{0}$) is the
+permanently (i.e.\ $\dot{\mathbf{p}}_{EE} \equiv \mathbf{0}$) is the
 equilibrium itself.
 The same argument applies to the rotational subsystem with $\mathbf{e}_R$,
-$\mathbf{K}_R$, $\boldsymbol{\omega}_e$, $\mathbf{D}_R$.
+$\mathbf{K}_R$, $\boldsymbol{\omega}_{EE}$, $\mathbf{D}_R$.
 
 \begin{remark}
 This proof holds for \emph{any} SPD $\mathbf{K}_p$ and $\mathbf{D}_p$,
@@ -162,7 +162,7 @@ confirming the stability proof analytically.
 \centering
 \includegraphics[width=\textwidth]{lyapunov.pdf}
 \caption{Stability verification: Lyapunov function $V(t)$ (left) and its
-         time derivative $\dot{V}(t)=-\mathbf{D}_p\dot{p}_e^2\leq0$ (right)
+         time derivative $\dot{V}(t)=-\mathbf{D}_p\dot{p}_{EE}^2\leq0$ (right)
          for a 50\,mm step error with $K=200\,\mathrm{N/m}$.
          The monotone decrease of $V$ and the non-positive $\dot{V}$ confirm
          asymptotic stability.}
@@ -210,7 +210,7 @@ The initial position is offset by \(10\,\mathrm{mm}\) in the base \(x\)-directio
 
 \begin{equation}
 \label{eq:exp1_initial}
-\mathbf{p}_e(0) =
+\mathbf{p}_{EE}(0) =
 \begin{bmatrix}
 0.49\\0.00\\0.40
 \end{bmatrix}
@@ -223,7 +223,7 @@ Thus, the initial position error is
 \label{eq:exp1_error}
 \mathbf{e}_p(0)
 =
-\mathbf{p}_d-\mathbf{p}_e(0)
+\mathbf{p}_d-\mathbf{p}_{EE}(0)
 =
 \begin{bmatrix}
 0.01\\0\\0
@@ -319,7 +319,7 @@ rotated spring field around the fixed target point.
         \(\mathbf{D}_{p,\mathrm{base}}\) using
         \cref{eq:exp1_KD_base}.
   \item Activate the impedance controller and record
-        \(\mathbf{p}_e(t)\), \(\dot{\mathbf{p}}_e(t)\),
+        \(\mathbf{p}_{EE}(t)\), \(\dot{\mathbf{p}}_{EE}(t)\),
         \(\mathbf{f}(t)\), and \(\boldsymbol{\tau}(t)\) at 1\,kHz.
   \item Compare the measured initial force direction with the predicted
         vector in \cref{eq:exp1_initial_force}.
@@ -423,11 +423,11 @@ for each trial.
   \item \textbf{Normal displacement $d(t)$} from \cref{eq:wall_dist}:
         should remain near zero during in-plane trials and return to zero
         after a normal push.
-  \item \textbf{In-plane position} $\mathbf{p}_e \cdot \hat{\mathbf{t}}_1$
-        and $\mathbf{p}_e \cdot \hat{\mathbf{t}}_2$ vs.\ time:
+  \item \textbf{In-plane position} $\mathbf{p}_{EE} \cdot \hat{\mathbf{t}}_1$
+        and $\mathbf{p}_{EE} \cdot \hat{\mathbf{t}}_2$ vs.\ time:
         should show free motion during in-plane trials.
   \item \textbf{Tilt angles} about $\hat{\mathbf{t}}_1$ and $\hat{\mathbf{t}}_2$
-        extracted from $\mathbf{R}_e$ vs.\ time: should converge freely to
+        extracted from $\mathbf{R}_{EE}$ vs.\ time: should converge freely to
         the angle that brings the tool face parallel to the surface.
   \item \textbf{Spin angle} about $\hat{\mathbf{n}}$ vs.\ time: should
         remain near zero ($< 2^{\circ}$) in all trials.

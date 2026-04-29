@@ -46,7 +46,7 @@ returns joint torques before the 1\,ms cycle deadline.
                minimum height=0.9cm, align=center, font=\small},
   arr/.style={-{Latex}, thick}
 ]
-  \node[box, fill=blue!10]  (state) at (0, 0.0) {Robot State\\$\vq,\dot{\vq},\mathbf{T}_e$};
+  \node[box, fill=blue!10]  (state) at (0, 0.0) {Robot State\\$\vq,\dot{\vq},\mathbf{T}_{EE}$};
   \node[box, fill=green!10] (model) at (0,-1.7) {Model Interface\\$\mathbf{J},\vtau_g,\vtau_c$};
   \node[box, fill=orange!15](ctrl)  at (0,-3.4) {Impedance Controller\\$\mathbf{F}=\mathbf{K}\mathbf{e}-\mathbf{D}\dot{\mathbf{x}}$};
   \node[box, fill=red!10]   (torq)  at (0,-5.1) {Torque Command\\$\vtau=\mathbf{J}^{\top}\mathbf{F}+\vtau_g+\vtau_c$};
@@ -65,7 +65,7 @@ returns joint torques before the 1\,ms cycle deadline.
 At the beginning of each callback, the current joint configuration and joint
 velocities are mapped from \texttt{franka::RobotState} to Eigen vectors. The
 end-effector pose is read from \texttt{state.O\_T\_EE}, which provides the
-homogeneous transformation $\mathbf{T}_e$. The Jacobian is obtained from
+homogeneous transformation $\mathbf{T}_{EE}$. The Jacobian is obtained from
 \texttt{model.zeroJacobian(franka::Frame::kEndEffector, state)} and is used
 both for Cartesian velocity computation and for the torque mapping.
 
@@ -94,7 +94,7 @@ real-time callback.
 The implemented control loop uses the following sequence:
 
 \begin{enumerate}
-  \item Read $\vq$, $\dot{\vq}$, and $\mathbf{T}_e$ from the robot state.
+  \item Read $\vq$, $\dot{\vq}$, and $\mathbf{T}_{EE}$ from the robot state.
   \item Compute the geometric Jacobian $\mathbf{J}(\vq)$.
   \item Compute the Cartesian velocity
         $\dot{\mathbf{x}} = \mathbf{J}\dot{\vq}$.
@@ -124,9 +124,9 @@ robot.control([&](const franka::RobotState& state,
   Eigen::Vector3d pdot = xdot.head<3>();
 
   Eigen::Map<const Eigen::Matrix<double, 4, 4>> T_EE(state.O_T_EE.data());
-  Eigen::Vector3d p_e = T_EE.block<3, 1>(0, 3);
+  Eigen::Vector3d p_EE = T_EE.block<3, 1>(0, 3);
 
-  Eigen::Vector3d e_p = p_des - p_e;
+  Eigen::Vector3d e_p = p_des - p_EE;
   Eigen::Vector3d f = Kp_base * e_p - Dp_base * pdot;
 
   Eigen::Matrix<double, 6, 1> F;
