@@ -1,5 +1,16 @@
 $MAIN = "Professor_Draft"
 $PDF = "$MAIN.pdf"
+$ROOT = Split-Path -Parent $MyInvocation.MyCommand.Path
+$CLEANUP_SCRIPT = Join-Path $ROOT "cleanup_build.ps1"
+
+function Invoke-BuildCleanup {
+  if (Test-Path -LiteralPath $CLEANUP_SCRIPT) {
+    & $CLEANUP_SCRIPT
+    if (-not $?) {
+      exit 1
+    }
+  }
+}
 
 function Close-PdfViewerForFile {
   param([string]$FileName)
@@ -85,6 +96,7 @@ function Open-PdfInVSCode {
 }
 
 Close-PdfViewerForFile $PDF
+Invoke-BuildCleanup
 
 $buildMain = $MAIN
 if (Test-FileLocked $PDF) {
@@ -118,4 +130,5 @@ pdflatex "-interaction=nonstopmode" "-halt-on-error" "-jobname=$buildMain" "$MAI
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 $builtPdf = (Resolve-Path "$buildMain.pdf").ProviderPath
+Invoke-BuildCleanup
 Open-PdfInVSCode $builtPdf

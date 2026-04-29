@@ -16,13 +16,13 @@ uses the Panda model interface for kinematic and dynamic quantities and sends
 torque commands through the \texttt{robot.control(...)} callback. The code is
 therefore organised around the real-time callback rather than around a large
 application architecture. Each experiment uses the same control structure and
-changes only the desired pose, stiffness matrix, damping matrix, and logging
+changes only the desired position and orientation, stiffness matrix, damping matrix, and logging
 signals.
 
 The implementation follows four requirements:
 
 \begin{itemize}
-  \item The measured end-effector pose, joint velocities, Jacobian, gravity,
+  \item The measured end-effector position and orientation, joint velocities, Jacobian, gravity,
         and Coriolis terms are read every control cycle.
   \item The Cartesian impedance law is evaluated in the same frame as the
         selected stiffness and damping matrices.
@@ -36,7 +36,7 @@ The implementation follows four requirements:
 
 \cref{fig:sw_arch} shows the data flow used in the implementation. The
 \abbr{FCI} provides the measured robot state and model quantities. The
-controller computes the pose error, evaluates the Cartesian impedance law, and
+controller computes the position-and-orientation error, evaluates the Cartesian impedance law, and
 returns joint torques before the 1\,ms cycle deadline.
 
 \begin{figure}[htb]
@@ -64,7 +64,7 @@ returns joint torques before the 1\,ms cycle deadline.
 
 At the beginning of each callback, the current joint configuration and joint
 velocities are mapped from \texttt{franka::RobotState} to Eigen vectors. The
-end-effector pose is read from \texttt{state.O\_T\_EE}, which provides the
+end-effector position and orientation are read from \texttt{state.O\_T\_EE}, which provides the
 homogeneous transformation $\mathbf{T}_{EE}$. The Jacobian is obtained from
 \texttt{model.zeroJacobian(franka::Frame::kEndEffector, state)} and is used
 both for Cartesian velocity computation and for the torque mapping.
@@ -162,7 +162,7 @@ structure, but they differ in their parameterisation:
         joint torques at different robot configurations.
 \end{itemize}
 
-For each experiment, the controller logs time, pose error, measured pose,
+For each experiment, the controller logs time, position-and-orientation error, measured position and orientation,
 Cartesian forces, and commanded joint torques. These CSV files form the basis
 for the plots and quantitative comparisons in the evaluation chapter.
 

@@ -6,12 +6,12 @@ This appendix contains three parts:
 \textbf{Part A} traces one complete 1\,ms control cycle numerically for
 a concrete Panda configuration.
 \textbf{Part B} provides the complete C++ implementation of Experiment~1
-(Cartesian pose tracking) with simulation results.
+(Cartesian position and orientation tracking) with simulation results.
 \textbf{Part C} provides the complete C++ implementation of Experiment~2
 (virtual wall constraint) with simulation results.
 
 The numerical worked example in Part~A covers every quantity required for
-one 1\,ms cycle — position vector, Jacobian, pose error, impedance force,
+one 1\,ms cycle — position vector, Jacobian, position-and-orientation error, impedance force,
 and joint torques.
 
 % ─────────────────────────────────────────────────────────────────
@@ -83,7 +83,7 @@ Applying the DH transformation chain of \cref{eq:fk} with $\vq = \vq_0$:
 The computation is performed numerically by evaluating each $4\times4$ DH
 matrix and multiplying left to right.
 The resulting end-effector position vector (the controlled variable
-from \cref{eq:pos_vec}) is extracted from the upper-right column of
+from \cref{eq:end_effector_position}) is extracted from the upper-right column of
 $\mT_0^7$:
 
 \begin{equation}
@@ -180,7 +180,7 @@ Columns 1 and 2 of $\mJ(\vq_0)$ are nearly identical, because joints 1 and 2
 share the same rotation axis direction ($+z_0$) at the home configuration and
 have the same lever arm to the end-effector.
 This is characteristic of the Panda's geometry at $\vq_0$; it changes with the
-robot's pose.
+robot's configuration.
 \end{remark}
 
 % ─────────────────────────────────────────────────────────────────
@@ -267,10 +267,10 @@ of freedom that is ``invisible'' to the task.
 \label{app:panda_matrices}
 % ─────────────────────────────────────────────────────────────────
 
-For the Panda, the controlled variable is the full end-effector pose
+For the Panda, the controlled variable is the full end-effector position and orientation
 $\mathbf{T}_{EE}\in SE(3)$ with translational error
 $\mathbf{e}_p\in\mathbb{R}^3$ and rotational error
-$\mathbf{e}_R\in\mathbb{R}^3$ (see \cref{subsec:pose_error}).
+$\mathbf{e}_R\in\mathbb{R}^3$ (see \cref{subsec:position_orientation_error}).
 The impedance matrices are $3\times3$ SPD matrices as defined in
 \cref{subsec:KD_matrices}.
 
@@ -373,19 +373,19 @@ $\mathbf{K}_R$, $\mathbf{D}_p$, $\mathbf{D}_R$ would be full SPD
 $3\times3$ matrices in the base frame.
 
 % ─────────────────────────────────────────────────────────────────
-\section{Step 5 --- Pose Error and Impedance Wrench}
+\section{Step 5 --- Position and Orientation Error and Impedance Wrench}
 \label{app:panda_force}
 % ─────────────────────────────────────────────────────────────────
 
-\subsection*{Pose Error via $\mathbf{T}_d^{-1}\mathbf{T}_{EE}$}
+\subsection*{Position and Orientation Error via $\mathbf{T}_d^{-1}\mathbf{T}_{EE}$}
 
-Suppose the desired pose is $\mathbf{T}_d$ with $\mathbf{R}_d=\mathbf{I}_3$
+Suppose the desired position and orientation are $\mathbf{T}_d$ with $\mathbf{R}_d=\mathbf{I}_3$
 and $\mathbf{p}_d=[0.136,\;0.545,\;0.395]^\top\,\mathrm{m}$
 (the home position shifted $20\,\mathrm{mm}$ in $x$).
-The current pose at $\vq_0$ is $\mathbf{T}_{EE}$ with $\mathbf{R}_{EE}$ (from \abbr{FK})
+The current position and orientation at $\vq_0$ are $\mathbf{T}_{EE}$ with $\mathbf{R}_{EE}$ (from \abbr{FK})
 and $\mathbf{p}_{EE}=[0.116,\;0.545,\;0.395]^\top\,\mathrm{m}$.
 
-Following \cref{eq:T_err_expanded}, the pose error matrix is:
+Following \cref{eq:expanded_transformation_error}, the position-and-orientation error matrix is:
 
 \begin{equation}
 \mathbf{T}_{\mathrm{err}} = \mathbf{T}_d^{-1}\mathbf{T}_{EE} =
@@ -584,7 +584,7 @@ The C++ implementation of this control cycle is shown in Listing~\ref{lst:panda}
 Eigen::Map<const Eigen::Matrix<double,7,1>> q(state.q.data());
 Eigen::Map<const Eigen::Matrix<double,7,1>> dq(state.dq.data());
 
-// -- STEP 2: End-effector pose from libfranka ----------------------
+// -- STEP 2: End-effector position and orientation from libfranka --
 Eigen::Affine3d T(Eigen::Matrix4d::Map(state.O_T_EE.data()));
 Eigen::Vector3d p_EE  = T.translation();    // [3x1] position
 Eigen::Matrix3d R_EE  = T.rotation();       // [3x3] orientation
@@ -597,9 +597,9 @@ Eigen::Map<const Eigen::Matrix<double,6,7>> J(jac_arr.data());
 // -- STEP 4: Cartesian velocity  x_dot = J * q_dot ----------------
 Eigen::Matrix<double,6,1> xdot = J * dq;
 
-// (pose error is now computed in STEP 5 via T_err; see below)
+// (position-and-orientation error is computed in STEP 5 via T_err)
 
-// -- STEP 5: Pose error via T_err = T_d^{-1} * T_EE --------------
+// -- STEP 5: Position and orientation error via T_err --------------
 Eigen::Matrix3d R_d = T_des.rotation();
 Eigen::Vector3d p_d = T_des.translation();
 

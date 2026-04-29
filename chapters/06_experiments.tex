@@ -9,7 +9,7 @@ evaluated with respect to three criteria:
         for all tested stiffness and damping parameters?
         Can stability be guaranteed analytically?
   \item \textbf{Tracking behavior} --- How accurately and quickly does the
-        end-effector converge to the desired pose after a step change?
+        end-effector converge to the desired position and orientation after a step change?
         What are the settling time and steady-state error as functions of
         the stiffness matrix $\mathbf{K}_p$?
   \item \textbf{Compliant interaction} --- Does the controller correctly
@@ -30,7 +30,7 @@ This chapter translates those criteria into four concrete experiments:
   \item \textbf{Experiment~3} (\cref{sec:exp_stiffness}): Normal stiffness
         variation --- validates the compliance law $d_{ss}=F_n/k$.
   \item \textbf{Experiment~4} (\cref{sec:exp_config}): Configuration
-        dependence --- same wrench at three different arm poses.
+        dependence --- same wrench at three different arm configurations.
 \end{itemize}
 
 % ─────────────────────────────────────────────────────────────────
@@ -115,7 +115,7 @@ The diagonal special case is not required for stability.
 To confirm stability experimentally, the following protocol is executed:
 
 \begin{enumerate}
-  \item The robot is held at the desired pose $\mathbf{p}_d$.
+  \item The robot is held at the desired position $\mathbf{p}_d$.
   \item The controller is activated with stiffness values ranging from
         $k_{\min}=50\,\mathrm{N/m}$ to $k_{\max}=1000\,\mathrm{N/m}$.
   \item A step disturbance is applied: the robot is manually displaced
@@ -355,7 +355,7 @@ notation introduced in \cref{subsec:KD_matrices}.
 \subsection{Protocol}
 
 \begin{enumerate}
-  \item The robot is moved to the initial pose on the wall surface
+  \item The robot is moved to the initial position and orientation on the wall surface
         ($d = 0$, desired orientation $\mathbf{R}_d$ such that the
         end-effector $z$-axis aligns with $\hat{\mathbf{n}}$).
   \item The impedance controller is activated.
@@ -501,7 +501,7 @@ Appendix~\ref{app:exp3}.
 
 The virtual wall task is repeated at three different base configurations
 $\vq^{(1)}, \vq^{(2)}, \vq^{(3)}$ while keeping the same Cartesian
-end-effector pose and the same stiffness parameters.
+end-effector position and orientation and the same stiffness parameters.
 For a fixed Cartesian force $\mathbf{F}$, the joint torques
 $\vtau = \mathbf{J}^\top(\vq)\mathbf{F}$ differ because the Jacobian
 $\mathbf{J}$ depends on the configuration.
@@ -509,7 +509,7 @@ $\mathbf{J}$ depends on the configuration.
 The torque distribution across the seven joints is recorded for each
 configuration and compared as a bar chart, illustrating how redundancy
 allows the same Cartesian task to be distributed differently across the
-joints depending on arm pose.
+joints depending on arm configuration.
 The complete simulation code is in Appendix~\ref{app:exp4}.
 
 % ─────────────────────────────────────────────────────────────────

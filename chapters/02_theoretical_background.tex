@@ -32,7 +32,7 @@ Three frames are central to this work:
         and is aligned with the first joint axis, while the $x_0$- and
         $y_0$-axes lie in the mounting plane and complete a right-handed
         coordinate system according to the manufacturer convention.
-        All positions, forces, and poses are ultimately expressed in
+        All positions, orientations, and forces are ultimately expressed in
         this frame unless stated otherwise.
   \item \textbf{Joint frames} $\{1\},\{2\},\ldots,\{n\}$: rigidly
         attached to the successive links of the kinematic chain.
@@ -48,7 +48,7 @@ Three frames are central to this work:
         describe the tool orientation: $z_{EE}$ is taken as the tool approach
         direction, while $x_{EE}$ and $y_{EE}$ span the tool plane and complete
         a right-handed frame. The position and orientation of $\{EE\}$
-        relative to $\{0\}$ constitute the controlled pose of the robot.
+        relative to $\{0\}$ constitute the controlled position and orientation of the robot.
 \end{itemize}
 
 The coordinate-frame assignment and the corresponding Denavit--Hartenberg convention for assigning consecutive coordinate systems
@@ -243,7 +243,7 @@ For example, if a transformation from frame \(\{a\}\) to frame \(\{b\}\) is foll
 \label{eq:homogeneous_composition}
 \end{equation}
 
-This property is particularly useful for kinematic chains, where the pose of one frame is often obtained through a sequence of intermediate frames.
+This property is particularly useful for kinematic chains, where the position and orientation of one frame are often obtained through a sequence of intermediate frames.
 
 For a homogeneous transformation to describe a valid rigid-body motion, the rotation part must satisfy
 
@@ -285,353 +285,413 @@ This follows from the orthogonality of the rotation matrix, since \(R^{-1}=R^\to
 As a result, inverting a homogeneous transformation requires only a transpose of the rotation matrix and one matrix-vector multiplication, rather than a general \(4 \times 4\) matrix inversion.
 
 %% ─────────────────────────────────────────────────────────────
-\section{The Controlled Variable: End-Effector Pose in SE(3)}
-\label{sec:pose}
+\section{The Controlled Variable: End-Effector Position and Orientation}
+\label{sec:position_orientation}
 %% ─────────────────────────────────────────────────────────────
 
-\subsection{Why SE(3)?}
-\label{subsec:ctrl_vars}
-
-The task of the controller is to bring the end-effector to a desired
-position \emph{and} orientation.
-Position is described by a vector
-$\mathbf{p}_{EE}\in\mathbb{R}^3$:
+The task of the controller is to move the end-effector to a desired position and orientation.
+The position of the end-effector is described by the vector
 
 \begin{equation}
-\label{eq:pos_vec}
-\mathbf{p}_{EE} =
-\begin{bmatrix} p_x \\ p_y \\ p_z \end{bmatrix}
-\in\mathbb{R}^3
-\end{equation}
-
-Orientation is described by a rotation matrix
-$\mathbf{R}_{EE}\in SO(3)$.
-Because both are already encoded in the homogeneous transformation
-$\mathbf{T}_{EE}\in SE(3)$ provided by libfranka, the most natural and
-algebraically consistent choice is to take $\mathbf{T}_{EE}$ itself as
-the \textbf{single unified controlled variable}:
-
-\begin{equation}
-\label{eq:pose}
-\mathbf{T}_{EE} =
+p_{\mathrm{EE}}
+=
 \begin{bmatrix}
-\mathbf{R}_{EE} & \mathbf{p}_{EE} \\
-\mathbf{0}^\top & 1
+p_x\\
+p_y\\
+p_z
 \end{bmatrix}
-\in SE(3)
+\in \mathbb{R}^3,
+\label{eq:end_effector_position}
 \end{equation}
 
-\begin{itemize}
-  \item $\mathbf{R}_{EE}\in SO(3)$: end-effector orientation in the base
-        frame.
-        The rotation matrix is chosen over Euler angles because it
-        avoids \emph{gimbal lock}---the loss of a degree of freedom when
-        two rotation axes align---and is available directly from
-        libfranka as the upper-left $3{\times}3$ block of
-        \mbox{\texttt{state.O\_T\_EE}} without conversion.
-  \item $\mathbf{p}_{EE}\in\mathbb{R}^3$: end-effector position in the
-        base frame (upper-right column), in metres.
-\end{itemize}
+where \(p_x\), \(p_y\), and \(p_z\) denote the Cartesian position components of the end-effector in the base frame.
 
-\subsection{Pose Error in SE(3)}
-\label{subsec:pose_error}
-
-\subsubsection*{Step 1 --- Why you cannot subtract poses directly}
-
-For ordinary scalars or vectors, ``error'' means subtraction:
-$e = x_d - x$.
-The key question is: why does this not work for poses?
-
-The answer is that $SE(3)$ is not a vector space.
-Two transformation matrices cannot be meaningfully subtracted because
-the result is not a member of $SE(3)$:
-$\mathbf{T}_d - \mathbf{T}_{EE}$ is in general just an arbitrary $4\times4$
-matrix with no geometric meaning---its rotation block would not belong
-to $SO(3)$, so it would not represent any rigid-body pose at all.
-
-The correct notion of ``how far is $\mathbf{T}_{EE}$ from $\mathbf{T}_d$?''
-in $SE(3)$ is the \textbf{relative transformation}: the unique element
-of $SE(3)$ that maps one pose into the other.
-
-\subsubsection*{Step 2 --- The relative transformation as an error}
-
-Recall from \cref{eq:homogeneous_composition} that if we chain two transformations,
-the result describes a composed motion.
-In particular, consider what happens when we compose $\mathbf{T}_d^{-1}$
-(the inverse of the desired pose) with $\mathbf{T}_{EE}$ (the current pose):
+The orientation of the end-effector is described by the rotation matrix
 
 \begin{equation}
-\label{eq:T_error}
-\mathbf{T}_{\mathrm{err}} = \mathbf{T}_d^{-1}\,\mathbf{T}_{EE} \in SE(3)
+R_{\mathrm{EE}} \in \mathbb{R}^{3 \times 3}.
+\label{eq:end_effector_rotation}
 \end{equation}
 
-To understand what this means geometrically, read it as a chain of frames:
-
-\begin{enumerate}
-  \item Start in the \textbf{base frame} $\{0\}$.
-  \item Apply $\mathbf{T}_{EE}$: move to the \textbf{current
-        end-effector frame} $\{EE\}$.
-  \item Apply $\mathbf{T}_d^{-1}$: move from the current end-effector
-        frame \emph{back to the desired frame} $\{d\}$.
-\end{enumerate}
-
-The product $\mathbf{T}_d^{-1}\mathbf{T}_{EE}$ therefore describes the
-pose of $\{EE\}$ as seen from $\{d\}$---it is the transformation you
-would need to apply \emph{inside the desired frame} to go from the
-desired pose to the actual pose.
-
-\paragraph{Why this is zero at perfect tracking.}
-When $\mathbf{T}_{EE} = \mathbf{T}_d$:
+Together, position and orientation describe the complete configuration of the end-effector relative to the robot base.
+Since both quantities are contained in the homogeneous transformation matrix, the end-effector transformation can be written as
 
 \begin{equation}
-\mathbf{T}_{\mathrm{err}}
-= \mathbf{T}_d^{-1}\,\mathbf{T}_d
-= \mathbf{I}_4
-\end{equation}
-
-The $4\times4$ identity matrix represents ``no motion from $\{d\}$ to
-$\{EE\}$'', i.e.\ the end-effector is exactly at the desired pose.
-This is the correct generalisation of ``error $= 0$'' for poses in $SE(3)$.
-
-\subsubsection*{Step 3 --- Full algebraic expansion}
-
-To compute $\mathbf{T}_{\mathrm{err}}$ explicitly, substitute the
-inverse formula from \cref{eq:homogeneous_inverse} and the definition of
-$\mathbf{T}_{EE}$:
-
-\begin{equation}
-\mathbf{T}_d^{-1} =
+T_{\mathrm{EE}}
+=
 \begin{bmatrix}
-\mathbf{R}_d^\top & -\mathbf{R}_d^\top\mathbf{p}_d \\
-\mathbf{0}^\top & 1
+R_{\mathrm{EE}} & p_{\mathrm{EE}}\\
+0^\top & 1
+\end{bmatrix}.
+\label{eq:end_effector_transformation}
+\end{equation}
+
+Here, \(R_{\mathrm{EE}}\) represents the orientation of the end-effector frame with respect to the base frame, and \(p_{\mathrm{EE}}\) represents the position of the end-effector origin expressed in the base frame.
+In the Franka control interface, this transformation is provided directly by \texttt{state.O\_T\_EE}.
+The upper-left \(3 \times 3\) block contains the rotation matrix, while the upper-right \(3 \times 1\) block contains the Cartesian position in metres.
+
+Using the homogeneous transformation matrix as the controlled variable is convenient because it combines position and orientation in a single representation.
+It also avoids the need to describe orientation by Euler angles, which can suffer from singularities such as gimbal lock.
+Since the rotation matrix is already provided directly by libfranka, no additional conversion is required.
+
+\subsection{Position and Orientation Error}
+\label{subsec:position_orientation_error}
+
+In order to control the motion of the end-effector, the deviation between the desired and the current end-effector transformation must be computed.
+Let the desired transformation be
+
+\begin{equation}
+T_d
+=
+\begin{bmatrix}
+R_d & p_d\\
+0^\top & 1
 \end{bmatrix},
-\qquad
-\mathbf{T}_{EE} =
+\label{eq:desired_transformation}
+\end{equation}
+
+and let the current end-effector transformation be
+
+\begin{equation}
+T_{\mathrm{EE}}
+=
 \begin{bmatrix}
-\mathbf{R}_{EE} & \mathbf{p}_{EE} \\
-\mathbf{0}^\top & 1
+R_{\mathrm{EE}} & p_{\mathrm{EE}}\\
+0^\top & 1
+\end{bmatrix}.
+\label{eq:current_end_effector_transformation}
+\end{equation}
+
+For scalar or vector quantities, an error is usually computed by subtraction.
+However, this is not suitable for homogeneous transformation matrices.
+Subtracting two transformation matrices does not generally produce another meaningful rigid-body transformation.
+Therefore, the error is computed using the relative transformation between the desired and the current end-effector frame.
+
+The relative transformation is defined as
+
+\begin{equation}
+T_{\mathrm{err}}
+=
+T_d^{-1}T_{\mathrm{EE}}.
+\label{eq:relative_transformation_error}
+\end{equation}
+
+This transformation describes the current end-effector frame relative to the desired frame.
+If the current and desired end-effector transformations are identical, then
+
+\begin{equation}
+T_{\mathrm{err}}
+=
+T_d^{-1}T_d
+=
+I_4.
+\label{eq:zero_transformation_error}
+\end{equation}
+
+Thus, the identity matrix represents zero position and orientation error.
+
+Using the inverse of a homogeneous transformation, the desired inverse is
+
+\begin{equation}
+T_d^{-1}
+=
+\begin{bmatrix}
+R_d^\top & -R_d^\top p_d\\
+0^\top & 1
+\end{bmatrix}.
+\label{eq:desired_transformation_inverse}
+\end{equation}
+
+Substituting \(T_d^{-1}\) and \(T_{\mathrm{EE}}\) gives
+
+\begin{equation}
+T_{\mathrm{err}}
+=
+\begin{bmatrix}
+R_d^\top & -R_d^\top p_d\\
+0^\top & 1
 \end{bmatrix}
-\end{equation}
-
-Carrying out the $4\times4$ matrix multiplication block by block:
-
-\begin{align}
-\mathbf{T}_{\mathrm{err}}
-&= \mathbf{T}_d^{-1}\,\mathbf{T}_{EE} \notag\\[6pt]
-&=
 \begin{bmatrix}
-\mathbf{R}_d^\top & -\mathbf{R}_d^\top\mathbf{p}_d \\
-\mathbf{0}^\top & 1
-\end{bmatrix}
+R_{\mathrm{EE}} & p_{\mathrm{EE}}\\
+0^\top & 1
+\end{bmatrix}.
+\label{eq:transformation_error_product}
+\end{equation}
+
+Carrying out the block matrix multiplication yields
+
+\begin{equation}
+T_{\mathrm{err}}
+=
 \begin{bmatrix}
-\mathbf{R}_{EE} & \mathbf{p}_{EE} \\
-\mathbf{0}^\top & 1
-\end{bmatrix}
-\notag\\[8pt]
-&=
+R_d^\top R_{\mathrm{EE}} & R_d^\top(p_{\mathrm{EE}}-p_d)\\
+0^\top & 1
+\end{bmatrix}.
+\label{eq:expanded_transformation_error}
+\end{equation}
+
+The translational part of this matrix gives the position error
+
+\begin{equation}
+e_p
+=
+R_d^\top(p_{\mathrm{EE}}-p_d)
+\in \mathbb{R}^3.
+\label{eq:position_error}
+\end{equation}
+
+This error is expressed in the desired frame.
+Therefore, its components describe the displacement of the current end-effector position relative to the desired frame axes.
+
+The rotational part of the relative transformation is
+
+\begin{equation}
+\Delta R
+=
+R_d^\top R_{\mathrm{EE}}.
+\label{eq:relative_rotation_error}
+\end{equation}
+
+This matrix describes the orientation difference between the desired and current end-effector frames.
+If the current orientation is equal to the desired orientation, then \(R_{\mathrm{EE}} = R_d\), and therefore
+
+\begin{equation}
+\Delta R
+=
+R_d^\top R_d
+=
+I.
+\label{eq:zero_rotation_error}
+\end{equation}
+
+Hence, the identity matrix represents zero orientation error.
+
+For use in the impedance controller, the orientation error must be represented as a three-dimensional vector.
+This is done using the axis-angle representation.
+A rotation matrix \(\Delta R\) can be described by a rotation angle \(\phi\) about a rotation axis vector \(u \in \mathbb{R}^3\).
+The vector \(u\) is chosen to have unit length, so it describes only the direction of the rotation axis.
+
+The rotation angle \(\phi\) can be obtained from the trace of the relative rotation matrix \(\Delta R\).
+The trace of a matrix is the sum of its diagonal elements,
+
+\begin{equation}
+\operatorname{tr}(\Delta R)
+=
+\Delta R_{11}
++
+\Delta R_{22}
++
+\Delta R_{33}.
+\label{eq:rotation_trace}
+\end{equation}
+
+For a three-dimensional rotation matrix, the trace is related to the rotation angle by
+
+\begin{equation}
+\operatorname{tr}(\Delta R)
+=
+1 + 2\cos\phi.
+\label{eq:trace_angle_relation}
+\end{equation}
+
+Solving this equation for \(\phi\) gives
+
+\begin{equation}
+\cos\phi
+=
+\frac{\operatorname{tr}(\Delta R)-1}{2},
+\label{eq:cos_angle_from_trace}
+\end{equation}
+
+and therefore
+
+\begin{equation}
+\phi
+=
+\arccos
+\left(
+\frac{\operatorname{tr}(\Delta R)-1}{2}
+\right).
+\label{eq:angle_from_trace}
+\end{equation}
+
+Thus, the rotation angle can be computed directly from the diagonal elements of \(\Delta R\).
+
+The rotation axis vector \(u\) can be obtained from the skew-symmetric part of \(\Delta R\).
+This relation follows from Rodrigues' rotation formula, which expresses a rotation matrix as
+
+\begin{equation}
+\Delta R
+=
+I
++
+\sin\phi [u]_\times
++
+(1-\cos\phi)[u]_\times^2.
+\label{eq:rodrigues_formula}
+\end{equation}
+
+Here, \([u]_\times\) is the skew-symmetric matrix corresponding to the rotation axis vector
+
+\begin{equation}
+u =
 \begin{bmatrix}
-\mathbf{R}_d^\top\mathbf{R}_{EE} + (-\mathbf{R}_d^\top\mathbf{p}_d)\,\mathbf{0}^\top
-&\quad
-\mathbf{R}_d^\top\mathbf{p}_{EE} + (-\mathbf{R}_d^\top\mathbf{p}_d)\cdot 1 \\[4pt]
-\mathbf{0}^\top\mathbf{R}_{EE} + 1\cdot\mathbf{0}^\top
-&\quad
-\mathbf{0}^\top\mathbf{p}_{EE} + 1\cdot 1
-\end{bmatrix}
-\notag\\[8pt]
-\label{eq:T_err_expanded}
-&=
+u_x\\
+u_y\\
+u_z
+\end{bmatrix},
+\label{eq:rotation_axis_vector}
+\end{equation}
+
+and is defined as
+
+\begin{equation}
+[u]_\times
+=
 \begin{bmatrix}
-\mathbf{R}_d^\top\mathbf{R}_{EE} &
-\mathbf{R}_d^\top(\mathbf{p}_{EE} - \mathbf{p}_d) \\[4pt]
-\mathbf{0}^\top & 1
-\end{bmatrix}
-\end{align}
-
-Note that $(-\mathbf{R}_d^\top\mathbf{p}_d)\cdot\mathbf{0}^\top = \mathbf{0}$
-(a matrix times the zero row vector from the lower row of $\mathbf{T}_{EE}$
-is zero), so the rotation block is simply $\mathbf{R}_d^\top\mathbf{R}_{EE}$.
-The translational block collects as $\mathbf{R}_d^\top\mathbf{p}_{EE}
-- \mathbf{R}_d^\top\mathbf{p}_d = \mathbf{R}_d^\top(\mathbf{p}_{EE}-\mathbf{p}_d)$.
-
-\subsubsection*{Step 4 --- Reading off the two sub-errors}
-
-The result \cref{eq:T_err_expanded} has the same $SE(3)$ structure as
-any homogeneous transformation: a rotation block (upper-left) and a
-translation block (upper-right).
-Each block carries exactly one of the two sub-errors:
-
-\paragraph{Translational error.}
-The upper-right $3\times1$ block of $\mathbf{T}_{\mathrm{err}}$ is:
-
-\begin{equation}
-\label{eq:pos_error}
-\mathbf{e}_p
-= \mathbf{R}_d^\top(\mathbf{p}_{EE} - \mathbf{p}_d)
-\in\mathbb{R}^3
+0 & -u_z & u_y\\
+u_z & 0 & -u_x\\
+-u_y & u_x & 0
+\end{bmatrix}.
+\label{eq:skew_symmetric_axis_matrix}
 \end{equation}
 
-This is the position error $(\mathbf{p}_{EE}-\mathbf{p}_d)$ rotated
-into the \textbf{desired frame} by $\mathbf{R}_d^\top$.
-Expressing the error in the desired frame removes the
-orientation-dependent coupling: the three components of $\mathbf{e}_p$
-are the displacement errors measured along the axes of $\{d\}$, not
-the base frame.
+The term \(\sin\phi [u]_\times\) is the part of Rodrigues' formula that contains the rotation-axis information.
+The factor \(\sin\phi\) appears because this skew-symmetric part of the rotation matrix depends on the sine of the rotation angle.
 
-\paragraph{Rotational error.}
-The upper-left $3\times3$ block of $\mathbf{T}_{\mathrm{err}}$ is:
+To isolate this part, the transpose of \(\Delta R\) is subtracted from \(\Delta R\).
+Since
 
 \begin{equation}
-\label{eq:R_error}
-\Delta\mathbf{R} = \mathbf{R}_d^\top\,\mathbf{R}_{EE} \in SO(3)
+[u]_\times^\top = -[u]_\times,
+\label{eq:skew_symmetric_property}
 \end{equation}
 
-$\Delta\mathbf{R}$ is the rotation matrix that takes the desired frame
-into the current frame.
-When $\mathbf{R}_{EE} = \mathbf{R}_d$, then
-$\Delta\mathbf{R}=\mathbf{R}_d^\top\mathbf{R}_d=\mathbf{I}$ (no
-orientation error), confirming the formula is consistent.
-
-To feed the orientation error into the impedance law (which operates
-on vectors, not matrices), $\Delta\mathbf{R}$ must be converted to a
-three-dimensional vector.
-This is done using the \textbf{axis-angle representation}: every rotation
-matrix $\Delta\mathbf{R}\in SO(3)$ describes a rotation by a single
-angle $\phi$ about a single unit axis $\hat{\mathbf{k}}\in\mathbb{R}^3$.
-The goal is to recover both from the entries of $\Delta\mathbf{R}$.
-
-\smallskip
-\noindent\textbf{Recovering the angle $\phi$.}
-The trace of any rotation matrix by angle $\phi$ satisfies
-$\mathrm{tr}(\mathbf{R})=1+2\cos\phi$, which can be shown by writing
-$\mathbf{R}$ in the eigenbasis of the rotation.
-Solving for $\phi$:
+the transpose of Rodrigues' formula is
 
 \begin{equation}
-\label{eq:phi}
-\phi = \arccos\!\left(\frac{\mathrm{tr}(\Delta\mathbf{R})-1}{2}\right)
-\in [0,\pi]
+\Delta R^\top
+=
+I
+-
+\sin\phi [u]_\times
++
+(1-\cos\phi)[u]_\times^2.
+\label{eq:rodrigues_transpose}
 \end{equation}
 
-\smallskip
-\noindent\textbf{Recovering the rotation axis $\hat{\mathbf{k}}$.}
-Every rotation matrix can be decomposed as:
+Subtracting \(\Delta R^\top\) from \(\Delta R\) gives
 
 \begin{equation}
-\label{eq:rodrigues}
-\Delta\mathbf{R}
-= \mathbf{I} + \sin\phi\,[\hat{\mathbf{k}}]_\times
-+ (1-\cos\phi)\,[\hat{\mathbf{k}}]_\times^2
+\Delta R - \Delta R^\top
+=
+2\sin\phi [u]_\times.
+\label{eq:skew_part_derivation}
 \end{equation}
 
-where $[\hat{\mathbf{k}}]_\times$ is the \textbf{skew-symmetric matrix}
-of the axis vector $\hat{\mathbf{k}}=[k_x,k_y,k_z]^\top$:
+The identity terms and the symmetric term \((1-\cos\phi)[u]_\times^2\) cancel out.
+Dividing by two gives the skew-symmetric part of \(\Delta R\):
 
 \begin{equation}
-\label{eq:skew}
-[\hat{\mathbf{k}}]_\times =
+\frac{1}{2}
+\left(
+\Delta R-\Delta R^\top
+\right)
+=
+\sin\phi [u]_\times.
+\label{eq:skew_part_rotation_matrix}
+\end{equation}
+
+This equation shows that the skew-symmetric part of \(\Delta R\) contains the rotation axis vector, scaled by \(\sin\phi\).
+Therefore, to recover \(u\), the corresponding entries must be divided by \(\sin\phi\).
+
+Reading off the entries gives
+
+\begin{equation}
+u_x =
+\frac{\Delta R_{32}-\Delta R_{23}}{2\sin\phi},
+\label{eq:rotation_axis_x}
+\end{equation}
+
+\begin{equation}
+u_y =
+\frac{\Delta R_{13}-\Delta R_{31}}{2\sin\phi},
+\label{eq:rotation_axis_y}
+\end{equation}
+
+and
+
+\begin{equation}
+u_z =
+\frac{\Delta R_{21}-\Delta R_{12}}{2\sin\phi}.
+\label{eq:rotation_axis_z}
+\end{equation}
+
+Therefore, the rotation axis vector is
+
+\begin{equation}
+u
+=
+\frac{1}{2\sin\phi}
 \begin{bmatrix}
- 0   & -k_z &  k_y \\
- k_z &  0   & -k_x \\
--k_y &  k_x &  0
-\end{bmatrix}
-\end{equation}
-
-Taking the skew-symmetric part of both sides of \cref{eq:rodrigues}
-(i.e.\ computing $\tfrac{1}{2}(\Delta\mathbf{R}-\Delta\mathbf{R}^\top)$)
-the symmetric terms $\mathbf{I}$ and $(1-\cos\phi)[\hat{\mathbf{k}}]_\times^2$
-both cancel, leaving:
-
-\begin{equation}
-\frac{1}{2}(\Delta\mathbf{R}-\Delta\mathbf{R}^\top)
-= \sin\phi\,[\hat{\mathbf{k}}]_\times
-\end{equation}
-
-Reading off the three independent entries of this skew-symmetric matrix
-and dividing by $\sin\phi$ recovers $\hat{\mathbf{k}}$:
-
-\begin{equation}
-\label{eq:axis}
-\hat{\mathbf{k}} = \frac{1}{2\sin\phi}
-\begin{bmatrix}
-\Delta R_{32}-\Delta R_{23} \\
-\Delta R_{13}-\Delta R_{31} \\
+\Delta R_{32}-\Delta R_{23}\\
+\Delta R_{13}-\Delta R_{31}\\
 \Delta R_{21}-\Delta R_{12}
-\end{bmatrix}
+\end{bmatrix}.
+\label{eq:rotation_axis_from_matrix}
 \end{equation}
 
-Here $\Delta R_{ij}$ is entry $(i,j)$ of $\Delta\mathbf{R}$, and the
-three differences are exactly the upper-right entries of
-$\Delta\mathbf{R}-\Delta\mathbf{R}^\top$ (each multiplied by
-$\sin\phi$), corresponding to $k_z$, $k_y$, $k_x$ respectively.
-This unit vector $\hat{\mathbf{k}}$ points along the physical rotation
-axis of $\Delta\mathbf{R}$.
-
-\smallskip
-\noindent\textbf{Combining angle and axis into the error vector.}
-The rotation error vector $\mathbf{e}_R$ is defined as the axis scaled
-by the angle:
+The rotational error vector is then defined as the rotation axis vector scaled by the rotation angle:
 
 \begin{equation}
-\label{eq:rot_error_vec}
-\mathbf{e}_R = \phi\,\hat{\mathbf{k}}
+e_R
+=
+\phi u.
+\label{eq:rotation_error_axis_angle}
+\end{equation}
+
+Substituting the expression for \(u\) gives
+
+\begin{equation}
+e_R
 =
 \frac{\phi}{2\sin\phi}
 \begin{bmatrix}
-\Delta R_{32}-\Delta R_{23} \\
-\Delta R_{13}-\Delta R_{31} \\
+\Delta R_{32}-\Delta R_{23}\\
+\Delta R_{13}-\Delta R_{31}\\
 \Delta R_{21}-\Delta R_{12}
 \end{bmatrix}
-\in\mathbb{R}^3
+\in \mathbb{R}^3.
+\label{eq:rotation_error_vector}
 \end{equation}
 
-\begin{itemize}
-  \item \textbf{Direction of $\mathbf{e}_R$}: the unit axis
-        $\hat{\mathbf{k}}$, pointing along the rotation axis that
-        takes the desired frame to the current frame.
-  \item \textbf{Magnitude of $\mathbf{e}_R$}: the angle
-        $\phi=\|\mathbf{e}_R\|$, measuring how far the current
-        orientation deviates from the desired one in radians.
-  \item When $\phi=0$ (orientations match): $\mathbf{e}_R=\mathbf{0}$.
-  \item When $\phi\to\pi$: $\sin\phi\to0$ and \cref{eq:rot_error_vec}
-        becomes numerically ill-conditioned; a special-case branch is
-        used in the implementation.
-        In practice $\phi\ll\pi$ since the robot always starts near
-        the desired orientation.
-\end{itemize}
+The direction of \(e_R\) gives the axis of the required rotational correction, while its magnitude gives the orientation error in radians.
+If the desired and current orientations are equal, then \(\Delta R = I\), \(\phi = 0\), and \(e_R = 0\).
+For angles close to \(\pi\), the expression becomes numerically sensitive because \(\sin\phi\) approaches zero.
+This case is therefore handled separately in the implementation.
 
-\subsubsection*{Step 5 --- Combined error vector}
-
-Stacking the two sub-errors gives the six-dimensional error that
-drives the impedance controller:
+Finally, the complete Cartesian error vector used by the impedance controller is obtained by stacking the translational and rotational errors:
 
 \begin{equation}
-\label{eq:error}
-\mathbf{e} =
+e
+=
 \begin{bmatrix}
-\mathbf{e}_p \\[2pt] \mathbf{e}_R
+e_p\\
+e_R
 \end{bmatrix}
-\in\mathbb{R}^6
+\in \mathbb{R}^6.
+\label{eq:cartesian_error_vector}
 \end{equation}
 
-\begin{remark}
-The entire computation reduces to a single $4{\times}4$ matrix product.
-The inverse $\mathbf{T}_d^{-1}$ is free in $SE(3)$: one transpose and
-one matrix-vector product (see \cref{eq:homogeneous_inverse}).
-Both $\mathbf{e}_p$ and $\mathbf{e}_R$ are then \emph{read off} from
-the blocks of the result---no additional computation is needed.
-libfranka provides $\mathbf{T}_{EE}$ directly as
-\texttt{state.O\_T\_EE} at every 1\,ms control cycle.
-A fully numerical worked example of this computation for the
-Franka Emika Panda at the home configuration is given in
-Appendix~\ref{app:panda}.
-\end{remark}
+This vector contains the three position-error components and the three orientation-error components of the end-effector.
+It therefore provides a compact representation of the deviation between the desired and current end-effector configuration.
 
 %% ─────────────────────────────────────────────────────────────
 \section{Forward Kinematics}
 \label{sec:fk}
 %% ─────────────────────────────────────────────────────────────
 
-\textbf{Forward kinematics} computes the end-effector pose
+\textbf{Forward kinematics} computes the end-effector position and orientation
 $\mathbf{T}_{EE}=\mathbf{T}_0^n$ from the joint angles by chaining the
 individual link transformations:
 
@@ -798,7 +858,7 @@ relationship between the motion of the end-effector and the forces
 acting on it, making the robot behave like a virtual mass-spring-damper
 system in Cartesian space.
 The error signal $\mathbf{e}=[\mathbf{e}_p^\top,\mathbf{e}_R^\top]^\top$
-defined in \cref{eq:error} drives two impedance laws: one translational,
+defined in \cref{eq:cartesian_error_vector} drives two impedance laws: one translational,
 one rotational.
 
 \subsection{Impedance Wrench}
@@ -1356,7 +1416,7 @@ Substituting \cref{eq:impedance} into \cref{eq:control_law} gives the
 \end{equation}
 
 This boxed equation is the computational core of the controller:
-at every 1\,ms cycle, the pose error $\mathbf{T}_d^{-1}\mathbf{T}_{EE}$
+at every 1\,ms cycle, the position-and-orientation error $\mathbf{T}_d^{-1}\mathbf{T}_{EE}$
 is formed, $\mathbf{e}_p$ and $\mathbf{e}_R$ are extracted, the
 wrench is evaluated, and $\vtau$ is sent to the actuators.
 Appendix~\ref{app:panda} traces every step numerically, including
