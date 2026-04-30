@@ -685,43 +685,116 @@ e_R
 
 This vector contains the three position-error components and the three orientation-error components of the end-effector.
 It therefore provides a compact representation of the deviation between the desired and current end-effector configuration.
-After defining the Cartesian error in terms of the end-effector position and orientation, the next step is to describe how these quantities are obtained from the robot joint angles. This relationship is given by forward kinematics, which maps the joint configuration of the robot to the corresponding end-effector transformation.
 
 %% ─────────────────────────────────────────────────────────────
 \section{Forward Kinematics}
-\label{sec:fk}
 %% ─────────────────────────────────────────────────────────────
 
-\textbf{Forward kinematics} computes the end-effector position and orientation
-$\mathbf{T}_{EE}=\mathbf{T}_0^n$ from the joint angles by chaining the
-individual link transformations:
+After defining the end-effector position and orientation as the controlled
+variable, the next step is to describe how these quantities are obtained from
+the robot joint angles.
+This relationship is given by forward kinematics, which maps the joint
+configuration of the robot to the corresponding end-effector transformation.
+
+Forward kinematics describes the relationship between the robot joint
+configuration and the resulting end-effector position and orientation.
+For a serial robot manipulator, the end-effector transformation is obtained by
+multiplying the homogeneous transformation matrices between neighboring link
+frames.
+
+For a robot with \(n\) joints, the forward kinematics can be written as
 
 \begin{equation}
-\label{eq:fk}
-\mathbf{T}_{0}^{n}(\vq) =
-\mathbf{T}_{0}^{1}(q_1)\;
-\mathbf{T}_{1}^{2}(q_2)\;
-\cdots\;
-\mathbf{T}_{n-1}^{n}(q_n)
+{}^0T_n(q)
+=
+{}^0T_1(q_1)
+{}^1T_2(q_2)
+\cdots
+{}^{n-1}T_n(q_n).
+\label{eq:forward_kinematics_chain}
 \end{equation}
 
-\begin{itemize}
-  \item $\vq=[q_1,\ldots,q_n]^\top\in\mathbb{R}^n$: the
-        \textbf{joint angle vector}; each $q_i\in\mathbb{R}$ in radians.
-  \item $\mathbf{T}_{i-1}^{i}(q_i)\in\mathbb{R}^{4\times4}$:
-        the \abbr{DH} link transformation with parameters
-        $\theta_i=q_i$, $d_i$, $a_i$, $\alpha_i$ \cite{Denavit1955}.
-  \item $\mathbf{T}_{0}^{n}(\vq)$: the resulting transformation.
-        Its upper-left $3\times3$ block is the end-effector
-        orientation $\mathbf{R}_{EE}(\vq)$; its upper-right $3\times1$
-        column is the end-effector position $\mathbf{p}_{EE}(\vq)$.
-\end{itemize}
+Here, \(q\) denotes the joint configuration vector,
 
-The mapping $\mathbf{T}_{EE}=f(\vq)$ is \emph{nonlinear} because each
-\abbr{DH} transformation contains trigonometric functions of the joint angle.
-A fully numerical evaluation of forward kinematics for the Panda at the
-home configuration is worked through step by step in
-Appendix~\ref{app:panda_fk} (parameters in Appendix~\ref{app:panda_params}).
+\begin{equation}
+q =
+\begin{bmatrix}
+q_1 & q_2 & \cdots & q_n
+\end{bmatrix}^\top
+\in \mathbb{R}^n.
+\label{eq:joint_configuration_vector}
+\end{equation}
+
+The vector \(q\) contains the joint angles of the robot.
+According to the Denavit--Hartenberg convention, each component \(q_i\)
+denotes the amount of rotation of joint \(i\) about its local joint axis
+\(z_i\).
+The angle \(q_i\) is measured in radians.
+
+Each matrix \({}^{i-1}T_i(q_i)\) describes the relative position and
+orientation between two neighboring link frames.
+In the standard Denavit--Hartenberg convention, this transformation is
+constructed from the joint angle \(q_i\), the link offset \(d_i\), the link
+length \(a_i\), and the link twist \(\alpha_i\).
+It is given by
+
+\begin{equation}
+{}^{i-1}T_i(q_i)
+=
+R_z(q_i)\,T_z(d_i)\,T_x(a_i)\,R_x(\alpha_i).
+\label{eq:dh_elementary_transformations}
+\end{equation}
+
+Written as a homogeneous transformation matrix, this becomes
+
+\begin{equation}
+{}^{i-1}T_i(q_i)
+=
+\begin{bmatrix}
+\cos q_i & -\sin q_i\cos\alpha_i & \sin q_i\sin\alpha_i & a_i\cos q_i\\
+\sin q_i & \cos q_i\cos\alpha_i & -\cos q_i\sin\alpha_i & a_i\sin q_i\\
+0 & \sin\alpha_i & \cos\alpha_i & d_i\\
+0 & 0 & 0 & 1
+\end{bmatrix}.
+\label{eq:dh_transformation_matrix}
+\end{equation}
+
+The remaining parameters \(d_i\), \(a_i\), and \(\alpha_i\) describe the fixed
+geometry between neighboring link frames.
+The parameter \(d_i\) describes a translation along the \(z\)-axis, and
+\(a_i\) describes a translation along the \(x\)-axis.
+The parameter \(\alpha_i\), called the link twist, describes the angle between
+two neighboring joint axes.
+More precisely, \(\alpha_i\) describes how much the axis \(z_i\) is tilted
+with respect to the previous axis \(z_{i-1}\).
+
+The final transformation \({}^0T_n(q)\) describes the position and orientation
+of the end-effector frame with respect to the robot base frame.
+It can therefore be written as
+
+\begin{equation}
+{}^0T_n(q)
+=
+T_{\mathrm{EE}}(q)
+=
+\begin{bmatrix}
+R_{\mathrm{EE}}(q) & p_{\mathrm{EE}}(q)\\
+0^\top & 1
+\end{bmatrix}.
+\label{eq:forward_kinematics_result}
+\end{equation}
+
+The upper-left \(3 \times 3\) block contains the end-effector orientation
+\(R_{\mathrm{EE}}(q)\), while the upper-right \(3 \times 1\) column contains
+the end-effector position \(p_{\mathrm{EE}}(q)\).
+
+This mapping is nonlinear because the individual link transformations contain
+trigonometric functions of the joint angles.
+Therefore, a change in a joint angle generally produces a nonlinear change in
+the end-effector position and orientation.
+A numerical evaluation of the forward kinematics for the Franka Emika Panda at
+the home configuration is provided in Appendix A.2, using the parameters listed
+in Appendix A.1.
 
 %% ─────────────────────────────────────────────────────────────
 \section{Differential Kinematics}
