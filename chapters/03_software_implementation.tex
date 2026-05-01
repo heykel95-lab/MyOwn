@@ -63,6 +63,9 @@ The software implementation therefore focuses on obtaining the required quantiti
 At the beginning of each control callback, the current joint configuration \(q\) and joint velocity vector \(\dot{q}\) are read from \texttt{franka::RobotState} and mapped to Eigen vectors.
 The end-effector transformation is obtained from \texttt{state.O\_T\_EE}, which contains the homogeneous transformation matrix \(T_{\mathrm{EE}}\) of the end-effector frame with respect to the robot base frame.
 
+Although the theoretical forward kinematics can be constructed from the DH parameters, the implementation uses the kinematic quantities provided directly by libfranka.
+The measured end-effector transformation is read from \texttt{state.O\_T\_EE}, and the Jacobian is obtained from the libfranka model interface.
+
 The geometric Jacobian is obtained using
 
 \begin{lstlisting}[language=C++]
@@ -123,7 +126,8 @@ The implemented control loop follows the sequence below:
 
 The core structure of the implementation is shown in Listing~\ref{lst:impedance_callback}.
 The listing is shortened to the essential operations.
-Experiment-specific files additionally contain the parameter selection and the trajectory or set-point definitions used for each experiment.
+Experiment-specific files define the desired end-effector motion, either as a fixed set-point \((p_d, R_d)\) or as a time-dependent trajectory \((p_d(t), R_d(t))\).
+They also specify the positional stiffness values \(K_{1,p}\), \(K_{2,p}\), and \(K_{3,p}\), the rotational stiffness values \(K_{1,R}\), \(K_{2,R}\), and \(K_{3,R}\).
 
 \begin{lstlisting}[style=cppstyle, language=C++, caption={Core structure of the real-time impedance-control callback with CSV logging.}, label={lst:impedance_callback}]
 #include <algorithm>
@@ -358,10 +362,10 @@ robot.control([&](const franka::RobotState& state,
 });
 \end{lstlisting}
 
-Listing~\ref{lst:impedance_callback} also shows how the rotational error \(e_R\) is computed from the relative orientation between the desired and current end-effector frames, as described in Chapter~2.
-The positional force \(f\) and rotational moment \(m\) are then combined into the Cartesian force/moment vector \(F\) and mapped to joint torques using the Jacobian transpose.
-If a specific experiment uses only positional impedance, the rotational moment \(m\) can be set to zero.
-In that case, the lower three components of \(F\) are zero and only the positional impedance force contributes to the task torque.
+Listing~\ref{lst:impedance_callback} summarizes the main operations performed during one real-time control cycle.
+The callback reads the current robot state, evaluates the Cartesian impedance law, adds the model-based compensation terms, limits the resulting torque command, and returns it to libfranka.
+If an experiment uses only positional tracking, the rotational control part is disabled by setting \(K_{R,0}=0_{3\times3}\) and \(D_{R,0}=0_{3\times3}\).
+As a result, the rotational moment \(m\) becomes zero, the lower three components of \(F\) are zero, and only the positional force contributes to the task torque.
 
 The callback also writes the measured and computed quantities to a CSV file.
 The logged values include the end-effector position, desired position, positional error, rotational error, Cartesian velocity, Cartesian force and moment, and limited joint torques.
