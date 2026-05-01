@@ -146,7 +146,7 @@ $k$ & $z_{k,x}$ & $z_{k,y}$ & $z_{k,z}$ \\
 \label{app:panda_jacobian}
 % ─────────────────────────────────────────────────────────────────
 
-Applying \cref{eq:jacobian_col} for each joint using the values from
+Applying \cref{eq:jacobian_column} for each joint using the values from
 \cref{tab:panda_fk} and the end-effector position \cref{eq:pe_panda}:
 
 \begin{equation}
@@ -188,13 +188,13 @@ robot's configuration.
 \label{app:panda_pinv}
 % ─────────────────────────────────────────────────────────────────
 
-As explained in \cref{subsec:pinv}, the pseudo-inverse $\mJ^+$ is
-\emph{not} required for the primary torque computation.
-It is computed here for the null-space controller only.
+The pseudo-inverse $\mJ^+$ is \emph{not} required for the primary torque
+computation.
+It is computed here only to form the null-space projector in this appendix.
 
 \subsection{Computing $\mathbf{J}^+$}
 
-From \cref{eq:pinv}:
+For the full-row-rank Jacobian used in this numerical example:
 
 \begin{equation}
 \mathbf{J}^+ = \mJ^\top\bigl(\mJ\mJ^\top\bigr)^{-1} \in \R{7\times6}
@@ -253,8 +253,7 @@ Here:
         affecting the end-effector.
 \end{itemize}
 
-As noted in \cref{subsec:pinv}, this thesis does not implement a null-space
-controller.
+This thesis does not implement a null-space controller.
 The projector $\mathbf{N}$ is computed here purely to illustrate the
 structure of the redundancy.
 Physically, the non-zero entries in $\mathrm{diag}(\mathbf{N})$ at joints
@@ -288,13 +287,13 @@ The impedance matrices are $3\times3$ SPD matrices as defined in
   \item Setting $\mM = \mI_6$ decouples all axes and simplifies the
         critical-damping formula to $D_i = 2\sqrt{K_i}$ for each axis $i$.
         The real link inertia and Coriolis effects are handled separately by
-        $\bm{\tau}_g$ and $\bm{\tau}_c$ (see \cref{eq:full_with_comp}).
+        $\bm{\tau}_g$ and $\bm{\tau}_c$ (see \cref{eq:commanded_torque}).
 \end{itemize}
 
 \subsection{Stiffness Matrices $\mathbf{K}_p$ and $\mathbf{K}_R$}
 
-Following the virtual wall design of \cref{subsec:virtual_wall}, the
-stiffness values in the wall frame are chosen as:
+For the axis-aligned virtual wall example, the stiffness values in the wall
+frame are chosen as:
 $k_{\mathrm{free}}=50\,\mathrm{N/m}$,
 $k_{\mathrm{stiff}}=1000\,\mathrm{N/m}$,
 $k_{R,\mathrm{free}}=5\,\mathrm{Nm/rad}$,
@@ -327,7 +326,8 @@ for this axis-aligned wall.
 For a tilted wall with $\mathbf{W}\neq\mathbf{I}$, applying
 $\mathbf{K}_p=\mathbf{W}\mathbf{K}_{p,\mathrm{local}}\mathbf{W}^\top$
 would produce a \textbf{full} $3\times3$ SPD matrix with non-zero
-off-diagonal entries, as derived in \cref{eq:K_base}.
+off-diagonal entries by the same congruence transformation used in
+\cref{eq:positional_stiffness_base}.
 
 \subsection{Damping Matrices $\mathbf{D}_p$ and $\mathbf{D}_R$}
 
@@ -430,7 +430,8 @@ and $\mathbf{e}_R = \mathbf{0}$.
 
 Assuming the robot is momentarily at rest
 ($\dot{\mathbf{p}}_{EE}=\mathbf{0}$, $\boldsymbol{\omega}_{EE}=\mathbf{0}$),
-the translational force and rotational moment from \cref{eq:imp_trans,eq:imp_rot} are:
+the positional force and rotational moment from
+\cref{eq:positional_impedance_force,eq:rotational_impedance_moment} are:
 
 \begin{equation}
 \label{eq:F_panda}
@@ -478,7 +479,7 @@ restoring force is gentle: the wall yields compliantly under applied loads.
 \label{app:panda_torques}
 % ─────────────────────────────────────────────────────────────────
 
-Applying the control law \cref{eq:control_law} with $\mJ^\top \in \R{7\times6}$
+Applying the control law \cref{eq:joint_torque_mapping} with $\mJ^\top \in \R{7\times6}$
 from \cref{eq:J_panda}:
 
 \begin{equation}
@@ -630,7 +631,7 @@ Eigen::Matrix3d DR = Eigen::Vector3d{28.28,28.28,4.47}.asDiagonal();
 Eigen::Vector3d pdot  = xdot.head<3>();
 Eigen::Vector3d omega = xdot.tail<3>();
 
-// Translational force and rotational moment
+// Positional force and rotational moment
 Eigen::Vector3d f = Kp * e_p - Dp * pdot;
 Eigen::Vector3d m = KR * e_R - DR * omega;
 

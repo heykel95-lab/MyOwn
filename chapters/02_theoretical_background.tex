@@ -216,8 +216,22 @@ The coordinates of the same point expressed in frame \(\{b\}\) are then obtained
 \begin{equation}
 {}^b\tilde{p}
 =
-{}^bT_a \, {}^a\tilde{p}.
-\label{eq:homogeneous_point_transform}
+{}^bT_a \, {}^a\tilde{p}
+=
+\begin{bmatrix}
+{}^bR_a & {}^bp_a\\
+0^\top & 1
+\end{bmatrix}
+\begin{bmatrix}
+{}^ap\\
+1
+\end{bmatrix}
+=
+\begin{bmatrix}
+{}^bR_a \, {}^ap + {}^bp_a\\
+1
+\end{bmatrix}.
+\label{eq:homogeneous_point_transform_expanded}
 \end{equation}
 
 In non-homogeneous form, this corresponds to
@@ -296,15 +310,17 @@ The position of the end-effector is described by the vector
 p_{\mathrm{EE}}
 =
 \begin{bmatrix}
-p_x\\
-p_y\\
-p_z
+p_{x,\mathrm{EE}}\\
+p_{y,\mathrm{EE}}\\
+p_{z,\mathrm{EE}}
 \end{bmatrix}
 \in \mathbb{R}^3,
 \label{eq:end_effector_position}
 \end{equation}
 
-where \(p_x\), \(p_y\), and \(p_z\) denote the Cartesian position components of the end-effector in the base frame.
+where \(p_{x,\mathrm{EE}}\), \(p_{y,\mathrm{EE}}\), and
+\(p_{z,\mathrm{EE}}\) denote the Cartesian position components of the
+end-effector in the base frame.
 
 The orientation of the end-effector is described by the rotation matrix
 
@@ -734,9 +750,7 @@ The angle \(q_i\) is measured in radians.
 Each matrix \({}^{i-1}T_i(q_i)\) describes the relative position and
 orientation between two neighboring link frames.
 In the standard Denavit--Hartenberg convention, this transformation is
-constructed from the joint angle \(q_i\), the link offset \(d_i\), the link
-length \(a_i\), and the link twist \(\alpha_i\).
-It is given by
+obtained as a product of four elementary homogeneous transformations:
 
 \begin{equation}
 {}^{i-1}T_i(q_i)
@@ -745,7 +759,23 @@ R_z(q_i)\,T_z(d_i)\,T_x(a_i)\,R_x(\alpha_i).
 \label{eq:dh_elementary_transformations}
 \end{equation}
 
-Written as a homogeneous transformation matrix, this becomes
+Here, \(R_z(q_i)\) and \(R_x(\alpha_i)\) are homogeneous rotation matrices,
+while \(T_z(d_i)\) and \(T_x(a_i)\) are homogeneous translation matrices.
+All four matrices have dimension \(4 \times 4\), so their product gives the
+homogeneous transformation from frame \(\{i\}\) to frame \(\{i-1\}\).
+
+Since column vectors are used, the transformations act from right to left when
+applied to a point.
+Thus, \(R_x(\alpha_i)\) represents the rotation about the \(x\)-axis by the
+link twist angle \(\alpha_i\).
+The translation \(T_x(a_i)\) then represents the displacement along the
+\(x\)-axis by the link length \(a_i\).
+The translation \(T_z(d_i)\) represents the displacement along the \(z\)-axis
+by the offset \(d_i\).
+Finally, \(R_z(q_i)\) represents the joint rotation about the local \(z\)-axis
+by the joint angle \(q_i\).
+
+Written as a single homogeneous transformation matrix, this product becomes
 
 \begin{equation}
 {}^{i-1}T_i(q_i)
@@ -759,14 +789,22 @@ Written as a homogeneous transformation matrix, this becomes
 \label{eq:dh_transformation_matrix}
 \end{equation}
 
-The remaining parameters \(d_i\), \(a_i\), and \(\alpha_i\) describe the fixed
+The remaining Denavit–Hartenberg parameters \(d_i\), \(a_i\), and \(\alpha_i\) describe the fixed
 geometry between neighboring link frames.
 The parameter \(d_i\) describes a translation along the \(z\)-axis, and
 \(a_i\) describes a translation along the \(x\)-axis.
 The parameter \(\alpha_i\), called the link twist, describes the angle between
 two neighboring joint axes.
 More precisely, \(\alpha_i\) describes how much the axis \(z_i\) is tilted
-with respect to the previous axis \(z_{i-1}\).
+with respect to the previous axis \(z_{i-1}\), as illustrated in
+\cref{fig:dh_parameters}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/DH_parameters.png}
+    \caption{Denavit--Hartenberg parameters between neighboring link frames.}
+    \label{fig:dh_parameters}
+\end{figure}
 
 The final transformation \({}^0T_n(q)\) describes the position and orientation
 of the end-effector frame with respect to the robot base frame.
@@ -792,227 +830,312 @@ This mapping is nonlinear because the individual link transformations contain
 trigonometric functions of the joint angles.
 Therefore, a change in a joint angle generally produces a nonlinear change in
 the end-effector position and orientation.
-A numerical evaluation of the forward kinematics for the Franka Emika Panda at
-the home configuration is provided in Appendix A.2, using the parameters listed
-in Appendix A.1.
 
 %% ─────────────────────────────────────────────────────────────
+Forward kinematics describes how the end-effector position and orientation are
+obtained from the joint angles.
+For control, however, it is also necessary to describe how changes in the joint
+angles affect the motion of the end-effector.
+This leads to differential kinematics, which relates joint velocities to
+Cartesian velocities.
+
 \section{Differential Kinematics}
-\label{sec:dk}
 %% ─────────────────────────────────────────────────────────────
 
-\textbf{Differential kinematics} relates joint \emph{velocities} to
-Cartesian \emph{velocities}.
-Differentiating $\vx=f(\vq)$ with respect to time yields:
+Forward kinematics provides the end-effector position and orientation as a
+function of the joint configuration \(q\).
+However, in control applications, the velocity relationship is also required.
+Differential kinematics describes how the end-effector velocity changes with
+respect to the joint velocities.
+
+Let the Cartesian end-effector state be written as
 
 \begin{equation}
-\label{eq:diff_kin}
-\dot{\mathbf{x}} = \mathbf{J}(\mathbf{q})\,\dot{\mathbf{q}}
+x = f(q),
+\label{eq:cartesian_state_forward_kinematics}
 \end{equation}
 
-\begin{itemize}
-  \item $\dot{\mathbf{x}}\in\mathbb{R}^6$: the \textbf{Cartesian
-        velocity}.
-        Upper three components: linear velocity
-        $\dot{\mathbf{p}}_{EE}\in\mathbb{R}^3$.
-        Lower three components: angular velocity
-        $\boldsymbol{\omega}_{EE}\in\mathbb{R}^3$.
-  \item $\dot{\mathbf{q}}\in\mathbb{R}^n$: the \textbf{joint velocity
-        vector}; each $\dot{q}_i$ in rad/s.
-  \item $\mathbf{J}(\mathbf{q})\in\mathbb{R}^{6\times n}$: the
-        \textbf{Jacobian matrix} (derived in \cref{sec:jacobian}),
-        encoding the first-order sensitivity of end-effector motion to
-        joint velocities at the current configuration $\vq$.
-\end{itemize}
-
-%% ─────────────────────────────────────────────────────────────
-\section{Jacobian Matrix}
-\label{sec:jacobian}
-%% ─────────────────────────────────────────────────────────────
-
-\subsection{Column Construction}
-
-The geometric Jacobian is assembled column by column:
+where \(x\) represents the Cartesian position and orientation of the
+end-effector, and \(q\) is the joint configuration vector.
+Differentiating this relationship with respect to time gives
 
 \begin{equation}
-\label{eq:jacobian_full}
-\mathbf{J} =
-\bigl[\mathbf{J}_1\;\mathbf{J}_2\;\cdots\;\mathbf{J}_n\bigr]
-\in\mathbb{R}^{6\times n}
+\dot{x}
+=
+J(q)\dot{q}.
+\label{eq:differential_kinematics}
 \end{equation}
 
-For revolute joint $k$:
+Here, \(\dot{x} \in \mathbb{R}^6\) is the Cartesian velocity vector of the
+end-effector.
+It consists of the linear velocity and angular velocity,
 
 \begin{equation}
-\label{eq:jacobian_col}
-\mathbf{J}_k =
+\dot{x}
+=
 \begin{bmatrix}
-\mathbf{z}_k\times(\mathbf{p}_{EE}-\mathbf{p}_k) \\[4pt]
-\mathbf{z}_k
-\end{bmatrix}
-\in\mathbb{R}^6
+\dot{p}_{\mathrm{EE}}\\
+\omega_{\mathrm{EE}}
+\end{bmatrix},
+\label{eq:cartesian_velocity_vector}
 \end{equation}
 
-\begin{itemize}
-  \item $\mathbf{z}_k\in\mathbb{R}^3$: unit vector along the rotation
-        axis of joint $k$ in the base frame (third column of
-        $\mathbf{R}_0^k$).
-  \item $\mathbf{p}_k\in\mathbb{R}^3$: position of joint frame $\{k\}$
-        in the base frame (upper-right column of $\mathbf{T}_0^k$).
-  \item $\mathbf{p}_{EE}-\mathbf{p}_k$: lever arm from joint $k$ to the
-        end-effector.
-  \item $\times$: cross product in $\mathbb{R}^3$.
-  \item \textbf{Upper block} $\mathbf{z}_k\times(\mathbf{p}_{EE}-\mathbf{p}_k)$:
-        linear velocity that joint $k$ induces at the end-effector
-        (rotation-axis crossed with lever arm).
-  \item \textbf{Lower block} $\mathbf{z}_k$:
-        angular velocity contribution (simply the joint axis).
-\end{itemize}
-
-Because $\mJ$ depends on $\vq$, the contribution of each joint to
-Cartesian motion changes with configuration.
-The complete $6\times7$ Jacobian matrix for the Panda at the home
-configuration is computed numerically in Appendix~\ref{app:panda_jacobian}.
-
-\subsection{Why the Jacobian Cannot Simply Be Inverted}
-\label{subsec:pinv}
-
-The control law uses $\mJ^\top$, not $\mJ^{-1}$.
-Two reasons:
-
-\paragraph{Part 1 --- J is not square.}
-The Panda has $n=7$ joints acting in $m=6$-dimensional Cartesian space.
-$\mJ\in\mathbb{R}^{6\times7}$ has more columns than rows; a regular
-inverse $\mJ^{-1}$ does not exist.
-
-\paragraph{Part 2 --- The transpose is the exact force-mapping tool.}
-The relationship between Cartesian forces and joint torques follows
-from the principle of virtual work and is \emph{exact}:
-
-\begin{equation}
-\label{eq:jT_use}
-\bm{\tau} = \mJ^\top(\vq)\,\vF
-\end{equation}
-
-No inversion is needed.
-$\mJ^\top\in\mathbb{R}^{7\times6}$ distributes the wrench $\vF$
-across the seven joints correctly at every configuration, including
-near singularities.
-\textbf{This is the only Jacobian operation used in the control law
-of this thesis.}
-
-\paragraph{The pseudo-inverse and null space (for reference).}
-Because $7>6$, there is a one-dimensional \textbf{null space}: a
-direction of joint motion that produces \emph{zero} end-effector
+where \(\dot{p}_{\mathrm{EE}} \in \mathbb{R}^3\) is the linear velocity of the
+end-effector and \(\omega_{\mathrm{EE}} \in \mathbb{R}^3\) is its angular
 velocity.
-This redundancy is characterised by the Moore--Penrose pseudo-inverse:
+
+The vector \(\dot{q} \in \mathbb{R}^n\) contains the joint velocities of the
+robot,
 
 \begin{equation}
-\label{eq:pinv}
-\mathbf{J}^+ = \mathbf{J}^\top(\mathbf{J}\mathbf{J}^\top)^{-1}
-\in\mathbb{R}^{7\times6}
+\dot{q}
+=
+\begin{bmatrix}
+\dot{q}_1 & \dot{q}_2 & \cdots & \dot{q}_n
+\end{bmatrix}^\top,
+\label{eq:joint_velocity_vector}
 \end{equation}
 
-$\mathbf{J}^+$ gives the minimum-norm joint velocity solution for a
-given Cartesian velocity.
-Together with the null-space projector
-$\mathbf{N}=\mathbf{I}_7-\mathbf{J}^+\mathbf{J}$, it could be used
-for secondary objectives (joint-limit avoidance).
-However, $\mathbf{J}^+$ and $\mathbf{N}$ are \textbf{not used in the
-controller of this thesis}; they are computed in
-Appendix~\ref{app:panda_pinv} for mathematical completeness only.
+where each \(\dot{q}_i\) describes the angular velocity of joint \(i\),
+measured in radians per second.
+
+The matrix \(J(q) \in \mathbb{R}^{6 \times n}\) is the geometric Jacobian.
+It maps joint velocities to the corresponding Cartesian velocity of the
+end-effector at the current configuration \(q\).
+Since the Jacobian depends on \(q\), the same joint velocity can produce
+different end-effector velocities depending on the current robot configuration.
+
+%% ─────────────────────────────────────────────────────────────
+The previous section introduced the velocity relation between joint space and
+Cartesian space.
+The matrix that describes this relation is the Jacobian.
+It determines how each individual joint velocity contributes to the linear and
+angular velocity of the end-effector.
+
+\section{Jacobian Matrix}
+%% ─────────────────────────────────────────────────────────────
+
+The Jacobian matrix describes the local relationship between joint velocities
+and the Cartesian velocity of the end-effector.
+It appears in the differential kinematics equation
+
+\begin{equation}
+\dot{x} = J(q)\dot{q}.
+\label{eq:jacobian_velocity_relation}
+\end{equation}
+
+For a robot with \(n\) joints, the geometric Jacobian is written as
+
+\begin{equation}
+J(q)
+=
+\begin{bmatrix}
+J_1 & J_2 & \cdots & J_n
+\end{bmatrix}
+\in \mathbb{R}^{6 \times n}.
+\label{eq:geometric_jacobian}
+\end{equation}
+
+Each column \(J_i\) describes the contribution of joint \(i\) to the
+end-effector velocity.
+Since the Franka Emika Panda consists of rotational joints, the \(i\)-th
+column of the Jacobian is given by
+
+\begin{equation}
+J_i
+=
+\begin{bmatrix}
+z_i \times \left(p_{\mathrm{EE}} - p_i\right)\\
+z_i
+\end{bmatrix}
+\in \mathbb{R}^6.
+\label{eq:jacobian_column}
+\end{equation}
+
+Here, \(z_i \in \mathbb{R}^3\) is the unit vector along the rotation axis of
+joint \(i\), expressed in the base frame.
+It is obtained from the corresponding transformation matrix as the \(z\)-axis
+of frame \(\{i\}\).
+The vector \(p_i \in \mathbb{R}^3\) is the position of frame \(\{i\}\),
+expressed in the base frame, and \(p_{\mathrm{EE}} \in \mathbb{R}^3\) is the
+end-effector position.
+
+The vector
+
+\begin{equation}
+p_{\mathrm{EE}} - p_i
+\label{eq:lever_arm}
+\end{equation}
+
+is the lever arm from joint \(i\) to the end-effector.
+The cross product
+
+\begin{equation}
+z_i \times \left(p_{\mathrm{EE}} - p_i\right)
+\label{eq:linear_velocity_contribution}
+\end{equation}
+
+therefore gives the linear velocity contribution at the end-effector caused by
+the rotation of joint \(i\).
+The lower part of the column, \(z_i\), gives the corresponding angular
+velocity contribution.
+
+Thus, each Jacobian column consists of two parts:
+
+\begin{equation}
+J_i
+=
+\begin{bmatrix}
+\text{linear velocity contribution}\\
+\text{angular velocity contribution}
+\end{bmatrix}.
+\label{eq:jacobian_column_parts}
+\end{equation}
+
+Because \(z_i\), \(p_i\), and \(p_{\mathrm{EE}}\) all depend on the current
+joint configuration, the Jacobian is configuration-dependent.
+Therefore, the influence of each joint on the end-effector motion changes as
+the robot moves.
 
 %% ─────────────────────────────────────────────────────────────
 \section{Impedance Control}
-\label{sec:impedance}
 %% ─────────────────────────────────────────────────────────────
 
-Impedance control \cite{Hogan1985} imposes a desired dynamic
-relationship between the motion of the end-effector and the forces
-acting on it, making the robot behave like a virtual mass-spring-damper
-system in Cartesian space.
-The error signal $\mathbf{e}=[\mathbf{e}_p^\top,\mathbf{e}_R^\top]^\top$
-defined in \cref{eq:cartesian_error_vector} drives two impedance laws: one translational,
-one rotational.
+The previous section introduced the Jacobian matrix, which relates joint
+velocities to Cartesian end-effector velocities.
+In the controller, this relationship is also used to map Cartesian forces and
+moments to joint torques \cite{Khatib1987}.
+Before this mapping is introduced, the desired Cartesian interaction behavior
+is defined using impedance control.
 
-\subsection{Impedance Wrench}
+Impedance control imposes a desired dynamic behavior between the end-effector
+motion and the forces acting on it \cite{Hogan1985,Ott2008}.
+Instead of commanding only a desired position, the robot is made to behave like
+a virtual spring-damper system in Cartesian space.
+In this way, deviations from the desired position and orientation generate
+restoring forces and moments, while the damping terms reduce oscillations and
+dissipate energy.
 
-The \textbf{translational impedance force} is:
-
-\begin{equation}
-\label{eq:imp_trans}
-\mathbf{f} = \mathbf{K}_p\,\mathbf{e}_p
-           - \mathbf{D}_p\,\dot{\mathbf{p}}_{EE}
-\in\mathbb{R}^3
-\end{equation}
-
-The \textbf{rotational impedance moment} is:
+The Cartesian error vector was defined as
 
 \begin{equation}
-\label{eq:imp_rot}
-\mathbf{m} = \mathbf{K}_R\,\mathbf{e}_R
-           - \mathbf{D}_R\,\boldsymbol{\omega}_{EE}
-\in\mathbb{R}^3
-\end{equation}
-
-The combined \textbf{Cartesian impedance wrench} is:
-
-\begin{equation}
-\label{eq:impedance}
-\mathbf{F} =
+e
+=
 \begin{bmatrix}
-\mathbf{f} \\[2pt] \mathbf{m}
+e_p\\
+e_R
+\end{bmatrix}
+\in \mathbb{R}^6,
+\label{eq:cartesian_error_impedance}
+\end{equation}
+
+where \(e_p\) is the translational error and \(e_R\) is the rotational error.
+These two error components are used to compute the Cartesian impedance forces
+and moments.
+
+\subsection{Impedance Forces and Moments}
+
+The positional impedance force is defined as
+
+\begin{equation}
+f
+=
+K_p e_p
+-
+D_p \dot{p}_{\mathrm{EE}}
+\in \mathbb{R}^3.
+\label{eq:positional_impedance_force}
+\end{equation}
+
+Here, \(K_p \in \mathbb{R}^{3 \times 3}\) is the positional stiffness
+matrix and \(D_p \in \mathbb{R}^{3 \times 3}\) is the positional damping
+matrix.
+The stiffness term \(K_p e_p\) generates a restoring force proportional to the
+position error, while the damping term \(D_p \dot{p}_{\mathrm{EE}}\) opposes
+the Cartesian linear velocity of the end-effector.
+
+The rotational impedance moment is defined as
+
+\begin{equation}
+m
+=
+K_R e_R
+-
+D_R \omega_{\mathrm{EE}}
+\in \mathbb{R}^3.
+\label{eq:rotational_impedance_moment}
+\end{equation}
+
+Here, \(K_R \in \mathbb{R}^{3 \times 3}\) is the rotational stiffness matrix
+and \(D_R \in \mathbb{R}^{3 \times 3}\) is the rotational damping matrix.
+The stiffness term \(K_R e_R\) generates a restoring moment proportional to the
+orientation error, while the damping term \(D_R \omega_{\mathrm{EE}}\) opposes
+the angular velocity of the end-effector.
+
+The positional force and rotational moment are combined into the Cartesian
+force/moment vector
+
+\begin{equation}
+F
+=
+\begin{bmatrix}
+f\\
+m
 \end{bmatrix}
 =
 \begin{bmatrix}
-\mathbf{K}_p\,\mathbf{e}_p - \mathbf{D}_p\,\dot{\mathbf{p}}_{EE} \\[4pt]
-\mathbf{K}_R\,\mathbf{e}_R - \mathbf{D}_R\,\boldsymbol{\omega}_{EE}
+K_p e_p - D_p \dot{p}_{\mathrm{EE}}\\
+K_R e_R - D_R \omega_{\mathrm{EE}}
 \end{bmatrix}
-\in\mathbb{R}^6
+\in \mathbb{R}^6.
+\label{eq:cartesian_force_moment_vector}
 \end{equation}
 
+The vector \(F\) therefore contains the Cartesian forces and moments generated
+by the impedance controller in response to position, orientation, linear
+velocity, and angular velocity errors.
+This force/moment vector is later mapped to joint torques using the transpose
+of the Jacobian.
 
-\subsection{Stiffness and Damping Matrices in Local and Base Frames}
+
+\subsection{Stiffness and Damping Matrices in the End-Effector Frame and Base Frame}
 \label{subsec:KD_matrices}
 
-The translational stiffness matrix \(\mathbf{K}_p\) and damping matrix
-\(\mathbf{D}_p\) are not restricted to diagonal form. A diagonal matrix is only
-obtained when the principal stiffness directions are aligned with the coordinate
-frame in which the controller is written. For a general Cartesian task, it is
-clearer to distinguish between a \emph{local stiffness frame} and the robot
-\emph{base frame}.
+The positional stiffness matrix \(K_p\) and damping matrix \(D_p\) do not have
+to be diagonal in the robot base frame \(\{0\}\).
+Here, the subscript \(p\) refers to the positional part of the impedance
+controller.
+A diagonal matrix is obtained only when the coordinate axes of the chosen frame
+are aligned with the principal stiffness directions.
+For this reason, the positional stiffness and damping matrices are first
+defined in the end-effector frame \(\{\mathrm{EE}\}\), where the principal
+directions are easier to specify, and are then transformed into the base frame
+\(\{0\}\).
 
-\subsubsection*{Local stiffness frame}
-
-Let the three principal stiffness directions around the desired point be
-collected in the orthonormal matrix
+Let the orientation of the end-effector frame \(\{\mathrm{EE}\}\) with respect
+to the base frame \(\{0\}\) be given by
 
 \begin{equation}
-\label{eq:W_local_base}
-\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}
+R_{\mathrm{EE}}
 =
 \begin{bmatrix}
-\hat{\mathbf{a}}_1 & \hat{\mathbf{a}}_2 & \hat{\mathbf{a}}_3
-\end{bmatrix}
-\in SO(3).
+x_{\mathrm{EE}} &
+y_{\mathrm{EE}} &
+z_{\mathrm{EE}}
+\end{bmatrix}.
+\label{eq:ee_axes_in_base}
 \end{equation}
 
-The variables in \cref{eq:W_local_base} are:
-\begin{itemize}
-  \item \(\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}\): orientation
-        matrix of the local stiffness frame expressed in the base frame.
-  \item \(\hat{\mathbf{a}}_1,\hat{\mathbf{a}}_2,\hat{\mathbf{a}}_3\in
-        \mathbb{R}^3\): unit vectors defining the principal stiffness
-        directions.
-  \item \(SO(3)\): the set of valid three-dimensional rotation matrices.
-        Thus the three columns are orthonormal and form a right-handed frame.
-\end{itemize}
+The vectors \(x_{\mathrm{EE}}\), \(y_{\mathrm{EE}}\), and \(z_{\mathrm{EE}}\)
+denote the unit direction vectors of the \(x\)-, \(y\)-, and \(z\)-axes of the
+end-effector frame, expressed in the base frame.
+They should not be confused with the Cartesian position components of the
+end-effector.
 
-In this local frame, the stiffness matrix is chosen diagonal:
+In the end-effector frame, the positional stiffness matrix is chosen diagonal:
 
 \begin{equation}
-\label{eq:K_local}
-\mathbf{K}_{p,\mathrm{local}}
+K_{p,\mathrm{EE}}
 =
 \operatorname{diag}(K_1,K_2,K_3)
 =
@@ -1021,504 +1144,196 @@ K_1 & 0 & 0\\
 0 & K_2 & 0\\
 0 & 0 & K_3
 \end{bmatrix}.
+\label{eq:positional_stiffness_ee}
 \end{equation}
 
-Here \(K_1,K_2,K_3>0\) are the stiffness values along the three local
-principal directions. Physically, they define the shape of the virtual
-spring around the desired point. If all three values are equal, the
-spring is spherical. If the values are different, the spring is
-ellipsoidal.
+Here, \(K_1\), \(K_2\), and \(K_3\) are positive stiffness values along the
+\(x\)-, \(y\)-, and \(z\)-axes of the end-effector frame, respectively.
+If all three values are equal, the virtual spring has the same stiffness in
+every direction.
+If the values are different, the stiffness depends on direction.
 
-\subsubsection*{Transformation to the base frame}
-
-The controller computes Cartesian forces in the base frame. Therefore, the
-local stiffness matrix must be expressed in the base frame:
+Since the impedance force is computed in the base frame, the stiffness matrix
+must also be expressed in the base frame.
+This is done by rotating the stiffness matrix from the end-effector frame into
+the base frame:
 
 \begin{equation}
-\label{eq:K_base_local}
-\mathbf{K}_{p,\mathrm{base}}
+K_{p,0}
 =
-\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}\,
-\mathbf{K}_{p,\mathrm{local}}\,
-\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}^{T}.
+R_{\mathrm{EE}}
+K_{p,\mathrm{EE}}
+R_{\mathrm{EE}}^\top .
+\label{eq:positional_stiffness_base}
 \end{equation}
 
-This equation is the most important form used throughout the remainder of the
-thesis. It says that the matrix is simple and diagonal in the local stiffness
-frame, but may become a full matrix in the base frame. The off-diagonal
-entries are not numerical errors. They describe coupling between the
-base-frame directions caused by the rotation of the stiffness field.
+This equation shows that the stiffness matrix can be diagonal in the
+end-effector frame but become a full matrix in the base frame.
+The off-diagonal terms are not errors; they describe coupling between the
+base-frame directions caused by the orientation of the end-effector frame.
 
-Equivalently, \cref{eq:K_base_local} can be written as a sum of dyadic
-products:
+Equivalently, the stiffness matrix in the base frame can be written as
 
 \begin{equation}
-\label{eq:K_base_dyadic}
-\mathbf{K}_{p,\mathrm{base}}
+K_{p,0}
 =
-K_1\,\hat{\mathbf{a}}_1\hat{\mathbf{a}}_1^{T}
+K_1\,x_{\mathrm{EE}}x_{\mathrm{EE}}^\top
 +
-K_2\,\hat{\mathbf{a}}_2\hat{\mathbf{a}}_2^{T}
+K_2\,y_{\mathrm{EE}}y_{\mathrm{EE}}^\top
 +
-K_3\,\hat{\mathbf{a}}_3\hat{\mathbf{a}}_3^{T}.
+K_3\,z_{\mathrm{EE}}z_{\mathrm{EE}}^\top .
+\label{eq:positional_stiffness_dyadic}
 \end{equation}
 
-This form shows directly how each principal direction contributes to the
-entries of the full base-frame matrix.
+This form shows how each end-effector axis contributes to the full stiffness
+matrix in the base frame.
 
-\subsubsection*{Damping matrix}
-
-The damping matrix is constructed in the same way. In the local frame:
+The damping matrix is constructed in the same way.
+In the end-effector frame, it is chosen as
 
 \begin{equation}
-\label{eq:D_local}
-\mathbf{D}_{p,\mathrm{local}}
+D_{p,\mathrm{EE}}
 =
 \operatorname{diag}(D_1,D_2,D_3).
+\label{eq:positional_damping_ee}
 \end{equation}
 
 For a unit virtual mass in each principal direction, critical damping gives
 
 \begin{equation}
-\label{eq:D_i_critical}
 D_i = 2\sqrt{K_i},
 \qquad i=1,2,3.
+\label{eq:critical_damping}
 \end{equation}
 
 Thus,
 
 \begin{equation}
-\label{eq:D_local_critical}
-\mathbf{D}_{p,\mathrm{local}}
+D_{p,\mathrm{EE}}
 =
-2\,\operatorname{diag}
+2\operatorname{diag}
 \left(
-\sqrt{K_1},\sqrt{K_2},\sqrt{K_3}
+\sqrt{K_1},
+\sqrt{K_2},
+\sqrt{K_3}
 \right).
+\label{eq:positional_damping_ee_critical}
 \end{equation}
 
-The damping matrix in the base frame is then
+The damping matrix expressed in the base frame is then
 
 \begin{equation}
-\label{eq:D_base_local}
-\mathbf{D}_{p,\mathrm{base}}
+D_{p,0}
 =
-\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}\,
-\mathbf{D}_{p,\mathrm{local}}\,
-\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}^{T}.
+R_{\mathrm{EE}}
+D_{p,\mathrm{EE}}
+R_{\mathrm{EE}}^\top .
+\label{eq:positional_damping_base}
 \end{equation}
 
-The same construction is used for the rotational stiffness and damping
-matrices \(\mathbf{K}_{R,\mathrm{base}}\) and \(\mathbf{D}_{R,\mathrm{base}}\),
-using rotational stiffness values in \(\mathrm{Nm/rad}\) instead of
-\(\mathrm{N/m}\).
-
-\subsubsection*{Application to fixed-point tracking}
-
-For tracking a single fixed Cartesian point, the desired point defines only the
-\emph{centre} of the virtual spring:
-
-\begin{equation}
-\label{eq:fixed_point_center}
-\mathbf{p}_d =
-\begin{bmatrix}
-x_d\\y_d\\z_d
-\end{bmatrix}.
-\end{equation}
-
-The stiffness matrix defines the shape and orientation of the restoring
-behaviour around this point. Therefore, even for a single fixed target point,
-\(\mathbf{K}_{p,\mathrm{base}}\) and \(\mathbf{D}_{p,\mathrm{base}}\) may be
-full matrices if the desired principal stiffness directions are rotated
-relative to the base frame.
-
-The translational tracking law becomes
-
-\begin{equation}
-\label{eq:tracking_full_KD}
-\mathbf{f}
-=
-\mathbf{K}_{p,\mathrm{base}}
-(\mathbf{p}_d-\mathbf{p}_{EE})
-+
-\mathbf{D}_{p,\mathrm{base}}
-(\dot{\mathbf{p}}_d-\dot{\mathbf{p}}_{EE}).
-\end{equation}
-
-For a fixed point, \(\dot{\mathbf{p}}_d=\mathbf{0}\), and therefore
-
-\begin{equation}
-\label{eq:tracking_fixed_point_full_KD}
-\mathbf{f}
-=
-\mathbf{K}_{p,\mathrm{base}}
-(\mathbf{p}_d-\mathbf{p}_{EE})
--
-\mathbf{D}_{p,\mathrm{base}}
-\dot{\mathbf{p}}_{EE}.
-\end{equation}
-
-Here:
-\begin{itemize}
-  \item \(\mathbf{f}\in\mathbb{R}^3\): commanded translational force.
-  \item \(\mathbf{p}_d\in\mathbb{R}^3\): desired fixed point.
-  \item \(\mathbf{p}_{EE}\in\mathbb{R}^3\): current end-effector position.
-  \item \(\dot{\mathbf{p}}_{EE}\in\mathbb{R}^3\): current end-effector velocity.
-  \item \(\mathbf{K}_{p,\mathrm{base}}\): full stiffness matrix in the base frame.
-  \item \(\mathbf{D}_{p,\mathrm{base}}\): full damping matrix in the base frame.
-\end{itemize}
-
-\subsubsection*{Numerical 3D example for point tracking}
-
-Consider a fixed target point and a local stiffness frame rotated relative to
-the base frame by roll, pitch, and yaw angles
-
-\begin{equation}
-\alpha = 20^{\circ},\qquad
-\beta = 30^{\circ},\qquad
-\gamma = 40^{\circ}.
-\end{equation}
-
-Using the \(ZYX\) convention, the local-to-base orientation matrix is
-
-\begin{equation}
-\label{eq:W_rpy}
-\mathbf{W}_{\mathrm{local}\rightarrow\mathrm{base}}
-=
-\mathbf{R}_z(\gamma)\,\mathbf{R}_y(\beta)\,\mathbf{R}_x(\alpha).
-\end{equation}
-
-Choose the local stiffness values
-
-\begin{equation}
-\label{eq:K_local_numeric}
-\mathbf{K}_{p,\mathrm{local}}
-=
-\operatorname{diag}(1000,\;300,\;100)\;\mathrm{N/m}.
-\end{equation}
-
-Substitution into \cref{eq:K_base_local} gives approximately
-
-\begin{equation}
-\label{eq:K_base_numeric_tracking}
-\mathbf{K}_{p,\mathrm{base}}
-\approx
-\begin{bmatrix}
-605.1 & 359.0 & -205.6\\
-359.0 & 500.2 & 138.9\\
--205.6 & 138.9 & 294.7
-\end{bmatrix}
-\;\mathrm{N/m}.
-\end{equation}
-
-The matrix is symmetric and positive definite, but it is no longer diagonal.
-Therefore, a position error in one base direction can produce a restoring
-force with components in several base directions.
-
-For example, if
-
-\begin{equation}
-\label{eq:tracking_error_numeric}
-\mathbf{p}_d-\mathbf{p}_{EE}
-=
-\begin{bmatrix}
-0.01\\0\\0
-\end{bmatrix}
-\mathrm{m},
-\end{equation}
-
-and the end-effector is momentarily at rest, then
-
-\begin{equation}
-\label{eq:tracking_force_numeric}
-\mathbf{f}
-=
-\mathbf{K}_{p,\mathrm{base}}
-(\mathbf{p}_d-\mathbf{p}_{EE})
-\approx
-\begin{bmatrix}
-6.05\\3.59\\-2.06
-\end{bmatrix}
-\mathrm{N}.
-\end{equation}
-
-Although the position error is purely in the base \(x\)-direction, the force
-contains \(x\)-, \(y\)-, and \(z\)-components. This is the clearest physical
-interpretation of a full stiffness matrix for tracking a single point.
-
-\subsection{Virtual Wall Constraint: Task Definition}
-\label{subsec:virtual_wall}
-
-The task studied in this thesis is \textbf{constrained interaction
-with a virtual plane}.
-The virtual wall is not a physical barrier; its effect is encoded
-entirely through the stiffness and damping matrices.
-
-\paragraph{Geometry.}
-The wall is defined by a unit \textbf{normal vector}
-$\hat{\mathbf{n}}\in\mathbb{R}^3$ and a \textbf{support point}
-$\mathbf{p}_0\in\mathbb{R}^3$ on the plane.
-The signed distance from the end-effector to the wall is:
-
-\begin{equation}
-\label{eq:wall_dist}
-d = \hat{\mathbf{n}}^\top(\mathbf{p}_{EE}-\mathbf{p}_0)\in\mathbb{R}
-\end{equation}
-
-The desired position $\mathbf{p}_d$ is chosen so that $d=0$: the
-end-effector is commanded to stay on the surface.
-
-\paragraph{Degrees of freedom.}
-Let $\hat{\mathbf{t}}_1,\hat{\mathbf{t}}_2$ be two orthogonal
-unit vectors in the plane, with
-$\hat{\mathbf{n}}=\hat{\mathbf{t}}_1\times\hat{\mathbf{t}}_2$.
-The wall partitions the six end-effector \abbr{DOF}s as follows:
-
-\begin{center}
-\renewcommand{\arraystretch}{1.4}
-\begin{tabular}{@{}llp{6cm}@{}}
-\toprule
-DOF & Compliance & Physical meaning \\
-\midrule
-Translation along $\hat{\mathbf{t}}_1$
-  & \textbf{Free} (low $k$)
-  & Sliding left--right in the plane \\
-Translation along $\hat{\mathbf{t}}_2$
-  & \textbf{Free} (low $k$)
-  & Sliding up--down in the plane \\
-Translation along $\hat{\mathbf{n}}$
-  & \textbf{Stiff} (high $k$)
-  & Normal direction: stays on the wall \\
-Rotation about $\hat{\mathbf{n}}$ (spin)
-  & \textbf{Stiff} (high $k_R$)
-  & Spinning blocked --- useless for surface contact \\
-Rotation about $\hat{\mathbf{t}}_1$ (tilt)
-  & \textbf{Free} (low $k_R$)
-  & Tilt to bring tool face flat against surface \\
-Rotation about $\hat{\mathbf{t}}_2$ (tilt)
-  & \textbf{Free} (low $k_R$)
-  & Tilt to bring tool face flat against surface \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\paragraph{Step 1 --- Define the wall frame $\mathbf{W}$.}
-The wall orientation matrix is assembled from the three task vectors:
-
-\begin{equation}
-\label{eq:W_matrix}
-\mathbf{W} =
-\begin{bmatrix}
-\hat{\mathbf{t}}_1 & \hat{\mathbf{t}}_2 & \hat{\mathbf{n}}
-\end{bmatrix}
-\in SO(3)
-\end{equation}
-
-The columns of $\mathbf{W}$ are the three unit vectors of the wall frame
-expressed in the base frame.
-$\mathbf{W}$ is a rotation matrix because $\hat{\mathbf{t}}_1$,
-$\hat{\mathbf{t}}_2$, $\hat{\mathbf{n}}$ form a right-handed orthonormal
-set.
-
-\paragraph{Step 2 --- Stiffness matrices in the wall frame: why diagonal here?}
-
-\begin{remark}
-This is the key question that often causes confusion.
-The stiffness matrix \textbf{is always a full \abbr{SPD} matrix in general}
-(as derived in \cref{subsec:KD_matrices}).
-It is diagonal \emph{only in the wall frame}, and for a very specific
-geometric reason explained here.
-In the base frame it is a full matrix with non-zero off-diagonals
-(unless the wall happens to be axis-aligned).
-\end{remark}
-
-The wall frame $\mathbf{W} = [\hat{\mathbf{t}}_1\;\hat{\mathbf{t}}_2\;\hat{\mathbf{n}}]$
-is defined \emph{precisely so that} its three coordinate axes coincide
-with the three mechanically distinct directions of the task:
-$\hat{\mathbf{t}}_1$, $\hat{\mathbf{t}}_2$ are the free sliding directions,
-and $\hat{\mathbf{n}}$ is the stiff normal direction.
-
-In this frame, a pure displacement along $\hat{\mathbf{t}}_1$ should
-produce a restoring force \emph{only} along $\hat{\mathbf{t}}_1$, because
-that direction is decoupled from the others by the task geometry.
-There is no physical reason for a displacement along the sliding direction
-to generate a force in the normal direction.
-This one-to-one mapping between displacement direction and restoring force
-direction is exactly what a \textbf{diagonal matrix} encodes: each diagonal
-entry $k_i$ maps displacement along axis $i$ to force along the same axis $i$,
-with zero off-diagonal coupling.
-
-In contrast, if we worked in the base frame from the start, the axes $x$,
-$y$, $z$ would generally not coincide with $\hat{\mathbf{t}}_1$,
-$\hat{\mathbf{t}}_2$, $\hat{\mathbf{n}}$.
-A displacement in $x$ would contain components in both the free and stiff
-directions, so the stiffness matrix in the base frame must couple $x$, $y$,
-and $z$ to correctly implement the task constraint.
-That coupling is captured by the off-diagonal entries of
-$\mathbf{K}_p = \mathbf{W}\mathbf{K}_{p,\mathrm{local}}\mathbf{W}^\top$,
-which are \textbf{non-zero} unless $\mathbf{W}=\mathbf{I}$.
-
-\textbf{In summary:} the matrix is diagonal in the wall frame because the
-wall frame was specifically designed to align with the task.
-The same matrix, when rotated to the base frame, becomes full.
-Diagonal does not mean simpler — it is simply a convenient representation
-in the right basis.
-
-The stiffness matrix in the wall frame is:
-
-\begin{equation}
-\label{eq:K_wall}
-\mathbf{K}_{p,\mathrm{local}} =
-\begin{bmatrix}
-k_{\mathrm{free}}  & 0 & 0 \\
-0 & k_{\mathrm{free}}  & 0 \\
-0 & 0 & k_{\mathrm{stiff}}
-\end{bmatrix},
-\quad
-\mathbf{K}_{R,\mathrm{local}} =
-\begin{bmatrix}
-k_{R,\mathrm{free}}  & 0 & 0 \\
-0 & k_{R,\mathrm{free}}  & 0 \\
-0 & 0 & k_{R,\mathrm{stiff}}
-\end{bmatrix}
-\end{equation}
-
-where the ordering of columns follows $(\hat{\mathbf{t}}_1,
-\hat{\mathbf{t}}_2, \hat{\mathbf{n}})$ and $K_{R,\mathrm{local}}$
-is arranged as (tilt-free, tilt-free, spin-stiff):
-rotation about $\hat{\mathbf{t}}_1$ and $\hat{\mathbf{t}}_2$ is free
-(tool tilts to make full contact); rotation about $\hat{\mathbf{n}}$
-(spinning) is stiff.
-
-\paragraph{Step 3 --- Rotating to the base frame.}
-The impedance controller computes forces and torques in the base frame,
-so $\mathbf{K}_{p,\mathrm{local}}$ must be expressed there.
-Whenever a matrix defined in one frame is rotated into another frame,
-the correct transformation is the \textbf{congruence transformation}
-$\mathbf{A} \mapsto \mathbf{W}\mathbf{A}\mathbf{W}^\top$.
-Applied to the stiffness matrices:
-
-\begin{equation}
-\label{eq:K_base}
-\mathbf{K}_p = \mathbf{W}\,\mathbf{K}_{p,\mathrm{local}}\,\mathbf{W}^\top
-\qquad
-\mathbf{K}_R = \mathbf{W}\,\mathbf{K}_{R,\mathrm{local}}\,\mathbf{W}^\top
-\end{equation}
-
-and analogously $\mathbf{D}_p = \mathbf{W}\mathbf{D}_{p,\mathrm{local}}\mathbf{W}^\top$,
-$\mathbf{D}_R = \mathbf{W}\mathbf{D}_{R,\mathrm{local}}\mathbf{W}^\top$.
-
-\paragraph{Why $\mathbf{K}_p$ is a full matrix in the base frame.}
-Unless $\mathbf{W}=\mathbf{I}$ (the wall frame happens to coincide with
-the base frame), the product $\mathbf{W}\mathbf{K}_{p,\mathrm{local}}\mathbf{W}^\top$
-is a \textbf{full} $3\times3$ SPD matrix with non-zero off-diagonal entries.
-To see why, expand the product for a simple $2\times2$ example: if
-$\mathbf{W}=\bigl[\begin{smallmatrix}\cos\theta&-\sin\theta\\\sin\theta&\cos\theta\end{smallmatrix}\bigr]$
-and $\mathbf{K}^{\mathrm{wall}}=\mathrm{diag}(k_1,k_2)$, then:
-
-\begin{equation}
-\mathbf{W}\mathbf{K}^{\mathrm{wall}}\mathbf{W}^\top
-=
-\begin{bmatrix}
-k_1\cos^2\theta + k_2\sin^2\theta & (k_1-k_2)\cos\theta\sin\theta \\
-(k_1-k_2)\cos\theta\sin\theta     & k_1\sin^2\theta + k_2\cos^2\theta
-\end{bmatrix}
-\end{equation}
-
-The off-diagonal term $(k_1-k_2)\cos\theta\sin\theta$ is non-zero
-whenever $k_1\neq k_2$ (different stiffnesses) and $\theta\neq 0$
-(wall is not aligned with the base frame).
-Physically, this off-diagonal entry means: in the base frame, a
-displacement along $x$ produces a restoring force with a component
-along $y$, because neither $x$ nor $y$ coincides with a wall-frame
-axis---both contain parts of the free and stiff directions mixed together.
-This coupling is not a problem; it is the correct physical behaviour.
-The congruence transformation $\mathbf{WKW}^\top$ preserves positive
-definiteness: if $\mathbf{K}^{\mathrm{wall}}$ is SPD and $\mathbf{W}$
-is invertible (which it is, as $\mathbf{W}\in SO(3)$), then
-$\mathbf{WKW}^\top$ is also SPD.
-
-\paragraph{Physical interpretation.}
-A force applied along $\hat{\mathbf{t}}_1$ or $\hat{\mathbf{t}}_2$
-meets only $k_{\mathrm{free}}$ resistance: the end-effector slides
-freely in the plane.
-A force along $\hat{\mathbf{n}}$ meets $k_{\mathrm{stiff}}$: the
-robot stays on the wall.
-Torques about $\hat{\mathbf{t}}_1$ and $\hat{\mathbf{t}}_2$
-are barely resisted ($k_{R,\mathrm{free}}$): the tool is free to tilt
-until its face lies flat and parallel to the surface, making full contact.
-A torque about $\hat{\mathbf{n}}$ (spinning) is strongly resisted
-by $k_{R,\mathrm{stiff}}$: spinning the tool about the wall normal does
-not improve contact and is therefore blocked.
+The same construction can be applied to the rotational stiffness matrix
+\(K_{R,0}\) and the rotational damping matrix \(D_{R,0}\).
+In this case, rotational stiffness is expressed in \(\mathrm{Nm/rad}\),
+whereas positional stiffness is expressed in \(\mathrm{N/m}\).
 
 %% ─────────────────────────────────────────────────────────────
 \section{Control Law}
 \label{sec:control_law}
 %% ─────────────────────────────────────────────────────────────
 
-The final step maps the desired Cartesian wrench $\mathbf{F}$ to the
-joint torques $\vtau$ that the actuators must produce.
-From the principle of virtual work \cite{Khatib1987}:
+After defining the Cartesian impedance forces and moments, the final step is
+to convert them into joint torques that can be commanded to the robot
+actuators.
+This mapping is performed using the transpose of the Jacobian
+\cite{Khatib1987}.
+
+The Cartesian force/moment vector is given by
 
 \begin{equation}
-\label{eq:control_law}
-\bm{\tau} = \mathbf{J}^\top(\mathbf{q})\,\mathbf{F}
-\end{equation}
-
-\begin{itemize}
-  \item $\bm{\tau}=[\tau_1,\ldots,\tau_n]^\top\in\mathbb{R}^n$:
-        the \textbf{joint torque vector}; each $\tau_i$ in Nm.
-  \item $\mathbf{J}^\top\in\mathbb{R}^{n\times6}$: the Jacobian
-        transpose, which maps the 6-dimensional wrench to $n$ joint
-        torques exactly (no inversion required; see \cref{subsec:pinv}).
-  \item $\mathbf{F}\in\mathbb{R}^6$: the impedance wrench from
-        \cref{eq:impedance}.
-\end{itemize}
-
-Substituting \cref{eq:impedance} into \cref{eq:control_law} gives the
-\textbf{complete Cartesian impedance control law}:
-
-\begin{equation}
-\label{eq:full_cl}
-\boxed{
-\bm{\tau} = \mathbf{J}^\top(\mathbf{q})
+F =
 \begin{bmatrix}
-\mathbf{K}_p\,\mathbf{e}_p - \mathbf{D}_p\,\dot{\mathbf{p}}_{EE} \\[4pt]
-\mathbf{K}_R\,\mathbf{e}_R - \mathbf{D}_R\,\boldsymbol{\omega}_{EE}
+f\\
+m
 \end{bmatrix}
-}
+\in \mathbb{R}^6,
+\label{eq:cartesian_force_moment_control_law}
 \end{equation}
 
-This boxed equation is the computational core of the controller:
-at every 1\,ms cycle, the position-and-orientation error $\mathbf{T}_d^{-1}\mathbf{T}_{EE}$
-is formed, $\mathbf{e}_p$ and $\mathbf{e}_R$ are extracted, the
-wrench is evaluated, and $\vtau$ is sent to the actuators.
-Appendix~\ref{app:panda} traces every step numerically, including
-the Jacobian (Appendix~\ref{app:panda_jacobian}), impedance wrench
-(Appendix~\ref{app:panda_force}), impedance parameters
-(Appendix~\ref{app:panda_matrices}), joint torques (Appendix~\ref{app:panda_torques}),
-and the complete loop summary (Appendix~\ref{app:panda_loop},
-Appendix~\ref{app:panda_stiffness}).
+where \(f \in \mathbb{R}^3\) is the Cartesian force and
+\(m \in \mathbb{R}^3\) is the Cartesian moment.
+Using the principle of virtual work, this vector is mapped to joint torques
+\cite{Khatib1987} by
+
+\begin{equation}
+\tau
+=
+J^\top(q)F.
+\label{eq:joint_torque_mapping}
+\end{equation}
+
+Here, \(\tau \in \mathbb{R}^n\) is the joint torque vector,
+
+\begin{equation}
+\tau =
+\begin{bmatrix}
+\tau_1 & \tau_2 & \cdots & \tau_n
+\end{bmatrix}^\top,
+\label{eq:joint_torque_vector}
+\end{equation}
+
+where each \(\tau_i\) is measured in \(\mathrm{Nm}\).
+The matrix \(J^\top(q) \in \mathbb{R}^{n \times 6}\) is the transpose of the
+Jacobian and maps the Cartesian force/moment vector into joint torques.
+
+Substituting the Cartesian impedance forces and moments gives the complete
+Cartesian impedance control law:
+
+\begin{equation}
+\tau
+=
+J^\top(q)
+\begin{bmatrix}
+K_{p,0} e_p - D_{p,0} \dot{p}_{\mathrm{EE}}\\
+K_{R,0} e_R - D_{R,0} \omega_{\mathrm{EE}}
+\end{bmatrix}.
+\label{eq:cartesian_impedance_control_law}
+\end{equation}
+
+This equation is the computational core of the controller.
+At each control cycle, the current end-effector transformation is read from
+the robot state and compared with the desired transformation.
+From this comparison, the positional error \(e_p\) and rotational error
+\(e_R\) are computed.
+The corresponding Cartesian forces and moments are then evaluated and mapped
+to joint torques using the Jacobian transpose.
 
 \subsection{Gravity and Coriolis Compensation}
 
-In practice, the impedance torques are augmented with model-based
-compensation to cancel gravitational and velocity-dependent forces:
+In practice, the impedance torques are combined with model-based compensation
+terms.
+These terms compensate for gravity and velocity-dependent effects in the robot
+dynamics.
+The commanded joint torque is therefore given by
 
 \begin{equation}
-\label{eq:full_with_comp}
-\bm{\tau}_{\mathrm{cmd}} =
-\mathbf{J}^\top(\mathbf{q})\,\mathbf{F}
-+ \bm{\tau}_g(\mathbf{q})
-+ \bm{\tau}_c(\mathbf{q},\dot{\mathbf{q}})
+\tau_{\mathrm{cmd}}
+=
+J^\top(q)F
++
+\tau_g(q)
++
+\tau_c(q,\dot{q}).
+\label{eq:commanded_torque}
 \end{equation}
 
-\begin{itemize}
-  \item $\bm{\tau}_g(\vq)\in\mathbb{R}^n$: gravity compensation,
-        depends only on $\vq$.
-  \item $\bm{\tau}_c(\vq,\vqd)\in\mathbb{R}^n$: Coriolis
-        and centrifugal compensation (depends on $\vq$ and $\vqd$).
-        Neglecting it corrupts the impedance behaviour.
-  \item Both are provided by the \texttt{libfranka} model interface
-        and recomputed at every control step.
-\end{itemize}
+Here, \(\tau_g(q) \in \mathbb{R}^n\) is the gravity compensation torque, which
+depends on the joint configuration \(q\).
+The term \(\tau_c(q,\dot{q}) \in \mathbb{R}^n\) compensates for Coriolis and
+centrifugal effects, which depend on both the joint configuration \(q\) and
+the joint velocity \(\dot{q}\).
+
+These compensation terms are provided by the libfranka model interface and are
+recomputed at every control step \cite{FrankaFCI2023}.
+Adding them helps ensure that the commanded torque produces the desired
+impedance behavior instead of being distorted by gravity or velocity-dependent
+dynamic effects.

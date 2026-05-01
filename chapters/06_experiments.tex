@@ -62,7 +62,7 @@ position, and positive definiteness of $\mathbf{M}_p$ ensures the kinetic
 energy is zero only when the end-effector is at rest.
 
 Taking the time derivative along the system trajectories and substituting the
-translational impedance law \cref{eq:imp_trans}:
+positional impedance law \cref{eq:positional_impedance_force}:
 
 \begin{align}
 \dot{V}
@@ -121,7 +121,7 @@ To confirm stability experimentally, the following protocol is executed:
   \item A step disturbance is applied: the robot is manually displaced
         by $\Delta p = 30\,\mathrm{mm}$ and released.
   \item The system must return to equilibrium without oscillation
-        (critical damping defined by \cref{eq:D_base_local}).
+        (critical damping defined by \cref{eq:positional_damping_base}).
   \item Joint torques and end-effector position are recorded.
         Divergence, sustained oscillation, or saturation of joint torques
         at their limits would indicate instability.
@@ -178,12 +178,9 @@ This experiment evaluates the tracking behaviour of the impedance controller
 for a single fixed Cartesian target point. In contrast to a purely diagonal
 axis-aligned test, the stiffness and damping matrices are intentionally
 constructed in a rotated local stiffness frame and then transformed into the
-base frame using \cref{eq:K_base_local,eq:D_base_local}. This experiment
+base frame using \cref{eq:positional_stiffness_base,eq:positional_damping_base}. This experiment
 therefore demonstrates that full matrices are meaningful even when the task is
 only to track one fixed point.
-
-The complete C++ implementation, simulation code, and parameter table are
-given in Appendix~\ref{app:exp1}.
 
 \subsection{Objective}
 
@@ -420,7 +417,8 @@ for each trial.
 \subsection{Measured Variables}
 
 \begin{itemize}
-  \item \textbf{Normal displacement $d(t)$} from \cref{eq:wall_dist}:
+  \item \textbf{Normal displacement
+        \(d(t)=\hat{\mathbf{n}}^\top(\mathbf{p}_{EE}-\mathbf{p}_0)\)}:
         should remain near zero during in-plane trials and return to zero
         after a normal push.
   \item \textbf{In-plane position} $\mathbf{p}_{EE} \cdot \hat{\mathbf{t}}_1$
@@ -467,8 +465,6 @@ $d_{\mathrm{ss}} = F_n / k_{\mathrm{stiff}}$ predicted by the impedance model
 (\cref{eq:ss_error}).
 \Cref{fig:exp2_stiffness,fig:compliance_law} show the simulated
 results and the theoretical compliance curve.
-The complete simulation code and parameter table are in
-Appendix~\ref{app:exp3}.
 
 \begin{figure}[htb]
 \centering
@@ -510,7 +506,6 @@ The torque distribution across the seven joints is recorded for each
 configuration and compared as a bar chart, illustrating how redundancy
 allows the same Cartesian task to be distributed differently across the
 joints depending on arm configuration.
-The complete simulation code is in Appendix~\ref{app:exp4}.
 
 % ─────────────────────────────────────────────────────────────────
 \section{Sensitivity Analysis}
