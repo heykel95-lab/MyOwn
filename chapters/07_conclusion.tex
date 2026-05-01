@@ -1,11 +1,8 @@
-\chapter{Conclusion and Future Work}
+\chapter{Conclusion}
 \label{ch:conclusion}
 
-\section{Summary of Results}
-\label{sec:summary}
-
 This thesis developed and evaluated a Cartesian impedance controller for the Franka Emika Panda.
-The work combined the theoretical formulation of forward kinematics, differential kinematics, Jacobian-based wrench mapping, and Cartesian impedance control with a C++ implementation using libfranka and Eigen.
+The work combined the theoretical formulation of forward kinematics, differential kinematics, Jacobian-based mapping of forces and moments, and Cartesian impedance control with a C++ implementation using libfranka and Eigen.
 The resulting controller computes Cartesian forces and moments from position, orientation, linear velocity, and angular velocity errors, and maps them to joint torques using the transpose of the geometric Jacobian.
 Gravity and Coriolis compensation terms are added through the libfranka model interface.
 
@@ -30,9 +27,6 @@ Overall, the implemented controller achieves the intended Cartesian impedance be
 It can regulate the end-effector pose, follow a time-dependent reference with limited tracking error, and provide compliant interaction behavior whose softness is determined by the selected stiffness values.
 The evaluation also confirms the practical trade-off of impedance control: high stiffness improves accuracy but increases the required torque and reduces compliance, while low stiffness improves compliance but allows larger position deviations.
 
-\section{Limitations}
-\label{sec:limitations}
-
 Several limitations remain in the present work.
 First, the evaluation is based on logged robot states and commanded torques.
 No external force/torque sensor is used, so the manually applied interaction force in the compliance experiment is not measured directly.
@@ -49,9 +43,6 @@ For this reason, the stability analysis should be interpreted as an ideal refere
 Finally, the orientation controller is based on a local rotation-vector error.
 This representation is suitable for the tested motions, but rotations close to \(180^\circ\) require special numerical handling.
 The controller should therefore be tested carefully before applying it to tasks with very large orientation errors.
-
-\section{Future Work}
-\label{sec:future}
 
 Future work can extend the controller and evaluation in several directions.
 An external force/torque sensor could be added to measure interaction forces directly.

@@ -373,7 +373,7 @@ $\mathbf{K}_R$, $\mathbf{D}_p$, $\mathbf{D}_R$ would be full SPD
 $3\times3$ matrices in the base frame.
 
 % ─────────────────────────────────────────────────────────────────
-\section{Step 5 --- Position and Orientation Error and Impedance Wrench}
+\section{Step 5 --- Position and Orientation Error and Impedance Forces and Moments}
 \label{app:panda_force}
 % ─────────────────────────────────────────────────────────────────
 
@@ -426,7 +426,7 @@ $\Delta\mathbf{R}\approx\mathbf{I}$, giving
 $\phi = \arccos\!\bigl(\tfrac{\mathrm{tr}(\mathbf{I})-1}{2}\bigr) = 0$
 and $\mathbf{e}_R = \mathbf{0}$.
 
-\subsection*{Impedance Wrench}
+\subsection*{Impedance Forces and Moments}
 
 Assuming the robot is momentarily at rest
 ($\dot{\mathbf{p}}_{EE}=\mathbf{0}$, $\boldsymbol{\omega}_{EE}=\mathbf{0}$),
@@ -455,7 +455,7 @@ the positional force and rotational moment from
 \mathbf{m} = \mathbf{K}_R\,\mathbf{e}_R = \mathbf{0}
 \end{equation}
 
-The combined wrench is:
+The combined forces and moments are:
 
 \begin{equation}
 \mathbf{F} =
@@ -567,7 +567,7 @@ Step & Quantity & Symbol & Value \\
 5  & Virtual inertia       & $\mathbf{M}$   & $\mI_6$ \\
 6  & Stiffness matrices    & $\mathbf{K}_p, \mathbf{K}_R$ & See \cref{eq:K_panda} \\
 7  & Damping matrices      & $\mathbf{D}_p, \mathbf{D}_R$ & See \cref{eq:D_panda} \\
-8  & Impedance wrench      & $\mathbf{f},\mathbf{m}$ & $[-1.0,0,0]^\top$ N, $\mathbf{0}$ \\
+8  & Impedance forces and moments & $\mathbf{f},\mathbf{m}$ & $[-1.0,0,0]^\top$ N, $\mathbf{0}$ \\
 9  & Pseudo-inverse        & $\mathbf{J}^+$ & See Eq.~(\ref{eq:Jp_panda}) \\
 10 & Null-space projector  & $\mathbf{N}$   & $\mI_7 - \mathbf{J}^+\mJ$ \\
 11 & Joint torques         & $\bm{\tau}$    & $[+0.55, +0.55, -0.04, +0.32,$\newline$-0.06, -0.06, 0.00]^\top$ Nm \\
@@ -635,7 +635,7 @@ Eigen::Vector3d omega = xdot.tail<3>();
 Eigen::Vector3d f = Kp * e_p - Dp * pdot;
 Eigen::Vector3d m = KR * e_R - DR * omega;
 
-// Combined 6D wrench
+// Combined 6D forces and moments
 Eigen::Matrix<double,6,1> F;
 F.head<3>() = f;  F.tail<3>() = m;
 

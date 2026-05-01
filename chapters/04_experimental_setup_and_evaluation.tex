@@ -7,7 +7,7 @@ In this chapter, the focus is on how the experiments are defined, which quantiti
 
 The evaluation is based on the CSV files generated during the experiments.
 These files contain the measured end-effector position, desired position, positional error, rotational error, Cartesian velocity, impedance forces and moments, and commanded joint torques.
-The logged data are used to analyze convergence, steady-state error, overshoot, oscillation behavior, torque limits, and compliance behavior.
+The logged data are used to analyze convergence, settling time, steady-state error, overshoot, phase delay, oscillation behavior, torque limits, and compliance behavior.
 
 \section{Experimental Setup}
 
@@ -237,35 +237,149 @@ e_{R,\max}
 
 These values indicate the largest deviation from the desired pose during the experiment.
 
-\subsection{Steady-State Error}
+\subsection{Settling Time and Steady-State Error}
+
+In addition to the maximum error, the transient response is evaluated using the settling time.
+The settling time describes how long the controller needs until the error remains inside a predefined tolerance band around the desired pose.
+For the positional error, the settling time \(t_{s,p}\) is defined as the first time at which the position error norm remains below the tolerance \(\varepsilon_p\) for the rest of the experiment,
+
+\begin{equation}
+t_{s,p}
+=
+\min t
+\quad
+\text{such that}
+\quad
+\|e_p(\tau)\|
+\leq
+\varepsilon_p
+\quad
+\forall \tau \geq t .
+\label{eq:settling_time_position}
+\end{equation}
+
+Similarly, the rotational settling time \(t_{s,R}\) is defined as
+
+\begin{equation}
+t_{s,R}
+=
+\min t
+\quad
+\text{such that}
+\quad
+\|e_R(\tau)\|
+\leq
+\varepsilon_R
+\quad
+\forall \tau \geq t .
+\label{eq:settling_time_rotation}
+\end{equation}
+
+The tolerances \(\varepsilon_p\) and \(\varepsilon_R\) are selected according to the accuracy required for the experiment.
+In this work, the positional tolerance is chosen as
+
+\begin{equation}
+\varepsilon_p = 1\,\mathrm{mm}
+=
+0.001\,\mathrm{m},
+\label{eq:position_tolerance}
+\end{equation}
+
+and the rotational tolerance is chosen as
+
+\begin{equation}
+\varepsilon_R = 0.01\,\mathrm{rad}.
+\label{eq:rotation_tolerance}
+\end{equation}
 
 The steady-state error describes the remaining error after the transient response has decayed.
-In this work, the steady-state error is computed as the mean error over the final part of the experiment.
-For example, if the final \(20\%\) of the measured time interval is used, the steady-state positional error is
+In contrast to the settling time, which describes how fast the controller reaches the tolerance band, the steady-state error describes how accurately the end-effector remains near the desired pose.
+
+After the settling time has been determined, the steady-state positional error is computed as the mean position error norm over the samples after \(t_{s,p}\),
+
+\begin{equation}
+e_{p,\mathrm{ss}}
+=
+\frac{1}{N_{s,p}}
+\sum_{k \in \mathcal{S}_p}
+\|e_p(k)\|,
+\label{eq:steady_state_position_error_after_settling}
+\end{equation}
+
+where \(\mathcal{S}_p\) is the set of samples satisfying \(t_k \geq t_{s,p}\), and \(N_{s,p}\) is the number of samples in this set.
+
+The steady-state rotational error is computed analogously as
+
+\begin{equation}
+e_{R,\mathrm{ss}}
+=
+\frac{1}{N_{s,R}}
+\sum_{k \in \mathcal{S}_R}
+\|e_R(k)\|.
+\label{eq:steady_state_rotation_error_after_settling}
+\end{equation}
+
+where \(\mathcal{S}_R\) is the set of samples satisfying \(t_k \geq t_{s,R}\), and \(N_{s,R}\) is the number of samples in this set.
+
+If the error does not enter and remain inside the tolerance band during the experiment, no settling time is assigned.
+In that case, the steady-state error is instead computed over the final part of the experiment, typically over the final \(20\%\) of the recorded samples,
 
 \begin{equation}
 e_{p,\mathrm{ss}}
 =
 \frac{1}{N_{\mathrm{ss}}}
-\sum_{k \in \mathcal{S}}
-\|e_p(k)\|,
-\label{eq:steady_state_position_error}
+\sum_{k \in \mathcal{S}_{\mathrm{ss}}}
+\|e_p(k)\|.
+\label{eq:steady_state_position_error_final_interval}
 \end{equation}
 
-where \(\mathcal{S}\) denotes the set of samples in the steady-state interval and \(N_{\mathrm{ss}}\) is the number of samples in this interval.
+The same fallback definition is used for the rotational steady-state error.
+Thus, the settling time evaluates how quickly the controller reaches the desired pose, while the steady-state error evaluates the remaining accuracy after the transient response.
 
-The steady-state rotational error is computed in the same way,
+\subsection{Phase Delay in Trajectory Experiments}
+
+For trajectory experiments, the desired end-effector position changes with time.
+Therefore, the tracking behavior is not only evaluated by the magnitude of the tracking error, but also by the delay between the desired and measured motion.
+If the measured end-effector position follows the desired trajectory with a time shift, this indicates a phase delay.
+
+This effect can be observed by comparing the desired trajectory \(p_d(t)\) with the measured end-effector position \(p_{\mathrm{EE}}(t)\).
+For one Cartesian direction, a visible shift between \(p_{d,x}(t)\) and \(p_{\mathrm{EE},x}(t)\) means that the robot follows the desired motion with a delay.
+
+The delay can be described as a time delay \(\Delta t\).
+For a sinusoidal reference trajectory, the desired and measured positions can be approximated as
 
 \begin{equation}
-e_{R,\mathrm{ss}}
+p_d(t)
 =
-\frac{1}{N_{\mathrm{ss}}}
-\sum_{k \in \mathcal{S}}
-\|e_R(k)\|.
-\label{eq:steady_state_rotation_error}
+A\sin(\omega t),
+\label{eq:desired_sinusoidal_trajectory}
 \end{equation}
 
-Small steady-state errors indicate that the controller reaches and maintains the desired end-effector pose accurately.
+and
+
+\begin{equation}
+p_{\mathrm{EE}}(t)
+=
+A_{\mathrm{EE}}
+\sin(\omega t - \varphi),
+\label{eq:measured_sinusoidal_trajectory}
+\end{equation}
+
+where \(A\) is the desired amplitude, \(A_{\mathrm{EE}}\) is the measured amplitude, \(\omega\) is the angular frequency, and \(\varphi\) is the phase delay.
+The corresponding time delay is
+
+\begin{equation}
+\Delta t
+=
+\frac{\varphi}{\omega}.
+\label{eq:phase_to_time_delay}
+\end{equation}
+
+A larger phase delay means that the measured end-effector motion follows the desired trajectory later in time.
+This effect becomes more important for faster trajectories, because the controller has less time to react to changes in the desired motion.
+
+In this work, the phase delay is evaluated qualitatively by comparing the desired and measured trajectory plots.
+For fixed set-point and compliance experiments, phase delay is not considered because the desired pose remains constant.
 
 \subsection{Overshoot}
 
@@ -353,7 +467,7 @@ Sudden peaks or large oscillations in the torque signals may indicate overly hig
 
 The logged CSV data are evaluated offline using Python.
 First, the CSV file is loaded and the positional and rotational error norms are computed.
-Then, the maximum errors, steady-state errors, overshoot values, compliance displacement, and maximum joint torques are calculated.
+Then, the maximum errors, settling times, steady-state errors, overshoot values, phase delay, compliance displacement, and maximum joint torques are calculated.
 
 The following signals are plotted over time:
 
@@ -375,6 +489,7 @@ m(t),
 \end{equation}
 
 The position and orientation error plots are used to analyze convergence and overshoot.
+For trajectory experiments, the desired and measured position plots are additionally used to evaluate phase delay qualitatively.
 For the compliance experiments, the position error plot is additionally used to determine the displacement caused by the external interaction.
 The force and moment plots show how the impedance controller reacts to the error.
 The torque plots are used to check whether the commanded torques remain smooth and within acceptable limits.
@@ -557,8 +672,108 @@ The torque signals remain smooth and bounded in the shown experiments.
 No sudden discontinuities or high-frequency oscillations are visible.
 This suggests that the stiffness and damping parameters used for the evaluation do not create aggressive torque commands and remain compatible with safe torque-control operation.
 
+The influence of stiffness on the transient response can also be interpreted using a simplified one-dimensional model.
+For one Cartesian direction, the impedance behavior can be approximated as a second-order spring-damper system,
+
+\begin{equation}
+M\ddot{x}
++
+D\dot{x}
++
+Kx
+=
+0.
+\label{eq:second_order_impedance_direction}
+\end{equation}
+
+The natural frequency of this system is
+
+\begin{equation}
+\omega_n
+=
+\sqrt{\frac{K}{M}},
+\label{eq:natural_frequency_stiffness}
+\end{equation}
+
+where \(M\) is the virtual mass and \(K\) is the stiffness in the considered direction.
+For a well-damped second-order system, the settling time can be approximated by
+
+\begin{equation}
+t_s
+\approx
+\frac{4}{\zeta \omega_n},
+\label{eq:settling_time_second_order}
+\end{equation}
+
+where \(\zeta\) is the damping ratio.
+Substituting Eq.~\eqref{eq:natural_frequency_stiffness} into Eq.~\eqref{eq:settling_time_second_order} gives
+
+\begin{equation}
+t_s
+\approx
+\frac{4}{\zeta}
+\sqrt{\frac{M}{K}}.
+\label{eq:settling_time_stiffness_relation}
+\end{equation}
+
+Thus, for constant virtual mass \(M\) and constant damping ratio \(\zeta\), the settling time is inversely proportional to the square root of the stiffness,
+
+\begin{equation}
+t_s
+\propto
+\frac{1}{\sqrt{K}}.
+\label{eq:settling_time_proportional_stiffness}
+\end{equation}
+
+This means that a higher stiffness generally leads to faster settling, while a lower stiffness leads to slower settling.
+However, increasing the stiffness also increases the generated Cartesian forces and the commanded joint torques.
+If the damping is not increased accordingly, higher stiffness can also lead to overshoot or oscillatory behavior.
+
+In this work, the damping values are selected according to the critical damping condition with unit virtual mass,
+
+\begin{equation}
+D
+=
+2\sqrt{K}.
+\label{eq:critical_damping_unit_mass_settling}
+\end{equation}
+
+This corresponds approximately to a damping ratio of
+
+\begin{equation}
+\zeta
+=
+1.
+\label{eq:critical_damping_ratio}
+\end{equation}
+
+Therefore, the settling time can be approximated as
+
+\begin{equation}
+t_s
+\approx
+\frac{4}{\sqrt{K}}.
+\label{eq:settling_time_critical_damping}
+\end{equation}
+
+Consequently, increasing the stiffness reduces the settling time, but only with a square-root relation.
+In particular, increasing the stiffness by a factor of four approximately halves the settling time,
+
+\begin{equation}
+K
+\rightarrow
+4K
+\qquad
+\Rightarrow
+\qquad
+t_s
+\rightarrow
+\frac{t_s}{2}.
+\label{eq:stiffness_factor_settling_time}
+\end{equation}
+
 Overall, the results illustrate the central trade-off in Cartesian impedance control.
 Increasing stiffness improves position regulation and reduces displacement during external interaction, but it can also increase commanded torques and may lead to stronger overshoot if the damping is not adjusted accordingly.
 Lower stiffness improves compliance and makes the robot easier to displace under external forces, but it also allows larger position errors.
 The controller parameters must therefore be selected according to the task: accurate tracking requires higher stiffness, while human interaction or contact tasks require a softer behavior.
-The logged CSV data and the offline evaluation procedure provide a practical basis for comparing these choices quantitatively using maximum error, steady-state error, overshoot, oscillation behavior, compliance displacement, and commanded torque limits.
+The logged CSV data and the offline evaluation procedure provide a practical basis for comparing these choices using maximum error, settling time, steady-state error, overshoot, phase delay, oscillation behavior, compliance displacement, and commanded torque limits.

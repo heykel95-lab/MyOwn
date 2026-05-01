@@ -3,7 +3,7 @@
  * ===============================
  * Experiment 4: configuration dependence of joint torques.
  *
- * The same Cartesian wrench is applied at different robot configurations.
+ * The same Cartesian forces and moments are applied at different robot configurations.
  * Because J = J(q), the torque vector tau = J^T(q) F changes with q.
  */
 
