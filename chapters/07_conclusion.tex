@@ -4,106 +4,67 @@
 \section{Summary of Results}
 \label{sec:summary}
 
-This thesis developed and evaluated a Cartesian impedance controller
-for the Franka Emika Panda, a 7-\abbr{DOF} collaborative manipulator.
-The work covered the complete pipeline from hardware commissioning to
-experimental evaluation, fulfilling all objectives stated in the thesis
-registration.
+This thesis developed and evaluated a Cartesian impedance controller for the Franka Emika Panda.
+The work combined the theoretical formulation of forward kinematics, differential kinematics, Jacobian-based wrench mapping, and Cartesian impedance control with a C++ implementation using libfranka and Eigen.
+The resulting controller computes Cartesian forces and moments from position, orientation, linear velocity, and angular velocity errors, and maps them to joint torques using the transpose of the geometric Jacobian.
+Gravity and Coriolis compensation terms are added through the libfranka model interface.
 
-The key contributions are as follows:
+The theoretical part showed how the end-effector pose is represented by a homogeneous transformation matrix and how the position and orientation errors are defined.
+The Denavit--Hartenberg convention was introduced to explain the structure of forward kinematics, while the implementation itself uses the measured end-effector transformation and Jacobian provided directly by libfranka.
+The stiffness and damping matrices were defined in the end-effector frame and transformed into the base frame, allowing direction-dependent impedance behavior.
+The damping values were selected from the critical damping condition for a unit virtual mass.
+A Lyapunov-based stability analysis was also presented for the ideal compensated closed-loop system, showing that symmetric positive definite stiffness and damping matrices lead to a non-increasing energy function.
 
-\begin{itemize}
-  \item \textbf{System setup (Objective~2):} The workstation, real-time
-        Ubuntu kernel, network connection, Franka Desk and \abbr{FCI} access,
-        libfranka installation, and C++ build environment were
-        successfully configured and verified.
-        A deterministic 1\,ms control cycle was confirmed with
-        \texttt{cyclictest}.
-  \item \textbf{Software structure (Objective~3):} A modular C++
-        implementation was developed, separating state acquisition,
-        model access, and control logic into clearly defined layers.
-        All source files are commented and reproducible on the same
-        hardware/software stack.
-  \item \textbf{Mathematical foundation (Objective~1, 4):}
-        The controlled variable was formulated as the full end-effector
-        position and orientation $\mathbf{T}_{EE}\in \SE$.
-        The position-and-orientation error $\mathbf{T}_d^{-1}\mathbf{T}_{EE}$ yields both
-        translational and rotational sub-errors from a single matrix
-        product.
-        Stiffness and damping matrices were derived as full \abbr{SPD} matrices
-        via eigendecomposition and dyadic sums, valid for arbitrarily
-        oriented task surfaces.
-  \item \textbf{Stability (Objective~4):} A Lyapunov argument formally
-        proves asymptotic stability for any \abbr{SPD} stiffness and damping
-        matrices, including the full off-diagonal matrices arising from
-        the virtual wall task.
-  \item \textbf{Experimental evaluation (Objective~4):} Three experiments
-        confirmed correct controller behaviour:
-        the virtual wall constraint — tilt-to-contact behaviour (compliant interaction),
-        stiffness variation (tracking behaviour and steady-state error),
-        and configuration dependence (torque distribution across joints).
-\end{itemize}
+The software implementation was organized around the real-time torque-control callback of libfranka.
+At each \(1\,\mathrm{ms}\) control cycle, the robot state is read, the Jacobian and model compensation terms are obtained, the Cartesian impedance law is evaluated, and the final torque command is limited before being returned to the robot.
+The implementation also logs the relevant measured and computed quantities to CSV files.
+These logged values include the end-effector position, desired position, positional error, rotational error, Cartesian velocity, Cartesian force and moment, and commanded joint torques.
+
+The experimental evaluation procedure uses these CSV files to compute maximum errors, steady-state errors, overshoot, compliance displacement, and maximum joint torques.
+The set-point results show that the end-effector errors decrease toward zero with damped oscillations and small steady-state errors.
+The trajectory results show that the measured motion follows the desired Cartesian trajectory with bounded tracking error.
+The compliance results show the expected stiffness-dependent behavior: a lower stiffness produces a larger displacement under external interaction, while a higher stiffness resists the same type of displacement more strongly.
+The torque plots show smooth and bounded commanded torques for the evaluated parameter sets.
+
+Overall, the implemented controller achieves the intended Cartesian impedance behavior.
+It can regulate the end-effector pose, follow a time-dependent reference with limited tracking error, and provide compliant interaction behavior whose softness is determined by the selected stiffness values.
+The evaluation also confirms the practical trade-off of impedance control: high stiffness improves accuracy but increases the required torque and reduces compliance, while low stiffness improves compliance but allows larger position deviations.
 
 \section{Limitations}
 \label{sec:limitations}
 
-The following limitations of the present work should be noted:
+Several limitations remain in the present work.
+First, the evaluation is based on logged robot states and commanded torques.
+No external force/torque sensor is used, so the manually applied interaction force in the compliance experiment is not measured directly.
+The compliance behavior is therefore evaluated from the resulting displacement rather than from a measured force-displacement relation.
 
-\begin{itemize}
-  \item \textbf{No external force sensing:} The controller relies on
-        the Jacobian transpose mapping to generate compliant behaviour.
-        True force measurement (e.g.\ via a wrist-mounted \abbr{FT} sensor)
-        would allow direct compensation of contact forces and improve
-        accuracy under external loads.
-  \item \textbf{Gravity and Coriolis from the robot model:} The
-        compensation terms $\bm{\tau}_g$ and $\bm{\tau}_c$ are computed
-        by the libfranka model, which is based on the nominal robot
-        parameters.
-        Any payload attached to the flange would degrade compensation
-        accuracy.
-  \item \textbf{Simplified damping at low stiffness:} The critical
-        damping rule $\mathbf{D}_p = 2\mathbf{K}_p^{1/2}$ was derived
-        for a linear time-invariant system.
-        At very low stiffness ($k < 20\,\mathrm{N/m}$), joint-level
-        Coulomb friction introduces a dead-band that the linear model
-        does not capture.
-  \item \textbf{Orientation error singularity at $\phi = \pi$:}
-        The axis-angle extraction is numerically undefined at
-        180-degree orientation error.
-        The special-case branch implemented handles this gracefully but
-        has not been tested experimentally near this boundary.
-\end{itemize}
+Second, the compensation terms are obtained from the libfranka model interface and depend on the nominal robot model.
+Model errors, payload uncertainty, friction, and unmodeled dynamics can influence the measured response.
+These effects are especially relevant at low stiffness values, where friction and small disturbances can have a stronger influence on the final position error.
+
+Third, the stability analysis assumes exact gravity and Coriolis compensation, continuous-time behavior, a constant desired pose, symmetric positive definite stiffness and damping matrices, and no torque saturation.
+The real implementation is discrete, torque-limited, and affected by measurement noise and model uncertainty.
+For this reason, the stability analysis should be interpreted as an ideal reference case, while the experimental plots are needed to evaluate the practical closed-loop behavior.
+
+Finally, the orientation controller is based on a local rotation-vector error.
+This representation is suitable for the tested motions, but rotations close to \(180^\circ\) require special numerical handling.
+The controller should therefore be tested carefully before applying it to tasks with very large orientation errors.
 
 \section{Future Work}
 \label{sec:future}
 
-The following extensions are identified as promising directions for
-future work:
+Future work can extend the controller and evaluation in several directions.
+An external force/torque sensor could be added to measure interaction forces directly.
+This would allow the compliance behavior to be evaluated using measured force-displacement curves and would make it possible to study contact tasks more accurately.
 
-\begin{itemize}
-  \item \textbf{Null-space control:} The one-dimensional null space of
-        the 7-\abbr{DOF} Panda can be exploited to simultaneously optimise a
-        secondary objective (joint-limit avoidance, preferred
-        configuration) without disturbing the Cartesian task.
-  \item \textbf{Adaptive impedance:} The stiffness and damping matrices
-        could be adapted online based on estimated contact forces,
-        enabling variable-compliance behaviour during task execution.
-  \item \textbf{Orientation impedance validation:} The rotational part
-        of the impedance law was derived but not independently validated
-        due to experimental time constraints.
-        A dedicated experiment applying pure torques about the
-        end-effector axes would complete the evaluation.
-  \item \textbf{Tilted virtual wall:} The experiments used an
-        axis-aligned wall ($\mathbf{W}=\mathbf{I}_3$).
-        Repeating the experiments with a tilted wall (full off-diagonal
-        $\mathbf{K}_p$) would validate the general \abbr{SPD} matrix framework
-        derived in \cref{subsec:KD_matrices}.
-  \item \textbf{Model-based inertia shaping:} Replacing the unit
-        virtual inertia $\mathbf{M}=\mathbf{I}_6$ with the actual
-        operational-space inertia matrix would improve dynamic accuracy
-        at high velocities.
-\end{itemize}
+The controller could also be extended with null-space control.
+Since the Franka Emika Panda has seven joints, one redundant degree of freedom remains for a six-dimensional Cartesian task.
+This redundancy could be used for joint-limit avoidance, posture optimization, or keeping the robot away from singular configurations while maintaining the desired end-effector behavior.
 
-%% =============================================================
-%%  APPENDIX A – 7-DOF PANDA WORKED EXAMPLE
-%% =============================================================
+Another possible extension is adaptive impedance control.
+Instead of selecting fixed stiffness and damping values before each experiment, the controller could adjust these parameters online depending on the task phase, tracking error, or estimated external interaction.
+This would allow the robot to be stiff during accurate positioning and softer during contact or human interaction.
+
+The experimental evaluation could also be expanded with additional trajectories, different payloads, larger orientation changes, and repeated trials for statistical comparison.
+This would make it possible to quantify repeatability and robustness more precisely.
+Finally, replacing the unit virtual inertia assumption with an operational-space inertia model could improve the dynamic behavior at higher velocities and during faster trajectory tracking.

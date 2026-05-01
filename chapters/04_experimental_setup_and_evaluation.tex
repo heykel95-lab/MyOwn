@@ -529,26 +529,36 @@ No sudden discontinuities are visible, which indicates that the selected stiffne
 
 \section{Discussion}
 
-The evaluation metrics provide a practical way to compare different controller settings.
-Higher stiffness values usually reduce the position error more quickly, but they may also increase overshoot and commanded torques.
-Higher damping values reduce oscillations, but excessive damping can make the response slower.
+The plotted results show the main properties expected from the implemented Cartesian impedance controller.
+In the set-point experiment, the end-effector errors decrease from their initial values toward zero.
+The position error components show zero crossings, so overshoot is present, but the oscillation amplitudes decrease with time.
+This indicates that the damping terms dissipate energy and prevent sustained oscillations.
+The error norms confirm the same behavior: the maximum errors occur at the beginning of the experiment, while the final part of the response has only small remaining errors.
+Thus, the steady-state error is small for the selected stiffness and damping values.
 
-In compliance experiments, lower stiffness values result in a softer behavior and allow larger end-effector displacements under external interaction.
-Higher stiffness values result in a more rigid behavior and reduce the displacement caused by the same type of interaction.
-Therefore, the stiffness values directly determine the trade-off between accurate position tracking and compliant interaction behavior.
+The trajectory experiment shows that the measured Cartesian position follows the desired position closely.
+The tracking error remains bounded and stays in the millimeter range throughout the motion.
+The largest tracking errors occur during parts of the trajectory where the desired position changes direction or velocity.
+This is expected because the impedance controller generates restoring forces from position and orientation errors rather than enforcing the trajectory as a rigid constraint.
+Therefore, some tracking error is a natural consequence of compliant control.
+The important observation is that the error remains bounded and decreases again after the transient parts of the motion.
 
-The controller parameters must therefore be chosen as a compromise between fast convergence, low overshoot, small steady-state error, compliant behavior, and safe torque limits.
-The logged data make it possible to compare these effects quantitatively for each experiment.
+The compliance experiment demonstrates the influence of stiffness on interaction behavior.
+Before the external push, the position error is close to zero, which means that the robot has reached the desired set-point.
+During the push interval, the low-stiffness setting produces a noticeably larger displacement than the high-stiffness setting.
+This confirms the physical interpretation of the stiffness matrix: lower stiffness creates a softer virtual spring, while higher stiffness creates a more rigid response.
+After the external force is removed, both responses return toward the desired pose.
+The return motion is smooth and does not show large overshoot, which indicates that the selected damping values are suitable for the tested compliance behavior.
 
-In summary, the experimental evaluation focuses on the following questions:
+The torque plots provide an additional safety-related evaluation.
+The largest commanded torques occur during the initial transient, when the Cartesian errors are largest.
+As the end-effector approaches the desired motion or pose, the torque magnitudes decrease.
+The torque signals remain smooth and bounded in the shown experiments.
+No sudden discontinuities or high-frequency oscillations are visible.
+This suggests that the stiffness and damping parameters used for the evaluation do not create aggressive torque commands and remain compatible with safe torque-control operation.
 
-\begin{itemize}
-    \item Does the end-effector converge to the desired pose?
-    \item How large is the maximum error during the motion?
-    \item How small is the steady-state error after convergence?
-    \item Does the response show overshoot or oscillations?
-    \item How much does the end-effector move during external interaction?
-    \item Do the commanded torques remain smooth and within safe limits?
-\end{itemize}
-
-These criteria are used in the result plots shown in this chapter to assess the performance of the implemented Cartesian impedance controller.
+Overall, the results illustrate the central trade-off in Cartesian impedance control.
+Increasing stiffness improves position regulation and reduces displacement during external interaction, but it can also increase commanded torques and may lead to stronger overshoot if the damping is not adjusted accordingly.
+Lower stiffness improves compliance and makes the robot easier to displace under external forces, but it also allows larger position errors.
+The controller parameters must therefore be selected according to the task: accurate tracking requires higher stiffness, while human interaction or contact tasks require a softer behavior.
+The logged CSV data and the offline evaluation procedure provide a practical basis for comparing these choices quantitatively using maximum error, steady-state error, overshoot, oscillation behavior, compliance displacement, and commanded torque limits.
