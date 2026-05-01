@@ -358,9 +358,12 @@ robot.control([&](const franka::RobotState& state,
 });
 \end{lstlisting}
 
-In the actual implementation, the rotational error \(e_R\) is computed from the relative orientation between the desired and current end-effector frames, as described in Chapter~2.
-If only translational impedance is used in a specific experiment, the rotational moment can be set to zero.
-In that case, the lower three components of \(F\) are set to zero and only the translational impedance force contributes to the task torque.
+Listing~\ref{lst:impedance_callback} also shows how the rotational error \(e_R\) is computed from the relative orientation between the desired and current end-effector frames, as described in Chapter~2.
+The positional force \(f\) and rotational moment \(m\) are then combined into the Cartesian force/moment vector \(F\) and mapped to joint torques using the Jacobian transpose.
+If a specific experiment uses only positional impedance, the rotational moment \(m\) can be set to zero.
+In that case, the lower three components of \(F\) are zero and only the positional impedance force contributes to the task torque.
 
+The callback also writes the measured and computed quantities to a CSV file.
+The logged values include the end-effector position, desired position, positional error, rotational error, Cartesian velocity, Cartesian force and moment, and limited joint torques.
 This implementation structure ensures that all quantities required by the controller are evaluated within the real-time callback.
 The torque command is computed from the current robot state at every control cycle and is limited before being returned to libfranka, which helps maintain safe operation during the experiments.

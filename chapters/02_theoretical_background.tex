@@ -1337,3 +1337,101 @@ recomputed at every control step \cite{FrankaFCI2023}.
 Adding them helps ensure that the commanded torque produces the desired
 impedance behavior instead of being distorted by gravity or velocity-dependent
 dynamic effects.
+
+\subsection{Stability Analysis of the Control Law}
+\label{subsec:control_law_stability}
+
+The stability of the Cartesian impedance control law can be discussed by
+considering the ideal closed-loop behavior after gravity and Coriolis
+compensation.
+For this analysis, the desired end-effector pose is assumed to be constant,
+the model-based compensation is assumed to be exact, and the commanded torques
+are assumed not to be saturated.
+The stiffness and damping matrices \(K_{p,0}\), \(K_{R,0}\), \(D_{p,0}\), and
+\(D_{R,0}\) are chosen symmetric positive definite.
+This property is preserved when diagonal matrices are rotated from the
+end-effector frame into the base frame, because the transformation
+\(R K R^\top\) preserves positive definiteness.
+
+Under these assumptions, the positional part of the controller corresponds to
+the damped second-order error dynamics
+
+\begin{equation}
+M_p \ddot{p}_{\mathrm{EE}}
+=
+K_{p,0} e_p
+-
+D_{p,0}\dot{p}_{\mathrm{EE}},
+\label{eq:positional_closed_loop_dynamics}
+\end{equation}
+
+where \(M_p\) is a positive definite virtual inertia matrix.
+For a constant desired position, \(\dot{e}_p=-\dot{p}_{\mathrm{EE}}\).
+A Lyapunov candidate for the positional subsystem is therefore
+
+\begin{equation}
+V_p
+=
+\frac{1}{2} e_p^\top K_{p,0} e_p
++
+\frac{1}{2} \dot{p}_{\mathrm{EE}}^\top
+M_p
+\dot{p}_{\mathrm{EE}} .
+\label{eq:positional_lyapunov_control_law}
+\end{equation}
+
+The first term represents the potential energy stored in the virtual spring,
+and the second term represents the kinetic energy associated with the virtual
+inertia.
+Differentiating \(V_p\) and substituting
+\cref{eq:positional_closed_loop_dynamics} gives
+
+\begin{equation}
+\dot{V}_p
+=
+-
+\dot{p}_{\mathrm{EE}}^\top
+D_{p,0}
+\dot{p}_{\mathrm{EE}}
+\leq 0 .
+\label{eq:positional_lyapunov_derivative_control_law}
+\end{equation}
+
+Thus, the damping matrix dissipates energy and prevents the positional
+subsystem from gaining energy.
+The same argument applies locally to the rotational subsystem when the
+orientation error \(e_R\) is represented by a local rotation vector.
+With a positive definite virtual rotational inertia \(M_R\), the rotational
+energy can be written as
+
+\begin{equation}
+V_R
+=
+\frac{1}{2} e_R^\top K_{R,0} e_R
++
+\frac{1}{2} \omega_{\mathrm{EE}}^\top
+M_R
+\omega_{\mathrm{EE}},
+\label{eq:rotational_lyapunov_control_law}
+\end{equation}
+
+and its derivative becomes
+
+\begin{equation}
+\dot{V}_R
+=
+-
+\omega_{\mathrm{EE}}^\top
+D_{R,0}
+\omega_{\mathrm{EE}}
+\leq 0 .
+\label{eq:rotational_lyapunov_derivative_control_law}
+\end{equation}
+
+The total energy \(V=V_p+V_R\) is therefore non-increasing.
+Consequently, the closed-loop system is stable in the Lyapunov sense for
+positive definite stiffness and damping matrices \cite{Hogan1985,Siciliano2009}.
+In practice, torque limits, sampling effects, modeling errors, and measurement
+noise can influence the observed behavior.
+For this reason, the experimental evaluation in Chapter~4 also checks
+convergence, overshoot, and torque limits using the logged data.
