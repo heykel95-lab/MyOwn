@@ -17,7 +17,7 @@ The implementation is organized around the real-time callback function
 This structure is required because the controller must compute and return a new
 torque command within each \(1\,\mathrm{ms}\) control cycle.
 Each experiment uses the same basic control-loop structure.
-Only the desired end-effector position and orientation, the stiffness and damping matrices, and the logged signals are changed between experiments.
+Only the desired end-effector position and orientation, as well as the stiffness and damping matrices, are changed between experiments.
 
 The implementation follows four main requirements:
 
@@ -123,7 +123,7 @@ The implemented control loop follows the sequence below:
 
 The core structure of the implementation is shown in Listing~\ref{lst:impedance_callback}.
 The listing is shortened to the essential operations.
-Experiment-specific files additionally contain parameter selection, trajectory or set-point definitions, and CSV logging.
+Experiment-specific files additionally contain the parameter selection and the trajectory or set-point definitions used for each experiment.
 
 \begin{lstlisting}[style=cppstyle, language=C++, caption={Core structure of the real-time impedance-control callback with CSV logging.}, label={lst:impedance_callback}]
 #include <algorithm>

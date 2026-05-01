@@ -573,6 +573,16 @@ $k_{\mathrm{stiff}}=1000\,\mathrm{N/m}$.
 This is within the positioning tolerance and confirms that the
 libfranka model is sufficiently accurate for the tasks considered.
 
+\section{Offline Evaluation of Logged Data}
+\label{sec:offline_evaluation}
+
+The CSV file is evaluated offline using Python.
+First, the positional and rotational error norms are computed from the logged error components.
+The maximum error is used to identify the largest deviation during the experiment, while the steady-state error is computed as the mean error over the final 20\% of the experiment.
+Overshoot is evaluated for each individual error component after the first zero crossing.
+In addition, the maximum commanded torque of each joint is computed to verify that the torque commands remain within acceptable limits.
+The logged signals are then plotted over time to analyze convergence, damping behavior, overshoot, and torque smoothness.
+
 \section{Result Interpretation Guide}
 \label{sec:exp_results}
 % ─────────────────────────────────────────────────────────────────
