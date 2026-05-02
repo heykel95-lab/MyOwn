@@ -4,8 +4,8 @@
 \section{Summary}
 
 This thesis developed and evaluated a Cartesian impedance controller for the Franka Emika Panda.
-The work combined the theoretical formulation of forward kinematics, differential kinematics, Jacobian-based mapping of forces and moments, and Cartesian impedance control with a C++ implementation using libfranka and Eigen.
-The resulting controller computes Cartesian forces and moments from position, orientation, linear velocity, and angular velocity errors, and maps them to joint torques using the transpose of the geometric Jacobian.
+It combined forward kinematics, differential kinematics, Jacobian-based force and moment mapping, and Cartesian impedance control with a C++ implementation using libfranka and Eigen.
+The controller computes Cartesian forces and moments from position, orientation, linear velocity, and angular velocity errors, and maps them to joint torques using the transpose of the geometric Jacobian.
 Gravity and Coriolis compensation terms are added through the libfranka model interface.
 
 The theoretical part showed how the end-effector pose is represented by a homogeneous transformation matrix and how the position and orientation errors are defined.
@@ -19,20 +19,20 @@ At each \(1\,\mathrm{ms}\) control cycle, the robot state is read, the Jacobian 
 The implementation also logs the relevant measured and computed quantities to CSV files.
 These logged values include the end-effector position, desired position, positional error, rotational error, Cartesian velocity, Cartesian force and moment, and commanded joint torques.
 
-The experimental evaluation procedure uses these CSV files to compute maximum errors, steady-state errors, overshoot, compliance displacement, and maximum joint torques.
-The set-point results show that the end-effector errors decrease toward zero with damped oscillations and small steady-state errors.
-The trajectory results show that the measured motion follows the desired Cartesian trajectory with bounded tracking error.
-The compliance results show the expected stiffness-dependent behavior: a lower stiffness produces a larger displacement under external interaction, while a higher stiffness resists the same type of displacement more strongly.
-The torque plots show smooth and bounded commanded torques for the evaluated parameter sets.
+The experimental evaluation uses these CSV files to compute maximum errors, steady-state errors, overshoot, compliance displacement, and maximum joint torques.
+In the set-point experiment, both the position and orientation errors of the end-effector pose decrease toward zero with damped oscillations and small steady-state errors.
+During trajectory tracking, the measured motion follows the desired Cartesian trajectory with bounded tracking error.
+In the compliance experiment, the expected stiffness dependence is visible: a lower stiffness produces a larger displacement under external interaction, while a higher stiffness resists the same type of displacement more strongly.
+The torque plots remain smooth and bounded for the evaluated parameter sets.
 
-Overall, the implemented controller achieves the intended Cartesian impedance behavior.
-It can regulate the end-effector pose, follow a time-dependent reference with limited tracking error, and provide compliant interaction behavior whose softness is determined by the selected stiffness values.
+Overall, the implemented controller achieves the intended Cartesian impedance behavior in the tested cases.
+It regulates both the end-effector position and orientation, follows a time-dependent reference with limited tracking error, and provides compliant interaction behavior whose softness is determined by the selected stiffness values.
 The evaluation also confirms the practical trade-off of impedance control: high stiffness improves accuracy but increases the required torque and reduces compliance, while low stiffness improves compliance but allows larger position deviations.
 
 \section{Limitations}
 \label{sec:limitations}
 
-Several limitations remain in the present work.
+Several limitations of the work presented in this thesis remain.
 First, the evaluation is based on logged robot states and commanded torques.
 No external force/torque sensor is used, so the manually applied interaction force in the compliance experiment is not measured directly.
 The compliance behavior is therefore evaluated from the resulting displacement rather than from a measured force-displacement relation.
@@ -52,7 +52,7 @@ The controller should therefore be tested carefully before applying it to tasks 
 \section{Future Work}
 \label{sec:future}
 
-Future work can extend the controller and evaluation in several directions.
+The controller and evaluation can be extended in several directions.
 An external force/torque sensor could be added to measure interaction forces directly.
 This would allow the compliance behavior to be evaluated using measured force-displacement curves and would make it possible to study contact tasks more accurately.
 
