@@ -1,6 +1,13 @@
 \chapter{Theoretical Background}
 \label{ch:theory}
 
+\makeatletter
+\@ifundefined{ifProfessorStopAfterForwardKinematics}{%
+  \newif\ifProfessorStopAfterForwardKinematics
+  \ProfessorStopAfterForwardKinematicsfalse
+}{}%
+\makeatother
+
 This chapter introduces all mathematical concepts required to derive and
 understand the Cartesian impedance controller used in this thesis.
 The presentation follows a deliberate step-by-step order:
@@ -831,6 +838,8 @@ Therefore, a change in a joint angle generally produces a nonlinear change in
 the end-effector position and orientation.
 
 %% ─────────────────────────────────────────────────────────────
+\ifProfessorStopAfterForwardKinematics
+\else
 Forward kinematics describes how the end-effector position and orientation are
 obtained from the joint angles.
 For control, however, it is also necessary to describe how changes in the joint
@@ -1530,3 +1539,4 @@ Since both subsystems are dissipative, its derivative is
 Consequently, the ideal closed-loop system is stable in the Lyapunov sense for symmetric positive definite stiffness and damping matrices.
 In practice, however, torque limits, sampling effects, modeling errors, and measurement noise can influence the observed behavior.
 Therefore, the experimental evaluation in Chapter~4 additionally investigates convergence, steady-state error, overshoot, oscillation behavior, and commanded torque limits using the logged data.
+\fi
