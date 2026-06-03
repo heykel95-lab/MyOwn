@@ -8,9 +8,14 @@
 % ============================================================
 % Professor draft selection
 % ============================================================
-% Change only the true/false lines below.
-% Example: use \ProfessorIncludeTheoreticalBackgroundtrue to include Chapter 2,
-% or \ProfessorIncludeTheoreticalBackgroundfalse to exclude it.
+% Change this number to choose how much of the draft to build:
+% 1 = Introduction
+% 2 = Introduction through Theoretical Background
+% 3 = Introduction through Software Implementation
+% 4 = Introduction through Experimental Setup and Evaluation
+% 5 = All draft chapters
+\newcount\ProfessorDraftChapterCount
+\ProfessorDraftChapterCount=5
 
 \newif\ifProfessorIncludeTitlePage
 \newif\ifProfessorIncludeDeclaration
@@ -40,12 +45,20 @@
 \newif\ifProfessorIncludeConclusion
 \newif\ifProfessorStopAfterForwardKinematics
 
-\ProfessorIncludeIntroductiontrue
-\ProfessorIncludeTheoreticalBackgroundtrue
+\ProfessorIncludeIntroductionfalse
+\ProfessorIncludeTheoreticalBackgroundfalse
 \ProfessorIncludeSoftwareImplementationfalse
 \ProfessorIncludeExperimentsfalse
 \ProfessorIncludeConclusionfalse
-\ProfessorStopAfterForwardKinematicstrue
+
+\ifnum\ProfessorDraftChapterCount>0 \ProfessorIncludeIntroductiontrue\fi
+\ifnum\ProfessorDraftChapterCount>1 \ProfessorIncludeTheoreticalBackgroundtrue\fi
+\ifnum\ProfessorDraftChapterCount>2 \ProfessorIncludeSoftwareImplementationtrue\fi
+\ifnum\ProfessorDraftChapterCount>3 \ProfessorIncludeExperimentstrue\fi
+\ifnum\ProfessorDraftChapterCount>4 \ProfessorIncludeConclusiontrue\fi
+
+% Optional shorter theory draft: set true to stop Chapter 2 after forward kinematics.
+\ProfessorStopAfterForwardKinematicsfalse
 
 % Appendices
 \newif\ifProfessorIncludeAppendixA
