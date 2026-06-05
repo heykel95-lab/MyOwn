@@ -1539,4 +1539,331 @@ Since both subsystems are dissipative, its derivative is
 Consequently, the ideal closed-loop system is stable in the Lyapunov sense for symmetric positive definite stiffness and damping matrices.
 In practice, however, torque limits, sampling effects, modeling errors, and measurement noise can influence the observed behavior.
 Therefore, the experimental evaluation in Chapter~4 additionally investigates convergence, steady-state error, overshoot, oscillation behavior, and commanded torque limits using the logged data.
+
+\section{Null Space and Singular Value Decomposition}
+\label{sec:nullspace_svd}
+
+The Franka Emika Panda has seven joints, while the Cartesian motion of the
+end-effector is described by six degrees of freedom: three translational and
+three rotational components.
+The robot is therefore kinematically redundant.
+This redundancy can be used to pursue additional optimization objectives in
+joint space without substantially disturbing the primary Cartesian task.
+
+The relationship between the joint velocities and the Cartesian end-effector
+velocity is described by the geometric Jacobian:
+
+\begin{equation}
+\dot{x}
+=
+J(q)\dot{q}.
+\label{eq:nullspace_jacobian_relation}
+\end{equation}
+
+Here,
+
+\begin{equation}
+\dot{x}
+=
+\begin{bmatrix}
+\dot{x} & \dot{y} & \dot{z} &
+\omega_x & \omega_y & \omega_z
+\end{bmatrix}^{\top}
+\in \mathbb{R}^{6}
+\label{eq:nullspace_cartesian_velocity}
+\end{equation}
+
+is the Cartesian end-effector velocity, and
+
+\begin{equation}
+\dot{q}
+=
+\begin{bmatrix}
+\dot{q}_1 & \dot{q}_2 & \cdots & \dot{q}_7
+\end{bmatrix}^{\top}
+\in \mathbb{R}^{7}
+\label{eq:nullspace_joint_velocity}
+\end{equation}
+
+is the joint velocity vector.
+For the Panda, the Jacobian has the dimension
+
+\begin{equation}
+J(q) \in \mathbb{R}^{6 \times 7}.
+\label{eq:nullspace_jacobian_dimension}
+\end{equation}
+
+Since the joint space has seven dimensions while the full Cartesian task has
+six dimensions, a one-dimensional null space exists when the Jacobian has full
+rank.
+A joint velocity in this null space satisfies
+
+\begin{equation}
+J(q)\dot{q}_0 = 0.
+\label{eq:jacobian_nullspace_condition}
+\end{equation}
+
+The velocity \(\dot{q}_0\) therefore produces no first-order Cartesian
+end-effector velocity.
+It can be used to execute a secondary joint-space task while preserving the
+primary Cartesian task.
+
+In this work, however, the controller does not always regulate the complete
+six-dimensional Cartesian task.
+The axis-selection mode can release individual translational or rotational
+axes.
+For the null-space optimization, a reduced active Jacobian is therefore used:
+
+\begin{equation}
+J_{\mathrm{active}} \in \mathbb{R}^{m \times 7},
+\label{eq:active_jacobian_dimension}
+\end{equation}
+
+where \(m\) is the number of axes that are actually fixed or regulated.
+The active Jacobian is formed by selecting the \(m\) rows of the full Jacobian
+that correspond to the regulated Cartesian components:
+
+\begin{equation}
+J_{\mathrm{active}}
+=
+\begin{bmatrix}
+J_{a_1}\\
+J_{a_2}\\
+\vdots\\
+J_{a_m}
+\end{bmatrix}
+\in \mathbb{R}^{m \times 7},
+\label{eq:active_jacobian_general}
+\end{equation}
+
+where each index \(a_i\) denotes one selected translational or rotational row
+of the full Cartesian Jacobian.
+
+The null space of the active Jacobian therefore describes all joint motions
+that have minimal influence on the regulated axes:
+
+\begin{equation}
+J_{\mathrm{active}}\dot{q}_0 \approx 0.
+\label{eq:active_jacobian_nullspace_condition}
+\end{equation}
+
+A damped null-space projector is used to project a joint-space vector into
+this null space:
+
+\begin{equation}
+N
+=
+I
+-
+J_{\mathrm{active}}^{\top}
+\left(
+J_{\mathrm{active}}J_{\mathrm{active}}^{\top}
++
+\lambda^2 I
+\right)^{-1}
+J_{\mathrm{active}}.
+\label{eq:damped_nullspace_projector}
+\end{equation}
+
+The parameter \(\lambda\) is a damping factor.
+The damping improves numerical robustness, especially when the active Jacobian
+is poorly conditioned or the robot is close to a singular configuration.
+The projector has the dimension
+
+\begin{equation}
+N \in \mathbb{R}^{7 \times 7}.
+\label{eq:nullspace_projector_dimension}
+\end{equation}
+
+It can be used to project a joint-space velocity into the null space of the
+active task:
+
+\begin{equation}
+\dot{q}_{\mathrm{null}}
+=
+N\dot{q}.
+\label{eq:nullspace_velocity_projection}
+\end{equation}
+
+In addition, the singular value decomposition of the active Jacobian is used:
+
+\begin{equation}
+J_{\mathrm{active}}
+=
+U\Sigma V^{\top}.
+\label{eq:active_jacobian_svd}
+\end{equation}
+
+The diagonal entries of \(\Sigma\) are the singular values,
+
+\begin{equation}
+\sigma_1,\sigma_2,\ldots,\sigma_m.
+\label{eq:singular_values}
+\end{equation}
+
+The smallest singular value,
+
+\begin{equation}
+\sigma_{\min}
+=
+\min_i \sigma_i,
+\label{eq:min_singular_value}
+\end{equation}
+
+is a measure of the kinematic conditioning of the robot.
+A small value of \(\sigma_{\min}\) indicates proximity to a singular or poorly
+conditioned configuration, whereas a larger value indicates better
+conditioning.
+
+For the optimization, a small motion in a null-space direction \(n\) is
+considered.
+Two candidate configurations are formed:
+
+\begin{equation}
+q_{+} = q + \alpha n,
+\label{eq:nullspace_candidate_plus}
+\end{equation}
+
+\begin{equation}
+q_{-} = q - \alpha n.
+\label{eq:nullspace_candidate_minus}
+\end{equation}
+
+The parameter \(\alpha\) is a small step size in joint space.
+For both candidates, the active Jacobian is recomputed:
+
+\begin{equation}
+J_{\mathrm{active},+}
+=
+J_{\mathrm{active}}(q_{+}),
+\label{eq:active_jacobian_candidate_plus}
+\end{equation}
+
+\begin{equation}
+J_{\mathrm{active},-}
+=
+J_{\mathrm{active}}(q_{-}).
+\label{eq:active_jacobian_candidate_minus}
+\end{equation}
+
+The corresponding smallest singular values are then compared:
+
+\begin{equation}
+\sigma_{\min}^{+}
+=
+\sigma_{\min}
+\left(
+J_{\mathrm{active},+}
+\right),
+\label{eq:min_singular_candidate_plus}
+\end{equation}
+
+\begin{equation}
+\sigma_{\min}^{-}
+=
+\sigma_{\min}
+\left(
+J_{\mathrm{active},-}
+\right).
+\label{eq:min_singular_candidate_minus}
+\end{equation}
+
+The direction with the larger smallest singular value is preferred:
+
+\begin{equation}
+s
+=
+\begin{cases}
++1, & \text{if } \sigma_{\min}^{+} > \sigma_{\min}^{-},\\
+-1, & \text{otherwise}.
+\end{cases}
+\label{eq:nullspace_direction_selection}
+\end{equation}
+
+The resulting optimization term in the null space is
+
+\begin{equation}
+\tau_{\sigma}
+=
+N
+\left(
+K_{\sigma}s\alpha n
+\right).
+\label{eq:singular_value_optimization_torque}
+\end{equation}
+
+Here, \(K_{\sigma}\) is a weighting factor for the singular-value
+optimization.
+The term is projected with the null-space projector \(N\) so that the active
+Cartesian task is influenced as little as possible.
+
+A damping term is also used in the null space:
+
+\begin{equation}
+\tau_{\mathrm{damp}}
+=
+-
+D_{\mathrm{null}}
+N\dot{q}.
+\label{eq:nullspace_damping_torque}
+\end{equation}
+
+The complete null-space term is therefore
+
+\begin{equation}
+\tau_{\mathrm{null}}
+=
+\tau_{\mathrm{damp}}
++
+\tau_{\sigma}.
+\label{eq:nullspace_torque}
+\end{equation}
+
+This term has the dimension
+
+\begin{equation}
+\tau_{\mathrm{null}} \in \mathbb{R}^{7},
+\label{eq:nullspace_torque_dimension}
+\end{equation}
+
+because it is added directly to the seven joint torques.
+The complete torque command of the controller can therefore be written as
+
+\begin{equation}
+\tau_{\mathrm{cmd}}
+=
+J^{\top}F_{\mathrm{cmd}}
++
+\tau_{\mathrm{null}}
++
+\tau_g
++
+\tau_c.
+\label{eq:nullspace_complete_torque_command}
+\end{equation}
+
+The term \(J^{\top}F_{\mathrm{cmd}}\) describes the Cartesian impedance
+torque, \(\tau_{\mathrm{null}}\) describes the null-space optimization, and
+\(\tau_g\) and \(\tau_c\) are the model-based gravity and Coriolis
+compensation terms.
+
+A feedback term toward the start configuration was intentionally not used.
+Such a term would have the form
+
+\begin{equation}
+K_{\mathrm{start}}
+\left(
+q_{\mathrm{start}}
+-
+q
+\right).
+\label{eq:start_configuration_feedback}
+\end{equation}
+
+In the experiments, this term restricted free motion in the virtual plane,
+because it pulled the robot back toward its start configuration.
+For this reason, the null-space optimization in this work is used only for
+damping redundant motion and for improving the smallest singular value.
+
+
 \fi

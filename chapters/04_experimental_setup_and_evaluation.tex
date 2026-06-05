@@ -642,6 +642,325 @@ No sudden discontinuities are visible, which indicates that the selected stiffne
     \label{fig:commanded_joint_torques}
 \end{figure}
 
+\section{Null-Space Optimization Comparison}
+\label{sec:nullspace_optimization_comparison}
+
+In an additional comparison, the influence of the null-space optimization on
+the axis-constrained controller was investigated.
+The goal was to evaluate whether the redundant joint motion can be influenced
+without disturbing the desired free motion in the virtual plane.
+
+The test was performed using the virtual \(y\)-\(z\) plane configuration.
+In this setup, the translational \(x\)-axis is fixed while the \(y\)- and
+\(z\)-directions are free:
+
+\begin{equation}
+\mathrm{fix}_p
+=
+\begin{bmatrix}
+1 & 0 & 0
+\end{bmatrix}.
+\end{equation}
+
+For the rotational part, rotations about the \(x\)- and \(y\)-axes were
+regulated, while rotation about the \(z\)-axis was left free:
+
+\begin{equation}
+\mathrm{fix}_R
+=
+\begin{bmatrix}
+1 & 1 & 0
+\end{bmatrix}.
+\end{equation}
+
+Therefore, the active Cartesian task consisted only of the components
+\(x\), \(R_x\), and \(R_y\).
+The corresponding active Jacobian was constructed from the rows of the full
+Jacobian that belong to these active components:
+
+\begin{equation}
+J_{\mathrm{active}}
+=
+\begin{bmatrix}
+J_x\\
+J_{R_x}\\
+J_{R_y}
+\end{bmatrix}
+\in
+\mathbb{R}^{3 \times 7}.
+\end{equation}
+
+The null space of this active Jacobian describes joint motions that do not
+significantly affect the constrained task:
+
+\begin{equation}
+J_{\mathrm{active}}
+\dot{q}_{\mathrm{null}}
+\approx
+0.
+\end{equation}
+
+Three controller variants were compared:
+
+\begin{enumerate}
+    \item axis-constrained controller without null-space optimization,
+    \item axis-constrained controller with null-space return-to-start behavior,
+    \item axis-constrained controller with only sigma-min-based null-space
+    optimization.
+\end{enumerate}
+
+\subsection{Variant 1: Without Null-Space Optimization}
+
+In the first variant, the null-space term was disabled:
+
+\begin{equation}
+\tau_{\mathrm{null}}
+=
+0.
+\end{equation}
+
+The torque command was therefore given by
+
+\begin{equation}
+\tau_{\mathrm{cmd}}
+=
+J^{\top}
+F_{\mathrm{cmd}}
++
+\tau_g
++
+\tau_c.
+\end{equation}
+
+This variant was used as a reference.
+The robot followed the virtual-plane behavior: the \(x\)-direction was
+regulated, while motion in the \(y\)- and \(z\)-directions remained free.
+However, the redundant joint configuration was not actively influenced.
+
+\subsection{Variant 2: Null-Space Return to the Start Configuration}
+
+In the second variant, a joint-space return term was added in the null space.
+The intention was to keep the robot close to its initial joint configuration:
+
+\begin{equation}
+\tau_{\mathrm{return}}
+=
+K_{\mathrm{start}}
+\left(
+q_{\mathrm{start}}
+-
+q
+\right)
+-
+D_{\mathrm{null}}
+\dot{q}.
+\end{equation}
+
+This term was projected into the null space of the active task:
+
+\begin{equation}
+\tau_{\mathrm{null}}
+=
+N
+\tau_{\mathrm{return}}.
+\end{equation}
+
+The projector was computed as
+
+\begin{equation}
+N
+=
+I
+-
+J_{\mathrm{active}}^{\top}
+\left(
+J_{\mathrm{active}}
+J_{\mathrm{active}}^{\top}
++
+\lambda^{2}
+I
+\right)^{-1}
+J_{\mathrm{active}}.
+\end{equation}
+
+During the experiment, this variant showed that the return-to-start term
+conflicted with the desired free motion in the virtual plane.
+When the robot was manually displaced in the \(y\)- or \(z\)-direction, the
+controller attempted to recover the initial joint posture.
+Since motion in the \(y\)- and \(z\)-axes was intended to be free, this made
+the robot behave as if it wanted to move back toward the initial configuration
+instead of staying naturally at the displaced position.
+
+Therefore, the return-to-start gain was removed from the final controller:
+
+\begin{equation}
+K_{\mathrm{start}}
+=
+0.
+\end{equation}
+
+In the final implementation, the parameter
+\texttt{nullspace\_k\_start} was removed completely.
+
+\subsection{Variant 3: Sigma-Min-Based Null-Space Optimization}
+
+In the final variant, the null-space term was used only for damping and
+singular-value-based optimization.
+No return-to-start term was used.
+The null-space torque was defined as
+
+\begin{equation}
+\tau_{\mathrm{null}}
+=
+\tau_{\mathrm{damp}}
++
+\tau_{\sigma}.
+\end{equation}
+
+The damping term was
+
+\begin{equation}
+\tau_{\mathrm{damp}}
+=
+-
+D_{\mathrm{null}}
+N
+\dot{q}.
+\end{equation}
+
+The singular-value-based optimization was based on the smallest singular value
+of the active Jacobian:
+
+\begin{equation}
+\sigma_{\min}
+=
+\min_i
+\sigma_i
+\left(
+J_{\mathrm{active}}
+\right).
+\end{equation}
+
+A larger value of \(\sigma_{\min}\) indicates a better conditioned
+configuration.
+Therefore, two small null-space motions were compared:
+
+\begin{equation}
+q_{+}
+=
+q
++
+\alpha
+n,
+\qquad
+q_{-}
+=
+q
+-
+\alpha
+n.
+\end{equation}
+
+For both candidate configurations, the active Jacobian was recalculated and
+the corresponding smallest singular values were compared:
+
+\begin{equation}
+\sigma_{\min}^{+}
+=
+\sigma_{\min}
+\left(
+J_{\mathrm{active},+}
+\right),
+\qquad
+\sigma_{\min}^{-}
+=
+\sigma_{\min}
+\left(
+J_{\mathrm{active},-}
+\right).
+\end{equation}
+
+The direction that increased the smallest singular value was selected:
+
+\begin{equation}
+s
+=
+\begin{cases}
++1, & \text{if } \sigma_{\min}^{+} > \sigma_{\min}^{-},\\
+-1, & \text{otherwise}.
+\end{cases}
+\end{equation}
+
+The resulting optimization torque was
+
+\begin{equation}
+\tau_{\sigma}
+=
+N
+\left(
+K_{\sigma}
+s
+\alpha
+n
+\right).
+\end{equation}
+
+Thus, the final torque command became
+
+\begin{equation}
+\tau_{\mathrm{cmd}}
+=
+J^{\top}
+F_{\mathrm{cmd}}
++
+\tau_{\mathrm{null}}
++
+\tau_g
++
+\tau_c.
+\end{equation}
+
+\subsection{Observed Behavior}
+
+The comparison showed that the return-to-start term was not suitable for the
+desired virtual-plane behavior.
+Although it reduced arbitrary joint configurations, it also caused the robot
+to actively move back toward the initial posture.
+This conflicted with the requirement that the robot should remain freely
+movable in the \(y\)-\(z\) plane.
+
+After removing the return-to-start term, the robot behaved as intended.
+It could be manually displaced in the free \(y\)- and \(z\)-directions and
+remained at the displaced position instead of being pulled back to the start
+configuration.
+At the same time, the null-space term still provided damping and a small
+singular-value-based bias toward better conditioned configurations.
+
+The final parameter configuration was therefore chosen as
+
+\begin{align}
+\texttt{use\_nullspace\_optimization} &= 1,\\
+\texttt{nullspace\_damping} &= 1.0,\\
+\texttt{nullspace\_k\_sigma} &= 0.5,\\
+\texttt{nullspace\_alpha} &= 0.01,\\
+\texttt{nullspace\_tau\_max} &= 1.0.
+\end{align}
+
+The removed return-to-start parameter is no longer part of the final
+controller:
+
+\begin{equation}
+\texttt{nullspace\_k\_start}
+\quad
+\text{was removed completely.}
+\end{equation}
+
+This result shows that the null space should not be used to force the robot
+back to its initial joint posture when a free virtual-plane behavior is
+desired.
+Instead, the null space is used only to damp redundant motion and to bias the
+configuration toward a larger smallest singular value of the active Jacobian.
+
 \section{Discussion}
 
 The plotted results show the main properties expected from the implemented Cartesian impedance controller.
