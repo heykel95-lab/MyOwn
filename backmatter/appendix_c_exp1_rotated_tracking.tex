@@ -83,7 +83,9 @@ F.head<3>() = f;
 F.tail<3>().setZero();
 
 Eigen::Matrix<double,7,1> tau_task = J.transpose() * F;
-Eigen::Matrix<double,7,1> tau_cmd  = tau_task + tau_g + tau_c;
+Eigen::Matrix<double,7,1> tau_null = Eigen::Matrix<double,7,1>::Zero();
+Eigen::Matrix<double,7,1> tau_cmd  =
+    tau_task + tau_null + tau_g + tau_c;
 \end{lstlisting}
 
 \section{Expected Numerical Values}

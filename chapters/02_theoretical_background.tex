@@ -1675,6 +1675,101 @@ N \in \mathbb{R}^{7 \times 7}.
 \label{eq:nullspace_projector_dimension}
 \end{equation}
 
+\subsection{Interpretation of the Null-Space Projector}
+\label{subsec:interpretation_nullspace_projector}
+
+The projector \(N\) in \eqref{eq:damped_nullspace_projector} can be
+interpreted as an operator that separates a joint-space vector into a part
+that influences the active Cartesian task and a part that remains in the
+active-task null space.
+This interpretation is useful because the controller does not always constrain
+all six Cartesian directions.
+Only the rows contained in \(J_{\mathrm{active}}\) are treated as task
+relevant.
+
+Let
+
+\begin{equation}
+v
+\in
+\mathbb{R}^{7}
+\label{eq:arbitrary_joint_vector}
+\end{equation}
+
+be an arbitrary joint-space vector.
+It is not restricted to one specific physical quantity.
+Depending on the context, \(v\) may represent the joint configuration \(q\), a
+joint velocity \(\dot{q}\), a joint-space correction direction, or another
+seven-dimensional secondary joint-space command that should be projected into
+the active-task null space.
+However, \(v\) must have the dimension of the joint space.
+Task-space quantities such as the Cartesian pose \(x\) or Cartesian velocity
+\(\dot{x}\) are not projected directly by \(N\), because they lie in task
+space rather than joint space.
+If such a task-space quantity is used for a secondary objective, it must first
+be converted into a compatible joint-space vector.
+The component that remains after projection is
+
+\begin{equation}
+v_{\mathrm{null}}
+=
+Nv.
+\label{eq:nullspace_component_projected}
+\end{equation}
+
+This vector is the part of \(v\) that has no, or only a very small, effect on
+the regulated Cartesian components.
+The remaining part of \(v\) can be interpreted as the task-relevant component:
+
+\begin{equation}
+v_{\mathrm{task}}
+=
+\left(
+I
+-
+N
+\right)
+v.
+\label{eq:task_relevant_component_active_projector}
+\end{equation}
+
+Thus, the original joint-space vector can be written as the sum of two parts:
+
+\begin{equation}
+v
+=
+v_{\mathrm{task}}
++
+v_{\mathrm{null}}.
+\label{eq:joint_vector_task_null_decomposition}
+\end{equation}
+
+In simple terms,
+
+\begin{equation}
+\text{null-space component}
+=
+\text{complete joint-space vector}
+-
+\text{task-relevant component}.
+\label{eq:nullspace_component_simple_interpretation}
+\end{equation}
+
+Consequently, applying \(N\) to a joint-space vector gives a vector that is
+approximately invisible to the active task:
+
+\begin{equation}
+J_{\mathrm{active}}Nv
+\approx
+0.
+\label{eq:nullspace_projected_vector_task_effect}
+\end{equation}
+
+This means that the projected vector \(Nv\) produces no, or only a very small,
+motion in the regulated Cartesian directions.
+It can therefore be used for secondary objectives without significantly
+disturbing the main task.
+
 It can be used to project a joint-space velocity into the null space of the
 active task:
 
@@ -1685,7 +1780,12 @@ N\dot{q}.
 \label{eq:nullspace_velocity_projection}
 \end{equation}
 
-In addition, the singular value decomposition of the active Jacobian is used:
+In addition, the singular value decomposition of the active Jacobian is used.
+The singular value decomposition is a standard matrix factorization that can be
+applied to any real matrix.
+It is useful here because it describes how a joint-space velocity is amplified
+or weakened when it is mapped into the active Cartesian task space.
+For the active Jacobian it is written as
 
 \begin{equation}
 J_{\mathrm{active}}
@@ -1694,14 +1794,111 @@ U\Sigma V^{\top}.
 \label{eq:active_jacobian_svd}
 \end{equation}
 
-The diagonal entries of \(\Sigma\) are the singular values,
+This equation is not a new robot-specific control law.
+It comes from the general singular value decomposition of a matrix
+\(A\in\mathbb{R}^{m\times n}\), which states that
 
 \begin{equation}
-\sigma_1,\sigma_2,\ldots,\sigma_m.
-\label{eq:singular_values}
+A
+=
+U\Sigma V^{\top},
+\label{eq:general_svd}
 \end{equation}
 
-The smallest singular value,
+where \(U\) and \(V\) are orthonormal matrices and \(\Sigma\) is a diagonal
+matrix containing non-negative singular values.
+In this work, the general matrix \(A\) is the active Jacobian
+\(J_{\mathrm{active}}\).
+The columns of \(V\) describe orthonormal directions in joint-velocity space,
+and the columns of \(U\) describe the corresponding orthonormal directions in
+the active task space.
+The singular values in \(\Sigma\) give the scaling between these two sets of
+directions.
+If a joint velocity is applied exactly in the direction of one column of
+\(V\), the resulting active Cartesian velocity points in the corresponding
+column direction of \(U\), scaled by the corresponding singular value
+\(\sigma_i\).
+
+For
+\(J_{\mathrm{active}}\in\mathbb{R}^{m\times7}\), the matrices have the
+dimensions
+
+\begin{equation}
+U\in\mathbb{R}^{m\times m},
+\qquad
+\Sigma\in\mathbb{R}^{m\times7},
+\qquad
+V\in\mathbb{R}^{7\times7}.
+\label{eq:active_svd_dimensions}
+\end{equation}
+
+The diagonal entries of the nonzero part of \(\Sigma\) are the singular values:
+
+\begin{equation}
+\Sigma
+=
+\begin{bmatrix}
+\sigma_1 & 0 & \cdots & 0\\
+0 & \sigma_2 & \cdots & 0\\
+\vdots & \vdots & \ddots & \vdots\\
+0 & 0 & \cdots & \sigma_m
+\end{bmatrix},
+\qquad
+\sigma_i\geq0.
+\label{eq:singular_value_matrix}
+\end{equation}
+
+This displayed matrix shows the diagonal part of \(\Sigma\).
+Since the active Jacobian has seven columns, \(\Sigma\) has seven columns as
+well; if \(m<7\), the remaining columns are zero.
+
+The singular values can be computed from the eigenvalues of
+\(J_{\mathrm{active}}J_{\mathrm{active}}^{\top}\).
+If
+
+\begin{equation}
+J_{\mathrm{active}}J_{\mathrm{active}}^{\top}u_i
+=
+\lambda_i u_i,
+\label{eq:active_jacobian_eigenvalue_problem}
+\end{equation}
+
+then the corresponding singular value is
+
+\begin{equation}
+\sigma_i
+=
+\sqrt{\lambda_i}.
+\label{eq:singular_value_from_eigenvalue}
+\end{equation}
+
+This relation comes directly from the SVD.
+Starting from \(J_{\mathrm{active}}=U\Sigma V^{\top}\), one obtains
+
+\begin{equation}
+J_{\mathrm{active}}J_{\mathrm{active}}^{\top}
+=
+U\Sigma V^{\top}V\Sigma^{\top}U^{\top}
+=
+U\Sigma\Sigma^{\top}U^{\top}.
+\label{eq:svd_eigenvalue_relation}
+\end{equation}
+
+Because \(V^{\top}V=I\), the middle term disappears.
+The diagonal entries of \(\Sigma\Sigma^{\top}\) are
+\(\sigma_i^2\).
+Therefore the eigenvalues of
+\(J_{\mathrm{active}}J_{\mathrm{active}}^{\top}\) are
+\(\lambda_i=\sigma_i^2\), and the singular values are obtained as
+\(\sigma_i=\sqrt{\lambda_i}\).
+
+Thus, the singular values measure how strongly joint-space motion can produce
+motion in the regulated Cartesian directions.
+Large singular values indicate directions in which the active Cartesian task
+can be influenced easily.
+Small singular values indicate weak directions, where the robot is close to
+losing the ability to generate motion in one regulated direction.
+The smallest singular value is therefore defined as
 
 \begin{equation}
 \sigma_{\min}
@@ -1710,10 +1907,14 @@ The smallest singular value,
 \label{eq:min_singular_value}
 \end{equation}
 
-is a measure of the kinematic conditioning of the robot.
+and is used as a measure of the kinematic conditioning of the robot with
+respect to the active task.
 A small value of \(\sigma_{\min}\) indicates proximity to a singular or poorly
 conditioned configuration, whereas a larger value indicates better
 conditioning.
+The controller therefore tries to choose null-space motions that increase
+\(\sigma_{\min}\), while the active Cartesian task remains preserved by the
+projector \(N\).
 
 For the optimization, a small motion in a null-space direction \(n\) is
 considered.
@@ -1780,6 +1981,37 @@ s
 \label{eq:nullspace_direction_selection}
 \end{equation}
 
+This comparison is a finite-difference approximation of the direction in which
+\(\sigma_{\min}\) increases.
+This optimization is not applied as an additional Cartesian task.
+It is used only as a secondary objective inside the null space of the active
+Jacobian.
+Instead of deriving an analytic gradient of the singular value, the controller
+tests two nearby configurations in the positive and negative null-space
+directions.
+The tested direction \(n\) is chosen in joint space and then restricted by the
+null-space projector, so the optimization can change the redundant joint
+configuration without intentionally changing the regulated Cartesian axes.
+If the positive candidate gives the larger value of \(\sigma_{\min}\), then
+the sign \(s=+1\) is chosen.
+If the negative candidate gives the larger value, then \(s=-1\) is chosen.
+The vector
+
+\begin{equation}
+\Delta q_{\sigma}
+=
+s\alpha n
+\label{eq:singular_value_joint_step}
+\end{equation}
+
+is therefore a small joint-space step that points toward the candidate with
+better active-task conditioning.
+Multiplication by \(K_{\sigma}\) scales this step into the strength of the
+secondary command.
+Finally, the null-space projector \(N\) keeps only the part of this command
+that lies in the null space of the active task and therefore does not
+significantly disturb the regulated Cartesian directions.
+
 The resulting optimization term in the null space is
 
 \begin{equation}
@@ -1793,9 +2025,15 @@ K_{\sigma}s\alpha n
 \end{equation}
 
 Here, \(K_{\sigma}\) is a weighting factor for the singular-value
-optimization.
+optimization, \(s\) is the selected sign, \(\alpha\) is the joint-space step
+size, and \(n\) is the tested null-space direction.
+Thus, \cref{eq:singular_value_optimization_torque} comes from the finite
+difference selection in \cref{eq:nullspace_direction_selection} and
+\cref{eq:singular_value_joint_step}.
 The term is projected with the null-space projector \(N\) so that the active
 Cartesian task is influenced as little as possible.
+Consequently, the singular-value optimization only uses the remaining
+redundant degrees of freedom after the active task has been defined.
 
 A damping term is also used in the null space:
 
@@ -1846,24 +2084,12 @@ The term \(J^{\top}F_{\mathrm{cmd}}\) describes the Cartesian impedance
 torque, \(\tau_{\mathrm{null}}\) describes the null-space optimization, and
 \(\tau_g\) and \(\tau_c\) are the model-based gravity and Coriolis
 compensation terms.
-
-A feedback term toward the start configuration was intentionally not used.
-Such a term would have the form
-
-\begin{equation}
-K_{\mathrm{start}}
-\left(
-q_{\mathrm{start}}
--
-q
-\right).
-\label{eq:start_configuration_feedback}
-\end{equation}
-
-In the experiments, this term restricted free motion in the virtual plane,
-because it pulled the robot back toward its start configuration.
-For this reason, the null-space optimization in this work is used only for
-damping redundant motion and for improving the smallest singular value.
+The null-space optimization in this work is used only for damping redundant
+motion and for improving the smallest singular value.
+Improving the smallest singular value means that the redundant joints are
+biased toward a better-conditioned configuration of the active Jacobian.
+This helps keep the regulated Cartesian directions controllable and avoids
+configurations in which one active direction becomes weak or close to singular.
 
 
 \fi

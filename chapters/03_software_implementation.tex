@@ -24,7 +24,7 @@ The implementation follows four main requirements:
     \item The measured robot state, including \(q\), \(\dot{q}\), and \(T_{\mathrm{EE}}\), is read at every control cycle.
     \item The Jacobian, gravity vector, and Coriolis terms are obtained from the libfranka model interface.
     \item The Cartesian impedance forces and moments are computed using the selected stiffness and damping matrices.
-    \item The resulting Cartesian force/moment vector is mapped to joint torques using \(J^\top(q)\), and the final torque command is limited before being sent to the robot.
+    \item The resulting Cartesian force/moment vector is mapped to joint torques using \(J^\top(q)\), combined with the null-space torque and model-based compensation terms, and limited before being sent to the robot.
 \end{itemize}
 
 \section{Control-Loop Structure}
@@ -32,7 +32,7 @@ The implementation follows four main requirements:
 
 Figure~\ref{fig:software_data_flow} shows the data flow of the implemented controller.
 At each control step, the Franka Control Interface provides the current robot state, while the libfranka model interface provides the required kinematic and dynamic quantities.
-The controller then computes the Cartesian error, evaluates the impedance law, maps the resulting Cartesian forces and moments to joint torques, adds model-based compensation terms, and returns the final torque command.
+The controller then computes the Cartesian error, evaluates the impedance law, maps the resulting Cartesian forces and moments to joint torques, adds the projected null-space torque and the model-based compensation terms, and returns the final torque command.
 
 \begin{figure}[h]
     \centering
@@ -42,8 +42,12 @@ The controller then computes the Cartesian error, evaluates the impedance law, m
     ]
         \node[block] (state) {Robot State\\ \(q,\dot{q},T_{\mathrm{EE}}\)};
         \node[block, below=0.9cm of state] (model) {Model Interface\\ \(J(q),\tau_g(q),\tau_c(q,\dot{q})\)};
-        \node[block, below=0.9cm of model] (controller) {Impedance Controller\\ \(F=\begin{bmatrix} f\\ m \end{bmatrix}\)};
-        \node[block, below=0.9cm of controller] (torque) {Torque Command\\ \(\tau_{\mathrm{cmd}}=J^\top(q)F+\tau_g(q)+\tau_c(q,\dot{q})\)};
+        \node[block, below=0.9cm of model] (controller) {Impedance and Null-Space Controller\\ \(F=\begin{bmatrix} f\\ m \end{bmatrix},\ \tau_{\mathrm{null}}\)};
+        \node[block, below=0.9cm of controller] (torque) {Torque Command\\
+        \(\begin{aligned}
+        \tau_{\mathrm{cmd}}={}&J^\top(q)F+\tau_{\mathrm{null}}\\
+        &+\tau_g(q)+\tau_c(q,\dot{q})
+        \end{aligned}\)};
 
         \draw[arrow] (state) -- (model);
         \draw[arrow] (model) -- (controller);
@@ -91,12 +95,14 @@ J^\top(q)F.
 \end{equation}
 
 The gravity and Coriolis terms are also obtained from the libfranka model interface.
-They are added after the task torque has been computed, resulting in the commanded torque
+Together with the projected null-space torque, they are added after the task torque has been computed, resulting in the commanded torque
 
 \begin{equation}
 \tau_{\mathrm{cmd}}
 =
 J^\top(q)F
++
+\tau_{\mathrm{null}}
 +
 \tau_g(q)
 +
@@ -1000,6 +1006,7 @@ The implemented control loop follows the sequence below:
     \item Compute the position and orientation errors.
     \item Evaluate the Cartesian impedance forces and moments.
     \item Map the Cartesian force/moment vector to joint torques using \(J^\top(q)\).
+    \item Compute and add the projected null-space torque \(\tau_{\mathrm{null}}\).
     \item Add gravity and Coriolis compensation.
     \item Limit the torque command before returning it to libfranka.
 \end{enumerate}
@@ -1197,6 +1204,11 @@ robot.control([&](const franka::RobotState& state,
   Eigen::Matrix<double, 7, 1> tau_task =
       J.transpose() * F;
 
+  // Compute the active-task null-space torque.
+  // The detailed implementation is shown in the null-space listings above.
+  Eigen::Matrix<double, 7, 1> tau_nullspace;
+  tau_nullspace.setZero();
+
   // Read the gravity compensation torque tau_g from the libfranka model.
   std::array<double, 7> gravity_array = model.gravity(state);
 
@@ -1212,7 +1224,7 @@ robot.control([&](const franka::RobotState& state,
 
   // Compute the final commanded joint torque vector.
   Eigen::Matrix<double, 7, 1> tau =
-      tau_task + tau_g + tau_c;
+      tau_task + tau_nullspace + tau_g + tau_c;
 
   // Limit the commanded torques before sending them to the robot.
   Eigen::Matrix<double, 7, 1> tau_limited = limitTorques(tau);
@@ -1243,7 +1255,7 @@ robot.control([&](const franka::RobotState& state,
 \end{lstlisting}
 
 Listing~\ref{lst:impedance_callback} summarizes the main operations performed during one real-time control cycle.
-The callback reads the current robot state, evaluates the Cartesian impedance law, adds the model-based compensation terms, limits the resulting torque command, and returns it to libfranka.
+The callback reads the current robot state, evaluates the Cartesian impedance law, adds the active-task null-space torque and the model-based compensation terms, limits the resulting torque command, and returns it to libfranka.
 If an experiment uses only positional tracking, the rotational control part is disabled by setting \(K_{R,0}=0_{3\times3}\) and \(D_{R,0}=0_{3\times3}\).
 As a result, the rotational moment \(m\) becomes zero, the lower three components of \(F\) are zero, and only the positional force contributes to the task torque.
 
