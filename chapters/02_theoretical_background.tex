@@ -1731,6 +1731,151 @@ Consequently, the ideal closed-loop system is stable in the Lyapunov sense for s
 In practice, however, torque limits, sampling effects, modeling errors, and measurement noise can influence the observed behavior.
 Therefore, the experimental evaluation in Chapter~4 additionally investigates convergence, steady-state error, overshoot, oscillation behavior, and commanded torque limits using the logged data.
 
+\subsection{Stability Interpretation of the Virtual-Center Extension}
+\label{subsec:virtual_center_stability}
+
+The stability argument above applies directly to the implemented Cartesian
+impedance controller in which the translational and rotational virtual springs
+are treated separately.
+The virtual-center formulation introduced in
+Section~\ref{subsec:virtual_center_of_rotation} changes this structure because
+translation and rotation are coupled through the lever arm \(r_c\).
+Therefore, the same separated Lyapunov proof cannot simply be copied without
+additional assumptions.
+
+For the simplified virtual-center extension, the relevant potential-energy
+term can be interpreted locally as
+
+\begin{equation}
+V_{c,p}
+=
+\frac{1}{2}
+e_{p,c}^{\top}
+K_p
+e_{p,c},
+\qquad
+e_{p,c}
+=
+e_p
+-
+e_R
+\times
+r_c .
+\label{eq:virtual_center_potential_energy}
+\end{equation}
+
+This expression shows that the stored translational spring energy is no longer
+based only on the pure position error \(e_p\).
+It also depends on the orientation error \(e_R\), because a rotation about the
+selected virtual center produces a translational displacement at the
+end-effector.
+The corresponding force is
+
+\begin{equation}
+f_c
+=
+K_p e_{p,c},
+\label{eq:virtual_center_stability_force}
+\end{equation}
+
+and this force produces the additional lever-arm moment
+
+\begin{equation}
+m_{\mathrm{lever}}
+=
+r_c
+\times
+f_c .
+\label{eq:virtual_center_stability_lever_moment}
+\end{equation}
+
+Consequently, the complete virtual-center wrench contains both the force and
+the induced moment,
+
+\begin{equation}
+F_c
+=
+\begin{bmatrix}
+f_c\\
+m_R+r_c\times f_c
+\end{bmatrix}.
+\label{eq:virtual_center_stability_wrench}
+\end{equation}
+
+Including the moment \(r_c\times f_c\) is important for energy consistency.
+If the force is applied at the end-effector but the compliant behavior is meant
+to act around the point \(p_c\), then the force must also generate the moment
+associated with its lever arm.
+Without this term, the translational and rotational parts would not represent
+the same virtual-center behavior.
+
+This reasoning gives a local energy interpretation of the simplified
+virtual-center coupling.
+The meaning and limitation of this statement with respect to passivity are
+discussed separately in the next subsection.
+
+\subsection{Passivity Scope of the Virtual-Center Formulation}
+\label{subsec:virtual_center_passivity_scope}
+
+Passivity is a stronger property than the local Lyapunov stability argument
+given above.
+In a passive system, the controller cannot generate net energy on its own.
+For robot-environment interaction, this property is important because the
+robot may exchange energy with an unknown or stiff environment through contact.
+A complete passivity proof would therefore have to consider the closed-loop
+robot dynamics, the controller, the contact interaction, actuator limits,
+sampling effects, filtering, and the possible variation of the desired pose and
+virtual-center point.
+
+The stability proof in this thesis has a more limited purpose.
+It shows that, under ideal assumptions, the implemented Cartesian impedance
+controller behaves like a damped virtual spring system.
+For the virtual-center extension, the previous subsection shows that the
+coupled translational error \(e_{p,c}\) and the lever-arm moment
+\(r_c\times f_c\) are consistent with the same local virtual spring energy.
+This means that the force and moment are not chosen independently: the moment
+term is the moment that belongs to the force when the compliant behavior is
+interpreted around the point \(p_c\).
+
+This local energy consistency should not be confused with a full passivity
+proof.
+The full spatial impedance formulation of Fasse and Broenink
+\cite{Fasse1997SpatialImpedance} treats the stiffness center and the complete
+spatial impedance behavior in a more general way.
+Such a formulation can be used to derive stronger statements about the energy
+exchange of the spatial impedance itself.
+In contrast, the formulation used in this thesis keeps the Cartesian impedance
+structure of the implemented libfranka controller and adds a practical
+virtual-center coupling through
+
+\begin{equation}
+e_{p,c}
+=
+e_p
+-
+e_R
+\times
+r_c
+\end{equation}
+
+and
+
+\begin{equation}
+m_{\mathrm{lever}}
+=
+r_c
+\times
+f_c .
+\end{equation}
+
+Therefore, the virtual-center extension can be understood as locally
+energy-consistent with the intended compliant rotation about \(p_c\).
+However, this thesis does not claim a complete passivity proof for arbitrary
+contact conditions, large rotations, discrete-time effects, torque saturation,
+or surface-estimation errors.
+Those effects must be checked experimentally and, for a formal treatment,
+would require a more complete spatial passivity analysis.
+
 \section{Null Space and Singular Value Decomposition}
 \label{sec:nullspace_svd}
 
