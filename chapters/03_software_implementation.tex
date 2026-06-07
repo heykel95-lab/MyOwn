@@ -22,9 +22,9 @@ The implementation follows four main requirements:
 
 \begin{itemize}
     \item The measured robot state, including \(q\), \(\dot{q}\), and \(T_{\mathrm{EE}}\), is read at every control cycle.
-    \item The Jacobian, gravity vector, and Coriolis terms are obtained from the libfranka model interface.
+    \item The Jacobian and Coriolis terms are obtained from the libfranka model interface.
     \item The Cartesian impedance forces and moments are computed using the selected stiffness and damping matrices.
-    \item The resulting Cartesian force/moment vector is mapped to joint torques using \(J^\top(q)\), combined with the null-space torque and model-based compensation terms, and limited before being sent to the robot.
+    \item The resulting Cartesian force/moment vector is mapped to joint torques using \(J^\top(q)\), combined with the active-task null-space torque and the optional Coriolis term, and limited before being sent to the robot.
 \end{itemize}
 
 \section{Control-Loop Structure}
@@ -32,7 +32,7 @@ The implementation follows four main requirements:
 
 Figure~\ref{fig:software_data_flow} shows the data flow of the implemented controller.
 At each control step, the Franka Control Interface provides the current robot state, while the libfranka model interface provides the required kinematic and dynamic quantities.
-The controller then computes the Cartesian error, evaluates the impedance law, maps the resulting Cartesian forces and moments to joint torques, adds the projected null-space torque and the model-based compensation terms, and returns the final torque command.
+The controller then computes the Cartesian error, evaluates the impedance law, maps the resulting Cartesian forces and moments to joint torques, adds the projected null-space torque and the optional Coriolis term, and returns the final torque command.
 
 \begin{figure}[h]
     \centering
@@ -41,12 +41,12 @@ The controller then computes the Cartesian error, evaluates the impedance law, m
         arrow/.style={->, thick}
     ]
         \node[block] (state) {Robot State\\ \(q,\dot{q},T_{\mathrm{EE}}\)};
-        \node[block, below=0.9cm of state] (model) {Model Interface\\ \(J(q),\tau_g(q),\tau_c(q,\dot{q})\)};
+        \node[block, below=0.9cm of state] (model) {Model Interface\\ \(J(q),\tau_c(q,\dot{q})\)};
         \node[block, below=0.9cm of model] (controller) {Impedance and Null-Space Controller\\ \(F=\begin{bmatrix} f\\ m \end{bmatrix},\ \tau_{\mathrm{null}}\)};
         \node[block, below=0.9cm of controller] (torque) {Torque Command\\
         \(\begin{aligned}
         \tau_{\mathrm{cmd}}={}&J^\top(q)F+\tau_{\mathrm{null}}\\
-        &+\tau_g(q)+\tau_c(q,\dot{q})
+        &+\tau_c(q,\dot{q})
         \end{aligned}\)};
 
         \draw[arrow] (state) -- (model);
@@ -94,8 +94,8 @@ J^\top(q)F.
 \label{eq:software_task_torque}
 \end{equation}
 
-The gravity and Coriolis terms are also obtained from the libfranka model interface.
-Together with the projected null-space torque, they are added after the task torque has been computed, resulting in the commanded torque
+The Coriolis term is also obtained from the libfranka model interface.
+Together with the projected null-space torque, it is added after the task torque has been computed, resulting in the commanded torque
 
 \begin{equation}
 \tau_{\mathrm{cmd}}
@@ -104,13 +104,25 @@ J^\top(q)F
 +
 \tau_{\mathrm{null}}
 +
-\tau_g(q)
-+
 \tau_c(q,\dot{q}).
 \label{eq:software_commanded_torque}
 \end{equation}
 
-This expression is the same torque structure derived in Chapter~2.
+An explicit gravity term is not added in this software equation.
+This follows the structure of the official libfranka Cartesian impedance
+example, where the user callback forms the commanded torque from the Cartesian
+task torque, the null-space torque, and the Coriolis term, but does not add a
+separate gravity vector.
+The reason is that, for external joint-torque control, the Franka Control
+Interface applies the desired torque command with robot-side gravity and
+motor-friction compensation already included \cite{FrankaFCI2023}.
+Therefore, the gravity compensation is not missing from the physical robot
+control loop; it is handled below the user-level torque equation.
+Adding another gravity vector in the user controller would compensate the same
+effect twice and would not match the implementation structure used here.
+
+This expression is the implementation form of the torque structure derived in
+Chapter~2.
 The purpose of this software chapter is therefore to describe how the required quantities are accessed, evaluated, and combined inside the real-time callback.
 
 \section{Axis Constraint Mode}
@@ -233,6 +245,60 @@ e_{R,i}, & \text{if } \mathrm{fix}_{R,i}=1,\\
 This allows the controller to regulate only the selected Cartesian directions
 while leaving the remaining directions compliant or free.
 
+The implementation follows this logic directly in the real-time callback.
+The desired position is first initialized from the start pose.
+Then, in axis constraint mode, every free translational component is replaced
+by the current measured position.
+For the rotational part, the selected free components of the rotation-vector
+error are set to zero:
+
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Implementation of translational and rotational axis constraints.}, label={lst:axis_constraint_callback}]
+Eigen::Vector3d p_d = p_start;
+Eigen::Vector3d pdot_d = Eigen::Vector3d::Zero();
+
+if (params.axis_constraint_mode) {
+  // Fixed axis: desired position is the start value.
+  // Free axis: desired position follows the measured position.
+  p_d(0) = params.fix_p_x ? p_start(0) : p_EE(0);
+  p_d(1) = params.fix_p_y ? p_start(1) : p_EE(1);
+  p_d(2) = params.fix_p_z ? p_start(2) : p_EE(2);
+
+  // Desired velocity is zero.
+  // Free axes therefore have damping but no position spring.
+  pdot_d(0) = 0.0;
+  pdot_d(1) = 0.0;
+  pdot_d(2) = 0.0;
+}
+
+Eigen::Vector3d e_p = p_d - p_EE;
+Eigen::Vector3d e_R = orientationError(R_EE, R_d);
+
+if (params.axis_constraint_mode) {
+  // Fixed rotational components keep their orientation spring.
+  // Free components have no rotational spring.
+  e_R(0) = params.fix_R_x ? e_R(0) : 0.0;
+  e_R(1) = params.fix_R_y ? e_R(1) : 0.0;
+  e_R(2) = params.fix_R_z ? e_R(2) : 0.0;
+}
+\end{lstlisting}
+
+Listing~\ref{lst:axis_constraint_callback} shows that the virtual plane is not
+implemented as a separate geometric wall object.
+It is created by the selected translational constraints.
+For example, setting
+\(\mathrm{fix}_p=[1\;0\;0]\) keeps the \(x\)-position close to the start
+position while allowing motion in the \(y\)- and \(z\)-directions.
+A tool orientation parallel to this virtual plane is obtained by choosing the
+desired orientation \(R_d\) accordingly and keeping the required rotational
+components active with \(\mathrm{fix}_R\).
+This means that the controller keeps or regulates the orientation that is
+defined in the experiment.
+It does not automatically discover an unknown physical surface from contact and
+then align the tool to that surface.
+For a non-planar or arbitrary surface, the desired orientation would have to be
+provided by the task definition or by an additional perception/contact
+estimation method, which is outside the implemented controller.
+
 \section{Virtual Plane and Virtual Line Behavior}
 \label{sec:virtual_plane_line_behavior}
 
@@ -333,6 +399,344 @@ If all three translational axes are fixed,
 
 the controller behaves like a standard Cartesian impedance controller that
 returns the end-effector to the initial position.
+
+\section{Tool Orientation for a Given Surface}
+\label{sec:tool_orientation_given_surface}
+
+If the surface is known in advance, the tool orientation can be defined from
+the surface geometry and then used as the desired orientation \(R_d\) of the
+orientation controller.
+This is different from automatically detecting an unknown surface during
+contact.
+In this case, the surface information is assumed to be given by the task
+definition, for example as a surface normal vector.
+
+Let
+
+\begin{equation}
+n_s
+\in
+\mathbb{R}^{3},
+\qquad
+\|n_s\|=1,
+\label{eq:given_surface_normal}
+\end{equation}
+
+be the unit normal vector of the given surface, expressed in the base frame.
+For a planar surface, \(n_s\) is constant.
+For a curved surface, \(n_s\) can be interpreted as the local normal at the
+current contact or reference point.
+To make the tool frame parallel to the surface, one axis of the end-effector
+frame is aligned with this normal.
+In this work, the tool approach direction is represented by the
+\(z_{\mathrm{EE}}\)-axis.
+Therefore, a natural choice is
+
+\begin{equation}
+z_d
+=
+n_s .
+\label{eq:desired_tool_z_axis}
+\end{equation}
+
+The remaining two axes of the desired orientation must lie in the tangent
+plane of the surface.
+Let \(a\in\mathbb{R}^{3}\) be an auxiliary direction that is not parallel to
+\(n_s\).
+A first tangent direction can be computed by projecting \(a\) onto the tangent
+plane and normalizing it:
+
+\begin{equation}
+x_d
+=
+\frac{
+a
+-
+n_s
+\left(
+n_s^{\top}a
+\right)}
+{\left\|
+a
+-
+n_s
+\left(
+n_s^{\top}a
+\right)
+\right\|}.
+\label{eq:surface_tangent_x_axis}
+\end{equation}
+
+The second tangent direction is then obtained from the cross product
+
+\begin{equation}
+y_d
+=
+z_d
+\times
+x_d .
+\label{eq:surface_tangent_y_axis}
+\end{equation}
+
+The desired orientation matrix is formed from these three orthonormal axes:
+
+\begin{equation}
+R_d
+=
+\begin{bmatrix}
+x_d & y_d & z_d
+\end{bmatrix}.
+\label{eq:desired_orientation_from_surface}
+\end{equation}
+
+With this construction, the desired tool orientation is no longer chosen
+arbitrarily.
+It is calculated from the given surface normal.
+The controller can then use the same orientation error computation as in the
+standard implementation:
+
+\begin{equation}
+e_R
+=
+\mathrm{orientationError}
+\left(
+R_{\mathrm{EE}},R_d
+\right).
+\label{eq:surface_orientation_error}
+\end{equation}
+
+If all rotational axes are regulated, the controller tries to keep the complete
+tool orientation equal to \(R_d\).
+If only selected rotational components are regulated through
+\(\mathrm{fix}_R\), then only those components of the orientation error remain
+active.
+This makes it possible to combine a given surface orientation with the
+existing axis constraint mode.
+For example, the translational constraint can define the virtual plane, while
+the desired orientation \(R_d\) can keep the tool frame parallel to the given
+surface.
+
+For the axis-aligned virtual planes used in this implementation, the surface
+normal is especially simple.
+A virtual \(y\)-\(z\) plane has normal
+
+\begin{equation}
+n_s
+=
+\begin{bmatrix}
+1 & 0 & 0
+\end{bmatrix}^{\top},
+\label{eq:yz_plane_surface_normal}
+\end{equation}
+
+while a virtual \(x\)-\(z\) plane has normal
+\([0\;1\;0]^{\top}\), and a virtual \(x\)-\(y\) plane has normal
+\([0\;0\;1]^{\top}\).
+For a general non-axis-aligned surface, the same method can still be used if
+the surface normal is provided by the task description, a CAD model, a
+trajectory planner, or an external perception/contact-estimation method.
+The present controller does not estimate this normal by itself; it only uses
+the desired orientation that is supplied to it.
+
+\section{Self-Alignment with a Virtual Center of Rotation}
+\label{sec:self_alignment_virtual_center}
+
+The orientation construction in Section~\ref{sec:tool_orientation_given_surface}
+defines how the tool can be kept parallel to a given surface.
+However, the task description also requires self-aligning rotational
+compliance with a virtual center of rotation that can be selected on, above,
+or below the surface.
+This requires an additional geometric coupling between translation and
+rotation.
+The purpose of the virtual center is to define the point about which the tool
+appears to rotate while it aligns with the surface.
+
+Let \(p_s\in\mathbb{R}^{3}\) be a point on the given surface and let
+\(n_s\in\mathbb{R}^{3}\) be the unit surface normal.
+The virtual center of rotation is defined as
+
+\begin{equation}
+p_c
+=
+p_s
++
+h n_s,
+\label{eq:virtual_center_from_surface}
+\end{equation}
+
+where \(h\in\mathbb{R}\) is the chosen offset from the surface.
+The three important cases are
+
+\begin{equation}
+\begin{array}{lll}
+h=0, & p_c \text{ on the surface},\\[2mm]
+h>0, & p_c \text{ above the surface},\\[2mm]
+h<0, & p_c \text{ below the surface}.
+\end{array}
+\label{eq:virtual_center_offset_cases}
+\end{equation}
+
+The vector from the virtual center to the end-effector is
+
+\begin{equation}
+r_c
+=
+p_{\mathrm{EE}}
+-
+p_c .
+\label{eq:implementation_virtual_center_lever_arm}
+\end{equation}
+
+If the end-effector rotates by a small angle
+\(\delta\theta\in\mathbb{R}^{3}\) about this virtual center, the corresponding
+linear displacement of the end-effector is approximated by
+
+\begin{equation}
+\delta p_{\mathrm{rot}}
+\approx
+\delta\theta
+\times
+r_c .
+\label{eq:implementation_vcr_position_motion}
+\end{equation}
+
+This equation is the key difference between simple orientation regulation and
+self-alignment with a virtual center of rotation.
+With simple orientation regulation, the controller tries to reduce the
+orientation error at the end-effector frame.
+With a virtual center of rotation, a rotation also implies a translational
+motion determined by the lever arm \(r_c\).
+The tool therefore behaves as if it pivots about the selected point \(p_c\).
+
+The simplified coupled error used for such a controller can be written as
+
+\begin{equation}
+e_c
+=
+\begin{bmatrix}
+e_p
+-
+e_R
+\times
+r_c\\
+e_R
+\end{bmatrix},
+\label{eq:implementation_vcr_coupled_error}
+\end{equation}
+
+where \(e_p=p_d-p_{\mathrm{EE}}\) is the translational error and \(e_R\) is
+the orientation error computed with respect to the surface-based desired
+orientation \(R_d\).
+The upper part of \(e_c\) contains the translational error corrected by the
+motion that would be produced by rotating around the virtual center.
+The lower part contains the rotational error itself.
+
+The translational impedance force is then computed using the coupled
+translational error
+
+\begin{equation}
+f_c
+=
+K_p
+\left(
+e_p
+-
+e_R
+\times
+r_c
+\right)
++
+D_p
+\left(
+\dot{p}_d
+-
+\dot{p}_{\mathrm{EE}}
+\right).
+\label{eq:implementation_vcr_force}
+\end{equation}
+
+The rotational impedance moment is computed as in the standard controller,
+
+\begin{equation}
+m_R
+=
+K_R e_R
+-
+D_R\omega_{\mathrm{EE}} .
+\label{eq:implementation_vcr_rotational_moment}
+\end{equation}
+
+However, because the translational force acts at the end-effector while the
+virtual center is located at \(p_c\), this force also creates an additional
+moment through the lever arm \(r_c\):
+
+\begin{equation}
+m_{\mathrm{lever}}
+=
+r_c
+\times
+f_c .
+\label{eq:implementation_vcr_lever_moment}
+\end{equation}
+
+The wrench used by the controller is therefore
+
+\begin{equation}
+F_c
+=
+\begin{bmatrix}
+f_c\\
+m_R + r_c\times f_c
+\end{bmatrix}.
+\label{eq:implementation_vcr_corrected_wrench}
+\end{equation}
+
+This is the corrected virtual-center coupling used for the practical
+Cartesian impedance structure.
+It is simpler than a full spatial impedance formulation
+\cite{Fasse1997SpatialImpedance}, but it includes the
+two important effects: the orientation error changes the effective
+translational error, and the translational force generates a moment about the
+selected virtual center.
+The resulting wrench is mapped to joint torques with the Jacobian transpose in
+the same way as the standard Cartesian impedance controller.
+
+For the self-aligning surface task, the desired orientation \(R_d\) is
+constructed from the given surface normal, as described in
+Section~\ref{sec:tool_orientation_given_surface}.
+The rotational stiffness can be chosen lower around the axes that should align
+compliantly, while the translational stiffness regulates the constrained
+surface direction.
+During contact, the tool can then rotate toward the surface orientation while
+the selected virtual center determines whether this rotation occurs as if the
+pivot point were on, above, or below the surface.
+
+Thus, the specified self-aligning surface behavior consists of two parts.
+First, the surface normal defines the desired tool orientation.
+Second, the virtual center \(p_c\) defines the point about which the compliant
+rotation is generated.
+Only combining both parts gives the intended self-aligning behavior.
+The axis-constraint mode alone can define a virtual plane and regulate a given
+orientation, but a full self-aligning surface controller requires the
+additional virtual-center coupling described in this section.
+
+In relation to the implemented controller, the missing part is therefore not an
+automatic discovery of an unknown surface.
+For the task formulation considered here, the surface is assumed to be a given
+task geometry, described by a point \(p_s\) and a normal vector \(n_s\).
+The missing part is the complete online use of the selectable virtual center
+\(p_c=p_s+h n_s\) inside the real-time control law.
+To fully realize the specified behavior, the implementation would need to add
+the parameter \(h\), compute \(p_c\) and \(r_c\) at every control step, replace
+the independent position/orientation error by the coupled error
+\eqref{eq:implementation_vcr_coupled_error}, and use the corrected
+virtual-center wrench
+\eqref{eq:implementation_vcr_corrected_wrench} in the torque command.
+If the surface were not given in advance, an additional estimation layer would
+be necessary to determine \(p_s\) and \(n_s\) from contact forces, external
+torque estimates, vision, or another sensor source.
+That surface-estimation layer is a different problem and is not part of the
+implemented controller.
 
 \section{Active Jacobian Construction}
 \label{sec:active_jacobian_construction}
@@ -470,6 +874,11 @@ K_{\sigma}s\alpha n
 \label{eq:implementation_sigma_torque}
 \end{equation}
 
+In the general formulation, \(K_{\sigma}\in\mathbb{R}^{7\times7}\) is a
+joint-space weighting matrix.
+The implementation uses one scalar parameter, \texttt{nullspace\_k\_sigma},
+which corresponds to the special case \(K_{\sigma}=k_{\sigma}I_7\).
+
 The complete null-space torque is therefore
 
 \begin{equation}
@@ -492,15 +901,16 @@ J^{\top}F_{\mathrm{cmd}}
 +
 \tau_{\mathrm{null}}
 +
-\tau_g
-+
 \tau_c.
 \label{eq:implementation_final_torque_with_nullspace}
 \end{equation}
 
-The gravity compensation term remains the same as in the standard Cartesian
-impedance controller. The null-space torque is added as an additional
-joint-space contribution before the final torque command is sent to the robot.
+In the implemented version used here, the Coriolis term can be added through a
+parameter switch.
+The gravity term is not added explicitly for the reason described in
+Section~\ref{sec:state_model}.
+The null-space torque is added as an additional joint-space contribution
+before the final torque command is rate-limited and sent to the robot.
 
 \section{Implementation of the Active Null-Space Optimization}
 \label{sec:code_active_nullspace}
@@ -515,8 +925,9 @@ formed from an \(m\times m\) matrix, but the resulting projector \(N\) remains
 \(7\times7\). Therefore, the projected null-space torque is still a
 seven-dimensional joint torque vector.
 
-The singular-value-based part computes a full singular value decomposition of
-the active Jacobian. The columns of \(V\) are joint-space directions.
+The singular-value-based part computes a full singular value decomposition
+(SVD) of the active Jacobian.
+The columns of \(V\) are joint-space directions.
 Because the Panda has seven joints, a full \(V\) matrix has seven columns.
 In the C++ implementation, Eigen uses zero-based indexing; therefore,
 \texttt{matrixV().col(6)} selects the seventh right singular vector:
@@ -595,15 +1006,11 @@ The final commanded torque is
 +
 \tau_{\mathrm{null}}
 +
-\tau_g
-+
 \tau_c
 =
 J^{\top}F_{\mathrm{cmd}}
 +
 \tau_{\mathrm{null}}
-+
-\tau_g
 +
 \tau_c.
 \label{eq:code_final_torque_command}
@@ -845,13 +1252,12 @@ Cartesian task as little as possible.
 
 Finally, the null-space torque is added to the Cartesian impedance torque in
 the real-time callback.
-The gravity compensation term is obtained from the libfranka model interface
-as in the standard controller, and the Coriolis term is added depending on the
-selected parameter:
+The Coriolis term is obtained from the libfranka model interface and is added
+depending on the selected parameter:
 
 \begin{lstlisting}[style=cppstyle, language=C++, caption={Combination of Cartesian task torque, null-space torque, and Coriolis torque.}, label={lst:task_nullspace_coriolis_torque}]
 Eigen::Matrix<double, 7, 1> tau_raw =
-    tau_task + tau_nullspace + gravity;
+    tau_task + tau_nullspace;
 
 if (params.use_coriolis) {
   tau_raw += coriolis;
@@ -866,8 +1272,8 @@ Eigen::Matrix<double, 7, 1> tau_limited =
 tau_previous = tau_limited;
 \end{lstlisting}
 
-The torque-rate limitation is applied after the task, null-space, model
-compensation, and optional Coriolis terms have been combined.
+The torque-rate limitation is applied after the task, null-space, and optional
+Coriolis terms have been combined.
 This keeps the torque command smooth before it is returned to the robot.
 
 \section{Torque Saturation and Safety Handling}
@@ -1007,7 +1413,7 @@ The implemented control loop follows the sequence below:
     \item Evaluate the Cartesian impedance forces and moments.
     \item Map the Cartesian force/moment vector to joint torques using \(J^\top(q)\).
     \item Compute and add the projected null-space torque \(\tau_{\mathrm{null}}\).
-    \item Add gravity and Coriolis compensation.
+    \item Add the optional Coriolis compensation.
     \item Limit the torque command before returning it to libfranka.
 \end{enumerate}
 
@@ -1054,7 +1460,7 @@ Eigen::Matrix<double, 7, 1> limitTorques(
 }
 
 // Load the robot model from libfranka.
-// The model is used to compute the Jacobian, gravity, and Coriolis terms.
+// The model is used to compute the Jacobian and Coriolis terms.
 franka::Model model = robot.loadModel();
 
 // Desired end-effector position.
@@ -1164,8 +1570,17 @@ robot.control([&](const franka::RobotState& state,
   Eigen::Vector3d p_EE = T_EE.block<3, 1>(0, 3);
   Eigen::Matrix3d R_EE = T_EE.block<3, 3>(0, 0);
 
-  // Compute the Cartesian position error.
-  Eigen::Vector3d e_p = p_d - p_EE;
+  // Compute the axis-constrained desired position and position error.
+  Eigen::Vector3d p_d_current = p_d;
+  Eigen::Vector3d pdot_d = Eigen::Vector3d::Zero();
+
+  if (params.axis_constraint_mode) {
+    p_d_current(0) = params.fix_p_x ? p_start(0) : p_EE(0);
+    p_d_current(1) = params.fix_p_y ? p_start(1) : p_EE(1);
+    p_d_current(2) = params.fix_p_z ? p_start(2) : p_EE(2);
+  }
+
+  Eigen::Vector3d e_p = p_d_current - p_EE;
 
   // Compute the relative rotation from desired orientation to current orientation.
   Eigen::Matrix3d dR = R_d.transpose() * R_EE;
@@ -1187,9 +1602,15 @@ robot.control([&](const franka::RobotState& state,
                         dR(1, 0) - dR(0, 1));
   }
 
+  if (params.axis_constraint_mode) {
+    e_R(0) = params.fix_R_x ? e_R(0) : 0.0;
+    e_R(1) = params.fix_R_y ? e_R(1) : 0.0;
+    e_R(2) = params.fix_R_z ? e_R(2) : 0.0;
+  }
+
   // Compute the positional impedance force.
   Eigen::Vector3d f =
-      Kp_base * e_p - Dp_base * pdot;
+      Kp_base * e_p + Dp_base * (pdot_d - pdot);
 
   // Compute the rotational impedance moment.
   Eigen::Vector3d m =
@@ -1209,22 +1630,16 @@ robot.control([&](const franka::RobotState& state,
   Eigen::Matrix<double, 7, 1> tau_nullspace;
   tau_nullspace.setZero();
 
-  // Read the gravity compensation torque tau_g from the libfranka model.
-  std::array<double, 7> gravity_array = model.gravity(state);
-
   // Read the Coriolis and centrifugal compensation torque tau_c from the libfranka model.
   std::array<double, 7> coriolis_array = model.coriolis(state);
 
-  // Map the compensation terms to Eigen vectors.
-  Eigen::Map<const Eigen::Matrix<double, 7, 1>>
-      tau_g(gravity_array.data());
-
+  // Map the compensation term to an Eigen vector.
   Eigen::Map<const Eigen::Matrix<double, 7, 1>>
       tau_c(coriolis_array.data());
 
   // Compute the final commanded joint torque vector.
   Eigen::Matrix<double, 7, 1> tau =
-      tau_task + tau_nullspace + tau_g + tau_c;
+      tau_task + tau_nullspace + tau_c;
 
   // Limit the commanded torques before sending them to the robot.
   Eigen::Matrix<double, 7, 1> tau_limited = limitTorques(tau);
@@ -1236,7 +1651,7 @@ robot.control([&](const franka::RobotState& state,
   log_file << std::fixed << std::setprecision(6)
            << time << ","
            << p_EE(0) << "," << p_EE(1) << "," << p_EE(2) << ","
-           << p_d(0)  << "," << p_d(1)  << "," << p_d(2)  << ","
+           << p_d_current(0) << "," << p_d_current(1) << "," << p_d_current(2) << ","
            << e_p(0) << "," << e_p(1) << "," << e_p(2) << ","
            << e_R(0) << "," << e_R(1) << "," << e_R(2) << ","
            << pdot(0) << "," << pdot(1) << "," << pdot(2) << ","
@@ -1255,7 +1670,7 @@ robot.control([&](const franka::RobotState& state,
 \end{lstlisting}
 
 Listing~\ref{lst:impedance_callback} summarizes the main operations performed during one real-time control cycle.
-The callback reads the current robot state, evaluates the Cartesian impedance law, adds the active-task null-space torque and the model-based compensation terms, limits the resulting torque command, and returns it to libfranka.
+The callback reads the current robot state, evaluates the Cartesian impedance law, adds the active-task null-space torque and the optional Coriolis term, limits the resulting torque command, and returns it to libfranka.
 If an experiment uses only positional tracking, the rotational control part is disabled by setting \(K_{R,0}=0_{3\times3}\) and \(D_{R,0}=0_{3\times3}\).
 As a result, the rotational moment \(m\) becomes zero, the lower three components of \(F\) are zero, and only the positional force contributes to the task torque.
 
