@@ -49,14 +49,14 @@ system as a candidate Lyapunov function:
 
 \begin{equation}
 \label{eq:lyapunov}
-V(\mathbf{e}_p, \dot{\mathbf{p}}_{EE}) =
+V(\mathbf{e}_p, \dot{\mathbf{p}}_{\mathrm{EE}}) =
 \underbrace{\tfrac{1}{2}\,\mathbf{e}_p^\top\,\mathbf{K}_p\,\mathbf{e}_p}_{\text{potential energy}}
 +
-\underbrace{\tfrac{1}{2}\,\dot{\mathbf{p}}_{EE}^\top\,\mathbf{M}_p\,\dot{\mathbf{p}}_{EE}}_{\text{kinetic energy}}
+\underbrace{\tfrac{1}{2}\,\dot{\mathbf{p}}_{\mathrm{EE}}^\top\,\mathbf{M}_p\,\dot{\mathbf{p}}_{\mathrm{EE}}}_{\text{kinetic energy}}
 > 0
 \end{equation}
 
-$V > 0$ for all $(\mathbf{e}_p, \dot{\mathbf{p}}_{EE}) \neq (\mathbf{0},\mathbf{0})$
+$V > 0$ for all $(\mathbf{e}_p, \dot{\mathbf{p}}_{\mathrm{EE}}) \neq (\mathbf{0},\mathbf{0})$
 because both $\mathbf{K}_p$ and $\mathbf{M}_p$ are \abbr{SPD}.
 This is precisely why \abbr{SPD} is required for both matrices: positive definiteness
 of $\mathbf{K}_p$ ensures the potential energy is zero only at the desired
@@ -69,25 +69,25 @@ positional impedance law \cref{eq:positional_impedance_force}:
 \begin{align}
 \dot{V}
 &= \mathbf{e}_p^\top\,\mathbf{K}_p\,\dot{\mathbf{e}}_p
- + \dot{\mathbf{p}}_{EE}^\top\,\mathbf{M}_p\,\ddot{\mathbf{p}}_{EE}
+ + \dot{\mathbf{p}}_{\mathrm{EE}}^\top\,\mathbf{M}_p\,\ddot{\mathbf{p}}_{\mathrm{EE}}
 \notag\\
-&= -\,\mathbf{e}_p^\top\,\mathbf{K}_p\,\dot{\mathbf{p}}_{EE}
- + \dot{\mathbf{p}}_{EE}^\top\bigl(\mathbf{K}_p\,\mathbf{e}_p
-   - \mathbf{D}_p\,\dot{\mathbf{p}}_{EE}\bigr)
+&= -\,\mathbf{e}_p^\top\,\mathbf{K}_p\,\dot{\mathbf{p}}_{\mathrm{EE}}
+ + \dot{\mathbf{p}}_{\mathrm{EE}}^\top\bigl(\mathbf{K}_p\,\mathbf{e}_p
+   - \mathbf{D}_p\,\dot{\mathbf{p}}_{\mathrm{EE}}\bigr)
 \notag\\
 \label{eq:Vdot}
-&= -\,\dot{\mathbf{p}}_{EE}^\top\,\mathbf{D}_p\,\dot{\mathbf{p}}_{EE}
+&= -\,\dot{\mathbf{p}}_{\mathrm{EE}}^\top\,\mathbf{D}_p\,\dot{\mathbf{p}}_{\mathrm{EE}}
 \;\leq\; 0
 \end{align}
 
-where $\dot{\mathbf{e}}_p = -\dot{\mathbf{p}}_{EE}$ (error decreases when
+where $\dot{\mathbf{e}}_p = -\dot{\mathbf{p}}_{\mathrm{EE}}$ (error decreases when
 the end-effector moves towards $\mathbf{p}_d$).
 The spring terms cancel exactly, leaving only the damping dissipation.
 
 \paragraph{Why $\mathbf{D}_p$ must be SPD.}
 $\dot{V} \leq 0$ requires the quadratic form
-$\dot{\mathbf{p}}_{EE}^\top\mathbf{D}_p\dot{\mathbf{p}}_{EE} \geq 0$.
-Strict inequality ($\dot{V} < 0$ for $\dot{\mathbf{p}}_{EE} \neq \mathbf{0}$)
+$\dot{\mathbf{p}}_{\mathrm{EE}}^\top\mathbf{D}_p\dot{\mathbf{p}}_{\mathrm{EE}} \geq 0$.
+Strict inequality ($\dot{V} < 0$ for $\dot{\mathbf{p}}_{\mathrm{EE}} \neq \mathbf{0}$)
 requires $\mathbf{D}_p$ to be positive definite.
 This is the formal reason why a damping matrix with negative or zero
 eigenvalues would destabilise the controller: it would allow $\dot{V}>0$
@@ -96,14 +96,14 @@ direction.
 
 \paragraph{Conclusion.}
 Since $V > 0$ and $\dot{V} \leq 0$, Lyapunov's theorem guarantees that
-the equilibrium $(\mathbf{e}_p, \dot{\mathbf{p}}_{EE}) = (\mathbf{0},\mathbf{0})$ is
+the equilibrium $(\mathbf{e}_p, \dot{\mathbf{p}}_{\mathrm{EE}}) = (\mathbf{0},\mathbf{0})$ is
 \textbf{stable}.
 Asymptotic stability (convergence to zero) follows from LaSalle's
 invariance principle: the only trajectory along which $\dot{V} = 0$
-permanently (i.e.\ $\dot{\mathbf{p}}_{EE} \equiv \mathbf{0}$) is the
+permanently (i.e.\ $\dot{\mathbf{p}}_{\mathrm{EE}} \equiv \mathbf{0}$) is the
 equilibrium itself.
 The same argument applies to the rotational subsystem with $\mathbf{e}_R$,
-$\mathbf{K}_R$, $\boldsymbol{\omega}_{EE}$, $\mathbf{D}_R$.
+$\mathbf{K}_R$, $\boldsymbol{\omega}_{\mathrm{EE}}$, $\mathbf{D}_R$.
 
 \begin{remark}
 This proof holds for \emph{any} SPD $\mathbf{K}_p$ and $\mathbf{D}_p$,
@@ -122,8 +122,8 @@ To confirm stability experimentally, the following protocol is executed:
         $k_{\min}=50\,\mathrm{N/m}$ to $k_{\max}=1000\,\mathrm{N/m}$.
   \item A step disturbance is applied: the robot is manually displaced
         by $\Delta p = 30\,\mathrm{mm}$ and released.
-  \item The system must return to equilibrium without oscillation
-        (critical damping defined by \cref{eq:positional_damping_base}).
+  \item The system must return to equilibrium without sustained oscillation
+        for the selected damping values.
   \item Joint torques and end-effector position are recorded.
         Divergence, sustained oscillation, or saturation of joint torques
         at their limits would indicate instability.
@@ -131,19 +131,20 @@ To confirm stability experimentally, the following protocol is executed:
 
 \textbf{Success criterion:} The position error $\|\mathbf{e}_p(t)\|$
 converges monotonically to zero for all tested values of $\mathbf{K}_p$
-designed according to \cref{subsec:KD_matrices}.
+with the selected damping values.
 
 
-For later comparison, the critically damped single-axis response is described by
+For later comparison, the critically damped single-axis reference response is described by
 
 \begin{equation}
 \label{eq:settling}
-t_s \approx \frac{4}{\omega_n}=\frac{4}{\sqrt{K_i}},
-\qquad \omega_n=\sqrt{K_i},
+t_s \approx \frac{4}{\omega_n}=4\sqrt{\frac{M_i}{K_i}},
+\qquad \omega_n=\sqrt{\frac{K_i}{M_i}},
 \end{equation}
 
 where \(t_s\) is the approximate 2\,\% settling time and \(K_i\) is the
-stiffness in the investigated principal direction for unit virtual mass. Under
+stiffness in the investigated principal direction for the corresponding
+directional mass \(M_i=(M_x)_{ii}\). Under
 a constant external force \(F_i\), the steady-state error is
 
 \begin{equation}
@@ -164,7 +165,7 @@ confirming the stability proof analytically.
 \centering
 \includegraphics[width=\textwidth]{lyapunov.pdf}
 \caption{Stability verification: Lyapunov function $V(t)$ (left) and its
-         time derivative $\dot{V}(t)=-\mathbf{D}_p\dot{p}_{EE}^2\leq0$ (right)
+         time derivative $\dot{V}(t)=-\mathbf{D}_p\dot{p}_{\mathrm{EE}}^2\leq0$ (right)
          for a 50\,mm step error with $K=200\,\mathrm{N/m}$.
          The monotone decrease of $V$ and the non-positive $\dot{V}$ confirm
          asymptotic stability.}
@@ -222,7 +223,7 @@ Thus, the initial position error is
 \label{eq:exp1_error}
 \mathbf{e}_p(0)
 =
-\mathbf{p}_d-\mathbf{p}_{EE}(0)
+\mathbf{p}_d-\mathbf{p}_{\mathrm{EE}}(0)
 =
 \begin{bmatrix}
 0.01\\0\\0
@@ -318,7 +319,7 @@ rotated spring field around the fixed target point.
         \(\mathbf{D}_{p,\mathrm{base}}\) using
         \cref{eq:exp1_KD_base}.
   \item Activate the impedance controller and record
-        \(\mathbf{p}_{EE}(t)\), \(\dot{\mathbf{p}}_{EE}(t)\),
+        \(\mathbf{p}_{\mathrm{EE}}(t)\), \(\dot{\mathbf{p}}_{\mathrm{EE}}(t)\),
         \(\mathbf{f}(t)\), and \(\boldsymbol{\tau}(t)\) at 1\,kHz.
   \item Compare the measured initial force direction with the predicted
         vector in \cref{eq:exp1_initial_force}.
@@ -328,7 +329,7 @@ rotated spring field around the fixed target point.
 
 The following quantities are evaluated:
 \begin{itemize}
-  \item position error components \(e_x(t),e_y(t),e_z(t)\);
+  \item position error components \(e_{p,x}(t),e_{p,y}(t),e_{p,z}(t)\);
   \item Cartesian force components \(f_x(t),f_y(t),f_z(t)\);
   \item joint torques \(\tau_1(t),\ldots,\tau_7(t)\);
   \item comparison between diagonal stiffness and rotated full stiffness.
@@ -427,7 +428,7 @@ for each trial.
         and $\mathbf{p}_{EE} \cdot \hat{\mathbf{t}}_2$ vs.\ time:
         should show free motion during in-plane trials.
   \item \textbf{Tilt angles} about $\hat{\mathbf{t}}_1$ and $\hat{\mathbf{t}}_2$
-        extracted from $\mathbf{R}_{EE}$ vs.\ time: should converge freely to
+        extracted from $R_{\mathrm{EE}}$ vs.\ time: should converge freely to
         the angle that brings the tool face parallel to the surface.
   \item \textbf{Spin angle} about $\hat{\mathbf{n}}$ vs.\ time: should
         remain near zero ($< 2^{\circ}$) in all trials.
@@ -543,15 +544,14 @@ parameter uncertainty} than high stiffness values.
 
 \subsection{Sensitivity to Damping}
 
-Under-damping ($D_i < 2\sqrt{K_i}$) causes oscillatory transients;
-over-damping ($D_i > 2\sqrt{K_i}$) increases settling time without
-improving steady-state accuracy.
-The optimal critical-damping condition $D_i = 2\sqrt{K_i}$ (with
-$M_i=1$) is computed analytically.
-In practice, a $\pm20\%$ deviation from the critical value is
-acceptable: under-damping by 20\% produces a peak overshoot of
-approximately 1.5\%, which is within the positioning tolerance of
-the \abbr{FCI} sensor.
+Under-damping relative to a selected stiffness can cause oscillatory
+transients, whereas excessive damping can increase settling time without
+improving steady-state accuracy. The critical-damping value
+$D_i = 2\sqrt{M_iK_i}$ is therefore used only as an analytical
+reference, where \(M_i=(M_x)_{ii}\) comes from the virtual Cartesian mass
+matrix computed from the libfranka model. In the implemented controller, the damping values are selected
+directly as controller parameters and the logged response is used to verify
+that oscillations remain sufficiently small for the tested motions.
 
 \subsection{Sensitivity to Model Errors}
 
@@ -598,8 +598,7 @@ Example formulations organised by criterion:
 \begin{itemize}
   \item \textit{``The position error $\|\mathbf{e}_p(t)\|$ converged
         monotonically to zero in all trials without oscillation, confirming
-        the critical-damping condition $\mathbf{D}_p = 2\mathbf{K}_p^{1/2}$
-        derived in \cref{subsec:KD_matrices}.''}
+        the selected damping values used in the controller.''}
   \item \textit{``No saturation of the joint torque limits was observed,
         indicating that the stiffness values lie within the dynamically
         feasible range of the Panda actuators.''}
@@ -609,8 +608,9 @@ Example formulations organised by criterion:
 \begin{itemize}
   \item \textit{``The measured settling time at $K_x=200\,\mathrm{N/m}$
         was $t_s = 0.29\,\mathrm{s}$, consistent with the theoretical
-        prediction $4/\omega_n = 4/\sqrt{200} \approx 0.28\,\mathrm{s}$
-        from \cref{eq:settling}.''}
+        prediction $4/\omega_n = 4\sqrt{M_i/K_x}$ from
+        \cref{eq:settling}, using the directional mass from the virtual
+        Cartesian mass matrix.''}
   \item \textit{``The steady-state error under a $3\,\mathrm{N}$ external
         force at $K_x = 500\,\mathrm{N/m}$ was $6.1\,\mathrm{mm}$,
         matching the predicted value $F/K = 3/500 = 6.0\,\mathrm{mm}$.''}

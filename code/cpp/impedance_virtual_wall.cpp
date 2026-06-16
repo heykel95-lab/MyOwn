@@ -59,9 +59,7 @@ int main(int argc, char** argv) {
     Kp_local.diagonal() << 50.0, 50.0, 1000.0;  // N/m
 
     Eigen::Matrix3d Dp_local = Eigen::Matrix3d::Zero();
-    Dp_local.diagonal() << 2.0 * std::sqrt(50.0),
-                           2.0 * std::sqrt(50.0),
-                           2.0 * std::sqrt(1000.0);  // Ns/m
+    Dp_local.diagonal() << 14.14, 14.14, 63.25;  // Ns/m
 
     const Eigen::Matrix3d Kp_base =
         W_local_to_base * Kp_local * W_local_to_base.transpose();

@@ -57,13 +57,12 @@ Eigen::Matrix3d W = Eigen::Matrix3d::Identity(); // change for tilted wall
 Eigen::Matrix3d Kp = W * Kp_wall * W.transpose();  // full SPD in general
 Eigen::Matrix3d KR = W * KR_wall * W.transpose();
 
-// Damping: D = 2*sqrt(K) per principal direction
-// (eigenvalues of Kp: 50, 50, 1000 => D diag: 14.14, 14.14, 63.25)
+// Damping values selected per principal direction
 Eigen::Matrix3d Dp = W *
-    Eigen::Vector3d(2*std::sqrt(50), 2*std::sqrt(50), 2*std::sqrt(1000))
+    Eigen::Vector3d(14.14, 14.14, 63.25)
     .asDiagonal() * W.transpose();
 Eigen::Matrix3d DR = W *
-    Eigen::Vector3d(2*std::sqrt(200), 2*std::sqrt(200), 2*std::sqrt(5))
+    Eigen::Vector3d(28.28, 28.28, 4.47)
     .asDiagonal() * W.transpose();
 
 // Control law (same as Experiment 1):

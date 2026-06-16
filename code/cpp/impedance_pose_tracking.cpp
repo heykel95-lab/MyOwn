@@ -73,9 +73,7 @@ int main(int argc, char** argv) {
     Kp_local.diagonal() << 1000.0, 300.0, 100.0;  // N/m
 
     Eigen::Matrix3d Dp_local = Eigen::Matrix3d::Zero();
-    Dp_local.diagonal() << 2.0 * std::sqrt(1000.0),
-                           2.0 * std::sqrt(300.0),
-                           2.0 * std::sqrt(100.0);  // Ns/m
+    Dp_local.diagonal() << 63.25, 34.64, 20.00;  // Ns/m
 
     // Full matrices used by the controller in the base frame.
     const Eigen::Matrix3d Kp_base =

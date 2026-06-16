@@ -56,6 +56,8 @@ Three frames are central to this work:
         direction, while $x_{EE}$ and $y_{EE}$ span the tool plane and complete
         a right-handed frame. The position and orientation of $\{EE\}$
         relative to $\{0\}$ constitute the controlled position and orientation of the robot.
+        In the implementation, this frame is the libfranka end-effector/tool
+        frame selected through the robot model interface.
 \end{itemize}
 
 The coordinate-frame assignment and the corresponding Denavit--Hartenberg convention for assigning consecutive coordinate systems
@@ -348,7 +350,7 @@ R_{\mathrm{EE}} & p_{\mathrm{EE}}\\
 \label{eq:end_effector_transformation}
 \end{equation}
 
-Here, \(R_{\mathrm{EE}}\) represents the orientation of the end-effector frame with respect to the base frame, and \(p_{\mathrm{EE}}\) represents the position of the end-effector origin expressed in the base frame.
+Here, \(R_{\mathrm{EE}}\) represents the orientation of the end-effector frame with respect to the base frame, and \(p_{\mathrm{EE}}\) represents the Cartesian position of the end-effector/tool-frame origin expressed in the base frame.
 In the Franka control interface, this transformation is provided directly by \texttt{state.O\_T\_EE}.
 The upper-left \(3 \times 3\) block contains the rotation matrix, while the upper-right \(3 \times 1\) block contains the Cartesian position in metres.
 
@@ -412,13 +414,13 @@ I_4.
 
 Thus, the identity matrix represents zero position and orientation error.
 
-Using the inverse of a homogeneous transformation, the desired inverse is
+Using the inverse of a homogeneous transformation \cite{Craig2005,Siciliano2009}, the desired inverse is
 
 \begin{equation}
 T_d^{-1}
 =
 \begin{bmatrix}
-R_d^\top & -R_d^\top p_d\\
+R_d^\top & -R_d^\top \mathbf{p}_d\\
 0^\top & 1
 \end{bmatrix}.
 \label{eq:desired_transformation_inverse}
@@ -430,11 +432,11 @@ Substituting \(T_d^{-1}\) and \(T_{\mathrm{EE}}\) gives
 T_{\mathrm{err}}
 =
 \begin{bmatrix}
-R_d^\top & -R_d^\top p_d\\
+R_d^\top & -R_d^\top \mathbf{p}_d\\
 0^\top & 1
 \end{bmatrix}
 \begin{bmatrix}
-R_{\mathrm{EE}} & p_{\mathrm{EE}}\\
+R_{\mathrm{EE}} & \mathbf{p}_{\mathrm{EE}}\\
 0^\top & 1
 \end{bmatrix}.
 \label{eq:transformation_error_product}
@@ -446,24 +448,40 @@ Carrying out the block matrix multiplication yields
 T_{\mathrm{err}}
 =
 \begin{bmatrix}
-R_d^\top R_{\mathrm{EE}} & R_d^\top(p_{\mathrm{EE}}-p_d)\\
+R_d^\top R_{\mathrm{EE}} & R_d^\top(\mathbf{p}_{\mathrm{EE}}-\mathbf{p}_d)\\
 0^\top & 1
 \end{bmatrix}.
 \label{eq:expanded_transformation_error}
 \end{equation}
 
-The translational part of this matrix gives the position error
+The translational part of this matrix gives the displacement of the current
+end-effector position relative to the desired frame:
 
 \begin{equation}
-e_p
+\Delta \mathbf{p}_d
 =
-R_d^\top(p_{\mathrm{EE}}-p_d)
+R_d^\top(\mathbf{p}_{\mathrm{EE}}-\mathbf{p}_d)
 \in \mathbb{R}^3.
-\label{eq:position_error}
+\label{eq:relative_position_displacement}
 \end{equation}
 
-This error is expressed in the desired frame.
-Therefore, its components describe the displacement of the current end-effector position relative to the desired frame axes.
+This displacement is expressed in the desired frame.
+Therefore, its components describe where the current end-effector position lies
+relative to the desired frame axes. The positional control error used in the
+impedance law is defined with the restoring sign
+
+\begin{equation}
+\mathbf{e}_p
+=
+\mathbf{p}_d
+-
+\mathbf{p}_{\mathrm{EE}}
+\in \mathbb{R}^3.
+\label{eq:position_control_error}
+\end{equation}
+
+If the error is expressed in the desired frame, this corresponds to
+\(-\Delta \mathbf{p}_d\).
 
 The rotational part of the relative transformation is
 
@@ -482,7 +500,7 @@ If the current orientation is equal to the desired orientation, then \(R_{\mathr
 =
 R_d^\top R_d
 =
-I.
+\mathbf{I}.
 \label{eq:zero_rotation_error}
 \end{equation}
 
@@ -490,7 +508,7 @@ Hence, the identity matrix represents zero orientation error.
 
 For use in the impedance controller, the orientation error must be represented as a three-dimensional vector.
 This is done using the axis-angle representation.
-A rotation matrix \(\Delta R\) can be described by a rotation angle \(\phi\) about a rotation axis vector \(u \in \mathbb{R}^3\).
+A rotation matrix \(\Delta R\) can be described by a rotation angle \(\phi\) about a rotation axis vector \(u \in \mathbb{R}^3\) \cite{Siciliano2009,Murray1994}.
 The vector \(u\) is chosen to have unit length, so it describes only the direction of the rotation axis.
 
 The rotation angle \(\phi\) can be obtained from the trace of the relative rotation matrix \(\Delta R\).
@@ -540,7 +558,7 @@ and therefore
 Thus, the rotation angle can be computed directly from the diagonal elements of \(\Delta R\).
 
 The rotation axis vector \(u\) can be obtained from the skew-symmetric part of \(\Delta R\).
-This relation follows from Rodrigues' rotation formula, which expresses a rotation matrix as
+This relation follows from Rodrigues' rotation formula, which expresses a rotation matrix as \cite{Siciliano2009,Murray1994}
 
 \begin{equation}
 \Delta R
@@ -666,7 +684,7 @@ u
 The rotational error vector is then defined as the rotation axis vector scaled by the rotation angle:
 
 \begin{equation}
-e_R
+\mathbf{e}_R
 =
 \phi u.
 \label{eq:rotation_error_axis_angle}
@@ -675,7 +693,7 @@ e_R
 Substituting the expression for \(u\) gives
 
 \begin{equation}
-e_R
+\mathbf{e}_R
 =
 \frac{\phi}{2\sin\phi}
 \begin{bmatrix}
@@ -687,19 +705,19 @@ e_R
 \label{eq:rotation_error_vector}
 \end{equation}
 
-The direction of \(e_R\) gives the axis of the required rotational correction, while its magnitude gives the orientation error in radians.
-If the desired and current orientations are equal, then \(\Delta R = I\), \(\phi = 0\), and \(e_R = 0\).
+The direction of \(\mathbf{e}_R\) gives the axis of the required rotational correction, while its magnitude gives the orientation error in radians.
+If the desired and current orientations are equal, then \(\Delta R = \mathbf{I}\), \(\phi = 0\), and \(\mathbf{e}_R = \mathbf{0}\).
 For angles close to \(\pi\), the expression becomes numerically sensitive because \(\sin\phi\) approaches zero.
 This case is therefore handled separately in the implementation.
 
 Finally, the complete Cartesian error vector used by the impedance controller is obtained by stacking the translational and rotational errors:
 
 \begin{equation}
-e
+\mathbf{e}
 =
 \begin{bmatrix}
-e_p\\
-e_R
+\mathbf{e}_p\\
+\mathbf{e}_R
 \end{bmatrix}
 \in \mathbb{R}^6.
 \label{eq:cartesian_error_vector}
@@ -907,7 +925,8 @@ robot,
 where each \(\dot{q}_i\) describes the angular velocity of joint \(i\),
 measured in radians per second.
 
-The matrix \(J(q) \in \mathbb{R}^{6 \times n}\) is the geometric Jacobian.
+The matrix \(J(q) \in \mathbb{R}^{6 \times n}\) is the geometric Jacobian
+\cite{Siciliano2009,Craig2005}.
 It maps joint velocities to the corresponding Cartesian velocity of the
 end-effector at the current configuration \(q\).
 Since the Jacobian depends on \(q\), the same joint velocity can produce
@@ -960,6 +979,8 @@ z_i
 \label{eq:jacobian_column}
 \end{equation}
 
+This standard geometric-Jacobian column follows from the instantaneous velocity
+of a point under a revolute joint motion \cite{Siciliano2009,Craig2005}.
 Here, \(z_i \in \mathbb{R}^3\) is the unit vector along the rotation axis of
 joint \(i\), expressed in the base frame.
 It is obtained from the corresponding transformation matrix as the \(z\)-axis
@@ -1017,7 +1038,7 @@ Before this mapping is introduced, the desired Cartesian interaction behavior
 is defined using impedance control.
 
 Impedance control imposes a desired dynamic behavior between the end-effector
-motion and the forces acting on it \cite{Hogan1985,Ott2008}.
+motion and the forces acting on it \cite{Hogan1985,Ott2008,Mayr2024CartesianImpedance}.
 Instead of commanding only a desired position, the robot is made to behave like
 a virtual spring-damper system in Cartesian space.
 In this way, deviations from the desired position and orientation generate
@@ -1027,30 +1048,31 @@ dissipate energy.
 The Cartesian error vector was defined as
 
 \begin{equation}
-e
+\mathbf{e}
 =
 \begin{bmatrix}
-e_p\\
-e_R
+\mathbf{e}_p\\
+\mathbf{e}_R
 \end{bmatrix}
 \in \mathbb{R}^6,
 \label{eq:cartesian_error_impedance}
 \end{equation}
 
-where \(e_p\) is the translational error and \(e_R\) is the rotational error.
+where \(\mathbf{e}_p\) is the translational error and \(\mathbf{e}_R\) is the rotational error.
 These two error components are used to compute the Cartesian impedance forces
 and moments.
 
 \subsection{Impedance Forces and Moments}
 
-The positional impedance force is defined as
+The positional impedance force is defined as the translational part of a
+Cartesian spring-damper law \cite{Hogan1985,Mayr2024CartesianImpedance},
 
 \begin{equation}
-f
+\mathbf{f}
 =
-K_p e_p
+K_p \mathbf{e}_p
 -
-D_p \dot{p}_{\mathrm{EE}}
+D_p \dot{\mathbf{p}}_{\mathrm{EE}}
 \in \mathbb{R}^3.
 \label{eq:positional_impedance_force}
 \end{equation}
@@ -1058,16 +1080,16 @@ D_p \dot{p}_{\mathrm{EE}}
 Here, \(K_p \in \mathbb{R}^{3 \times 3}\) is the positional stiffness
 matrix and \(D_p \in \mathbb{R}^{3 \times 3}\) is the positional damping
 matrix.
-The stiffness term \(K_p e_p\) generates a restoring force proportional to the
-position error, while the damping term \(D_p \dot{p}_{\mathrm{EE}}\) opposes
+The stiffness term \(K_p \mathbf{e}_p\) generates a restoring force proportional to the
+position error, while the damping term \(D_p \dot{\mathbf{p}}_{\mathrm{EE}}\) opposes
 the Cartesian linear velocity of the end-effector.
 
 The rotational impedance moment is defined as
 
 \begin{equation}
-m
+\mathbf{m}
 =
-K_R e_R
+K_R \mathbf{e}_R
 -
 D_R \omega_{\mathrm{EE}}
 \in \mathbb{R}^3.
@@ -1076,7 +1098,7 @@ D_R \omega_{\mathrm{EE}}
 
 Here, \(K_R \in \mathbb{R}^{3 \times 3}\) is the rotational stiffness matrix
 and \(D_R \in \mathbb{R}^{3 \times 3}\) is the rotational damping matrix.
-The stiffness term \(K_R e_R\) generates a restoring moment proportional to the
+The stiffness term \(K_R \mathbf{e}_R\) generates a restoring moment proportional to the
 orientation error, while the damping term \(D_R \omega_{\mathrm{EE}}\) opposes
 the angular velocity of the end-effector.
 
@@ -1084,22 +1106,22 @@ The positional force and rotational moment are combined into the Cartesian
 force/moment vector
 
 \begin{equation}
-F
+\mathbf{F}
 =
 \begin{bmatrix}
-f\\
-m
+\mathbf{f}\\
+\mathbf{m}
 \end{bmatrix}
 =
 \begin{bmatrix}
-K_p e_p - D_p \dot{p}_{\mathrm{EE}}\\
-K_R e_R - D_R \omega_{\mathrm{EE}}
+K_p \mathbf{e}_p - D_p \dot{\mathbf{p}}_{\mathrm{EE}}\\
+K_R \mathbf{e}_R - D_R \omega_{\mathrm{EE}}
 \end{bmatrix}
 \in \mathbb{R}^6.
 \label{eq:cartesian_force_moment_vector}
 \end{equation}
 
-The vector \(F\) therefore contains the Cartesian forces and moments generated
+The vector \(\mathbf{F}\) therefore contains the Cartesian forces and moments generated
 by the impedance controller in response to position, orientation, linear
 velocity, and angular velocity errors.
 This force/moment vector is later mapped to joint torques using the transpose
@@ -1206,7 +1228,7 @@ D_{p,\mathrm{EE}}
 \label{eq:positional_damping_ee}
 \end{equation}
 
-The damping values are selected according to the critical damping condition.
+The damping values can be compared with the critical damping condition.
 Critical damping describes the case in which a second-order spring-damper
 system returns to its equilibrium position as quickly as possible without
 oscillating.
@@ -1228,34 +1250,49 @@ D_i = 2\sqrt{M_iK_i}.
 \label{eq:critical_damping_general}
 \end{equation}
 
-In this work, a unit virtual mass is assumed in each principal direction,
-meaning
+In the robot implementation, the mass value is not assumed to be one.
+Instead, the directional mass is taken from the virtual Cartesian mass matrix
+obtained from the libfranka model quantities. If this matrix is denoted by
+\(M_x\), it can be computed from the joint-space mass matrix \(M_q(q)\) and
+the Jacobian \(J(q)\) as in operational-space dynamics \cite{Khatib1987}
 
 \begin{equation}
-M_i = 1.
-\label{eq:unit_virtual_mass}
+M_x
+=
+\left(J(q)M_q^{-1}(q)J^\top(q)\right)^{-1}.
+\label{eq:cartesian_virtual_mass_matrix}
 \end{equation}
 
-Therefore, the damping values become
+The mass associated with principal direction \(i\) is then
 
 \begin{equation}
-D_i = 2\sqrt{K_i},
+M_i = (M_x)_{ii}.
+\label{eq:directional_virtual_mass}
+\end{equation}
+
+The corresponding critical damping reference therefore becomes
+
+\begin{equation}
+D_i = 2\sqrt{(M_x)_{ii}K_i},
 \qquad i=1,2,3.
-\label{eq:critical_damping_unit_mass}
+\label{eq:critical_damping_directional_mass}
 \end{equation}
 
-Thus, the positional damping matrix in the end-effector frame is
+In the implemented controller, however, the damping values are selected
+explicitly as controller parameters rather than being computed from this
+critical damping expression. Thus, the positional damping matrix in the
+end-effector frame is
 
 \begin{equation}
 D_{p,\mathrm{EE}}
 =
-2\operatorname{diag}
+\operatorname{diag}
 \left(
-\sqrt{K_1},
-\sqrt{K_2},
-\sqrt{K_3}
+D_1,
+D_2,
+D_3
 \right).
-\label{eq:positional_damping_ee_critical}
+\label{eq:positional_damping_ee_selected}
 \end{equation}
 
 The damping matrix expressed in the base frame is then
@@ -1355,37 +1392,37 @@ parts.
 For the finite-error controller, this leads to the coupled translational error
 
 \begin{equation}
-e_{p,c}
+\mathbf{e}_{p,c}
 =
-e_p
+\mathbf{e}_p
 -
-e_R
+\mathbf{e}_R
 \times
-r_c .
+\mathbf{r}_c .
 \label{eq:virtual_center_coupled_position_error}
 \end{equation}
 
 The translational impedance force can then be computed from
-\(e_{p,c}\), while the rotational impedance moment is still computed from
-\(e_R\):
+\(\mathbf{e}_{p,c}\), while the rotational impedance moment is still computed from
+\(\mathbf{e}_R\):
 
 \begin{equation}
-f_c
+\mathbf{f}_c
 =
-K_p e_{p,c}
+K_p \mathbf{e}_{p,c}
 -
-D_p\dot{p}_{\mathrm{EE}},
+D_p\dot{\mathbf{p}}_{\mathrm{EE}},
 \qquad
-m_R
+\mathbf{m}_R
 =
-K_R e_R
+K_R \mathbf{e}_R
 -
 D_R\omega_{\mathrm{EE}} .
 \label{eq:virtual_center_force_moment}
 \end{equation}
 
 Because the force is generated at the end-effector while the selected virtual
-center is located at \(p_c\), the lever arm \(r_c\) also produces a moment
+center is located at \(\mathbf{p}_c\), the lever arm \(\mathbf{r}_c\) also produces a moment
 
 \begin{equation}
 m_{\mathrm{lever}}
@@ -1452,31 +1489,31 @@ This mapping is performed using the transpose of the Jacobian
 The Cartesian force/moment vector is given by
 
 \begin{equation}
-F =
+\mathbf{F} =
 \begin{bmatrix}
-f\\
-m
+\mathbf{f}\\
+\mathbf{m}
 \end{bmatrix}
 \in \mathbb{R}^6,
 \label{eq:cartesian_force_moment_control_law}
 \end{equation}
 
-where \(f \in \mathbb{R}^3\) is the Cartesian force and
-\(m \in \mathbb{R}^3\) is the Cartesian moment.
+where \(\mathbf{f} \in \mathbb{R}^3\) is the Cartesian force and
+\(\mathbf{m} \in \mathbb{R}^3\) is the Cartesian moment.
 Using the principle of virtual work, this vector is mapped to joint torques
 \cite{Khatib1987} by
 
 \begin{equation}
-\tau
+\boldsymbol{\tau}
 =
-J^\top(q)F.
+J^\top(q)\mathbf{F}.
 \label{eq:joint_torque_mapping}
 \end{equation}
 
-Here, \(\tau \in \mathbb{R}^n\) is the joint torque vector,
+Here, \(\boldsymbol{\tau} \in \mathbb{R}^n\) is the joint torque vector,
 
 \begin{equation}
-\tau =
+\boldsymbol{\tau} =
 \begin{bmatrix}
 \tau_1 & \tau_2 & \cdots & \tau_n
 \end{bmatrix}^\top,
@@ -1491,12 +1528,12 @@ Substituting the Cartesian impedance forces and moments gives the complete
 Cartesian impedance control law:
 
 \begin{equation}
-\tau
+\boldsymbol{\tau}
 =
 J^\top(q)
 \begin{bmatrix}
-K_{p,0} e_p - D_{p,0} \dot{p}_{\mathrm{EE}}\\
-K_{R,0} e_R - D_{R,0} \omega_{\mathrm{EE}}
+K_{p,0} \mathbf{e}_p - D_{p,0} \dot{\mathbf{p}}_{\mathrm{EE}}\\
+K_{R,0} \mathbf{e}_R - D_{R,0} \omega_{\mathrm{EE}}
 \end{bmatrix}.
 \label{eq:cartesian_impedance_control_law}
 \end{equation}
@@ -1504,8 +1541,8 @@ K_{R,0} e_R - D_{R,0} \omega_{\mathrm{EE}}
 This equation is the computational core of the controller.
 At each control cycle, the current end-effector transformation is read from
 the robot state and compared with the desired transformation.
-From this comparison, the positional error \(e_p\) and rotational error
-\(e_R\) are computed.
+From this comparison, the positional error \(\mathbf{e}_p\) and rotational error
+\(\mathbf{e}_R\) are computed.
 The corresponding Cartesian forces and moments are then evaluated and mapped
 to joint torques using the Jacobian transpose.
 
@@ -1520,7 +1557,7 @@ The commanded joint torque can therefore be written as
 \begin{equation}
 \tau_{\mathrm{cmd}}
 =
-J^\top(q)F
+J^\top(q)\mathbf{F}
 +
 \tau_g(q)
 +
@@ -1546,7 +1583,7 @@ Consequently, the implementation returns
 \begin{equation}
 \tau_{\mathrm{cmd,impl}}
 =
-J^\top(q)F
+J^\top(q)\mathbf{F}
 +
 \tau_c(q,\dot{q}),
 \label{eq:commanded_torque_libfranka}
@@ -1555,7 +1592,7 @@ or, when the null-space controller is active,
 \begin{equation}
 \tau_{\mathrm{cmd,impl}}
 =
-J^\top(q)F
+J^\top(q)\mathbf{F}
 +
 \tau_{\mathrm{null}}
 +
@@ -1590,11 +1627,11 @@ The same argument applies to the damping matrix and to the rotational stiffness 
 Under the stated assumptions, the positional part of the controller behaves like a damped second-order system,
 
 \begin{equation}
-M_p \ddot{p}_{\mathrm{EE}}
+M_p \ddot{\mathbf{p}}_{\mathrm{EE}}
 =
-K_{p,0}e_p
+K_{p,0}\mathbf{e}_p
 -
-D_{p,0}\dot{p}_{\mathrm{EE}},
+D_{p,0}\dot{\mathbf{p}}_{\mathrm{EE}},
 \label{eq:positional_closed_loop_dynamics}
 \end{equation}
 
@@ -1602,20 +1639,20 @@ where \(M_p\) is a symmetric positive definite virtual inertia matrix.
 Since the desired position is constant, the positional error
 
 \begin{equation}
-e_p
+\mathbf{e}_p
 =
-p_d
+\mathbf{p}_d
 -
-p_{\mathrm{EE}}
+\mathbf{p}_{\mathrm{EE}}
 \label{eq:positional_error_stability}
 \end{equation}
 
 satisfies
 
 \begin{equation}
-\dot{e}_p
+\dot{\mathbf{e}}_p
 =
--\dot{p}_{\mathrm{EE}}.
+-\dot{\mathbf{p}}_{\mathrm{EE}}.
 \label{eq:positional_error_derivative}
 \end{equation}
 
@@ -1624,9 +1661,9 @@ A suitable Lyapunov candidate for the positional subsystem is the total virtual 
 \begin{equation}
 V_p
 =
-\frac{1}{2}e_p^\top K_{p,0}e_p
+\frac{1}{2}\mathbf{e}_p^\top K_{p,0}\mathbf{e}_p
 +
-\frac{1}{2}\dot{p}_{\mathrm{EE}}^\top M_p \dot{p}_{\mathrm{EE}}.
+\frac{1}{2}\dot{\mathbf{p}}_{\mathrm{EE}}^\top M_p \dot{\mathbf{p}}_{\mathrm{EE}}.
 \label{eq:positional_lyapunov_candidate}
 \end{equation}
 
@@ -1638,24 +1675,24 @@ Taking the time derivative gives
 \begin{equation}
 \dot{V}_p
 =
-e_p^\top K_{p,0}\dot{e}_p
+\mathbf{e}_p^\top K_{p,0}\dot{\mathbf{e}}_p
 +
-\dot{p}_{\mathrm{EE}}^\top M_p \ddot{p}_{\mathrm{EE}}.
+\dot{\mathbf{p}}_{\mathrm{EE}}^\top M_p \ddot{\mathbf{p}}_{\mathrm{EE}}.
 \label{eq:positional_lyapunov_derivative}
 \end{equation}
 
-Using \(\dot{e}_p = -\dot{p}_{\mathrm{EE}}\) and substituting the positional dynamics yields
+Using \(\dot{\mathbf{e}}_p = -\dot{\mathbf{p}}_{\mathrm{EE}}\) and substituting the positional dynamics yields
 
 \begin{equation}
 \dot{V}_p
 =
--e_p^\top K_{p,0}\dot{p}_{\mathrm{EE}}
+-\mathbf{e}_p^\top K_{p,0}\dot{\mathbf{p}}_{\mathrm{EE}}
 +
-\dot{p}_{\mathrm{EE}}^\top
+\dot{\mathbf{p}}_{\mathrm{EE}}^\top
 \left(
-K_{p,0}e_p
+K_{p,0}\mathbf{e}_p
 -
-D_{p,0}\dot{p}_{\mathrm{EE}}
+D_{p,0}\dot{\mathbf{p}}_{\mathrm{EE}}
 \right).
 \label{eq:positional_lyapunov_substitution}
 \end{equation}
@@ -1666,22 +1703,22 @@ Because \(K_{p,0}\) is symmetric, the spring terms cancel, resulting in
 \dot{V}_p
 =
 -
-\dot{p}_{\mathrm{EE}}^\top
+\dot{\mathbf{p}}_{\mathrm{EE}}^\top
 D_{p,0}
-\dot{p}_{\mathrm{EE}}
+\dot{\mathbf{p}}_{\mathrm{EE}}
 \leq 0.
 \label{eq:positional_lyapunov_result}
 \end{equation}
 
 Thus, the damping matrix dissipates energy and prevents the positional subsystem from gaining energy.
 
-The same reasoning can be applied locally to the rotational subsystem, where the orientation error is represented by the rotation vector \(e_R\).
+The same reasoning can be applied locally to the rotational subsystem, where the orientation error is represented by the rotation vector \(\mathbf{e}_R\).
 With a symmetric positive definite virtual rotational inertia matrix \(M_R\), the rotational energy is defined as
 
 \begin{equation}
 V_R
 =
-\frac{1}{2}e_R^\top K_{R,0}e_R
+\frac{1}{2}\mathbf{e}_R^\top K_{R,0}\mathbf{e}_R
 +
 \frac{1}{2}\omega_{\mathrm{EE}}^\top M_R \omega_{\mathrm{EE}}.
 \label{eq:rotational_lyapunov_candidate}
@@ -1720,7 +1757,7 @@ Since both subsystems are dissipative, its derivative is
 +
 \dot{V}_R
 =
--\dot{p}_{\mathrm{EE}}^\top D_{p,0}\dot{p}_{\mathrm{EE}}
+-\dot{\mathbf{p}}_{\mathrm{EE}}^\top D_{p,0}\dot{\mathbf{p}}_{\mathrm{EE}}
 -
 \omega_{\mathrm{EE}}^\top D_{R,0}\omega_{\mathrm{EE}}
 \leq 0.
@@ -1750,31 +1787,31 @@ term can be interpreted locally as
 V_{c,p}
 =
 \frac{1}{2}
-e_{p,c}^{\top}
+\mathbf{e}_{p,c}^{\top}
 K_p
-e_{p,c},
+\mathbf{e}_{p,c},
 \qquad
-e_{p,c}
+\mathbf{e}_{p,c}
 =
-e_p
+\mathbf{e}_p
 -
-e_R
+\mathbf{e}_R
 \times
-r_c .
+\mathbf{r}_c .
 \label{eq:virtual_center_potential_energy}
 \end{equation}
 
 This expression shows that the stored translational spring energy is no longer
-based only on the pure position error \(e_p\).
-It also depends on the orientation error \(e_R\), because a rotation about the
+based only on the pure position error \(\mathbf{e}_p\).
+It also depends on the orientation error \(\mathbf{e}_R\), because a rotation about the
 selected virtual center produces a translational displacement at the
 end-effector.
 The corresponding force is
 
 \begin{equation}
-f_c
+\mathbf{f}_c
 =
-K_p e_{p,c},
+K_p \mathbf{e}_{p,c},
 \label{eq:virtual_center_stability_force}
 \end{equation}
 
@@ -1849,13 +1886,13 @@ structure of the implemented libfranka controller and adds a practical
 virtual-center coupling through
 
 \begin{equation}
-e_{p,c}
+\mathbf{e}_{p,c}
 =
-e_p
+\mathbf{e}_p
 -
-e_R
+\mathbf{e}_R
 \times
-r_c
+\mathbf{r}_c
 \end{equation}
 
 and
@@ -1863,9 +1900,9 @@ and
 \begin{equation}
 m_{\mathrm{lever}}
 =
-r_c
+\mathbf{r}_c
 \times
-f_c .
+\mathbf{f}_c .
 \end{equation}
 
 Therefore, the virtual-center extension can be understood as locally
@@ -1984,7 +2021,9 @@ J_{\mathrm{active}}\dot{q}_0 \approx 0.
 \end{equation}
 
 A damped null-space projector is used to project a joint-space vector into
-this null space:
+this null space. This follows the general idea of null-space projection for
+redundant manipulators, with the damping term improving numerical robustness
+near singular configurations \cite{Khatib1987,Dietrich2015NullspaceSurvey,Chiaverini1994DampedLeastSquares}:
 
 \begin{equation}
 N
@@ -2141,7 +2180,8 @@ used.
 The SVD is a standard matrix factorization that can be
 applied to any real matrix.
 It is useful here because it describes how a joint-space velocity is amplified
-or weakened when it is mapped into the active Cartesian task space.
+or weakened when it is mapped into the active Cartesian task space
+\cite{Chiaverini1994DampedLeastSquares,Dietrich2015NullspaceSurvey}.
 For the active Jacobian it is written as
 
 \begin{equation}
@@ -2439,7 +2479,7 @@ and is used as a measure of the kinematic conditioning of the robot with
 respect to the active task.
 A small value of \(\sigma_{\min}\) indicates proximity to a singular or poorly
 conditioned configuration, whereas a larger value indicates better
-conditioning.
+conditioning \cite{Chiaverini1994DampedLeastSquares}.
 The controller therefore tries to choose null-space motions that increase
 \(\sigma_{\min}\), while the active Cartesian task remains preserved by the
 projector \(N\).

@@ -25,7 +25,7 @@ axis can be set individually. Implementing this control strategy
 requires precise knowledge of the Jacobian matrix of the manipulator,
 which establishes the relationship between Cartesian velocities and
 joint angular velocities and additionally enables the mapping of
-Cartesian forces to joint torques \citep{Siciliano2009,Khatib1987}.
+Cartesian forces to joint torques \citep{Siciliano2009,Khatib1987,Mayr2024CartesianImpedance}.
 The main goal of this thesis is therefore to formulate and analyse a
 Cartesian impedance controller for a 7-\abbr{DOF} manipulator.
 
@@ -40,18 +40,23 @@ with the environment is explicitly designed and parameterised.
 The theoretical background of this work builds on standard treatments
 of serial-manipulator kinematics and dynamics, including homogeneous
 transformations, the geometric and analytic Jacobian, redundancy, and
-operational-space modelling \citep{Siciliano2009,Craig2005,Murray1994}.
+operational-space modelling \citep{Siciliano2009,Craig2005,Murray1994,Khatib1987}.
 For the Panda platform, these foundations are especially relevant
 because \abbr{FCI} provides direct access to joint states, model
 quantities, and the geometric Jacobian in a deterministic 1\,kHz
 torque-control loop. The controller developed in this thesis follows
 the Jacobian-transpose mapping from Cartesian forces to joint torques
 \citep{Khatib1987}, while using a fixed-parameter, quasi-static
-impedance model. This choice avoids the complexity and model sensitivity
-of full operational-space dynamic inversion, remains suitable for the
-low-velocity interaction tasks considered here, and leaves adaptive or
-variable-impedance extensions as future work
-\citep{Albu2003,Ott2008,Villani2016}.
+impedance model similar in structure to practical Cartesian impedance
+software implementations \citep{Mayr2024CartesianImpedance}. This choice
+avoids the complexity and model sensitivity of full operational-space
+dynamic inversion, remains suitable for the low-velocity interaction
+tasks considered here, and leaves adaptive or variable-impedance
+extensions as future work \citep{Albu2003,Ott2008,Villani2016}.
+The secondary null-space term is treated as an auxiliary redundancy
+resolution component, following the broader literature on null-space
+projection for redundant torque-controlled robots
+\citep{Khatib1987,Dietrich2015NullspaceSurvey}.
 
 This is technically demanding: it requires a verified real-time
 software stack, a mathematically sound controller formulation, and a

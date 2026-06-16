@@ -21,6 +21,16 @@ double K1_R = 50.0;
 double K2_R = 50.0;
 double K3_R = 50.0;
 
+// Positional damping values along the desired end-effector x-, y-, and z-axes.
+double D1_p = 77.46;
+double D2_p = 77.46;
+double D3_p = 77.46;
+
+// Rotational damping values about the desired end-effector x-, y-, and z-axes.
+double D1_R = 14.14;
+double D2_R = 14.14;
+double D3_R = 14.14;
+
 // Trajectory settings.
 // If use_trajectory is false, the desired position remains constant.
 bool use_trajectory = true;

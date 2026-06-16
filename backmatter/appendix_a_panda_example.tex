@@ -284,9 +284,8 @@ The impedance matrices are $3\times3$ SPD matrices as defined in
 \begin{itemize}
   \item $M_{11} = M_{22} = M_{33} = 1\,\mathrm{kg}$: virtual translational mass.
   \item $M_{44} = M_{55} = M_{66} = 1\,\mathrm{kg\,m^2}$: virtual rotational inertia.
-  \item Setting $\mM = \mI_6$ decouples all axes and simplifies the
-        critical-damping formula to $D_i = 2\sqrt{K_i}$ for each axis $i$.
-        The real link inertia and Coriolis effects are handled separately by
+  \item Setting $\mM = \mI_6$ decouples all axes in the simplified
+        spring-damper model. The real link inertia and Coriolis effects are handled separately by
         $\bm{\tau}_g$ and $\bm{\tau}_c$ (see \cref{eq:commanded_torque}).
 \end{itemize}
 
@@ -331,17 +330,11 @@ off-diagonal entries by the same congruence transformation used in
 
 \subsection{\texorpdfstring{Damping Matrices $\mathbf{D}_p$ and $\mathbf{D}_R$}{Damping Matrices Dp and DR}}
 
-Critical damping with $\mathbf{M}_p=\mathbf{M}_R=\mathbf{I}_3$:
+For the numerical example, the damping matrices are selected as:
 
 \begin{equation}
 \label{eq:D_panda}
 \mathbf{D}_p =
-\begin{bmatrix}
-2\sqrt{50}   & 0           & 0             \\
-0            & 2\sqrt{50}  & 0             \\
-0            & 0           & 2\sqrt{1000}
-\end{bmatrix}
-\approx
 \begin{bmatrix}
 14.14 & 0     & 0     \\
 0     & 14.14 & 0     \\
@@ -353,12 +346,6 @@ Critical damping with $\mathbf{M}_p=\mathbf{M}_R=\mathbf{I}_3$:
 \begin{equation}
 \label{eq:DR_panda}
 \mathbf{D}_R =
-\begin{bmatrix}
-2\sqrt{200} & 0           & 0         \\
-0           & 2\sqrt{200} & 0         \\
-0           & 0           & 2\sqrt{5}
-\end{bmatrix}
-\approx
 \begin{bmatrix}
 28.28 & 0     & 0    \\
 0     & 28.28 & 0    \\
@@ -377,38 +364,38 @@ $3\times3$ matrices in the base frame.
 \label{app:panda_force}
 % ─────────────────────────────────────────────────────────────────
 
-\subsection*{Position and Orientation Error via $\mathbf{T}_d^{-1}\mathbf{T}_{EE}$}
+\subsection*{Position and Orientation Error via \(T_d^{-1}T_{\mathrm{EE}}\)}
 
-Suppose the desired position and orientation are $\mathbf{T}_d$ with $\mathbf{R}_d=\mathbf{I}_3$
+Suppose the desired position and orientation are \(T_d\) with \(R_d=I_3\)
 and $\mathbf{p}_d=[0.136,\;0.545,\;0.395]^\top\,\mathrm{m}$
 (the home position shifted $20\,\mathrm{mm}$ in $x$).
-The current position and orientation at $\vq_0$ are $\mathbf{T}_{EE}$ with $\mathbf{R}_{EE}$ (from \abbr{FK})
-and $\mathbf{p}_{EE}=[0.116,\;0.545,\;0.395]^\top\,\mathrm{m}$.
+The current position and orientation at $\vq_0$ are \(T_{\mathrm{EE}}\) with \(R_{\mathrm{EE}}\) (from \abbr{FK})
+and $\mathbf{p}_{\mathrm{EE}}=[0.116,\;0.545,\;0.395]^\top\,\mathrm{m}$.
 
 Following \cref{eq:expanded_transformation_error}, the position-and-orientation error matrix is:
 
 \begin{equation}
-\mathbf{T}_{\mathrm{err}} = \mathbf{T}_d^{-1}\mathbf{T}_{EE} =
+T_{\mathrm{err}} = T_d^{-1}T_{\mathrm{EE}} =
 \begin{bmatrix}
-\mathbf{R}_d^\top\mathbf{R}_{EE} &
-\mathbf{R}_d^\top(\mathbf{p}_{EE} - \mathbf{p}_d) \\
+R_d^\top R_{\mathrm{EE}} &
+R_d^\top(\mathbf{p}_{\mathrm{EE}} - \mathbf{p}_d) \\
 \mathbf{0}^\top & 1
 \end{bmatrix}
 =
 \begin{bmatrix}
-\mathbf{R}_{EE} & [-0.020,\;0,\;0]^\top \\
+R_{\mathrm{EE}} & [-0.020,\;0,\;0]^\top \\
 \mathbf{0}^\top & 1
 \end{bmatrix}
 \end{equation}
 
-since $\mathbf{R}_d=\mathbf{I}_3$ so $\mathbf{R}_d^\top=\mathbf{I}_3$.
+since \(R_d=I_3\) so \(R_d^\top=I_3\).
 
 Reading off the sub-errors from the two blocks:
 
-\paragraph{Translational error (upper-right column):}
+\paragraph{Relative translational displacement (upper-right column):}
 \begin{equation}
-\label{eq:panda_error}
-\mathbf{e}_p = \mathbf{R}_d^\top(\mathbf{p}_{EE} - \mathbf{p}_d) =
+\label{eq:panda_relative_displacement}
+\Delta\mathbf{p}_d = R_d^\top(\mathbf{p}_{\mathrm{EE}} - \mathbf{p}_d) =
 \begin{bmatrix}
 0.116 - 0.136 \\ 0 \\ 0
 \end{bmatrix}
@@ -419,23 +406,33 @@ Reading off the sub-errors from the two blocks:
 \mathrm{m}
 \end{equation}
 
+\paragraph{Positional control error:}
+\begin{equation}
+\label{eq:panda_error}
+\mathbf{e}_p = \mathbf{p}_d-\mathbf{p}_{\mathrm{EE}} =
+\begin{bmatrix}
+0.020 \\ 0 \\ 0
+\end{bmatrix}
+\mathrm{m}.
+\end{equation}
+
 \paragraph{Rotational error (upper-left block):}
-$\Delta\mathbf{R} = \mathbf{R}_d^\top\mathbf{R}_{EE} = \mathbf{R}_{EE}$.
-Since the robot is at the desired orientation ($\mathbf{R}_{EE}\approx\mathbf{R}_d$),
-$\Delta\mathbf{R}\approx\mathbf{I}$, giving
-$\phi = \arccos\!\bigl(\tfrac{\mathrm{tr}(\mathbf{I})-1}{2}\bigr) = 0$
+\(\Delta R = R_d^\top R_{\mathrm{EE}} = R_{\mathrm{EE}}\).
+Since the robot is at the desired orientation (\(R_{\mathrm{EE}}\approx R_d\)),
+\(\Delta R\approx I\), giving
+\(\phi = \arccos\!\bigl(\tfrac{\mathrm{tr}(I)-1}{2}\bigr) = 0\)
 and $\mathbf{e}_R = \mathbf{0}$.
 
 \subsection*{Impedance Forces and Moments}
 
 Assuming the robot is momentarily at rest
-($\dot{\mathbf{p}}_{EE}=\mathbf{0}$, $\boldsymbol{\omega}_{EE}=\mathbf{0}$),
+($\dot{\mathbf{p}}_{\mathrm{EE}}=\mathbf{0}$, $\boldsymbol{\omega}_{\mathrm{EE}}=\mathbf{0}$),
 the positional force and rotational moment from
 \cref{eq:positional_impedance_force,eq:rotational_impedance_moment} are:
 
 \begin{equation}
 \label{eq:F_panda}
-\mathbf{f} = \mathbf{K}_p\,\mathbf{e}_p - \mathbf{D}_p\,\dot{\mathbf{p}}_{EE}
+\mathbf{f} = \mathbf{K}_p\,\mathbf{e}_p - \mathbf{D}_p\,\dot{\mathbf{p}}_{\mathrm{EE}}
 =
 \begin{bmatrix}
 50   & 0  & 0    \\
@@ -443,11 +440,11 @@ the positional force and rotational moment from
 0    & 0  & 1000
 \end{bmatrix}
 \begin{bmatrix}
--0.020 \\ 0 \\ 0
+0.020 \\ 0 \\ 0
 \end{bmatrix}
 =
 \begin{bmatrix}
--1.0\,\mathrm{N} \\ 0 \\ 0
++1.0\,\mathrm{N} \\ 0 \\ 0
 \end{bmatrix}
 \end{equation}
 
@@ -464,12 +461,12 @@ The combined forces and moments are:
 \end{bmatrix}
 =
 \begin{bmatrix}
--1.0\,\mathrm{N} \\ 0 \\ 0 \\ 0 \\ 0 \\ 0
++1.0\,\mathrm{N} \\ 0 \\ 0 \\ 0 \\ 0 \\ 0
 \end{bmatrix}
 \in\mathbb{R}^6
 \end{equation}
 
-The $-1\,\mathrm{N}$ in the $x$-direction is a restoring force pulling the
+The \(+1\,\mathrm{N}\) in the \(x\)-direction is a restoring force pulling the
 end-effector $20\,\mathrm{mm}$ back to the desired position.
 The low in-plane stiffness $k_{\mathrm{free}}=50\,\mathrm{N/m}$ means this
 restoring force is gentle: the wall yields compliantly under applied loads.
@@ -487,57 +484,55 @@ from \cref{eq:J_panda}:
 \bm{\tau} = \mJ^\top\,\vF
 \end{equation}
 
-Since $\mathbf{F} = [-1,\;0,\;0,\;0,\;0,\;0]^\top\,\mathrm{N}$,
+Since $\mathbf{F} = [1,\;0,\;0,\;0,\;0,\;0]^\top\,\mathrm{N}$,
 only the first row of $\mJ$ (the $v_x$ row) contributes to $\vtau$:
 
 \begin{equation}
 \label{eq:panda_tau}
 \bm{\tau} = \mJ^\top\,\vF =
 \begin{bmatrix}
-J_{11}\cdot(-1) \\[2pt]
-J_{21}\cdot(-1) \\[2pt]
-J_{31}\cdot(-1) \\[2pt]
-J_{41}\cdot(-1) \\[2pt]
-J_{51}\cdot(-1) \\[2pt]
-J_{61}\cdot(-1) \\[2pt]
-J_{71}\cdot(-1)
+J_{11}\cdot 1 \\[2pt]
+J_{21}\cdot 1 \\[2pt]
+J_{31}\cdot 1 \\[2pt]
+J_{41}\cdot 1 \\[2pt]
+J_{51}\cdot 1 \\[2pt]
+J_{61}\cdot 1 \\[2pt]
+J_{71}\cdot 1
 \end{bmatrix}
 =
 \begin{bmatrix}
-(-0.5452)(-1) \\[2pt]
-(-0.5452)(-1) \\[2pt]
-( 0.0440)(-1) \\[2pt]
-(-0.3218)(-1) \\[2pt]
-( 0.0622)(-1) \\[2pt]
-( 0.0622)(-1) \\[2pt]
-( 0.0000)(-1)
+(-0.5452)(1) \\[2pt]
+(-0.5452)(1) \\[2pt]
+( 0.0440)(1) \\[2pt]
+(-0.3218)(1) \\[2pt]
+( 0.0622)(1) \\[2pt]
+( 0.0622)(1) \\[2pt]
+( 0.0000)(1)
 \end{bmatrix}
 =
 \begin{bmatrix}
-+0.545\,\mathrm{Nm} \\[2pt]
-+0.545\,\mathrm{Nm} \\[2pt]
--0.044\,\mathrm{Nm} \\[2pt]
-+0.322\,\mathrm{Nm} \\[2pt]
--0.062\,\mathrm{Nm} \\[2pt]
--0.062\,\mathrm{Nm} \\[2pt]
+-0.545\,\mathrm{Nm} \\[2pt]
+-0.545\,\mathrm{Nm} \\[2pt]
++0.044\,\mathrm{Nm} \\[2pt]
+-0.322\,\mathrm{Nm} \\[2pt]
++0.062\,\mathrm{Nm} \\[2pt]
++0.062\,\mathrm{Nm} \\[2pt]
 \phantom{+}0.000\,\mathrm{Nm}
 \end{bmatrix}
 \end{equation}
 
 \begin{itemize}
-  \item $\tau_1 = \tau_2 = +0.545\,\mathrm{Nm}$:
+  \item $\tau_1 = \tau_2 = -0.545\,\mathrm{Nm}$:
         joints 1 and 2 contribute equally (consistent with their
         nearly identical Jacobian columns).
-        The positive sign means both joints rotate to pull the
-        end-effector in the $+x$ direction (restoring towards $\mathbf{p}_d$).
-  \item $\tau_3 = -0.044\,\mathrm{Nm}$:
+  \item $\tau_3 = +0.044\,\mathrm{Nm}$:
         joint 3 contributes a small opposing torque because its rotation
         axis ($\mathbf{z}_3 \approx [0.707,\;0.707,\;0]^\top$) is
         at $45^\circ$ to the $x$-direction.
-  \item $\tau_4 = +0.322\,\mathrm{Nm}$:
-        the elbow joint contributes positively; it has the largest
+  \item $\tau_4 = -0.322\,\mathrm{Nm}$:
+        the elbow joint has the largest
         translational lever arm to the end-effector.
-  \item $\tau_5 = \tau_6 = -0.062\,\mathrm{Nm}$:
+  \item $\tau_5 = \tau_6 = +0.062\,\mathrm{Nm}$:
         the wrist joints contribute small opposing torques.
   \item $\tau_7 = 0$:
         joint 7's rotation axis ($-x_0$) is perpendicular to the
@@ -561,16 +556,16 @@ J_{71}\cdot(-1)
 Step & Quantity & Symbol & Value \\
 \midrule
 1  & Joint configuration   & $\vq$          & $[0, -45, 0, -135, 0, 90, 45]^\top$ deg \\
-2  & EE position           & $\mathbf{p}_{EE}$ & $[0.116,\;0.545,\;0.395]^\top\,\mathrm{m}$ \\
+2  & EE position           & $\mathbf{p}_{\mathrm{EE}}$ & $[0.116,\;0.545,\;0.395]^\top\,\mathrm{m}$ \\
 3  & Jacobian ($6\times7$) & $\mathbf{J}$   & See \cref{eq:J_panda} \\
-4  & $\mathbf{T}_{\mathrm{err}}$ blocks & $\mathbf{e}_p,\mathbf{e}_R$ & $[-0.020,0,0]^\top$ m, $\mathbf{0}$ \\
+4  & Error quantities & $\Delta\mathbf{p}_d,\mathbf{e}_p,\mathbf{e}_R$ & $[-0.020,0,0]^\top$ m, $[0.020,0,0]^\top$ m, $\mathbf{0}$ \\
 5  & Virtual inertia       & $\mathbf{M}$   & $\mI_6$ \\
 6  & Stiffness matrices    & $\mathbf{K}_p, \mathbf{K}_R$ & See \cref{eq:K_panda} \\
 7  & Damping matrices      & $\mathbf{D}_p, \mathbf{D}_R$ & See \cref{eq:D_panda} \\
-8  & Impedance forces and moments & $\mathbf{f},\mathbf{m}$ & $[-1.0,0,0]^\top$ N, $\mathbf{0}$ \\
+8  & Impedance forces and moments & $\mathbf{f},\mathbf{m}$ & $[+1.0,0,0]^\top$ N, $\mathbf{0}$ \\
 9  & Pseudo-inverse        & $\mathbf{J}^+$ & See Eq.~(\ref{eq:Jp_panda}) \\
 10 & Null-space projector  & $\mathbf{N}$   & $\mI_7 - \mathbf{J}^+\mJ$ \\
-11 & Primary joint torques & $\bm{\tau}_{\mathrm{task}}$ & $[+0.55, +0.55, -0.04, +0.32,$\newline$-0.06, -0.06, 0.00]^\top$ Nm \\
+11 & Primary joint torques & $\bm{\tau}_{\mathrm{task}}$ & $[-0.55, -0.55, +0.04, -0.32,$\newline$+0.06, +0.06, 0.00]^\top$ Nm \\
 12 & Null-space torque    & $\bm{\tau}_{\mathrm{null}}$ & projected secondary torque; zero for this numerical example \\
 \bottomrule
 \end{tabular}
@@ -606,7 +601,7 @@ Eigen::Matrix3d R_d = T_des.rotation();
 Eigen::Vector3d p_d = T_des.translation();
 
 // Translational error in desired frame
-Eigen::Vector3d e_p = R_d.transpose() * (p_EE - p_d);
+Eigen::Vector3d e_p = p_d - p_EE;
 
 // Rotational error: Delta_R = R_d^T * R_EE
 Eigen::Matrix3d Delta_R = R_d.transpose() * R_EE;

@@ -45,7 +45,7 @@ The controller then computes the Cartesian error, evaluates the impedance law, m
         \node[block, below=0.9cm of model] (controller) {Impedance and Null-Space Controller\\ \(F=\begin{bmatrix} f\\ m \end{bmatrix},\ \tau_{\mathrm{null}}\)};
         \node[block, below=0.9cm of controller] (torque) {Torque Command\\
         \(\begin{aligned}
-        \tau_{\mathrm{cmd}}={}&J^\top(q)F+\tau_{\mathrm{null}}\\
+        \tau_{\mathrm{cmd}}={}&J^\top(q)\mathbf{F}+\tau_{\mathrm{null}}\\
         &+\tau_c(q,\dot{q})
         \end{aligned}\)};
 
@@ -64,7 +64,8 @@ The software implementation therefore focuses on obtaining the required quantiti
 \label{sec:state_model}
 
 At the beginning of each control callback, the current joint configuration \(q\) and joint velocity vector \(\dot{q}\) are read from \texttt{franka::RobotState} and mapped to Eigen vectors.
-The end-effector transformation is obtained from \texttt{state.O\_T\_EE}, which contains the homogeneous transformation matrix \(T_{\mathrm{EE}}\) of the end-effector frame with respect to the robot base frame.
+The end-effector transformation is obtained from \texttt{state.O\_T\_EE}, which contains the homogeneous transformation matrix \(T_{\mathrm{EE}}\) of the libfranka end-effector/tool frame with respect to the robot base frame.
+Thus, the position vector \(p_{\mathrm{EE}}\) used by the controller is the Cartesian position of this tool-frame origin, not an independently reconstructed DH point.
 
 Although the theoretical forward kinematics can be constructed from the DH parameters, the implementation uses the kinematic quantities provided directly by libfranka.
 The measured end-effector transformation is read from \texttt{state.O\_T\_EE}, and the Jacobian is obtained from the libfranka model interface.
@@ -90,7 +91,7 @@ Second, its transpose is used to map the Cartesian force/moment vector to joint 
 \begin{equation}
 \tau_{\mathrm{task}}
 =
-J^\top(q)F.
+J^\top(q)\mathbf{F}.
 \label{eq:software_task_torque}
 \end{equation}
 
@@ -100,7 +101,7 @@ Together with the projected null-space torque, it is added after the task torque
 \begin{equation}
 \tau_{\mathrm{cmd}}
 =
-J^\top(q)F
+J^\top(q)\mathbf{F}
 +
 \tau_{\mathrm{null}}
 +
@@ -147,15 +148,15 @@ x & y & z
 The position error is
 
 \begin{equation}
-e_p
+\mathbf{e}_p
 =
-p_d
+\mathbf{p}_d
 -
-p_{\mathrm{EE}},
+\mathbf{p}_{\mathrm{EE}},
 \label{eq:axis_constraint_position_error}
 \end{equation}
 
-where \(p_d\) is the desired position and \(p_{\mathrm{EE}}\) is the measured
+where \(\mathbf{p}_d\) is the desired position and \(\mathbf{p}_{\mathrm{EE}}\) is the measured
 end-effector position.
 In the axis constraint mode, each translational axis can be fixed or free.
 This is controlled by
@@ -206,7 +207,7 @@ The same idea is applied to the rotational error.
 The orientation error is represented by
 
 \begin{equation}
-e_R
+\mathbf{e}_R
 =
 \begin{bmatrix}
 e_{R,x} &
@@ -336,7 +337,7 @@ z_{\mathrm{EE}}
 The resulting position error becomes
 
 \begin{equation}
-e_p
+\mathbf{e}_p
 =
 \begin{bmatrix}
 x_{\mathrm{start}} - x_{\mathrm{EE}}\\
@@ -496,7 +497,7 @@ The controller can then use the same orientation error computation as in the
 standard implementation:
 
 \begin{equation}
-e_R
+\mathbf{e}_R
 =
 \mathrm{orientationError}
 \left(
@@ -611,23 +612,23 @@ The tool therefore behaves as if it pivots about the selected point \(p_c\).
 The simplified coupled error used for such a controller can be written as
 
 \begin{equation}
-e_c
+\mathbf{e}_c
 =
 \begin{bmatrix}
-e_p
+\mathbf{e}_p
 -
-e_R
+\mathbf{e}_R
 \times
-r_c\\
-e_R
+\mathbf{r}_c\\
+\mathbf{e}_R
 \end{bmatrix},
 \label{eq:implementation_vcr_coupled_error}
 \end{equation}
 
-where \(e_p=p_d-p_{\mathrm{EE}}\) is the translational error and \(e_R\) is
+where \(\mathbf{e}_p=\mathbf{p}_d-\mathbf{p}_{\mathrm{EE}}\) is the translational error and \(\mathbf{e}_R\) is
 the orientation error computed with respect to the surface-based desired
 orientation \(R_d\).
-The upper part of \(e_c\) contains the translational error corrected by the
+The upper part of \(\mathbf{e}_c\) contains the translational error corrected by the
 motion that would be produced by rotating around the virtual center.
 The lower part contains the rotational error itself.
 
@@ -635,22 +636,22 @@ The translational impedance force is then computed using the coupled
 translational error
 
 \begin{equation}
-f_c
+\mathbf{f}_c
 =
 K_p
 \left(
-e_p
+\mathbf{e}_p
 -
-e_R
+\mathbf{e}_R
 \times
-r_c
+\mathbf{r}_c
 \right)
 +
 D_p
 \left(
-\dot{p}_d
+\dot{\mathbf{p}}_d
 -
-\dot{p}_{\mathrm{EE}}
+\dot{\mathbf{p}}_{\mathrm{EE}}
 \right).
 \label{eq:implementation_vcr_force}
 \end{equation}
@@ -658,16 +659,16 @@ D_p
 The rotational impedance moment is computed as in the standard controller,
 
 \begin{equation}
-m_R
+\mathbf{m}_R
 =
-K_R e_R
+K_R \mathbf{e}_R
 -
 D_R\omega_{\mathrm{EE}} .
 \label{eq:implementation_vcr_rotational_moment}
 \end{equation}
 
 However, because the translational force acts at the end-effector while the
-virtual center is located at \(p_c\), this force also creates an additional
+virtual center is located at \(\mathbf{p}_c\), this force also creates an additional
 moment through the lever arm \(r_c\):
 
 \begin{equation}
@@ -1487,6 +1488,12 @@ double K3_p;
 double K1_R;
 double K2_R;
 double K3_R;
+double D1_p;
+double D2_p;
+double D3_p;
+double D1_R;
+double D2_R;
+double D3_R;
 
 // Diagonal positional stiffness matrix in the desired end-effector frame.
 Eigen::Matrix3d Kp_EE =
@@ -1496,16 +1503,12 @@ Eigen::Matrix3d Kp_EE =
 Eigen::Matrix3d KR_EE =
     Eigen::Vector3d(K1_R, K2_R, K3_R).asDiagonal();
 
-// Critical damping matrices in the desired end-effector frame.
+// Diagonal damping matrices in the desired end-effector frame.
 Eigen::Matrix3d Dp_EE =
-    2.0 * Eigen::Vector3d(std::sqrt(K1_p),
-                          std::sqrt(K2_p),
-                          std::sqrt(K3_p)).asDiagonal();
+    Eigen::Vector3d(D1_p, D2_p, D3_p).asDiagonal();
 
 Eigen::Matrix3d DR_EE =
-    2.0 * Eigen::Vector3d(std::sqrt(K1_R),
-                          std::sqrt(K2_R),
-                          std::sqrt(K3_R)).asDiagonal();
+    Eigen::Vector3d(D1_R, D2_R, D3_R).asDiagonal();
 
 // Express the stiffness and damping matrices in the base frame.
 Eigen::Matrix3d Kp_base = R_d * Kp_EE * R_d.transpose();

@@ -11,7 +11,7 @@ The Coriolis term is added from the libfranka model interface, while gravity com
 The theoretical part showed how the end-effector pose is represented by a homogeneous transformation matrix and how the position and orientation errors are defined.
 The Denavit--Hartenberg convention was introduced to explain the structure of forward kinematics, while the implementation itself uses the measured end-effector transformation and Jacobian provided directly by libfranka.
 The stiffness and damping matrices were defined in the end-effector frame and transformed into the base frame, allowing direction-dependent impedance behavior.
-The damping values were selected from the critical damping condition for a unit virtual mass.
+The damping values were selected explicitly as controller parameters, with the critical damping expression used only as a theoretical reference.
 A Lyapunov-based stability analysis was also presented for the ideal compensated closed-loop system, showing that symmetric positive definite stiffness and damping matrices lead to a non-increasing energy function.
 
 The software implementation was organized around the real-time torque-control callback of libfranka.
@@ -76,4 +76,4 @@ If the surface were unknown before contact, an additional surface-estimation met
 
 The experimental evaluation could also be expanded with additional trajectories, different payloads, larger orientation changes, and repeated trials for statistical comparison.
 This would make it possible to quantify repeatability and robustness more precisely.
-Finally, replacing the unit virtual inertia assumption with an operational-space inertia model could improve the dynamic behavior at higher velocities and during faster trajectory tracking.
+Finally, further refining the operational-space inertia model and its use in damping selection could improve the dynamic behavior at higher velocities and during faster trajectory tracking.

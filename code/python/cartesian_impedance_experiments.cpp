@@ -48,6 +48,14 @@ struct ExperimentConfig {
   double K2_R;
   double K3_R;
 
+  double D1_p;
+  double D2_p;
+  double D3_p;
+
+  double D1_R;
+  double D2_R;
+  double D3_R;
+
   bool use_trajectory;
 
   std::string csv_file_name;
@@ -78,6 +86,14 @@ ExperimentConfig getExperimentConfig(ExperimentType experiment) {
       config.K2_R = 30.0;
       config.K3_R = 30.0;
 
+      config.D1_p = 56.57;
+      config.D2_p = 56.57;
+      config.D3_p = 56.57;
+
+      config.D1_R = 10.95;
+      config.D2_R = 10.95;
+      config.D3_R = 10.95;
+
       config.use_trajectory = false;
       config.csv_file_name = "setpoint_low_stiffness.csv";
       break;
@@ -97,6 +113,14 @@ ExperimentConfig getExperimentConfig(ExperimentType experiment) {
       config.K1_R = 80.0;
       config.K2_R = 80.0;
       config.K3_R = 80.0;
+
+      config.D1_p = 100.0;
+      config.D2_p = 100.0;
+      config.D3_p = 100.0;
+
+      config.D1_R = 17.89;
+      config.D2_R = 17.89;
+      config.D3_R = 17.89;
 
       config.use_trajectory = false;
       config.csv_file_name = "setpoint_high_stiffness.csv";
@@ -118,6 +142,14 @@ ExperimentConfig getExperimentConfig(ExperimentType experiment) {
       config.K2_R = 50.0;
       config.K3_R = 50.0;
 
+      config.D1_p = 77.46;
+      config.D2_p = 77.46;
+      config.D3_p = 77.46;
+
+      config.D1_R = 14.14;
+      config.D2_R = 14.14;
+      config.D3_R = 14.14;
+
       config.use_trajectory = true;
       config.csv_file_name = "trajectory_experiment.csv";
       break;
@@ -138,6 +170,14 @@ ExperimentConfig getExperimentConfig(ExperimentType experiment) {
       config.K2_R = 30.0;
       config.K3_R = 30.0;
 
+      config.D1_p = 44.72;
+      config.D2_p = 44.72;
+      config.D3_p = 44.72;
+
+      config.D1_R = 10.95;
+      config.D2_R = 10.95;
+      config.D3_R = 10.95;
+
       config.use_trajectory = false;
       config.csv_file_name = "compliance_low_stiffness.csv";
       break;
@@ -157,6 +197,14 @@ ExperimentConfig getExperimentConfig(ExperimentType experiment) {
       config.K1_R = 80.0;
       config.K2_R = 80.0;
       config.K3_R = 80.0;
+
+      config.D1_p = 100.0;
+      config.D2_p = 100.0;
+      config.D3_p = 100.0;
+
+      config.D1_R = 17.89;
+      config.D2_R = 17.89;
+      config.D3_R = 17.89;
 
       config.use_trajectory = false;
       config.csv_file_name = "compliance_high_stiffness.csv";
@@ -307,16 +355,16 @@ int main(int argc, char** argv) {
                         config.K2_R,
                         config.K3_R).asDiagonal();
 
-    // Critical damping matrices in the desired end-effector frame.
+    // Diagonal damping matrices in the desired end-effector frame.
     Eigen::Matrix3d Dp_EE =
-        2.0 * Eigen::Vector3d(std::sqrt(config.K1_p),
-                              std::sqrt(config.K2_p),
-                              std::sqrt(config.K3_p)).asDiagonal();
+        Eigen::Vector3d(config.D1_p,
+                        config.D2_p,
+                        config.D3_p).asDiagonal();
 
     Eigen::Matrix3d DR_EE =
-        2.0 * Eigen::Vector3d(std::sqrt(config.K1_R),
-                              std::sqrt(config.K2_R),
-                              std::sqrt(config.K3_R)).asDiagonal();
+        Eigen::Vector3d(config.D1_R,
+                        config.D2_R,
+                        config.D3_R).asDiagonal();
 
     // Express the stiffness and damping matrices in the base frame.
     Eigen::Matrix3d Kp_base = R_d * Kp_EE * R_d.transpose();

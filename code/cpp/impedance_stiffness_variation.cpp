@@ -51,13 +51,18 @@ int main(int argc, char** argv) {
     const Eigen::Matrix3d W_local_to_base = Eigen::Matrix3d::Identity();
 
     for (double k_stiff : normal_stiffness_values) {
+      double d_stiff = 28.28;
+      if (k_stiff == 500.0) {
+        d_stiff = 44.72;
+      } else if (k_stiff == 1000.0) {
+        d_stiff = 63.25;
+      }
+
       Eigen::Matrix3d Kp_local = Eigen::Matrix3d::Zero();
       Kp_local.diagonal() << 50.0, 50.0, k_stiff;
 
       Eigen::Matrix3d Dp_local = Eigen::Matrix3d::Zero();
-      Dp_local.diagonal() << 2.0 * std::sqrt(50.0),
-                             2.0 * std::sqrt(50.0),
-                             2.0 * std::sqrt(k_stiff);
+      Dp_local.diagonal() << 14.14, 14.14, d_stiff;
 
       const Eigen::Matrix3d Kp_base =
           W_local_to_base * Kp_local * W_local_to_base.transpose();

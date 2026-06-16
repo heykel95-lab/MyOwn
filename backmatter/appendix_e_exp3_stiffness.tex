@@ -41,11 +41,13 @@ prints measured vs.\ theoretical $d_{ss}$:
   caption={Experiment~3: stiffness variation loop (C++)},
   label={lst:exp3_cpp}]
 const std::array<double,3> k_stiff_vals = {200.0, 500.0, 1000.0};
-for (double k_stiff : k_stiff_vals) {
+const std::array<double,3> d_stiff_vals = {28.28, 44.72, 63.25};
+for (size_t i = 0; i < k_stiff_vals.size(); ++i) {
+    double k_stiff = k_stiff_vals[i];
+    double d_stiff = d_stiff_vals[i];
     // K_p = W*diag(k_free,k_free,k_stiff)*W^T  (full SPD in general)
     Kp = rotate_diagonal(W, k_free, k_free, k_stiff);
-    Dp = rotate_diagonal(W, 2*sqrt(k_free), 2*sqrt(k_free),
-                            2*sqrt(k_stiff));
+    Dp = rotate_diagonal(W, 14.14, 14.14, d_stiff);
     double d_ss   = run_trial(robot, model, R_d, p_d, n_hat,
                               k_stiff, k_free, T_run, csv_file);
     double theory = 5.0 / k_stiff * 1000.0;  // mm
@@ -72,8 +74,7 @@ def simulate_sdof(K, D, M, F_fn, dt=0.001, T=4.0):
 
 F_n = 5.0
 F_fn = lambda t: F_n if t > 0.5 else 0.0
-for K in [200, 500, 1000]:
-    D = 2.0 * np.sqrt(K)
+for K, D in [(200, 28.28), (500, 44.72), (1000, 63.25)]:
     t, x = simulate_sdof(K, D, 1.0, F_fn)
     print(f"K={K} N/m: d_ss_sim={x[-1]*1000:.2f} mm, "
           f"theory={F_n/K*1000:.2f} mm")
@@ -89,7 +90,7 @@ Parameter & Symbol & Values & Unit \\
 \midrule
 Applied force & $F_n$ & $5$ & N \\
 Normal stiffness & $k_{\mathrm{stiff}}$ & $200,\ 500,\ 1000$ & N/m \\
-Critical damping & $D_n=2\sqrt{k}$ & $28.3,\ 44.7,\ 63.2$ & Ns/m \\
+Selected damping & $D_n$ & $28.3,\ 44.7,\ 63.2$ & Ns/m \\
 Predicted $d_{ss}$ & $F_n/k$ & $25.0,\ 10.0,\ 5.0$ & mm \\
 \bottomrule
 \end{tabular}

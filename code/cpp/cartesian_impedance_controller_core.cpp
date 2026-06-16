@@ -57,16 +57,12 @@ Eigen::Matrix3d Kp_EE =
 Eigen::Matrix3d KR_EE =
     Eigen::Vector3d(K1_R, K2_R, K3_R).asDiagonal();
 
-// Critical damping matrices in the desired end-effector frame.
+// Diagonal damping matrices in the desired end-effector frame.
 Eigen::Matrix3d Dp_EE =
-    2.0 * Eigen::Vector3d(std::sqrt(K1_p),
-                          std::sqrt(K2_p),
-                          std::sqrt(K3_p)).asDiagonal();
+    Eigen::Vector3d(D1_p, D2_p, D3_p).asDiagonal();
 
 Eigen::Matrix3d DR_EE =
-    2.0 * Eigen::Vector3d(std::sqrt(K1_R),
-                          std::sqrt(K2_R),
-                          std::sqrt(K3_R)).asDiagonal();
+    Eigen::Vector3d(D1_R, D2_R, D3_R).asDiagonal();
 
 // Express the stiffness and damping matrices in the base frame.
 Eigen::Matrix3d Kp_base = R_d * Kp_EE * R_d.transpose();
