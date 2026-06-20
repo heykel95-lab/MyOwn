@@ -7,6 +7,7 @@ This thesis developed and evaluated a Cartesian impedance controller for the Fra
 It combined forward kinematics, differential kinematics, Jacobian-based force and moment mapping, and Cartesian impedance control with a C++ implementation using libfranka and Eigen.
 The controller computes Cartesian forces and moments from position, orientation, linear velocity, and angular velocity errors, and maps them to joint torques using the transpose of the geometric Jacobian.
 The Coriolis term is added from the libfranka model interface, while gravity compensation is handled by the Franka Control Interface for the external torque command.
+For the redundant 7-\abbr{DOF} arm, a projected null-space term adds joint-space damping and a smallest-singular-value optimization, so that secondary joint motion does not disturb the regulated Cartesian task.
 
 The theoretical part showed how the end-effector pose is represented by a homogeneous transformation matrix and how the position and orientation errors are defined.
 The Denavit--Hartenberg convention was introduced to explain the structure of forward kinematics, while the implementation itself uses the measured end-effector transformation and Jacobian provided directly by libfranka.
@@ -103,9 +104,9 @@ The controller and evaluation can be extended in several directions.
 An external force/torque sensor could be added to measure interaction forces directly.
 This would allow the compliance behavior to be evaluated using measured force-displacement curves and would make it possible to study contact tasks more accurately.
 
-The controller could also be extended with null-space control.
+The implemented null-space control can be extended further.
 Since the Franka Emika Panda has seven joints, one redundant degree of freedom remains for a six-dimensional Cartesian task.
-This redundancy could be used for joint-limit avoidance, posture optimization, or keeping the robot away from singular configurations while maintaining the desired end-effector behavior.
+At present this redundancy is used for joint-space damping and a smallest-singular-value optimization; it could additionally be used for joint-limit avoidance, posture optimization, or keeping the robot away from singular configurations while maintaining the desired end-effector behavior.
 
 Another possible extension is adaptive impedance control.
 Instead of selecting fixed stiffness and damping values before each experiment,

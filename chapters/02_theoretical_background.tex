@@ -1304,7 +1304,7 @@ D_{p,\mathrm{EE}}
 The damping values can be compared with the critical damping condition.
 Critical damping describes the case in which a second-order spring-damper
 system returns to its equilibrium position as quickly as possible without
-oscillating.
+oscillating~\cite{Ogata2010}.
 
 For each principal direction, the corresponding one-dimensional
 spring-damper system can be written as
@@ -1735,314 +1735,124 @@ control interface rather than being added again in the user callback.
 This avoids double compensation and keeps the implementation consistent with
 the official libfranka Cartesian impedance example.
 
-\subsection{Stability Analysis of the Joint-Torque Control Law}
-\label{subsec:control_law_stability}
+\subsection{Stability Analysis of the Implemented Controller}
+\label{subsec:stability_analysis}
 
-The stability of the Cartesian impedance control law can be discussed by considering the ideal closed-loop behavior after gravity and Coriolis compensation.
-For this analysis, the desired end-effector pose is assumed to be constant, the model-based compensation is assumed to be exact, and the commanded torques are assumed not to be saturated.
-Furthermore, the stiffness and damping matrices \(K_{p,0}\), \(D_{p,0}\), \(K_{R,0}\), and \(D_{R,0}\) are chosen to be symmetric positive definite.
+This subsection gives a single stability argument for the controller that is
+actually implemented and evaluated in this thesis: the block-diagonal Cartesian
+impedance law of \cref{eq:cartesian_impedance_control_law}, with decoupled
+translational and rotational springs, together with the projected null-space
+term and the model-based Coriolis compensation. The passive self-alignment
+observed during table contact is an emergent property of this controller under
+contact, produced by the rotational compliance and the contact geometry, rather
+than by a separate control mode. It is therefore covered by the same analysis.
 
-This property is preserved when diagonal stiffness and damping matrices are transformed from the end-effector frame into the base frame.
-For example, if \(K_{p,\mathrm{EE}}\) is symmetric positive definite and \(R_d\) is a rotation matrix, then
-
-\begin{equation}
-K_{p,0}
-=
-R_d K_{p,\mathrm{EE}} R_d^\top
-\label{eq:stability_stiffness_transformation}
-\end{equation}
-
-is also symmetric positive definite.
-The same argument applies to the damping matrix and to the rotational stiffness and damping matrices.
-
-Under the stated assumptions, the positional part of the controller behaves like a damped second-order system,
+The analysis uses the following assumptions: the desired end-effector pose is
+constant; gravity and Coriolis effects are exactly compensated; the commanded
+torques are not saturated; and the stiffness and damping matrices
+\(K_{p,0},\,D_{p,0},\,K_{R,0},\,D_{R,0}\) are symmetric positive definite.
+The last property is preserved when diagonal end-effector-frame matrices are
+rotated into the base frame: for a symmetric positive definite
+\(K_{p,\mathrm{EE}}\) and a rotation \(R_d\),
 
 \begin{equation}
-M_p \ddot{\mathbf{p}}_{\mathrm{EE}}
-=
-K_{p,0}\mathbf{e}_p
--
-D_{p,0}\dot{\mathbf{p}}_{\mathrm{EE}},
-\label{eq:positional_closed_loop_dynamics}
+K_{p,0}=R_d K_{p,\mathrm{EE}} R_d^\top
+\label{eq:stability_spd_preserved}
 \end{equation}
 
-where \(M_p\) is a symmetric positive definite virtual inertia matrix.
-Since the desired position is constant, the positional error
+is again symmetric positive definite, and the same holds for the damping and
+the rotational matrices. The translational and rotational springs remain
+decoupled, so the full Cartesian stiffness and damping are block-diagonal even
+though each \(3\times3\) block is generally a full matrix in the base frame.
+
+After exact gravity and Coriolis compensation, the end-effector obeys the
+operational-space dynamics \cite{Khatib1987,Siciliano2009}
 
 \begin{equation}
-\mathbf{e}_p
-=
-\mathbf{p}_d
--
-\mathbf{p}_{\mathrm{EE}}
-\label{eq:positional_error_stability}
+\Lambda(q)\ddot{x}+\Gamma(q,\dot{q})\dot{x}=\mathbf{F},
+\label{eq:operational_space_closed_loop}
 \end{equation}
 
-satisfies
+where \(\mathbf{F}\) is the commanded impedance wrench,
+\(\Lambda(q)=\left(J(q)M_q^{-1}(q)J^\top(q)\right)^{-1}\) is the symmetric
+positive definite operational-space inertia of
+\cref{eq:cartesian_virtual_mass_matrix}, and \(\Gamma(q,\dot{q})\) is the
+corresponding operational-space Coriolis matrix. As in the joint-space model,
+\(\dot{\Lambda}-2\Gamma\) is skew-symmetric \cite{Siciliano2009,Ott2008}.
+
+Collect the full Cartesian error and velocity as
 
 \begin{equation}
-\dot{\mathbf{e}}_p
-=
--\dot{\mathbf{p}}_{\mathrm{EE}}.
-\label{eq:positional_error_derivative}
+\mathbf{e}=
+\begin{bmatrix}\mathbf{e}_p\\ \mathbf{e}_R\end{bmatrix},
+\qquad
+\dot{x}=
+\begin{bmatrix}\dot{\mathbf{p}}_{\mathrm{EE}}\\ \omega_{\mathrm{EE}}\end{bmatrix},
+\qquad
+K=
+\begin{bmatrix}K_{p,0}&0\\0&K_{R,0}\end{bmatrix},
+\qquad
+D=
+\begin{bmatrix}D_{p,0}&0\\0&D_{R,0}\end{bmatrix},
+\label{eq:stability_stacked_quantities}
 \end{equation}
 
-A suitable Lyapunov candidate for the positional subsystem is the total virtual mechanical energy,
+so that the commanded wrench is \(\mathbf{F}=K\mathbf{e}-D\dot{x}\). The
+block-diagonal structure of \(K\) and \(D\) is exactly the decoupling between
+translation and rotation used in the implemented controller. A single Lyapunov
+candidate for the complete six-dimensional task is the total virtual mechanical
+energy
 
 \begin{equation}
-V_p
-=
-\frac{1}{2}\mathbf{e}_p^\top K_{p,0}\mathbf{e}_p
-+
-\frac{1}{2}\dot{\mathbf{p}}_{\mathrm{EE}}^\top M_p \dot{\mathbf{p}}_{\mathrm{EE}}.
-\label{eq:positional_lyapunov_candidate}
+V=\tfrac{1}{2}\mathbf{e}^\top K\mathbf{e}
+ +\tfrac{1}{2}\dot{x}^\top \Lambda\,\dot{x}.
+\label{eq:unified_lyapunov}
 \end{equation}
 
-The first term represents the potential energy stored in the virtual spring, while the second term represents the kinetic energy associated with the virtual inertia.
-Since \(K_{p,0}\) and \(M_p\) are symmetric positive definite, \(V_p\) is positive definite.
+Since \(K\) and \(\Lambda\) are symmetric positive definite, \(V\) is positive
+definite and vanishes only for \(\mathbf{e}=0,\ \dot{x}=0\).
 
-Taking the time derivative gives
-
-\begin{equation}
-\dot{V}_p
-=
-\mathbf{e}_p^\top K_{p,0}\dot{\mathbf{e}}_p
-+
-\dot{\mathbf{p}}_{\mathrm{EE}}^\top M_p \ddot{\mathbf{p}}_{\mathrm{EE}}.
-\label{eq:positional_lyapunov_derivative}
-\end{equation}
-
-Using \(\dot{\mathbf{e}}_p = -\dot{\mathbf{p}}_{\mathrm{EE}}\) and substituting the positional dynamics yields
-
-\begin{equation}
-\dot{V}_p
-=
--\mathbf{e}_p^\top K_{p,0}\dot{\mathbf{p}}_{\mathrm{EE}}
-+
-\dot{\mathbf{p}}_{\mathrm{EE}}^\top
-\left(
-K_{p,0}\mathbf{e}_p
--
-D_{p,0}\dot{\mathbf{p}}_{\mathrm{EE}}
-\right).
-\label{eq:positional_lyapunov_substitution}
-\end{equation}
-
-Because \(K_{p,0}\) is symmetric, the spring terms cancel, resulting in
-
-\begin{equation}
-\dot{V}_p
-=
--
-\dot{\mathbf{p}}_{\mathrm{EE}}^\top
-D_{p,0}
-\dot{\mathbf{p}}_{\mathrm{EE}}
-\leq 0.
-\label{eq:positional_lyapunov_result}
-\end{equation}
-
-Thus, the damping matrix dissipates energy and prevents the positional subsystem from gaining energy.
-
-The same reasoning can be applied locally to the rotational subsystem, where the orientation error is represented by the rotation vector \(\mathbf{e}_R\).
-With a symmetric positive definite virtual rotational inertia matrix \(M_R\), the rotational energy is defined as
-
-\begin{equation}
-V_R
-=
-\frac{1}{2}\mathbf{e}_R^\top K_{R,0}\mathbf{e}_R
-+
-\frac{1}{2}\omega_{\mathrm{EE}}^\top M_R \omega_{\mathrm{EE}}.
-\label{eq:rotational_lyapunov_candidate}
-\end{equation}
-
-Its time derivative satisfies
-
-\begin{equation}
-\dot{V}_R
-=
--
-\omega_{\mathrm{EE}}^\top
-D_{R,0}
-\omega_{\mathrm{EE}}
-\leq 0.
-\label{eq:rotational_lyapunov_result}
-\end{equation}
-
-The total Lyapunov function is therefore
-
-\begin{equation}
-V
-=
-V_p
-+
-V_R.
-\label{eq:total_lyapunov_function}
-\end{equation}
-
-Since both subsystems are dissipative, its derivative is
+For a constant desired pose the error satisfies \(\dot{\mathbf{e}}=-\dot{x}\).
+Differentiating \cref{eq:unified_lyapunov} and inserting
+\cref{eq:operational_space_closed_loop} gives
 
 \begin{equation}
 \dot{V}
-=
-\dot{V}_p
-+
-\dot{V}_R
-=
--\dot{\mathbf{p}}_{\mathrm{EE}}^\top D_{p,0}\dot{\mathbf{p}}_{\mathrm{EE}}
--
-\omega_{\mathrm{EE}}^\top D_{R,0}\omega_{\mathrm{EE}}
-\leq 0.
-\label{eq:total_lyapunov_derivative}
+=\mathbf{e}^\top K\dot{\mathbf{e}}
+ +\dot{x}^\top\Lambda\ddot{x}
+ +\tfrac{1}{2}\dot{x}^\top\dot{\Lambda}\dot{x}
+=-\dot{x}^\top D\dot{x}
+ +\dot{x}^\top\!\left(\tfrac{1}{2}\dot{\Lambda}-\Gamma\right)\!\dot{x}.
+\label{eq:unified_lyapunov_derivative}
 \end{equation}
 
-Consequently, the ideal closed-loop system is stable in the Lyapunov sense for symmetric positive definite stiffness and damping matrices.
-In practice, however, torque limits, sampling effects, modeling errors, and measurement noise can influence the observed behavior.
-Therefore, the experimental evaluation in Chapter~4 additionally investigates convergence, steady-state error, overshoot, oscillation behavior, and commanded torque limits using the logged data.
-
-\subsection{Stability Interpretation of the Virtual-Center Extension}
-\label{subsec:virtual_center_stability}
-
-The stability argument above applies directly to the implemented Cartesian
-impedance controller in which the translational and rotational virtual springs
-are treated separately.
-The virtual-center formulation introduced in
-Section~\ref{subsec:virtual_center_of_rotation} changes this structure because
-translation and rotation are coupled through the lever arm \(r_c\).
-Therefore, the same separated Lyapunov proof cannot simply be copied without
-additional assumptions.
-
-For the simplified virtual-center extension, the relevant potential-energy
-term can be interpreted locally as
+The skew-symmetry of \(\dot{\Lambda}-2\Gamma\) makes the last term vanish, so
 
 \begin{equation}
-V_{c,p}
-=
-\frac{1}{2}
-\mathbf{e}_{p,c}^{\top}
-K_p
-\mathbf{e}_{p,c},
-\qquad
-\mathbf{e}_{p,c}
-=
-\mathbf{e}_p
--
-\mathbf{e}_R
-\times
-\mathbf{r}_c .
-\label{eq:virtual_center_potential_energy}
+\dot{V}=-\dot{x}^\top D\,\dot{x}\le 0.
+\label{eq:unified_lyapunov_result}
 \end{equation}
 
-This expression shows that the stored translational spring energy is no longer
-based only on the pure position error \(\mathbf{e}_p\).
-It also depends on the orientation error \(\mathbf{e}_R\), because a rotation about the
-selected virtual center produces a translational displacement at the
-end-effector.
-The corresponding force is
+Thus the damping matrix dissipates energy and the closed loop is stable in the
+sense of Lyapunov. Because \(\dot{V}=0\) only for \(\dot{x}=0\), LaSalle's
+invariance principle implies that the regulated Cartesian error converges to
+zero in this ideal case \cite{Siciliano2009}.
 
-\begin{equation}
-\mathbf{f}_c
-=
-K_p \mathbf{e}_{p,c},
-\label{eq:virtual_center_stability_force}
-\end{equation}
+The null-space term does not change this conclusion. By construction
+\(\tau_{\mathrm{null}}=-D_{\mathrm{null}}N\dot{q}+N(K_\sigma s\alpha n)\) lies in
+the null space of the constrained-task Jacobian, so to first order
+\(J_c\dot{q}_{\mathrm{null}}\approx 0\) and it does not contribute to the
+regulated Cartesian velocity \(\dot{x}\). Its damping part removes energy from
+the redundant joint motion, and the singular-value term is bounded and
+norm-limited (\cref{eq:nullspace_torque_limit}). Hence the secondary term acts
+only on the redundant degree of freedom and cannot inject energy into the
+Cartesian task.
 
-and this force produces the additional lever-arm moment
-
-\begin{equation}
-m_{\mathrm{lever}}
-=
-r_c
-\times
-f_c .
-\label{eq:virtual_center_stability_lever_moment}
-\end{equation}
-
-Consequently, the complete virtual-center wrench contains both the force and
-the induced moment,
-
-\begin{equation}
-F_c
-=
-\begin{bmatrix}
-f_c\\
-m_R+r_c\times f_c
-\end{bmatrix}.
-\label{eq:virtual_center_stability_wrench}
-\end{equation}
-
-Including the moment \(r_c\times f_c\) is important for energy consistency.
-If the force is applied at the end-effector but the compliant behavior is meant
-to act around the point \(p_c\), then the force must also generate the moment
-associated with its lever arm.
-Without this term, the translational and rotational parts would not represent
-the same virtual-center behavior.
-
-This reasoning gives a local energy interpretation of the simplified
-virtual-center coupling.
-The meaning and limitation of this statement with respect to passivity are
-discussed separately in the next subsection.
-
-\subsection{Passivity Scope of the Virtual-Center Formulation}
-\label{subsec:virtual_center_passivity_scope}
-
-Passivity is a stronger property than the local Lyapunov stability argument
-given above.
-In a passive system, the controller cannot generate net energy on its own.
-For robot-environment interaction, this property is important because the
-robot may exchange energy with an unknown or stiff environment through contact.
-A complete passivity proof would therefore have to consider the closed-loop
-robot dynamics, the controller, the contact interaction, actuator limits,
-sampling effects, filtering, and the possible variation of the desired pose and
-virtual-center point.
-
-The stability proof in this thesis has a more limited purpose.
-It shows that, under ideal assumptions, the implemented Cartesian impedance
-controller behaves like a damped virtual spring system.
-For the virtual-center extension, the previous subsection shows that the
-coupled translational error \(e_{p,c}\) and the lever-arm moment
-\(r_c\times f_c\) are consistent with the same local virtual spring energy.
-This means that the force and moment are not chosen independently: the moment
-term is the moment that belongs to the force when the compliant behavior is
-interpreted around the point \(p_c\).
-
-This local energy consistency should not be confused with a full passivity
-proof.
-The full spatial impedance formulation of Fasse and Broenink
-\cite{Fasse1997SpatialImpedance} treats the stiffness center and the complete
-spatial impedance behavior in a more general way.
-Such a formulation can be used to derive stronger statements about the energy
-exchange of the spatial impedance itself.
-In contrast, the formulation used in this thesis keeps the Cartesian impedance
-structure of the implemented libfranka controller and adds a practical
-virtual-center coupling through
-
-\begin{equation}
-\mathbf{e}_{p,c}
-=
-\mathbf{e}_p
--
-\mathbf{e}_R
-\times
-\mathbf{r}_c
-\end{equation}
-
-and
-
-\begin{equation}
-m_{\mathrm{lever}}
-=
-\mathbf{r}_c
-\times
-\mathbf{f}_c .
-\end{equation}
-
-Therefore, the virtual-center extension can be understood as locally
-energy-consistent with the intended compliant rotation about \(p_c\).
-However, this thesis does not claim a complete passivity proof for arbitrary
-contact conditions, large rotations, discrete-time effects, torque saturation,
-or surface-estimation errors.
-Those effects must be checked experimentally and, for a formal treatment,
-would require a more complete spatial passivity analysis.
+In practice, torque limits, sampling effects, modeling errors, measurement
+noise, and the contact interaction itself influence the observed behavior.
+Therefore the experimental evaluation in Chapter~\ref{ch:experiments}
+additionally examines convergence, steady-state error, overshoot, oscillation,
+and commanded-torque limits from the logged data.
 
 \section{Nullspace and Singular Value Decomposition}
 \label{sec:nullspace_svd}
