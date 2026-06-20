@@ -11,8 +11,8 @@
 % Change this number to choose how much of the draft to build:
 % 1 = Introduction
 % 2 = Introduction through Theoretical Background
-% 3 = Introduction through Software Implementation
-% 4 = Introduction through Experimental Setup and Evaluation
+% 3 = Introduction through Controller Design and Implementation
+% 4 = Introduction through Experimental Setup, Results, and Discussion
 % 5 = All draft chapters
 \newcount\ProfessorDraftChapterCount
 \ProfessorDraftChapterCount=5
@@ -69,12 +69,14 @@
 \newif\ifProfessorIncludeAppendixF
 \newif\ifProfessorIncludeAnyAppendix
 
-\ProfessorIncludeAppendixAtrue
-\ProfessorIncludeAppendixBtrue
-\ProfessorIncludeAppendixCtrue
-\ProfessorIncludeAppendixDtrue
-\ProfessorIncludeAppendixEtrue
-\ProfessorIncludeAppendixFtrue
+% Appendices are archived for later reuse and hidden from the current
+% step-by-step thesis build.
+\ProfessorIncludeAppendixAfalse
+\ProfessorIncludeAppendixBfalse
+\ProfessorIncludeAppendixCfalse
+\ProfessorIncludeAppendixDfalse
+\ProfessorIncludeAppendixEfalse
+\ProfessorIncludeAppendixFfalse
 
 \ifProfessorIncludeAppendixA\ProfessorIncludeAnyAppendixtrue\fi
 \ifProfessorIncludeAppendixB\ProfessorIncludeAnyAppendixtrue\fi
@@ -93,9 +95,9 @@
 }
 \ProfessorFallbackLabel{ch:intro}{1}{Introduction}
 \ProfessorFallbackLabel{ch:theory}{2}{Theoretical Background}
-\ProfessorFallbackLabel{ch:implementation}{3}{Software Implementation}
-\ProfessorFallbackLabel{ch:experiments}{4}{Experimental Setup and Evaluation}
-\ProfessorFallbackLabel{ch:conclusion}{5}{Conclusion}
+\ProfessorFallbackLabel{ch:implementation}{3}{Controller Design and Implementation}
+\ProfessorFallbackLabel{ch:experiments}{4}{Experimental Setup, Results, and Discussion}
+\ProfessorFallbackLabel{ch:conclusion}{5}{Conclusion and Future Work}
 \ProfessorFallbackLabel{sec:exp_stability}{4.1}{Preliminary: Stability Analysis}
 \ProfessorFallbackLabel{sec:future}{5.3}{Future Work}
 \ProfessorFallbackLabel{app:panda}{A}{Panda Numerical Example}
@@ -104,7 +106,7 @@
 \ProfessorFallbackLabel{app:panda_jacobian}{A.3}{Jacobian}
 \ProfessorFallbackLabel{app:panda_pinv}{A.4}{Pseudoinverse}
 \ProfessorFallbackLabel{app:panda_matrices}{A.5}{Impedance Matrices}
-\ProfessorFallbackLabel{app:panda_force}{A.6}{Cartesian Force}
+\ProfessorFallbackLabel{app:panda_force}{A.6}{Pose Error and Impedance Wrench}
 \ProfessorFallbackLabel{app:panda_torques}{A.7}{Joint Torques}
 \ProfessorFallbackLabel{app:panda_loop}{A.8}{Control Loop}
 \ProfessorFallbackLabel{app:panda_stiffness}{A.9}{Stiffness Variation}

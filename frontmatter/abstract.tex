@@ -1,19 +1,31 @@
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-Collaborative robots operating in close proximity to humans require control strategies that can respond to unplanned contact in a safe, compliant, and predictable manner. Cartesian impedance control addresses this requirement by regulating the apparent mechanical impedance at the robot end-effector, allowing the robot to behave like a virtual spring-damper system that yields to external forces instead of resisting them rigidly. In this framework, deviations between the desired and actual end-effector pose are converted into virtual Cartesian forces and moments, which are then mapped through the robot Jacobian into joint torques applied by the actuators. The resulting robot behaviour is determined by the chosen stiffness and damping matrices, whose formulation and implementation are central to achieving intuitive and reliable compliant motion.
+Collaborative robots operating in close proximity to humans require control strategies that can respond to unplanned contact in a safe, compliant, and predictable manner. Cartesian impedance control addresses this requirement by regulating the apparent mechanical impedance at the robot end-effector, allowing the robot to behave like a virtual spring-damper system that yields to external forces instead of resisting them rigidly. In this framework, deviations between the desired and actual end-effector pose, meaning its position and orientation, are converted into virtual Cartesian forces and moments, which are then mapped through the robot Jacobian into joint torques applied by the actuators. The resulting robot behaviour is determined by the chosen stiffness and damping matrices, whose formulation and implementation are central to achieving intuitive and reliable compliant motion.
 
-This thesis investigates the design, implementation, and evaluation of a real-time
-Cartesian impedance controller for the Franka Emika Panda, a redundant 7-\abbr{DOF}
-collaborative robot. The controller is intended to produce compliant Cartesian motion while
-keeping the relation between pose error, impedance forces and moments, Jacobian mapping, and
-commanded joint torques traceable. The formulation uses stiffness and damping matrices defined
-in the end-effector frame and transforms them into the robot base frame.
+This thesis investigates the design and implementation of a real-time Cartesian
+impedance controller for the Franka Emika Panda, a redundant 7-\abbr{DOF}
+collaborative robot. The controller is intended to produce compliant Cartesian
+motion while keeping the relation between pose error, impedance forces and
+moments, Jacobian mapping, null-space behavior, and commanded joint torques
+traceable. The formulation uses stiffness and damping matrices defined in the
+end-effector frame and transforms them into the robot base frame.
 
-The controller is implemented in C++ with libfranka and Eigen inside a real-time torque-control callback.
-The evaluation covers set-point convergence, trajectory tracking, compliance under external interaction,
-and commanded joint torque distribution. In these tests, the controller converges toward the desired pose
-with damped transients, tracks the selected Cartesian trajectory with bounded error, shows the expected
-stiffness-dependent compliance, and keeps the commanded torques smooth for the evaluated parameter sets.
+The experimental focus is narrowed to a contact-alignment task. A tool edge is
+brought into contact with a table. The contact wrench contains both force and
+moment components, and the Cartesian compliance allows a small translational and
+rotational displacement. This displacement can be interpreted geometrically as a
+screw motion; the corresponding instantaneous screw axis, or the closest point
+of this axis to the tool edge, describes the passive alignment tendency of the
+tool. The central question is how the Cartesian stiffness matrix should be
+selected so that the contact wrench generates a useful passive self-aligning
+motion around a virtual center of rotation while the robot remains stable, torque
+limited, and safe for contact operation.
+The first stiffness and damping candidates are computed from a quasi-static
+compliance relation and a critical-damping approximation, and are then compared
+experimentally. In addition, the thesis describes a least-squares
+identification method for computing effective translation--rotation stiffness
+and damping contributions from the logged contact motion and contact moment
+model.
 
 \cleardoublepage

@@ -21,18 +21,20 @@ to Cartesian forces.
 \label{sec:coord_systems}
 %% ─────────────────────────────────────────────────────────────
 
+\subsection{Reference Frames Used in This Thesis}
+
 To describe the motion of a robotic manipulator, multiple coordinate
 frames are used simultaneously \cite{Siciliano2009, Craig2005}.
-A \textbf{coordinate frame} is a right-handed orthogonal system of
+A coordinate frame is a right-handed orthogonal system of
 three mutually perpendicular unit vectors anchored at a chosen origin.
 For the joint frames, this thesis follows the
-\textbf{Denavit--Hartenberg} (\abbr{DH}) convention, a standard robotics
+Denavit--Hartenberg (\abbr{DH}) convention, a standard robotics
 method for assigning coordinate frames to consecutive links in a kinematic
 chain \cite{Denavit1955, Craig2005}.
 Three frames are central to this work:
 
 \begin{itemize}
-  \item \textbf{Base frame} $\{0\}$: fixed to the robot mounting
+  \item Base frame $\{0\}$: fixed to the robot mounting
         surface. Its origin is the robot base reference point used by
         the kinematic model. For the upright Panda configuration used in
         this thesis, the $z_0$-axis points normal to the mounting surface
@@ -41,7 +43,7 @@ Three frames are central to this work:
         coordinate system according to the manufacturer convention.
         All positions, orientations, and forces are ultimately expressed in
         this frame unless stated otherwise.
-  \item \textbf{Joint frames} $\{1\},\{2\},\ldots,\{n\}$: rigidly
+  \item Joint frames $\{1\},\{2\},\ldots,\{n\}$: rigidly
         attached to the successive links of the kinematic chain.
         The origin of frame $\{i\}$ is placed at the reference point of
         joint $i$ used by the Denavit--Hartenberg model. Its $z_i$-axis
@@ -49,12 +51,12 @@ Three frames are central to this work:
         the common normal to the neighbouring joint axes, and $y_i$
         completes the right-handed frame. These frames move with the
         robot and encode the relative geometry between consecutive links.
-  \item \textbf{End-effector frame} $\{EE\}$: attached to the tool
+  \item End-effector frame $\{\mathrm{EE}\}$: attached to the tool
         centre point. Its origin is the controlled point at the tool tip
         or flange, depending on the selected tool definition. The axes
-        describe the tool orientation: $z_{EE}$ is taken as the tool approach
-        direction, while $x_{EE}$ and $y_{EE}$ span the tool plane and complete
-        a right-handed frame. The position and orientation of $\{EE\}$
+        describe the tool orientation: $z_{\mathrm{EE}}$ is taken as the tool approach
+        direction, while $x_{\mathrm{EE}}$ and $y_{\mathrm{EE}}$ span the tool plane and complete
+        a right-handed frame. The position and orientation of $\{\mathrm{EE}\}$
         relative to $\{0\}$ constitute the controlled position and orientation of the robot.
         In the implementation, this frame is the libfranka end-effector/tool
         frame selected through the robot model interface.
@@ -75,7 +77,7 @@ This frame assignment forms the basis for describing the robot kinematics using 
 %% ─────────────────────────────────────────────────────────────
 
 The relationship between any two coordinate frames is described by a
-combination of \textbf{translation} and \textbf{rotation}
+combination of translation and rotation
 \cite{Denavit1955, Craig2005}.
 
 \subsection{Translation}
@@ -186,7 +188,7 @@ In addition, a proper rotation must have a determinant equal to one,
 The determinant condition excludes reflections, which also preserve lengths and angles but reverse the handedness of the coordinate system. Together, these conditions ensure that \(R\) represents a pure rotation only.
 
 %% ─────────────────────────────────────────────────────────────
-\section{Homogeneous Transformation Matrices}
+\subsection{Homogeneous Transformation Matrices}
 \label{sec:homogeneous}
 %% ─────────────────────────────────────────────────────────────
 The previous sections introduced the rotation matrix for describing orientation and the translation vector for describing position. For coordinate transformations and kinematic calculations, it is often convenient to combine rotation and translation into a single representation: the homogeneous transformation matrix. This representation is widely used in robotics and kinematics because it allows coordinate transformations and chains of frame changes to be expressed as matrix products~\cite{Craig2005,Siciliano2009}.
@@ -307,11 +309,13 @@ This follows from the orthogonality of the rotation matrix, since \(R^{-1}=R^\to
 As a result, inverting a homogeneous transformation requires only a transpose of the rotation matrix and one matrix-vector multiplication, rather than a general \(4 \times 4\) matrix inversion.
 
 %% ─────────────────────────────────────────────────────────────
-\section{The Controlled Variable: End-Effector Position and Orientation}
+\subsection{End-Effector Pose}
 \label{sec:position_orientation}
 %% ─────────────────────────────────────────────────────────────
 
-The task of the controller is to move the end-effector to a desired position and orientation.
+The task of the controller is to move the end-effector to a desired pose.
+In robotics, the pose of a rigid body means its position and orientation
+together.
 The position of the end-effector is described by the vector
 
 \begin{equation}
@@ -337,7 +341,7 @@ R_{\mathrm{EE}} \in \mathbb{R}^{3 \times 3}.
 \label{eq:end_effector_rotation}
 \end{equation}
 
-Together, position and orientation describe the complete configuration of the end-effector relative to the robot base.
+Together, position and orientation describe the complete pose of the end-effector relative to the robot base.
 Since both quantities are contained in the homogeneous transformation matrix, the end-effector transformation can be written as
 
 \begin{equation}
@@ -354,7 +358,7 @@ Here, \(R_{\mathrm{EE}}\) represents the orientation of the end-effector frame w
 In the Franka control interface, this transformation is provided directly by \texttt{state.O\_T\_EE}.
 The upper-left \(3 \times 3\) block contains the rotation matrix, while the upper-right \(3 \times 1\) block contains the Cartesian position in metres.
 
-Using the homogeneous transformation matrix as the controlled variable is convenient because it combines position and orientation in a single representation.
+Using the homogeneous transformation matrix as the controlled variable is convenient because it combines the end-effector pose in a single representation.
 It also avoids the need to describe orientation by Euler angles, which can suffer from singularities such as gimbal lock.
 Since the rotation matrix is already provided directly by libfranka, no additional conversion is required.
 
@@ -865,7 +869,7 @@ angles affect the motion of the end-effector.
 This leads to differential kinematics, which relates joint velocities to
 Cartesian velocities.
 
-\section{Differential Kinematics}
+\section{Jacobian}
 %% ─────────────────────────────────────────────────────────────
 
 Forward kinematics provides the end-effector position and orientation as a
@@ -939,7 +943,7 @@ The matrix that describes this relation is the Jacobian.
 It determines how each individual joint velocity contributes to the linear and
 angular velocity of the end-effector.
 
-\section{Jacobian Matrix}
+\subsection{Jacobian Matrix}
 %% ─────────────────────────────────────────────────────────────
 
 The Jacobian matrix describes the local relationship between joint velocities
@@ -1027,13 +1031,13 @@ Therefore, the influence of each joint on the end-effector motion changes as
 the robot moves.
 
 %% ─────────────────────────────────────────────────────────────
-\section{Impedance Control}
+\section{Cartesian Impedance Control}
 %% ─────────────────────────────────────────────────────────────
 
 The previous section introduced the Jacobian matrix, which relates joint
 velocities to Cartesian end-effector velocities.
-In the controller, this relationship is also used to map Cartesian forces and
-moments to joint torques \cite{Khatib1987}.
+In the controller, this relationship is also used to map a Cartesian wrench to
+joint torques \cite{Khatib1987}.
 Before this mapping is introduced, the desired Cartesian interaction behavior
 is defined using impedance control.
 
@@ -1041,9 +1045,12 @@ Impedance control imposes a desired dynamic behavior between the end-effector
 motion and the forces acting on it \cite{Hogan1985,Ott2008,Mayr2024CartesianImpedance}.
 Instead of commanding only a desired position, the robot is made to behave like
 a virtual spring-damper system in Cartesian space.
-In this way, deviations from the desired position and orientation generate
-restoring forces and moments, while the damping terms reduce oscillations and
-dissipate energy.
+In this way, deviations from the desired pose generate restoring forces and
+moments, while the damping terms reduce oscillations and dissipate energy.
+The numerical choice of the stiffness and damping gains is therefore part of
+the controller design, because the same impedance law can produce very
+different contact behavior depending on the selected values
+\cite{Pollayil2023ImpedancePlanning,Hjorth2023EnergyAwareImpedance}.
 
 The Cartesian error vector was defined as
 
@@ -1062,7 +1069,7 @@ where \(\mathbf{e}_p\) is the translational error and \(\mathbf{e}_R\) is the ro
 These two error components are used to compute the Cartesian impedance forces
 and moments.
 
-\subsection{Impedance Forces and Moments}
+\subsection{Impedance Wrench}
 
 The positional impedance force is defined as the translational part of a
 Cartesian spring-damper law \cite{Hogan1985,Mayr2024CartesianImpedance},
@@ -1103,7 +1110,8 @@ orientation error, while the damping term \(D_R \omega_{\mathrm{EE}}\) opposes
 the angular velocity of the end-effector.
 
 The positional force and rotational moment are combined into the Cartesian
-force/moment vector
+wrench. In this thesis, a wrench means a six-dimensional vector containing a
+Cartesian force and a Cartesian moment:
 
 \begin{equation}
 \mathbf{F}
@@ -1121,11 +1129,11 @@ K_R \mathbf{e}_R - D_R \omega_{\mathrm{EE}}
 \label{eq:cartesian_force_moment_vector}
 \end{equation}
 
-The vector \(\mathbf{F}\) therefore contains the Cartesian forces and moments generated
-by the impedance controller in response to position, orientation, linear
-velocity, and angular velocity errors.
-This force/moment vector is later mapped to joint torques using the transpose
-of the Jacobian.
+The vector \(\mathbf{F}\) is therefore the Cartesian wrench generated by the
+impedance controller in response to position, orientation, linear velocity,
+and angular velocity errors.
+This wrench is later mapped to joint torques using the transpose of the
+Jacobian.
 
 
 \subsection{Stiffness and Damping Matrices in the End-Effector Frame and Base Frame}
@@ -1141,6 +1149,9 @@ For this reason, the positional stiffness and damping matrices are first
 defined in the end-effector frame \(\{\mathrm{EE}\}\), where the principal
 directions are easier to specify, and are then transformed into the base frame
 \(\{0\}\).
+For contact-rich tasks, choosing these directions and gains should follow the
+task geometry and safety requirements rather than only numerical convenience
+\cite{Pollayil2023ImpedancePlanning}.
 
 Let the orientation of the end-effector frame \(\{\mathrm{EE}\}\) with respect
 to the base frame \(\{0\}\) be given by
@@ -1201,6 +1212,68 @@ This equation shows that the stiffness matrix can be diagonal in the
 end-effector frame but become a full matrix in the base frame.
 The off-diagonal terms are not errors; they describe coupling between the
 base-frame directions caused by the orientation of the end-effector frame.
+
+The same transformation can also be understood by first expressing the
+position error in the end-effector frame. With
+\(\mathbf{e}_{p,0}\) denoting the positional error expressed in the base
+frame, the corresponding error in the end-effector frame is
+
+\begin{equation}
+\mathbf{e}_{p,\mathrm{EE}}
+=
+R_{\mathrm{EE}}^\top
+\mathbf{e}_{p,0}.
+\label{eq:positional_error_ee}
+\end{equation}
+
+The local spring force is then computed with the diagonal stiffness matrix,
+
+\begin{equation}
+\mathbf{f}_{\mathrm{EE}}
+=
+K_{p,\mathrm{EE}}
+\mathbf{e}_{p,\mathrm{EE}},
+\label{eq:positional_force_ee}
+\end{equation}
+
+and transformed back into the base frame:
+
+\begin{equation}
+\mathbf{f}_0
+=
+R_{\mathrm{EE}}
+\mathbf{f}_{\mathrm{EE}}.
+\label{eq:positional_force_base_from_ee}
+\end{equation}
+
+Substituting \cref{eq:positional_error_ee,eq:positional_force_ee} into
+\cref{eq:positional_force_base_from_ee} gives
+
+\begin{equation}
+\mathbf{f}_0
+=
+R_{\mathrm{EE}}
+K_{p,\mathrm{EE}}
+R_{\mathrm{EE}}^\top
+\mathbf{e}_{p,0}
+=
+K_{p,0}\mathbf{e}_{p,0}.
+\label{eq:positional_force_base_equivalent}
+\end{equation}
+
+Thus, it is equivalent to either transform the stiffness matrix into the base
+frame once and multiply it by the base-frame error, or transform the error
+into the local frame, compute the local spring force, and rotate the resulting
+force back into the base frame.
+This interpretation is useful for task frames as well.
+If a local frame is chosen such that two axes lie tangential to a virtual
+plane and the third axis is normal to it, the diagonal entries of
+\(K_{p,\mathrm{EE}}\) can be interpreted directly as tangential and normal
+stiffness values.
+After transformation with \cref{eq:positional_stiffness_base}, the resulting
+matrix \(K_{p,0}\) realizes the same physical stiffness directions while
+remaining compatible with a controller that evaluates forces in the base
+frame.
 
 Equivalently, the stiffness matrix in the base frame can be written as
 
@@ -1310,6 +1383,65 @@ The same construction can be applied to the rotational stiffness matrix
 \(K_{R,0}\) and the rotational damping matrix \(D_{R,0}\).
 In this case, rotational stiffness is expressed in \(\mathrm{Nm/rad}\),
 whereas positional stiffness is expressed in \(\mathrm{N/m}\).
+
+For the full Cartesian impedance law, the translational and rotational
+stiffness matrices can be collected into one block matrix. In the
+end-effector frame this matrix is
+
+\begin{equation}
+K_{\mathrm{EE}}
+=
+\begin{bmatrix}
+K_{p,\mathrm{EE}} & 0\\
+0 & K_{R,\mathrm{EE}}
+\end{bmatrix}.
+\label{eq:cartesian_stiffness_ee_block}
+\end{equation}
+
+The corresponding block rotation matrix is
+
+\begin{equation}
+T_{R,\mathrm{EE}}
+=
+\begin{bmatrix}
+R_{\mathrm{EE}} & 0\\
+0 & R_{\mathrm{EE}}
+\end{bmatrix}.
+\label{eq:block_rotation_ee}
+\end{equation}
+
+Using this block matrix, the full Cartesian stiffness matrix expressed in the
+base frame becomes
+
+\begin{equation}
+K_0
+=
+T_{R,\mathrm{EE}}
+K_{\mathrm{EE}}
+T_{R,\mathrm{EE}}^\top .
+\label{eq:cartesian_stiffness_base_block}
+\end{equation}
+
+With the Cartesian error vector
+\(\mathbf{e}=[\mathbf{e}_{p,0}^{\top}\ \mathbf{e}_{R,0}^{\top}]^{\top}\),
+the stiffness part of the Cartesian wrench can be written compactly as
+
+\begin{equation}
+\mathbf{F}_{K,0}
+=
+K_0\mathbf{e}
+=
+\begin{bmatrix}
+K_{p,0}\mathbf{e}_{p,0}\\
+K_{R,0}\mathbf{e}_{R,0}
+\end{bmatrix}.
+\label{eq:cartesian_stiffness_force_block}
+\end{equation}
+
+This block notation is only a compact way of writing the same translational
+and rotational impedance terms used in \cref{eq:cartesian_force_moment_vector}.
+The resulting wrench remains expressed in the base frame and is therefore
+mapped to joint torques by \(J^\top(q)\) in the following control law.
 
 %% ─────────────────────────────────────────────────────────────
 \subsection{Virtual Center of Rotation for Axis-Constrained Plane Alignment}
@@ -1457,7 +1589,7 @@ In the implemented controller of this work, the full selectable remote-center
 mapping was not implemented as an independent control mode.
 Instead, self-alignment is approximated through rotational compliance: the
 rotational stiffness and damping values are chosen so that the end-effector can
-rotate about the compliant axes while the active translational axes maintain
+rotate about the compliant axes while the constrained translational axes maintain
 the desired axis-constrained plane behavior.
 For a known virtual plane, the controller can therefore keep or regulate the
 tool orientation that is defined by the desired orientation \(R_d\).
@@ -1476,17 +1608,16 @@ Therefore, the virtual center of rotation is treated as an extension of the
 task-to-impedance mapping rather than as a fully evaluated part of the final
 implementation.
 
-\section{Control Law}
+\subsection{Joint-Torque Control Law}
 \label{sec:control_law}
 %% ─────────────────────────────────────────────────────────────
 
-After defining the Cartesian impedance forces and moments, the final step is
-to convert them into joint torques that can be commanded to the robot
-actuators.
+After defining the Cartesian impedance wrench, the final step is to convert it
+into joint torques that can be commanded to the robot actuators.
 This mapping is performed using the transpose of the Jacobian
 \cite{Khatib1987}.
 
-The Cartesian force/moment vector is given by
+The Cartesian wrench is given by
 
 \begin{equation}
 \mathbf{F} =
@@ -1500,7 +1631,7 @@ The Cartesian force/moment vector is given by
 
 where \(\mathbf{f} \in \mathbb{R}^3\) is the Cartesian force and
 \(\mathbf{m} \in \mathbb{R}^3\) is the Cartesian moment.
-Using the principle of virtual work, this vector is mapped to joint torques
+Using the principle of virtual work, this wrench is mapped to joint torques
 \cite{Khatib1987} by
 
 \begin{equation}
@@ -1522,7 +1653,7 @@ Here, \(\boldsymbol{\tau} \in \mathbb{R}^n\) is the joint torque vector,
 
 where each \(\tau_i\) is measured in \(\mathrm{Nm}\).
 The matrix \(J^\top(q) \in \mathbb{R}^{n \times 6}\) is the transpose of the
-Jacobian and maps the Cartesian force/moment vector into joint torques.
+Jacobian and maps the Cartesian wrench into joint torques.
 
 Substituting the Cartesian impedance forces and moments gives the complete
 Cartesian impedance control law:
@@ -1546,7 +1677,7 @@ From this comparison, the positional error \(\mathbf{e}_p\) and rotational error
 The corresponding Cartesian forces and moments are then evaluated and mapped
 to joint torques using the Jacobian transpose.
 
-\subsection{Gravity and Coriolis Compensation}
+\subsection{Coriolis Compensation in libfranka}
 
 In a general robot-dynamics formulation, the impedance torques are combined
 with model-based compensation terms.
@@ -1604,7 +1735,7 @@ control interface rather than being added again in the user callback.
 This avoids double compensation and keeps the implementation consistent with
 the official libfranka Cartesian impedance example.
 
-\subsection{Stability Analysis of the Control Law}
+\subsection{Stability Analysis of the Joint-Torque Control Law}
 \label{subsec:control_law_stability}
 
 The stability of the Cartesian impedance control law can be discussed by considering the ideal closed-loop behavior after gravity and Coriolis compensation.
@@ -1913,7 +2044,7 @@ or surface-estimation errors.
 Those effects must be checked experimentally and, for a formal treatment,
 would require a more complete spatial passivity analysis.
 
-\section{Null Space and Singular Value Decomposition}
+\section{Nullspace and Singular Value Decomposition}
 \label{sec:nullspace_svd}
 
 The Franka Emika Panda has seven joints, while the Cartesian motion of the
@@ -1985,19 +2116,19 @@ In this work, however, the controller does not always regulate the complete
 six-dimensional Cartesian task.
 The axis-selection mode can release individual translational or rotational
 axes.
-For the null-space optimization, a reduced active Jacobian is therefore used:
+For the null-space optimization, a constrained-task Jacobian is therefore used:
 
 \begin{equation}
-J_{\mathrm{active}} \in \mathbb{R}^{m \times 7},
+J_c \in \mathbb{R}^{m \times 7},
 \label{eq:active_jacobian_dimension}
 \end{equation}
 
 where \(m\) is the number of axes that are actually fixed or regulated.
-The active Jacobian is formed by selecting the \(m\) rows of the full Jacobian
+The constrained-task Jacobian is formed by selecting the \(m\) rows of the full Jacobian
 that correspond to the regulated Cartesian components:
 
 \begin{equation}
-J_{\mathrm{active}}
+J_c
 =
 \begin{bmatrix}
 J_{a_1}\\
@@ -2012,11 +2143,11 @@ J_{a_m}
 where each index \(a_i\) denotes one selected translational or rotational row
 of the full Cartesian Jacobian.
 
-The null space of the active Jacobian therefore describes all joint motions
+The null space of \(J_c\) therefore describes all joint motions
 that have minimal influence on the regulated axes:
 
 \begin{equation}
-J_{\mathrm{active}}\dot{q}_0 \approx 0.
+J_c\dot{q}_0 \approx 0.
 \label{eq:active_jacobian_nullspace_condition}
 \end{equation}
 
@@ -2030,18 +2161,18 @@ N
 =
 I
 -
-J_{\mathrm{active}}^{\top}
+J_c^{\top}
 \left(
-J_{\mathrm{active}}J_{\mathrm{active}}^{\top}
+J_cJ_c^{\top}
 +
 \lambda^2 I
 \right)^{-1}
-J_{\mathrm{active}}.
+J_c.
 \label{eq:damped_nullspace_projector}
 \end{equation}
 
 The parameter \(\lambda\) is a damping factor.
-The damping improves numerical robustness, especially when the active Jacobian
+The damping improves numerical robustness, especially when \(J_c\)
 is poorly conditioned or the robot is close to a singular configuration.
 The projector has the dimension
 
@@ -2050,60 +2181,11 @@ N \in \mathbb{R}^{7 \times 7}.
 \label{eq:nullspace_projector_dimension}
 \end{equation}
 
-The meaning of this projector can be understood as follows.
-The projector \(N\) in \eqref{eq:damped_nullspace_projector} can be
-interpreted as an operator that separates a joint-space vector into a part
-that influences the active Cartesian task and a part that remains in the
-active-task null space.
-This interpretation is useful because the controller does not always constrain
-all six Cartesian directions.
-Only the rows contained in \(J_{\mathrm{active}}\) are treated as task
-relevant.
-
-Let
-
-\begin{equation}
-v
-\in
-\mathbb{R}^{7}
-\label{eq:arbitrary_joint_vector}
-\end{equation}
-
-be an arbitrary joint-space vector.
-It is not restricted to one specific physical quantity.
-Depending on the context, \(v\) may represent the joint configuration \(q\), a
-joint velocity \(\dot{q}\), a joint-space correction direction, or another
-seven-dimensional secondary joint-space command that should be projected into
-the active-task null space.
-For example, the same projector can be applied to different joint-space
-vectors,
-
-\begin{equation}
-v=q,
-\qquad
-v=\dot{q},
-\qquad
-v=\Delta q,
-\qquad
-v=\tau_{\mathrm{sec}},
-\label{eq:nullspace_projector_vector_examples}
-\end{equation}
-
-as long as the vector has one component for each joint.
-If \(v=q\), the result \(Nq\) should be interpreted as the part of the
-configuration vector that lies in the active-task null-space direction.
-If \(v=\dot{q}\), the result \(N\dot{q}\) is a joint velocity that produces no,
-or only very small, velocity in the regulated Cartesian directions.
-If \(v=\tau_{\mathrm{sec}}\), the result \(N\tau_{\mathrm{sec}}\) is a
-secondary torque command that is restricted to the null space of the active
-task.
-However, \(v\) must have the dimension of the joint space.
-Task-space quantities such as the Cartesian pose \(x\) or Cartesian velocity
-\(\dot{x}\) are not projected directly by \(N\), because they lie in task
-space rather than joint space.
-If such a task-space quantity is used for a secondary objective, it must first
-be converted into a compatible joint-space vector.
-The component that remains after projection is
+The projector \(N\) separates a seven-dimensional joint-space vector into the
+part that affects the constrained Cartesian task and the part that remains
+approximately invisible to it.
+For a generic joint-space vector \(v\in\mathbb{R}^7\), the null-space
+component is
 
 \begin{equation}
 v_{\mathrm{null}}
@@ -2112,9 +2194,7 @@ Nv.
 \label{eq:nullspace_component_projected}
 \end{equation}
 
-This vector is the part of \(v\) that has no, or only a very small, effect on
-the regulated Cartesian components.
-The remaining part of \(v\) can be interpreted as the task-relevant component:
+The complementary task-relevant component is
 
 \begin{equation}
 v_{\mathrm{task}}
@@ -2128,7 +2208,7 @@ v.
 \label{eq:task_relevant_component_active_projector}
 \end{equation}
 
-Thus, the original joint-space vector can be written as the sum of two parts:
+The original vector can then be written as
 
 \begin{equation}
 v
@@ -2139,34 +2219,23 @@ v_{\mathrm{null}}.
 \label{eq:joint_vector_task_null_decomposition}
 \end{equation}
 
-In simple terms,
+Because only the rows contained in \(J_c\) are treated as constrained task
+directions, applying \(N\) gives
 
 \begin{equation}
-\text{null-space component}
-=
-\text{complete joint-space vector}
--
-\text{task-relevant component}.
-\label{eq:nullspace_component_simple_interpretation}
-\end{equation}
-
-Consequently, applying \(N\) to a joint-space vector gives a vector that is
-approximately invisible to the active task:
-
-\begin{equation}
-J_{\mathrm{active}}Nv
+J_cNv
 \approx
 0.
 \label{eq:nullspace_projected_vector_task_effect}
 \end{equation}
 
-This means that the projected vector \(Nv\) produces no, or only a very small,
-motion in the regulated Cartesian directions.
-It can therefore be used for secondary objectives without significantly
-disturbing the main task.
+This relation holds up to the residual introduced by damping and numerical
+conditioning.
+Thus, secondary joint-space commands can be projected with \(N\) without
+substantially disturbing the regulated Cartesian axes.
 
-It can be used to project a joint-space velocity into the null space of the
-active task:
+For example, \(N\) can be used to project a joint-space velocity into the
+null space of the constrained task:
 
 \begin{equation}
 \dot{q}_{\mathrm{null}}
@@ -2175,17 +2244,17 @@ N\dot{q}.
 \label{eq:nullspace_velocity_projection}
 \end{equation}
 
-In addition, the singular value decomposition (SVD) of the active Jacobian is
+In addition, the singular value decomposition (SVD) of \(J_c\) is
 used.
 The SVD is a standard matrix factorization that can be
 applied to any real matrix.
 It is useful here because it describes how a joint-space velocity is amplified
-or weakened when it is mapped into the active Cartesian task space
+or weakened when it is mapped into the constrained Cartesian task space
 \cite{Chiaverini1994DampedLeastSquares,Dietrich2015NullspaceSurvey}.
-For the active Jacobian it is written as
+For the constrained-task Jacobian it is written as
 
 \begin{equation}
-J_{\mathrm{active}}
+J_c
 =
 U\Sigma V^{\top}.
 \label{eq:active_jacobian_svd}
@@ -2204,20 +2273,19 @@ U\Sigma V^{\top},
 
 where \(U\) and \(V\) are orthonormal matrices and \(\Sigma\) is a diagonal
 matrix containing non-negative singular values.
-In this work, the general matrix \(A\) is the active Jacobian
-\(J_{\mathrm{active}}\).
+In this work, the general matrix \(A\) is \(J_c\).
 The columns of \(V\) describe orthonormal directions in joint-velocity space,
 and the columns of \(U\) describe the corresponding orthonormal directions in
-the active task space.
+the constrained task space.
 The singular values in \(\Sigma\) give the scaling between these two sets of
 directions.
 If a joint velocity is applied exactly in the direction of one column of
-\(V\), the resulting active Cartesian velocity points in the corresponding
+\(V\), the resulting constrained Cartesian velocity points in the corresponding
 column direction of \(U\), scaled by the corresponding singular value
 \(\sigma_i\).
 
 For
-\(J_{\mathrm{active}}\in\mathbb{R}^{m\times7}\), the matrices have the
+\(J_c\in\mathbb{R}^{m\times7}\), the matrices have the
 dimensions
 
 \begin{equation}
@@ -2246,16 +2314,16 @@ The diagonal entries of the nonzero part of \(\Sigma\) are the singular values:
 \end{equation}
 
 This displayed matrix shows the diagonal part of \(\Sigma\).
-Since the active Jacobian has seven columns, \(\Sigma\) has seven columns as
+Since the constrained-task Jacobian has seven columns, \(\Sigma\) has seven columns as
 well; if \(m<7\), the remaining columns are zero.
 
 The singular values can be computed from the eigenvalues of
-\(J_{\mathrm{active}}J_{\mathrm{active}}^{\top}\).
-The reason for multiplying the active Jacobian by its transpose is that
-\(J_{\mathrm{active}}\) is generally not square:
+\(J_cJ_c^{\top}\).
+The reason for multiplying the constrained-task Jacobian by its transpose is that
+\(J_c\) is generally not square:
 
 \begin{equation}
-J_{\mathrm{active}}
+J_c
 \in
 \mathbb{R}^{m\times7}.
 \end{equation}
@@ -2265,25 +2333,25 @@ Therefore, the rectangular Jacobian is converted into the square symmetric
 matrix
 
 \begin{equation}
-J_{\mathrm{active}}J_{\mathrm{active}}^{\top}
+J_cJ_c^{\top}
 \in
 \mathbb{R}^{m\times m}.
 \end{equation}
 
-This matrix acts in the active Cartesian task space.
-Its eigenvectors \(u_i\) describe orthonormal directions in the active task
+This matrix acts in the constrained Cartesian task space.
+Its eigenvectors \(u_i\) describe orthonormal directions in the constrained task
 space, and its eigenvalues describe how strongly the robot can produce motion
 in those directions.
 The same nonzero singular values could also be obtained from
-\(J_{\mathrm{active}}^{\top}J_{\mathrm{active}}\), which is a
+\(J_c^{\top}J_c\), which is a
 \(7\times7\) joint-space matrix.
-In this work, \(J_{\mathrm{active}}J_{\mathrm{active}}^{\top}\) is used
+In this work, \(J_cJ_c^{\top}\) is used
 because it has the smaller dimension \(m\times m\) and directly describes the
 regulated Cartesian directions.
 If
 
 \begin{equation}
-J_{\mathrm{active}}J_{\mathrm{active}}^{\top}u_i
+J_cJ_c^{\top}u_i
 =
 \lambda_i u_i,
 \label{eq:active_jacobian_eigenvalue_problem}
@@ -2299,10 +2367,10 @@ then the corresponding singular value is
 \end{equation}
 
 This relation comes directly from the SVD.
-Starting from \(J_{\mathrm{active}}=U\Sigma V^{\top}\), one obtains
+Starting from \(J_c=U\Sigma V^{\top}\), one obtains
 
 \begin{equation}
-J_{\mathrm{active}}J_{\mathrm{active}}^{\top}
+J_cJ_c^{\top}
 =
 U\Sigma V^{\top}V\Sigma^{\top}U^{\top}
 =
@@ -2314,17 +2382,17 @@ Because \(V^{\top}V=I\), the middle term disappears.
 The diagonal entries of \(\Sigma\Sigma^{\top}\) are
 \(\sigma_i^2\).
 Therefore the eigenvalues of
-\(J_{\mathrm{active}}J_{\mathrm{active}}^{\top}\) are
+\(J_cJ_c^{\top}\) are
 \(\lambda_i=\sigma_i^2\), and the singular values are obtained as
 \(\sigma_i=\sqrt{\lambda_i}\).
 
 The same eigenvalue calculation also gives the left singular vectors.
 For every nonzero eigenvalue \(\lambda_i\), the vector \(u_i\) is the
 corresponding normalized eigenvector of
-\(J_{\mathrm{active}}J_{\mathrm{active}}^{\top}\):
+\(J_cJ_c^{\top}\):
 
 \begin{equation}
-J_{\mathrm{active}}J_{\mathrm{active}}^{\top}u_i
+J_cJ_c^{\top}u_i
 =
 \lambda_i u_i,
 \qquad
@@ -2338,7 +2406,7 @@ After \(u_i\) and \(\sigma_i\) are known, the corresponding right singular
 vector \(v_i\) can be calculated from the defining relation
 
 \begin{equation}
-J_{\mathrm{active}}v_i
+J_cv_i
 =
 \sigma_i u_i.
 \label{eq:singular_vector_defining_relation}
@@ -2351,7 +2419,7 @@ back into joint space:
 v_i
 =
 \frac{1}{\sigma_i}
-J_{\mathrm{active}}^{\top}u_i,
+J_c^{\top}u_i,
 \qquad
 \sigma_i>0.
 \label{eq:right_singular_vector_from_left}
@@ -2360,10 +2428,10 @@ J_{\mathrm{active}}^{\top}u_i,
 Indeed, substituting this expression gives
 
 \begin{equation}
-J_{\mathrm{active}}v_i
+J_cv_i
 =
 \frac{1}{\sigma_i}
-J_{\mathrm{active}}J_{\mathrm{active}}^{\top}u_i
+J_cJ_c^{\top}u_i
 =
 \frac{\lambda_i}{\sigma_i}u_i
 =
@@ -2374,9 +2442,9 @@ J_{\mathrm{active}}J_{\mathrm{active}}^{\top}u_i
 because \(\lambda_i=\sigma_i^2\).
 Thus, the mathematical construction of the SVD can be summarized as follows:
 first solve the eigenvalue problem of
-\(J_{\mathrm{active}}J_{\mathrm{active}}^{\top}\) to obtain \(u_i\) and
+\(J_cJ_c^{\top}\) to obtain \(u_i\) and
 \(\lambda_i\); then compute \(\sigma_i=\sqrt{\lambda_i}\); finally compute
-\(v_i=J_{\mathrm{active}}^{\top}u_i/\sigma_i\) for every nonzero singular
+\(v_i=J_c^{\top}u_i/\sigma_i\) for every nonzero singular
 value.
 The matrices \(U\) and \(V\) are then formed by collecting these vectors as
 columns:
@@ -2396,14 +2464,14 @@ v_1 & v_2 & \cdots & v_7
 \label{eq:svd_u_v_column_construction}
 \end{equation}
 
-If \(J_{\mathrm{active}}\) has rank \(r<7\), only the first \(r\) right
+If \(J_c\) has rank \(r<7\), only the first \(r\) right
 singular vectors are obtained from
 \eqref{eq:right_singular_vector_from_left}.
 The remaining vectors \(v_{r+1},\ldots,v_7\) are chosen as orthonormal vectors
 that complete the basis of the seven-dimensional joint space and satisfy
 
 \begin{equation}
-J_{\mathrm{active}}v_i
+J_cv_i
 =
 0,
 \qquad
@@ -2411,8 +2479,8 @@ i=r+1,\ldots,7.
 \label{eq:right_singular_vectors_nullspace}
 \end{equation}
 
-These remaining right singular vectors span the null space of the active
-Jacobian.
+These remaining right singular vectors span the null space of the
+constrained-task Jacobian.
 In numerical software such as Eigen, this construction is carried out
 automatically by the SVD algorithm, but the mathematical meaning is exactly the
 one described above.
@@ -2422,26 +2490,26 @@ motion in the regulated Cartesian directions.
 This can be seen from the differential kinematic relation
 
 \begin{equation}
-\dot{x}_{\mathrm{active}}
+\dot{x}_{c}
 =
-J_{\mathrm{active}}\dot{q}.
+J_c\dot{q}.
 \label{eq:active_differential_kinematics_svd}
 \end{equation}
 
 Here, \(\dot{q}\) is a joint-space velocity direction and
-\(\dot{x}_{\mathrm{active}}\) is the resulting velocity in the active
-Cartesian task space.
+\(\dot{x}_{c}\) is the resulting velocity in the constrained Cartesian task
+space.
 Using the SVD,
 
 \begin{equation}
-\dot{x}_{\mathrm{active}}
+\dot{x}_{c}
 =
 U\Sigma V^{\top}\dot{q}.
 \label{eq:active_svd_velocity_mapping}
 \end{equation}
 
 The columns of \(V\) are directions in joint space, while the columns of
-\(U\) are the corresponding directions in the active Cartesian task space.
+\(U\) are the corresponding directions in the constrained Cartesian task space.
 The singular values in \(\Sigma\) are the scaling factors between these two
 spaces.
 For example, if the joint velocity is chosen in the \(i\)-th right singular
@@ -2452,19 +2520,19 @@ direction \(v_i\), then
 =
 v_i,
 \qquad
-J_{\mathrm{active}}v_i
+J_cv_i
 =
 \sigma_i u_i.
 \label{eq:singular_value_direction_mapping}
 \end{equation}
 
 This means that the Jacobian maps the joint-space direction \(v_i\) into the
-active Cartesian direction \(u_i\), and the singular value \(\sigma_i\)
+constrained Cartesian direction \(u_i\), and the singular value \(\sigma_i\)
 describes how much this direction is amplified or weakened.
 Large singular values indicate directions in which a small joint motion
-produces a relatively large motion in the active Cartesian task space.
+produces a relatively large motion in the constrained Cartesian task space.
 Small singular values indicate weak directions, where joint motion produces
-only a small active Cartesian motion and the robot is close to losing the
+only a small constrained Cartesian motion and the robot is close to losing the
 ability to generate motion in one regulated direction.
 The smallest singular value is therefore defined as
 
@@ -2476,20 +2544,20 @@ The smallest singular value is therefore defined as
 \end{equation}
 
 and is used as a measure of the kinematic conditioning of the robot with
-respect to the active task.
+respect to the constrained task.
 A small value of \(\sigma_{\min}\) indicates proximity to a singular or poorly
 conditioned configuration, whereas a larger value indicates better
 conditioning \cite{Chiaverini1994DampedLeastSquares}.
 The controller therefore tries to choose null-space motions that increase
-\(\sigma_{\min}\), while the active Cartesian task remains preserved by the
+\(\sigma_{\min}\), while the constrained Cartesian task remains preserved by the
 projector \(N\).
 
 For the optimization, a small motion in a null-space direction \(n\) is
 considered.
-This direction is obtained from the SVD of the active Jacobian. With
+This direction is obtained from the SVD of the constrained-task Jacobian. With
 
 \begin{equation}
-J_{\mathrm{active}}
+J_c
 =
 U\Sigma V^{\top},
 \end{equation}
@@ -2505,10 +2573,10 @@ v_1 & v_2 & \cdots & v_7
 \end{equation}
 
 A null-space direction is a joint-space direction that produces no, or only a
-very small, motion in the active Cartesian task space:
+very small, motion in the constrained Cartesian task space:
 
 \begin{equation}
-J_{\mathrm{active}}n
+J_cn
 \approx
 0.
 \end{equation}
@@ -2518,14 +2586,14 @@ The right singular vectors in \(V\) are ordered in the same sequence as the
 singular values:
 
 \begin{equation}
-J_{\mathrm{active}}v_i
+J_cv_i
 =
 \sigma_i u_i.
 \label{eq:svd_direction_mapping}
 \end{equation}
 
-This means that a joint-space motion in direction \(v_i\) produces an active
-Cartesian motion in direction \(u_i\), scaled by \(\sigma_i\).
+This means that a joint-space motion in direction \(v_i\) produces a
+constrained Cartesian motion in direction \(u_i\), scaled by \(\sigma_i\).
 Here, \(v_i\) is not the current joint configuration \(q\).
 It is a direction for a joint displacement.
 Equivalently, it can be interpreted as a normalized \(\Delta q\) direction.
@@ -2558,45 +2626,22 @@ Thus, \(q\) describes where the robot currently is in joint space, while
 \(v_i\) describes in which joint-space direction the robot is locally moved.
 The singular values are ordered from large to small.
 Therefore, \(v_1\) is the joint-space direction with the strongest effect on
-the active Cartesian task, while the last columns of \(V\) are the directions
+the constrained Cartesian task, while the last columns of \(V\) are the directions
 with the weakest effect.
 For a seven-joint robot, the last column is \(v_7\).
-If the active task has fewer independent directions than seven, some of the
+If the constrained task has fewer independent directions than seven, some of the
 last singular values are zero, or close to zero in the damped numerical case.
 The corresponding vectors are then null-space directions.
 Thus, \(v_7\) is not weak because it belongs to joint 7; it is weak because it
 is the last direction in the SVD ordering.
 
-In principle, the search direction \(n\) can be chosen from any right singular
-vector \(v_i\):
-
-\begin{equation}
-n
-\in
-\left\{
-v_1,\,
-v_2,\,
-\ldots,\,
-v_7
-\right\}.
-\label{eq:nullspace_direction_possible_svd_vectors}
-\end{equation}
-
-However, not all of these directions are equally useful for a secondary
-null-space optimization.
-Directions associated with large singular values strongly affect the active
-Cartesian task and are therefore not desirable as secondary search directions.
-Directions associated with small singular values have a weak influence on the
-active task and are closer to the null space.
-The optimization does not need to test every possible null-space direction in
-each control step.
-Instead, one representative weak direction is used for the local test.
-The controller checks whether a small positive or negative motion along this
-direction improves the smallest singular value.
-Since the SVD orders the right singular vectors according to decreasing
-singular values, the weakest available direction appears at the end of \(V\).
-For the seven-joint robot, this last direction is \(v_7\).
-In the implementation, the tested direction is therefore chosen as
+For the secondary optimization, the controller does not test every right
+singular vector.
+It uses one representative weak direction, because directions associated with
+large singular values would strongly disturb the constrained Cartesian task.
+Since the SVD orders the singular vectors according to decreasing singular
+values, the weakest available direction is the last column of \(V\).
+For the seven-joint Panda, the tested direction is therefore
 
 \begin{equation}
 n
@@ -2607,7 +2652,7 @@ v_7.
 
 The vector \(v_7\) is not selected manually.
 It is calculated automatically as the seventh column of the matrix \(V\)
-obtained from the SVD of \(J_{\mathrm{active}}\).
+obtained from the SVD of \(J_c\).
 The index \(7\) in \(v_7\) does not mean the scalar joint coordinate \(q_7\).
 It means the seventh SVD direction vector.
 Because the robot has seven joints, this vector has one component for each
@@ -2636,7 +2681,7 @@ The sign of each entry determines the positive or negative joint direction.
 Therefore, \(v_7\) does not describe a Cartesian direction.
 It describes a coordinated direction of motion for all seven joints.
 It is suitable as a search direction for the secondary optimization because it
-changes the active Cartesian task as little as possible.
+changes the constrained Cartesian task as little as possible.
 The local test then only has to compare the two signs of this direction,
 \(+v_7\) and \(-v_7\).
 Two candidate configurations are formed:
@@ -2652,47 +2697,47 @@ q_{-} = q - \alpha n.
 \end{equation}
 
 The parameter \(\alpha\) is a small step size in joint space.
-For both candidates, the active Jacobian is recomputed:
+For both candidates, the constrained-task Jacobian is recomputed:
 
 \begin{equation}
-J_{\mathrm{active},+}
+J_{c,+}
 =
-J_{\mathrm{active}}(q_{+}),
+J_c(q_{+}),
 \label{eq:active_jacobian_candidate_plus}
 \end{equation}
 
 \begin{equation}
-J_{\mathrm{active},-}
+J_{c,-}
 =
-J_{\mathrm{active}}(q_{-}).
+J_c(q_{-}).
 \label{eq:active_jacobian_candidate_minus}
 \end{equation}
 
-Here, \(J_{\mathrm{active}}(q_{+})\) and \(J_{\mathrm{active}}(q_{-})\)
+Here, \(J_c(q_{+})\) and \(J_c(q_{-})\)
 mean that the Jacobian is evaluated again at the two candidate joint
 configurations.
 First, the forward kinematics and the full geometric Jacobian are recomputed
 for \(q_{+}\) and \(q_{-}\).
-Then the same active-row selection used for the real configuration \(q\) is
+Then the same row selection used for the real configuration \(q\) is
 applied again.
 Thus, only the rows corresponding to the regulated Cartesian axes are kept:
 
 \begin{equation}
-J_{\mathrm{active},+}
+J_{c,+}
 =
-S_{\mathrm{active}}J(q_{+}),
+S_cJ(q_{+}),
 \qquad
-J_{\mathrm{active},-}
+J_{c,-}
 =
-S_{\mathrm{active}}J(q_{-}).
+S_cJ(q_{-}).
 \label{eq:active_jacobian_candidate_row_selection}
 \end{equation}
 
-The matrix \(S_{\mathrm{active}}\) represents the row-selection operation
-defined by the active translational and rotational axes.
+The matrix \(S_c\) represents the row-selection operation
+defined by the constrained translational and rotational axes.
 It is directly constructed from the binary axis-selection vectors
 \(\mathrm{fixp}\) and \(\mathrm{fixR}\).
-These vectors are combined into one active-axis vector
+These vectors are combined into one constrained-axis vector
 
 \begin{equation}
 a
@@ -2731,7 +2776,7 @@ Jacobian row is removed.
 Let
 
 \begin{equation}
-\mathcal{I}_{\mathrm{active}}
+\mathcal{I}_{c}
 =
 \left\{
 i
@@ -2747,7 +2792,7 @@ i_1,\ldots,i_m
 \label{eq:active_axis_index_set}
 \end{equation}
 
-be the set of active row indices, where
+be the set of constrained row indices, where
 
 \begin{equation}
 m
@@ -2761,7 +2806,7 @@ Using the standard unit row vectors \(e_i^{\top}\in\mathbb{R}^{1\times6}\),
 the selection matrix is
 
 \begin{equation}
-S_{\mathrm{active}}
+S_c
 =
 \begin{bmatrix}
 e_{i_1}^{\top}\\
@@ -2778,10 +2823,10 @@ It is not an additional optimization variable and it does not choose the
 null-space direction.
 Its only role is to extract from the full geometric Jacobian the rows that
 belong to the currently regulated Cartesian axes.
-If \(m\) Cartesian axes are active, then
+If \(m\) Cartesian axes are constrained, then
 
 \begin{equation}
-S_{\mathrm{active}}
+S_c
 \in
 \mathbb{R}^{m\times6},
 \qquad
@@ -2789,30 +2834,29 @@ J(q)
 \in
 \mathbb{R}^{6\times7},
 \qquad
-J_{\mathrm{active}}(q)
+J_c(q)
 =
-S_{\mathrm{active}}J(q)
+S_cJ(q)
 \in
 \mathbb{R}^{m\times7}.
 \label{eq:active_selection_matrix_dimension}
 \end{equation}
 
-Thus, \(S_{\mathrm{active}}\) keeps the optimization consistent with the same
+Thus, \(S_c\) keeps the optimization consistent with the same
 task that is used by the controller.
 For example, if only \(m\) of the six Cartesian directions are regulated, the
-smallest singular value is evaluated only for these \(m\) active directions,
+smallest singular value is evaluated only for these \(m\) constrained directions,
 not for the full six-dimensional Cartesian task.
-This means that the controller does not reuse the old Jacobian.
-It checks how the active Jacobian would change if the robot moved slightly in
-the positive or negative null-space direction.
+The controller therefore checks how the constrained-task Jacobian would change
+if the robot moved slightly in the positive or negative null-space direction.
 The vector \(v_7\) is used only to define the two candidate configurations
 \(q_{+}\) and \(q_{-}\).
 After these candidate configurations are formed, the controller computes the
-complete active Jacobian for each candidate again.
+complete constrained-task Jacobian for each candidate again.
 Therefore, the comparison is not made only on the seventh component of a
 vector.
 Instead, it is made on the smallest singular value of the complete candidate
-active Jacobian.
+constrained-task Jacobian.
 
 The corresponding smallest singular values are then compared:
 
@@ -2821,7 +2865,7 @@ The corresponding smallest singular values are then compared:
 =
 \sigma_{\min}
 \left(
-J_{\mathrm{active},+}
+J_{c,+}
 \right),
 \label{eq:min_singular_candidate_plus}
 \end{equation}
@@ -2831,7 +2875,7 @@ J_{\mathrm{active},+}
 =
 \sigma_{\min}
 \left(
-J_{\mathrm{active},-}
+J_{c,-}
 \right).
 \label{eq:min_singular_candidate_minus}
 \end{equation}
@@ -2840,25 +2884,9 @@ The variable \(s\) is only a sign selector.
 It is introduced because the controller does not yet know whether moving a
 small step along \(+n\) or along \(-n\) gives the better robot
 configuration.
-Therefore, two candidate configurations are tested:
-
-\begin{equation}
-q_{+}
-=
-q
-+
-\alpha n,
-\qquad
-q_{-}
-=
-q
--
-\alpha n.
-\label{eq:candidates_for_sign_selection}
-\end{equation}
-
-After the two candidates have been evaluated, the sign \(s\) stores which of
-the two directions should be used.
+After the two candidates from \cref{eq:nullspace_candidate_plus} and
+\cref{eq:nullspace_candidate_minus} have been evaluated, the sign \(s\)
+stores which of the two directions should be used.
 If the positive candidate \(q_{+}\) gives the larger smallest singular value,
 then \(s=+1\).
 Otherwise, \(s=-1\), so the controller uses the negative direction:
@@ -2886,35 +2914,12 @@ n.
 \label{eq:sigma_joint_step_from_sign}
 \end{equation}
 
-For \(s=+1\), this gives \(\Delta q_{\sigma}=+\alpha n\), which corresponds
-to the candidate \(q_{+}\).
-For \(s=-1\), this gives \(\Delta q_{\sigma}=-\alpha n\), which corresponds
-to the candidate \(q_{-}\).
 This comparison is a finite-difference approximation of the direction in which
-\(\sigma_{\min}\) increases.
-This optimization is not applied as an additional Cartesian task.
-It is used only as a secondary objective inside the null space of the active
-Jacobian.
-Instead of deriving an analytic gradient of the singular value, the controller
-tests two nearby configurations in the positive and negative null-space
-directions.
-The tested direction \(n\) is chosen in joint space and then restricted by the
-null-space projector, so the optimization can change the redundant joint
-configuration without intentionally changing the regulated Cartesian axes.
-If the positive candidate gives the larger value of \(\sigma_{\min}\), then
-the sign \(s=+1\) is chosen.
-If the negative candidate gives the larger value, then \(s=-1\) is chosen.
-The vector
-
-\begin{equation}
-\Delta q_{\sigma}
-=
-s\alpha n
-\label{eq:singular_value_joint_step}
-\end{equation}
-
-is therefore a small joint-space step that points toward the candidate with
-better active-task conditioning.
+\(\sigma_{\min}\) increases. The optimization is not an additional Cartesian
+task; it is a secondary joint-space objective that is projected through \(N\)
+so that the regulated Cartesian axes are disturbed as little as possible.
+Thus, \(\Delta q_{\sigma}\) is a small joint-space step toward the candidate
+with better constrained-task conditioning.
 Multiplication by \(K_{\sigma}\) scales this step into the strength of the
 secondary command.
 In the general joint-space form, \(K_{\sigma}\) is a weighting matrix with one
@@ -2942,7 +2947,7 @@ k_{\sigma}\in\mathbb{R}.
 \end{equation}
 
 Finally, the null-space projector \(N\) keeps only the part of this command
-that lies in the null space of the active task and therefore does not
+that lies in the null space of the constrained task and therefore does not
 significantly disturb the regulated Cartesian directions.
 
 The resulting optimization term in the null space is
@@ -2963,11 +2968,11 @@ matrix for the singular-value optimization, \(s\) is the selected sign,
 direction.
 Thus, \cref{eq:singular_value_optimization_torque} comes from the finite
 difference selection in \cref{eq:nullspace_direction_selection} and
-\cref{eq:singular_value_joint_step}.
-The term is projected with the null-space projector \(N\) so that the active
-Cartesian task is influenced as little as possible.
+\cref{eq:nullspace_candidate_plus,eq:nullspace_candidate_minus}.
+The term is projected with the null-space projector \(N\) so that the
+constrained Cartesian task is influenced as little as possible.
 Consequently, the singular-value optimization only uses the remaining
-redundant degrees of freedom after the active task has been defined.
+redundant degrees of freedom after the constrained task has been defined.
 
 A damping term is also used in the null space:
 
@@ -3022,9 +3027,11 @@ Equations~\eqref{eq:commanded_torque_libfranka} and
 The null-space optimization in this work is used only for damping redundant
 motion and for improving the smallest singular value.
 Improving the smallest singular value means that the redundant joints are
-biased toward a better-conditioned configuration of the active Jacobian.
+biased toward a better-conditioned configuration of the constrained-task Jacobian.
 This helps keep the regulated Cartesian directions controllable and avoids
-configurations in which one active direction becomes weak or close to singular.
+configurations in which one constrained direction becomes weak or close to singular.
 
 
 \fi
+
+

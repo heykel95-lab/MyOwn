@@ -1,77 +1,245 @@
 \chapter{Introduction}
 \label{ch:intro}
 
+\section{Motivation}
 \label{sec:motivation}
-Robotic manipulators are traditionally designed for accurate and
-repeatable motion. In many industrial applications, this is sufficient
-because the environment is structured and contact with humans or
-unknown obstacles is avoided. In collaborative and interaction-based
-tasks, however, purely rigid position control is not always suitable.
-Unlike classical industrial robots, which operate in fenced-off cells
-and prioritise rigid trajectory tracking, collaborative robots must be
-capable of reacting safely and predictably to contact with their
-environment. A robot that reacts compliantly to contact can reduce
-interaction forces and can be guided more naturally by a human
-operator. Collaborative robots account for a growing share of
-industrial robot deployments, since their inherent compliance and
-sensor capabilities enable safe human--robot collaboration
-\citep{IFR2023WorldRobotics}.
+\subsection{Collaborative Robots in Modern Automation}
+Robotic manipulators are widely used for accurate and repeatable
+motion in structured industrial environments. In classical automation,
+the robot is often separated from humans and the task is defined as a
+geometric trajectory that should be followed as precisely as possible.
+This approach is effective for welding, handling, machining, or
+pick-and-place operations when the environment is known and contact with
+unexpected objects is avoided. The requirements change when the robot
+is used in collaborative or interaction-based tasks. In these cases,
+the robot may come into contact with a human operator, a tool, a
+workpiece, or a surface whose exact position is not perfectly known.
+Then, rigid position tracking alone is not sufficient because small
+geometric errors can lead to large contact forces.
 
-Hogan introduced in 1985 \citep{Hogan1985}, Cartesian impedance control that addresses this problem
-by describing the dynamic behaviour of the robot arm as a mass--spring--damper system in
-Cartesian coordinates. By deliberately choosing stiffness and damping
-parameters, the compliance of the end-effector along each Cartesian
-axis can be set individually. Implementing this control strategy
-requires precise knowledge of the Jacobian matrix of the manipulator,
-which establishes the relationship between Cartesian velocities and
-joint angular velocities and additionally enables the mapping of
-Cartesian forces to joint torques \citep{Siciliano2009,Khatib1987,Mayr2024CartesianImpedance}.
-The main goal of this thesis is therefore to formulate and analyse a
-Cartesian impedance controller for a 7-\abbr{DOF} manipulator.
+Collaborative robots are designed to make such interaction tasks more
+practical. They typically include joint torque sensing, collision
+detection, and control interfaces that allow compliant behavior.
+According to the International Federation of Robotics, collaborative
+robots are becoming an increasingly relevant part of industrial robot
+deployments because they can support flexible human--robot
+collaboration and shorter setup times \citep{IFR2023WorldRobotics}.
+For this reason, the control problem is no longer only to move the
+robot from one pose to another, but also to define how the robot should
+react when its end-effector interacts with the environment.
 
-The Franka Emika Panda represents this class of robot: a
-7-\abbr{DOF} arm with integrated joint torque sensing, designed to run
-at 1\,kHz in torque-control mode through the Franka Control Interface
-(\abbr{FCI}) \citep{FrankaFCI2023}. Achieving compliant, force-aware
-behaviour on such a platform requires moving beyond position control to
-an impedance-based approach in which the robot's dynamic relationship
-with the environment is explicitly designed and parameterised.
+\subsection{Need for Compliant Robot Motion}
+Compliant robot motion addresses this problem by allowing a controlled
+deviation from the desired pose when interaction forces occur. Instead
+of behaving like an ideally stiff positioning device, the robot can be
+made to behave like a mechanical spring-damper system. The stiffness
+determines how strongly the robot reacts to a displacement, while the
+damping determines how strongly velocity is opposed. This idea is the
+basis of impedance control, which was introduced by Hogan as a way to
+specify the dynamic relation between motion and interaction forces
+\citep{Hogan1985}. In Cartesian impedance control, this relation is
+defined directly at the end-effector in task space.
 
-The theoretical background of this work builds on standard treatments
-of serial-manipulator kinematics and dynamics, including homogeneous
-transformations, the geometric and analytic Jacobian, redundancy, and
-operational-space modelling \citep{Siciliano2009,Craig2005,Murray1994,Khatib1987}.
-For the Panda platform, these foundations are especially relevant
-because \abbr{FCI} provides direct access to joint states, model
-quantities, and the geometric Jacobian in a deterministic 1\,kHz
-torque-control loop. The controller developed in this thesis follows
-the Jacobian-transpose mapping from Cartesian forces to joint torques
-\citep{Khatib1987}, while using a fixed-parameter, quasi-static
-impedance model similar in structure to practical Cartesian impedance
-software implementations \citep{Mayr2024CartesianImpedance}. This choice
-avoids the complexity and model sensitivity of full operational-space
-dynamic inversion, remains suitable for the low-velocity interaction
-tasks considered here, and leaves adaptive or variable-impedance
-extensions as future work \citep{Albu2003,Ott2008,Villani2016}.
-The secondary null-space term is treated as an auxiliary redundancy
-resolution component, following the broader literature on null-space
-projection for redundant torque-controlled robots
-\citep{Khatib1987,Dietrich2015NullspaceSurvey}.
+Cartesian impedance control is especially useful for contact tasks.
+For example, a robot that moves a tool along a surface should be stiff
+in the direction in which a precise distance or contact condition must
+be maintained, but more compliant in directions where small
+misalignments should not generate large forces. The same idea applies
+to orientation: if a tool edge contacts a table while the tool is
+slightly tilted, the external contact wrench contains both a force and
+a moment. A suitably selected Cartesian stiffness matrix can allow a
+small translation and rotation instead of resisting the contact
+rigidly. The resulting displacement can be interpreted as a screw
+motion, and its instantaneous screw axis gives a geometric description
+of how the tool tends to align passively with the table. Therefore, the
+central control design question is not only how to compute a torque
+command, but also how to choose meaningful stiffness and damping
+matrices for the contact geometry.
 
-This is technically demanding: it requires a verified real-time
-software stack, a mathematically sound controller formulation, and a
-systematic experimental evaluation. The present thesis addresses these
-aspects for the Panda by developing and evaluating a Cartesian
-impedance-control approach. The work focuses on the
-compliant behaviour of the manipulator, the influence of controller
-parameters, and the stability of the resulting impedance behaviour.
+\subsection{Previous Work and Technical Background}
+The mathematical foundations of this thesis build on standard robotics
+methods for serial manipulators. Homogeneous transformations describe
+the position and orientation of coordinate frames, forward kinematics
+relates joint positions to end-effector pose, and the Jacobian maps
+joint velocities to Cartesian velocities \citep{Siciliano2009,Craig2005,Murray1994}.
+For force and torque control, the Jacobian is also used in the reverse
+direction: a Cartesian wrench, consisting of force and moment, can be
+mapped to joint torques using the Jacobian transpose. This relation is
+closely connected to operational-space control and the work of Khatib
+\citep{Khatib1987}.
 
+Several previous works have extended impedance control toward more
+complex interaction behavior. Ott et al. discuss Cartesian impedance
+control for flexible joint robots and the importance of stable
+interaction behavior \citep{Ott2008}. Albu-Schaffer et al. describe
+Cartesian impedance control for torque-controlled lightweight robots,
+which is directly relevant for robots with joint torque sensing
+\citep{Albu2003}. Practical Cartesian impedance implementations for
+robots such as the Franka Emika Panda also show the importance of
+filtering, torque limiting, and null-space behavior in real robot
+experiments \citep{Mayr2024CartesianImpedance}. Recent work on
+energy-aware Cartesian impedance control on a Franka Emika Panda further
+shows that contact tasks must be evaluated not only by tracking accuracy, but
+also by the energy, power, damping, and safety behavior during unexpected
+interaction \citep{Hjorth2023EnergyAwareImpedance}. Villani et al. provide
+a broader view of human--robot collaboration and physical interaction
+in manufacturing \citep{Villani2016}. For the specific question of how
+the center of compliance or stiffness can be chosen in space, the
+spatial impedance formulation of Fasse and Broenink is important
+because it shows how translation and rotation can be coupled through a
+selected point \citep{Fasse1997SpatialImpedance}. This is closely
+related to the older remote-center-compliance idea in assembly and to
+variable compliance-center strategies for peg-in-hole tasks, where the
+compliance geometry is chosen so that contact forces tend to reduce rather
+than amplify misalignment
+\citep{Nevins1989ComputerControlledAssembly,Watson1978RCC,Wang2019VariableComplianceCenter,Hartisch2022FlexureRCC}.
+In this thesis, the same principle is investigated as an active
+Cartesian impedance design problem for a table-contact task.
+
+\section{Objectives of the Thesis}
+\subsection{Design of a Cartesian Impedance Controller}
+The purpose of this thesis is to design, implement, and evaluate a
+Cartesian impedance controller for the Franka Emika Panda, a redundant
+7-\abbr{DOF} collaborative robot. The practical motivation comes from a
+single surface-contact experiment: the edge of a tool is brought into
+contact with a table. When contact occurs, the table applies an
+external wrench to the tool. Because the tool is controlled
+compliantly, this wrench produces a small translational and rotational
+motion. The experiment investigates whether the Cartesian stiffness
+matrix can be selected so that this motion behaves like passive
+self-alignment around a useful virtual center of rotation. In this
+context, self-alignment means that the contact wrench tends to reduce
+the tool--table angular misalignment instead of increasing it or
+creating an unsafe torque response.
+
+The main idea is to use task-dependent Cartesian stiffness and damping
+matrices in all six Cartesian degrees of freedom. The translational
+part determines how the robot reacts to position errors, while the
+rotational part determines how it reacts to orientation errors. For the
+table-contact task, these matrices should not be chosen only as
+arbitrary diagonal values in the robot base frame. Instead, the task
+geometry should define the physically meaningful directions: the table
+normal, two tangential directions, and the rotational directions that
+allow the edge to align. The thesis therefore investigates how a known
+contact geometry can be mapped to six-dimensional impedance parameters
+and how the resulting displacement can be interpreted through an
+instantaneous screw axis. Work on impedance planning shows that choosing
+stiffness and damping is itself a control-design problem, because the same
+controller can be safe, oscillatory, accurate, or overly aggressive depending
+on the selected gains \citep{Pollayil2023ImpedancePlanning}. Since the
+present setup does not use an external force/torque sensor, the thesis treats
+the stiffness choice in two complementary ways. First, representative
+commanded stiffness settings are computed from quasi-static contact
+compliance, with damping initialized from a critical-damping approximation,
+and then compared directly in the contact experiment.
+Second, an offline least-squares fit is used to identify effective
+translation--rotation stiffness and damping contributions from the logged
+motion and contact-moment model. This is not a full online impedance-planning
+or sensorless environment-estimation method, but it gives an additional
+description of how sliding, rotation, and damping contribute to the observed
+self-alignment \citep{Roveda2021SensorlessStiffness}.
+
+\subsection{Implementation on a 7-DOF Collaborative Robot}
+The implementation is based on the Franka Control Interface
+(\abbr{FCI}) and libfranka. The Panda provides access to robot states,
+model quantities, and a real-time torque-control callback with a
+control period of \(1\,\mathrm{ms}\) \citep{FrankaFCI2023}. Before the
+impedance controller can be implemented, the robot and workstation must
+therefore be configured, the C++ development environment must be set
+up, and the basic libfranka motion examples must be understood and
+tested. These steps are part of the work because they form the
+experimental foundation for real-time torque control.
+
+On this foundation, the controller reads the current robot state,
+obtains the end-effector transformation, Jacobian, and model terms from
+libfranka, computes the Cartesian impedance wrench, maps it to joint
+torques, adds the selected model-based compensation terms, and returns
+a limited torque command to the robot. Because the Panda has seven
+joints but a full Cartesian task has six degrees of freedom, the robot
+is kinematically redundant. The redundant motion must be handled
+through a null-space controller so that secondary joint motion does not
+disturb the Cartesian task. Null-space projection and singularity
+avoidance are therefore included in the controller design, following
+the general concepts described in the literature on redundant robot
+control \citep{Khatib1987,Dietrich2015NullspaceSurvey,Chiaverini1994DampedLeastSquares}.
+
+\section{Problem Statement}
+\subsection{Challenges in Cartesian Impedance Control}
+Although the basic impedance law resembles a spring-damper equation,
+its practical implementation on a torque-controlled robot is not
+trivial. First, the controller must use consistent coordinate frames.
+The desired pose, measured pose, Cartesian error, stiffness matrix, and
+damping matrix must all be expressed in compatible frames before the
+resulting wrench is mapped to joint torques. Second, the stiffness and
+damping matrices must be selected so that the robot is stiff where the
+task requires accuracy and compliant where interaction or alignment is
+needed. Third, the torque command must remain smooth and bounded so
+that the robot can be operated safely in the real-time control loop.
+
+The self-alignment task adds another difficulty. A tool that is tilted
+with respect to a table cannot be aligned by translational compliance
+alone. The orientation behavior must be defined so that the tool can
+rotate toward the table while the contact force remains limited. A
+virtual center of rotation provides a useful way to describe this
+behavior: the tool should move as if the effective pivot point were
+located at a useful point near the tool edge or table contact. However,
+this requires a coupling between translational and rotational behavior
+and is more complex than a purely diagonal impedance matrix. In this
+thesis, the virtual-center idea is therefore treated carefully as a
+task-to-impedance mapping concept and evaluated through the measured
+motion caused by table contact.
+
+\section{Scope and Contributions}
+\subsection{Scope of the Implemented Controller}
+This thesis focuses on a fixed-parameter Cartesian impedance controller
+implemented in C++ with libfranka and Eigen. The controller follows a
+Jacobian-transpose torque mapping and uses the model quantities
+provided by libfranka. It does not attempt to implement a full
+operational-space inverse-dynamics controller, adaptive impedance
+control, or online surface estimation. The surface is treated as a
+given task geometry, for example through a surface normal and a point
+on the surface. This scope is appropriate for investigating the core
+question of how the controller behavior depends on the selected
+six-dimensional impedance parameters.
+
+The main contributions of the thesis are:
+\begin{itemize}
+    \item the configuration and use of the Franka Emika Panda with
+    \abbr{FCI}/libfranka in a C++ development environment;
+    \item the formulation of a Cartesian impedance controller using
+    pose error, Cartesian wrench computation, Jacobian-transpose torque
+    mapping, and model-based Coriolis compensation;
+    \item the construction of task-dependent stiffness and damping
+    matrices for translational and rotational compliance;
+    \item the investigation of a table-contact experiment in which a
+    tool edge generates a combined contact force and moment;
+    \item the discussion of passive self-alignment using rotational
+    compliance, screw-motion geometry, and a virtual center of
+    rotation;
+    \item the formulation of a least-squares method for identifying
+    effective translation--rotation stiffness and damping contributions
+    from logged edge-contact data;
+    \item the integration of null-space damping and
+    singular-value-based null-space optimization for the redundant
+    7-\abbr{DOF} arm;
+    \item the experimental evaluation of the implemented controller
+    using logged robot data.
+\end{itemize}
+
+The work therefore connects the theoretical concepts of impedance
+control, screw-motion geometry, and redundancy resolution with a
+real-time implementation on the Panda robot. The emphasis is on
+understanding how the impedance parameters influence the observed
+contact response and what stiffness selection is required for passive
+self-alignment around a useful virtual center.
+
+\section{Thesis Structure}
 Chapter~\ref{ch:theory} develops the theoretical background and
 controller formulation for Cartesian impedance control. Chapter~\ref{ch:implementation}
-describes the software implementation used to execute the controller on the
-Panda. Chapter~\ref{ch:experiments} defines the experimental design and
-evaluation procedure, and Chapter~\ref{ch:conclusion} summarises the results
-and limitations.
+describes the controller design and implementation used to execute the controller on the
+Panda. Chapter~\ref{ch:experiments} presents the experimental setup,
+evaluation method, results, and discussion. Chapter~\ref{ch:conclusion}
+summarises the conclusions and future work.
 
 
 

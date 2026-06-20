@@ -1,10 +1,10 @@
-\chapter{Software Implementation}
+\chapter{Controller Design and Implementation}
 \label{ch:implementation}
 
 This chapter describes the implementation of the Cartesian impedance controller derived in Chapter~2 for the Franka Emika Panda.
-The implementation involves accessing model quantities through libfranka, evaluating the controller within the \(1\,\mathrm{ms}\) Franka Control Interface cycle, mapping Cartesian forces and moments to joint torques, and logging the signals used later for evaluation.
+The implementation involves accessing model quantities through libfranka, evaluating the controller within the \(1\,\mathrm{ms}\) Franka Control Interface cycle, mapping the Cartesian wrench to joint torques, and logging the signals used later for evaluation.
 
-\section{Implementation Scope}
+\section{Real-Time Controller Structure}
 \label{sec:implementation_scope}
 
 The controller is implemented in C++ using libfranka and Eigen.
@@ -16,23 +16,24 @@ The implementation is organized around the real-time callback function
 This structure is required because the controller must compute and return a new
 torque command within each \(1\,\mathrm{ms}\) control cycle.
 Each experiment uses the same basic control-loop structure.
-Only the desired end-effector position and orientation, as well as the stiffness and damping matrices, are changed between experiments.
+Only the desired end-effector pose and the stiffness and damping matrices are
+changed between experiments.
 
 The implementation follows four main requirements:
 
 \begin{itemize}
     \item The measured robot state, including \(q\), \(\dot{q}\), and \(T_{\mathrm{EE}}\), is read at every control cycle.
     \item The Jacobian and Coriolis terms are obtained from the libfranka model interface.
-    \item The Cartesian impedance forces and moments are computed using the selected stiffness and damping matrices.
-    \item The resulting Cartesian force/moment vector is mapped to joint torques using \(J^\top(q)\), combined with the active-task null-space torque and the optional Coriolis term, and limited before being sent to the robot.
+    \item The Cartesian impedance wrench is computed using the selected stiffness and damping matrices.
+    \item The resulting wrench is mapped to joint torques using \(J^\top(q)\), combined with the constrained-task null-space torque and the optional Coriolis term, and limited before being sent to the robot.
 \end{itemize}
 
-\section{Control-Loop Structure}
+\subsection{Control-Loop Data Flow}
 \label{sec:control_loop_structure}
 
 Figure~\ref{fig:software_data_flow} shows the data flow of the implemented controller.
 At each control step, the Franka Control Interface provides the current robot state, while the libfranka model interface provides the required kinematic and dynamic quantities.
-The controller then computes the Cartesian error, evaluates the impedance law, maps the resulting Cartesian forces and moments to joint torques, adds the projected null-space torque and the optional Coriolis term, and returns the final torque command.
+The controller then computes the Cartesian error, evaluates the impedance law, maps the resulting wrench to joint torques, adds the projected null-space torque and the optional Coriolis term, and returns the final torque command.
 
 \begin{figure}[h]
     \centering
@@ -53,14 +54,16 @@ The controller then computes the Cartesian error, evaluates the impedance law, m
         \draw[arrow] (model) -- (controller);
         \draw[arrow] (controller) -- (torque);
     \end{tikzpicture}
-    \caption{Software data flow of the impedance controller implemented with libfranka.}
+    \caption{Real-time data flow of the impedance controller implemented with libfranka.}
     \label{fig:software_data_flow}
 \end{figure}
 
 This structure follows the control law derived in Chapter~2.
-The software implementation therefore focuses on obtaining the required quantities from libfranka, evaluating the equations in real time, and ensuring that the resulting torque command satisfies the safety limits.
+This implementation chapter therefore focuses on obtaining the required
+quantities from libfranka, evaluating the equations in real time, and ensuring
+that the resulting torque command satisfies the safety limits.
 
-\section{State Acquisition and Model Access}
+\section{Cartesian Impedance Control Law}
 \label{sec:state_model}
 
 At the beginning of each control callback, the current joint configuration \(q\) and joint velocity vector \(\dot{q}\) are read from \texttt{franka::RobotState} and mapped to Eigen vectors.
@@ -86,7 +89,7 @@ J(q)\dot{q}.
 \label{eq:software_cartesian_velocity}
 \end{equation}
 
-Second, its transpose is used to map the Cartesian force/moment vector to joint torques,
+Second, its transpose is used to map the Cartesian wrench to joint torques,
 
 \begin{equation}
 \tau_{\mathrm{task}}
@@ -124,7 +127,8 @@ effect twice and would not match the implementation structure used here.
 
 This expression is the implementation form of the torque structure derived in
 Chapter~2.
-The purpose of this software chapter is therefore to describe how the required quantities are accessed, evaluated, and combined inside the real-time callback.
+The purpose of this chapter is therefore to describe how the required
+quantities are accessed, evaluated, and combined inside the real-time callback.
 
 \section{Axis Constraint Mode}
 \label{sec:axis_constraint_mode}
@@ -401,7 +405,7 @@ If all three translational axes are fixed,
 the controller behaves like a standard Cartesian impedance controller that
 returns the end-effector to the initial position.
 
-\section{Tool Orientation for a Given Surface}
+\subsection{Tool Orientation for a Given Surface}
 \label{sec:tool_orientation_given_surface}
 
 If the surface is known in advance, the tool orientation can be defined from
@@ -539,7 +543,7 @@ trajectory planner, or an external perception/contact-estimation method.
 The present controller does not estimate this normal by itself; it only uses
 the desired orientation that is supplied to it.
 
-\section{Self-Alignment with a Virtual Center of Rotation}
+\subsection{Virtual-Center Self-Alignment Extension}
 \label{sec:self_alignment_virtual_center}
 
 The orientation construction in Section~\ref{sec:tool_orientation_given_surface}
@@ -739,88 +743,33 @@ torque estimates, vision, or another sensor source.
 That surface-estimation layer is a different problem and is not part of the
 implemented controller.
 
-\section{Active Jacobian Construction}
+\section{Constrained-Task Jacobian for Null-Space Control}
 \label{sec:active_jacobian_construction}
 
-For the null-space optimization, it is important to distinguish between the
-full Cartesian Jacobian and the active task Jacobian.
-The full geometric Jacobian maps the seven joint velocities to the
-six-dimensional Cartesian end-effector velocity,
+The impedance torque is always computed with the full geometric Jacobian
+\(J(q)\in\mathbb{R}^{6\times7}\). The row-reduced Jacobian introduced here is
+used only for the null-space projector. This distinction is important: the
+controller does not replace \(J(q)\) in the Cartesian impedance law.
+
+When the axis-constraint mode releases some translational or rotational
+directions, the null-space term should preserve only the directions that are
+actually regulated. For this purpose the implementation forms a constrained
+task Jacobian
 
 \begin{equation}
-\dot{x}
+J_c
 =
-J(q)\dot{q},
-\qquad
-J(q) \in \mathbb{R}^{6 \times 7}.
-\label{eq:implementation_full_jacobian}
-\end{equation}
-
-The six rows of the Jacobian correspond to the translational and rotational
-velocity components:
-
-\begin{equation}
-J
-=
-\begin{bmatrix}
-J_x\\
-J_y\\
-J_z\\
-J_{R_x}\\
-J_{R_y}\\
-J_{R_z}
-\end{bmatrix}.
-\label{eq:jacobian_row_components}
-\end{equation}
-
-In the axis constraint mode, not all six Cartesian directions are necessarily
-part of the active task.
-The controller therefore constructs a reduced active Jacobian,
-
-\begin{equation}
-J_{\mathrm{active}}
+S_cJ(q)
 \in
-\mathbb{R}^{m \times 7},
-\label{eq:implementation_active_jacobian_dimension}
+\mathbb{R}^{m\times7},
+\label{eq:implementation_constrained_jacobian}
 \end{equation}
 
-where \(m\) is the number of fixed Cartesian directions.
-The active Jacobian is built by selecting only the rows of the full Jacobian
-that correspond to fixed axes:
+where \(S_c\) selects the \(m\) rows belonging to fixed Cartesian axes. For
+example, if \(x\), \(R_x\), and \(R_y\) are fixed, then
 
 \begin{equation}
-J_{\mathrm{active}}
-=
-\mathrm{rows}
-\left(
-J,
-\text{fixed axes}
-\right).
-\label{eq:active_jacobian_row_selection}
-\end{equation}
-
-For example, for
-
-\begin{equation}
-\mathrm{fix}_p
-=
-\begin{bmatrix}
-1 & 0 & 0
-\end{bmatrix},
-\qquad
-\mathrm{fix}_R
-=
-\begin{bmatrix}
-1 & 1 & 0
-\end{bmatrix},
-\label{eq:active_jacobian_selection_example}
-\end{equation}
-
-the active task consists of \(x\), \(R_x\), and \(R_y\).
-Therefore,
-
-\begin{equation}
-J_{\mathrm{active}}
+J_c
 =
 \begin{bmatrix}
 J_x\\
@@ -828,77 +777,59 @@ J_{R_x}\\
 J_{R_y}
 \end{bmatrix}
 \in
-\mathbb{R}^{3 \times 7}.
-\label{eq:implementation_active_jacobian_example}
+\mathbb{R}^{3\times7}.
+\label{eq:implementation_constrained_jacobian_example}
 \end{equation}
 
-This reduced Jacobian defines the null space of the actually constrained task.
-Consequently, the null-space optimization does not try to preserve directions
-that are intentionally free.
+The code variable \texttt{J\_active} denotes this same matrix \(J_c\). The
+name is kept in the listing because it is the variable used in the program,
+but the thesis interpretation is simply: \(J_c\) is the Jacobian of the
+currently constrained Cartesian task.
 
-\section{Null-Space Optimization in the Controller}
+\section{Implemented Null-Space Term}
 \label{sec:nullspace_optimization_implementation}
 
-The theoretical null-space and singular-value optimization terms were derived
-in Section~\ref{sec:nullspace_svd}.
-In the software implementation, these terms are evaluated using the active
-Jacobian rather than the full Jacobian.
-The null space of the active Jacobian is described by
+The theoretical null-space and singular-value terms were derived in
+Section~\ref{sec:nullspace_svd}. In the implementation, the projector is built
+from \(J_c\), not from the full \(6\times7\) Jacobian:
 
 \begin{equation}
-J_{\mathrm{active}}\dot{q}_0 \approx 0.
-\label{eq:implementation_active_nullspace}
-\end{equation}
-
-The implemented null-space term consists of a damping contribution and a
-singular-value optimization contribution.
-The damping term is
-
-\begin{equation}
-\tau_{\mathrm{damp}}
-=
--
-D_{\mathrm{null}}
-N\dot{q},
-\label{eq:implementation_nullspace_damping}
-\end{equation}
-
-and the singular-value term is
-
-\begin{equation}
-\tau_{\sigma}
-=
 N
+=
+I
+-
+J_c^\top
 \left(
-K_{\sigma}s\alpha n
-\right).
-\label{eq:implementation_sigma_torque}
+J_cJ_c^\top+\lambda^2I
+\right)^{-1}
+J_c.
+\label{eq:implementation_constrained_projector}
 \end{equation}
 
-In the general formulation, \(K_{\sigma}\in\mathbb{R}^{7\times7}\) is a
-joint-space weighting matrix.
-The implementation uses one scalar parameter, \texttt{nullspace\_k\_sigma},
-which corresponds to the special case \(K_{\sigma}=k_{\sigma}I_7\).
-
-The complete null-space torque is therefore
+The null-space torque has two parts,
 
 \begin{equation}
 \tau_{\mathrm{null}}
 =
-\tau_{\mathrm{damp}}
+-D_{\mathrm{null}}N\dot{q}
 +
-\tau_{\sigma}.
+N\left(K_{\sigma}s\alpha n\right).
 \label{eq:implementation_nullspace_torque}
 \end{equation}
 
-The return-to-start term was intentionally removed because it conflicted with
-the desired free motion in the virtual plane.
-The final torque command used by the controller becomes
+The first term damps redundant joint motion. The second term is the optional
+smallest-singular-value improvement. The implementation uses the scalar
+parameter \texttt{nullspace\_k\_sigma}, corresponding to
+\(K_{\sigma}=k_{\sigma}I_7\). The return-to-start term was removed because it
+conflicted with the desired free motion in the plane.
+
+The final torque command is still the Cartesian impedance task torque plus
+the projected null-space torque and the optional Coriolis term,
 
 \begin{equation}
 \tau_{\mathrm{cmd}}
 =
-J^{\top}F_{\mathrm{cmd}}
+J^\top(q)F_{\mathrm{cmd}}
 +
 \tau_{\mathrm{null}}
 +
@@ -906,123 +837,33 @@ J^{\top}F_{\mathrm{cmd}}
 \label{eq:implementation_final_torque_with_nullspace}
 \end{equation}
 
-In the implemented version used here, the Coriolis term can be added through a
-parameter switch.
-The gravity term is not added explicitly for the reason described in
-Section~\ref{sec:state_model}.
-The null-space torque is added as an additional joint-space contribution
-before the final torque command is rate-limited and sent to the robot.
+The null-space torque is rate- and norm-limited before being sent to the
+robot, so it remains a bounded secondary contribution.
 
-\section{Implementation of the Active Null-Space Optimization}
+\subsection{Code-Level Constrained Null-Space Optimization}
 \label{sec:code_active_nullspace}
 
-The following code excerpts show the implementation of the active-task
+The following code excerpts show the implementation of the constrained-task
 null-space optimization.
-The null space is computed from the reduced active Jacobian introduced in
+The null space is computed from the constrained-task Jacobian introduced in
 Section~\ref{sec:active_jacobian_construction}; this matrix contains only the
 rows corresponding to the constrained Cartesian axes.
-For \(J_{\mathrm{active}}\in\mathbb{R}^{m\times7}\), the damped projector is
+For \(J_c\in\mathbb{R}^{m\times7}\), the damped projector is
 formed from an \(m\times m\) matrix, but the resulting projector \(N\) remains
 \(7\times7\). Therefore, the projected null-space torque is still a
 seven-dimensional joint torque vector.
 
-The singular-value-based part computes a full singular value decomposition
-(SVD) of the active Jacobian.
-The columns of \(V\) are joint-space directions.
-Because the Panda has seven joints, a full \(V\) matrix has seven columns.
-In the C++ implementation, Eigen uses zero-based indexing; therefore,
-\texttt{matrixV().col(6)} selects the seventh right singular vector:
+The singular-value part uses a full SVD of \(J_c\). In the code this matrix is
+named \texttt{J\_active}. Since the Panda has seven joints, Eigen's
+\texttt{matrixV().col(6)} selects the seventh right singular vector. This
+vector is used as one local joint-space search direction \(n\). The controller
+tests \(q+\alpha n\) and \(q-\alpha n\), recomputes the constrained-task
+Jacobian for both candidates, and keeps the sign that gives the larger
+smallest singular value. The resulting secondary torque is projected with
+\(N\), norm-limited, and then added to the Cartesian task torque. It does not
+replace the impedance task; it only damps and biases redundant joint motion.
 
-\begin{equation}
-n
-=
-v_7
-\in
-\mathbb{R}^{7}.
-\label{eq:code_nullspace_direction_v7}
-\end{equation}
-
-When fewer than six Cartesian components are constrained, the active Jacobian
-can have more than one null-space direction. The implementation uses this last
-right singular vector as a single local search direction and then projects the
-resulting torque with \(N\), so the commanded contribution remains inside the
-active-task null space.
-This vector is normalized before it is used for the local sigma-min comparison.
-The two candidate configurations are
-
-\begin{equation}
-q_{+}
-=
-q
-+
-\alpha n,
-\qquad
-q_{-}
-=
-q
--
-\alpha n.
-\label{eq:code_sigma_candidate_configurations}
-\end{equation}
-
-For both candidates, the full Jacobian is recomputed with libfranka and the
-same active rows are selected.
-The controller then compares
-\(\sigma_{\min}(J_{\mathrm{active},+})\) and
-\(\sigma_{\min}(J_{\mathrm{active},-})\) and chooses the direction that
-locally increases the smallest singular value.
-
-The resulting sigma-min contribution is
-
-\begin{equation}
-\tau_{\sigma}
-=
-N
-\left(
-K_{\sigma}s\alpha n
-\right),
-\label{eq:code_sigma_min_torque}
-\end{equation}
-
-and the total null-space torque is
-
-\begin{equation}
-\tau_{\mathrm{null}}
-=
-\tau_{\mathrm{damp}}
-+
-\tau_{\sigma}
-\in
-\mathbb{R}^{7}.
-\label{eq:code_total_nullspace_torque}
-\end{equation}
-
-Its norm is limited before it is added to the Cartesian task torque.
-The final commanded torque is
-
-\begin{equation}
-\tau_{\mathrm{cmd}}
-=
-\tau_{\mathrm{task}}
-+
-\tau_{\mathrm{null}}
-+
-\tau_c
-=
-J^{\top}F_{\mathrm{cmd}}
-+
-\tau_{\mathrm{null}}
-+
-\tau_c.
-\label{eq:code_final_torque_command}
-\end{equation}
-
-The null-space torque does not replace the Cartesian impedance task.
-It is an additional projected secondary torque that damps and optimizes the
-redundant joint motion while the Cartesian task remains responsible for the
-selected fixed axes.
-
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Construction of the active task Jacobian.}, label={lst:active_task_jacobian}]
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Construction of the constrained task Jacobian.}, label={lst:active_task_jacobian}]
 Eigen::MatrixXd buildActiveTaskJacobian(
     const Eigen::Matrix<double, 6, 7>& J,
     const Parameters& params) {
@@ -1067,11 +908,11 @@ rotational axes.
 Rows 0, 1, and 2 correspond to translational \(x\), \(y\), and \(z\) motion,
 whereas rows 3, 4, and 5 correspond to rotational motion about these axes.
 
-The active Jacobian is then used to compute a damped null-space projector.
+The constrained-task Jacobian is then used to compute a damped null-space projector.
 This projector maps joint-space quantities into the null space of the
 constrained task.
 
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Damped null-space projector of the active task.}, label={lst:active_task_projector}]
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Damped null-space projector of the constrained task.}, label={lst:active_task_projector}]
 Eigen::Matrix<double, 7, 7> activeTaskNullspaceProjector(
     const Eigen::MatrixXd& J_active,
     double damping_lambda) {
@@ -1136,7 +977,7 @@ Listing~\ref{lst:active_task_nullspace_sigma}.
 The previously used return-to-start term is not included, because it conflicted
 with the desired free motion in the virtual plane.
 
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Active-task null-space damping and sigma-min optimization.}, label={lst:active_task_nullspace_sigma}]
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Constrained-task null-space damping and sigma-min optimization.}, label={lst:active_task_nullspace_sigma}]
 Eigen::Matrix<double, 7, 1> tau_nullspace;
 tau_nullspace.setZero();
 
@@ -1246,10 +1087,10 @@ if (params.use_nullspace_optimization) {
 
 The sigma-min term compares two small candidate motions in positive and
 negative null-space direction.
-The direction that produces the larger smallest singular value of the active
-Jacobian is selected.
-The resulting contribution is projected with \(N\), so it affects the active
-Cartesian task as little as possible.
+The direction that produces the larger smallest singular value of the
+constrained-task Jacobian is selected.
+The resulting contribution is projected with \(N\), so it affects the
+constrained Cartesian task as little as possible.
 
 Finally, the null-space torque is added to the Cartesian impedance torque in
 the real-time callback.
@@ -1401,7 +1242,7 @@ file I/O during torque control.
 The resulting CSV file can then be used for post-processing, plotting, and
 comparing different controller configurations.
 
-\section{Controller Evaluation}
+\subsection{Complete Real-Time Callback}
 \label{sec:control_impl}
 
 The implemented control loop follows the sequence below:
@@ -1411,8 +1252,8 @@ The implemented control loop follows the sequence below:
     \item Compute the geometric Jacobian \(J(q)\).
     \item Compute the Cartesian velocity using \(\dot{x}=J(q)\dot{q}\).
     \item Compute the position and orientation errors.
-    \item Evaluate the Cartesian impedance forces and moments.
-    \item Map the Cartesian force/moment vector to joint torques using \(J^\top(q)\).
+    \item Evaluate the Cartesian impedance wrench.
+    \item Map the Cartesian wrench to joint torques using \(J^\top(q)\).
     \item Compute and add the projected null-space torque \(\tau_{\mathrm{null}}\).
     \item Add the optional Coriolis compensation.
     \item Limit the torque command before returning it to libfranka.
@@ -1420,8 +1261,11 @@ The implemented control loop follows the sequence below:
 
 The core structure of the implementation is shown in Listing~\ref{lst:impedance_callback}.
 The listing keeps only the operations needed to show the control flow.
-Experiment-specific files define the desired end-effector motion, either as a fixed set-point \((p_d, R_d)\) or as a time-dependent trajectory \((p_d(t), R_d(t))\).
-They also specify the positional stiffness values \(K_{1,p}\), \(K_{2,p}\), and \(K_{3,p}\), the rotational stiffness values \(K_{1,R}\), \(K_{2,R}\), and \(K_{3,R}\).
+Task-specific files define the desired end-effector pose, the table-contact
+configuration, and the candidate impedance parameters used for a given test.
+They specify the positional stiffness values \(K_{1,p}\), \(K_{2,p}\), and
+\(K_{3,p}\), the rotational stiffness values \(K_{1,R}\), \(K_{2,R}\), and
+\(K_{3,R}\), and the corresponding damping values.
 
 \begin{lstlisting}[style=cppstyle, language=C++, caption={Core structure of the real-time impedance-control callback with CSV logging.}, label={lst:impedance_callback}]
 #include <algorithm>
@@ -1619,16 +1463,16 @@ robot.control([&](const franka::RobotState& state,
   Eigen::Vector3d m =
       KR_base * e_R - DR_base * omega;
 
-  // Combine the Cartesian force and moment into one 6D force/moment vector.
+  // Combine the Cartesian force and moment into one 6D wrench.
   Eigen::Matrix<double, 6, 1> F;
   F.head<3>() = f;
   F.tail<3>() = m;
 
-  // Map the Cartesian force/moment vector to joint torques using the Jacobian transpose.
+  // Map the Cartesian wrench to joint torques using the Jacobian transpose.
   Eigen::Matrix<double, 7, 1> tau_task =
       J.transpose() * F;
 
-  // Compute the active-task null-space torque.
+  // Compute the constrained-task null-space torque.
   // The detailed implementation is shown in the null-space listings above.
   Eigen::Matrix<double, 7, 1> tau_nullspace;
   tau_nullspace.setZero();
@@ -1673,11 +1517,15 @@ robot.control([&](const franka::RobotState& state,
 \end{lstlisting}
 
 Listing~\ref{lst:impedance_callback} summarizes the main operations performed during one real-time control cycle.
-The callback reads the current robot state, evaluates the Cartesian impedance law, adds the active-task null-space torque and the optional Coriolis term, limits the resulting torque command, and returns it to libfranka.
-If an experiment uses only positional tracking, the rotational control part is disabled by setting \(K_{R,0}=0_{3\times3}\) and \(D_{R,0}=0_{3\times3}\).
-As a result, the rotational moment \(m\) becomes zero, the lower three components of \(F\) are zero, and only the positional force contributes to the task torque.
+The callback reads the current robot state, evaluates the Cartesian impedance law, adds the constrained-task null-space torque and the optional Coriolis term, limits the resulting torque command, and returns it to libfranka.
+If a test configuration uses only translational compliance, the rotational
+control part can be disabled by setting \(K_{R,0}=0_{3\times3}\) and
+\(D_{R,0}=0_{3\times3}\). For the table-contact alignment experiment,
+however, both translational and rotational components are relevant because the
+contact wrench contains both force and moment terms.
 
 The callback also writes the measured and computed quantities to a CSV file.
 The logged values include the end-effector position, desired position, positional error, rotational error, Cartesian velocity, Cartesian force and moment, and limited joint torques.
 This implementation structure ensures that all quantities required by the controller are evaluated within the real-time callback.
 The torque command is computed from the current robot state at every control cycle and is limited before being returned to libfranka, which helps maintain safe operation during the experiments.
+
