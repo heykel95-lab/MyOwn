@@ -25,7 +25,7 @@ The implementation follows four main requirements:
     \item The measured robot state, including \(q\), \(\dot{q}\), and \(T_{\mathrm{EE}}\), is read at every control cycle.
     \item The Jacobian and Coriolis terms are obtained from the libfranka model interface.
     \item The Cartesian impedance wrench is computed using the selected stiffness and damping matrices.
-    \item The resulting wrench is mapped to joint torques using \(J^\top(q)\), combined with the constrained-task null-space torque and the optional Coriolis term, and limited before being sent to the robot.
+    \item The resulting wrench is mapped to joint torques using \(J^\top(q)\), combined with the null-space torque and the optional Coriolis term, and limited before being sent to the robot.
 \end{itemize}
 
 \subsection{Control-Loop Data Flow}
@@ -130,280 +130,95 @@ Chapter~2.
 The purpose of this chapter is therefore to describe how the required
 quantities are accessed, evaluated, and combined inside the real-time callback.
 
-\section{Axis Constraint Mode}
-\label{sec:axis_constraint_mode}
+\section{Surface Task and Plane Constraint}
+\label{sec:surface_task_plane}
 
-In addition to the standard Cartesian impedance behavior, the implemented
-controller provides an axis constraint mode.
-This mode defines which translational and rotational Cartesian directions are
-actively regulated and which directions remain free for manual interaction.
+The controller regulates contact with a planar surface of arbitrary
+orientation. Instead of selecting individual base-frame axes, the task is
+described by the surface task frame
+\(R_{\mathrm{surface}}=[\,n_s\;t_1\;t_2\,]\) introduced in
+\cref{subsec:surface_task_frame}, built from a surface normal \(n_s\) and a
+tangent \(t_1\). This generalizes the earlier axis-aligned planes: a
+\(y\)-\(z\) plane corresponds to \(n_s=[1\;0\;0]^\top\), an \(x\)-\(z\) plane to
+\(n_s=[0\;1\;0]^\top\), and an \(x\)-\(y\) plane to \(n_s=[0\;0\;1]^\top\),
+while any other unit normal describes an inclined plane.
 
-The Cartesian position of the end-effector is
+\subsection{Plane Projection of the Desired Position}
+\label{sec:plane_projection}
 
-\begin{equation}
-p
-=
-\begin{bmatrix}
-x & y & z
-\end{bmatrix}^{\top}.
-\label{eq:axis_constraint_position}
-\end{equation}
-
-The position error is
-
-\begin{equation}
-\mathbf{e}_p
-=
-\mathbf{p}_d
--
-\mathbf{p}_{\mathrm{EE}},
-\label{eq:axis_constraint_position_error}
-\end{equation}
-
-where \(\mathbf{p}_d\) is the desired position and \(\mathbf{p}_{\mathrm{EE}}\) is the measured
-end-effector position.
-In the axis constraint mode, each translational axis can be fixed or free.
-This is controlled by
+The plane constraint regulates only the deviation of the end-effector along the
+surface normal and leaves the in-plane motion free. With a point \(p_{\mathrm{plane}}\)
+on the surface, the signed normal distance of the end-effector is
 
 \begin{equation}
-\mathrm{fix}_p
+d_n
 =
-\begin{bmatrix}
-\mathrm{fix}_{p,x} &
-\mathrm{fix}_{p,y} &
-\mathrm{fix}_{p,z}
-\end{bmatrix}.
-\label{eq:fix_p_vector}
+n_s^\top\left(p_{\mathrm{plane}}-p_{\mathrm{EE}}\right),
+\label{eq:signed_normal_distance}
 \end{equation}
 
-If an axis is fixed, the desired position component is set to the initial
-position.
-If an axis is free, the desired position component is set to the current
-measured end-effector position.
-For each translational component \(i \in \{x,y,z\}\), the desired position is
-
-\begin{equation}
-p_{d,i}
-=
-\begin{cases}
-p_{\mathrm{start},i}, & \text{if } \mathrm{fix}_{p,i}=1,\\
-p_{\mathrm{EE},i}, & \text{if } \mathrm{fix}_{p,i}=0.
-\end{cases}
-\label{eq:axis_constraint_desired_position}
-\end{equation}
-
-As a result, free axes automatically have zero position error:
-
-\begin{equation}
-e_{p,i}
-=
-p_{d,i}
--
-p_{\mathrm{EE},i}
-=
-0
-\qquad
-\text{if } \mathrm{fix}_{p,i}=0.
-\label{eq:free_axis_position_error}
-\end{equation}
-
-The same idea is applied to the rotational error.
-The orientation error is represented by
-
-\begin{equation}
-\mathbf{e}_R
-=
-\begin{bmatrix}
-e_{R,x} &
-e_{R,y} &
-e_{R,z}
-\end{bmatrix}^{\top}.
-\label{eq:axis_constraint_orientation_error}
-\end{equation}
-
-The rotational constraint parameters are
-
-\begin{equation}
-\mathrm{fix}_R
-=
-\begin{bmatrix}
-\mathrm{fix}_{R,x} &
-\mathrm{fix}_{R,y} &
-\mathrm{fix}_{R,z}
-\end{bmatrix}.
-\label{eq:fix_R_vector}
-\end{equation}
-
-If a rotational component is free, the corresponding component of the
-orientation error is set to zero:
-
-\begin{equation}
-e_{R,i}
-\leftarrow
-\begin{cases}
-e_{R,i}, & \text{if } \mathrm{fix}_{R,i}=1,\\
-0, & \text{if } \mathrm{fix}_{R,i}=0.
-\end{cases}
-\label{eq:axis_constraint_orientation_mask}
-\end{equation}
-
-This allows the controller to regulate only the selected Cartesian directions
-while leaving the remaining directions compliant or free.
-
-The implementation follows this logic directly in the real-time callback.
-The desired position is first initialized from the start pose.
-Then, in axis constraint mode, every free translational component is replaced
-by the current measured position.
-For the rotational part, the selected free components of the rotation-vector
-error are set to zero:
-
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Implementation of translational and rotational axis constraints.}, label={lst:axis_constraint_callback}]
-Eigen::Vector3d p_d = p_start;
-Eigen::Vector3d pdot_d = Eigen::Vector3d::Zero();
-
-if (params.axis_constraint_mode) {
-  // Fixed axis: desired position is the start value.
-  // Free axis: desired position follows the measured position.
-  p_d(0) = params.fix_p_x ? p_start(0) : p_EE(0);
-  p_d(1) = params.fix_p_y ? p_start(1) : p_EE(1);
-  p_d(2) = params.fix_p_z ? p_start(2) : p_EE(2);
-
-  // Desired velocity is zero.
-  // Free axes therefore have damping but no position spring.
-  pdot_d(0) = 0.0;
-  pdot_d(1) = 0.0;
-  pdot_d(2) = 0.0;
-}
-
-Eigen::Vector3d e_p = p_d - p_EE;
-Eigen::Vector3d e_R = orientationError(R_EE, R_d);
-
-if (params.axis_constraint_mode) {
-  // Fixed rotational components keep their orientation spring.
-  // Free components have no rotational spring.
-  e_R(0) = params.fix_R_x ? e_R(0) : 0.0;
-  e_R(1) = params.fix_R_y ? e_R(1) : 0.0;
-  e_R(2) = params.fix_R_z ? e_R(2) : 0.0;
-}
-\end{lstlisting}
-
-Listing~\ref{lst:axis_constraint_callback} shows that the virtual plane is not
-implemented as a separate geometric wall object.
-It is created by the selected translational constraints.
-For example, setting
-\(\mathrm{fix}_p=[1\;0\;0]\) keeps the \(x\)-position close to the start
-position while allowing motion in the \(y\)- and \(z\)-directions.
-A tool orientation parallel to this virtual plane is obtained by choosing the
-desired orientation \(R_d\) accordingly and keeping the required rotational
-components active with \(\mathrm{fix}_R\).
-This means that the controller keeps or regulates the orientation that is
-defined in the experiment.
-It does not automatically discover an unknown physical surface from contact and
-then align the tool to that surface.
-For a non-planar or arbitrary surface, the desired orientation would have to be
-provided by the task definition or by an additional perception/contact
-estimation method, which is outside the implemented controller.
-
-\section{Virtual Plane and Virtual Line Behavior}
-\label{sec:virtual_plane_line_behavior}
-
-The axis constraint mode can be used to create virtual planes or virtual
-lines.
-A virtual plane is obtained by fixing one translational direction while
-leaving the other two translational directions free.
-For example,
-
-\begin{equation}
-\mathrm{fix}_p
-=
-\begin{bmatrix}
-1 & 0 & 0
-\end{bmatrix}
-\label{eq:virtual_yz_plane_fixp}
-\end{equation}
-
-fixes the \(x\)-position while allowing motion in the \(y\)- and
-\(z\)-directions.
-This corresponds to a virtual \(y\)-\(z\) plane.
-In this case, the desired position is
+and the desired position is obtained by projecting the current position back
+onto the plane,
 
 \begin{equation}
 p_d
 =
-\begin{bmatrix}
-x_{\mathrm{start}}\\
-y_{\mathrm{EE}}\\
-z_{\mathrm{EE}}
-\end{bmatrix}.
-\label{eq:virtual_yz_plane_desired_position}
+p_{\mathrm{EE}}
++
+d_n\,n_s .
+\label{eq:plane_projected_desired_position}
 \end{equation}
 
-The resulting position error becomes
+The resulting position error therefore lies entirely along the surface normal,
 
 \begin{equation}
 \mathbf{e}_p
 =
-\begin{bmatrix}
-x_{\mathrm{start}} - x_{\mathrm{EE}}\\
-0\\
-0
-\end{bmatrix}.
-\label{eq:virtual_yz_plane_error}
+p_d-p_{\mathrm{EE}}
+=
+d_n\,n_s ,
+\label{eq:plane_projected_position_error}
 \end{equation}
 
-Thus, only deviations in the \(x\)-direction are corrected by the Cartesian
-impedance controller.
-The \(y\)- and \(z\)-directions remain free.
+so the impedance controller pulls the tool toward the plane in the normal
+direction while the two tangential directions remain free for sliding. The same
+expression covers axis-aligned and inclined planes, which is the difference
+from the earlier axis-selection scheme that could only fix whole base-frame
+axes. The corresponding implementation is shown in
+Listing~\ref{lst:app_desired_motion} (Appendix~\ref{app:code}).
 
-Similarly, fixing the \(y\)-axis creates a virtual \(x\)-\(z\) plane,
+\subsection{Surface-Frame Gains and Rotational Constraint}
+\label{sec:surface_frame_gains}
+
+The stiffness and damping used in the contact task are diagonal in the surface
+frame and expressed in the base frame with the spatial gain matrix of
+\cref{eq:spatial_gain_matrix}, so that the normal stiffness \(K_n\) and the two
+tangential stiffnesses \(K_{t_1},K_{t_2}\) act along the physically meaningful
+directions of the plane.
+
+The rotational behavior is constrained in the same surface frame. The
+orientation error is first expressed in the surface frame, the released
+rotational components are set to zero, and the result is rotated back into the
+base frame,
 
 \begin{equation}
-\mathrm{fix}_p
+\mathbf{e}_{R,\mathrm{task}}
 =
-\begin{bmatrix}
-0 & 1 & 0
-\end{bmatrix},
-\label{eq:virtual_xz_plane_fixp}
+R_{\mathrm{surface}}^\top\,\mathbf{e}_R,
+\qquad
+\mathbf{e}_R
+\leftarrow
+R_{\mathrm{surface}}\,\mathbf{e}_{R,\mathrm{task}} ,
+\label{eq:surface_rotational_mask}
 \end{equation}
 
-and fixing the \(z\)-axis creates a virtual \(x\)-\(y\) plane,
-
-\begin{equation}
-\mathrm{fix}_p
-=
-\begin{bmatrix}
-0 & 0 & 1
-\end{bmatrix}.
-\label{eq:virtual_xy_plane_fixp}
-\end{equation}
-
-A virtual line is generated by fixing two translational axes.
-For example,
-
-\begin{equation}
-\mathrm{fix}_p
-=
-\begin{bmatrix}
-1 & 1 & 0
-\end{bmatrix}
-\label{eq:virtual_z_line_fixp}
-\end{equation}
-
-fixes the \(x\)- and \(y\)-directions while allowing motion only in the
-\(z\)-direction.
-If all three translational axes are fixed,
-
-\begin{equation}
-\mathrm{fix}_p
-=
-\begin{bmatrix}
-1 & 1 & 1
-\end{bmatrix},
-\label{eq:standard_cartesian_fixp}
-\end{equation}
-
-the controller behaves like a standard Cartesian impedance controller that
-returns the end-effector to the initial position.
+where the components of \(\mathbf{e}_{R,\mathrm{task}}\) corresponding to free
+rotational directions (about the normal or a tangent) are removed before the
+back-rotation. This lets the tool rotate compliantly about the chosen surface
+directions while keeping the remaining rotational directions regulated. The
+surface frame, the spatial gain matrix, and the rotational mask are implemented
+in Listings~\ref{lst:app_surface_gains} and~\ref{lst:app_orientation}
+(Appendix~\ref{app:code}).
 
 \subsection{Tool Orientation for a Given Surface}
 \label{sec:tool_orientation_given_surface}
@@ -512,18 +327,16 @@ R_{\mathrm{EE}},R_d
 
 If all rotational axes are regulated, the controller tries to keep the complete
 tool orientation equal to \(R_d\).
-If only selected rotational components are regulated through
-\(\mathrm{fix}_R\), then only those components of the orientation error remain
-active.
-This makes it possible to combine a given surface orientation with the
-existing axis constraint mode.
-For example, the translational constraint can define the virtual plane, while
-the desired orientation \(R_d\) can keep the tool frame parallel to the given
-surface.
+If only selected rotational components are regulated, the surface-frame
+rotational mask of \cref{eq:surface_rotational_mask} releases the remaining
+components, so the tool stays compliant about the chosen surface directions.
+This combines a given surface orientation with the plane constraint: the plane
+projection defines the regulated normal direction, while the desired
+orientation \(R_d\) keeps the tool frame parallel to the surface.
 
-For the axis-aligned virtual planes used in this implementation, the surface
-normal is especially simple.
-A virtual \(y\)-\(z\) plane has normal
+For axis-aligned planes, which are special cases of the general surface frame,
+the surface normal is especially simple.
+A \(y\)-\(z\) plane has normal
 
 \begin{equation}
 n_s
@@ -534,8 +347,8 @@ n_s
 \label{eq:yz_plane_surface_normal}
 \end{equation}
 
-while a virtual \(x\)-\(z\) plane has normal
-\([0\;1\;0]^{\top}\), and a virtual \(x\)-\(y\) plane has normal
+while an \(x\)-\(z\) plane has normal
+\([0\;1\;0]^{\top}\), and an \(x\)-\(y\) plane has normal
 \([0\;0\;1]^{\top}\).
 For a general non-axis-aligned surface, the same method can still be used if
 the surface normal is provided by the task description, a CAD model, a
@@ -721,7 +534,7 @@ First, the surface normal defines the desired tool orientation.
 Second, the virtual center \(p_c\) defines the point about which the compliant
 rotation is generated.
 Only combining both parts gives the intended self-aligning behavior.
-The axis-constraint mode alone can define a virtual plane and regulate a given
+The plane constraint alone can define the surface plane and regulate a given
 orientation, but a full self-aligning surface controller requires the
 additional virtual-center coupling described in this section.
 
@@ -743,380 +556,88 @@ torque estimates, vision, or another sensor source.
 That surface-estimation layer is a different problem and is not part of the
 implemented controller.
 
-\section{Constrained-Task Jacobian for Null-Space Control}
-\label{sec:active_jacobian_construction}
-
-The impedance torque is always computed with the full geometric Jacobian
-\(J(q)\in\mathbb{R}^{6\times7}\). The row-reduced Jacobian introduced here is
-used only for the null-space projector. This distinction is important: the
-controller does not replace \(J(q)\) in the Cartesian impedance law.
-
-When the axis-constraint mode releases some translational or rotational
-directions, the null-space term should preserve only the directions that are
-actually regulated. For this purpose the implementation forms a constrained
-task Jacobian
-
-\begin{equation}
-J_c
-=
-S_cJ(q)
-\in
-\mathbb{R}^{m\times7},
-\label{eq:implementation_constrained_jacobian}
-\end{equation}
-
-where \(S_c\) selects the \(m\) rows belonging to fixed Cartesian axes. For
-example, if \(x\), \(R_x\), and \(R_y\) are fixed, then
-
-\begin{equation}
-J_c
-=
-\begin{bmatrix}
-J_x\\
-J_{R_x}\\
-J_{R_y}
-\end{bmatrix}
-\in
-\mathbb{R}^{3\times7}.
-\label{eq:implementation_constrained_jacobian_example}
-\end{equation}
-
-The code variable \texttt{J\_active} denotes this same matrix \(J_c\). The
-name is kept in the listing because it is the variable used in the program,
-but the thesis interpretation is simply: \(J_c\) is the Jacobian of the
-currently constrained Cartesian task.
-
-\section{Implemented Null-Space Term}
+\section{Null-Space Control}
 \label{sec:nullspace_optimization_implementation}
 
-The theoretical null-space and singular-value terms were derived in
-Section~\ref{sec:nullspace_svd}. In the implementation, the projector is built
-from \(J_c\), not from the full \(6\times7\) Jacobian:
+The null-space theory was derived in \cref{sec:nullspace_svd}. In the
+implementation, the damped null-space projector is built from the full
+\(6\times7\) geometric Jacobian, not from a row-reduced task Jacobian:
 
 \begin{equation}
 N
 =
 I
 -
-J_c^\top
+J^\top
 \left(
-J_cJ_c^\top+\lambda^2I
+JJ^\top+\lambda^2 I
 \right)^{-1}
-J_c.
-\label{eq:implementation_constrained_projector}
+J,
+\qquad
+\lambda=0.05 .
+\label{eq:implementation_full_projector}
 \end{equation}
 
-The null-space torque has two parts,
+The inverse is evaluated with a numerically stable solve rather than an
+explicit matrix inversion. Because the full Cartesian task is used, the
+projector preserves the complete end-effector pose while still leaving the one
+redundant joint direction of the seven-joint arm available for a secondary
+objective.
+
+The null-space torque has three projected contributions. A joint-space
+restoring spring keeps the redundant motion near the start configuration
+\(q_{\mathrm{start}}\), a damping term removes redundant joint velocity, and the
+singular-value term biases the configuration toward better conditioning:
 
 \begin{equation}
 \tau_{\mathrm{null}}
 =
--D_{\mathrm{null}}N\dot{q}
+N
+\left(
+k_{\mathrm{start}}\left(q_{\mathrm{start}}-q\right)
+-
+d_{\mathrm{null}}\dot{q}
+\right)
 +
-N\left(K_{\sigma}s\alpha n\right).
+N
+\left(
+k_{\sigma}\,s\,\alpha\,n
+\right).
 \label{eq:implementation_nullspace_torque}
 \end{equation}
 
-The first term damps redundant joint motion. The second term is the optional
-smallest-singular-value improvement. The implementation uses the scalar
-parameter \texttt{nullspace\_k\_sigma}, corresponding to
-\(K_{\sigma}=k_{\sigma}I_7\). The return-to-start term was removed because it
-conflicted with the desired free motion in the plane.
+The singular-value direction \(n\) is the seventh right singular vector of the
+Jacobian, obtained from its SVD. The sign \(s\) is selected by comparing the
+smallest singular value of the Jacobian at the two candidate configurations
+\(q\pm\alpha n\), keeping the direction that improves the conditioning, exactly
+as in \cref{eq:nullspace_direction_selection}. The null-space torque is then
+norm-limited so that it remains a bounded secondary contribution,
 
-The final torque command is still the Cartesian impedance task torque plus
-the projected null-space torque and the optional Coriolis term,
+\begin{equation}
+\left\|\tau_{\mathrm{null}}\right\|\le\tau_{\mathrm{null,max}},
+\qquad
+\tau_{\mathrm{null}}\in\mathbb{R}^{7}.
+\label{eq:implementation_nullspace_limit}
+\end{equation}
+
+The final torque command is the Cartesian impedance task torque plus the
+projected null-space torque and the optional Coriolis term,
 
 \begin{equation}
 \tau_{\mathrm{cmd}}
 =
-J^\top(q)F_{\mathrm{cmd}}
+J^\top(q)\,\mathbf{F}_{\mathrm{cmd}}
 +
 \tau_{\mathrm{null}}
 +
-\tau_c.
+\tau_c .
 \label{eq:implementation_final_torque_with_nullspace}
 \end{equation}
 
-The null-space torque is rate- and norm-limited before being sent to the
-robot, so it remains a bounded secondary contribution.
-
-\subsection{Code-Level Constrained Null-Space Optimization}
-\label{sec:code_active_nullspace}
-
-The following code excerpts show the implementation of the constrained-task
-null-space optimization.
-The null space is computed from the constrained-task Jacobian introduced in
-Section~\ref{sec:active_jacobian_construction}; this matrix contains only the
-rows corresponding to the constrained Cartesian axes.
-For \(J_c\in\mathbb{R}^{m\times7}\), the damped projector is
-formed from an \(m\times m\) matrix, but the resulting projector \(N\) remains
-\(7\times7\). Therefore, the projected null-space torque is still a
-seven-dimensional joint torque vector.
-
-The singular-value part uses a full SVD of \(J_c\). In the code this matrix is
-named \texttt{J\_active}. Since the Panda has seven joints, Eigen's
-\texttt{matrixV().col(6)} selects the seventh right singular vector. This
-vector is used as one local joint-space search direction \(n\). The controller
-tests \(q+\alpha n\) and \(q-\alpha n\), recomputes the constrained-task
-Jacobian for both candidates, and keeps the sign that gives the larger
-smallest singular value. The resulting secondary torque is projected with
-\(N\), norm-limited, and then added to the Cartesian task torque. It does not
-replace the impedance task; it only damps and biases redundant joint motion.
-
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Construction of the constrained task Jacobian.}, label={lst:active_task_jacobian}]
-Eigen::MatrixXd buildActiveTaskJacobian(
-    const Eigen::Matrix<double, 6, 7>& J,
-    const Parameters& params) {
-
-  int rows = 0;
-  if (params.fix_p_x) ++rows;
-  if (params.fix_p_y) ++rows;
-  if (params.fix_p_z) ++rows;
-  if (params.fix_R_x) ++rows;
-  if (params.fix_R_y) ++rows;
-  if (params.fix_R_z) ++rows;
-
-  Eigen::MatrixXd J_active(rows, 7);
-  int r = 0;
-
-  if (params.fix_p_x) {
-    J_active.row(r++) = J.row(0);
-  }
-  if (params.fix_p_y) {
-    J_active.row(r++) = J.row(1);
-  }
-  if (params.fix_p_z) {
-    J_active.row(r++) = J.row(2);
-  }
-  if (params.fix_R_x) {
-    J_active.row(r++) = J.row(3);
-  }
-  if (params.fix_R_y) {
-    J_active.row(r++) = J.row(4);
-  }
-  if (params.fix_R_z) {
-    J_active.row(r++) = J.row(5);
-  }
-
-  return J_active;
-}
-\end{lstlisting}
-
-Listing~\ref{lst:active_task_jacobian} selects the rows of the full
-\(6 \times 7\) Jacobian that correspond to the constrained translational and
-rotational axes.
-Rows 0, 1, and 2 correspond to translational \(x\), \(y\), and \(z\) motion,
-whereas rows 3, 4, and 5 correspond to rotational motion about these axes.
-
-The constrained-task Jacobian is then used to compute a damped null-space projector.
-This projector maps joint-space quantities into the null space of the
-constrained task.
-
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Damped null-space projector of the constrained task.}, label={lst:active_task_projector}]
-Eigen::Matrix<double, 7, 7> activeTaskNullspaceProjector(
-    const Eigen::MatrixXd& J_active,
-    double damping_lambda) {
-
-  Eigen::Matrix<double, 7, 7> I =
-      Eigen::Matrix<double, 7, 7>::Identity();
-
-  if (J_active.rows() == 0) {
-    return I;
-  }
-
-  Eigen::MatrixXd A =
-      J_active * J_active.transpose()
-      + damping_lambda * damping_lambda
-            * Eigen::MatrixXd::Identity(
-                  J_active.rows(),
-                  J_active.rows());
-
-  Eigen::MatrixXd J_pseudo =
-      J_active.transpose() * A.inverse();
-
-  Eigen::Matrix<double, 7, 7> N =
-      I - J_pseudo * J_active;
-
-  return N;
-}
-\end{lstlisting}
-
-The damping term \(\lambda^2 I\) improves numerical robustness near singular
-or poorly conditioned configurations.
-If no Cartesian axis is fixed, the whole joint space is treated as free and
-the identity matrix is returned.
-
-Since the null-space torque is a seven-dimensional joint torque vector, a
-separate norm limiter is used for this term:
-
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Norm limitation of the seven-dimensional null-space torque.}, label={lst:nullspace_torque_norm_limit}]
-Eigen::Matrix<double, 7, 1> limitJointTorqueVectorNorm(
-    const Eigen::Matrix<double, 7, 1>& v,
-    double max_norm) {
-
-  if (max_norm <= 0.0) {
-    return v;
-  }
-
-  const double norm = v.norm();
-
-  if (norm > max_norm && norm > 1e-12) {
-    return max_norm * v / norm;
-  }
-
-  return v;
-}
-\end{lstlisting}
-
-The limiter in Listing~\ref{lst:nullspace_torque_norm_limit} scales the
-complete vector only when its norm exceeds the allowed maximum.
-The direction of the null-space torque is therefore preserved.
-
-The main null-space torque calculation is shown in
-Listing~\ref{lst:active_task_nullspace_sigma}.
-The previously used return-to-start term is not included, because it conflicted
-with the desired free motion in the virtual plane.
-
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Constrained-task null-space damping and sigma-min optimization.}, label={lst:active_task_nullspace_sigma}]
-Eigen::Matrix<double, 7, 1> tau_nullspace;
-tau_nullspace.setZero();
-
-if (params.use_nullspace_optimization) {
-
-  Eigen::Map<const Eigen::Matrix<double, 7, 1>>
-      q_current(state.q.data());
-
-  Eigen::MatrixXd J_active =
-      buildActiveTaskJacobian(J, params);
-
-  Eigen::Matrix<double, 7, 7> N =
-      activeTaskNullspaceProjector(
-          J_active,
-          params.active_nullspace_lambda);
-
-  tau_nullspace =
-      -params.nullspace_damping * (N * dq);
-
-  if (params.nullspace_k_sigma > 0.0) {
-
-    Eigen::JacobiSVD<Eigen::MatrixXd> svd_active(
-        J_active,
-        Eigen::ComputeFullU | Eigen::ComputeFullV);
-
-    Eigen::Matrix<double, 7, 1> n =
-        svd_active.matrixV().col(6);
-
-    if (n.norm() > 1e-9) {
-      n.normalize();
-
-      Eigen::Matrix<double, 7, 1> q_plus =
-          q_current + params.nullspace_alpha * n;
-
-      Eigen::Matrix<double, 7, 1> q_minus =
-          q_current - params.nullspace_alpha * n;
-
-      std::array<double, 7> q_plus_array =
-          eigenQToArray(q_plus);
-
-      std::array<double, 7> q_minus_array =
-          eigenQToArray(q_minus);
-
-      std::array<double, 42> J_plus_array =
-          model.zeroJacobian(
-              franka::Frame::kEndEffector,
-              q_plus_array,
-              state.F_T_EE,
-              state.EE_T_K);
-
-      std::array<double, 42> J_minus_array =
-          model.zeroJacobian(
-              franka::Frame::kEndEffector,
-              q_minus_array,
-              state.F_T_EE,
-              state.EE_T_K);
-
-      Eigen::Map<const Eigen::Matrix<double, 6, 7>>
-          J_plus_full(J_plus_array.data());
-
-      Eigen::Map<const Eigen::Matrix<double, 6, 7>>
-          J_minus_full(J_minus_array.data());
-
-      Eigen::MatrixXd J_plus_active =
-          buildActiveTaskJacobian(J_plus_full, params);
-
-      Eigen::MatrixXd J_minus_active =
-          buildActiveTaskJacobian(J_minus_full, params);
-
-      const double sigma_min_plus =
-          J_plus_active.rows() > 0
-              ? Eigen::JacobiSVD<Eigen::MatrixXd>(
-                    J_plus_active,
-                    Eigen::ComputeThinU | Eigen::ComputeThinV)
-                    .singularValues()
-                    .minCoeff()
-              : 0.0;
-
-      const double sigma_min_minus =
-          J_minus_active.rows() > 0
-              ? Eigen::JacobiSVD<Eigen::MatrixXd>(
-                    J_minus_active,
-                    Eigen::ComputeThinU | Eigen::ComputeThinV)
-                    .singularValues()
-                    .minCoeff()
-              : 0.0;
-
-      const double sigma_direction =
-          (sigma_min_plus > sigma_min_minus) ? 1.0 : -1.0;
-
-      tau_nullspace +=
-          N * (
-              params.nullspace_k_sigma
-              * sigma_direction
-              * params.nullspace_alpha
-              * n
-          );
-    }
-  }
-
-  tau_nullspace =
-      limitJointTorqueVectorNorm(
-          tau_nullspace,
-          params.nullspace_tau_max);
-}
-\end{lstlisting}
-
-The sigma-min term compares two small candidate motions in positive and
-negative null-space direction.
-The direction that produces the larger smallest singular value of the
-constrained-task Jacobian is selected.
-The resulting contribution is projected with \(N\), so it affects the
-constrained Cartesian task as little as possible.
-
-Finally, the null-space torque is added to the Cartesian impedance torque in
-the real-time callback.
-The Coriolis term is obtained from the libfranka model interface and is added
-depending on the selected parameter:
-
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Combination of Cartesian task torque, null-space torque, and Coriolis torque.}, label={lst:task_nullspace_coriolis_torque}]
-Eigen::Matrix<double, 7, 1> tau_raw =
-    tau_task + tau_nullspace;
-
-if (params.use_coriolis) {
-  tau_raw += coriolis;
-}
-
-Eigen::Matrix<double, 7, 1> tau_limited =
-    limitTorqueRate(
-        tau_raw,
-        tau_previous,
-        params.delta_tau_max);
-
-tau_previous = tau_limited;
-\end{lstlisting}
-
-The torque-rate limitation is applied after the task, null-space, and optional
-Coriolis terms have been combined.
-This keeps the torque command smooth before it is returned to the robot.
+Because every null-space contribution is projected by \(N\), the restoring
+spring, the damping, and the singular-value bias act only in the redundant
+direction and do not disturb the regulated Cartesian pose. The implementation
+is given in Listing~\ref{lst:app_nullspace} (Appendix~\ref{app:code}).
 
 \section{Torque Saturation and Safety Handling}
 \label{sec:torque_saturation_safety}
@@ -1259,7 +780,7 @@ The implemented control loop follows the sequence below:
     \item Limit the torque command before returning it to libfranka.
 \end{enumerate}
 
-The core structure of the implementation is shown in Listing~\ref{lst:impedance_callback}.
+The core structure of the implementation is shown in Listing~\ref{lst:app_callback_core} (Appendix~\ref{app:code}).
 The listing keeps only the operations needed to show the control flow.
 Task-specific files define the desired end-effector pose, the table-contact
 configuration, and the candidate impedance parameters used for a given test.
@@ -1267,257 +788,10 @@ They specify the positional stiffness values \(K_{1,p}\), \(K_{2,p}\), and
 \(K_{3,p}\), the rotational stiffness values \(K_{1,R}\), \(K_{2,R}\), and
 \(K_{3,R}\), and the corresponding damping values.
 
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Core structure of the real-time impedance-control callback with CSV logging.}, label={lst:impedance_callback}]
-#include <algorithm>
-#include <array>
-#include <cmath>
-#include <fstream>
-#include <iomanip>
-#include <Eigen/Dense>
-#include <Eigen/Geometry>
 
-// Define function eigenToArray: convert an Eigen torque vector to a std::array.
-std::array<double, 7> eigenToArray(
-    const Eigen::Matrix<double, 7, 1>& tau) {
 
-  std::array<double, 7> tau_array{};
-
-  for (int i = 0; i < 7; ++i) {
-    tau_array[i] = tau(i);
-  }
-
-  return tau_array;
-}
-
-// Define function limitTorques: limit each commanded joint torque.
-Eigen::Matrix<double, 7, 1> limitTorques(
-    const Eigen::Matrix<double, 7, 1>& tau) {
-
-  const double tau_max = 87.0;  // Example limit value.
-
-  Eigen::Matrix<double, 7, 1> tau_limited;
-
-  for (int i = 0; i < 7; ++i) {
-    tau_limited(i) = std::max(-tau_max, std::min(tau_max, tau(i)));
-  }
-
-  return tau_limited;
-}
-
-// Load the robot model from libfranka.
-// The model is used to compute the Jacobian and Coriolis terms.
-franka::Model model = robot.loadModel();
-
-// Desired end-effector position.
-Eigen::Vector3d p_d;
-
-// Desired orientation angles in radians.
-double roll_d;
-double pitch_d;
-double yaw_d;
-
-// Compute the desired orientation R_d using the ZYX convention:
-// R_d = Rz(yaw_d) * Ry(pitch_d) * Rx(roll_d).
-Eigen::Matrix3d R_d =
-    Eigen::AngleAxisd(yaw_d, Eigen::Vector3d::UnitZ()).toRotationMatrix() *
-    Eigen::AngleAxisd(pitch_d, Eigen::Vector3d::UnitY()).toRotationMatrix() *
-    Eigen::AngleAxisd(roll_d, Eigen::Vector3d::UnitX()).toRotationMatrix();
-
-// Positional stiffness values along the desired end-effector x-, y-, and z-axes.
-double K1_p;
-double K2_p;
-double K3_p;
-
-// Rotational stiffness values about the desired end-effector x-, y-, and z-axes.
-double K1_R;
-double K2_R;
-double K3_R;
-double D1_p;
-double D2_p;
-double D3_p;
-double D1_R;
-double D2_R;
-double D3_R;
-
-// Diagonal positional stiffness matrix in the desired end-effector frame.
-Eigen::Matrix3d Kp_EE =
-    Eigen::Vector3d(K1_p, K2_p, K3_p).asDiagonal();
-
-// Diagonal rotational stiffness matrix in the desired end-effector frame.
-Eigen::Matrix3d KR_EE =
-    Eigen::Vector3d(K1_R, K2_R, K3_R).asDiagonal();
-
-// Diagonal damping matrices in the desired end-effector frame.
-Eigen::Matrix3d Dp_EE =
-    Eigen::Vector3d(D1_p, D2_p, D3_p).asDiagonal();
-
-Eigen::Matrix3d DR_EE =
-    Eigen::Vector3d(D1_R, D2_R, D3_R).asDiagonal();
-
-// Express the stiffness and damping matrices in the base frame.
-Eigen::Matrix3d Kp_base = R_d * Kp_EE * R_d.transpose();
-Eigen::Matrix3d Dp_base = R_d * Dp_EE * R_d.transpose();
-
-Eigen::Matrix3d KR_base = R_d * KR_EE * R_d.transpose();
-Eigen::Matrix3d DR_base = R_d * DR_EE * R_d.transpose();
-
-// Open CSV file for logging experimental data.
-std::ofstream log_file("impedance_experiment_log.csv");
-
-// Write CSV header.
-log_file << "time,"
-         << "p_EE_x,p_EE_y,p_EE_z,"
-         << "p_d_x,p_d_y,p_d_z,"
-         << "e_p_x,e_p_y,e_p_z,"
-         << "e_R_x,e_R_y,e_R_z,"
-         << "pdot_x,pdot_y,pdot_z,"
-         << "omega_x,omega_y,omega_z,"
-         << "f_x,f_y,f_z,"
-         << "m_x,m_y,m_z,"
-         << "tau_1,tau_2,tau_3,tau_4,tau_5,tau_6,tau_7"
-         << "\n";
-
-// Initialize experiment time.
-double time = 0.0;
-
-// Real-time torque-control callback:
-// libfranka provides the current robot state at each control cycle, including
-// q, dq, and T_EE. The callback computes and returns the joint torque vector tau.
-robot.control([&](const franka::RobotState& state,
-                  franka::Duration period) -> franka::Torques {
-
-  // Map the current joint positions q from the robot state to an Eigen vector.
-  Eigen::Map<const Eigen::Matrix<double, 7, 1>>
-      q(state.q.data());
-
-  // Map the current joint velocities dq from the robot state to an Eigen vector.
-  Eigen::Map<const Eigen::Matrix<double, 7, 1>>
-      dq(state.dq.data());
-
-  // Compute the geometric Jacobian at the end-effector using the libfranka model.
-  std::array<double, 42> jacobian_array =
-      model.zeroJacobian(franka::Frame::kEndEffector, state);
-
-  // Map the Jacobian array to a 6x7 Eigen matrix.
-  Eigen::Map<const Eigen::Matrix<double, 6, 7>>
-      J(jacobian_array.data());
-
-  // Compute the Cartesian end-effector velocity from the joint velocities.
-  Eigen::Matrix<double, 6, 1> xdot = J * dq;
-
-  // Extract the linear velocity and angular velocity of the end-effector.
-  Eigen::Vector3d pdot = xdot.head<3>();
-  Eigen::Vector3d omega = xdot.tail<3>();
-
-  // Map the current homogeneous end-effector transformation T_EE to an Eigen matrix.
-  Eigen::Map<const Eigen::Matrix<double, 4, 4>>
-      T_EE(state.O_T_EE.data());
-
-  // Extract the current end-effector position p_EE and orientation R_EE.
-  Eigen::Vector3d p_EE = T_EE.block<3, 1>(0, 3);
-  Eigen::Matrix3d R_EE = T_EE.block<3, 3>(0, 0);
-
-  // Compute the axis-constrained desired position and position error.
-  Eigen::Vector3d p_d_current = p_d;
-  Eigen::Vector3d pdot_d = Eigen::Vector3d::Zero();
-
-  if (params.axis_constraint_mode) {
-    p_d_current(0) = params.fix_p_x ? p_start(0) : p_EE(0);
-    p_d_current(1) = params.fix_p_y ? p_start(1) : p_EE(1);
-    p_d_current(2) = params.fix_p_z ? p_start(2) : p_EE(2);
-  }
-
-  Eigen::Vector3d e_p = p_d_current - p_EE;
-
-  // Compute the relative rotation from desired orientation to current orientation.
-  Eigen::Matrix3d dR = R_d.transpose() * R_EE;
-
-  // Compute the rotation angle from the trace of the relative rotation matrix.
-  double cos_phi = (dR.trace() - 1.0) / 2.0;
-  cos_phi = std::min(1.0, std::max(-1.0, cos_phi));
-  double phi = std::acos(cos_phi);
-
-  // Compute the rotational error vector using the axis-angle representation.
-  Eigen::Vector3d e_R;
-  if (phi < 1e-6) {
-    e_R.setZero();
-  } else {
-    e_R =
-        phi / (2.0 * std::sin(phi)) *
-        Eigen::Vector3d(dR(2, 1) - dR(1, 2),
-                        dR(0, 2) - dR(2, 0),
-                        dR(1, 0) - dR(0, 1));
-  }
-
-  if (params.axis_constraint_mode) {
-    e_R(0) = params.fix_R_x ? e_R(0) : 0.0;
-    e_R(1) = params.fix_R_y ? e_R(1) : 0.0;
-    e_R(2) = params.fix_R_z ? e_R(2) : 0.0;
-  }
-
-  // Compute the positional impedance force.
-  Eigen::Vector3d f =
-      Kp_base * e_p + Dp_base * (pdot_d - pdot);
-
-  // Compute the rotational impedance moment.
-  Eigen::Vector3d m =
-      KR_base * e_R - DR_base * omega;
-
-  // Combine the Cartesian force and moment into one 6D wrench.
-  Eigen::Matrix<double, 6, 1> F;
-  F.head<3>() = f;
-  F.tail<3>() = m;
-
-  // Map the Cartesian wrench to joint torques using the Jacobian transpose.
-  Eigen::Matrix<double, 7, 1> tau_task =
-      J.transpose() * F;
-
-  // Compute the constrained-task null-space torque.
-  // The detailed implementation is shown in the null-space listings above.
-  Eigen::Matrix<double, 7, 1> tau_nullspace;
-  tau_nullspace.setZero();
-
-  // Read the Coriolis and centrifugal compensation torque tau_c from the libfranka model.
-  std::array<double, 7> coriolis_array = model.coriolis(state);
-
-  // Map the compensation term to an Eigen vector.
-  Eigen::Map<const Eigen::Matrix<double, 7, 1>>
-      tau_c(coriolis_array.data());
-
-  // Compute the final commanded joint torque vector.
-  Eigen::Matrix<double, 7, 1> tau =
-      tau_task + tau_nullspace + tau_c;
-
-  // Limit the commanded torques before sending them to the robot.
-  Eigen::Matrix<double, 7, 1> tau_limited = limitTorques(tau);
-
-  // Update elapsed experiment time.
-  time += period.toSec();
-
-  // Log measured and computed quantities for later evaluation.
-  log_file << std::fixed << std::setprecision(6)
-           << time << ","
-           << p_EE(0) << "," << p_EE(1) << "," << p_EE(2) << ","
-           << p_d_current(0) << "," << p_d_current(1) << "," << p_d_current(2) << ","
-           << e_p(0) << "," << e_p(1) << "," << e_p(2) << ","
-           << e_R(0) << "," << e_R(1) << "," << e_R(2) << ","
-           << pdot(0) << "," << pdot(1) << "," << pdot(2) << ","
-           << omega(0) << "," << omega(1) << "," << omega(2) << ","
-           << f(0) << "," << f(1) << "," << f(2) << ","
-           << m(0) << "," << m(1) << "," << m(2) << ","
-           << tau_limited(0) << "," << tau_limited(1) << ","
-           << tau_limited(2) << "," << tau_limited(3) << ","
-           << tau_limited(4) << "," << tau_limited(5) << ","
-           << tau_limited(6)
-           << "\n";
-
-  // Convert the limited Eigen torque vector to std::array and return it to libfranka.
-  return franka::Torques(eigenToArray(tau_limited));
-});
-\end{lstlisting}
-
-Listing~\ref{lst:impedance_callback} summarizes the main operations performed during one real-time control cycle.
-The callback reads the current robot state, evaluates the Cartesian impedance law, adds the constrained-task null-space torque and the optional Coriolis term, limits the resulting torque command, and returns it to libfranka.
+Listing~\ref{lst:app_callback_core} (Appendix~\ref{app:code}) summarizes the main operations performed during one real-time control cycle.
+The callback reads the current robot state, evaluates the Cartesian impedance law, adds the null-space torque and the optional Coriolis term, limits the resulting torque command, and returns it to libfranka.
 If a test configuration uses only translational compliance, the rotational
 control part can be disabled by setting \(K_{R,0}=0_{3\times3}\) and
 \(D_{R,0}=0_{3\times3}\). For the table-contact alignment experiment,

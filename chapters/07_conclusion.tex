@@ -61,13 +61,16 @@ contact geometry \citep{Pollayil2023ImpedancePlanning,Wang2019VariableCompliance
 
 Several limitations of the work presented in this thesis remain.
 First, the evaluation is based on logged robot states and commanded torques.
-No external force/torque sensor is used, so the table-contact wrench is not
+No dedicated external force/torque sensor is used; the controller relies on the
+robot's model-based external wrench estimate \texttt{O\_F\_ext\_hat\_K} for
+contact detection, so the table-contact wrench is estimated rather than
 measured directly. The passive alignment behavior is therefore evaluated from
-the resulting displacement, the computed impedance wrench, and the commanded
-torques rather than from a measured force-displacement relation. Sensorless
-force and environment-stiffness estimation could reduce this limitation, but
-it would require an additional estimation layer beyond the implemented
-controller \citep{Roveda2021SensorlessStiffness}.
+the resulting displacement, the computed impedance wrench, the commanded
+torques, and this estimated external wrench rather than from a directly
+measured force-displacement relation. A dedicated force/torque sensor or more
+elaborate sensorless force and environment-stiffness estimation could reduce
+this limitation, but it would require an additional measurement or estimation
+layer beyond the implemented controller \citep{Roveda2021SensorlessStiffness}.
 For the same reason, the least-squares stiffness and damping matrices should
 be interpreted as effective contact models derived from the available logged
 signals, not as direct measurements of the physical table or tool stiffness.
