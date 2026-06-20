@@ -1140,6 +1140,155 @@ commanded stiffness and damping setting, while the least-squares fit computes th
 translation--rotation and damping behavior that produced the observed
 self-alignment.
 
+\section{Results}
+\label{sec:results_contact}
+
+This section reports the table-contact experiment for the candidate stiffness
+settings of Table~\ref{tab:example_candidate_stiffness_sets}. The qualitative
+trends described below follow directly from the contact physics and are stated
+as the expected behavior; the numerical values and the plots are completed from
+the logged data. Quantities still to be inserted are marked
+\texttt{[\,\ldots\,]} in the tables, and the figures are placeholders for the
+corresponding logged signals.
+
+\subsection{Passive Orientation Alignment}
+\label{sec:results_alignment}
+
+The decisive variable is the rotational stiffness about the alignment axes.
+With high rotational stiffness (Test~1), the controller holds the commanded
+orientation and resists the contact-induced rotation, so the contact moment is
+largely reacted as joint torque and the tool barely rotates. The residual
+misalignment stays close to the initial value, \(\Delta e_R\approx0\), and the
+peak contact force at the leading edge is high. As the rotational stiffness is
+reduced (Tests~2 and~3), the moment produced by the downward force at the tool
+edge increasingly rotates the tool toward the surface, so \(\Delta e_R\) becomes
+positive and the orientation error decreases while the peak contact force drops.
+Adding lateral compliance (Test~4) lets the tool both slide and rotate, which
+is expected to give the most complete passive alignment. With an over-soft
+setting (Test~5), the displacement becomes large and the alignment motion
+poorly defined, so this setting is expected to be rejected on the safety and
+displacement criteria.
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox[c][4.2cm][c]{0.82\textwidth}{\centering
+    \emph{Placeholder.} Orientation error magnitude \(\|\mathbf{e}_R\|\) versus
+    time during contact for the candidate stiffness settings, from the logged
+    data. Lower rotational stiffness is expected to show a larger drop in
+    \(\|\mathbf{e}_R\|\) after contact.}}
+    \caption{Contact-induced orientation-error reduction for the candidate
+    stiffness settings (to be inserted from logged data).}
+    \label{fig:results_orientation_error}
+\end{figure}
+
+\subsection{Instantaneous Pole and Virtual-Center Consistency}
+\label{sec:results_pole}
+
+The instantaneous pole of the measured motion
+(\cref{eq:instantaneous_pole_displacement}) indicates where the passive motion
+appears to pivot. With stiff rotation, the small rotation occurs essentially
+about the tool-frame origin, so the pole lies far from the contact edge and the
+pole error \(e_P\) is large. With compliant rotation and added lateral
+compliance, the pole is expected to migrate toward the contact edge and the
+table surface, reducing \(e_P\) and matching the useful passive pivot near the
+contact. This is the geometric signature of good passive self-alignment.
+
+\subsection{Contact Displacement, Force, and Commanded Torque}
+\label{sec:results_force_torque}
+
+The normal penetration scales approximately as
+\(\Delta x_n\approx \|f_C\|/K_n\), so a stiffer normal direction gives a smaller
+displacement but a larger peak contact force, while a more compliant setting
+gives the opposite. The peak commanded joint torque grows with the commanded
+wrench through \(\boldsymbol{\tau}=J^\top\mathbf{F}\), so the stiffer settings
+produce the largest torque peaks. All settings are expected to remain below the
+selected joint-torque limit, and the torque-rate limiter keeps the command
+smooth across the contact transient.
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox[c][4.2cm][c]{0.82\textwidth}{\centering
+    \emph{Placeholder.} Contact force magnitude \(\|f_C\|\) and the largest
+    commanded joint torque versus time, from the logged data, for the selected
+    stiffness setting.}}
+    \caption{Contact force and commanded torque during contact (to be inserted
+    from logged data).}
+    \label{fig:results_force_torque}
+\end{figure}
+
+\subsection{Damping and Oscillation}
+\label{sec:results_damping}
+
+With the damping initialized from the critical-damping approximation, the
+contact response is expected to settle without sustained oscillation. An
+under-damped setting would show oscillation in the orientation error and the
+contact force after the tool touches or leaves the table; the selected damping
+values are checked against this on the logged signals.
+
+\subsection{Summary of Candidate Settings}
+\label{sec:results_summary_table}
+
+Table~\ref{tab:results_contact_summary} collects the measured outcomes for each
+candidate setting. The expected ranking, from the reasoning above, places the
+low-rotational-stiffness setting with added lateral compliance (Test~4) as the
+best passive self-alignment candidate, with the stiff setting (Test~1) the
+worst for alignment and the over-soft setting (Test~5) rejected for excessive
+displacement.
+
+\begin{table}[H]
+\centering
+\caption{Measured outcomes of the candidate stiffness settings in the
+edge-contact alignment experiment. Values marked \texttt{[\,\ldots\,]} are
+inserted from the logged data; \(b\) and \(a\) denote before and after
+contact-induced alignment.}
+\label{tab:results_contact_summary}
+\begin{tabular}{@{}cllllll@{}}
+\toprule
+Test
+& \(\|\mathbf{e}_{R,b}\|\)
+& \(\|\mathbf{e}_{R,a}\|\)
+& \(\Delta e_R\)
+& \(e_P\)
+& \(\|f_C\|_{\max}\)
+& \(\|\boldsymbol{\tau}\|_{\max}\) \\
+\midrule
+1 & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] \\
+2 & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] \\
+3 & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] \\
+4 & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] \\
+5 & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Finally, the least-squares identification of
+Section~\ref{sec:effective_stiffness_damping_identification} is expected to show
+that for the stiff settings the alignment moment is dominated by the rotational
+term \(M_{\mathrm{rot}}=K_R^{\mathrm{eff}}\Delta\theta\), whereas for the
+compliant setting with lateral sliding the translational term
+\(M_{\mathrm{trans}}=K_{rt}^{\mathrm{eff}}\Delta x_C\) contributes a
+significant share, confirming that sliding is part of the passive alignment.
+The fitted effective values \(K_{rt}^{\mathrm{eff}}\),
+\(D_{rt}^{\mathrm{eff}}\), \(K_R^{\mathrm{eff}}\), and \(D_R^{\mathrm{eff}}\)
+are reported in Table~\ref{tab:results_effective_fit} once computed.
+
+\begin{table}[H]
+\centering
+\caption{Effective stiffness and damping contributions identified by the
+least-squares fit (to be inserted from logged data).}
+\label{tab:results_effective_fit}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Quantity & Symbol & Identified value \\
+\midrule
+Translation--rotation stiffness & \(K_{rt}^{\mathrm{eff}}\) & [\,\ldots\,] \\
+Translation--rotation damping & \(D_{rt}^{\mathrm{eff}}\) & [\,\ldots\,] \\
+Rotational stiffness & \(K_R^{\mathrm{eff}}\) & [\,\ldots\,] \\
+Rotational damping & \(D_R^{\mathrm{eff}}\) & [\,\ldots\,] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \section{Discussion}
 \label{sec:discussion_contact}
 
