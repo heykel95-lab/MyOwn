@@ -360,14 +360,19 @@ the desired orientation that is supplied to it.
 \label{sec:self_alignment_virtual_center}
 
 The orientation construction in Section~\ref{sec:tool_orientation_given_surface}
-defines how the tool can be kept parallel to a given surface.
-However, the task description also requires self-aligning rotational
-compliance with a virtual center of rotation that can be selected on, above,
-or below the surface.
-This requires an additional geometric coupling between translation and
-rotation.
-The purpose of the virtual center is to define the point about which the tool
-appears to rotate while it aligns with the surface.
+defines a nominal tool orientation parallel to the surface. The fine
+self-alignment to the actual surface, however, is passive and requires no
+commanded rotation. When the tool edge is pressed onto the surface by the
+downward motion, the contact force acts at the edge, which is offset from the
+tool-frame origin, and therefore produces a moment. Under the compliant (low)
+rotational stiffness, this moment rotates the tool until its face becomes
+parallel to the surface, reducing the misalignment on its own.
+No active rotation about a virtual center is used.
+The virtual center of rotation is introduced here only as an optional geometric
+interpretation of where this passive rotation appears to pivot, and as a
+possible extension that would let the pivot point be shaped explicitly. It
+couples translation and rotation through a chosen point on, above, or below the
+surface.
 
 Let \(p_s\in\mathbb{R}^{3}\) be a point on the given surface and let
 \(n_s\in\mathbb{R}^{3}\) be the unit surface normal.
@@ -525,36 +530,64 @@ Section~\ref{sec:tool_orientation_given_surface}.
 The rotational stiffness can be chosen lower around the axes that should align
 compliantly, while the translational stiffness regulates the constrained
 surface direction.
-During contact, the tool can then rotate toward the surface orientation while
-the selected virtual center determines whether this rotation occurs as if the
-pivot point were on, above, or below the surface.
+During contact, the downward force lets the tool rotate toward the surface
+orientation passively, and the virtual center is only the point about which
+this measured rotation appears to pivot.
 
-Thus, the specified self-aligning surface behavior consists of two parts.
-First, the surface normal defines the desired tool orientation.
-Second, the virtual center \(p_c\) defines the point about which the compliant
-rotation is generated.
-Only combining both parts gives the intended self-aligning behavior.
-The plane constraint alone can define the surface plane and regulate a given
-orientation, but a full self-aligning surface controller requires the
-additional virtual-center coupling described in this section.
+Thus, the implemented self-alignment relies on two passive ingredients.
+First, the surface normal defines a nominal desired tool orientation.
+Second, the downward contact force at the offset tool edge produces the moment
+that, under the compliant rotational stiffness, rotates the tool into
+alignment. The plane constraint and this rotational compliance are sufficient
+for the passive behavior; the virtual-center coupling described in this section
+is \emph{not} required for it.
 
-In relation to the implemented controller, the missing part is therefore not an
-automatic discovery of an unknown surface.
-For the task formulation considered here, the surface is assumed to be a given
-task geometry, described by a point \(p_s\) and a normal vector \(n_s\).
-The missing part is the complete online use of the selectable virtual center
-\(p_c=p_s+h n_s\) inside the real-time control law.
-To fully realize the specified behavior, the implementation would need to add
-the parameter \(h\), compute \(p_c\) and \(r_c\) at every control step, replace
-the independent position/orientation error by the coupled error
-\eqref{eq:implementation_vcr_coupled_error}, and use the corrected
-virtual-center wrench
-\eqref{eq:implementation_vcr_corrected_wrench} in the torque command.
-If the surface were not given in advance, an additional estimation layer would
-be necessary to determine \(p_s\) and \(n_s\) from contact forces, external
-torque estimates, vision, or another sensor source.
-That surface-estimation layer is a different problem and is not part of the
-implemented controller.
+The virtual-center coupling is therefore an optional extension rather than a
+missing necessity. It would let the effective pivot point be shaped explicitly,
+through a chosen offset \(h\), instead of emerging from the contact geometry. To
+add it, the implementation would compute \(p_c=p_s+h n_s\) and \(r_c\) at every
+control step, replace the independent position/orientation error by the coupled
+error \eqref{eq:implementation_vcr_coupled_error}, and use the corrected
+virtual-center wrench \eqref{eq:implementation_vcr_corrected_wrench} in the
+torque command. This is a possible refinement of where the passive rotation
+pivots, not a prerequisite for self-alignment. Separately, if the surface were
+not given in advance, an additional estimation layer would be necessary to
+determine \(p_s\) and \(n_s\) from contact forces, external torque estimates,
+vision, or another sensor source; that surface-estimation problem is also not
+part of the implemented controller.
+
+\section{Control Phases}
+\label{sec:control_phases}
+
+The table-contact experiment runs through a short sequence of control phases.
+Each phase selects the active desired orientation and the gain set used in the
+impedance law, which is why the callback uses the phase-dependent symbols
+\(R_{d,\mathrm{phase}}\) and \(K_{p,\mathrm{used}},K_{R,\mathrm{used}}\) rather
+than a single fixed gain matrix.
+
+\begin{enumerate}
+    \item \textbf{Orient to surface.} At the start pose, the tool is rotated
+    until it is parallel to the surface, using the desired orientation
+    \(R_d\) constructed from the surface normal
+    (Section~\ref{sec:tool_orientation_given_surface}). The null-space
+    optimization is disabled in this phase.
+    \item \textbf{Contact search.} The tool moves slowly along the surface
+    normal with soft translational gains until contact is detected from the
+    robot's estimated external wrench. The null-space optimization is still
+    disabled, so the search motion stays purely along the approach direction.
+    \item \textbf{Post-contact alignment.} Once contact is detected, the
+    controller switches to compliant rotational gains. The downward contact
+    force at the offset tool edge then passively rotates the tool into
+    alignment with the surface, as described in
+    Section~\ref{sec:self_alignment_virtual_center}. The null-space
+    optimization is re-enabled.
+    \item \textbf{Surface impedance.} The controller holds the plane constraint
+    and the surface-frame impedance while the tool remains in contact.
+\end{enumerate}
+
+The phase therefore determines which stiffness and damping matrices are passed
+to the impedance law and whether the null-space term is active, but the control
+equations within each phase are the ones derived above.
 
 \section{Null-Space Control}
 \label{sec:nullspace_optimization_implementation}
@@ -784,9 +817,9 @@ The core structure of the implementation is shown in Listing~\ref{lst:app_callba
 The listing keeps only the operations needed to show the control flow.
 Task-specific files define the desired end-effector pose, the table-contact
 configuration, and the candidate impedance parameters used for a given test.
-They specify the positional stiffness values \(K_{1,p}\), \(K_{2,p}\), and
-\(K_{3,p}\), the rotational stiffness values \(K_{1,R}\), \(K_{2,R}\), and
-\(K_{3,R}\), and the corresponding damping values.
+They specify the surface-frame translational stiffness values
+\(K_n\), \(K_{t_1}\), and \(K_{t_2}\) (normal and two tangential directions),
+the corresponding rotational stiffness values, and the matching damping values.
 
 
 
