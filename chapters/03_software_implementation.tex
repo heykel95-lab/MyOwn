@@ -130,6 +130,90 @@ Chapter~2.
 The purpose of this chapter is therefore to describe how the required
 quantities are accessed, evaluated, and combined inside the real-time callback.
 
+\section{Complete Torque Command}
+\label{sec:nullspace_optimization_implementation}
+
+The null-space theory was derived in \cref{sec:nullspace_svd}. In the
+implementation, the damped null-space projector is built from the full
+\(6\times7\) geometric Jacobian, not from a row-reduced task Jacobian
+\cite{Khatib1987,Dietrich2015NullspaceSurvey,Chiaverini1994DampedLeastSquares}:
+
+\begin{equation}
+N
+=
+I
+-
+J^\top
+\left(
+JJ^\top+\lambda^2 I
+\right)^{-1}
+J,
+\qquad
+\lambda=0.05 .
+\label{eq:implementation_full_projector}
+\end{equation}
+
+The inverse is evaluated with a numerically stable solve rather than an
+explicit matrix inversion. Because the full Cartesian task is used, the
+projector preserves the complete end-effector pose while still leaving the one
+redundant joint direction of the seven-joint arm available for a secondary
+objective.
+
+The null-space torque has three projected contributions. A joint-space
+restoring spring keeps the redundant motion near the start configuration
+\(q_{\mathrm{start}}\), a damping term removes redundant joint velocity, and the
+singular-value term biases the configuration toward better conditioning:
+
+\begin{equation}
+\tau_{\mathrm{null}}
+=
+N
+\left(
+k_{\mathrm{start}}\left(q_{\mathrm{start}}-q\right)
+-
+d_{\mathrm{null}}\dot{q}
+\right)
++
+N
+\left(
+k_{\sigma}\,s\,\alpha\,n
+\right).
+\label{eq:implementation_nullspace_torque}
+\end{equation}
+
+The singular-value direction \(n\) is the seventh right singular vector of the
+Jacobian, obtained from its SVD. The sign \(s\) is selected by comparing the
+smallest singular value of the Jacobian at the two candidate configurations
+\(q\pm\alpha n\), keeping the direction that improves the conditioning, exactly
+as in \cref{eq:nullspace_direction_selection}. The null-space torque is then
+norm-limited so that it remains a bounded secondary contribution,
+
+\begin{equation}
+\left\|\tau_{\mathrm{null}}\right\|\le\tau_{\mathrm{null,max}},
+\qquad
+\tau_{\mathrm{null}}\in\mathbb{R}^{7}.
+\label{eq:implementation_nullspace_limit}
+\end{equation}
+
+The final torque command is the Cartesian impedance task torque plus the
+projected null-space torque and the optional Coriolis term,
+
+\begin{equation}
+\tau_{\mathrm{cmd}}
+=
+J^\top(q)\,\mathbf{F}_{\mathrm{cmd}}
++
+\tau_{\mathrm{null}}
++
+\tau_c .
+\label{eq:implementation_final_torque_with_nullspace}
+\end{equation}
+
+Because every null-space contribution is projected by \(N\), the restoring
+spring, the damping, and the singular-value bias act only in the redundant
+direction and do not disturb the regulated Cartesian pose. The implementation
+is given in Listing~\ref{lst:app_nullspace} (Appendix~\ref{app:code}).
+
 \section{Surface-Frame Control Mode}
 \label{sec:surface_task_plane}
 
@@ -402,7 +486,7 @@ advance, an additional estimation layer would be necessary to determine
 another sensor source; that surface-estimation problem is also not part of the
 implemented controller.
 
-\section{Control Phases}
+\subsection{Control Phases}
 \label{sec:control_phases}
 
 The table-contact experiment runs through a short sequence of control phases.
@@ -435,90 +519,6 @@ than a single fixed gain matrix.
 The phase therefore determines which stiffness and damping matrices are passed
 to the impedance law and whether the null-space term is active, but the control
 equations within each phase are the ones derived above.
-
-\section{Complete Torque Command}
-\label{sec:nullspace_optimization_implementation}
-
-The null-space theory was derived in \cref{sec:nullspace_svd}. In the
-implementation, the damped null-space projector is built from the full
-\(6\times7\) geometric Jacobian, not from a row-reduced task Jacobian
-\cite{Khatib1987,Dietrich2015NullspaceSurvey,Chiaverini1994DampedLeastSquares}:
-
-\begin{equation}
-N
-=
-I
--
-J^\top
-\left(
-JJ^\top+\lambda^2 I
-\right)^{-1}
-J,
-\qquad
-\lambda=0.05 .
-\label{eq:implementation_full_projector}
-\end{equation}
-
-The inverse is evaluated with a numerically stable solve rather than an
-explicit matrix inversion. Because the full Cartesian task is used, the
-projector preserves the complete end-effector pose while still leaving the one
-redundant joint direction of the seven-joint arm available for a secondary
-objective.
-
-The null-space torque has three projected contributions. A joint-space
-restoring spring keeps the redundant motion near the start configuration
-\(q_{\mathrm{start}}\), a damping term removes redundant joint velocity, and the
-singular-value term biases the configuration toward better conditioning:
-
-\begin{equation}
-\tau_{\mathrm{null}}
-=
-N
-\left(
-k_{\mathrm{start}}\left(q_{\mathrm{start}}-q\right)
--
-d_{\mathrm{null}}\dot{q}
-\right)
-+
-N
-\left(
-k_{\sigma}\,s\,\alpha\,n
-\right).
-\label{eq:implementation_nullspace_torque}
-\end{equation}
-
-The singular-value direction \(n\) is the seventh right singular vector of the
-Jacobian, obtained from its SVD. The sign \(s\) is selected by comparing the
-smallest singular value of the Jacobian at the two candidate configurations
-\(q\pm\alpha n\), keeping the direction that improves the conditioning, exactly
-as in \cref{eq:nullspace_direction_selection}. The null-space torque is then
-norm-limited so that it remains a bounded secondary contribution,
-
-\begin{equation}
-\left\|\tau_{\mathrm{null}}\right\|\le\tau_{\mathrm{null,max}},
-\qquad
-\tau_{\mathrm{null}}\in\mathbb{R}^{7}.
-\label{eq:implementation_nullspace_limit}
-\end{equation}
-
-The final torque command is the Cartesian impedance task torque plus the
-projected null-space torque and the optional Coriolis term,
-
-\begin{equation}
-\tau_{\mathrm{cmd}}
-=
-J^\top(q)\,\mathbf{F}_{\mathrm{cmd}}
-+
-\tau_{\mathrm{null}}
-+
-\tau_c .
-\label{eq:implementation_final_torque_with_nullspace}
-\end{equation}
-
-Because every null-space contribution is projected by \(N\), the restoring
-spring, the damping, and the singular-value bias act only in the redundant
-direction and do not disturb the regulated Cartesian pose. The implementation
-is given in Listing~\ref{lst:app_nullspace} (Appendix~\ref{app:code}).
 
 \section{Safety Handling}
 \label{sec:torque_saturation_safety}

@@ -71,10 +71,6 @@ are illustrated in \cref{fig:coordinate_frame_robot}.
     \label{fig:coordinate_frame_robot}
 \end{figure}
 This frame assignment forms the basis for describing the robot kinematics using homogeneous transformation matrices.
-%% ─────────────────────────────────────────────────────────────
-\section{Coordinate Transformations}
-\label{sec:coord_transf}
-%% ─────────────────────────────────────────────────────────────
 
 The relationship between any two coordinate frames is described by a
 combination of translation and rotation
@@ -748,6 +744,9 @@ It therefore provides a compact representation of the deviation between the desi
 After defining the end-effector position and orientation as the controlled
 variable, the next step is to describe how these quantities are obtained from
 the robot joint angles.
+
+\subsection{Forward Kinematics}
+
 This relationship is given by forward kinematics, which maps the joint
 configuration of the robot to the corresponding end-effector transformation.
 
@@ -880,7 +879,7 @@ angles affect the motion of the end-effector.
 This leads to differential kinematics, which relates joint velocities to
 Cartesian velocities.
 
-\section{Differential Kinematics and Jacobian Matrix}
+\subsection{Differential Kinematics}
 %% ─────────────────────────────────────────────────────────────
 
 Forward kinematics provides the end-effector position and orientation as a
@@ -1147,7 +1146,134 @@ This wrench is later mapped to joint torques using the transpose of the
 Jacobian.
 
 
-\subsection{Stiffness and Damping Matrices in the End-Effector Frame and Base Frame}
+\subsection{Joint-Torque Control Law}
+\label{sec:control_law}
+%% ─────────────────────────────────────────────────────────────
+
+After defining the Cartesian impedance wrench, the final step is to convert it
+into joint torques that can be commanded to the robot actuators.
+This mapping is performed using the transpose of the Jacobian
+\cite{Khatib1987}.
+
+The Cartesian wrench is given by
+
+\begin{equation}
+\mathbf{F} =
+\begin{bmatrix}
+\mathbf{f}\\
+\mathbf{m}
+\end{bmatrix}
+\in \mathbb{R}^6,
+\label{eq:cartesian_force_moment_control_law}
+\end{equation}
+
+where \(\mathbf{f} \in \mathbb{R}^3\) is the Cartesian force and
+\(\mathbf{m} \in \mathbb{R}^3\) is the Cartesian moment.
+Using the principle of virtual work, this wrench is mapped to joint torques
+\cite{Khatib1987} by
+
+\begin{equation}
+\boldsymbol{\tau}
+=
+J^\top(q)\mathbf{F}.
+\label{eq:joint_torque_mapping}
+\end{equation}
+
+Here, \(\boldsymbol{\tau} \in \mathbb{R}^n\) is the joint torque vector,
+
+\begin{equation}
+\boldsymbol{\tau} =
+\begin{bmatrix}
+\tau_1 & \tau_2 & \cdots & \tau_n
+\end{bmatrix}^\top,
+\label{eq:joint_torque_vector}
+\end{equation}
+
+where each \(\tau_i\) is measured in \(\mathrm{Nm}\).
+The matrix \(J^\top(q) \in \mathbb{R}^{n \times 6}\) is the transpose of the
+Jacobian and maps the Cartesian wrench into joint torques.
+
+Substituting the Cartesian impedance forces and moments gives the complete
+Cartesian impedance control law:
+
+\begin{equation}
+\boldsymbol{\tau}
+=
+J^\top(q)
+\begin{bmatrix}
+K_{p,0} \mathbf{e}_p - D_{p,0} \dot{\mathbf{p}}_{\mathrm{EE}}\\
+K_{R,0} \mathbf{e}_R - D_{R,0} \omega_{\mathrm{EE}}
+\end{bmatrix}.
+\label{eq:cartesian_impedance_control_law}
+\end{equation}
+
+This equation is the computational core of the controller.
+At each control cycle, the current end-effector transformation is read from
+the robot state and compared with the desired transformation.
+From this comparison, the positional error \(\mathbf{e}_p\) and rotational error
+\(\mathbf{e}_R\) are computed.
+The corresponding Cartesian forces and moments are then evaluated and mapped
+to joint torques using the Jacobian transpose.
+
+\subsection{Coriolis Compensation in libfranka}
+
+In a general robot-dynamics formulation, the impedance torques are combined
+with model-based compensation terms.
+These terms compensate for gravity and velocity-dependent effects in the robot
+dynamics.
+The commanded joint torque can therefore be written as
+
+\begin{equation}
+\tau_{\mathrm{cmd}}
+=
+J^\top(q)\mathbf{F}
++
+\tau_g(q)
++
+\tau_c(q,\dot{q}).
+\label{eq:commanded_torque}
+\end{equation}
+
+Here, \(\tau_g(q) \in \mathbb{R}^n\) is the gravity compensation torque, which
+depends on the joint configuration \(q\).
+The term \(\tau_c(q,\dot{q}) \in \mathbb{R}^n\) compensates for Coriolis and
+centrifugal effects, which depend on both the joint configuration \(q\) and
+the joint velocity \(\dot{q}\).
+
+This equation represents the general model-compensated impedance-control
+structure.
+In the libfranka implementation used in this work, the Coriolis vector is read
+from the model interface and added explicitly in the callback, while the
+gravity compensation is not added as a separate user-level term.
+For external joint-torque control, the Franka Control Interface applies the
+desired torque command together with robot-side gravity and motor-friction
+compensation \cite{FrankaFCI2023}.
+Consequently, the implementation returns
+\begin{equation}
+\tau_{\mathrm{cmd,impl}}
+=
+J^\top(q)\mathbf{F}
++
+\tau_c(q,\dot{q}),
+\label{eq:commanded_torque_libfranka}
+\end{equation}
+or, when the null-space controller is active,
+\begin{equation}
+\tau_{\mathrm{cmd,impl}}
+=
+J^\top(q)\mathbf{F}
++
+\tau_{\mathrm{null}}
++
+\tau_c(q,\dot{q}).
+\label{eq:commanded_torque_libfranka_null}
+\end{equation}
+Thus, gravity is not neglected physically; it is compensated by the robot-side
+control interface rather than being added again in the user callback.
+This avoids double compensation and keeps the implementation consistent with
+the official libfranka Cartesian impedance example.
+
+\section{Stiffness and Damping Representation}
 \label{subsec:KD_matrices}
 
 The positional stiffness matrix \(K_p\) and damping matrix \(D_p\) do not have
@@ -1458,7 +1584,7 @@ The resulting wrench remains expressed in the base frame and is therefore
 mapped to joint torques by \(J^\top(q)\) in the following control law.
 
 %% ─────────────────────────────────────────────────────────────
-\subsection{Surface Task Frame and Spatial Gain Matrices}
+\section{Surface Task Frame and Passive Alignment}
 \label{subsec:surface_task_frame}
 %% ─────────────────────────────────────────────────────────────
 
@@ -1509,133 +1635,6 @@ orientation, while \cref{eq:spatial_gain_matrix} keeps the resulting matrix
 compatible with the base-frame control law.
 
 %% ─────────────────────────────────────────────────────────────
-\subsection{Joint-Torque Control Law}
-\label{sec:control_law}
-%% ─────────────────────────────────────────────────────────────
-
-After defining the Cartesian impedance wrench, the final step is to convert it
-into joint torques that can be commanded to the robot actuators.
-This mapping is performed using the transpose of the Jacobian
-\cite{Khatib1987}.
-
-The Cartesian wrench is given by
-
-\begin{equation}
-\mathbf{F} =
-\begin{bmatrix}
-\mathbf{f}\\
-\mathbf{m}
-\end{bmatrix}
-\in \mathbb{R}^6,
-\label{eq:cartesian_force_moment_control_law}
-\end{equation}
-
-where \(\mathbf{f} \in \mathbb{R}^3\) is the Cartesian force and
-\(\mathbf{m} \in \mathbb{R}^3\) is the Cartesian moment.
-Using the principle of virtual work, this wrench is mapped to joint torques
-\cite{Khatib1987} by
-
-\begin{equation}
-\boldsymbol{\tau}
-=
-J^\top(q)\mathbf{F}.
-\label{eq:joint_torque_mapping}
-\end{equation}
-
-Here, \(\boldsymbol{\tau} \in \mathbb{R}^n\) is the joint torque vector,
-
-\begin{equation}
-\boldsymbol{\tau} =
-\begin{bmatrix}
-\tau_1 & \tau_2 & \cdots & \tau_n
-\end{bmatrix}^\top,
-\label{eq:joint_torque_vector}
-\end{equation}
-
-where each \(\tau_i\) is measured in \(\mathrm{Nm}\).
-The matrix \(J^\top(q) \in \mathbb{R}^{n \times 6}\) is the transpose of the
-Jacobian and maps the Cartesian wrench into joint torques.
-
-Substituting the Cartesian impedance forces and moments gives the complete
-Cartesian impedance control law:
-
-\begin{equation}
-\boldsymbol{\tau}
-=
-J^\top(q)
-\begin{bmatrix}
-K_{p,0} \mathbf{e}_p - D_{p,0} \dot{\mathbf{p}}_{\mathrm{EE}}\\
-K_{R,0} \mathbf{e}_R - D_{R,0} \omega_{\mathrm{EE}}
-\end{bmatrix}.
-\label{eq:cartesian_impedance_control_law}
-\end{equation}
-
-This equation is the computational core of the controller.
-At each control cycle, the current end-effector transformation is read from
-the robot state and compared with the desired transformation.
-From this comparison, the positional error \(\mathbf{e}_p\) and rotational error
-\(\mathbf{e}_R\) are computed.
-The corresponding Cartesian forces and moments are then evaluated and mapped
-to joint torques using the Jacobian transpose.
-
-\subsection{Coriolis Compensation in libfranka}
-
-In a general robot-dynamics formulation, the impedance torques are combined
-with model-based compensation terms.
-These terms compensate for gravity and velocity-dependent effects in the robot
-dynamics.
-The commanded joint torque can therefore be written as
-
-\begin{equation}
-\tau_{\mathrm{cmd}}
-=
-J^\top(q)\mathbf{F}
-+
-\tau_g(q)
-+
-\tau_c(q,\dot{q}).
-\label{eq:commanded_torque}
-\end{equation}
-
-Here, \(\tau_g(q) \in \mathbb{R}^n\) is the gravity compensation torque, which
-depends on the joint configuration \(q\).
-The term \(\tau_c(q,\dot{q}) \in \mathbb{R}^n\) compensates for Coriolis and
-centrifugal effects, which depend on both the joint configuration \(q\) and
-the joint velocity \(\dot{q}\).
-
-This equation represents the general model-compensated impedance-control
-structure.
-In the libfranka implementation used in this work, the Coriolis vector is read
-from the model interface and added explicitly in the callback, while the
-gravity compensation is not added as a separate user-level term.
-For external joint-torque control, the Franka Control Interface applies the
-desired torque command together with robot-side gravity and motor-friction
-compensation \cite{FrankaFCI2023}.
-Consequently, the implementation returns
-\begin{equation}
-\tau_{\mathrm{cmd,impl}}
-=
-J^\top(q)\mathbf{F}
-+
-\tau_c(q,\dot{q}),
-\label{eq:commanded_torque_libfranka}
-\end{equation}
-or, when the null-space controller is active,
-\begin{equation}
-\tau_{\mathrm{cmd,impl}}
-=
-J^\top(q)\mathbf{F}
-+
-\tau_{\mathrm{null}}
-+
-\tau_c(q,\dot{q}).
-\label{eq:commanded_torque_libfranka_null}
-\end{equation}
-Thus, gravity is not neglected physically; it is compensated by the robot-side
-control interface rather than being added again in the user callback.
-This avoids double compensation and keeps the implementation consistent with
-the official libfranka Cartesian impedance example.
-
 \section{Complete Joint-Torque Command}
 \label{sec:nullspace_svd}
 
