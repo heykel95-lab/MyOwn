@@ -24,6 +24,7 @@
 \newif\ifProfessorIncludeTableOfContents
 \newif\ifProfessorIncludeListOfFigures
 \newif\ifProfessorIncludeListOfTables
+\newif\ifProfessorIncludeListOfSymbols
 \newif\ifProfessorIncludeAbbreviations
 \newif\ifProfessorIncludeReferences
 
@@ -34,6 +35,7 @@
 \ProfessorIncludeTableOfContentstrue
 \ProfessorIncludeListOfFigurestrue
 \ProfessorIncludeListOfTablestrue
+\ProfessorIncludeListOfSymbolstrue
 \ProfessorIncludeAbbreviationstrue
 \ProfessorIncludeReferencestrue
 
@@ -67,6 +69,7 @@
 \newif\ifProfessorIncludeAppendixD
 \newif\ifProfessorIncludeAppendixE
 \newif\ifProfessorIncludeAppendixF
+\newif\ifProfessorIncludeAppendixCode
 \newif\ifProfessorIncludeAnyAppendix
 
 % Appendices are archived for later reuse and hidden from the current
@@ -77,6 +80,7 @@
 \ProfessorIncludeAppendixDfalse
 \ProfessorIncludeAppendixEfalse
 \ProfessorIncludeAppendixFfalse
+\ProfessorIncludeAppendixCodetrue
 
 \ifProfessorIncludeAppendixA\ProfessorIncludeAnyAppendixtrue\fi
 \ifProfessorIncludeAppendixB\ProfessorIncludeAnyAppendixtrue\fi
@@ -84,6 +88,7 @@
 \ifProfessorIncludeAppendixD\ProfessorIncludeAnyAppendixtrue\fi
 \ifProfessorIncludeAppendixE\ProfessorIncludeAnyAppendixtrue\fi
 \ifProfessorIncludeAppendixF\ProfessorIncludeAnyAppendixtrue\fi
+\ifProfessorIncludeAppendixCode\ProfessorIncludeAnyAppendixtrue\fi
 
 \begin{document}
 
@@ -153,6 +158,11 @@
   \cleardoublepage
 \fi
 
+\ifProfessorIncludeListOfSymbols
+  \input{frontmatter/symbols}
+  \cleardoublepage
+\fi
+
 \ifProfessorIncludeAbbreviations
   \input{config/abbreviations}
   \cleardoublepage
@@ -188,6 +198,11 @@
 
 \ifProfessorIncludeAnyAppendix
   \appendix
+
+  \ifProfessorIncludeAppendixCode
+    \setcounter{chapter}{0}
+    \input{backmatter/appendix_code}
+  \fi
 
   \ifProfessorIncludeAppendixA
     \setcounter{chapter}{0}
