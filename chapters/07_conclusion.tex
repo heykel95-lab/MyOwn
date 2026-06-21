@@ -61,25 +61,23 @@ contact geometry \citep{Pollayil2023ImpedancePlanning,Wang2019VariableCompliance
 \section{Main Contributions}
 \label{sec:main_contributions}
 
-The main contributions of this thesis are:
-\begin{itemize}
-    \item a reproducible real-time Cartesian impedance controller for the Franka
-    Emika Panda, implemented in C++ with libfranka and Eigen, using
-    Jacobian-transpose torque mapping and model-based Coriolis compensation;
-    \item a surface-frame control mode that aligns the stiffness and damping with
-    an arbitrary contact plane and projects the desired position onto that plane;
-    \item null-space damping and a smallest-singular-value optimization for the
-    redundant 7-\abbr{DOF} arm;
-    \item a passive self-alignment formulation in which the contact moment at the
-    offset tool edge rotates the tool toward the surface under compliant
-    rotational stiffness, evaluated geometrically through the instantaneous screw
-    axis (Chasles' theorem);
-    \item a two-part gain-selection methodology combining a quasi-static
-    stiffness and damping design with an offline least-squares identification of
-    the effective translation--rotation impedance;
-    \item a memory-buffered data-logging scheme and an offline analysis pipeline
-    for evaluating the contact experiments.
-\end{itemize}
+This thesis makes several connected contributions. At its centre is a
+reproducible real-time Cartesian impedance controller for the Franka Emika
+Panda, implemented in C++ with libfranka and Eigen using Jacobian-transpose
+torque mapping and model-based Coriolis compensation. On top of this core
+controller, a surface-frame control mode aligns the stiffness and damping with
+an arbitrary contact plane and projects the desired position onto that plane,
+while null-space damping and a smallest-singular-value optimization handle the
+redundancy of the 7-\abbr{DOF} arm. Building on this foundation, the thesis
+develops a passive self-alignment formulation in which the contact moment at the
+offset tool edge rotates the tool toward the surface under a compliant
+rotational stiffness, and interprets the resulting motion geometrically through
+its instantaneous screw axis (Chasles' theorem). To choose and analyse the gains
+systematically, a two-part gain-selection methodology combines a quasi-static
+stiffness and damping design with an offline least-squares identification of the
+effective translation--rotation impedance. Finally, a memory-buffered
+data-logging scheme and an offline analysis pipeline tie these elements together
+by making the contact experiments measurable and repeatable.
 
 \section{Limitations}
 \label{sec:limitations}
