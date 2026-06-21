@@ -382,6 +382,23 @@ Test & \(k_x,k_y,k_z\) & \(k_{rx},k_{ry},k_{rz}\) & Expected behavior \\
 \end{tabular}
 \end{table}
 
+\paragraph{Intuition.}
+When the tool edge is pressed onto the table, the tool rocks into place by
+rotating and sliding at the same time, and at each instant it turns about a
+single pivot point---the instantaneous pole that
+Section~\ref{sec:screw_motion_evaluation} defines through Chasles' theorem.
+Good self-alignment means this pivot sits at the contact edge, so the tool face
+settles flat onto the table like a door swinging about its hinge; if the pivot
+were at the wrist instead, the edge would scrape rather than the face settling.
+There are two ways to obtain this. The implemented controller uses a diagonal
+stiffness, for which the pivot is \emph{not} placed directly: it emerges from
+the contact geometry and the chosen gains, so the procedure is to try a few
+settings, measure where the pivot ends up, and keep the one whose pivot lies
+closest to the edge. The ideal target is a \emph{coupled} stiffness that links
+translation and rotation so that the pivot lies at the edge \emph{by design},
+with no trial needed. The diagonal controller approximates this ideal; the
+coupled construction itself is given at the end of this section.
+
 The virtual-center interpretation is still important for understanding why
 the stiffness values affect alignment. A small rotation around a virtual
 center produces a related translation of the end-effector,
