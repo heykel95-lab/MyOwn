@@ -49,18 +49,26 @@
 \symrow{$\dot{p}_{\mathrm{EE}},\ \omega_{\mathrm{EE}}$}{Linear / angular end-effector velocity}{[m/s], [rad/s]}
 }
 
-\symgroup{Cartesian Impedance and Stability}{
-\symrow{$K_p,\ D_p$}{Translational stiffness / damping}{[N/m], [N\,s/m]}
-\symrow{$K_R,\ D_R$}{Rotational stiffness / damping}{[Nm/rad], [Nm\,s/rad]}
+\symgroup{Cartesian Impedance Gains}{
+\symrow{$K_p,\ D_p$}{Generic translational stiffness / damping block; a frame subscript is added when needed}{[N/m], [N\,s/m]}
+\symrow{$K_R,\ D_R$}{Generic rotational stiffness / damping block; a frame subscript is added when needed}{[Nm/rad], [Nm\,s/rad]}
 \symrow{$K_1,K_2,K_3$}{Diagonal stiffness entries in the local frame}{[N/m]}
 \symrow{$D_1,D_2,D_3$}{Diagonal damping entries in the local frame}{[N\,s/m]}
-\symrow{$K_{p,0},\ D_{p,0}$}{Stiffness / damping in the base frame}{[N/m], [N\,s/m]}
-\symrow{$K_{p,\mathrm{EE}}$}{Diagonal stiffness in the local frame}{[N/m]}
+\symrow{$R_{\mathrm{task}},\ T_R$}{Task-frame orientation and corresponding block rotation}{[-]}
+\symrow{$K_{p,\mathrm{task}},\ D_{p,\mathrm{task}}$}{Local translational stiffness / damping in the chosen task frame}{[N/m], [N\,s/m]}
+\symrow{$K_{R,\mathrm{task}},\ D_{R,\mathrm{task}}$}{Local rotational stiffness / damping in the chosen task frame}{[Nm/rad], [Nm\,s/rad]}
+\symrow{$K_{p,0},\ D_{p,0}$}{Translational stiffness / damping used in the base-frame command}{[N/m], [N\,s/m]}
+\symrow{$K_{R,0},\ D_{R,0}$}{Rotational stiffness / damping used in the base-frame command}{[Nm/rad], [Nm\,s/rad]}
+\symrow{$K_{p,\mathrm{EE}},\ D_{p,\mathrm{EE}}$}{Local translational stiffness / damping in the end-effector frame}{[N/m], [N\,s/m]}
+\symrow{$K_{R,\mathrm{EE}},\ D_{R,\mathrm{EE}}$}{Local rotational stiffness / damping in the end-effector frame}{[Nm/rad], [Nm\,s/rad]}
 \symrow{$K_{\mathrm{EE}},\ T_{R,\mathrm{EE}}$}{Block stiffness / block rotation (local frame)}{[-]}
-\symrow{$K,\ K_0,\ D$}{Full $6\times6$ stiffness / damping}{[-]}
+\symrow{$K_0,\ D_0$}{Full $6\times6$ stiffness / damping used in the base-frame command}{[-]}
+}
+
+\symgroup{Dynamics, Torques, and Stability}{
 \symrow{$\mathbf{F}$}{Cartesian wrench}{[N], [Nm]}
 \symrow{$\mathbf{f},\ \mathbf{m}$}{Cartesian force / moment}{[N], [Nm]}
-\symrow{$\Lambda,\ M_x$}{Operational-space (Cartesian) inertia matrix}{[kg], [kg\,m$^2$]}
+\symrow{$\Lambda$}{Operational-space (Cartesian) inertia matrix}{[kg], [kg\,m$^2$]}
 \symrow{$\Gamma$}{Operational-space Coriolis matrix}{[-]}
 \symrow{$M_q$}{Joint-space mass matrix}{[-]}
 \symrow{$M_p,\ M_R$}{Virtual translational / rotational inertia}{[kg], [kg\,m$^2$]}
@@ -71,26 +79,32 @@
 \symrow{$V,\ V_p,\ V_R$}{Lyapunov function (virtual energy)}{[J]}
 }
 
-\symgroup{Surface, Contact, and Alignment}{
+\symgroup{Surface and Contact Geometry}{
 \symrow{$n_s$}{Surface normal (unit vector)}{[-]}
 \symrow{$t_1,\ t_2$}{Surface tangent directions (unit)}{[-]}
-\symrow{$R_{\mathrm{surface}},\ R_s$}{Surface task frame}{[-]}
+\symrow{$a_s,\ \tilde{t}_1$}{Auxiliary surface direction / projected tangent before normalization}{[-]}
+\symrow{$R_{\mathrm{surface}}$}{Surface task-frame orientation in the base frame}{[-]}
 \symrow{$z_T$}{Tool normal (approach axis)}{[-]}
-\symrow{$x_d,y_d,z_d,\ a$}{Desired tool axes / auxiliary direction}{[-]}
+\symrow{$x_d,y_d,z_d,\ a$}{Desired tool axes / auxiliary direction used for tool orientation}{[-]}
 \symrow{$K_n,K_{t_1},K_{t_2}$}{Normal / tangential stiffness}{[N/m]}
+\symrow{$K_{r,n},K_{r,t_1},K_{r,t_2}$}{Rotational stiffness entries about the surface-frame axes}{[Nm/rad]}
 \symrow{$d_n$}{Signed normal distance to the plane}{[m]}
 \symrow{$p_{\mathrm{plane}},\ p_s$}{Point on the surface}{[m]}
 \symrow{$p_e,\ a_e$}{Tool-edge point / edge direction}{[m], [-]}
 \symrow{$p_c,\ r_c,\ h$}{Virtual center, lever arm, normal offset}{[m]}
 \symrow{$p_C,\ r_C$}{Contact point and its lever arm}{[m]}
-\symrow{$W_C,\ f_C,\ m_C$}{Contact wrench / force / moment}{[N], [Nm]}
-\symrow{$W_{\mathrm{imp}}$}{Commanded impedance wrench}{[N], [Nm]}
-\symrow{$K_s,\ D_s$}{Local Cartesian stiffness / damping (task frame)}{[-]}
-\symrow{$K_{pp},\ K_{RR}$}{Diagonal stiffness sub-blocks}{[-]}
-\symrow{$K_{pR},\ K_{Rp}$}{Translation--rotation coupling sub-blocks}{[-]}
+\symrow{$\mathbf{F}_C,\ f_C,\ m_C$}{Contact wrench / force / moment}{[N], [Nm]}
+\symrow{$\begin{array}{@{}c@{}}\mathbf{F}_{\mathrm{imp}},\ \mathbf{F}_{\mathrm{imp},\mathrm{task}},\\ \mathbf{F}_{\mathrm{ext}}\end{array}$}{Base-frame commanded wrench, task-frame commanded wrench, and estimated external wrench}{[N], [Nm]}
+}
+
+\symgroup{Contact Stiffness and Alignment}{
+\symrow{$K_{\mathrm{task}},\ D_{\mathrm{task}}$}{Full local Cartesian stiffness / damping in the chosen task frame}{[-]}
+\symrow{$K_{\mathrm{task}}^{(0)},\ D_{\mathrm{task}}^{(0)}$}{Initial local Cartesian stiffness / damping candidate}{[-]}
+\symrow{$\begin{array}{@{}c@{}}K_{pR,\mathrm{task}},\\ K_{Rp,\mathrm{task}}\end{array}$}{Task-frame translation--rotation coupling sub-blocks}{[-]}
 \symrow{$K_c,\ V_K,\ V_c$}{Center stiffness / stored elastic energy}{[N/m], [J]}
 \symrow{$\mathrm{Ad}_g$}{Adjoint of the EE-to-edge offset $g$}{[-]}
 \symrow{$K_{\mathrm{edge}},K_{\mathrm{coupled}}$}{Edge-centred / coupled stiffness}{[N/m]}
+\symrow{$\mathbf{e}_{\mathrm{task}},\ \dot{x}_{\mathrm{task}}$}{Stacked task-frame error / twist used for local contact interpretation}{[m], [rad], [m/s], [rad/s]}
 \symrow{$\Delta p,\ \Delta\theta$}{Translational / angular displacement}{[m], [rad]}
 \symrow{$\Delta x$}{Stacked Cartesian displacement}{[m], [rad]}
 \symrow{$\Delta e_R$}{Orientation-error reduction}{[rad]}
@@ -104,7 +118,7 @@
 \symrow{$M_{i,\max},\ \Delta\theta_{i,\max}$}{Allowed contact moment / angle}{[Nm], [rad]}
 \symrow{$k_{r,i}$}{Directional rotational stiffness estimate}{[Nm/rad]}
 \symrow{$l,\ F_C,\ M_C$}{Lever-arm length / contact force / moment}{[m], [N], [Nm]}
-\symrow{$K_s^{(j)},\ N_K$}{Candidate stiffness set / number of sets}{[-]}
+\symrow{$\begin{array}{@{}c@{}}K_{\mathrm{task}}^{(j)},\ D_{\mathrm{task}}^{(j)},\\ N_K\end{array}$}{Candidate stiffness / damping set and number of sets}{[-]}
 }
 
 \symgroup{Screw-Motion Evaluation}{
@@ -135,10 +149,10 @@
 \symrow{$M_{C,i}$}{Contact moment at sample $i$}{[Nm]}
 \symrow{$\Delta x_{C,i},\ v_{C,i}$}{Sliding displacement / linear velocity}{[m], [m/s]}
 \symrow{$\Delta\theta_i,\ \omega_i$}{Angular displacement / velocity at sample $i$}{[rad], [rad/s]}
-\symrow{$\phi_i,\ \Phi$}{Sample / stacked regressor}{[-]}
+\symrow{$\varphi_i,\ \Phi$}{Sample / stacked least-squares regressor}{[-]}
 \symrow{$A,\ Y$}{Parameter matrix / stacked output}{[-]}
 \symrow{$\Phi^{\#}$}{Pseudoinverse of $\Phi$}{[-]}
-\symrow{$N$}{Number of samples}{[-]}
+\symrow{$N_{\mathrm{LS}}$}{Number of samples used in the least-squares fit}{[-]}
 \symrow{$K_{rt}^{\mathrm{eff}},\ K_R^{\mathrm{eff}}$}{Effective stiffness contributions}{[Nm/m], [Nm/rad]}
 \symrow{$D_{rt}^{\mathrm{eff}},\ D_R^{\mathrm{eff}}$}{Effective damping contributions}{[Nm\,s/m], [Nm\,s/rad]}
 \symrow{$M_{\mathrm{trans}},M_{\mathrm{rot}}$}{Translational / rotational moment contribution}{[Nm]}
@@ -156,6 +170,9 @@
 \symrow{$\delta\theta,\ \delta p$}{Small angular / linear displacement}{[rad], [m]}
 \symrow{$\delta p_{\mathrm{rot}},\ \delta x_c$}{Rotation-induced / coupled displacement}{[m]}
 \symrow{$\mathbf{e}_{p,c}$}{Coupled translational error}{[m]}
+\symrow{$K_{p_c},\ D_{p_c}$}{Full stiffness / damping matrix defined about the selected pole \(p_c\)}{[-]}
+\symrow{$K_{p,c},\ K_{R,c}$}{Translational / rotational stiffness blocks defined about the selected pole}{[N/m], [Nm/rad]}
+\symrow{$K_{\mathrm{TCP}},\ D_{\mathrm{TCP}}$}{Pole-based stiffness / damping mapped to the tool-center point}{[-]}
 \symrow{$f_c,\ m_R$}{Virtual-center force / rotational moment}{[N], [Nm]}
 \symrow{$m_{\mathrm{lever}},\ F_c$}{Lever-arm moment / virtual-center wrench}{[Nm], [N]}
 }

@@ -1061,43 +1061,58 @@ and moments.
 
 \subsection{Impedance Wrench}
 
+The impedance command is evaluated in the robot base frame. Therefore the
+matrices that appear in the commanded wrench are the base-frame stiffness and
+damping matrices
+\(K_{p,0}\), \(D_{p,0}\), \(K_{R,0}\), and \(D_{R,0}\). They are not assumed to
+be diagonal in the base frame. If the task frame changes, for example because
+the surface normal changes, these base-frame matrices change as well. As a
+result, the commanded Cartesian force, moment, and joint torque also change
+even if the local diagonal gain values are kept the same.
+
 The positional impedance force is defined as the translational part of a
 Cartesian spring-damper law \cite{Hogan1985,Mayr2024CartesianImpedance},
 
 \begin{equation}
 \mathbf{f}
 =
-K_p \mathbf{e}_p
+K_{p,0} \mathbf{e}_p
 -
-D_p \dot{\mathbf{p}}_{\mathrm{EE}}
+D_{p,0} \dot{\mathbf{p}}_{\mathrm{EE}}
 \in \mathbb{R}^3.
 \label{eq:positional_impedance_force}
 \end{equation}
 
-Here, \(K_p \in \mathbb{R}^{3 \times 3}\) is the positional stiffness
-matrix and \(D_p \in \mathbb{R}^{3 \times 3}\) is the positional damping
-matrix.
-The stiffness term \(K_p \mathbf{e}_p\) generates a restoring force proportional to the
-position error, while the damping term \(D_p \dot{\mathbf{p}}_{\mathrm{EE}}\) opposes
-the Cartesian linear velocity of the end-effector.
+Here, \(K_{p,0} \in \mathbb{R}^{3 \times 3}\) is the positional stiffness
+matrix expressed in the base frame, \(D_{p,0} \in \mathbb{R}^{3 \times 3}\) is
+the positional damping matrix expressed in the base frame, and
+\(\dot{\mathbf{p}}_{\mathrm{EE}}\in\mathbb{R}^3\) is the Cartesian linear
+velocity of the end-effector expressed in the same frame.
+The stiffness term \(K_{p,0} \mathbf{e}_p\) generates a restoring force
+proportional to the position error, while the damping term
+\(D_{p,0} \dot{\mathbf{p}}_{\mathrm{EE}}\) opposes the Cartesian linear
+velocity of the end-effector.
 
 The rotational impedance moment is defined as
 
 \begin{equation}
 \mathbf{m}
 =
-K_R \mathbf{e}_R
+K_{R,0} \mathbf{e}_R
 -
-D_R \omega_{\mathrm{EE}}
+D_{R,0} \omega_{\mathrm{EE}}
 \in \mathbb{R}^3.
 \label{eq:rotational_impedance_moment}
 \end{equation}
 
-Here, \(K_R \in \mathbb{R}^{3 \times 3}\) is the rotational stiffness matrix
-and \(D_R \in \mathbb{R}^{3 \times 3}\) is the rotational damping matrix.
-The stiffness term \(K_R \mathbf{e}_R\) generates a restoring moment proportional to the
-orientation error, while the damping term \(D_R \omega_{\mathrm{EE}}\) opposes
-the angular velocity of the end-effector.
+Here, \(K_{R,0} \in \mathbb{R}^{3 \times 3}\) is the rotational stiffness
+matrix expressed in the base frame, \(D_{R,0} \in \mathbb{R}^{3 \times 3}\) is
+the rotational damping matrix expressed in the base frame, and
+\(\omega_{\mathrm{EE}}\in\mathbb{R}^3\) is the angular velocity of the
+end-effector expressed in the base frame. The stiffness term
+\(K_{R,0}\mathbf{e}_R\) generates a restoring moment proportional to the
+orientation error, while the damping term \(D_{R,0}\omega_{\mathrm{EE}}\)
+opposes the angular velocity of the end-effector.
 
 The positional force and rotational moment are combined into the Cartesian
 wrench. In this thesis, a wrench means a six-dimensional vector containing a
@@ -1112,8 +1127,8 @@ Cartesian force and a Cartesian moment:
 \end{bmatrix}
 =
 \begin{bmatrix}
-K_p \mathbf{e}_p - D_p \dot{\mathbf{p}}_{\mathrm{EE}}\\
-K_R \mathbf{e}_R - D_R \omega_{\mathrm{EE}}
+K_{p,0} \mathbf{e}_p - D_{p,0} \dot{\mathbf{p}}_{\mathrm{EE}}\\
+K_{R,0} \mathbf{e}_R - D_{R,0} \omega_{\mathrm{EE}}
 \end{bmatrix}
 \in \mathbb{R}^6.
 \label{eq:cartesian_force_moment_vector}
@@ -1188,6 +1203,10 @@ K_{R,0} \mathbf{e}_R - D_{R,0} \omega_{\mathrm{EE}}
 \end{equation}
 
 This equation is the computational core of the controller.
+The matrices \(K_{p,0}\), \(D_{p,0}\), \(K_{R,0}\), and \(D_{R,0}\) are the
+already transformed base-frame matrices. Therefore, for a surface task, changing
+the surface frame changes these matrices before the wrench is computed, and the
+joint torque command changes through the same equation.
 At each control cycle, the current end-effector transformation is read from
 the robot state and compared with the desired transformation.
 From this comparison, the positional error \(\mathbf{e}_p\) and rotational error
@@ -1277,10 +1296,77 @@ are aligned with the principal stiffness directions.
 For this reason, the positional stiffness and damping matrices are first
 defined in a chosen task frame, where the principal directions are easier to
 specify, and are then transformed into the base frame \(\{0\}\).
-The construction below is written for the end-effector frame
-\(\{\mathrm{EE}\}\) as a concrete example, but it applies to any task frame; for
-the contact task in this thesis the chosen frame is the surface task frame
-introduced in Section~\ref{subsec:surface_task_frame}.
+Let \(R_{\mathrm{task}}\in SO(3)\) be the orientation of this chosen task frame
+with respect to the base frame. Its columns are the task-frame axes expressed
+in the base frame. If the local task-frame matrices are
+\(K_{p,\mathrm{task}}\), \(D_{p,\mathrm{task}}\),
+\(K_{R,\mathrm{task}}\), and \(D_{R,\mathrm{task}}\), then the matrices used in
+the command of \cref{eq:cartesian_force_moment_vector} are
+
+\begin{equation}
+\begin{aligned}
+K_{p,0}
+&=
+R_{\mathrm{task}}K_{p,\mathrm{task}}R_{\mathrm{task}}^\top,
+&
+D_{p,0}
+&=
+R_{\mathrm{task}}D_{p,\mathrm{task}}R_{\mathrm{task}}^\top,\\
+K_{R,0}
+&=
+R_{\mathrm{task}}K_{R,\mathrm{task}}R_{\mathrm{task}}^\top,
+&
+D_{R,0}
+&=
+R_{\mathrm{task}}D_{R,\mathrm{task}}R_{\mathrm{task}}^\top .
+\end{aligned}
+\label{eq:general_task_frame_gain_transform}
+\end{equation}
+
+The same notation can be written for the full six-dimensional stiffness and
+damping matrices. For an uncoupled translational--rotational impedance in the
+chosen task frame,
+
+\begin{equation}
+K_{\mathrm{task}}
+=
+\begin{bmatrix}
+K_{p,\mathrm{task}} & 0\\
+0 & K_{R,\mathrm{task}}
+\end{bmatrix},
+\qquad
+D_{\mathrm{task}}
+=
+\begin{bmatrix}
+D_{p,\mathrm{task}} & 0\\
+0 & D_{R,\mathrm{task}}
+\end{bmatrix}.
+\label{eq:full_task_frame_gain_blocks}
+\end{equation}
+
+With
+\(T_R=\operatorname{diag}(R_{\mathrm{task}},R_{\mathrm{task}})\), the
+corresponding full base-frame matrices are
+
+\begin{equation}
+K_0=T_R K_{\mathrm{task}}T_R^\top,
+\qquad
+D_0=T_R D_{\mathrm{task}}T_R^\top .
+\label{eq:full_task_frame_gain_transform}
+\end{equation}
+
+This is the important point for surface-dependent control: the controller does
+not command the diagonal local matrices directly. It commands the base-frame
+matrices after this transformation. Therefore, changing the surface orientation
+changes \(R_{\mathrm{task}}\), which changes \(K_{p,0}\), \(D_{p,0}\),
+\(K_{R,0}\), and \(D_{R,0}\), and consequently changes the Cartesian wrench and
+the final joint torque command.
+
+The construction below is then written for the end-effector frame
+\(\{\mathrm{EE}\}\) as a concrete example of
+\cref{eq:general_task_frame_gain_transform}. For the contact task in this
+thesis the chosen frame is instead the surface task frame introduced in
+Section~\ref{subsec:surface_task_frame}.
 For contact-rich tasks, choosing these directions and gains should follow the
 task geometry and safety requirements rather than only numerical convenience
 \cite{Pollayil2023ImpedancePlanning}.
@@ -1456,29 +1542,31 @@ D_i = 2\sqrt{M_iK_i}.
 \end{equation}
 
 In the robot implementation, the mass value is not assumed to be one.
-Instead, the directional mass is taken from the virtual Cartesian mass matrix
-obtained from the libfranka model quantities. If this matrix is denoted by
-\(M_x\), it can be computed from the joint-space mass matrix \(M_q(q)\) and
-the Jacobian \(J(q)\) as in operational-space dynamics \cite{Khatib1987}
+Instead, the directional mass is taken from the operational-space (Cartesian)
+inertia matrix, also called the virtual Cartesian mass matrix, obtained from the
+libfranka model quantities. Denoting it by \(\Lambda\), it is computed from the
+joint-space mass matrix \(M_q(q)\) and the Jacobian \(J(q)\) as in
+operational-space dynamics \cite{Khatib1987}
 
 \begin{equation}
-M_x
+\Lambda
 =
 \left(J(q)M_q^{-1}(q)J^\top(q)\right)^{-1}.
 \label{eq:cartesian_virtual_mass_matrix}
 \end{equation}
 
-The mass associated with principal direction \(i\) is then
+The mass associated with principal direction \(i\) is then the corresponding
+diagonal entry,
 
 \begin{equation}
-M_i = (M_x)_{ii}.
+M_i = \Lambda_{ii}.
 \label{eq:directional_virtual_mass}
 \end{equation}
 
 The corresponding critical damping reference therefore becomes
 
 \begin{equation}
-D_i = 2\sqrt{(M_x)_{ii}K_i},
+D_i = 2\sqrt{\Lambda_{ii}K_i},
 \qquad i=1,2,3.
 \label{eq:critical_damping_directional_mass}
 \end{equation}
@@ -1580,23 +1668,44 @@ mapped to joint torques by \(J^\top(q)\) in the following control law.
 \label{subsec:surface_task_frame}
 %% ─────────────────────────────────────────────────────────────
 
-The general construction above expresses diagonal gains, defined in a chosen
-frame, in the base frame. For the contact task in this thesis, the chosen frame
-is the \emph{surface task frame}, built from the plane that the tool should
-interact with. This generalizes the earlier axis-aligned planes to an arbitrary
-inclined plane, because the plane is described by a normal vector rather than by
-selecting individual base-frame axes.
+The general transformation in \cref{eq:general_task_frame_gain_transform}
+becomes surface dependent by choosing
+\(R_{\mathrm{task}}=R_{\mathrm{surface}}\). For the contact task in this thesis,
+the chosen frame is the \emph{surface task frame}, built from the plane that the
+tool should interact with. This generalizes the earlier axis-aligned planes to
+an arbitrary inclined plane, because the plane is described by a normal vector
+rather than by selecting individual base-frame axes.
 
-Let \(n_s\in\mathbb{R}^3\) with \(\|n_s\|=1\) be the surface normal and let
-\(t_1\) be a chosen tangent direction. A right-handed surface frame is obtained
-by orthonormalizing the tangent against the normal,
+Let \(n_s\in\mathbb{R}^3\) with \(\|n_s\|=1\) be the unit surface normal,
+expressed in the robot base frame. To complete the frame, choose an auxiliary
+direction \(a_s\in\mathbb{R}^3\) that is not parallel to \(n_s\). This auxiliary
+direction is only used to define a repeatable tangent direction on the surface.
+The first tangent vector is obtained by projecting \(a_s\) onto the plane
+orthogonal to \(n_s\), and the second tangent vector is then obtained by a cross
+product. With \(\tilde{t}_1\) denoting the unnormalised projected tangent, the
+construction is a Gram--Schmidt orthonormalization step applied to the surface
+normal and the auxiliary direction \cite{Siciliano2009,Craig2005}:
+
 \begin{equation}
-t_1 \leftarrow \frac{t_1-n_s\left(n_s^\top t_1\right)}{\left\|t_1-n_s\left(n_s^\top t_1\right)\right\|},
-\qquad
-t_2 = n_s\times t_1,
+\begin{aligned}
+\tilde{t}_1
+&=
+a_s - n_s\left(n_s^\top a_s\right),\\
+t_1
+&=
+\frac{\tilde{t}_1}{\|\tilde{t}_1\|},\\
+t_2
+&=
+n_s\times t_1 .
+\end{aligned}
 \label{eq:surface_frame_tangents}
 \end{equation}
-and collecting the axes as columns,
+
+Here, \(t_1\) and \(t_2\) are unit tangent vectors lying in the surface plane.
+The construction is valid as long as \(\|\tilde{t}_1\|\neq0\), which means that
+the auxiliary direction \(a_s\) must not be parallel to the normal \(n_s\). The
+surface task frame is then obtained by collecting the normal and tangent axes
+as columns,
 \begin{equation}
 R_{\mathrm{surface}}
 =
@@ -1606,11 +1715,11 @@ n_s & t_1 & t_2
 \label{eq:surface_task_frame_matrix}
 \end{equation}
 
-The impedance gains for the contact task are diagonal in this surface frame,
-where the diagonal entries have a direct physical meaning: a normal stiffness
-\(K_n\) and two tangential stiffnesses \(K_{t_1}\) and \(K_{t_2}\). They are
-expressed in the base frame by the same rotation used above, now with
-\(R=R_{\mathrm{surface}}\),
+The impedance gains for the contact task can be chosen diagonal in this surface
+frame, where the diagonal entries have a direct physical meaning: a normal
+stiffness \(K_n\) and two tangential stiffnesses \(K_{t_1}\) and \(K_{t_2}\).
+They are expressed in the base frame by the same rotation used above, now with
+\(R_{\mathrm{task}}=R_{\mathrm{surface}}\),
 \begin{equation}
 K_{p,0}
 =
@@ -1619,12 +1728,13 @@ R_{\mathrm{surface}}\,
 R_{\mathrm{surface}}^\top,
 \label{eq:spatial_gain_matrix}
 \end{equation}
-and analogously for the damping and the rotational gains. In the
+and analogously for \(D_{p,0}\), \(K_{R,0}\), and \(D_{R,0}\). In the
 implementation this operation is the function \texttt{makeSpatialGainMatrix}.
-Thus, choosing the directions through \(n_s\) and \(t_1\) instead of fixed
-base-frame axes lets the same impedance law act on any planar surface
-orientation, while \cref{eq:spatial_gain_matrix} keeps the resulting matrix
-compatible with the base-frame control law.
+Thus, choosing the directions through \(n_s\), \(t_1\), and \(t_2\) instead of
+fixed base-frame axes lets the same impedance law act on any planar surface
+orientation. If the surface normal changes, \(R_{\mathrm{surface}}\) changes,
+so the base-frame matrices in the command change even though the local diagonal
+entries \(K_n\), \(K_{t_1}\), and \(K_{t_2}\) may remain numerically identical.
 
 %% ─────────────────────────────────────────────────────────────
 \section{Complete Joint-Torque Command}
@@ -1877,7 +1987,7 @@ operational-space dynamics \cite{Khatib1987,Siciliano2009}
 
 where \(\mathbf{F}\) is the commanded impedance wrench,
 \(\Lambda(q)=\left(J(q)M_q^{-1}(q)J^\top(q)\right)^{-1}\) is the symmetric
-positive definite operational-space inertia of
+positive definite operational-space inertia introduced in
 \cref{eq:cartesian_virtual_mass_matrix}, and \(\Gamma(q,\dot{q})\) is the
 corresponding operational-space Coriolis matrix. As in the joint-space model,
 \(\dot{\Lambda}-2\Gamma\) is skew-symmetric \cite{Siciliano2009,Ott2008}.

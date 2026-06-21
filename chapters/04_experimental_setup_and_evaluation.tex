@@ -99,7 +99,7 @@ tangent directions \(t_1\) and \(t_2\) span the surface plane. With the normal a
 the first column, the task frame is therefore
 
 \begin{equation}
-R_s
+R_{\mathrm{surface}}
 =
 \begin{bmatrix}
 n_s & t_1 & t_2
@@ -107,7 +107,7 @@ n_s & t_1 & t_2
 \label{eq:surface_task_frame}
 \end{equation}
 
-consistent with the surface task frame \(R_{\mathrm{surface}}\) of
+consistent with the surface task frame of
 \cref{eq:surface_task_frame_matrix} and the implementation, where the normal,
 the first tangent, and the second tangent are columns one, two, and three.
 
@@ -129,7 +129,8 @@ p_{\mathrm{EE}} - p_c.
 
 The lower-case subscript \(c\) is used here for the chosen virtual center
 \(p_c\). Later, the upper-case subscript \(C\) is used for the physical
-contact point \(p_C\) and the measured or estimated contact wrench \(W_C\).
+contact point \(p_C\) and the measured or estimated contact wrench
+\(\mathbf{F}_C\).
 
 If a force \(\mathbf{f}\) acts at the contact, the corresponding moment about
 the end-effector depends on this lever arm. Therefore, the selected stiffness
@@ -260,23 +261,71 @@ displacement magnitude, contact force, and torque signals.
 \section{Gain Selection Methodology}
 \label{sec:cartesian_stiffness_selection}
 
-The complete local Cartesian stiffness matrix in the task frame can be written
-in the standard spatial-stiffness block form
-\citep{Fasse1997SpatialImpedance,Ott2008} as
+This chapter keeps the notation of Chapter~\ref{ch:theory}. A subscript
+\(\mathrm{task}\) means that a gain is written in the local task frame. For the
+surface experiment this task frame is \(R_{\mathrm{task}}=R_{\mathrm{surface}}\).
+The controller itself uses the transformed base-frame matrices \(K_0\) and
+\(D_0\), or equivalently the blocks \(K_{p,0}\), \(D_{p,0}\), \(K_{R,0}\), and
+\(D_{R,0}\), as defined in \cref{eq:full_task_frame_gain_transform}. Candidate
+matrices such as \(K_{\mathrm{task}}^{(j)}\) and
+\(D_{\mathrm{task}}^{(j)}\) are therefore local design values before this
+transformation. The commanded impedance wrench is denoted
+\(\mathbf{F}_{\mathrm{imp}}\), while the estimated external/contact wrench is
+denoted \(\mathbf{F}_{\mathrm{ext}}\) or \(\mathbf{F}_C\), depending on whether
+the measured external wrench or the contact-edge wrench is meant.
+
+The connection to the controller notation is the following. The controller law
+of \cref{eq:cartesian_impedance_control_law} uses base-frame errors and
+base-frame gains. For the experimental interpretation, the same quantities can
+be written in the surface task frame as
 
 \begin{equation}
-K_s
+\mathbf{e}_{\mathrm{task}}
 =
 \begin{bmatrix}
-K_{pp} & K_{pR}\\
-K_{Rp} & K_{RR}
+\mathbf{e}_{p,\mathrm{task}}\\
+\mathbf{e}_{R,\mathrm{task}}
+\end{bmatrix}
+=
+T_R^\top
+\begin{bmatrix}
+\mathbf{e}_p\\
+\mathbf{e}_R
+\end{bmatrix},
+\qquad
+\dot{x}_{\mathrm{task}}
+=
+T_R^\top
+\begin{bmatrix}
+\dot{\mathbf{p}}_{\mathrm{EE}}\\
+\omega_{\mathrm{EE}}
+\end{bmatrix},
+\label{eq:experiment_task_frame_errors}
+\end{equation}
+
+where \(T_R=\operatorname{diag}(R_{\mathrm{surface}},R_{\mathrm{surface}})\).
+Thus \(K_{\mathrm{task}}\) and \(D_{\mathrm{task}}\) are the local matrices that
+shape the experiment, while \(K_0\) and \(D_0\) are the transformed matrices
+that appear in the actual base-frame torque command.
+
+The complete local Cartesian stiffness matrix uses the same task-frame notation
+introduced in \cref{eq:full_task_frame_gain_blocks}. In the standard
+spatial-stiffness block form \citep{Fasse1997SpatialImpedance,Ott2008},
+
+\begin{equation}
+K_{\mathrm{task}}
+=
+\begin{bmatrix}
+K_{p,\mathrm{task}} & K_{pR,\mathrm{task}}\\
+K_{Rp,\mathrm{task}} & K_{R,\mathrm{task}}
 \end{bmatrix}.
 \label{eq:contact_stiffness_block}
 \end{equation}
 
-Here, \(K_{pp}\) relates translational displacement to force,
-\(K_{RR}\) relates rotational displacement to moment, and the off-diagonal
-blocks \(K_{pR}\) and \(K_{Rp}\) describe translation--rotation coupling.
+Here, \(K_{p,\mathrm{task}}\) relates translational displacement to force,
+\(K_{R,\mathrm{task}}\) relates rotational displacement to moment, and the
+off-diagonal blocks \(K_{pR,\mathrm{task}}\) and \(K_{Rp,\mathrm{task}}\)
+describe translation--rotation coupling.
 This block form is useful for explaining the physical coupling between sliding
 and rotation during edge contact. In the main experimental method of this
 thesis, however, a full coupled stiffness matrix is not identified or optimized
@@ -288,9 +337,9 @@ For a passive linear stiffness, the complete matrix should be symmetric
 positive definite \citep{Fasse1997SpatialImpedance,Ott2008},
 
 \begin{equation}
-K_s = K_s^\top,
+K_{\mathrm{task}} = K_{\mathrm{task}}^\top,
 \qquad
-K_s \succ 0.
+K_{\mathrm{task}} \succ 0.
 \label{eq:contact_stiffness_spd}
 \end{equation}
 
@@ -302,7 +351,7 @@ V_K
 =
 \frac{1}{2}
 \Delta x^\top
-K_s
+K_{\mathrm{task}}
 \Delta x,
 \qquad
 \Delta x =
@@ -319,24 +368,27 @@ create a plausible virtual center in the measured motion but still be rejected
 if it stores too much energy, creates large torque peaks, or requires damping
 that is not reliable in contact \citep{Hjorth2023EnergyAwareImpedance}.
 
-The commanded stiffness settings used for the main evaluation are first
+The local task-frame stiffness settings used for the main evaluation are first
 computed from the quasi-static estimates in
 Section~\ref{subsec:initial_stiffness_damping_values}. They are then grouped
 into a small number of diagonal candidate matrices,
 
 \begin{equation}
-K_s^{(j)}
+K_{\mathrm{task}}^{(j)}
 =
 \mathrm{diag}
 \left(
-k_x^{(j)},k_y^{(j)},k_z^{(j)},
-k_{rx}^{(j)},k_{ry}^{(j)},k_{rz}^{(j)}
+K_n^{(j)},K_{t_1}^{(j)},K_{t_2}^{(j)},
+K_{r,n}^{(j)},K_{r,t_1}^{(j)},K_{r,t_2}^{(j)}
 \right),
 \qquad
 j=1,\dots,N_K .
 \label{eq:candidate_diagonal_stiffness}
 \end{equation}
 
+The entries follow the surface-frame axis order of
+\cref{eq:surface_task_frame_matrix}: normal \(n_s\), tangent \(t_1\), tangent
+\(t_2\), followed by the rotational stiffnesses about those same local axes.
 The diagonal terms define the basic directional behavior. In the surface-normal
 direction, the stiffness should be high enough to avoid excessive penetration
 or sagging, but not so high that the contact wrench creates abrupt torque
@@ -392,7 +444,7 @@ For example, if the surface-normal force should stay near
 \(5\,\mathrm{mm}=0.005\,\mathrm{m}\), then
 
 \begin{equation}
-k_z
+K_n
 =
 \frac{15}{0.005}
 =
@@ -405,9 +457,9 @@ The same idea is used for the lateral directions. If a lateral force of
 or backward motion, then
 
 \begin{equation}
-k_x
+K_{t_1}
 =
-k_y
+K_{t_2}
 \approx
 \frac{10}{0.01}
 =
@@ -489,9 +541,9 @@ not oscillatory and that the commanded torques remain smooth.
 For the values computed above, the normalized approximation gives, for example,
 
 \begin{equation}
-d_z = 2\sqrt{3000}\approx 110,
+d_n = 2\sqrt{3000}\approx 110,
 \qquad
-d_x = d_y = 2\sqrt{1000}\approx 63,
+d_{t_1} = d_{t_2} = 2\sqrt{1000}\approx 63,
 \qquad
 d_r = 2\sqrt{8}\approx 5.7 ,
 \label{eq:worked_damping_example}
@@ -499,14 +551,15 @@ d_r = 2\sqrt{8}\approx 5.7 ,
 
 in \(\mathrm{N\,s/m}\) for the translational and \(\mathrm{Nm\,s/rad}\) for the
 rotational terms. Collecting the translational and rotational stiffness with
-the matching damping, one representative complete initial setting is
+the matching damping, one representative complete initial local surface-frame
+setting is
 
 \begin{equation}
-K_x = \operatorname{diag}(1000,\,1000,\,3000,\ 4.3,\,4.3,\,5),
+K_{\mathrm{task}}^{(0)} = \operatorname{diag}(3000,\,1000,\,1000,\ 4.3,\,4.3,\,5),
 \label{eq:worked_stiffness_set}
 \end{equation}
 \begin{equation}
-D_x \approx \operatorname{diag}(63,\,63,\,110,\ 4.2,\,4.2,\,4.5),
+D_{\mathrm{task}}^{(0)} \approx \operatorname{diag}(110,\,63,\,63,\ 4.2,\,4.2,\,4.5),
 \label{eq:worked_damping_set}
 \end{equation}
 
@@ -523,13 +576,13 @@ stiffness in \(\mathrm{Nm/rad}\).}
 \label{tab:example_candidate_stiffness_sets}
 \begin{tabular}{@{}clll@{}}
 \toprule
-Test & \(k_x,k_y,k_z\) & \(k_{rx},k_{ry},k_{rz}\) & Expected behavior \\
+Test & \(K_n,K_{t_1},K_{t_2}\) & \(K_{r,n},K_{r,t_1},K_{r,t_2}\) & Expected behavior \\
 \midrule
-1 & \(3000,3000,4000\) & \(40,40,20\) & stiff baseline \\
-2 & \(3000,3000,4000\) & \(20,20,10\) & partial alignment \\
+1 & \(4000,3000,3000\) & \(40,40,20\) & stiff baseline \\
+2 & \(4000,3000,3000\) & \(20,20,10\) & partial alignment \\
 3 & \(3000,3000,3000\) & \(8,8,5\) & soft rotation \\
-4 & \(1000,1000,3000\) & \(8,8,5\) & rotation with lateral sliding \\
-5 & \(500,500,1500\) & \(4,4,3\) & too-soft check \\
+4 & \(3000,1000,1000\) & \(8,8,5\) & rotation with lateral sliding \\
+5 & \(1500,500,500\) & \(4,4,3\) & too-soft check \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -603,7 +656,7 @@ K_c
 This expression generates coupled stiffness terms between translation and
 rotation. The coupling is what allows the contact wrench to produce a motion
 that appears to rotate around the selected center. The remaining rotational
-stiffness \(K_R\) can then be added to keep rotations bounded:
+stiffness \(K_{R,c}\) can then be added to keep rotations bounded:
 
 \begin{equation}
 V
@@ -619,7 +672,7 @@ K_c
 +
 \frac{1}{2}
 \Delta \theta^\top
-K_R
+K_{R,c}
 \Delta \theta.
 \label{eq:virtual_center_total_energy}
 \end{equation}
@@ -682,7 +735,7 @@ tilt, lowered until the edge contacts the surface, and the contact wrench is
 allowed to rotate the tool passively under the selected compliance. For the
 diagonal controller the pivot location is therefore \emph{emergent}: it is set
 by the contact geometry and the chosen gains. The practical procedure is then to
-choose several representative diagonal settings \(K_s^{(j)}\), run the same
+choose several representative diagonal settings \(K_{\mathrm{task}}^{(j)}\), run the same
 edge-contact experiment for each, compute the instantaneous pole from the
 measured motion using Chasles' theorem, and select the setting whose pole lies
 closest to the edge---smallest \(e_P\) and \(d_{\mathrm{ISA},e}\)---together
@@ -720,26 +773,29 @@ chosen point \(p_c\).
 A non-diagonal stiffness can arise in two ways that have very different effects,
 and they must not be confused. In the block form of
 \cref{eq:contact_stiffness_block}, only the translation--rotation blocks
-\(K_{pR},K_{Rp}\) place the pole. Expressing a diagonal surface-frame stiffness
+\(K_{pR,\mathrm{task}},K_{Rp,\mathrm{task}}\) place the pole. Expressing a diagonal surface-frame stiffness
 in the base frame uses the \emph{block-diagonal} rotation
 \(T_R=\operatorname{diag}(R_{\mathrm{surface}},R_{\mathrm{surface}})\),
 
 \begin{equation}
-K_0 = T_R\,K\,T_R^\top
+K_0 = T_R\,K_{\mathrm{task}}\,T_R^\top
 =
 \begin{bmatrix}
-R_{\mathrm{surface}}K_p R_{\mathrm{surface}}^\top & 0\\[2pt]
-0 & R_{\mathrm{surface}}K_R R_{\mathrm{surface}}^\top
+R_{\mathrm{surface}}K_{p,\mathrm{task}}R_{\mathrm{surface}}^\top & 0\\[2pt]
+0 & R_{\mathrm{surface}}K_{R,\mathrm{task}}R_{\mathrm{surface}}^\top
 \end{bmatrix}.
 \label{eq:surface_rotation_keeps_block_diagonal}
 \end{equation}
 
-For an inclined surface this makes the translational block \(K_{pp}\) a full
+Here, \(K_{\mathrm{task}}\) is the local block-diagonal stiffness matrix and
+\(K_{p,\mathrm{task}}\), \(K_{R,\mathrm{task}}\) are its translational and
+rotational task-frame blocks. For an inclined surface this makes the
+base-frame translational block \(K_{p,0}\) a full
 \(3\times3\) matrix, so the \(x\)-, \(y\)- and \(z\)-stiffnesses become coupled;
 for a horizontal surface the surface frame is axis-aligned and \(K_0\) is simply
 diagonal, identical to the surface-frame matrix up to the axis labelling. In
 \emph{both} cases, however, the off-diagonal blocks remain zero,
-\(K_{pR}=K_{Rp}=0\): the rotation couples translation only among its own axes
+\(K_{pR,\mathrm{task}}=K_{Rp,\mathrm{task}}=0\): the rotation couples translation only among its own axes
 and never couples translation to rotation. The centre of compliance therefore
 stays at the tool-frame origin, and the surface transform alone does \emph{not}
 place the pole---whether the surface is horizontal or inclined.
@@ -768,10 +824,11 @@ D_{\mathrm{TCP}} = \mathrm{Ad}_g^\top D_{p_c}\,\mathrm{Ad}_g.
 \label{eq:impedance_around_pole}
 \end{equation}
 
-For a diagonal \(K_{p_c}=\operatorname{diag}(K_p,K_R)\) the result has the
-non-zero coupling \(K_{pR}=K_p\,[r_c]_\times\), which is exactly the block that
-places the pole at \(p_c\). This coupling depends only on the offset \(r_c\) and
-not on the surface inclination, so it is required for a horizontal surface just as
+For a diagonal pole-frame stiffness \(K_{p_c}\) with translational block
+\(K_{p,c}\) and rotational block \(K_{R,c}\), the result has the non-zero
+coupling \(K_{pR,\mathrm{task}}=K_{p,c}[r_c]_\times\), which is exactly the block that places
+the pole at \(p_c\). This coupling depends only on the offset \(r_c\) and not on
+the surface inclination, so it is required for a horizontal surface just as
 for an inclined one. The damping is transformed by the \emph{same} adjoint, so
 that the spring and the dissipation are both centred at \(p_c\); if only the
 stiffness were referred to \(p_c\) and the damping left at the tool frame, the
@@ -821,12 +878,12 @@ method answers a different question:
     \item \textbf{Quasi-static initial selection.} This is the first step,
     because it can be done before contact data exist. Allowable
     force--displacement and moment--angle limits are used to compute safe
-    starting values for \(K_{\mathrm{cmd}}\). The damping
-    \(D_{\mathrm{cmd}}\) is then chosen from the same stiffness values using a
-    critically damped or slightly over-damped design. This method gives practical
-    diagonal or block-diagonal gains for the implemented controller. It does
-    not prescribe a pivot point directly; the apparent pole is evaluated after
-    contact.
+    starting values for the local candidate stiffness \(K_{\mathrm{task}}^{(j)}\). The local
+    damping candidate \(D_{\mathrm{task}}^{(j)}\) is then chosen from the same stiffness
+    values using a critically damped or slightly over-damped design. This method
+    gives practical diagonal or block-diagonal gains for the implemented
+    controller. It does not prescribe a pivot point directly; the apparent pole
+    is evaluated after contact.
 
     \item \textbf{Pole-based virtual-center selection.} This is the second
     design step once a useful pole or virtual center \(p_c\) has been selected
@@ -868,8 +925,8 @@ The intended design logic is therefore
 \label{eq:gain_selection_workflow}
 \end{equation}
 
-In other words, the controller receives commanded gains
-\(K_{\mathrm{cmd}}\) and \(D_{\mathrm{cmd}}\), while the least-squares fit
+In other words, the controller receives the transformed commanded gains
+\(K_0\) and \(D_0\), while the least-squares fit
 estimates apparent or effective gains \(K^{\mathrm{eff}}\) and
 \(D^{\mathrm{eff}}\) after the contact has happened. The effective values
 describe the behavior of the combined robot--tool--contact system, including
@@ -905,8 +962,8 @@ edge-contact alignment experiment.}
 \begin{tabular}{@{}clllllp{0.28\textwidth}@{}}
 \toprule
 Test
-& \(K_p\)
-& \(K_R\)
+& \(K_{p,\mathrm{task}}\)
+& \(K_{R,\mathrm{task}}\)
 & \(\|\mathbf{e}_{R,b}\|\)
 & \(\|\mathbf{e}_{R,a}\|\)
 & \(e_P\)
@@ -1040,10 +1097,11 @@ caused by translational sliding, while
 impedance contribution. The two damping terms describe moment contributions
 caused by linear and angular velocity.
 
-One sample is not enough to identify all matrices. For \(N\) samples, define
+One sample is not enough to identify all matrices. For \(N_{\mathrm{LS}}\)
+samples, define
 
 \begin{equation}
-\phi_i
+\varphi_i
 =
 \begin{bmatrix}
 \Delta x_{C,i}\\
@@ -1077,7 +1135,7 @@ The sample equation is then
 \begin{equation}
 M_{C,i}
 =
-A\phi_i .
+A\varphi_i .
 \label{eq:effective_coupling_compact_sample}
 \end{equation}
 
@@ -1099,16 +1157,16 @@ Y
 M_{C,1}^\top\\
 M_{C,2}^\top\\
 \vdots\\
-M_{C,N}^\top
+M_{C,N_{\mathrm{LS}}}^\top
 \end{bmatrix},
 \qquad
 \Phi
 =
 \begin{bmatrix}
-\phi_1^\top\\
-\phi_2^\top\\
+\varphi_1^\top\\
+\varphi_2^\top\\
 \vdots\\
-\phi_N^\top
+\varphi_{N_{\mathrm{LS}}}^\top
 \end{bmatrix}.
 \label{eq:effective_coupling_stacked_matrices}
 \end{equation}
@@ -1191,7 +1249,7 @@ prediction
 \end{equation}
 
 The identified coupling is useful even when the commanded matrix
-\(K_s^{(j)}\) is diagonal. In that case, the commanded off-diagonal stiffness
+\(K_{\mathrm{task}}^{(j)}\) is diagonal. In that case, the commanded off-diagonal stiffness
 is zero, but effective coupling can still appear because of the contact
 geometry, the tool offset, the Jacobian, friction, surface constraints,
 null-space behavior, torque limits, and the fact that the contact force acts
@@ -1241,37 +1299,35 @@ behavior that produced the observed self-alignment.
 \label{sec:simple_contact_model}
 
 The contact experiment is interpreted with the same Cartesian impedance
-notation used in the controller derivation \citep{Hogan1985,Ott2008}. The
-commanded impedance wrench is
+notation used in the controller derivation \citep{Hogan1985,Ott2008}. Written
+in the surface task frame, the commanded impedance wrench is
 
 \begin{equation}
-W_{\mathrm{imp}}
+\mathbf{F}_{\mathrm{imp},\mathrm{task}}
 =
-K_s
-\begin{bmatrix}
-\Delta p\\
-\Delta \theta
-\end{bmatrix}
-+
-D_s
-\begin{bmatrix}
-v\\
-\omega
-\end{bmatrix},
+K_{\mathrm{task}}
+\mathbf{e}_{\mathrm{task}}
+-
+D_{\mathrm{task}}
+\dot{x}_{\mathrm{task}},
 \qquad
-W_{\mathrm{imp}}
+\mathbf{F}_{\mathrm{imp},\mathrm{task}}
 =
 \begin{bmatrix}
-f\\
-m
+\mathbf{f}_{\mathrm{task}}\\
+\mathbf{m}_{\mathrm{task}}
 \end{bmatrix}.
 \label{eq:contact_impedance_wrench_simple}
 \end{equation}
 
-Here, \(K_s\) and \(D_s\) denote the stiffness and damping matrices expressed
-in the same task frame.
-The scalar entries \(K_i\) and \(D_i\) used below are the corresponding
-principal-direction values of these matrices.
+This is the same law as \cref{eq:cartesian_impedance_control_law}, but written
+before the task-frame-to-base-frame transformation. The base-frame wrench used
+by the torque command is
+\(\mathbf{F}_{\mathrm{imp}}=T_R\mathbf{F}_{\mathrm{imp},\mathrm{task}}\). Logged
+base-frame quantities are therefore transformed into the task frame before this
+local interpretation is used.
+The scalar entries \(k_i\) and \(d_i\) used below are the corresponding
+principal-direction estimates used to fill these matrices.
 
 For a slow contact motion, the quasi-static compliance relation can be written
 as \citep{Hogan1985,Fasse1997SpatialImpedance}
@@ -1282,9 +1338,9 @@ as \citep{Hogan1985,Fasse1997SpatialImpedance}
 \Delta \theta
 \end{bmatrix}
 \approx
-K_s^{-1} W_C,
+K_{\mathrm{task}}^{-1} \mathbf{F}_C,
 \qquad
-W_C
+\mathbf{F}_C
 =
 \begin{bmatrix}
 f_C\\
@@ -1293,11 +1349,15 @@ m_C
 \label{eq:contact_quasistatic_compliance}
 \end{equation}
 
-where \(W_C\) is the contact wrench. This equation is not used to compute the
-controller command directly. It is used to explain the physical effect of the
-selected stiffness: for the same type of contact wrench, lower stiffness
-allows a larger displacement and higher stiffness resists the motion more
-strongly.
+where \(\mathbf{F}_C\) is the contact wrench expressed in the same task frame.
+Here \(\Delta p\) and \(\Delta\theta\) denote the physical translation and
+rotation caused by contact; in the small-error impedance model they correspond
+to the task-frame error components \(\mathbf{e}_{p,\mathrm{task}}\) and
+\(\mathbf{e}_{R,\mathrm{task}}\).
+This equation is not used to compute the controller command directly. It is
+used to explain the physical effect of the selected stiffness: for the same
+type of contact wrench, lower stiffness allows a larger displacement and higher
+stiffness resists the motion more strongly.
 
 If the contact force acts at the tool edge, it also creates a moment. With
 \(p_C\) denoting the contact point and \(p_{\mathrm{EE}}\) the end-effector
@@ -1339,7 +1399,7 @@ The experiment is executed in the following steps:
     \item Move the Panda to a safe initial pose above the surface.
     \item Define the surface frame, tool edge frame, and selected virtual center
     \(p_c\).
-    \item Select one candidate stiffness matrix \(K_s^{(j)}\) from the
+    \item Select one candidate stiffness matrix \(K_{\mathrm{task}}^{(j)}\) from the
     manually defined stiffness set.
     \item Select damping values and torque limits.
     \item Move the tool edge slowly into contact with the surface.
@@ -1384,13 +1444,13 @@ The first is the \emph{commanded} (calculated) impedance wrench. It is computed
 directly by the controller from the pose error and velocity,
 
 \begin{equation}
-W_{\mathrm{imp}}
+\mathbf{F}_{\mathrm{imp}}
 =
 \begin{bmatrix} \mathbf{f}\\ \mathbf{m}\end{bmatrix}
 =
 \begin{bmatrix}
-K_p\mathbf{e}_p - D_p\dot{\mathbf{p}}_{\mathrm{EE}}\\
-K_R\mathbf{e}_R - D_R\omega_{\mathrm{EE}}
+K_{p,0}\mathbf{e}_p - D_{p,0}\dot{\mathbf{p}}_{\mathrm{EE}}\\
+K_{R,0}\mathbf{e}_R - D_{R,0}\omega_{\mathrm{EE}}
 \end{bmatrix},
 \label{eq:commanded_wrench_logging}
 \end{equation}
@@ -1400,7 +1460,7 @@ is always available, requires no sensor, and is exactly the quantity the
 stiffness and damping matrices produce.
 
 The second is the \emph{measured} (estimated external) wrench
-\(W_{\mathrm{ext}}\), the contact reaction from the surface. It is not commanded;
+\(\mathbf{F}_{\mathrm{ext}}\), the contact reaction from the surface. It is not commanded;
 it is what the environment applies to the tool. The robot provides it directly
 as \texttt{O\_F\_ext\_hat\_K}, a model-based estimate computed from the full
 robot dynamics and the joint-torque sensors and then filtered. This is the
@@ -1408,15 +1468,15 @@ estimate used in this work.
 
 The same quantity can also be reconstructed by the user from the external joint
 torque \(\tau_{\mathrm{ext}}\). Since an external wrench maps to joint torque by
-\(\tau_{\mathrm{ext}}=J^\top W_{\mathrm{ext}}\), a simple damped least-squares
+\(\tau_{\mathrm{ext}}=J^\top \mathbf{F}_{\mathrm{ext}}\), a simple damped least-squares
 inverse \citep{Khatib1987,Chiaverini1994DampedLeastSquares} gives
 
 \begin{equation}
-W_{\mathrm{ext}}
+\mathbf{F}_{\mathrm{ext}}
 \approx
 \left(JJ^\top + \lambda^2 I\right)^{-1} J\,\tau_{\mathrm{ext}},
 \qquad
-W_{\mathrm{ext}}
+\mathbf{F}_{\mathrm{ext}}
 =
 \begin{bmatrix} \mathbf{f}_{\mathrm{ext}}\\ \mathbf{m}_{\mathrm{ext}}\end{bmatrix},
 \label{eq:external_wrench_estimate}
@@ -1429,7 +1489,7 @@ no Cartesian wrench, and the theoretically correct mapping is the dynamically
 consistent inverse \cite{Khatib1987}
 
 \begin{equation}
-W_{\mathrm{ext}}
+\mathbf{F}_{\mathrm{ext}}
 =
 \left(J M_q^{-1} J^\top\right)^{-1} J M_q^{-1}\,\tau_{\mathrm{ext}},
 \label{eq:dynamically_consistent_wrench}
@@ -1449,7 +1509,7 @@ the commanded impedance wrench balances the external contact wrench
 \citep{Hogan1985,Ott2008},
 
 \begin{equation}
-W_{\mathrm{imp}} \approx -\,W_{\mathrm{ext}}.
+\mathbf{F}_{\mathrm{imp}} \approx -\,\mathbf{F}_{\mathrm{ext}}.
 \label{eq:wrench_balance}
 \end{equation}
 
@@ -1580,22 +1640,24 @@ useful passive alignment behavior during contact.
 \section{Safety Limits}
 \label{sec:damping_safety_limits_contact}
 
-The damping matrix \(D\) is selected to dissipate energy and reduce
-oscillation after contact. In impedance planning, damping cannot be treated as
-an afterthought to stiffness, because both gains shape the transient response,
-the energy stored in the virtual spring, and the response to disturbances
+The local damping matrix \(D_{\mathrm{task}}\) is selected to dissipate energy
+and reduce oscillation after contact. After the task-frame transformation, the
+controller applies the base-frame damping matrix \(D_0\). In impedance planning,
+damping cannot be treated as an afterthought to stiffness, because both gains
+shape the transient response, the energy stored in the virtual spring, and the
+response to disturbances
 \citep{Pollayil2023ImpedancePlanning}. For each principal direction, the critical damping
 reference is
 
 \begin{equation}
-D_i
+d_i
 =
-2\sqrt{M_iK_i},
+2\sqrt{M_i k_i},
 \label{eq:critical_damping_contact}
 \end{equation}
 
 where \(M_i\) is the corresponding directional entry of the effective
-Cartesian inertia and \(K_i\) is the selected stiffness. This expression is
+Cartesian inertia and \(k_i\) is the selected scalar stiffness estimate. This expression is
 used as a reference rather than as an automatic tuning rule, because the real
 controller is discrete, torque limited, affected by model uncertainty, and
 interacts with a stiff environment.
@@ -1620,4 +1682,3 @@ studies make the same point from a safety perspective: contact tasks should
 limit not only position error, but also the energy and power that the
 controller can inject during unexpected interaction
 \citep{Hjorth2023EnergyAwareImpedance}.
-
