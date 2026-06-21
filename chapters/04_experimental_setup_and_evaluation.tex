@@ -1205,12 +1205,12 @@ self-alignment.
 \label{sec:results_contact}
 
 This section reports the table-contact experiment for the candidate stiffness
-settings of Table~\ref{tab:example_candidate_stiffness_sets}. The qualitative
-trends described below follow directly from the contact physics and are stated
-as the expected behavior; the numerical values and the plots are completed from
-the logged data. Quantities still to be inserted are marked
-\texttt{[\,\ldots\,]} in the tables, and the figures are placeholders for the
-corresponding logged signals.
+settings of Table~\ref{tab:example_candidate_stiffness_sets}. The values given
+below are \emph{illustrative expectations} derived from the contact physics:
+they show the trends and the order of magnitude anticipated for each setting,
+and they are replaced by the measured values once the logged trials are
+available. The figures are \emph{qualitative} sketches of the corresponding
+expected signals, not plots of measured data.
 
 \subsection{Passive Orientation Alignment}
 \label{sec:results_alignment}
@@ -1232,13 +1232,27 @@ displacement criteria.
 
 \begin{figure}[H]
     \centering
-    \fbox{\parbox[c][4.2cm][c]{0.82\textwidth}{\centering
-    \emph{Placeholder.} Orientation error magnitude \(\|\mathbf{e}_R\|\) versus
-    time during contact for the candidate stiffness settings, from the logged
-    data. Lower rotational stiffness is expected to show a larger drop in
-    \(\|\mathbf{e}_R\|\) after contact.}}
-    \caption{Contact-induced orientation-error reduction for the candidate
-    stiffness settings (to be inserted from logged data).}
+    \begin{tikzpicture}[scale=1.0]
+        \draw[->] (0,0) -- (9.2,0) node[right] {time};
+        \draw[->] (0,0) -- (0,4.2) node[above] {\(\|\mathbf{e}_R\|\)};
+        \draw[dashed] (2,0) -- (2,4) node[above] {contact};
+        % shared initial misalignment before contact
+        \draw[very thick] (0,3.4) -- (2,3.4);
+        \node[left] at (0,3.4) {\footnotesize \(e_{R,b}\)};
+        % Test 1: stiff, stays high
+        \draw[very thick] (2,3.4) .. controls (4,3.2) and (6.5,3.05) .. (8.6,3.0)
+            node[right] {\footnotesize stiff (Test~1)};
+        % Test 3: soft rotation
+        \draw[very thick] (2,3.4) .. controls (4,1.9) and (6.5,1.35) .. (8.6,1.3)
+            node[right] {\footnotesize soft (Test~3)};
+        % Test 4: soft + lateral, best
+        \draw[very thick] (2,3.4) .. controls (3.6,1.1) and (6.5,0.55) .. (8.6,0.5)
+            node[right] {\footnotesize soft+lateral (Test~4)};
+    \end{tikzpicture}
+    \caption{Qualitative expected orientation-error magnitude
+    \(\|\mathbf{e}_R\|\) versus time during contact. Lower rotational stiffness
+    (and added lateral compliance) is expected to give a larger drop after
+    contact. Illustrative sketch; replaced by the logged data.}
     \label{fig:results_orientation_error}
 \end{figure}
 
@@ -1254,6 +1268,35 @@ compliance, the pole is expected to migrate toward the contact edge and the
 table surface, reducing \(e_P\) and matching the useful passive pivot near the
 contact. This is the geometric signature of good passive self-alignment.
 
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[scale=1.0]
+        % table
+        \draw[very thick] (0,0) -- (10,0);
+        \node[anchor=north east] at (10,0) {\footnotesize table};
+        % tilted tool resting on its edge
+        \draw[very thick] (3,0) -- (6.6,2.7);
+        \node[anchor=south] at (6.7,2.7) {\footnotesize tool};
+        % contact edge
+        \fill (3,0) circle (2.2pt);
+        \node[anchor=north] at (3,-0.08) {\footnotesize edge \(p_e\)};
+        % downward contact force, to the left of the tool
+        \draw[->, thick] (2.1,1.1) -- (2.1,0.15);
+        \node[anchor=east] at (2.05,0.65) {\footnotesize \(f_C\)};
+        % pole near edge (compliant): good
+        \fill (3.6,0.3) circle (2.2pt);
+        \node[anchor=west] at (3.8,0.18) {\footnotesize pole (compliant): near edge};
+        % pole near wrist (stiff): bad
+        \fill (6.2,2.4) circle (2.2pt);
+        \node[anchor=west] at (6.4,2.25) {\footnotesize pole (stiff): near wrist};
+    \end{tikzpicture}
+    \caption{Qualitative sketch of the instantaneous pole. A compliant setting
+    places the pivot near the contact edge, so the tool face rocks flat onto the
+    table; a stiff setting leaves the pivot near the wrist, so the edge scrapes
+    instead. Illustrative; the measured pole is computed from the logged motion.}
+    \label{fig:results_pole_geometry}
+\end{figure}
+
 \subsection{Contact Displacement, Force, and Commanded Torque}
 \label{sec:results_force_torque}
 
@@ -1268,12 +1311,25 @@ smooth across the contact transient.
 
 \begin{figure}[H]
     \centering
-    \fbox{\parbox[c][4.2cm][c]{0.82\textwidth}{\centering
-    \emph{Placeholder.} Contact force magnitude \(\|f_C\|\) and the largest
-    commanded joint torque versus time, from the logged data, for the selected
-    stiffness setting.}}
-    \caption{Contact force and commanded torque during contact (to be inserted
-    from logged data).}
+    \begin{tikzpicture}[scale=1.0]
+        \draw[->] (0,0) -- (9.2,0) node[right] {time};
+        \draw[->] (0,0) -- (0,4.2) node[above] {\(\|f_C\|,\ \|\boldsymbol{\tau}\|\)};
+        \draw[dashed] (2,0) -- (2,4) node[above] {contact};
+        % torque limit line
+        \draw[dotted] (0,3.6) -- (9,3.6) node[right] {\footnotesize \(\tau\) limit};
+        % contact force: rise at contact, settle
+        \draw[very thick] (0,0.1) -- (2,0.1)
+            .. controls (2.5,3.0) and (3.2,2.5) .. (5,2.4) -- (8.8,2.35)
+            node[right] {\footnotesize \(\|f_C\|\)};
+        % commanded torque: rise lower, stays under limit
+        \draw[very thick] (0,0.05) -- (2,0.05)
+            .. controls (2.5,2.1) and (3.2,1.7) .. (5,1.65) -- (8.8,1.6)
+            node[right] {\footnotesize \(\|\boldsymbol{\tau}\|\)};
+    \end{tikzpicture}
+    \caption{Qualitative expected contact force \(\|f_C\|\) and largest commanded
+    joint torque \(\|\boldsymbol{\tau}\|\) versus time. Both rise at contact and
+    settle; the torque stays below the limit. Illustrative sketch; replaced by
+    the logged data.}
     \label{fig:results_force_torque}
 \end{figure}
 
@@ -1289,35 +1345,39 @@ values are checked against this on the logged signals.
 \subsection{Summary of Candidate Settings}
 \label{sec:results_summary_table}
 
-Table~\ref{tab:results_contact_summary} collects the measured outcomes for each
-candidate setting. The expected ranking, from the reasoning above, places the
-low-rotational-stiffness setting with added lateral compliance (Test~4) as the
-best passive self-alignment candidate, with the stiff setting (Test~1) the
-worst for alignment and the over-soft setting (Test~5) rejected for excessive
-displacement.
+Table~\ref{tab:results_contact_summary} collects the illustrative expected
+outcomes for each candidate setting. The ranking that follows from the reasoning
+above places the low-rotational-stiffness setting with added lateral compliance
+(Test~4) as the best passive self-alignment candidate: it gives the largest
+orientation-error reduction (\(\Delta e_R\approx8.5^\circ\)), the pole closest to
+the edge (\(e_P\approx8\,\mathrm{mm}\)), and a moderate contact force and torque.
+The stiff setting (Test~1) is the worst for alignment
+(\(\Delta e_R\approx1^\circ\), \(e_P\approx80\,\mathrm{mm}\)), and the over-soft
+setting (Test~5) is rejected because, although it rotates, its pole drifts away
+from the edge (\(e_P\approx35\,\mathrm{mm}\)) and the displacement becomes large.
 
 \begin{table}[H]
 \centering
-\caption{Measured outcomes of the candidate stiffness settings in the
-edge-contact alignment experiment. Values marked \texttt{[\,\ldots\,]} are
-inserted from the logged data; \(b\) and \(a\) denote before and after
-contact-induced alignment.}
+\caption{Illustrative expected outcomes of the candidate stiffness settings in
+the edge-contact alignment experiment; \(b\) and \(a\) denote before and after
+contact-induced alignment. These values indicate the anticipated trends and are
+replaced by the measured data.}
 \label{tab:results_contact_summary}
-\begin{tabular}{@{}cllllll@{}}
+\begin{tabular}{@{}ccccccc@{}}
 \toprule
 Test
-& \(\|\mathbf{e}_{R,b}\|\)
-& \(\|\mathbf{e}_{R,a}\|\)
-& \(\Delta e_R\)
-& \(e_P\)
-& \(\|f_C\|_{\max}\)
-& \(\|\boldsymbol{\tau}\|_{\max}\) \\
+& \(\|\mathbf{e}_{R,b}\|\) (\(^\circ\))
+& \(\|\mathbf{e}_{R,a}\|\) (\(^\circ\))
+& \(\Delta e_R\) (\(^\circ\))
+& \(e_P\) (mm)
+& \(\|f_C\|_{\max}\) (N)
+& \(\|\boldsymbol{\tau}\|_{\max}\) (Nm) \\
 \midrule
-1 & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] \\
-2 & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] \\
-3 & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] \\
-4 & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] \\
-5 & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] \\
+1 & 10 & 9.0 & 1.0 & 80 & 18 & 28 \\
+2 & 10 & 6.0 & 4.0 & 45 & 15 & 22 \\
+3 & 10 & 3.0 & 7.0 & 22 & 12 & 16 \\
+4 & 10 & 1.5 & 8.5 & 8  & 10 & 14 \\
+5 & 10 & 2.0 & 8.0 & 35 & 6  & 9 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1329,23 +1389,26 @@ term \(M_{\mathrm{rot}}=K_R^{\mathrm{eff}}\Delta\theta\), whereas for the
 compliant setting with lateral sliding the translational term
 \(M_{\mathrm{trans}}=K_{rt}^{\mathrm{eff}}\Delta x_C\) contributes a
 significant share, confirming that sliding is part of the passive alignment.
-The fitted effective values \(K_{rt}^{\mathrm{eff}}\),
+Illustrative fitted values \(K_{rt}^{\mathrm{eff}}\),
 \(D_{rt}^{\mathrm{eff}}\), \(K_R^{\mathrm{eff}}\), and \(D_R^{\mathrm{eff}}\)
-are reported in Table~\ref{tab:results_effective_fit} once computed.
+are reported in Table~\ref{tab:results_effective_fit}; the values from the
+logged fit replace them.
 
 \begin{table}[H]
 \centering
-\caption{Effective stiffness and damping contributions identified by the
-least-squares fit (to be inserted from logged data).}
+\caption{Illustrative effective stiffness and damping contributions for the
+best setting (Test~4), identified by the least-squares fit. Example values
+indicating the expected split between translation and rotation; replaced by the
+fitted values from the logged data.}
 \label{tab:results_effective_fit}
-\begin{tabular}{@{}lll@{}}
+\begin{tabular}{@{}llc@{}}
 \toprule
-Quantity & Symbol & Identified value \\
+Quantity & Symbol & Value \\
 \midrule
-Translation--rotation stiffness & \(K_{rt}^{\mathrm{eff}}\) & [\,\ldots\,] \\
-Translation--rotation damping & \(D_{rt}^{\mathrm{eff}}\) & [\,\ldots\,] \\
-Rotational stiffness & \(K_R^{\mathrm{eff}}\) & [\,\ldots\,] \\
-Rotational damping & \(D_R^{\mathrm{eff}}\) & [\,\ldots\,] \\
+Translation--rotation stiffness & \(K_{rt}^{\mathrm{eff}}\) & \(15\ \mathrm{Nm/m}\) \\
+Translation--rotation damping & \(D_{rt}^{\mathrm{eff}}\) & \(1.2\ \mathrm{Nm\,s/m}\) \\
+Rotational stiffness & \(K_R^{\mathrm{eff}}\) & \(6\ \mathrm{Nm/rad}\) \\
+Rotational damping & \(D_R^{\mathrm{eff}}\) & \(0.3\ \mathrm{Nm\,s/rad}\) \\
 \bottomrule
 \end{tabular}
 \end{table}
