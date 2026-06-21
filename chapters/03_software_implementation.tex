@@ -298,10 +298,14 @@ R_{\mathrm{surface}}\,\mathbf{e}_{R,\mathrm{task}} ,
 
 where the components of \(\mathbf{e}_{R,\mathrm{task}}\) corresponding to free
 rotational directions (about the normal or a tangent) are removed before the
-back-rotation. This lets the tool rotate compliantly about the chosen surface
-directions while keeping the remaining rotational directions regulated. The
-surface frame, the spatial gain matrix, and the rotational mask are implemented
-in Listings~\ref{lst:app_surface_gains} and~\ref{lst:app_orientation}
+back-rotation. Setting a component of \(\mathbf{e}_R\) to zero removes the
+orientation spring about that axis: the rotational moment there reduces to
+\(-D_R\omega\), pure damping. The controller therefore applies \emph{no active
+rotation} toward \(R_d\) about a released axis; the tool aligns there
+\emph{purely passively}, driven only by the contact moment, while the remaining
+constrained directions keep their orientation spring. The surface frame, the
+spatial gain matrix, and the rotational mask are implemented in
+Listings~\ref{lst:app_surface_gains} and~\ref{lst:app_orientation}
 (Appendix~\ref{app:code}).
 
 \subsection{Tool Orientation for a Given Surface}
@@ -409,14 +413,16 @@ R_{\mathrm{EE}},R_d
 \label{eq:surface_orientation_error}
 \end{equation}
 
-If all rotational axes are regulated, the controller tries to keep the complete
-tool orientation equal to \(R_d\).
-If only selected rotational components are regulated, the surface-frame
-rotational mask of \cref{eq:surface_rotational_mask} releases the remaining
-components, so the tool stays compliant about the chosen surface directions.
-This combines a given surface orientation with the plane constraint: the plane
-projection defines the regulated normal direction, while the desired
-orientation \(R_d\) keeps the tool frame parallel to the surface.
+Here \(R_d\) serves only as a \emph{reference} orientation; whether the
+controller acts on a given axis depends on the rotational mask. If an axis is
+regulated, the controller drives that component of the orientation toward
+\(R_d\); if an axis is released by the surface-frame mask of
+\cref{eq:surface_rotational_mask}, no orientation spring acts there and the tool
+stays compliant. For the passive self-alignment task the alignment axes are
+released, so \(R_d\) is not actively pursued about them: it merely defines a
+nominal surface-parallel reference, while the actual alignment about those axes
+comes from the contact moment (Section~\ref{sec:self_alignment_virtual_center}).
+The plane projection still defines the regulated normal direction.
 
 For axis-aligned planes, which are special cases of the general surface frame,
 the surface normal is especially simple.
@@ -490,7 +496,7 @@ implemented controller.
 \label{sec:control_phases}
 
 The table-contact experiment runs through a short sequence of control phases.
-Each phase selects the active desired orientation and the gain set used in the
+Each phase selects the current reference orientation and the gain set used in the
 impedance law, which is why the callback uses the phase-dependent symbols
 \(R_{d,\mathrm{phase}}\) and \(K_{p,\mathrm{used}},K_{R,\mathrm{used}}\) rather
 than a single fixed gain matrix.
