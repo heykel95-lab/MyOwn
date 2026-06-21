@@ -1794,126 +1794,6 @@ control interface rather than being added again in the user callback.
 This avoids double compensation and keeps the implementation consistent with
 the official libfranka Cartesian impedance example.
 
-\subsection{Stability Analysis of the Implemented Controller}
-\label{subsec:stability_analysis}
-
-This subsection gives a single stability argument for the controller that is
-actually implemented and evaluated in this thesis: the block-diagonal Cartesian
-impedance law of \cref{eq:cartesian_impedance_control_law}, with decoupled
-translational and rotational springs, together with the projected null-space
-term and the model-based Coriolis compensation. The passive self-alignment
-observed during table contact is an emergent property of this controller under
-contact, produced by the rotational compliance and the contact geometry, rather
-than by a separate control mode. It is therefore covered by the same analysis.
-
-The analysis uses the following assumptions: the desired end-effector pose is
-constant; gravity and Coriolis effects are exactly compensated; the commanded
-torques are not saturated; and the stiffness and damping matrices
-\(K_{p,0},\,D_{p,0},\,K_{R,0},\,D_{R,0}\) are symmetric positive definite.
-The last property is preserved when diagonal end-effector-frame matrices are
-rotated into the base frame: for a symmetric positive definite
-\(K_{p,\mathrm{EE}}\) and a rotation \(R_d\),
-
-\begin{equation}
-K_{p,0}=R_d K_{p,\mathrm{EE}} R_d^\top
-\label{eq:stability_spd_preserved}
-\end{equation}
-
-is again symmetric positive definite, and the same holds for the damping and
-the rotational matrices. The translational and rotational springs remain
-decoupled, so the full Cartesian stiffness and damping are block-diagonal even
-though each \(3\times3\) block is generally a full matrix in the base frame.
-
-After exact gravity and Coriolis compensation, the end-effector obeys the
-operational-space dynamics \cite{Khatib1987,Siciliano2009}
-
-\begin{equation}
-\Lambda(q)\ddot{x}+\Gamma(q,\dot{q})\dot{x}=\mathbf{F},
-\label{eq:operational_space_closed_loop}
-\end{equation}
-
-where \(\mathbf{F}\) is the commanded impedance wrench,
-\(\Lambda(q)=\left(J(q)M_q^{-1}(q)J^\top(q)\right)^{-1}\) is the symmetric
-positive definite operational-space inertia of
-\cref{eq:cartesian_virtual_mass_matrix}, and \(\Gamma(q,\dot{q})\) is the
-corresponding operational-space Coriolis matrix. As in the joint-space model,
-\(\dot{\Lambda}-2\Gamma\) is skew-symmetric \cite{Siciliano2009,Ott2008}.
-
-Collect the full Cartesian error and velocity as
-
-\begin{equation}
-\mathbf{e}=
-\begin{bmatrix}\mathbf{e}_p\\ \mathbf{e}_R\end{bmatrix},
-\qquad
-\dot{x}=
-\begin{bmatrix}\dot{\mathbf{p}}_{\mathrm{EE}}\\ \omega_{\mathrm{EE}}\end{bmatrix},
-\qquad
-K=
-\begin{bmatrix}K_{p,0}&0\\0&K_{R,0}\end{bmatrix},
-\qquad
-D=
-\begin{bmatrix}D_{p,0}&0\\0&D_{R,0}\end{bmatrix},
-\label{eq:stability_stacked_quantities}
-\end{equation}
-
-so that the commanded wrench is \(\mathbf{F}=K\mathbf{e}-D\dot{x}\). The
-block-diagonal structure of \(K\) and \(D\) is exactly the decoupling between
-translation and rotation used in the implemented controller. A single Lyapunov
-candidate for the complete six-dimensional task is the total virtual mechanical
-energy
-
-\begin{equation}
-V=\tfrac{1}{2}\mathbf{e}^\top K\mathbf{e}
- +\tfrac{1}{2}\dot{x}^\top \Lambda\,\dot{x}.
-\label{eq:unified_lyapunov}
-\end{equation}
-
-Since \(K\) and \(\Lambda\) are symmetric positive definite, \(V\) is positive
-definite and vanishes only for \(\mathbf{e}=0,\ \dot{x}=0\).
-
-For a constant desired pose the error satisfies \(\dot{\mathbf{e}}=-\dot{x}\).
-Differentiating \cref{eq:unified_lyapunov} and inserting
-\cref{eq:operational_space_closed_loop} gives
-
-\begin{equation}
-\dot{V}
-=\mathbf{e}^\top K\dot{\mathbf{e}}
- +\dot{x}^\top\Lambda\ddot{x}
- +\tfrac{1}{2}\dot{x}^\top\dot{\Lambda}\dot{x}
-=-\dot{x}^\top D\dot{x}
- +\dot{x}^\top\!\left(\tfrac{1}{2}\dot{\Lambda}-\Gamma\right)\!\dot{x}.
-\label{eq:unified_lyapunov_derivative}
-\end{equation}
-
-The skew-symmetry of \(\dot{\Lambda}-2\Gamma\) makes the last term vanish, so
-
-\begin{equation}
-\dot{V}=-\dot{x}^\top D\,\dot{x}\le 0.
-\label{eq:unified_lyapunov_result}
-\end{equation}
-
-Thus the damping matrix dissipates energy and the closed loop is stable in the
-sense of Lyapunov. Because \(\dot{V}=0\) only for \(\dot{x}=0\), LaSalle's
-invariance principle implies that the regulated Cartesian error converges to
-zero in this ideal case \cite{Siciliano2009}.
-
-The null-space term does not change this conclusion. By construction
-\(\tau_{\mathrm{null}}=N\!\left(k_{\mathrm{start}}(q_{\mathrm{start}}-q)-D_{\mathrm{null}}\dot{q}\right)+N(K_\sigma s\alpha n)\)
-is projected by the damped null-space projector \(N\) of the geometric
-Jacobian, so to first order \(J\dot{q}_{\mathrm{null}}\approx 0\) and it does
-not contribute to the regulated Cartesian velocity \(\dot{x}\). The
-joint-space restoring spring \(k_{\mathrm{start}}(q_{\mathrm{start}}-q)\) and
-the damping term act as a passive spring--damper in the redundant direction,
-and the singular-value term is bounded and norm-limited
-(\cref{eq:nullspace_torque}). Hence the secondary term acts only on the
-redundant degree of freedom and cannot inject energy into the Cartesian task.
-
-In practice, torque limits, sampling effects, modeling errors, measurement
-noise, and the contact interaction itself influence the observed behavior.
-Therefore the experimental evaluation in Chapter~\ref{ch:experiments}
-additionally examines convergence, steady-state error, overshoot, oscillation,
-and commanded-torque limits from the logged data.
-
 \section{Nullspace and Singular Value Decomposition}
 \label{sec:nullspace_svd}
 
@@ -2123,6 +2003,126 @@ compensation added in the user callback. The gravity compensation is handled by
 the Franka Control Interface for the external torque command, as explained
 around Equations~\eqref{eq:commanded_torque_libfranka} and
 \eqref{eq:commanded_torque_libfranka_null}.
+
+\section{Stability Analysis of the Implemented Controller}
+\label{sec:stability_analysis}
+
+This section gives a single stability argument for the controller that is
+actually implemented and evaluated in this thesis: the block-diagonal Cartesian
+impedance law of \cref{eq:cartesian_impedance_control_law}, with decoupled
+translational and rotational springs, together with the projected null-space
+term and the model-based Coriolis compensation. The passive self-alignment
+observed during table contact is an emergent property of this controller under
+contact, produced by the rotational compliance and the contact geometry, rather
+than by a separate control mode. It is therefore covered by the same analysis.
+
+The analysis uses the following assumptions: the desired end-effector pose is
+constant; gravity and Coriolis effects are exactly compensated; the commanded
+torques are not saturated; and the stiffness and damping matrices
+\(K_{p,0},\,D_{p,0},\,K_{R,0},\,D_{R,0}\) are symmetric positive definite.
+The last property is preserved when diagonal end-effector-frame matrices are
+rotated into the base frame: for a symmetric positive definite
+\(K_{p,\mathrm{EE}}\) and a rotation \(R_d\),
+
+\begin{equation}
+K_{p,0}=R_d K_{p,\mathrm{EE}} R_d^\top
+\label{eq:stability_spd_preserved}
+\end{equation}
+
+is again symmetric positive definite, and the same holds for the damping and
+the rotational matrices. The translational and rotational springs remain
+decoupled, so the full Cartesian stiffness and damping are block-diagonal even
+though each \(3\times3\) block is generally a full matrix in the base frame.
+
+After exact gravity and Coriolis compensation, the end-effector obeys the
+operational-space dynamics \cite{Khatib1987,Siciliano2009}
+
+\begin{equation}
+\Lambda(q)\ddot{x}+\Gamma(q,\dot{q})\dot{x}=\mathbf{F},
+\label{eq:operational_space_closed_loop}
+\end{equation}
+
+where \(\mathbf{F}\) is the commanded impedance wrench,
+\(\Lambda(q)=\left(J(q)M_q^{-1}(q)J^\top(q)\right)^{-1}\) is the symmetric
+positive definite operational-space inertia of
+\cref{eq:cartesian_virtual_mass_matrix}, and \(\Gamma(q,\dot{q})\) is the
+corresponding operational-space Coriolis matrix. As in the joint-space model,
+\(\dot{\Lambda}-2\Gamma\) is skew-symmetric \cite{Siciliano2009,Ott2008}.
+
+Collect the full Cartesian error and velocity as
+
+\begin{equation}
+\mathbf{e}=
+\begin{bmatrix}\mathbf{e}_p\\ \mathbf{e}_R\end{bmatrix},
+\qquad
+\dot{x}=
+\begin{bmatrix}\dot{\mathbf{p}}_{\mathrm{EE}}\\ \omega_{\mathrm{EE}}\end{bmatrix},
+\qquad
+K=
+\begin{bmatrix}K_{p,0}&0\\0&K_{R,0}\end{bmatrix},
+\qquad
+D=
+\begin{bmatrix}D_{p,0}&0\\0&D_{R,0}\end{bmatrix},
+\label{eq:stability_stacked_quantities}
+\end{equation}
+
+so that the commanded wrench is \(\mathbf{F}=K\mathbf{e}-D\dot{x}\). The
+block-diagonal structure of \(K\) and \(D\) is exactly the decoupling between
+translation and rotation used in the implemented controller. A single Lyapunov
+candidate for the complete six-dimensional task is the total virtual mechanical
+energy
+
+\begin{equation}
+V=\tfrac{1}{2}\mathbf{e}^\top K\mathbf{e}
+ +\tfrac{1}{2}\dot{x}^\top \Lambda\,\dot{x}.
+\label{eq:unified_lyapunov}
+\end{equation}
+
+Since \(K\) and \(\Lambda\) are symmetric positive definite, \(V\) is positive
+definite and vanishes only for \(\mathbf{e}=0,\ \dot{x}=0\).
+
+For a constant desired pose the error satisfies \(\dot{\mathbf{e}}=-\dot{x}\).
+Differentiating \cref{eq:unified_lyapunov} and inserting
+\cref{eq:operational_space_closed_loop} gives
+
+\begin{equation}
+\dot{V}
+=\mathbf{e}^\top K\dot{\mathbf{e}}
+ +\dot{x}^\top\Lambda\ddot{x}
+ +\tfrac{1}{2}\dot{x}^\top\dot{\Lambda}\dot{x}
+=-\dot{x}^\top D\dot{x}
+ +\dot{x}^\top\!\left(\tfrac{1}{2}\dot{\Lambda}-\Gamma\right)\!\dot{x}.
+\label{eq:unified_lyapunov_derivative}
+\end{equation}
+
+The skew-symmetry of \(\dot{\Lambda}-2\Gamma\) makes the last term vanish, so
+
+\begin{equation}
+\dot{V}=-\dot{x}^\top D\,\dot{x}\le 0.
+\label{eq:unified_lyapunov_result}
+\end{equation}
+
+Thus the damping matrix dissipates energy and the closed loop is stable in the
+sense of Lyapunov. Because \(\dot{V}=0\) only for \(\dot{x}=0\), LaSalle's
+invariance principle implies that the regulated Cartesian error converges to
+zero in this ideal case \cite{Siciliano2009}.
+
+The null-space term does not change this conclusion. By construction
+\(\tau_{\mathrm{null}}=N\!\left(k_{\mathrm{start}}(q_{\mathrm{start}}-q)-D_{\mathrm{null}}\dot{q}\right)+N(K_\sigma s\alpha n)\)
+is projected by the damped null-space projector \(N\) of the geometric
+Jacobian, so to first order \(J\dot{q}_{\mathrm{null}}\approx 0\) and it does
+not contribute to the regulated Cartesian velocity \(\dot{x}\). The
+joint-space restoring spring \(k_{\mathrm{start}}(q_{\mathrm{start}}-q)\) and
+the damping term act as a passive spring--damper in the redundant direction,
+and the singular-value term is bounded and norm-limited
+(\cref{eq:nullspace_torque}). Hence the secondary term acts only on the
+redundant degree of freedom and cannot inject energy into the Cartesian task.
+
+In practice, torque limits, sampling effects, modeling errors, measurement
+noise, and the contact interaction itself influence the observed behavior.
+Therefore the experimental evaluation in Chapter~\ref{ch:experiments}
+additionally examines convergence, steady-state error, overshoot, oscillation,
+and commanded-torque limits from the logged data.
 
 \fi
 
