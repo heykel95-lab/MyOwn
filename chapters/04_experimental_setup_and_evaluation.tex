@@ -1231,7 +1231,7 @@ methods compute commanded stiffness and damping matrices, while the
 least-squares fit computes the effective translation--rotation and damping
 behavior that produced the observed self-alignment.
 
-\section{Simple Contact Model}
+\subsection{Simple Contact Model}
 \label{sec:simple_contact_model}
 
 The contact experiment is interpreted with the same Cartesian impedance
@@ -1324,49 +1324,33 @@ acts at the edge. Therefore, the contact produces both a force and a moment.
 The observed tool motion is consequently not a pure rotation and not a pure
 translation, but a combined screw-like displacement.
 
-\section{Safety Limits and Damping Check}
-\label{sec:damping_safety_limits_contact}
+\section{Experimental Procedure}
+\label{sec:experimental_procedure_contact}
 
-The damping matrix \(D\) is selected to dissipate energy and reduce
-oscillation after contact. In impedance planning, damping cannot be treated as
-an afterthought to stiffness, because both gains shape the transient response,
-the energy stored in the virtual spring, and the response to disturbances
-\citep{Pollayil2023ImpedancePlanning}. For each principal direction, the critical damping
-reference is
+The experiment is executed in the following steps:
 
-\begin{equation}
-D_i
-=
-2\sqrt{M_iK_i},
-\label{eq:critical_damping_contact}
-\end{equation}
+\begin{enumerate}
+    \item Move the Panda to a safe initial pose above the table.
+    \item Define the table frame, tool edge frame, and selected virtual center
+    \(p_c\).
+    \item Select one candidate stiffness matrix \(K_s^{(j)}\) from the
+    manually defined stiffness set.
+    \item Select damping values and torque limits.
+    \item Move the tool edge slowly into contact with the table.
+    \item Record the pose displacement, impedance wrench, and commanded joint
+    torques during contact.
+    \item Estimate the instantaneous pole or screw axis from the measured
+    translation and rotation.
+    \item Compare the orientation-error reduction, pole location, displacement,
+    force, and torque signals against the design goal.
+\end{enumerate}
 
-where \(M_i\) is the corresponding directional entry of the effective
-Cartesian inertia and \(K_i\) is the selected stiffness. This expression is
-used as a reference rather than as an automatic tuning rule, because the real
-controller is discrete, torque limited, affected by model uncertainty, and
-interacts with a stiff environment.
-
-The following safety checks are part of the experiment:
-
-\begin{itemize}
-    \item the commanded torque must remain below the selected torque limit;
-    \item the torque-rate limiter must prevent abrupt command changes;
-    \item the tool displacement must stay within a small, predefined contact
-    range;
-    \item the rotational displacement must remain below the selected angular
-    limit;
-    \item the controller must not generate sustained oscillations after the
-    tool touches or leaves the table.
-\end{itemize}
-
-These checks are necessary because a stiffness matrix that is geometrically
-meaningful can still be unsuitable for real hardware if it produces aggressive
-torques or poorly damped contact behavior. Energy-aware impedance control
-studies make the same point from a safety perspective: contact tasks should
-limit not only position error, but also the energy and power that the
-controller can inject during unexpected interaction
-\citep{Hjorth2023EnergyAwareImpedance}.
+The same procedure is repeated for each candidate stiffness setting. The
+comparison is not meant to prove a universal optimal stiffness matrix. Instead,
+it identifies which of the tested settings produces the most useful passive
+self-aligning tendency for the chosen tool, table, and contact configuration.
+The stiffness values are therefore selected experimentally rather than through
+an analytical optimization.
 
 \section{Logged Data}
 \label{sec:logged_data_contact}
@@ -1593,35 +1577,7 @@ current-minus-desired axis-angle error.) This condition is used only as a local
 alignment indicator. The final judgement also includes the pole location, force
 level, torque level, and oscillation behavior.
 
-\section{Experimental Procedure}
-\label{sec:experimental_procedure_contact}
-
-The experiment is executed in the following steps:
-
-\begin{enumerate}
-    \item Move the Panda to a safe initial pose above the table.
-    \item Define the table frame, tool edge frame, and selected virtual center
-    \(p_c\).
-    \item Select one candidate stiffness matrix \(K_s^{(j)}\) from the
-    manually defined stiffness set.
-    \item Select damping values and torque limits.
-    \item Move the tool edge slowly into contact with the table.
-    \item Record the pose displacement, impedance wrench, and commanded joint
-    torques during contact.
-    \item Estimate the instantaneous pole or screw axis from the measured
-    translation and rotation.
-    \item Compare the orientation-error reduction, pole location, displacement,
-    force, and torque signals against the design goal.
-\end{enumerate}
-
-The same procedure is repeated for each candidate stiffness setting. The
-comparison is not meant to prove a universal optimal stiffness matrix. Instead,
-it identifies which of the tested settings produces the most useful passive
-self-aligning tendency for the chosen tool, table, and contact configuration.
-The stiffness values are therefore selected experimentally rather than through
-an analytical optimization.
-
-\section{Evaluation Criteria and Acceptance Conditions}
+\subsection{Evaluation Criteria and Acceptance Conditions}
 \label{sec:evaluation_criteria_contact}
 
 The experiment is evaluated using the following criteria:
@@ -1644,3 +1600,47 @@ These criteria match the goal of the experiment more directly than the earlier
 set-point and trajectory metrics. The central result is not tracking accuracy
 alone, but whether the selected Cartesian stiffness matrix creates a safe and
 useful passive alignment behavior during contact.
+\section{Safety Limits}
+\label{sec:damping_safety_limits_contact}
+
+The damping matrix \(D\) is selected to dissipate energy and reduce
+oscillation after contact. In impedance planning, damping cannot be treated as
+an afterthought to stiffness, because both gains shape the transient response,
+the energy stored in the virtual spring, and the response to disturbances
+\citep{Pollayil2023ImpedancePlanning}. For each principal direction, the critical damping
+reference is
+
+\begin{equation}
+D_i
+=
+2\sqrt{M_iK_i},
+\label{eq:critical_damping_contact}
+\end{equation}
+
+where \(M_i\) is the corresponding directional entry of the effective
+Cartesian inertia and \(K_i\) is the selected stiffness. This expression is
+used as a reference rather than as an automatic tuning rule, because the real
+controller is discrete, torque limited, affected by model uncertainty, and
+interacts with a stiff environment.
+
+The following safety checks are part of the experiment:
+
+\begin{itemize}
+    \item the commanded torque must remain below the selected torque limit;
+    \item the torque-rate limiter must prevent abrupt command changes;
+    \item the tool displacement must stay within a small, predefined contact
+    range;
+    \item the rotational displacement must remain below the selected angular
+    limit;
+    \item the controller must not generate sustained oscillations after the
+    tool touches or leaves the table.
+\end{itemize}
+
+These checks are necessary because a stiffness matrix that is geometrically
+meaningful can still be unsuitable for real hardware if it produces aggressive
+torques or poorly damped contact behavior. Energy-aware impedance control
+studies make the same point from a safety perspective: contact tasks should
+limit not only position error, but also the energy and power that the
+controller can inject during unexpected interaction
+\citep{Hjorth2023EnergyAwareImpedance}.
+

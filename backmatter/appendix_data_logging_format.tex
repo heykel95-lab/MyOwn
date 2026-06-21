@@ -1,0 +1,50 @@
+\chapter{Data Logging Format}
+\label{app:data_logging_format}
+
+This appendix documents the format of the CSV log produced by the controller.
+
+\paragraph{Timing.}
+The controller runs in the \(1\,\mathrm{ms}\) real-time torque-control callback.
+To avoid disturbing the loop timing, the logged values are stored in a
+preallocated in-memory buffer during the callback; the CSV file is created and
+written \emph{after} the control loop has finished.
+
+\paragraph{Columns.}
+Each row corresponds to one logged control cycle (optionally decimated). The
+columns are:
+
+\begin{table}[H]
+\centering
+\caption{CSV log columns and their meaning.}
+\label{tab:csv_columns}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Column(s) & Symbol & Meaning \\
+\midrule
+\texttt{time} & \(t\) & time since start [s] \\
+\texttt{p\_EE\_\{x,y,z\}} & \(p_{\mathrm{EE}}\) & end-effector position [m] \\
+\texttt{p\_d\_\{x,y,z\}} & \(p_d\) & desired position [m] \\
+\texttt{p\_end\_\{x,y,z\}} & \(p_{\mathrm{end}}\) & target / end position [m] \\
+\texttt{e\_p\_\{x,y,z\}} & \(\mathbf{e}_p\) & position error [m] \\
+\texttt{e\_R\_\{x,y,z\}} & \(\mathbf{e}_R\) & orientation error [rad] \\
+\texttt{pdot\_\{x,y,z\}} & \(\dot{p}_{\mathrm{EE}}\) & linear velocity [m/s] \\
+\texttt{pdot\_d\_\{x,y,z\}} & \(\dot{p}_d\) & desired linear velocity [m/s] \\
+\texttt{omega\_\{x,y,z\}} & \(\omega_{\mathrm{EE}}\) & angular velocity [rad/s] \\
+\texttt{f\_\{x,y,z\}} & \(\mathbf{f}\) & commanded impedance force [N] \\
+\texttt{m\_\{x,y,z\}} & \(\mathbf{m}\) & commanded impedance moment [Nm] \\
+\texttt{tau\_cmd\_1..7} & \(\boldsymbol{\tau}\) & commanded joint torques [Nm] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The logged force and moment \(\mathbf{f},\mathbf{m}\) are the \emph{commanded}
+impedance wrench (Section~\ref{subsec:commanded_measured_wrench}). The robot's
+estimated external wrench \texttt{O\_F\_ext\_hat\_K} can additionally be logged
+as \(\mathbf{f}_{\mathrm{ext}},\mathbf{m}_{\mathrm{ext}}\) to enable the
+commanded-versus-measured consistency check.
+
+\paragraph{Offline analysis.}
+The log is processed by the script
+\texttt{code/python/evaluate\_contact\_alignment.py}, which computes the
+orientation-error reduction, the instantaneous pole, the pole error, the
+least-squares effective impedance, and the evaluation figures.
