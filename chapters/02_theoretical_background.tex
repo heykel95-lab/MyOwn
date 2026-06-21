@@ -1215,12 +1215,11 @@ From this comparison, the positional error \(\mathbf{e}_p\) and rotational error
 The corresponding Cartesian forces and moments are then evaluated and mapped
 to joint torques using the Jacobian transpose.
 
-\subsection{Coriolis Compensation in libfranka}
+\subsection{Coriolis and Gravity Compensation in libfranka}
 
-In a general robot-dynamics formulation, the impedance torques are combined
-with model-based compensation terms.
-These terms compensate for gravity and velocity-dependent effects in the robot
-dynamics.
+In a general robot-dynamics formulation, the impedance torques are combined with
+two model-based compensation terms: a gravity term and a Coriolis/centrifugal
+term.
 The commanded joint torque can therefore be written as
 
 \begin{equation}
@@ -1235,19 +1234,30 @@ J^\top(q)\mathbf{F}
 \end{equation}
 
 Here, \(\tau_g(q) \in \mathbb{R}^n\) is the gravity compensation torque, which
-depends on the joint configuration \(q\).
-The term \(\tau_c(q,\dot{q}) \in \mathbb{R}^n\) compensates for Coriolis and
-centrifugal effects, which depend on both the joint configuration \(q\) and
-the joint velocity \(\dot{q}\).
-
+depends on the joint configuration \(q\), and \(\tau_c(q,\dot{q}) \in
+\mathbb{R}^n\) compensates for Coriolis and centrifugal effects, which depend on
+both the joint configuration \(q\) and the joint velocity \(\dot{q}\).
 This equation represents the general model-compensated impedance-control
-structure.
-In the libfranka implementation used in this work, the Coriolis vector is read
-from the model interface and added explicitly in the callback, while the
-gravity compensation is not added as a separate user-level term.
-For external joint-torque control, the Franka Control Interface applies the
-desired torque command together with robot-side gravity and motor-friction
-compensation \cite{FrankaFCI2023}.
+structure; the two terms are, however, handled differently in the libfranka
+implementation used in this work.
+
+\paragraph{Coriolis term: computed and added explicitly.}
+The Coriolis and centrifugal vector \(\tau_c(q,\dot{q})\) is not compensated by
+the robot internally, so it is read from the libfranka model interface and added
+explicitly to the commanded torque in the control callback. Including it cancels
+the velocity-dependent coupling of the manipulator dynamics, so that the closed
+loop behaves as the intended Cartesian impedance rather than being distorted by
+the arm's own inertial coupling during motion.
+
+\paragraph{Gravity term: already handled inside libfranka.}
+The gravity torque \(\tau_g(q)\) is not added as a user-level term, because it is
+already compensated internally by libfranka. In the external joint-torque
+control mode of the Franka Control Interface, the robot runs its own rigid-body
+model and continuously compensates gravity (and motor friction) on board; the
+torque commanded through libfranka is added on top of this internal gravity
+compensation, so the command is interpreted as the torque excluding gravity
+\cite{FrankaFCI2023}.
+
 Consequently, the implementation returns
 \begin{equation}
 \tau_{\mathrm{cmd,impl}}
@@ -1268,11 +1278,12 @@ J^\top(q)\mathbf{F}
 \tau_c(q,\dot{q}).
 \label{eq:commanded_torque_libfranka_null}
 \end{equation}
-Thus, gravity is not neglected physically; the robot-side control interface adds
-the commanded torque on top of its internal gravity compensation, so the gravity
-torque \(\tau_g(q)\) is already taken into account and is not added again in the
-user callback. This avoids double compensation and keeps the implementation
-consistent with the official libfranka Cartesian impedance example.
+Thus, of the two compensation terms only the Coriolis term \(\tau_c(q,\dot{q})\)
+appears explicitly in the user callback. Gravity is not neglected physically; the
+gravity torque \(\tau_g(q)\) is already taken into account one level below the
+user equation, so adding it again would compensate the same effect twice. This
+keeps the implementation consistent with the official libfranka Cartesian
+impedance example.
 
 \section{Stiffness and Damping Representation}
 \label{subsec:KD_matrices}
