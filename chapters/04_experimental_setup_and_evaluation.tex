@@ -137,6 +137,115 @@ matrix should not be interpreted only as three independent translational
 springs and three independent rotational springs. For a virtual-center
 behavior, translation and rotation must be selected consistently.
 
+\section{Screw-Motion Evaluation}
+\label{sec:screw_motion_evaluation}
+
+By Chasles' theorem, any rigid-body displacement can be described as a screw
+motion: a rotation about an axis combined with a translation along that same
+axis \citep{Murray1994}. The contact-induced motion of the tool is therefore
+neither a pure rotation nor a pure translation but a screw motion, and its
+screw axis---or, for planar motion, its instantaneous pole---gives a compact
+geometric description of how the tool moves during contact. This is the
+geometric basis used here to judge where the passive motion pivots.
+
+The measured displacement during contact contains both translation and
+rotation. Over a short contact interval, the measured pose change is written
+as
+
+\begin{equation}
+\Delta x_C
+=
+\begin{bmatrix}
+\Delta p_C\\
+\Delta \theta
+\end{bmatrix},
+\label{eq:contact_displacement_vector}
+\end{equation}
+
+where \(\Delta p_C\) is the translational displacement associated with the
+contact interval and \(\Delta\theta\) is the small angular displacement. If
+\(\|\Delta\theta\|>0\), the instantaneous pole of the measured motion---the
+point about which the displacement is, to first order, a pure rotation---follows
+from this screw decomposition as
+
+\begin{equation}
+r_{\mathrm{inst}}
+=
+\frac{
+\Delta\theta
+\times
+\Delta p_C
+}{
+\|\Delta\theta\|^2
+}.
+\label{eq:instantaneous_pole_displacement}
+\end{equation}
+
+For the corresponding velocity representation, Chasles' theorem gives the
+instantaneous screw axis directly from the measured twist: its point closest to
+the origin and its direction are
+
+\begin{equation}
+\xi
+=
+\begin{bmatrix}
+v\\
+\omega
+\end{bmatrix},
+\qquad
+p_{\mathrm{ISA}}
+=
+\frac{\omega \times v}{\|\omega\|^2},
+\qquad
+a_{\mathrm{ISA}}
+=
+\frac{\omega}{\|\omega\|}.
+\label{eq:contact_twist_and_isa}
+\end{equation}
+
+Both forms describe the same physical idea: the tool moves in a screw-like way,
+and the instantaneous pole or screw axis is a compact geometric description of
+that motion.
+
+For good passive self-alignment the tool should pivot at the contact edge
+rather than about its own frame origin. The desired pole is therefore the tool
+edge, \(r_P=p_e\); in this evaluation the virtual center of rotation is exactly
+this desired pole, so that ``virtual center'' and ``desired instantaneous pole
+at the edge'' denote the same point. The pole error is
+
+\begin{equation}
+e_P
+=
+\left\|
+r_{\mathrm{inst}}
+-
+p_e
+\right\|,
+\label{eq:pole_error_metric}
+\end{equation}
+
+and a smaller \(e_P\) means the measured motion pivots closer to the edge.
+Equivalently, for the velocity-based screw axis, the relevant quantity is the
+distance from the tool edge to that axis,
+
+\begin{equation}
+d_{\mathrm{ISA},e}
+=
+\left\|
+\left(
+p_e - p_{\mathrm{ISA}}
+\right)
+\times
+a_{\mathrm{ISA}}
+\right\|,
+\label{eq:isa_center_distance}
+\end{equation}
+
+which is the Chasles distance between the edge and the instantaneous screw
+axis. The stiffness setting that minimizes this distance places the passive
+pivot at the edge. This metric is evaluated together with the angular error,
+displacement magnitude, contact force, and torque signals.
+
 \section{Cartesian Stiffness Selection}
 \label{sec:cartesian_stiffness_selection}
 
@@ -385,8 +494,8 @@ Test & \(k_x,k_y,k_z\) & \(k_{rx},k_{ry},k_{rz}\) & Expected behavior \\
 \paragraph{Intuition.}
 When the tool edge is pressed onto the table, the tool rocks into place by
 rotating and sliding at the same time, and at each instant it turns about a
-single pivot point---the instantaneous pole that
-Section~\ref{sec:screw_motion_evaluation} defines through Chasles' theorem.
+single pivot point---the instantaneous pole introduced in
+Section~\ref{sec:screw_motion_evaluation} through Chasles' theorem.
 Good self-alignment means this pivot sits at the contact edge, so the tool face
 settles flat onto the table like a door swinging about its hinge; if the pivot
 were at the wrist instead, the edge would scrape rather than the face settling.
@@ -677,115 +786,6 @@ must be kept in mind when interpreting the results. More elaborate sensorless
 approaches can additionally estimate environment stiffness for impedance
 tuning, including on the Franka Emika Panda, but such estimation is outside the
 implemented scope of the present thesis \citep{Roveda2021SensorlessStiffness}.
-
-\section{Screw-Motion Evaluation}
-\label{sec:screw_motion_evaluation}
-
-By Chasles' theorem, any rigid-body displacement can be described as a screw
-motion: a rotation about an axis combined with a translation along that same
-axis \citep{Murray1994}. The contact-induced motion of the tool is therefore
-neither a pure rotation nor a pure translation but a screw motion, and its
-screw axis---or, for planar motion, its instantaneous pole---gives a compact
-geometric description of how the tool moves during contact. This is the
-geometric basis used here to judge where the passive motion pivots.
-
-The measured displacement during contact contains both translation and
-rotation. Over a short contact interval, the measured pose change is written
-as
-
-\begin{equation}
-\Delta x_C
-=
-\begin{bmatrix}
-\Delta p_C\\
-\Delta \theta
-\end{bmatrix},
-\label{eq:contact_displacement_vector}
-\end{equation}
-
-where \(\Delta p_C\) is the translational displacement associated with the
-contact interval and \(\Delta\theta\) is the small angular displacement. If
-\(\|\Delta\theta\|>0\), the instantaneous pole of the measured motion---the
-point about which the displacement is, to first order, a pure rotation---follows
-from this screw decomposition as
-
-\begin{equation}
-r_{\mathrm{inst}}
-=
-\frac{
-\Delta\theta
-\times
-\Delta p_C
-}{
-\|\Delta\theta\|^2
-}.
-\label{eq:instantaneous_pole_displacement}
-\end{equation}
-
-For the corresponding velocity representation, Chasles' theorem gives the
-instantaneous screw axis directly from the measured twist: its point closest to
-the origin and its direction are
-
-\begin{equation}
-\xi
-=
-\begin{bmatrix}
-v\\
-\omega
-\end{bmatrix},
-\qquad
-p_{\mathrm{ISA}}
-=
-\frac{\omega \times v}{\|\omega\|^2},
-\qquad
-a_{\mathrm{ISA}}
-=
-\frac{\omega}{\|\omega\|}.
-\label{eq:contact_twist_and_isa}
-\end{equation}
-
-Both forms describe the same physical idea: the tool moves in a screw-like way,
-and the instantaneous pole or screw axis is a compact geometric description of
-that motion.
-
-For good passive self-alignment the tool should pivot at the contact edge
-rather than about its own frame origin. The desired pole is therefore the tool
-edge, \(r_P=p_e\); in this evaluation the virtual center of rotation is exactly
-this desired pole, so that ``virtual center'' and ``desired instantaneous pole
-at the edge'' denote the same point. The pole error is
-
-\begin{equation}
-e_P
-=
-\left\|
-r_{\mathrm{inst}}
--
-p_e
-\right\|,
-\label{eq:pole_error_metric}
-\end{equation}
-
-and a smaller \(e_P\) means the measured motion pivots closer to the edge.
-Equivalently, for the velocity-based screw axis, the relevant quantity is the
-distance from the tool edge to that axis,
-
-\begin{equation}
-d_{\mathrm{ISA},e}
-=
-\left\|
-\left(
-p_e - p_{\mathrm{ISA}}
-\right)
-\times
-a_{\mathrm{ISA}}
-\right\|,
-\label{eq:isa_center_distance}
-\end{equation}
-
-which is the Chasles distance between the edge and the instantaneous screw
-axis. The stiffness setting that minimizes this distance places the passive
-pivot at the edge. This metric is evaluated together with the angular error,
-displacement magnitude, contact force, and torque signals.
 
 \section{Alignment Evaluation}
 \label{sec:alignment_evaluation}
