@@ -181,6 +181,13 @@ r_{\mathrm{inst}}
 \label{eq:instantaneous_pole_displacement}
 \end{equation}
 
+Here \(r_{\mathrm{inst}}\) is the pole position \emph{relative} to the
+end-effector point whose displacement \(\Delta p_C\) is used, so the absolute
+pole in the base frame is \(p_{\mathrm{pole}}=p_{\mathrm{EE}}+r_{\mathrm{inst}}\).
+The estimate is reliable only when the angular displacement is not too small: if
+\(\|\Delta\theta\|\) is below a small threshold, the division amplifies
+measurement noise and the pole for that interval is discarded.
+
 For the corresponding velocity representation, Chasles' theorem gives the
 instantaneous screw axis directly from the measured twist: its point closest to
 the origin and its direction are
@@ -208,32 +215,34 @@ and the instantaneous pole or screw axis is a compact geometric description of
 that motion.
 
 For good passive self-alignment the tool should pivot at the contact edge
-rather than about its own frame origin. The desired pole is therefore the tool
-edge, \(r_P=p_e\); in this evaluation the virtual center of rotation is exactly
+rather than about its own frame origin. The desired pole is the tool
+edge \(p_e\); in this evaluation the virtual center of rotation is exactly
 this desired pole, so that ``virtual center'' and ``desired instantaneous pole
-at the edge'' denote the same point. The pole error is
+at the edge'' denote the same point. Because \(r_{\mathrm{inst}}\) is expressed
+relative to the end-effector, the pole error is computed with the absolute pole
+\(p_{\mathrm{pole}}=p_{\mathrm{EE}}+r_{\mathrm{inst}}\) so that both quantities
+are in the same base frame:
 
 \begin{equation}
 e_P
 =
 \left\|
-r_{\mathrm{inst}}
--
-p_e
+p_{\mathrm{EE}} + r_{\mathrm{inst}} - p_e
 \right\|,
 \label{eq:pole_error_metric}
 \end{equation}
 
 and a smaller \(e_P\) means the measured motion pivots closer to the edge.
-Equivalently, for the velocity-based screw axis, the relevant quantity is the
-distance from the tool edge to that axis,
+Equivalently, for the velocity-based screw axis through the absolute point
+\(p_{\mathrm{EE}}+p_{\mathrm{ISA}}\), the relevant quantity is the distance from
+the tool edge to that axis,
 
 \begin{equation}
 d_{\mathrm{ISA},e}
 =
 \left\|
 \left(
-p_e - p_{\mathrm{ISA}}
+p_e - p_{\mathrm{EE}} - p_{\mathrm{ISA}}
 \right)
 \times
 a_{\mathrm{ISA}}
@@ -472,6 +481,35 @@ only as a starting point. The damping values are
 then checked experimentally by verifying that the table-contact response is
 not oscillatory and that the commanded torques remain smooth.
 
+For the values computed above, the normalized approximation gives, for example,
+
+\begin{equation}
+d_z = 2\sqrt{3000}\approx 110,
+\qquad
+d_x = d_y = 2\sqrt{1000}\approx 63,
+\qquad
+d_r = 2\sqrt{8}\approx 5.7 ,
+\label{eq:worked_damping_example}
+\end{equation}
+
+in \(\mathrm{N\,s/m}\) for the translational and \(\mathrm{Nm\,s/rad}\) for the
+rotational terms. Collecting the translational and rotational stiffness with
+the matching damping, one representative complete initial setting is
+
+\begin{equation}
+K_x = \operatorname{diag}(1000,\,1000,\,3000,\ 4.3,\,4.3,\,5),
+\label{eq:worked_stiffness_set}
+\end{equation}
+\begin{equation}
+D_x \approx \operatorname{diag}(63,\,63,\,110,\ 4.2,\,4.2,\,4.5),
+\label{eq:worked_damping_set}
+\end{equation}
+
+with translational stiffness in \(\mathrm{N/m}\), rotational stiffness in
+\(\mathrm{Nm/rad}\), and damping in the corresponding units. This single
+setting is the starting point from which the candidate settings below vary the
+gains.
+
 \begin{table}[H]
 \centering
 \caption{Example candidate stiffness settings for the edge-contact alignment
@@ -490,6 +528,13 @@ Test & \(k_x,k_y,k_z\) & \(k_{rx},k_{ry},k_{rz}\) & Expected behavior \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+The candidate rotational stiffness values bracket the quasi-static estimate of
+\cref{eq:rotational_stiffness_example}: Tests~3--5 lie at or near it (about
+\(4\)--\(8\,\mathrm{Nm/rad}\)), while Tests~1--2 are deliberately stiffer to show
+how excessive rotational stiffness resists the passive alignment. The
+translational values are kept stiff in the normal direction and softer
+laterally, following the quasi-static force--displacement estimates.
 
 \paragraph{Intuition.}
 When the tool edge is pressed onto the table, the tool rocks into place by
@@ -787,6 +832,73 @@ approaches can additionally estimate environment stiffness for impedance
 tuning, including on the Franka Emika Panda, but such estimation is outside the
 implemented scope of the present thesis \citep{Roveda2021SensorlessStiffness}.
 
+\subsection{Commanded and Measured Wrench}
+\label{subsec:commanded_measured_wrench}
+
+Two different Cartesian wrenches appear in the impedance-controlled contact, and
+it is important to keep them apart.
+
+The first is the \emph{commanded} (calculated) impedance wrench. It is computed
+directly by the controller from the pose error and velocity,
+
+\begin{equation}
+W_{\mathrm{imp}}
+=
+\begin{bmatrix} \mathbf{f}\\ \mathbf{m}\end{bmatrix}
+=
+\begin{bmatrix}
+K_p\mathbf{e}_p - D_p\dot{\mathbf{p}}_{\mathrm{EE}}\\
+K_R\mathbf{e}_R - D_R\omega_{\mathrm{EE}}
+\end{bmatrix},
+\label{eq:commanded_wrench_logging}
+\end{equation}
+
+and it is the wrench the controller imposes on the robot through \(J^\top\). It
+is always available, requires no sensor, and is exactly the quantity the
+stiffness and damping matrices produce.
+
+The second is the \emph{measured} (estimated external) wrench
+\(W_{\mathrm{ext}}\), the contact reaction from the table. It is not commanded;
+it is what the environment applies to the tool. The robot provides it directly
+as the model-based estimate \texttt{O\_F\_ext\_hat\_K}. Alternatively, it can be
+reconstructed from the external joint torque \(\tau_{\mathrm{ext}}\): since an
+external wrench maps to joint torque by \(\tau_{\mathrm{ext}}=J^\top
+W_{\mathrm{ext}}\), the damped least-squares inverse gives
+
+\begin{equation}
+W_{\mathrm{ext}}
+\approx
+\left(JJ^\top + \lambda^2 I\right)^{-1} J\,\tau_{\mathrm{ext}},
+\qquad
+W_{\mathrm{ext}}
+=
+\begin{bmatrix} \mathbf{f}_{\mathrm{ext}}\\ \mathbf{m}_{\mathrm{ext}}\end{bmatrix},
+\label{eq:external_wrench_estimate}
+\end{equation}
+
+where \(\lambda\) is a small damping factor for robustness near singular
+configurations.
+
+The two wrenches describe the same interaction from opposite sides. During the
+slow, quasi-static contact considered here the tool is close to equilibrium, so
+the commanded impedance wrench balances the external contact wrench,
+
+\begin{equation}
+W_{\mathrm{imp}} \approx -\,W_{\mathrm{ext}}.
+\label{eq:wrench_balance}
+\end{equation}
+
+The restoring spring--damper wrench produced by the controller therefore mirrors
+the contact push at the edge. For the effective-moment identification of
+Section~\ref{sec:effective_stiffness_damping_identification}, the contact moment
+\(M_C\) can be taken from either side: the commanded moment \(\mathbf{m}\) is
+always available and needs no estimation, while the measured moment
+\(\mathbf{m}_{\mathrm{ext}}\) (from \texttt{O\_F\_ext\_hat\_K} or
+\eqref{eq:external_wrench_estimate}) provides an independent check. Because of
+\eqref{eq:wrench_balance} the two should agree up to sign and the small dynamic
+terms, so the choice does not change the identified behavior; it is only a
+matter of which measurement is used.
+
 \section{Alignment Evaluation}
 \label{sec:alignment_evaluation}
 
@@ -837,20 +949,25 @@ rotation itself is described by
 \label{eq:contact_induced_rotation}
 \end{equation}
 
-With the sign convention used in this thesis, the contact-induced rotation is
-considered favorable if it acts against the initial orientation error,
+The alignment error \(\mathbf{e}_R=z_T\times n_s\) points along the axis that
+rotates the tool normal toward the table normal, that is, along the corrective
+direction. The contact-induced rotation is therefore favorable when it has a
+positive component along this corrective axis,
 
 \begin{equation}
 \mathbf{e}_{R,\mathrm{before}}^\top
 \Delta\theta_C
-<
-0.
+>
+0,
 \label{eq:passive_rotation_condition}
 \end{equation}
 
-This condition is used only as a local alignment indicator. The final
-judgement also includes the pole location, force level, torque level, and
-oscillation behavior.
+which is the condition for the passive rotation to reduce the misalignment.
+(The sign follows from \(\mathbf{e}_R=z_T\times n_s\) being the correction axis;
+it is the opposite of a convention in which \(\mathbf{e}_R\) is the
+current-minus-desired axis-angle error.) This condition is used only as a local
+alignment indicator. The final judgement also includes the pole location, force
+level, torque level, and oscillation behavior.
 
 \section{Experimental Procedure}
 \label{sec:experimental_procedure_contact}
