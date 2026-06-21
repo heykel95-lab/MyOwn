@@ -112,18 +112,19 @@ J^\top(q)\mathbf{F}
 \label{eq:software_commanded_torque}
 \end{equation}
 
-An explicit gravity term is not added in this software equation.
-This follows the structure of the official libfranka Cartesian impedance
-example, where the user callback forms the commanded torque from the Cartesian
-task torque, the null-space torque, and the Coriolis term, but does not add a
-separate gravity vector.
-The reason is that, for external joint-torque control, the Franka Control
-Interface applies the desired torque command with robot-side gravity and
-motor-friction compensation already included \cite{FrankaFCI2023}.
-Therefore, the gravity compensation is not missing from the physical robot
-control loop; it is handled below the user-level torque equation.
-Adding another gravity vector in the user controller would compensate the same
-effect twice and would not match the implementation structure used here.
+An explicit gravity term \(\tau_g(q)\) is not added in this software equation,
+because gravity compensation is already performed internally by libfranka. In
+the external joint-torque control mode of the Franka Control Interface, the
+robot runs its own rigid-body model and continuously compensates the gravity
+torque on board; the torque commanded through libfranka is added \emph{on top
+of} this internal gravity compensation, so the command is interpreted as the
+torque \emph{excluding} gravity \cite{FrankaFCI2023}. The user callback
+therefore forms the commanded torque from the Cartesian task torque, the
+null-space torque, and the Coriolis term only, exactly as in the official
+libfranka Cartesian impedance example.
+Gravity is thus not missing from the physical control loop---it is taken into
+account one level below the user-level torque equation---and adding a separate
+gravity vector here would compensate the same effect twice.
 
 This expression is the implementation form of the torque structure derived in
 Chapter~2.
@@ -495,7 +496,7 @@ implemented controller.
 \subsection{Control Phases}
 \label{sec:control_phases}
 
-The table-contact experiment runs through a short sequence of control phases.
+The surface-contact experiment runs through a short sequence of control phases.
 Each phase selects the current reference orientation and the gain set used in the
 impedance law, which is why the callback uses the phase-dependent symbols
 \(R_{d,\mathrm{phase}}\) and \(K_{p,\mathrm{used}},K_{R,\mathrm{used}}\) rather
@@ -677,7 +678,7 @@ The implemented control loop follows the sequence below:
 
 The core structure of the implementation is shown in Listing~\ref{lst:app_callback_core} (Appendix~\ref{app:code}).
 The listing keeps only the operations needed to show the control flow.
-Task-specific files define the desired end-effector pose, the table-contact
+Task-specific files define the desired end-effector pose, the surface-contact
 configuration, and the candidate impedance parameters used for a given test.
 They specify the surface-frame translational stiffness values
 \(K_n\), \(K_{t_1}\), and \(K_{t_2}\) (normal and two tangential directions),
@@ -692,7 +693,7 @@ Listing~\ref{lst:app_callback_core} (Appendix~\ref{app:code}) summarizes the mai
 The callback reads the current robot state, evaluates the Cartesian impedance law, adds the null-space torque and the optional Coriolis term, limits the resulting torque command, and returns it to libfranka.
 If a test configuration uses only translational compliance, the rotational
 control part can be disabled by setting \(K_{R,0}=0_{3\times3}\) and
-\(D_{R,0}=0_{3\times3}\). For the table-contact alignment experiment,
+\(D_{R,0}=0_{3\times3}\). For the surface-contact alignment experiment,
 however, both translational and rotational components are relevant because the
 contact wrench contains both force and moment terms.
 

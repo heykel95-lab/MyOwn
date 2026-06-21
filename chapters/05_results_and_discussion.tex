@@ -4,7 +4,7 @@
 \section{Overview of Tested Gain Settings}
 \label{sec:results_contact}
 
-This section reports the table-contact experiment for the candidate stiffness
+This section reports the surface-contact experiment for the candidate stiffness
 settings of Table~\ref{tab:example_candidate_stiffness_sets}. The values given
 below are \emph{illustrative expectations} derived from the contact physics:
 they show the trends and the order of magnitude anticipated for each setting,
@@ -65,15 +65,15 @@ appears to pivot. With stiff rotation, the small rotation occurs essentially
 about the tool-frame origin, so the pole lies far from the contact edge and the
 pole error \(e_P\) is large. With compliant rotation and added lateral
 compliance, the pole is expected to migrate toward the contact edge and the
-table surface, reducing \(e_P\) and matching the useful passive pivot near the
+surface, reducing \(e_P\) and matching the useful passive pivot near the
 contact. This is the geometric signature of good passive self-alignment.
 
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[scale=1.0]
-        % table
+        % surface
         \draw[very thick] (0,0) -- (10,0);
-        \node[anchor=north east] at (10,0) {\footnotesize table};
+        \node[anchor=north east] at (10,0) {\footnotesize surface};
         % tilted tool resting on its edge
         \draw[very thick] (3,0) -- (6.6,2.7);
         \node[anchor=south] at (6.7,2.7) {\footnotesize tool};
@@ -92,7 +92,7 @@ contact. This is the geometric signature of good passive self-alignment.
     \end{tikzpicture}
     \caption{Qualitative sketch of the instantaneous pole. A compliant setting
     places the pivot near the contact edge, so the tool face rocks flat onto the
-    table; a stiff setting leaves the pivot near the wrist, so the edge scrapes
+    surface; a stiff setting leaves the pivot near the wrist, so the edge scrapes
     instead. Illustrative; the measured pole is computed from the logged motion.}
     \label{fig:results_pole_geometry}
 \end{figure}
@@ -179,7 +179,7 @@ Test
 With the damping initialized from the critical-damping approximation, the
 contact response is expected to settle without sustained oscillation. An
 under-damped setting would show oscillation in the orientation error and the
-contact force after the tool touches or leaves the table; the selected damping
+contact force after the tool touches or leaves the surface; the selected damping
 values are checked against this on the logged signals.
 
 \section{Least-Squares Identification Results}
@@ -225,7 +225,7 @@ The expected trade-off is the same physical trade-off that appears throughout
 Cartesian impedance control. Higher stiffness improves pose regulation but
 increases contact forces and commanded torques. Lower stiffness improves
 compliance but can allow excessive displacement and may make the alignment
-motion poorly defined. For the table-contact task, the important design
+motion poorly defined. For the surface-contact task, the important design
 question is not simply whether the robot is soft or stiff. The important
 question is where the compliance appears to be located geometrically.
 
@@ -234,7 +234,7 @@ question is where the compliance appears to be located geometrically.
 A purely diagonal stiffness matrix can make the robot compliant, but it does
 not directly encode a useful virtual center of rotation. In that case, the
 contact wrench may still produce useful alignment because the contact force
-acts at the tool edge and because the table constrains the motion. However,
+acts at the tool edge and because the surface constrains the motion. However,
 the effective pivot point must then be evaluated from the measured motion
 rather than assumed from the commanded stiffness matrix. This is why the
 instantaneous pole or screw-axis evaluation is important in the direct

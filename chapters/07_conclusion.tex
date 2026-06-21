@@ -21,8 +21,8 @@ At each \(1\,\mathrm{ms}\) control cycle, the robot state is read, the Jacobian 
 The implementation also logs the relevant measured and computed quantities to CSV files.
 These logged values include the end-effector position, desired position, positional error, rotational error, Cartesian velocity, Cartesian force and moment, and commanded joint torques.
 
-The current experimental focus is a table-contact alignment task. In this
-experiment, a tool edge contacts a table and the external contact wrench
+The current experimental focus is a surface-contact alignment task. In this
+experiment, a tool edge contacts a surface and the external contact wrench
 produces both force and moment components. The tool is deliberately started
 with a small orientation error relative to the surface so that the experiment
 can test whether contact reduces this misalignment passively. Because the robot
@@ -88,7 +88,7 @@ Several limitations of the work presented in this thesis remain.
 First, the evaluation is based on logged robot states and commanded torques.
 No dedicated external force/torque sensor is used; the controller relies on the
 robot's model-based external wrench estimate \texttt{O\_F\_ext\_hat\_K} for
-contact detection, so the table-contact wrench is estimated rather than
+contact detection, so the surface-contact wrench is estimated rather than
 measured directly. The passive alignment behavior is therefore evaluated from
 the resulting displacement, the computed impedance wrench, the commanded
 torques, and this estimated external wrench rather than from a directly
@@ -98,7 +98,7 @@ this limitation, but it would require an additional measurement or estimation
 layer beyond the implemented controller \citep{Roveda2021SensorlessStiffness}.
 For the same reason, the least-squares stiffness and damping matrices should
 be interpreted as effective contact models derived from the available logged
-signals, not as direct measurements of the physical table or tool stiffness.
+signals, not as direct measurements of the physical surface or tool stiffness.
 
 Second, the compensation terms are obtained from the libfranka model interface and depend on the nominal robot model.
 Model errors, payload uncertainty, friction, and unmodeled dynamics can influence the measured response.
@@ -117,7 +117,7 @@ This representation is suitable for the tested motions, but rotations close to \
 The controller should therefore be tested carefully before applying it to tasks with very large orientation errors.
 The virtual-center formulation is presently treated as a passive gain-design
 direction, not as an additional active rotation command. A fully selectable
-virtual center of rotation above, below, or on the table is not yet implemented
+virtual center of rotation above, below, or on the surface is not yet implemented
 as a mature coupled gain construction. Thus, the implemented controller can
 test passive alignment from an intentionally tilted start pose with diagonal
 Cartesian gains, but complete virtual-center behavior would require the
@@ -140,12 +140,12 @@ Instead of selecting fixed stiffness and damping values before each experiment,
 the controller could adjust these parameters online depending on the task
 phase, contact error, or estimated external interaction.
 This would allow the robot to be stiff during accurate positioning and softer
-during table contact or human interaction.
+during surface contact or human interaction.
 
-The table-contact experiment could be extended with an explicit
+The surface-contact experiment could be extended with an explicit
 virtual-center gain construction. In such a passive impedance design, the user
-could choose whether the effective rotation point lies on the table, above the
-table, or below the table, and this choice would define coupled stiffness and
+could choose whether the effective rotation point lies on the surface, above the
+surface, or below the surface, and this choice would define coupled stiffness and
 damping matrices through the lever arm to that point. The impedance law would
 still compute its force and moment from the same spring--damper relation; the
 difference would be the structured off-diagonal coupling in \(K\) and \(D\). For
@@ -154,10 +154,10 @@ the surface normal. If the surface were unknown before contact, an additional
 surface-estimation method would be required before the same self-aligning
 impedance formulation could be used.
 
-The experimental evaluation could also be expanded with repeated table-contact
+The experimental evaluation could also be expanded with repeated surface-contact
 trials, different tool-edge geometries, different virtual-center locations,
 larger initial angular errors, and different payloads. This would make it
 possible to quantify repeatability and robustness more precisely.
 Finally, further refining the operational-space inertia model and its use in
 damping selection could improve the dynamic behavior during contact approach,
-contact release, and faster tool motions near the table.
+contact release, and faster tool motions near the surface.

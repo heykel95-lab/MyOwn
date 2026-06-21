@@ -45,13 +45,13 @@ For example, a robot that moves a tool along a surface should be stiff
 in the direction in which a precise distance or contact condition must
 be maintained, but more compliant in directions where small
 misalignments should not generate large forces. The same idea applies
-to orientation: if a tool edge contacts a table while the tool is
+to orientation: if a tool edge contacts a surface while the tool is
 slightly tilted, the external contact wrench contains both a force and
 a moment. A suitably selected Cartesian stiffness matrix can allow a
 small translation and rotation instead of resisting the contact
 rigidly. The resulting displacement can be interpreted as a screw
 motion, and its instantaneous screw axis gives a geometric description
-of how the tool tends to align passively with the table
+of how the tool tends to align passively with the surface
 \citep{Doria2019MozziAxis}. Therefore, the
 central control design question is not only how to compute a torque
 command, but also how to choose meaningful stiffness and damping
@@ -96,7 +96,7 @@ than amplify misalignment
 \citep{Nevins1989ComputerControlledAssembly,Watson1978RCC,Wang2019VariableComplianceCenter,Hartisch2022FlexureRCC}.
 In this thesis, the same principle is investigated as a passive
 gain-selection problem within a Cartesian impedance controller for a
-table-contact task.
+surface-contact task.
 
 \section{Problem Statement}
 \label{sec:problem_statement}
@@ -113,17 +113,17 @@ needed. Third, the torque command must remain smooth and bounded so
 that the robot can be operated safely in the real-time control loop.
 
 The self-alignment task adds another difficulty. A tool that is tilted
-with respect to a table cannot be aligned by translational compliance
+with respect to a surface cannot be aligned by translational compliance
 alone. The orientation behavior must be defined so that the tool can
-rotate toward the table while the contact force remains limited. A
+rotate toward the surface while the contact force remains limited. A
 virtual center of rotation provides a useful way to describe this
 behavior: the tool should move as if the effective pivot point were
-located at a useful point near the tool edge or table contact. However,
+located at a useful point near the tool edge or surface contact. However,
 this requires a coupling between translational and rotational behavior
 and is more complex than a purely diagonal impedance matrix. In this
 thesis, the virtual-center idea is therefore treated carefully as a
 task-to-impedance mapping concept and evaluated through the measured
-motion caused by table contact.
+motion caused by surface contact.
 
 \section{Objectives of the Thesis}
 \label{sec:objectives}
@@ -133,7 +133,7 @@ Cartesian impedance controller for the Franka Emika Panda. The controller is
 not evaluated only as a position-tracking controller. Its main purpose is to
 support compliant contact with a known surface and to study whether a selected
 Cartesian stiffness and damping behavior can create passive self-alignment of a
-tool edge during table contact.
+tool edge during surface contact.
 
 \subsection{Design of a Cartesian Impedance Controller}
 The first objective is to formulate the Cartesian impedance law used in the
@@ -155,11 +155,11 @@ The third objective is to define the controller behavior with respect to a known
 surface frame. The surface normal and tangent directions are used to express
 stiffness and damping in task-relevant directions. This makes it possible to
 separate normal compliance, tangential motion, and rotational behavior relative
-to the table instead of tuning all gains only in the robot base frame.
+to the surface instead of tuning all gains only in the robot base frame.
 
 \subsection{Passive Self-Alignment During Contact}
 The fourth objective is to study passive alignment when a deliberately tilted
-tool edge touches the table. The contact wrench produces both force and moment,
+tool edge touches the surface. The contact wrench produces both force and moment,
 and the selected compliance should allow the resulting motion to reduce the
 orientation error without adding an active rotation command. The motion is
 evaluated through its instantaneous screw axis or pole, and the logged data are
@@ -189,7 +189,7 @@ The main contributions of the thesis are:
     mapping, and model-based Coriolis compensation;
     \item the construction of task-dependent stiffness and damping
     matrices for translational and rotational compliance;
-    \item the investigation of a table-contact experiment in which a
+    \item the investigation of a surface-contact experiment in which a
     tool edge generates a combined contact force and moment;
     \item the discussion of passive self-alignment using rotational
     compliance, screw-motion geometry, and a virtual center of

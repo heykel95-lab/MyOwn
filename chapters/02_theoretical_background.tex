@@ -1268,10 +1268,11 @@ J^\top(q)\mathbf{F}
 \tau_c(q,\dot{q}).
 \label{eq:commanded_torque_libfranka_null}
 \end{equation}
-Thus, gravity is not neglected physically; it is compensated by the robot-side
-control interface rather than being added again in the user callback.
-This avoids double compensation and keeps the implementation consistent with
-the official libfranka Cartesian impedance example.
+Thus, gravity is not neglected physically; the robot-side control interface adds
+the commanded torque on top of its internal gravity compensation, so the gravity
+torque \(\tau_g(q)\) is already taken into account and is not added again in the
+user callback. This avoids double compensation and keeps the implementation
+consistent with the official libfranka Cartesian impedance example.
 
 \section{Stiffness and Damping Representation}
 \label{subsec:KD_matrices}
@@ -1853,7 +1854,7 @@ actually implemented and evaluated in this thesis: the block-diagonal Cartesian
 impedance law of \cref{eq:cartesian_impedance_control_law}, with decoupled
 translational and rotational springs, together with the projected null-space
 term and the model-based Coriolis compensation. The passive self-alignment
-observed during table contact is an emergent property of this controller under
+observed during surface contact is an emergent property of this controller under
 contact, produced by the rotational compliance and the contact geometry, rather
 than by a separate control mode. It is therefore covered by the same analysis.
 
