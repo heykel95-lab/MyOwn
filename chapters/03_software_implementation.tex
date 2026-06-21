@@ -355,7 +355,7 @@ trajectory planner, or an external perception/contact-estimation method.
 The present controller does not estimate this normal by itself; it only uses
 the desired orientation that is supplied to it.
 
-\subsection{Virtual-Center Self-Alignment Extension}
+\subsection{Passive Self-Alignment During Contact}
 \label{sec:self_alignment_virtual_center}
 
 The orientation construction in Section~\ref{sec:tool_orientation_given_surface}
@@ -366,162 +366,13 @@ downward motion, the contact force acts at the edge, which is offset from the
 tool-frame origin, and therefore produces a moment. Under the compliant (low)
 rotational stiffness, this moment rotates the tool until its face becomes
 parallel to the surface, reducing the misalignment on its own.
-No active rotation about a virtual center is used.
-The virtual center of rotation is introduced here only as an optional geometric
-interpretation of where this passive rotation appears to pivot, and as a
-possible extension that would let the pivot point be shaped explicitly. It
-couples translation and rotation through a chosen point on, above, or below the
-surface.
-
-Let \(p_s\in\mathbb{R}^{3}\) be a point on the given surface and let
-\(n_s\in\mathbb{R}^{3}\) be the unit surface normal.
-The virtual center of rotation is defined as
-
-\begin{equation}
-p_c
-=
-p_s
-+
-h n_s,
-\label{eq:virtual_center_from_surface}
-\end{equation}
-
-where \(h\in\mathbb{R}\) is the chosen offset from the surface.
-The three important cases are
-
-\begin{equation}
-\begin{array}{lll}
-h=0, & p_c \text{ on the surface},\\[2mm]
-h>0, & p_c \text{ above the surface},\\[2mm]
-h<0, & p_c \text{ below the surface}.
-\end{array}
-\label{eq:virtual_center_offset_cases}
-\end{equation}
-
-The vector from the virtual center to the end-effector is
-
-\begin{equation}
-r_c
-=
-p_{\mathrm{EE}}
--
-p_c .
-\label{eq:implementation_virtual_center_lever_arm}
-\end{equation}
-
-If the end-effector rotates by a small angle
-\(\delta\theta\in\mathbb{R}^{3}\) about this virtual center, the corresponding
-linear displacement of the end-effector is approximated by
-
-\begin{equation}
-\delta p_{\mathrm{rot}}
-\approx
-\delta\theta
-\times
-r_c .
-\label{eq:implementation_vcr_position_motion}
-\end{equation}
-
-This equation is the key difference between simple orientation regulation and
-self-alignment with a virtual center of rotation.
-With simple orientation regulation, the controller tries to reduce the
-orientation error at the end-effector frame.
-With a virtual center of rotation, a rotation also implies a translational
-motion determined by the lever arm \(r_c\).
-The tool therefore behaves as if it pivots about the selected point \(p_c\).
-
-The simplified coupled error used for such a controller can be written as
-
-\begin{equation}
-\mathbf{e}_c
-=
-\begin{bmatrix}
-\mathbf{e}_p
--
-\mathbf{e}_R
-\times
-\mathbf{r}_c\\
-\mathbf{e}_R
-\end{bmatrix},
-\label{eq:implementation_vcr_coupled_error}
-\end{equation}
-
-where \(\mathbf{e}_p=\mathbf{p}_d-\mathbf{p}_{\mathrm{EE}}\) is the translational error and \(\mathbf{e}_R\) is
-the orientation error computed with respect to the surface-based desired
-orientation \(R_d\).
-The upper part of \(\mathbf{e}_c\) contains the translational error corrected by the
-motion that would be produced by rotating around the virtual center.
-The lower part contains the rotational error itself.
-
-The translational impedance force is then computed using the coupled
-translational error
-
-\begin{equation}
-\mathbf{f}_c
-=
-K_p
-\left(
-\mathbf{e}_p
--
-\mathbf{e}_R
-\times
-\mathbf{r}_c
-\right)
-+
-D_p
-\left(
-\dot{\mathbf{p}}_d
--
-\dot{\mathbf{p}}_{\mathrm{EE}}
-\right).
-\label{eq:implementation_vcr_force}
-\end{equation}
-
-The rotational impedance moment is computed as in the standard controller,
-
-\begin{equation}
-\mathbf{m}_R
-=
-K_R \mathbf{e}_R
--
-D_R\omega_{\mathrm{EE}} .
-\label{eq:implementation_vcr_rotational_moment}
-\end{equation}
-
-However, because the translational force acts at the end-effector while the
-virtual center is located at \(\mathbf{p}_c\), this force also creates an additional
-moment through the lever arm \(r_c\):
-
-\begin{equation}
-m_{\mathrm{lever}}
-=
-r_c
-\times
-f_c .
-\label{eq:implementation_vcr_lever_moment}
-\end{equation}
-
-The wrench used by the controller is therefore
-
-\begin{equation}
-F_c
-=
-\begin{bmatrix}
-f_c\\
-m_R + r_c\times f_c
-\end{bmatrix}.
-\label{eq:implementation_vcr_corrected_wrench}
-\end{equation}
-
-This is the corrected virtual-center coupling used for the practical
-Cartesian impedance structure.
-It is simpler than a full spatial impedance formulation
-\cite{Fasse1997SpatialImpedance}, but it includes the
-two important effects: the orientation error changes the effective
-translational error, and the translational force generates a moment about the
-selected virtual center.
-The resulting wrench is mapped to joint torques with the Jacobian transpose in
-the same way as the standard Cartesian impedance controller.
+No active rotation about a virtual center is used, and no virtual-center
+coupling is added to the commanded Cartesian force or moment. The controller
+therefore keeps the standard impedance structure from Chapter~\ref{ch:theory}:
+the commanded force is computed from the translational error and velocity, and
+the commanded moment is computed from the orientation error and angular
+velocity. The virtual center is only an interpretation of the measured passive
+motion, evaluated later from the instantaneous pole or screw axis.
 
 For the self-aligning surface task, the desired orientation \(R_d\) is
 constructed from the given surface normal, as described in
@@ -530,30 +381,20 @@ The rotational stiffness can be chosen lower around the axes that should align
 compliantly, while the translational stiffness regulates the constrained
 surface direction.
 During contact, the downward force lets the tool rotate toward the surface
-orientation passively, and the virtual center is only the point about which
-this measured rotation appears to pivot.
+orientation passively. The virtual center is only the point about which this
+measured rotation appears to pivot; it is not a point imposed by the commanded
+wrench.
 
 Thus, the implemented self-alignment relies on two passive ingredients.
 First, the surface normal defines a nominal desired tool orientation.
 Second, the downward contact force at the offset tool edge produces the moment
 that, under the compliant rotational stiffness, rotates the tool into
 alignment. The plane constraint and this rotational compliance are sufficient
-for the passive behavior; the virtual-center coupling described in this section
-is \emph{not} required for it.
-
-The virtual-center coupling is therefore an optional extension rather than a
-missing necessity. It would let the effective pivot point be shaped explicitly,
-through a chosen offset \(h\), instead of emerging from the contact geometry. To
-add it, the implementation would compute \(p_c=p_s+h n_s\) and \(r_c\) at every
-control step, replace the independent position/orientation error by the coupled
-error \eqref{eq:implementation_vcr_coupled_error}, and use the corrected
-virtual-center wrench \eqref{eq:implementation_vcr_corrected_wrench} in the
-torque command. This is a possible refinement of where the passive rotation
-pivots, not a prerequisite for self-alignment. Separately, if the surface were
-not given in advance, an additional estimation layer would be necessary to
-determine \(p_s\) and \(n_s\) from contact forces, external torque estimates,
-vision, or another sensor source; that surface-estimation problem is also not
-part of the implemented controller.
+for the passive behavior. Separately, if the surface were not given in
+advance, an additional estimation layer would be necessary to determine
+\(p_s\) and \(n_s\) from contact forces, external torque estimates, vision, or
+another sensor source; that surface-estimation problem is also not part of the
+implemented controller.
 
 \section{Control Phases}
 \label{sec:control_phases}

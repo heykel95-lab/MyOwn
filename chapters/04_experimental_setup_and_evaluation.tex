@@ -624,7 +624,32 @@ the pivot at a chosen point. Choosing the center at the tool edge,
 with \(K_c\) builds a stiffness whose centre of compliance is the edge.
 Equivalently, a stiffness defined diagonally in an edge-centred frame,
 \(K_{\mathrm{edge}}\), is mapped to the end-effector frame by the rigid-body
-adjoint \(\mathrm{Ad}_g\) of the end-effector-to-edge offset \(g\),
+adjoint \(\mathrm{Ad}_g\) of the end-effector-to-edge offset \(g\). In this
+thesis \(g\) is the small-displacement transform from the end-effector origin
+to the chosen edge point, and \(r_c=p_c-p_{\mathrm{EE}}\). With the edge frame
+chosen parallel to the end-effector frame, the displacement of the edge is
+
+\begin{equation}
+\begin{bmatrix}
+\Delta p_c\\
+\Delta \theta
+\end{bmatrix}
+=
+\underbrace{
+\begin{bmatrix}
+I_3 & [r_c]_\times\\
+0_3 & I_3
+\end{bmatrix}}_{\mathrm{Ad}_g}
+\begin{bmatrix}
+\Delta p\\
+\Delta \theta
+\end{bmatrix}.
+\label{eq:edge_adjoint_definition}
+\end{equation}
+
+Thus, \(\mathrm{Ad}_g\) is the matrix that converts an end-effector origin
+translation and rotation into the corresponding motion of the selected edge
+point. The coupled stiffness in the end-effector coordinates is then
 
 \begin{equation}
 K_{\mathrm{coupled}}
@@ -1338,6 +1363,54 @@ The matrix \(A\) can then be split into \(K_{rt}^{\mathrm{eff}}\),
 \(D_{rt}^{\mathrm{eff}}\), \(K_R^{\mathrm{eff}}\), and
 \(D_R^{\mathrm{eff}}\). These blocks are the effective stiffness and damping
 matrices computed by the fit.
+
+To make the last step explicit, define
+
+\begin{equation}
+\widehat{A}
+=
+\left(\Phi^\# Y\right)^\top
+=
+\begin{bmatrix}
+\widehat{A}_1 &
+\widehat{A}_2 &
+\widehat{A}_3 &
+\widehat{A}_4
+\end{bmatrix},
+\qquad
+\widehat{A}_j\in\mathbb{R}^{3\times3}.
+\label{eq:effective_coupling_final_A}
+\end{equation}
+
+The final fitted matrices are the four \(3\times3\) blocks of
+\(\widehat{A}\):
+
+\begin{equation}
+\boxed{
+\begin{aligned}
+\widehat{K}_{rt}^{\mathrm{eff}} &= \widehat{A}_1, &
+\widehat{D}_{rt}^{\mathrm{eff}} &= \widehat{A}_2,\\
+\widehat{K}_{R}^{\mathrm{eff}}  &= \widehat{A}_3, &
+\widehat{D}_{R}^{\mathrm{eff}}  &= \widehat{A}_4 .
+\end{aligned}}
+\label{eq:effective_final_stiffness_damping_blocks}
+\end{equation}
+
+Substituting these blocks back into the model gives the fitted moment
+prediction
+
+\begin{equation}
+\widehat{M}_{C,i}
+=
+\widehat{K}_{rt}^{\mathrm{eff}}\Delta x_{C,i}
++
+\widehat{D}_{rt}^{\mathrm{eff}}v_{C,i}
++
+\widehat{K}_{R}^{\mathrm{eff}}\Delta\theta_i
++
+\widehat{D}_{R}^{\mathrm{eff}}\omega_i .
+\label{eq:effective_final_fitted_moment}
+\end{equation}
 
 The identified coupling is useful even when the commanded matrix
 \(K_s^{(j)}\) is diagonal. In that case, the commanded off-diagonal stiffness
