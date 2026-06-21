@@ -2,96 +2,179 @@
 \addcontentsline{toc}{chapter}{List of Symbols}
 \markboth{List of Symbols}{List of Symbols}
 
-\renewcommand{\arraystretch}{1.25}
+\renewcommand{\arraystretch}{1.2}
+\newcommand{\symrow}[3]{#1 & #2 & #3\\}
 
 \noindent\textbf{Frames and Kinematics}\\[2pt]
-\begin{tabular}{@{}p{2.6cm}p{8.4cm}p{2.8cm}@{}}
-$\{0\}$ & Robot base frame & [-]\\
-$\{i\}$ & Joint / link frame $i$ & [-]\\
-$\{\mathrm{EE}\}$ & End-effector (tool) frame & [-]\\
-$n$ & Number of joints ($n=7$) & [-]\\
-$q,\ \dot{q}$ & Joint position / velocity vector & [rad], [rad/s]\\
-$R$ & Rotation matrix & [-]\\
-$T$ & Homogeneous transformation matrix & [-]\\
-$J(q)$ & Geometric Jacobian & [-]\\
-$z_i$ & Rotation axis of joint $i$ (base frame) & [-]\\
-$p_i$ & Position of frame $i$ (base frame) & [m]\\
-$a_i,\ d_i,\ \alpha_i$ & Denavit--Hartenberg parameters & [m], [m], [rad]\\
+\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symrow{$\{0\}$}{Robot base frame}{[-]}
+\symrow{$\{i\}$}{Joint / link frame $i$}{[-]}
+\symrow{$\{\mathrm{EE}\}$}{End-effector (tool) frame}{[-]}
+\symrow{$n$}{Number of joints ($n=7$)}{[-]}
+\symrow{$q,\ \dot{q}$}{Joint position / velocity vector}{[rad], [rad/s]}
+\symrow{$x$}{Cartesian end-effector state, $x=f(q)$}{[m], [rad]}
+\symrow{$f(\cdot)$}{Forward-kinematics map}{[-]}
+\symrow{$x,\ y,\ z$}{Cartesian position components}{[m]}
+\symrow{$p$}{Position / translation vector}{[m]}
+\symrow{$R$}{Rotation matrix}{[-]}
+\symrow{$R_x,\ R_y,\ R_z$}{Elementary rotations about $x,y,z$}{[-]}
+\symrow{$\alpha,\ \beta,\ \gamma$}{Roll, pitch, yaw angles}{[rad]}
+\symrow{$T$}{Homogeneous transformation matrix}{[-]}
+\symrow{$J(q)$}{Geometric Jacobian}{[-]}
+\symrow{$z_i$}{Rotation axis of joint $i$ (base frame)}{[-]}
+\symrow{$p_i$}{Position of frame $i$ (base frame)}{[m]}
+\symrow{$a_i,\ d_i,\ \alpha_i$}{Denavit--Hartenberg parameters}{[m], [m], [rad]}
+\symrow{$x_{\mathrm{EE}},y_{\mathrm{EE}},z_{\mathrm{EE}}$}{End-effector frame axes (base frame)}{[-]}
 \end{tabular}
 
-\vspace{1.0em}
+\vspace{0.9em}
 \noindent\textbf{Pose and Error}\\[2pt]
-\begin{tabular}{@{}p{2.6cm}p{8.4cm}p{2.8cm}@{}}
-$p_{\mathrm{EE}}$ & End-effector position & [m]\\
-$R_{\mathrm{EE}},\ T_{\mathrm{EE}}$ & End-effector orientation / transformation & [-]\\
-$R_d$ & Desired end-effector orientation & [-]\\
-$\Delta R$ & Relative rotation (orientation error) & [-]\\
-$\phi$ & Orientation-error angle & [rad]\\
-$u,\ [u]_\times$ & Orientation-error axis / its skew matrix & [-]\\
-$\mathbf{e}_p$ & Translational (position) error & [m]\\
-$\mathbf{e}_R$ & Rotational (orientation) error & [rad]\\
-$\mathbf{e}$ & Stacked Cartesian error & [-]\\
-$\dot{x}$ & Cartesian velocity (twist) & [m/s], [rad/s]\\
-$\dot{p}_{\mathrm{EE}},\ \omega_{\mathrm{EE}}$ & Linear / angular end-effector velocity & [m/s], [rad/s]\\
+\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symrow{$p_{\mathrm{EE}}$}{End-effector position}{[m]}
+\symrow{$R_{\mathrm{EE}},\ T_{\mathrm{EE}}$}{End-effector orientation / transformation}{[-]}
+\symrow{$p_d,\ R_d,\ T_d$}{Desired position / orientation / transformation}{[m], [-]}
+\symrow{$T_{\mathrm{err}}$}{Relative (error) transformation}{[-]}
+\symrow{$\Delta R$}{Relative rotation (orientation error)}{[-]}
+\symrow{$\Delta p_d$}{Position displacement in the desired frame}{[m]}
+\symrow{$\phi$}{Orientation-error angle}{[rad]}
+\symrow{$u,\ [u]_\times$}{Orientation-error axis / its skew matrix}{[-]}
+\symrow{$\mathbf{e}_p$}{Translational (position) error}{[m]}
+\symrow{$\mathbf{e}_R$}{Rotational (orientation) error}{[rad]}
+\symrow{$\mathbf{e}$}{Stacked Cartesian error}{[m], [rad]}
+\symrow{$\dot{x}$}{Cartesian velocity (twist)}{[m/s], [rad/s]}
+\symrow{$\dot{p}_{\mathrm{EE}},\ \omega_{\mathrm{EE}}$}{Linear / angular end-effector velocity}{[m/s], [rad/s]}
 \end{tabular}
 
-\vspace{1.0em}
-\noindent\textbf{Cartesian Impedance}\\[2pt]
-\begin{tabular}{@{}p{2.6cm}p{8.4cm}p{2.8cm}@{}}
-$K_p,\ D_p$ & Translational stiffness / damping & [N/m], [N\,s/m]\\
-$K_R,\ D_R$ & Rotational stiffness / damping & [Nm/rad], [Nm\,s/rad]\\
-$K_{p,0},\ D_{p,0}$ & Stiffness / damping in the base frame & [N/m], [N\,s/m]\\
-$K,\ D$ & Full $6\times6$ stiffness / damping & [-]\\
-$\mathbf{F}$ & Cartesian wrench & [N], [Nm]\\
-$\mathbf{f},\ \mathbf{m}$ & Cartesian force / moment & [N], [Nm]\\
-$\Lambda$ & Operational-space inertia matrix & [kg], [kg\,m$^2$]\\
-$\Gamma$ & Operational-space Coriolis matrix & [-]\\
-$M_q$ & Joint-space mass matrix & [-]\\
-$\boldsymbol{\tau}$ & Joint torque vector & [Nm]\\
-$\tau_c,\ \tau_g$ & Coriolis / gravity compensation torque & [Nm]\\
-$V$ & Lyapunov function (virtual energy) & [J]\\
-$M_i,\ \zeta$ & Directional inertia / damping ratio & [kg], [-]\\
+\vspace{0.9em}
+\noindent\textbf{Cartesian Impedance and Stability}\\[2pt]
+\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symrow{$K_p,\ D_p$}{Translational stiffness / damping}{[N/m], [N\,s/m]}
+\symrow{$K_R,\ D_R$}{Rotational stiffness / damping}{[Nm/rad], [Nm\,s/rad]}
+\symrow{$K_1,K_2,K_3$}{Diagonal stiffness entries in the local frame}{[N/m]}
+\symrow{$D_1,D_2,D_3$}{Diagonal damping entries in the local frame}{[N\,s/m]}
+\symrow{$K_{p,0},\ D_{p,0}$}{Stiffness / damping in the base frame}{[N/m], [N\,s/m]}
+\symrow{$K_{p,\mathrm{EE}}$}{Diagonal stiffness in the local frame}{[N/m]}
+\symrow{$K_{\mathrm{EE}},\ T_{R,\mathrm{EE}}$}{Block stiffness / block rotation (local frame)}{[-]}
+\symrow{$K,\ K_0,\ D$}{Full $6\times6$ stiffness / damping}{[-]}
+\symrow{$\mathbf{F}$}{Cartesian wrench}{[N], [Nm]}
+\symrow{$\mathbf{f},\ \mathbf{m}$}{Cartesian force / moment}{[N], [Nm]}
+\symrow{$\Lambda,\ M_x$}{Operational-space (Cartesian) inertia matrix}{[kg], [kg\,m$^2$]}
+\symrow{$\Gamma$}{Operational-space Coriolis matrix}{[-]}
+\symrow{$M_q$}{Joint-space mass matrix}{[-]}
+\symrow{$M_p,\ M_R$}{Virtual translational / rotational inertia}{[kg], [kg\,m$^2$]}
+\symrow{$M_i,\ \zeta$}{Directional inertia / damping ratio}{[kg], [-]}
+\symrow{$\boldsymbol{\tau}$}{Joint torque vector}{[Nm]}
+\symrow{$\tau_c,\ \tau_g$}{Coriolis / gravity compensation torque}{[Nm]}
+\symrow{$\tau_{\mathrm{cmd}},\ \tau_{\mathrm{task}}$}{Commanded / task torque}{[Nm]}
+\symrow{$V,\ V_p,\ V_R$}{Lyapunov function (virtual energy)}{[J]}
 \end{tabular}
 
-\vspace{1.0em}
-\noindent\textbf{Surface and Contact}\\[2pt]
-\begin{tabular}{@{}p{2.6cm}p{8.4cm}p{2.8cm}@{}}
-$n_s$ & Surface normal (unit vector) & [-]\\
-$t_1,\ t_2$ & Surface tangent directions (unit) & [-]\\
-$R_{\mathrm{surface}}$ & Surface task frame & [-]\\
-$K_n,\ K_{t_1},\ K_{t_2}$ & Normal / tangential stiffness & [N/m]\\
-$d_n$ & Signed normal distance to the plane & [m]\\
-$p_{\mathrm{plane}}$ & Point on the surface & [m]\\
-$p_c,\ r_c,\ h$ & Virtual center, lever arm, normal offset & [m]\\
-$p_C,\ r_C$ & Contact point and its lever arm & [m]\\
-$W_C,\ f_C,\ m_C$ & Contact wrench / force / moment & [N], [Nm]\\
-$\Delta\theta$ & Angular displacement during contact & [rad]\\
-$r_{\mathrm{inst}},\ p_{\mathrm{ISA}}$ & Instantaneous pole / screw-axis point & [m]\\
-$a_{\mathrm{ISA}}$ & Instantaneous screw-axis direction & [-]\\
-$K_{rt}^{\mathrm{eff}},\ K_R^{\mathrm{eff}}$ & Effective stiffness contributions (fit) & [Nm/m], [Nm/rad]\\
-$D_{rt}^{\mathrm{eff}},\ D_R^{\mathrm{eff}}$ & Effective damping contributions (fit) & [Nm\,s/m], [Nm\,s/rad]\\
+\vspace{0.9em}
+\noindent\textbf{Surface, Contact, and Alignment}\\[2pt]
+\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symrow{$n_s$}{Surface normal (unit vector)}{[-]}
+\symrow{$t_1,\ t_2$}{Surface tangent directions (unit)}{[-]}
+\symrow{$R_{\mathrm{surface}},\ R_s$}{Surface task frame}{[-]}
+\symrow{$z_T$}{Tool normal (approach axis)}{[-]}
+\symrow{$x_d,y_d,z_d,\ a$}{Desired tool axes / auxiliary direction}{[-]}
+\symrow{$K_n,K_{t_1},K_{t_2}$}{Normal / tangential stiffness}{[N/m]}
+\symrow{$d_n$}{Signed normal distance to the plane}{[m]}
+\symrow{$p_{\mathrm{plane}},\ p_s$}{Point on the surface}{[m]}
+\symrow{$p_e,\ a_e$}{Tool-edge point / edge direction}{[m], [-]}
+\symrow{$p_c,\ r_c,\ h$}{Virtual center, lever arm, normal offset}{[m]}
+\symrow{$p_C,\ r_C$}{Contact point and its lever arm}{[m]}
+\symrow{$W_C,\ f_C,\ m_C$}{Contact wrench / force / moment}{[N], [Nm]}
+\symrow{$W_{\mathrm{imp}}$}{Commanded impedance wrench}{[N], [Nm]}
+\symrow{$K_s,\ D_s$}{Local Cartesian stiffness / damping (task frame)}{[-]}
+\symrow{$K_{pp},\ K_{RR}$}{Diagonal stiffness sub-blocks}{[-]}
+\symrow{$K_{pR},\ K_{Rp}$}{Translation--rotation coupling sub-blocks}{[-]}
+\symrow{$K_c,\ V_K,\ V_c$}{Center stiffness / stored elastic energy}{[N/m], [J]}
+\symrow{$\Delta p,\ \Delta\theta$}{Translational / angular displacement}{[m], [rad]}
+\symrow{$\Delta x$}{Stacked Cartesian displacement}{[m], [rad]}
+\symrow{$\Delta e_R$}{Orientation-error reduction}{[rad]}
+\symrow{$\Delta\theta_C$}{Contact-induced rotation}{[rad]}
+\symrow{$\theta_{\mathrm{before}},\theta_{\mathrm{after}}$}{Tool angle before / after contact}{[rad]}
 \end{tabular}
 
-\vspace{1.0em}
+\vspace{0.9em}
+\noindent\textbf{Quasi-Static Stiffness and Damping Design}\\[2pt]
+\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symrow{$F_{i,\max},\ \Delta x_{i,\max}$}{Allowed contact force / displacement}{[N], [m]}
+\symrow{$k_i,\ d_i$}{Directional stiffness / damping estimate}{[N/m], [N\,s/m]}
+\symrow{$M_{i,\max},\ \Delta\theta_{i,\max}$}{Allowed contact moment / angle}{[Nm], [rad]}
+\symrow{$k_{r,i}$}{Directional rotational stiffness estimate}{[Nm/rad]}
+\symrow{$l,\ F_C,\ M_C$}{Lever-arm length / contact force / moment}{[m], [N], [Nm]}
+\symrow{$K_s^{(j)},\ N_K$}{Candidate stiffness set / number of sets}{[-]}
+\end{tabular}
+
+\vspace{0.9em}
+\noindent\textbf{Screw-Motion Evaluation}\\[2pt]
+\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symrow{$\xi,\ v$}{Twist / linear velocity}{[m/s], [rad/s]}
+\symrow{$\Delta p_C,\ \Delta x_C$}{Contact displacement (translation / stacked)}{[m]}
+\symrow{$r_{\mathrm{inst}}$}{Instantaneous pole of the measured motion}{[m]}
+\symrow{$p_{\mathrm{ISA}},\ a_{\mathrm{ISA}}$}{Screw-axis point / direction}{[m], [-]}
+\symrow{$e_P,\ r_P$}{Pole error / desired pole location}{[m]}
+\symrow{$d_{\mathrm{ISA},c}$}{Distance from screw axis to virtual center}{[m]}
+\end{tabular}
+
+\vspace{0.9em}
 \noindent\textbf{Null-Space and Singular Value Decomposition}\\[2pt]
-\begin{tabular}{@{}p{2.6cm}p{8.4cm}p{2.8cm}@{}}
-$N$ & Damped null-space projector & [-]\\
-$\lambda$ & Damping factor of the projector & [-]\\
-$\sigma_i,\ \sigma_{\min}$ & Singular value / smallest singular value & [-]\\
-$U,\ \Sigma,\ V$ & Singular value decomposition factors of $J$ & [-]\\
-$v_7$ & Seventh (weakest) right singular vector & [-]\\
-$q_{\mathrm{start}}$ & Start joint configuration & [rad]\\
-$k_{\mathrm{start}}$ & Null-space restoring stiffness & [Nm/rad]\\
-$d_{\mathrm{null}}$ & Null-space damping & [Nm\,s/rad]\\
-$k_\sigma,\ \alpha,\ s$ & Sigma-min weight, step size, sign selector & [-]\\
-$\tau_{\mathrm{null}}$ & Projected null-space torque & [Nm]\\
+\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symrow{$N$}{Damped null-space projector}{[-]}
+\symrow{$\lambda$}{Damping factor of the projector}{[-]}
+\symrow{$\sigma_i,\ \sigma_{\min}$}{Singular value / smallest singular value}{[-]}
+\symrow{$\lambda_i$}{Eigenvalue of $JJ^\top$}{[-]}
+\symrow{$U,\ \Sigma,\ V$}{Singular value decomposition factors of $J$}{[-]}
+\symrow{$u_i,\ v_i$}{Left / right singular vectors}{[-]}
+\symrow{$v_7,\ n$}{Seventh (weakest) right singular vector}{[-]}
+\symrow{$q_{\mathrm{start}}$}{Start joint configuration}{[rad]}
+\symrow{$k_{\mathrm{start}}$}{Null-space restoring stiffness}{[Nm/rad]}
+\symrow{$d_{\mathrm{null}}$}{Null-space damping}{[Nm\,s/rad]}
+\symrow{$k_\sigma,\ \alpha,\ s$}{Sigma-min weight, step size, sign selector}{[-]}
+\symrow{$\tau_{\mathrm{null}}$}{Projected null-space torque}{[Nm]}
 \end{tabular}
 
-\vspace{1.0em}
+\vspace{0.9em}
+\noindent\textbf{Least-Squares Identification}\\[2pt]
+\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symrow{$M_{C,i}$}{Contact moment at sample $i$}{[Nm]}
+\symrow{$\Delta x_{C,i},\ v_{C,i}$}{Sliding displacement / linear velocity}{[m], [m/s]}
+\symrow{$\Delta\theta_i,\ \omega_i$}{Angular displacement / velocity at sample $i$}{[rad], [rad/s]}
+\symrow{$\phi_i,\ \Phi$}{Sample / stacked regressor}{[-]}
+\symrow{$A,\ Y$}{Parameter matrix / stacked output}{[-]}
+\symrow{$\Phi^{\#}$}{Pseudoinverse of $\Phi$}{[-]}
+\symrow{$N$}{Number of samples}{[-]}
+\symrow{$K_{rt}^{\mathrm{eff}},\ K_R^{\mathrm{eff}}$}{Effective stiffness contributions}{[Nm/m], [Nm/rad]}
+\symrow{$D_{rt}^{\mathrm{eff}},\ D_R^{\mathrm{eff}}$}{Effective damping contributions}{[Nm\,s/m], [Nm\,s/rad]}
+\symrow{$M_{\mathrm{trans}},M_{\mathrm{rot}}$}{Translational / rotational moment contribution}{[Nm]}
+\end{tabular}
+
+\vspace{0.9em}
+\noindent\textbf{Safety Limits}\\[2pt]
+\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symrow{$f_{\max},\ m_{\max}$}{Maximum Cartesian force / moment}{[N], [Nm]}
+\symrow{$f_{\mathrm{cmd}},\ m_{\mathrm{cmd}}$}{Commanded force / moment}{[N], [Nm]}
+\symrow{$\Delta\tau_i,\ \Delta\tau_{\max}$}{Joint torque change / its limit}{[Nm]}
+\symrow{$\tau_{\mathrm{null,max}}$}{Null-space torque limit}{[Nm]}
+\symrow{$f_{\mathrm{lim}},\ \tau_{\mathrm{lim}}$}{Contact force / torque limit}{[N], [Nm]}
+\end{tabular}
+
+\vspace{0.9em}
+\noindent\textbf{Virtual-Center Extension}\\[2pt]
+\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symrow{$\delta\theta,\ \delta p$}{Small angular / linear displacement}{[rad], [m]}
+\symrow{$\delta p_{\mathrm{rot}},\ \delta x_c$}{Rotation-induced / coupled displacement}{[m]}
+\symrow{$\mathbf{e}_{p,c}$}{Coupled translational error}{[m]}
+\symrow{$f_c,\ m_R$}{Virtual-center force / rotational moment}{[N], [Nm]}
+\symrow{$m_{\mathrm{lever}},\ F_c$}{Lever-arm moment / virtual-center wrench}{[Nm], [N]}
+\end{tabular}
+
+\vspace{0.9em}
 \noindent\textbf{Miscellaneous}\\[2pt]
-\begin{tabular}{@{}p{2.6cm}p{8.4cm}p{2.8cm}@{}}
-$T_s$ & Control sampling time ($1\,\mathrm{ms}$) & [s]\\
-$I$ & Identity matrix & [-]\\
+\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symrow{$T_s$}{Control sampling time ($1\,\mathrm{ms}$)}{[s]}
+\symrow{$I,\ I_4,\ I_7$}{Identity matrices}{[-]}
 \end{tabular}
 
 \renewcommand{\arraystretch}{1.0}
