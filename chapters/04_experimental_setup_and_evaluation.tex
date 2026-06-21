@@ -344,9 +344,11 @@ d_i
 \end{equation}
 
 where \(M_i\) is the effective inertia in direction \(i\) and \(\zeta\) is
-the damping ratio. In the implemented controller, the Cartesian inertia is not
-explicitly shaped for each direction. Therefore, the practical initial value
-uses the common normalized-inertia approximation
+the damping ratio. A consistent value takes \(M_i=\Lambda_{ii}\) from the
+operational-space inertia \(\Lambda=(JM_q^{-1}J^\top)^{-1}\) provided by
+libfranka, so that \(d_i=2\zeta\sqrt{\Lambda_{ii}k_i}\). In the implemented
+controller the Cartesian inertia is not explicitly shaped for each direction,
+so the practical initial value uses the common normalized-inertia approximation
 
 \begin{equation}
 d_i
@@ -445,12 +447,39 @@ K_R
 \label{eq:virtual_center_total_energy}
 \end{equation}
 
-Equation~\eqref{eq:virtual_center_total_energy} explains the more general
-coupled stiffness idea. In the present thesis it is used as interpretation,
-not as the main tuning algorithm. The practical tuning procedure remains:
-choose several representative \(K_s^{(j)}\), run the same edge-contact
-experiment for each setting, and compare the measured alignment, displacement,
-force, and torque behavior directly.
+Equation~\eqref{eq:virtual_center_total_energy} is the principled way to place
+the pivot at a chosen point. Choosing the center at the tool edge,
+\(p_c=p_e\), makes \(\Delta p_c\) the displacement of the edge, so penalizing it
+with \(K_c\) builds a stiffness whose centre of compliance is the edge.
+Equivalently, a stiffness defined diagonally in an edge-centred frame,
+\(K_{\mathrm{edge}}\), is mapped to the end-effector frame by the rigid-body
+adjoint \(\mathrm{Ad}_g\) of the end-effector-to-edge offset \(g\),
+
+\begin{equation}
+K_{\mathrm{coupled}}
+=
+\mathrm{Ad}_g^{\top}\,K_{\mathrm{edge}}\,\mathrm{Ad}_g,
+\label{eq:edge_centered_adjoint_stiffness}
+\end{equation}
+
+which produces exactly the translation--rotation coupling of
+\eqref{eq:virtual_center_total_energy}. With such a coupled stiffness, the
+contact wrench produces a screw motion whose instantaneous pole
+(Section~\ref{sec:screw_motion_evaluation}) lies at the edge by construction.
+This is the spatial-impedance / remote-centre-of-compliance idea
+\citep{Fasse1997SpatialImpedance} expressed through the screw geometry.
+
+The implemented controller, however, uses a diagonal stiffness without this
+coupling, so its centre of compliance is the tool-frame origin and the pivot is
+not placed analytically. For the diagonal controller the pivot location is
+therefore \emph{emergent}: it is set by the contact geometry and the chosen
+gains. The practical procedure is then to choose several representative diagonal
+settings \(K_s^{(j)}\), run the same edge-contact experiment for each, compute
+the instantaneous pole from the measured motion using Chasles' theorem, and
+select the setting whose pole lies closest to the edge---smallest \(e_P\) and
+\(d_{\mathrm{ISA},e}\)---together with acceptable displacement, force, and
+torque. The coupled design \eqref{eq:virtual_center_total_energy} is thus the
+ideal that the diagonal selection approximates.
 
 \section{Simple Contact Model}
 \label{sec:simple_contact_model}
@@ -635,6 +664,14 @@ implemented scope of the present thesis \citep{Roveda2021SensorlessStiffness}.
 \section{Screw-Motion Evaluation}
 \label{sec:screw_motion_evaluation}
 
+By Chasles' theorem, any rigid-body displacement can be described as a screw
+motion: a rotation about an axis combined with a translation along that same
+axis \citep{Murray1994}. The contact-induced motion of the tool is therefore
+neither a pure rotation nor a pure translation but a screw motion, and its
+screw axis---or, for planar motion, its instantaneous pole---gives a compact
+geometric description of how the tool moves during contact. This is the
+geometric basis used here to judge where the passive motion pivots.
+
 The measured displacement during contact contains both translation and
 rotation. Over a short contact interval, the measured pose change is written
 as
@@ -651,9 +688,9 @@ as
 
 where \(\Delta p_C\) is the translational displacement associated with the
 contact interval and \(\Delta\theta\) is the small angular displacement. If
-\(\|\Delta\theta\|>0\), the instantaneous pole of the measured motion can be
-approximated using the screw-theory description of rigid-body
-motion~\citep{Murray1994} by
+\(\|\Delta\theta\|>0\), the instantaneous pole of the measured motion---the
+point about which the displacement is, to first order, a pure rotation---follows
+from this screw decomposition as
 
 \begin{equation}
 r_{\mathrm{inst}}
@@ -668,8 +705,9 @@ r_{\mathrm{inst}}
 \label{eq:instantaneous_pole_displacement}
 \end{equation}
 
-For the corresponding velocity representation, the same idea can be written
-with the measured linear and angular velocities as
+For the corresponding velocity representation, Chasles' theorem gives the
+instantaneous screw axis directly from the measured twist: its point closest to
+the origin and its direction are
 
 \begin{equation}
 \xi
@@ -689,13 +727,15 @@ a_{\mathrm{ISA}}
 \label{eq:contact_twist_and_isa}
 \end{equation}
 
-Both forms describe the same physical idea: the tool does not only rotate and
-does not only translate. It moves in a screw-like way. The instantaneous pole
-or screw axis gives a compact geometric description of the motion caused by
-contact.
+Both forms describe the same physical idea: the tool moves in a screw-like way,
+and the instantaneous pole or screw axis is a compact geometric description of
+that motion.
 
-The desired geometric behavior is that the observed pole lies close to the
-tool edge or the selected virtual center. The pole error is therefore
+For good passive self-alignment the tool should pivot at the contact edge
+rather than about its own frame origin. The desired pole is therefore the tool
+edge, \(r_P=p_e\); in this evaluation the virtual center of rotation is exactly
+this desired pole, so that ``virtual center'' and ``desired instantaneous pole
+at the edge'' denote the same point. The pole error is
 
 \begin{equation}
 e_P
@@ -703,32 +743,32 @@ e_P
 \left\|
 r_{\mathrm{inst}}
 -
-r_P
-\right\|.
+p_e
+\right\|,
 \label{eq:pole_error_metric}
 \end{equation}
 
-Here \(r_P\) is the desired pole location, for example a point on the tool
-edge or the selected virtual center. A smaller value of \(e_P\) means that the
-measured motion is closer to the desired pivot behavior. If the velocity-based
-screw axis is used instead of \(r_{\mathrm{inst}}\), the distance from the
-axis to the selected virtual center is computed as
+and a smaller \(e_P\) means the measured motion pivots closer to the edge.
+Equivalently, for the velocity-based screw axis, the relevant quantity is the
+distance from the tool edge to that axis,
 
 \begin{equation}
-d_{\mathrm{ISA},c}
+d_{\mathrm{ISA},e}
 =
 \left\|
 \left(
-p_c - p_{\mathrm{ISA}}
+p_e - p_{\mathrm{ISA}}
 \right)
 \times
 a_{\mathrm{ISA}}
-\right\|.
+\right\|,
 \label{eq:isa_center_distance}
 \end{equation}
 
-This metric is evaluated together with the angular error, displacement
-magnitude, contact force, and torque signals.
+which is the Chasles distance between the edge and the instantaneous screw
+axis. The stiffness setting that minimizes this distance places the passive
+pivot at the edge. This metric is evaluated together with the angular error,
+displacement magnitude, contact force, and torque signals.
 
 \section{Alignment Evaluation}
 \label{sec:alignment_evaluation}

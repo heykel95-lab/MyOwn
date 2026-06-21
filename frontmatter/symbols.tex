@@ -4,11 +4,17 @@
 
 \renewcommand{\arraystretch}{1.2}
 \newcommand{\symrow}[3]{#1 & #2 & #3\\}
+\newcommand{\symgroup}[2]{%
+  \noindent\begin{minipage}{\linewidth}%
+  \textbf{#1}\\[2pt]%
+  \begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}%
+  #2
+  \end{tabular}%
+  \end{minipage}\par\vspace{0.9em}}
 
-\noindent\textbf{Frames and Kinematics}\\[2pt]
-\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symgroup{Frames and Kinematics}{
 \symrow{$\{0\}$}{Robot base frame}{[-]}
-\symrow{$\{i\}$}{Joint / link frame $i$}{[-]}
+\symrow{$\{i\}$}{Joint frame $i$}{[-]}
 \symrow{$\{\mathrm{EE}\}$}{End-effector (tool) frame}{[-]}
 \symrow{$n$}{Number of joints ($n=7$)}{[-]}
 \symrow{$q,\ \dot{q}$}{Joint position / velocity vector}{[rad], [rad/s]}
@@ -25,11 +31,9 @@
 \symrow{$p_i$}{Position of frame $i$ (base frame)}{[m]}
 \symrow{$a_i,\ d_i,\ \alpha_i$}{Denavit--Hartenberg parameters}{[m], [m], [rad]}
 \symrow{$x_{\mathrm{EE}},y_{\mathrm{EE}},z_{\mathrm{EE}}$}{End-effector frame axes (base frame)}{[-]}
-\end{tabular}
+}
 
-\vspace{0.9em}
-\noindent\textbf{Pose and Error}\\[2pt]
-\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symgroup{Pose and Error}{
 \symrow{$p_{\mathrm{EE}}$}{End-effector position}{[m]}
 \symrow{$R_{\mathrm{EE}},\ T_{\mathrm{EE}}$}{End-effector orientation / transformation}{[-]}
 \symrow{$p_d,\ R_d,\ T_d$}{Desired position / orientation / transformation}{[m], [-]}
@@ -43,11 +47,9 @@
 \symrow{$\mathbf{e}$}{Stacked Cartesian error}{[m], [rad]}
 \symrow{$\dot{x}$}{Cartesian velocity (twist)}{[m/s], [rad/s]}
 \symrow{$\dot{p}_{\mathrm{EE}},\ \omega_{\mathrm{EE}}$}{Linear / angular end-effector velocity}{[m/s], [rad/s]}
-\end{tabular}
+}
 
-\vspace{0.9em}
-\noindent\textbf{Cartesian Impedance and Stability}\\[2pt]
-\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symgroup{Cartesian Impedance and Stability}{
 \symrow{$K_p,\ D_p$}{Translational stiffness / damping}{[N/m], [N\,s/m]}
 \symrow{$K_R,\ D_R$}{Rotational stiffness / damping}{[Nm/rad], [Nm\,s/rad]}
 \symrow{$K_1,K_2,K_3$}{Diagonal stiffness entries in the local frame}{[N/m]}
@@ -67,11 +69,9 @@
 \symrow{$\tau_c,\ \tau_g$}{Coriolis / gravity compensation torque}{[Nm]}
 \symrow{$\tau_{\mathrm{cmd}},\ \tau_{\mathrm{task}}$}{Commanded / task torque}{[Nm]}
 \symrow{$V,\ V_p,\ V_R$}{Lyapunov function (virtual energy)}{[J]}
-\end{tabular}
+}
 
-\vspace{0.9em}
-\noindent\textbf{Surface, Contact, and Alignment}\\[2pt]
-\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symgroup{Surface, Contact, and Alignment}{
 \symrow{$n_s$}{Surface normal (unit vector)}{[-]}
 \symrow{$t_1,\ t_2$}{Surface tangent directions (unit)}{[-]}
 \symrow{$R_{\mathrm{surface}},\ R_s$}{Surface task frame}{[-]}
@@ -89,38 +89,34 @@
 \symrow{$K_{pp},\ K_{RR}$}{Diagonal stiffness sub-blocks}{[-]}
 \symrow{$K_{pR},\ K_{Rp}$}{Translation--rotation coupling sub-blocks}{[-]}
 \symrow{$K_c,\ V_K,\ V_c$}{Center stiffness / stored elastic energy}{[N/m], [J]}
+\symrow{$\mathrm{Ad}_g$}{Adjoint of the EE-to-edge offset $g$}{[-]}
+\symrow{$K_{\mathrm{edge}},K_{\mathrm{coupled}}$}{Edge-centred / coupled stiffness}{[N/m]}
 \symrow{$\Delta p,\ \Delta\theta$}{Translational / angular displacement}{[m], [rad]}
 \symrow{$\Delta x$}{Stacked Cartesian displacement}{[m], [rad]}
 \symrow{$\Delta e_R$}{Orientation-error reduction}{[rad]}
 \symrow{$\Delta\theta_C$}{Contact-induced rotation}{[rad]}
 \symrow{$\theta_{\mathrm{before}},\theta_{\mathrm{after}}$}{Tool angle before / after contact}{[rad]}
-\end{tabular}
+}
 
-\vspace{0.9em}
-\noindent\textbf{Quasi-Static Stiffness and Damping Design}\\[2pt]
-\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symgroup{Quasi-Static Stiffness and Damping Design}{
 \symrow{$F_{i,\max},\ \Delta x_{i,\max}$}{Allowed contact force / displacement}{[N], [m]}
 \symrow{$k_i,\ d_i$}{Directional stiffness / damping estimate}{[N/m], [N\,s/m]}
 \symrow{$M_{i,\max},\ \Delta\theta_{i,\max}$}{Allowed contact moment / angle}{[Nm], [rad]}
 \symrow{$k_{r,i}$}{Directional rotational stiffness estimate}{[Nm/rad]}
 \symrow{$l,\ F_C,\ M_C$}{Lever-arm length / contact force / moment}{[m], [N], [Nm]}
 \symrow{$K_s^{(j)},\ N_K$}{Candidate stiffness set / number of sets}{[-]}
-\end{tabular}
+}
 
-\vspace{0.9em}
-\noindent\textbf{Screw-Motion Evaluation}\\[2pt]
-\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symgroup{Screw-Motion Evaluation}{
 \symrow{$\xi,\ v$}{Twist / linear velocity}{[m/s], [rad/s]}
 \symrow{$\Delta p_C,\ \Delta x_C$}{Contact displacement (translation / stacked)}{[m]}
 \symrow{$r_{\mathrm{inst}}$}{Instantaneous pole of the measured motion}{[m]}
 \symrow{$p_{\mathrm{ISA}},\ a_{\mathrm{ISA}}$}{Screw-axis point / direction}{[m], [-]}
-\symrow{$e_P,\ r_P$}{Pole error / desired pole location}{[m]}
-\symrow{$d_{\mathrm{ISA},c}$}{Distance from screw axis to virtual center}{[m]}
-\end{tabular}
+\symrow{$e_P,\ r_P$}{Pole error / desired pole (tool edge)}{[m]}
+\symrow{$d_{\mathrm{ISA},e}$}{Distance from screw axis to tool edge}{[m]}
+}
 
-\vspace{0.9em}
-\noindent\textbf{Null-Space and Singular Value Decomposition}\\[2pt]
-\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symgroup{Null-Space and Singular Value Decomposition}{
 \symrow{$N$}{Damped null-space projector}{[-]}
 \symrow{$\lambda$}{Damping factor of the projector}{[-]}
 \symrow{$\sigma_i,\ \sigma_{\min}$}{Singular value / smallest singular value}{[-]}
@@ -133,11 +129,9 @@
 \symrow{$d_{\mathrm{null}}$}{Null-space damping}{[Nm\,s/rad]}
 \symrow{$k_\sigma,\ \alpha,\ s$}{Sigma-min weight, step size, sign selector}{[-]}
 \symrow{$\tau_{\mathrm{null}}$}{Projected null-space torque}{[Nm]}
-\end{tabular}
+}
 
-\vspace{0.9em}
-\noindent\textbf{Least-Squares Identification}\\[2pt]
-\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symgroup{Least-Squares Identification}{
 \symrow{$M_{C,i}$}{Contact moment at sample $i$}{[Nm]}
 \symrow{$\Delta x_{C,i},\ v_{C,i}$}{Sliding displacement / linear velocity}{[m], [m/s]}
 \symrow{$\Delta\theta_i,\ \omega_i$}{Angular displacement / velocity at sample $i$}{[rad], [rad/s]}
@@ -148,33 +142,27 @@
 \symrow{$K_{rt}^{\mathrm{eff}},\ K_R^{\mathrm{eff}}$}{Effective stiffness contributions}{[Nm/m], [Nm/rad]}
 \symrow{$D_{rt}^{\mathrm{eff}},\ D_R^{\mathrm{eff}}$}{Effective damping contributions}{[Nm\,s/m], [Nm\,s/rad]}
 \symrow{$M_{\mathrm{trans}},M_{\mathrm{rot}}$}{Translational / rotational moment contribution}{[Nm]}
-\end{tabular}
+}
 
-\vspace{0.9em}
-\noindent\textbf{Safety Limits}\\[2pt]
-\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symgroup{Safety Limits}{
 \symrow{$f_{\max},\ m_{\max}$}{Maximum Cartesian force / moment}{[N], [Nm]}
 \symrow{$f_{\mathrm{cmd}},\ m_{\mathrm{cmd}}$}{Commanded force / moment}{[N], [Nm]}
 \symrow{$\Delta\tau_i,\ \Delta\tau_{\max}$}{Joint torque change / its limit}{[Nm]}
 \symrow{$\tau_{\mathrm{null,max}}$}{Null-space torque limit}{[Nm]}
 \symrow{$f_{\mathrm{lim}},\ \tau_{\mathrm{lim}}$}{Contact force / torque limit}{[N], [Nm]}
-\end{tabular}
+}
 
-\vspace{0.9em}
-\noindent\textbf{Virtual-Center Extension}\\[2pt]
-\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symgroup{Virtual-Center Extension}{
 \symrow{$\delta\theta,\ \delta p$}{Small angular / linear displacement}{[rad], [m]}
 \symrow{$\delta p_{\mathrm{rot}},\ \delta x_c$}{Rotation-induced / coupled displacement}{[m]}
 \symrow{$\mathbf{e}_{p,c}$}{Coupled translational error}{[m]}
 \symrow{$f_c,\ m_R$}{Virtual-center force / rotational moment}{[N], [Nm]}
 \symrow{$m_{\mathrm{lever}},\ F_c$}{Lever-arm moment / virtual-center wrench}{[Nm], [N]}
-\end{tabular}
+}
 
-\vspace{0.9em}
-\noindent\textbf{Miscellaneous}\\[2pt]
-\begin{tabular}{@{}p{2.9cm}p{8.1cm}p{2.8cm}@{}}
+\symgroup{Miscellaneous}{
 \symrow{$T_s$}{Control sampling time ($1\,\mathrm{ms}$)}{[s]}
 \symrow{$I,\ I_4,\ I_7$}{Identity matrices}{[-]}
-\end{tabular}
+}
 
 \renewcommand{\arraystretch}{1.0}
