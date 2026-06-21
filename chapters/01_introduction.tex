@@ -180,29 +180,24 @@ on the surface. This scope is appropriate for investigating the core
 question of how the controller behavior depends on the selected
 six-dimensional impedance parameters.
 
-The main contributions of the thesis are:
-\begin{itemize}
-    \item the configuration and use of the Franka Emika Panda with
-    \abbr{FCI}/libfranka in a C++ development environment;
-    \item the formulation of a Cartesian impedance controller using
-    pose error, Cartesian wrench computation, Jacobian-transpose torque
-    mapping, and model-based Coriolis compensation;
-    \item the construction of task-dependent stiffness and damping
-    matrices for translational and rotational compliance;
-    \item the investigation of a surface-contact experiment in which a
-    tool edge generates a combined contact force and moment;
-    \item the discussion of passive self-alignment using rotational
-    compliance, screw-motion geometry, and a virtual center of
-    rotation;
-    \item the formulation of a least-squares method for identifying
-    effective translation--rotation stiffness and damping contributions
-    from logged edge-contact data;
-    \item the integration of null-space damping and
-    singular-value-based null-space optimization for the redundant
-    7-\abbr{DOF} arm;
-    \item the experimental evaluation of the implemented controller
-    using logged robot data.
-\end{itemize}
+The main contributions of the thesis follow directly from this scope. On the
+practical side, the work configures and uses the Franka Emika Panda through the
+\abbr{FCI} and libfranka in a C++ development environment, and on this basis
+formulates a Cartesian impedance controller that computes a wrench from the pose
+error, maps it to joint torques with the Jacobian transpose, and adds
+model-based Coriolis compensation. Around this core law, task-dependent stiffness
+and damping matrices are constructed so that translational and rotational
+compliance can be specified in directions that are meaningful for the contact
+task. These gains are then studied in a surface-contact experiment, in which a
+deliberately tilted tool edge generates a combined contact force and moment, and
+the resulting motion is analysed as passive self-alignment using rotational
+compliance, screw-motion geometry, and a virtual center of rotation. To make
+this analysis quantitative, a least-squares method is formulated that identifies
+the effective translation--rotation stiffness and damping contributions from the
+logged edge-contact data. Finally, the controller integrates null-space damping
+and a singular-value-based null-space optimization for the redundant
+7-\abbr{DOF} arm, and the complete implementation is evaluated experimentally
+from logged robot data.
 
 The work therefore connects the theoretical concepts of impedance
 control, screw-motion geometry, and redundancy resolution with a
