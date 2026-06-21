@@ -1519,74 +1519,12 @@ D_{p,\mathrm{EE}}
 \label{eq:positional_damping_ee}
 \end{equation}
 
-The damping values can be compared with the critical damping condition.
-Critical damping describes the case in which a second-order spring-damper
-system returns to its equilibrium position as quickly as possible without
-oscillating~\cite{Ogata2010}.
-
-For each principal direction, the corresponding one-dimensional
-spring-damper system can be written as
-
-\begin{equation}
-M_i \ddot{x}_i + D_i \dot{x}_i + K_i x_i = 0,
-\label{eq:one_dimensional_spring_damper}
-\end{equation}
-
-where \(M_i\), \(D_i\), and \(K_i\) are the virtual mass, damping, and
-stiffness in direction \(i\).
-The critical damping value is given by
-
-\begin{equation}
-D_i = 2\sqrt{M_iK_i}.
-\label{eq:critical_damping_general}
-\end{equation}
-
-In the robot implementation, the mass value is not assumed to be one.
-Instead, the directional mass is taken from the operational-space (Cartesian)
-inertia matrix, also called the virtual Cartesian mass matrix, obtained from the
-libfranka model quantities. Denoting it by \(\Lambda\), it is computed from the
-joint-space mass matrix \(M_q(q)\) and the Jacobian \(J(q)\) as in
-operational-space dynamics \cite{Khatib1987}
-
-\begin{equation}
-\Lambda
-=
-\left(J(q)M_q^{-1}(q)J^\top(q)\right)^{-1}.
-\label{eq:cartesian_virtual_mass_matrix}
-\end{equation}
-
-The mass associated with principal direction \(i\) is then the corresponding
-diagonal entry,
-
-\begin{equation}
-M_i = \Lambda_{ii}.
-\label{eq:directional_virtual_mass}
-\end{equation}
-
-The corresponding critical damping reference therefore becomes
-
-\begin{equation}
-D_i = 2\sqrt{\Lambda_{ii}K_i},
-\qquad i=1,2,3.
-\label{eq:critical_damping_directional_mass}
-\end{equation}
-
-In the implemented controller, however, the damping values are selected
-explicitly as controller parameters rather than being computed from this
-critical damping expression. Thus, the positional damping matrix in the
-end-effector frame is
-
-\begin{equation}
-D_{p,\mathrm{EE}}
-=
-\operatorname{diag}
-\left(
-D_1,
-D_2,
-D_3
-\right).
-\label{eq:positional_damping_ee_selected}
-\end{equation}
+The damping values \(D_1,D_2,D_3\) are selected directly as controller
+parameters. They are guided by the critical-damping condition so that the
+contact response settles quickly without oscillation, but the explicit selection
+rule is a gain-design choice---it relies on the robot's directional Cartesian
+inertia, which the control law itself never uses---and is therefore presented
+together with the gain-selection methodology in Chapter~\ref{ch:methodology}.
 
 The damping matrix expressed in the base frame is then
 
@@ -1987,10 +1925,13 @@ operational-space dynamics \cite{Khatib1987,Siciliano2009}
 
 where \(\mathbf{F}\) is the commanded impedance wrench,
 \(\Lambda(q)=\left(J(q)M_q^{-1}(q)J^\top(q)\right)^{-1}\) is the symmetric
-positive definite operational-space inertia introduced in
-\cref{eq:cartesian_virtual_mass_matrix}, and \(\Gamma(q,\dot{q})\) is the
+positive definite operational-space inertia, and \(\Gamma(q,\dot{q})\) is the
 corresponding operational-space Coriolis matrix. As in the joint-space model,
 \(\dot{\Lambda}-2\Gamma\) is skew-symmetric \cite{Siciliano2009,Ott2008}.
+Here \(\Lambda\) is the robot's \emph{natural} operational-space inertia: it
+appears only in this dynamic model used for the stability argument, while the
+control law never forms or inverts it and it does not enter the commanded
+torque.
 
 Collect the full Cartesian error and velocity as
 
