@@ -1266,23 +1266,68 @@ J^\top(q)\mathbf{F}
 \tau_c(q,\dot{q}),
 \label{eq:commanded_torque_libfranka}
 \end{equation}
-or, when the null-space controller is active,
+to which the secondary null-space term is added once it has been introduced,
+giving the complete command of
+\cref{eq:nullspace_complete_torque_command}. Thus, of the two compensation terms
+only the Coriolis term \(\tau_c(q,\dot{q})\) appears explicitly in the user
+callback. Gravity is not neglected physically; the gravity torque \(\tau_g(q)\)
+is already taken into account one level below the user equation, so adding it
+again would compensate the same effect twice. This keeps the implementation
+consistent with the official libfranka Cartesian impedance
+example~\cite{libfrankaCartesianExample}.
+
+\section{Surface Task Frame}
+\label{subsec:surface_task_frame}
+
+The contact experiment uses a task frame tied to the surface geometry. This
+frame is defined before the stiffness and damping matrices are introduced, so
+that the local gain entries can later be interpreted as normal and tangential
+values instead of as abstract base-frame directions.
+
+Let \(n_s\in\mathbb{R}^3\) with \(\|n_s\|=1\) be the unit surface normal,
+expressed in the robot base frame. To complete the frame, choose an auxiliary
+direction \(a_s\in\mathbb{R}^3\) that is not parallel to \(n_s\). This auxiliary
+direction is only used to define a repeatable tangent direction on the surface.
+The first tangent vector is obtained by projecting \(a_s\) onto the plane
+orthogonal to \(n_s\), and the second tangent vector is then obtained by a cross
+product. With \(\tilde{t}_1\) denoting the unnormalised projected tangent, the
+construction is a Gram--Schmidt orthonormalization step applied to the surface
+normal and the auxiliary direction \cite{Siciliano2009,Craig2005}:
+
 \begin{equation}
-\tau_{\mathrm{cmd,impl}}
-=
-J^\top(q)\mathbf{F}
-+
-\tau_{\mathrm{null}}
-+
-\tau_c(q,\dot{q}).
-\label{eq:commanded_torque_libfranka_null}
+\begin{aligned}
+\tilde{t}_1
+&=
+a_s - n_s\left(n_s^\top a_s\right),\\
+t_1
+&=
+\frac{\tilde{t}_1}{\|\tilde{t}_1\|},\\
+t_2
+&=
+n_s\times t_1 .
+\end{aligned}
+\label{eq:surface_frame_tangents}
 \end{equation}
-Thus, of the two compensation terms only the Coriolis term \(\tau_c(q,\dot{q})\)
-appears explicitly in the user callback. Gravity is not neglected physically; the
-gravity torque \(\tau_g(q)\) is already taken into account one level below the
-user equation, so adding it again would compensate the same effect twice. This
-keeps the implementation consistent with the official libfranka Cartesian
-impedance example.
+
+Here, \(t_1\) and \(t_2\) are unit tangent vectors lying in the surface plane.
+The construction is valid as long as \(\|\tilde{t}_1\|\neq0\), which means that
+the auxiliary direction \(a_s\) must not be parallel to the normal \(n_s\). The
+surface task frame is then obtained by collecting the normal and tangent axes
+as columns,
+\begin{equation}
+R_{\mathrm{surface}}
+=
+\begin{bmatrix}
+n_s & t_1 & t_2
+\end{bmatrix}.
+\label{eq:surface_task_frame_matrix}
+\end{equation}
+
+The column order is important: the first axis is the surface normal, and the
+second and third axes are tangential. In the gain representation below, the
+contact task uses this frame by setting
+\(R_{\mathrm{task}}=R_{\mathrm{surface}}\). This makes stiffness values such as
+\(K_n\), \(K_{t_1}\), and \(K_{t_2}\) local surface-frame quantities.
 
 \section{Stiffness and Damping Representation}
 \label{subsec:KD_matrices}
@@ -1362,11 +1407,30 @@ changes \(R_{\mathrm{task}}\), which changes \(K_{p,0}\), \(D_{p,0}\),
 \(K_{R,0}\), and \(D_{R,0}\), and consequently changes the Cartesian wrench and
 the final joint torque command.
 
-The construction below is then written for the end-effector frame
+For the contact task, the task frame is the surface task frame introduced in
+Section~\ref{subsec:surface_task_frame}. Setting
+\(R_{\mathrm{task}}=R_{\mathrm{surface}}\) gives, for example,
+
+\begin{equation}
+K_{p,0}
+=
+R_{\mathrm{surface}}\,
+\operatorname{diag}\!\left(K_n,K_{t_1},K_{t_2}\right)\,
+R_{\mathrm{surface}}^\top,
+\label{eq:spatial_gain_matrix}
+\end{equation}
+
+and analogously for \(D_{p,0}\), \(K_{R,0}\), and \(D_{R,0}\). In the
+implementation this operation is the function \texttt{makeSpatialGainMatrix}.
+Thus, choosing the directions through \(n_s\), \(t_1\), and \(t_2\) instead of
+fixed base-frame axes lets the same impedance law act on any planar surface
+orientation. If the surface normal changes, \(R_{\mathrm{surface}}\) changes,
+so the base-frame matrices in the command change even though the local diagonal
+entries \(K_n\), \(K_{t_1}\), and \(K_{t_2}\) may remain numerically identical.
+
+The remaining construction below is written for the end-effector frame
 \(\{\mathrm{EE}\}\) as a concrete example of
-\cref{eq:general_task_frame_gain_transform}. For the contact task in this
-thesis the chosen frame is instead the surface task frame introduced in
-Section~\ref{subsec:surface_task_frame}.
+\cref{eq:general_task_frame_gain_transform}.
 For contact-rich tasks, choosing these directions and gains should follow the
 task geometry and safety requirements rather than only numerical convenience
 \cite{Pollayil2023ImpedancePlanning}.
@@ -1602,77 +1666,7 @@ The resulting wrench remains expressed in the base frame and is therefore
 mapped to joint torques by \(J^\top(q)\) in the following control law.
 
 %% ─────────────────────────────────────────────────────────────
-\section{Surface Task Frame}
-\label{subsec:surface_task_frame}
 %% ─────────────────────────────────────────────────────────────
-
-The general transformation in \cref{eq:general_task_frame_gain_transform}
-becomes surface dependent by choosing
-\(R_{\mathrm{task}}=R_{\mathrm{surface}}\). For the contact task in this thesis,
-the chosen frame is the \emph{surface task frame}, built from the plane that the
-tool should interact with. This generalizes the earlier axis-aligned planes to
-an arbitrary inclined plane, because the plane is described by a normal vector
-rather than by selecting individual base-frame axes.
-
-Let \(n_s\in\mathbb{R}^3\) with \(\|n_s\|=1\) be the unit surface normal,
-expressed in the robot base frame. To complete the frame, choose an auxiliary
-direction \(a_s\in\mathbb{R}^3\) that is not parallel to \(n_s\). This auxiliary
-direction is only used to define a repeatable tangent direction on the surface.
-The first tangent vector is obtained by projecting \(a_s\) onto the plane
-orthogonal to \(n_s\), and the second tangent vector is then obtained by a cross
-product. With \(\tilde{t}_1\) denoting the unnormalised projected tangent, the
-construction is a Gram--Schmidt orthonormalization step applied to the surface
-normal and the auxiliary direction \cite{Siciliano2009,Craig2005}:
-
-\begin{equation}
-\begin{aligned}
-\tilde{t}_1
-&=
-a_s - n_s\left(n_s^\top a_s\right),\\
-t_1
-&=
-\frac{\tilde{t}_1}{\|\tilde{t}_1\|},\\
-t_2
-&=
-n_s\times t_1 .
-\end{aligned}
-\label{eq:surface_frame_tangents}
-\end{equation}
-
-Here, \(t_1\) and \(t_2\) are unit tangent vectors lying in the surface plane.
-The construction is valid as long as \(\|\tilde{t}_1\|\neq0\), which means that
-the auxiliary direction \(a_s\) must not be parallel to the normal \(n_s\). The
-surface task frame is then obtained by collecting the normal and tangent axes
-as columns,
-\begin{equation}
-R_{\mathrm{surface}}
-=
-\begin{bmatrix}
-n_s & t_1 & t_2
-\end{bmatrix}.
-\label{eq:surface_task_frame_matrix}
-\end{equation}
-
-The impedance gains for the contact task can be chosen diagonal in this surface
-frame, where the diagonal entries have a direct physical meaning: a normal
-stiffness \(K_n\) and two tangential stiffnesses \(K_{t_1}\) and \(K_{t_2}\).
-They are expressed in the base frame by the same rotation used above, now with
-\(R_{\mathrm{task}}=R_{\mathrm{surface}}\),
-\begin{equation}
-K_{p,0}
-=
-R_{\mathrm{surface}}\,
-\operatorname{diag}\!\left(K_n,K_{t_1},K_{t_2}\right)\,
-R_{\mathrm{surface}}^\top,
-\label{eq:spatial_gain_matrix}
-\end{equation}
-and analogously for \(D_{p,0}\), \(K_{R,0}\), and \(D_{R,0}\). In the
-implementation this operation is the function \texttt{makeSpatialGainMatrix}.
-Thus, choosing the directions through \(n_s\), \(t_1\), and \(t_2\) instead of
-fixed base-frame axes lets the same impedance law act on any planar surface
-orientation. If the surface normal changes, \(R_{\mathrm{surface}}\) changes,
-so the base-frame matrices in the command change even though the local diagonal
-entries \(K_n\), \(K_{t_1}\), and \(K_{t_2}\) may remain numerically identical.
 
 %% ─────────────────────────────────────────────────────────────
 \section{Complete Joint-Torque Command}
@@ -1882,8 +1876,7 @@ where \(J^{\top}\mathbf{F}_{\mathrm{cmd}}\) is the Cartesian impedance torque,
 \(\tau_{\mathrm{null}}\) is the null-space term, and \(\tau_c\) is the Coriolis
 compensation added in the user callback. The gravity compensation is handled by
 the Franka Control Interface for the external torque command, as explained
-around Equations~\eqref{eq:commanded_torque_libfranka} and
-\eqref{eq:commanded_torque_libfranka_null}.
+around Equation~\eqref{eq:commanded_torque_libfranka}.
 
 \section{Stability and Passivity Considerations}
 \label{sec:stability_analysis}
