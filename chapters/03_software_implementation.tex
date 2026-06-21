@@ -4,7 +4,7 @@
 This chapter describes the implementation of the Cartesian impedance controller derived in Chapter~2 for the Franka Emika Panda.
 The implementation involves accessing model quantities through libfranka, evaluating the controller within the \(1\,\mathrm{ms}\) Franka Control Interface cycle, mapping the Cartesian wrench to joint torques, and logging the signals used later for evaluation.
 
-\section{Real-Time Controller Structure}
+\section{Real-Time Control Architecture}
 \label{sec:implementation_scope}
 
 The controller is implemented in C++ using libfranka and Eigen.
@@ -62,7 +62,7 @@ This implementation chapter therefore focuses on obtaining the required
 quantities from libfranka, evaluating the equations in real time, and ensuring
 that the resulting torque command satisfies the safety limits.
 
-\section{Cartesian Impedance Control Law}
+\section{Implemented Cartesian Impedance Controller}
 \label{sec:state_model}
 
 At the beginning of each control callback, the current joint configuration \(q\) and joint velocity vector \(\dot{q}\) are read from \texttt{franka::RobotState} and mapped to Eigen vectors.
@@ -130,7 +130,7 @@ Chapter~2.
 The purpose of this chapter is therefore to describe how the required
 quantities are accessed, evaluated, and combined inside the real-time callback.
 
-\section{Surface Task and Plane Constraint}
+\section{Surface-Frame Control Mode}
 \label{sec:surface_task_plane}
 
 The controller regulates contact with a planar surface of arbitrary
@@ -356,7 +356,7 @@ trajectory planner, or an external perception/contact-estimation method.
 The present controller does not estimate this normal by itself; it only uses
 the desired orientation that is supplied to it.
 
-\subsection{Passive Self-Alignment During Contact}
+\section{Passive Self-Alignment Strategy}
 \label{sec:self_alignment_virtual_center}
 
 The orientation construction in Section~\ref{sec:tool_orientation_given_surface}
@@ -436,7 +436,7 @@ The phase therefore determines which stiffness and damping matrices are passed
 to the impedance law and whether the null-space term is active, but the control
 equations within each phase are the ones derived above.
 
-\section{Null-Space Control}
+\section{Complete Torque Command}
 \label{sec:nullspace_optimization_implementation}
 
 The null-space theory was derived in \cref{sec:nullspace_svd}. In the
@@ -520,7 +520,7 @@ spring, the damping, and the singular-value bias act only in the redundant
 direction and do not disturb the regulated Cartesian pose. The implementation
 is given in Listing~\ref{lst:app_nullspace} (Appendix~\ref{app:code}).
 
-\section{Torque Saturation and Safety Handling}
+\section{Safety Handling}
 \label{sec:torque_saturation_safety}
 
 Several safety mechanisms are implemented to keep the commanded robot motion
@@ -624,7 +624,7 @@ wrench. The robot's estimated external wrench \texttt{O\_F\_ext\_hat\_K} is used
 inside the callback for contact detection and can additionally be logged
 (\(\mathbf{f}_{\mathrm{ext}},\mathbf{m}_{\mathrm{ext}}\)) to enable the
 commanded-versus-measured consistency check discussed in
-Chapter~\ref{ch:experiments}.
+Chapter~\ref{ch:methodology}.
 
 Because the controller runs in a real-time torque-control loop with a sampling
 time of approximately \(1\,\mathrm{ms}\), file operations should be kept outside the
@@ -677,6 +677,9 @@ They specify the surface-frame translational stiffness values
 \(K_n\), \(K_{t_1}\), and \(K_{t_2}\) (normal and two tangential directions),
 the corresponding rotational stiffness values, and the matching damping values.
 
+
+\section{Implementation Summary}
+\label{sec:implementation_summary}
 
 
 Listing~\ref{lst:app_callback_core} (Appendix~\ref{app:code}) summarizes the main operations performed during one real-time control cycle.

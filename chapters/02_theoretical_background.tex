@@ -17,7 +17,7 @@ end-effector position and orientation, derives the error signal, and then
 develops the kinematic and dynamic machinery that connects joint torques
 to Cartesian forces.
 %% ─────────────────────────────────────────────────────────────
-\section{Coordinate Systems}
+\section{Coordinate Systems and Transformations}
 \label{sec:coord_systems}
 %% ─────────────────────────────────────────────────────────────
 
@@ -742,7 +742,7 @@ This vector contains the three position-error components and the three orientati
 It therefore provides a compact representation of the deviation between the desired and current end-effector configuration.
 
 %% ─────────────────────────────────────────────────────────────
-\section{Forward Kinematics}
+\section{Kinematics of a 7-DOF Manipulator}
 %% ─────────────────────────────────────────────────────────────
 
 After defining the end-effector position and orientation as the controlled
@@ -880,7 +880,7 @@ angles affect the motion of the end-effector.
 This leads to differential kinematics, which relates joint velocities to
 Cartesian velocities.
 
-\section{Jacobian}
+\section{Differential Kinematics and Jacobian Matrix}
 %% ─────────────────────────────────────────────────────────────
 
 Forward kinematics provides the end-effector position and orientation as a
@@ -1636,7 +1636,7 @@ control interface rather than being added again in the user callback.
 This avoids double compensation and keeps the implementation consistent with
 the official libfranka Cartesian impedance example.
 
-\section{Nullspace and Singular Value Decomposition}
+\section{Complete Joint-Torque Command}
 \label{sec:nullspace_svd}
 
 The Franka Emika Panda has seven joints, while the Cartesian motion of the
@@ -1846,7 +1846,7 @@ the Franka Control Interface for the external torque command, as explained
 around Equations~\eqref{eq:commanded_torque_libfranka} and
 \eqref{eq:commanded_torque_libfranka_null}.
 
-\section{Stability Analysis of the Implemented Controller}
+\section{Stability and Passivity Considerations}
 \label{sec:stability_analysis}
 
 This section gives a single stability argument for the controller that is
@@ -1962,8 +1962,9 @@ redundant degree of freedom and cannot inject energy into the Cartesian task.
 
 In practice, torque limits, sampling effects, modeling errors, measurement
 noise, and the contact interaction itself influence the observed behavior.
-Therefore the experimental evaluation in Chapter~\ref{ch:experiments}
-additionally examines convergence, steady-state error, overshoot, oscillation,
-and commanded-torque limits from the logged data.
+Therefore the experimental methodology in Chapter~\ref{ch:methodology} and
+the results discussion in Chapter~\ref{ch:results_discussion} additionally
+examine convergence, steady-state error, overshoot, oscillation, and
+commanded-torque limits from the logged data.
 
 \fi

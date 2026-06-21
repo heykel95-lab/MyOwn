@@ -1,13 +1,13 @@
-\chapter{Experimental Setup, Results, and Discussion}
-\label{ch:experiments}
+\chapter{Experimental Methodology}
+\label{ch:methodology}
 
-This chapter defines the current experimental focus of the thesis. Earlier
+This chapter defines the experimental methodology used for the current thesis focus. Earlier
 set-point, trajectory-tracking, virtual-wall, and stiffness-variation
 experiments are treated as archived development material. They were useful for
 building and checking the controller, but they are not the central experimental
 argument of the thesis in its present form.
 
-The experiment considered here investigates passive self-alignment during
+The method considered here investigates passive self-alignment during
 table contact. The robot is controlled by Cartesian impedance. A tool edge is
 brought into contact with a table. At contact, the table applies an external
 wrench to the tool. Because the tool is compliant, this wrench produces a small
@@ -257,7 +257,7 @@ axis. The stiffness setting that minimizes this distance places the passive
 pivot at the edge. This metric is evaluated together with the angular error,
 displacement magnitude, contact force, and torque signals.
 
-\section{Cartesian Stiffness Selection}
+\section{Gain Selection Methodology}
 \label{sec:cartesian_stiffness_selection}
 
 The complete local Cartesian stiffness matrix in the task frame can be written
@@ -359,7 +359,7 @@ computed from task constraints, robot inertia, and robustness requirements
 turn contact limits into practical candidate gains for the self-alignment
 experiment.
 
-\subsection{Initial Stiffness and Damping Values}
+\subsection{Quasi-Static Stiffness and Damping Selection}
 \label{subsec:initial_stiffness_damping_values}
 
 The candidate stiffness values are initialized from simple contact
@@ -690,7 +690,7 @@ with acceptable displacement, force, and torque. The coupled design
 \eqref{eq:virtual_center_total_energy} is thus the passive stiffness design
 that the diagonal selection approximates.
 
-\subsection{Designing the Impedance Around a Chosen Pole}
+\subsection{Pole-Based Gain Design}
 \label{subsec:impedance_around_pole}
 
 The relation between the gains and the pole can be read in two directions. In
@@ -804,421 +804,7 @@ the remaining cluster is compared with the chosen \(p_c\) through \(e_P\) and
 follows \(p_c\) demonstrates directly that the impedance has been designed around
 the selected pole.
 
-\section{Simple Contact Model}
-\label{sec:simple_contact_model}
-
-The contact experiment is interpreted with the same Cartesian impedance
-notation used in the controller derivation \citep{Hogan1985,Ott2008}. The
-commanded impedance wrench is
-
-\begin{equation}
-W_{\mathrm{imp}}
-=
-K_s
-\begin{bmatrix}
-\Delta p\\
-\Delta \theta
-\end{bmatrix}
-+
-D_s
-\begin{bmatrix}
-v\\
-\omega
-\end{bmatrix},
-\qquad
-W_{\mathrm{imp}}
-=
-\begin{bmatrix}
-f\\
-m
-\end{bmatrix}.
-\label{eq:contact_impedance_wrench_simple}
-\end{equation}
-
-Here, \(K_s\) and \(D_s\) denote the stiffness and damping matrices expressed
-in the same task frame.
-The scalar entries \(K_i\) and \(D_i\) used below are the corresponding
-principal-direction values of these matrices.
-
-For a slow contact motion, the quasi-static compliance relation can be written
-as \citep{Hogan1985,Fasse1997SpatialImpedance}
-
-\begin{equation}
-\begin{bmatrix}
-\Delta p\\
-\Delta \theta
-\end{bmatrix}
-\approx
-K_s^{-1} W_C,
-\qquad
-W_C
-=
-\begin{bmatrix}
-f_C\\
-m_C
-\end{bmatrix},
-\label{eq:contact_quasistatic_compliance}
-\end{equation}
-
-where \(W_C\) is the contact wrench. This equation is not used to compute the
-controller command directly. It is used to explain the physical effect of the
-selected stiffness: for the same type of contact wrench, lower stiffness
-allows a larger displacement and higher stiffness resists the motion more
-strongly.
-
-If the contact force acts at the tool edge, it also creates a moment. With
-\(p_C\) denoting the contact point and \(p_{\mathrm{EE}}\) the end-effector
-origin, the contact lever arm is
-
-\begin{equation}
-r_C
-=
-p_C
--
-p_{\mathrm{EE}} .
-\label{eq:contact_edge_lever_arm}
-\end{equation}
-
-The moment caused by the contact force is then \citep{Murray1994,Siciliano2009}
-
-\begin{equation}
-m_C
-=
-r_C
-\times
-f_C .
-\label{eq:contact_edge_moment}
-\end{equation}
-
-This relation explains why the table contact can produce rotation even when
-the controller is commanded through a Cartesian impedance law at the
-end-effector. The force does not act exactly at the end-effector origin; it
-acts at the edge. Therefore, the contact produces both a force and a moment.
-The observed tool motion is consequently not a pure rotation and not a pure
-translation, but a combined screw-like displacement.
-
-\section{Damping and Safety Limits}
-\label{sec:damping_safety_limits_contact}
-
-The damping matrix \(D\) is selected to dissipate energy and reduce
-oscillation after contact. In impedance planning, damping cannot be treated as
-an afterthought to stiffness, because both gains shape the transient response,
-the energy stored in the virtual spring, and the response to disturbances
-\citep{Pollayil2023ImpedancePlanning}. For each principal direction, the critical damping
-reference is
-
-\begin{equation}
-D_i
-=
-2\sqrt{M_iK_i},
-\label{eq:critical_damping_contact}
-\end{equation}
-
-where \(M_i\) is the corresponding directional entry of the effective
-Cartesian inertia and \(K_i\) is the selected stiffness. This expression is
-used as a reference rather than as an automatic tuning rule, because the real
-controller is discrete, torque limited, affected by model uncertainty, and
-interacts with a stiff environment.
-
-The following safety checks are part of the experiment:
-
-\begin{itemize}
-    \item the commanded torque must remain below the selected torque limit;
-    \item the torque-rate limiter must prevent abrupt command changes;
-    \item the tool displacement must stay within a small, predefined contact
-    range;
-    \item the rotational displacement must remain below the selected angular
-    limit;
-    \item the controller must not generate sustained oscillations after the
-    tool touches or leaves the table.
-\end{itemize}
-
-These checks are necessary because a stiffness matrix that is geometrically
-meaningful can still be unsuitable for real hardware if it produces aggressive
-torques or poorly damped contact behavior. Energy-aware impedance control
-studies make the same point from a safety perspective: contact tasks should
-limit not only position error, but also the energy and power that the
-controller can inject during unexpected interaction
-\citep{Hjorth2023EnergyAwareImpedance}.
-
-\section{Logged Data}
-\label{sec:logged_data_contact}
-
-During the experiment, selected measured and computed quantities are written
-to a CSV file for offline evaluation. The main logged quantities are
-
-\begin{equation}
-\begin{aligned}
-&
-\mathbf{p}_{\mathrm{EE}},
-R_{\mathrm{EE}},
-\mathbf{p}_d,
-R_d,
-\mathbf{e}_p,
-\mathbf{e}_R,
-\dot{\mathbf{p}}_{\mathrm{EE}},
-\omega_{\mathrm{EE}},
-\\
-&
-\mathbf{f},
-\mathbf{m},
-\mathbf{f}_C,
-\mathbf{m}_C,
-\boldsymbol{\tau}.
-\end{aligned}
-\label{eq:logged_quantities_contact}
-\end{equation}
-
-The vectors \(\mathbf{f}\) and \(\mathbf{m}\) are the Cartesian force and
-moment generated by the impedance controller. No dedicated external
-force/torque sensor is mounted on the robot. Instead, the controller uses the
-external wrench estimated by the robot itself, \texttt{O\_F\_ext\_hat\_K},
-which is reconstructed from the joint torque sensors and the dynamic model.
-This estimate is used for contact detection during the experiment and can be
-logged as \(\mathbf{f}_C\) and \(\mathbf{m}_C\). Because it is a model-based
-estimate rather than a direct measurement at the contact, it is less accurate
-than a dedicated force/torque sensor, especially during fast motion or near
-singular configurations. The passive alignment behavior is therefore evaluated
-from the measured pose displacement, the computed impedance wrench, the
-commanded joint torques, and this estimated external wrench. This limitation
-must be kept in mind when interpreting the results. More elaborate sensorless
-approaches can additionally estimate environment stiffness for impedance
-tuning, including on the Franka Emika Panda, but such estimation is outside the
-implemented scope of the present thesis \citep{Roveda2021SensorlessStiffness}.
-
-\subsection{Commanded and Measured Wrench}
-\label{subsec:commanded_measured_wrench}
-
-Two different Cartesian wrenches appear in the impedance-controlled contact, and
-it is important to keep them apart.
-
-The first is the \emph{commanded} (calculated) impedance wrench. It is computed
-directly by the controller from the pose error and velocity,
-
-\begin{equation}
-W_{\mathrm{imp}}
-=
-\begin{bmatrix} \mathbf{f}\\ \mathbf{m}\end{bmatrix}
-=
-\begin{bmatrix}
-K_p\mathbf{e}_p - D_p\dot{\mathbf{p}}_{\mathrm{EE}}\\
-K_R\mathbf{e}_R - D_R\omega_{\mathrm{EE}}
-\end{bmatrix},
-\label{eq:commanded_wrench_logging}
-\end{equation}
-
-and it is the wrench the controller imposes on the robot through \(J^\top\). It
-is always available, requires no sensor, and is exactly the quantity the
-stiffness and damping matrices produce.
-
-The second is the \emph{measured} (estimated external) wrench
-\(W_{\mathrm{ext}}\), the contact reaction from the table. It is not commanded;
-it is what the environment applies to the tool. The robot provides it directly
-as \texttt{O\_F\_ext\_hat\_K}, a model-based estimate computed from the full
-robot dynamics and the joint-torque sensors and then filtered. This is the
-estimate used in this work.
-
-The same quantity can also be reconstructed by the user from the external joint
-torque \(\tau_{\mathrm{ext}}\). Since an external wrench maps to joint torque by
-\(\tau_{\mathrm{ext}}=J^\top W_{\mathrm{ext}}\), a simple damped least-squares
-inverse \citep{Khatib1987,Chiaverini1994DampedLeastSquares} gives
-
-\begin{equation}
-W_{\mathrm{ext}}
-\approx
-\left(JJ^\top + \lambda^2 I\right)^{-1} J\,\tau_{\mathrm{ext}},
-\qquad
-W_{\mathrm{ext}}
-=
-\begin{bmatrix} \mathbf{f}_{\mathrm{ext}}\\ \mathbf{m}_{\mathrm{ext}}\end{bmatrix},
-\label{eq:external_wrench_estimate}
-\end{equation}
-
-where \(\lambda\) is a small damping factor for robustness near singular
-configurations. For the redundant seven-joint arm, however,
-\(\tau_{\mathrm{ext}}\) can contain a null-space component that corresponds to
-no Cartesian wrench, and the theoretically correct mapping is the dynamically
-consistent inverse \cite{Khatib1987}
-
-\begin{equation}
-W_{\mathrm{ext}}
-=
-\left(J M_q^{-1} J^\top\right)^{-1} J M_q^{-1}\,\tau_{\mathrm{ext}},
-\label{eq:dynamically_consistent_wrench}
-\end{equation}
-
-which weights the inverse by the joint-space mass matrix \(M_q\). The plain
-damped pseudoinverse \eqref{eq:external_wrench_estimate} ignores \(M_q\) and is
-therefore an approximation. Consequently \texttt{O\_F\_ext\_hat\_K} and the
-user-reconstructed wrench estimate the same physical quantity but are
-\emph{not} numerically identical: the robot estimate is the better-conditioned,
-filtered one and is preferred here, while the reconstruction formulas are useful
-mainly when only \(\tau_{\mathrm{ext}}\) is available.
-
-The two wrenches describe the same interaction from opposite sides. During the
-slow, quasi-static contact considered here the tool is close to equilibrium, so
-the commanded impedance wrench balances the external contact wrench
-\citep{Hogan1985,Ott2008},
-
-\begin{equation}
-W_{\mathrm{imp}} \approx -\,W_{\mathrm{ext}}.
-\label{eq:wrench_balance}
-\end{equation}
-
-The restoring spring--damper wrench produced by the controller therefore mirrors
-the contact push at the edge. For the effective-moment identification of
-Section~\ref{sec:effective_stiffness_damping_identification}, the contact moment
-\(M_C\) can be taken from either side: the commanded moment \(\mathbf{m}\) is
-always available and needs no estimation, while the measured moment
-\(\mathbf{m}_{\mathrm{ext}}\) (from \texttt{O\_F\_ext\_hat\_K} or
-\eqref{eq:external_wrench_estimate}) provides an independent check. Because of
-\eqref{eq:wrench_balance} the two should agree up to sign and the small dynamic
-terms, so the choice does not change the identified behavior; it is only a
-matter of which measurement is used.
-
-The balance \eqref{eq:wrench_balance} also serves as a consistency check on the
-logged data. During quasi-static contact the commanded and estimated external
-moments should be equal and opposite, so their agreement over a contact interval
-can be quantified by
-
-\begin{equation}
-r_{\mathrm{check}}
-=
-\frac{\left\|\mathbf{m}+\mathbf{m}_{\mathrm{ext}}\right\|}{\left\|\mathbf{m}\right\|}.
-\label{eq:wrench_consistency_check}
-\end{equation}
-
-A small \(r_{\mathrm{check}}\) confirms three things at once: the motion is slow
-enough for the quasi-static assumption to hold, the impedance model is
-consistent with the real contact, and the external-wrench estimate is
-trustworthy despite the absence of a dedicated force/torque sensor. A large
-\(r_{\mathrm{check}}\) instead flags fast transients, friction, or estimation
-error, and marks intervals that should not be used for the quasi-static
-analysis.
-
-\section{Alignment Evaluation}
-\label{sec:alignment_evaluation}
-
-The orientation error is evaluated using the same rotation-error notation as
-the controller. For the contact-alignment task, it can also be interpreted
-geometrically from the tool normal and the table normal. If \(z_T\) is the
-tool normal and \(n_s\) is the table normal, a simple local alignment error is
-
-\begin{equation}
-\mathbf{e}_R
-=
-z_T
-\times
-n_s .
-\label{eq:contact_alignment_error_cross}
-\end{equation}
-
-Good passive alignment means that the contact-induced motion reduces this
-orientation error. Therefore, the main before--after condition is
-
-\begin{equation}
-\|\mathbf{e}_{R,\mathrm{after}}\|
-<
-\|\mathbf{e}_{R,\mathrm{before}}\|.
-\label{eq:alignment_error_reduction}
-\end{equation}
-
-Equivalently, the improvement can be written as
-
-\begin{equation}
-\Delta e_R
-=
-\|\mathbf{e}_{R,\mathrm{before}}\|
--
-\|\mathbf{e}_{R,\mathrm{after}}\|.
-\label{eq:alignment_error_improvement}
-\end{equation}
-
-If \(\Delta e_R>0\), the alignment improved during contact. The passive
-rotation itself is described by
-
-\begin{equation}
-\Delta\theta_C
-=
-\theta_{\mathrm{after}}
--
-\theta_{\mathrm{before}} .
-\label{eq:contact_induced_rotation}
-\end{equation}
-
-The alignment error \(\mathbf{e}_R=z_T\times n_s\) points along the axis that
-rotates the tool normal toward the table normal, that is, along the corrective
-direction. The contact-induced rotation is therefore favorable when it has a
-positive component along this corrective axis,
-
-\begin{equation}
-\mathbf{e}_{R,\mathrm{before}}^\top
-\Delta\theta_C
->
-0,
-\label{eq:passive_rotation_condition}
-\end{equation}
-
-which is the condition for the passive rotation to reduce the misalignment.
-(The sign follows from \(\mathbf{e}_R=z_T\times n_s\) being the correction axis;
-it is the opposite of a convention in which \(\mathbf{e}_R\) is the
-current-minus-desired axis-angle error.) This condition is used only as a local
-alignment indicator. The final judgement also includes the pole location, force
-level, torque level, and oscillation behavior.
-
-\section{Experimental Procedure}
-\label{sec:experimental_procedure_contact}
-
-The experiment is executed in the following steps:
-
-\begin{enumerate}
-    \item Move the Panda to a safe initial pose above the table.
-    \item Define the table frame, tool edge frame, and selected virtual center
-    \(p_c\).
-    \item Select one candidate stiffness matrix \(K_s^{(j)}\) from the
-    manually defined stiffness set.
-    \item Select damping values and torque limits.
-    \item Move the tool edge slowly into contact with the table.
-    \item Record the pose displacement, impedance wrench, and commanded joint
-    torques during contact.
-    \item Estimate the instantaneous pole or screw axis from the measured
-    translation and rotation.
-    \item Compare the orientation-error reduction, pole location, displacement,
-    force, and torque signals against the design goal.
-\end{enumerate}
-
-The same procedure is repeated for each candidate stiffness setting. The
-comparison is not meant to prove a universal optimal stiffness matrix. Instead,
-it identifies which of the tested settings produces the most useful passive
-self-aligning tendency for the chosen tool, table, and contact configuration.
-The stiffness values are therefore selected experimentally rather than through
-an analytical optimization.
-
-\section{Evaluation Criteria}
-\label{sec:evaluation_criteria_contact}
-
-The experiment is evaluated using the following criteria:
-
-\begin{itemize}
-    \item \textbf{Alignment direction:} the measured rotation should reduce the
-    angular error between the tool edge and the table.
-    \item \textbf{Virtual-center consistency:} the instantaneous screw axis
-    should pass close to the selected virtual center or the useful contact
-    region.
-    \item \textbf{Contact displacement:} the translational displacement should
-    remain small and bounded.
-    \item \textbf{Torque behavior:} the commanded torques should remain smooth,
-    bounded, and below the selected limits.
-    \item \textbf{Damping behavior:} after contact or release, the response
-    should not show sustained oscillations.
-\end{itemize}
-
-These criteria match the goal of the experiment more directly than the earlier
-set-point and trajectory metrics. The central result is not tracking accuracy
-alone, but whether the selected Cartesian stiffness matrix creates a safe and
-useful passive alignment behavior during contact.
-
-\section{Role of the Stiffness and Damping Methods}
+\subsection{Selection Order of the Stiffness and Damping Methods}
 \label{sec:role_of_gain_methods}
 
 Three related methods are used in this chapter. They are complementary steps of
@@ -1287,53 +873,18 @@ quantities: they tell how the system really behaved during contact and can be
 used to improve the next commanded gain choice, but they are not themselves the
 initial gains applied by the controller.
 
-\section{Quasi-Static Stiffness Computation and Direct Comparison}
+\subsection{Direct Comparison of Candidate Gains}
 \label{sec:direct_stiffness_comparison}
 
-The first evaluation method computes initial commanded stiffness and damping
-values from a quasi-static compliance assumption and then compares the
-resulting settings experimentally. For slow contact, the damping and inertial
-terms are small compared with the elastic term, so the principal stiffness in
-one direction can be estimated from a force-displacement pair,
-
-\begin{equation}
-k_i
-\approx
-\frac{F_{i,\max}}{\Delta x_{i,\max}} .
-\label{eq:direct_method_translational_stiffness}
-\end{equation}
-
-Similarly, the rotational stiffness is estimated from an allowable contact
-moment and angular deflection,
-
-\begin{equation}
-k_{r,i}
-\approx
-\frac{M_{i,\max}}{\Delta\theta_{i,\max}} .
-\label{eq:direct_method_rotational_stiffness}
-\end{equation}
-
-These equations can be used with design limits before the experiment, or with
-measured contact data after a trial to compute the apparent stiffness that was
-actually observed. For example, if the measured contact force and displacement
-in direction \(i\) are \(F_i\) and \(\Delta x_i\), then
-\(k_i \approx F_i/\Delta x_i\). If the measured contact moment and angular
-deflection are \(M_i\) and \(\Delta\theta_i\), then
-\(k_{r,i}\approx M_i/\Delta\theta_i\).
-
-The damping values are initialized from the critical-damping approximation,
-
-\begin{equation}
-d_i
-\approx
-2\sqrt{k_i},
-\label{eq:direct_method_critical_damping}
-\end{equation}
-
-or, when a directional effective inertia \(M_i\) is available,
-\(d_i=2\zeta\sqrt{M_i k_i}\). These damping values are not assumed to be final
-optimal values. They are starting values that are checked experimentally for
-smooth contact, bounded torque, and absence of sustained oscillation.
+The direct comparison uses the candidate gains obtained from the quasi-static
+selection in \cref{subsec:initial_stiffness_damping_values}. Thus the
+translational stiffness is computed from the force--displacement limit in
+\cref{eq:initial_translational_stiffness}, the rotational stiffness from the
+moment--angle limit in \cref{eq:initial_rotational_stiffness}, and the initial
+damping from the critical-damping approximation in
+\cref{eq:normalized_critical_damping}. This subsection does not introduce a
+second stiffness formula. It defines how the resulting candidate settings are
+compared in the same edge-contact experiment.
 
 After the stiffness and damping candidates have been computed, each setting is
 tested in the same edge-contact experiment and judged from the measured values
@@ -1400,7 +951,7 @@ toward the table plane. Additional lateral compliance can improve the behavior
 because the tool does not rotate purely about the end-effector origin, but
 performs a combined sliding and rotational motion.
 
-\section{Least-Squares Identification of Effective Stiffness and Damping}
+\subsection{Least-Squares Identification of Effective Stiffness and Damping}
 \label{sec:effective_stiffness_damping_identification}
 
 The offline identification method identifies an effective contact model from the
@@ -1680,249 +1231,416 @@ methods compute commanded stiffness and damping matrices, while the
 least-squares fit computes the effective translation--rotation and damping
 behavior that produced the observed self-alignment.
 
-\section{Results}
-\label{sec:results_contact}
+\section{Simple Contact Model}
+\label{sec:simple_contact_model}
 
-This section reports the table-contact experiment for the candidate stiffness
-settings of Table~\ref{tab:example_candidate_stiffness_sets}. The values given
-below are \emph{illustrative expectations} derived from the contact physics:
-they show the trends and the order of magnitude anticipated for each setting,
-and they are replaced by the measured values once the logged trials are
-available. The figures are \emph{qualitative} sketches of the corresponding
-expected signals, not plots of measured data.
+The contact experiment is interpreted with the same Cartesian impedance
+notation used in the controller derivation \citep{Hogan1985,Ott2008}. The
+commanded impedance wrench is
 
-\subsection{Passive Orientation Alignment}
-\label{sec:results_alignment}
+\begin{equation}
+W_{\mathrm{imp}}
+=
+K_s
+\begin{bmatrix}
+\Delta p\\
+\Delta \theta
+\end{bmatrix}
++
+D_s
+\begin{bmatrix}
+v\\
+\omega
+\end{bmatrix},
+\qquad
+W_{\mathrm{imp}}
+=
+\begin{bmatrix}
+f\\
+m
+\end{bmatrix}.
+\label{eq:contact_impedance_wrench_simple}
+\end{equation}
 
-The decisive variable is the rotational stiffness about the alignment axes.
-With high rotational stiffness (Test~1), the controller holds the commanded
-orientation and resists the contact-induced rotation, so the contact moment is
-largely reacted as joint torque and the tool barely rotates. The residual
-misalignment stays close to the initial value, \(\Delta e_R\approx0\), and the
-peak contact force at the leading edge is high. As the rotational stiffness is
-reduced (Tests~2 and~3), the moment produced by the downward force at the tool
-edge increasingly rotates the tool toward the surface, so \(\Delta e_R\) becomes
-positive and the orientation error decreases while the peak contact force drops.
-Adding lateral compliance (Test~4) lets the tool both slide and rotate, which
-is expected to give the most complete passive alignment. With an over-soft
-setting (Test~5), the displacement becomes large and the alignment motion
-poorly defined, so this setting is expected to be rejected on the safety and
-displacement criteria.
+Here, \(K_s\) and \(D_s\) denote the stiffness and damping matrices expressed
+in the same task frame.
+The scalar entries \(K_i\) and \(D_i\) used below are the corresponding
+principal-direction values of these matrices.
 
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}[scale=1.0]
-        \draw[->] (0,0) -- (9.2,0) node[right] {time};
-        \draw[->] (0,0) -- (0,4.2) node[above] {\(\|\mathbf{e}_R\|\)};
-        \draw[dashed] (2,0) -- (2,4) node[above] {contact};
-        % shared initial misalignment before contact
-        \draw[very thick] (0,3.4) -- (2,3.4);
-        \node[left] at (0,3.4) {\footnotesize \(e_{R,b}\)};
-        % Test 1: stiff, stays high
-        \draw[very thick] (2,3.4) .. controls (4,3.2) and (6.5,3.05) .. (8.6,3.0)
-            node[right] {\footnotesize stiff (Test~1)};
-        % Test 3: soft rotation
-        \draw[very thick] (2,3.4) .. controls (4,1.9) and (6.5,1.35) .. (8.6,1.3)
-            node[right] {\footnotesize soft (Test~3)};
-        % Test 4: soft + lateral, best
-        \draw[very thick] (2,3.4) .. controls (3.6,1.1) and (6.5,0.55) .. (8.6,0.5)
-            node[right] {\footnotesize soft+lateral (Test~4)};
-    \end{tikzpicture}
-    \caption{Qualitative expected orientation-error magnitude
-    \(\|\mathbf{e}_R\|\) versus time during contact. Lower rotational stiffness
-    (and added lateral compliance) is expected to give a larger drop after
-    contact. Illustrative sketch; replaced by the logged data.}
-    \label{fig:results_orientation_error}
-\end{figure}
+For a slow contact motion, the quasi-static compliance relation can be written
+as \citep{Hogan1985,Fasse1997SpatialImpedance}
 
-\subsection{Instantaneous Pole and Virtual-Center Consistency}
-\label{sec:results_pole}
+\begin{equation}
+\begin{bmatrix}
+\Delta p\\
+\Delta \theta
+\end{bmatrix}
+\approx
+K_s^{-1} W_C,
+\qquad
+W_C
+=
+\begin{bmatrix}
+f_C\\
+m_C
+\end{bmatrix},
+\label{eq:contact_quasistatic_compliance}
+\end{equation}
 
-The instantaneous pole of the measured motion
-(\cref{eq:instantaneous_pole_displacement}) indicates where the passive motion
-appears to pivot. With stiff rotation, the small rotation occurs essentially
-about the tool-frame origin, so the pole lies far from the contact edge and the
-pole error \(e_P\) is large. With compliant rotation and added lateral
-compliance, the pole is expected to migrate toward the contact edge and the
-table surface, reducing \(e_P\) and matching the useful passive pivot near the
-contact. This is the geometric signature of good passive self-alignment.
+where \(W_C\) is the contact wrench. This equation is not used to compute the
+controller command directly. It is used to explain the physical effect of the
+selected stiffness: for the same type of contact wrench, lower stiffness
+allows a larger displacement and higher stiffness resists the motion more
+strongly.
 
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}[scale=1.0]
-        % table
-        \draw[very thick] (0,0) -- (10,0);
-        \node[anchor=north east] at (10,0) {\footnotesize table};
-        % tilted tool resting on its edge
-        \draw[very thick] (3,0) -- (6.6,2.7);
-        \node[anchor=south] at (6.7,2.7) {\footnotesize tool};
-        % contact edge
-        \fill (3,0) circle (2.2pt);
-        \node[anchor=north] at (3,-0.08) {\footnotesize edge \(p_e\)};
-        % downward contact force, to the left of the tool
-        \draw[->, thick] (2.1,1.1) -- (2.1,0.15);
-        \node[anchor=east] at (2.05,0.65) {\footnotesize \(f_C\)};
-        % pole near edge (compliant): good
-        \fill (3.6,0.3) circle (2.2pt);
-        \node[anchor=west] at (3.8,0.18) {\footnotesize pole (compliant): near edge};
-        % pole near wrist (stiff): bad
-        \fill (6.2,2.4) circle (2.2pt);
-        \node[anchor=west] at (6.4,2.25) {\footnotesize pole (stiff): near wrist};
-    \end{tikzpicture}
-    \caption{Qualitative sketch of the instantaneous pole. A compliant setting
-    places the pivot near the contact edge, so the tool face rocks flat onto the
-    table; a stiff setting leaves the pivot near the wrist, so the edge scrapes
-    instead. Illustrative; the measured pole is computed from the logged motion.}
-    \label{fig:results_pole_geometry}
-\end{figure}
+If the contact force acts at the tool edge, it also creates a moment. With
+\(p_C\) denoting the contact point and \(p_{\mathrm{EE}}\) the end-effector
+origin, the contact lever arm is
 
-\subsection{Contact Displacement, Force, and Commanded Torque}
-\label{sec:results_force_torque}
+\begin{equation}
+r_C
+=
+p_C
+-
+p_{\mathrm{EE}} .
+\label{eq:contact_edge_lever_arm}
+\end{equation}
 
-The normal penetration scales approximately as
-\(\Delta x_n\approx \|f_C\|/K_n\), so a stiffer normal direction gives a smaller
-displacement but a larger peak contact force, while a more compliant setting
-gives the opposite. The peak commanded joint torque grows with the commanded
-wrench through \(\boldsymbol{\tau}=J^\top\mathbf{F}\), so the stiffer settings
-produce the largest torque peaks. All settings are expected to remain below the
-selected joint-torque limit, and the torque-rate limiter keeps the command
-smooth across the contact transient.
+The moment caused by the contact force is then \citep{Murray1994,Siciliano2009}
 
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}[scale=1.0]
-        \draw[->] (0,0) -- (9.2,0) node[right] {time};
-        \draw[->] (0,0) -- (0,4.2) node[above] {\(\|f_C\|,\ \|\boldsymbol{\tau}\|\)};
-        \draw[dashed] (2,0) -- (2,4) node[above] {contact};
-        % torque limit line
-        \draw[dotted] (0,3.6) -- (9,3.6) node[right] {\footnotesize \(\tau\) limit};
-        % contact force: rise at contact, settle
-        \draw[very thick] (0,0.1) -- (2,0.1)
-            .. controls (2.5,3.0) and (3.2,2.5) .. (5,2.4) -- (8.8,2.35)
-            node[right] {\footnotesize \(\|f_C\|\)};
-        % commanded torque: rise lower, stays under limit
-        \draw[very thick] (0,0.05) -- (2,0.05)
-            .. controls (2.5,2.1) and (3.2,1.7) .. (5,1.65) -- (8.8,1.6)
-            node[right] {\footnotesize \(\|\boldsymbol{\tau}\|\)};
-    \end{tikzpicture}
-    \caption{Qualitative expected contact force \(\|f_C\|\) and largest commanded
-    joint torque \(\|\boldsymbol{\tau}\|\) versus time. Both rise at contact and
-    settle; the torque stays below the limit. Illustrative sketch; replaced by
-    the logged data.}
-    \label{fig:results_force_torque}
-\end{figure}
+\begin{equation}
+m_C
+=
+r_C
+\times
+f_C .
+\label{eq:contact_edge_moment}
+\end{equation}
 
-\subsection{Damping and Oscillation}
-\label{sec:results_damping}
+This relation explains why the table contact can produce rotation even when
+the controller is commanded through a Cartesian impedance law at the
+end-effector. The force does not act exactly at the end-effector origin; it
+acts at the edge. Therefore, the contact produces both a force and a moment.
+The observed tool motion is consequently not a pure rotation and not a pure
+translation, but a combined screw-like displacement.
 
-With the damping initialized from the critical-damping approximation, the
-contact response is expected to settle without sustained oscillation. An
-under-damped setting would show oscillation in the orientation error and the
-contact force after the tool touches or leaves the table; the selected damping
-values are checked against this on the logged signals.
+\section{Safety Limits and Damping Check}
+\label{sec:damping_safety_limits_contact}
 
-\subsection{Summary of Candidate Settings}
-\label{sec:results_summary_table}
+The damping matrix \(D\) is selected to dissipate energy and reduce
+oscillation after contact. In impedance planning, damping cannot be treated as
+an afterthought to stiffness, because both gains shape the transient response,
+the energy stored in the virtual spring, and the response to disturbances
+\citep{Pollayil2023ImpedancePlanning}. For each principal direction, the critical damping
+reference is
 
-Table~\ref{tab:results_contact_summary} collects the illustrative expected
-outcomes for each candidate setting. The ranking that follows from the reasoning
-above places the low-rotational-stiffness setting with added lateral compliance
-(Test~4) as the best passive self-alignment candidate: it gives the largest
-orientation-error reduction (\(\Delta e_R\approx8.5^\circ\)), the pole closest to
-the edge (\(e_P\approx8\,\mathrm{mm}\)), and a moderate contact force and torque.
-The stiff setting (Test~1) is the worst for alignment
-(\(\Delta e_R\approx1^\circ\), \(e_P\approx80\,\mathrm{mm}\)), and the over-soft
-setting (Test~5) is rejected because, although it rotates, its pole drifts away
-from the edge (\(e_P\approx35\,\mathrm{mm}\)) and the displacement becomes large.
+\begin{equation}
+D_i
+=
+2\sqrt{M_iK_i},
+\label{eq:critical_damping_contact}
+\end{equation}
 
-\begin{table}[H]
-\centering
-\caption{Illustrative expected outcomes of the candidate stiffness settings in
-the edge-contact alignment experiment; \(b\) and \(a\) denote before and after
-contact-induced alignment. These values indicate the anticipated trends and are
-replaced by the measured data.}
-\label{tab:results_contact_summary}
-\begin{tabular}{@{}ccccccc@{}}
-\toprule
-Test
-& \(\|\mathbf{e}_{R,b}\|\) (\(^\circ\))
-& \(\|\mathbf{e}_{R,a}\|\) (\(^\circ\))
-& \(\Delta e_R\) (\(^\circ\))
-& \(e_P\) (mm)
-& \(\|f_C\|_{\max}\) (N)
-& \(\|\boldsymbol{\tau}\|_{\max}\) (Nm) \\
-\midrule
-1 & 10 & 9.0 & 1.0 & 80 & 18 & 28 \\
-2 & 10 & 6.0 & 4.0 & 45 & 15 & 22 \\
-3 & 10 & 3.0 & 7.0 & 22 & 12 & 16 \\
-4 & 10 & 1.5 & 8.5 & 8  & 10 & 14 \\
-5 & 10 & 2.0 & 8.0 & 35 & 6  & 9 \\
-\bottomrule
-\end{tabular}
-\end{table}
+where \(M_i\) is the corresponding directional entry of the effective
+Cartesian inertia and \(K_i\) is the selected stiffness. This expression is
+used as a reference rather than as an automatic tuning rule, because the real
+controller is discrete, torque limited, affected by model uncertainty, and
+interacts with a stiff environment.
 
-Finally, the least-squares identification of
-Section~\ref{sec:effective_stiffness_damping_identification} is expected to show
-that for the stiff settings the alignment moment is dominated by the rotational
-term \(M_{\mathrm{rot}}=K_R^{\mathrm{eff}}\Delta\theta\), whereas for the
-compliant setting with lateral sliding the translational term
-\(M_{\mathrm{trans}}=K_{rt}^{\mathrm{eff}}\Delta x_C\) contributes a
-significant share, confirming that sliding is part of the passive alignment.
-Illustrative fitted values \(K_{rt}^{\mathrm{eff}}\),
-\(D_{rt}^{\mathrm{eff}}\), \(K_R^{\mathrm{eff}}\), and \(D_R^{\mathrm{eff}}\)
-are reported in Table~\ref{tab:results_effective_fit}; the values from the
-logged fit replace them.
+The following safety checks are part of the experiment:
 
-\begin{table}[H]
-\centering
-\caption{Illustrative effective stiffness and damping contributions for the
-best setting (Test~4), identified by the least-squares fit. Example values
-indicating the expected split between translation and rotation; replaced by the
-fitted values from the logged data.}
-\label{tab:results_effective_fit}
-\begin{tabular}{@{}llc@{}}
-\toprule
-Quantity & Symbol & Value \\
-\midrule
-Translation--rotation stiffness & \(K_{rt}^{\mathrm{eff}}\) & \(15\ \mathrm{Nm/m}\) \\
-Translation--rotation damping & \(D_{rt}^{\mathrm{eff}}\) & \(1.2\ \mathrm{Nm\,s/m}\) \\
-Rotational stiffness & \(K_R^{\mathrm{eff}}\) & \(6\ \mathrm{Nm/rad}\) \\
-Rotational damping & \(D_R^{\mathrm{eff}}\) & \(0.3\ \mathrm{Nm\,s/rad}\) \\
-\bottomrule
-\end{tabular}
-\end{table}
+\begin{itemize}
+    \item the commanded torque must remain below the selected torque limit;
+    \item the torque-rate limiter must prevent abrupt command changes;
+    \item the tool displacement must stay within a small, predefined contact
+    range;
+    \item the rotational displacement must remain below the selected angular
+    limit;
+    \item the controller must not generate sustained oscillations after the
+    tool touches or leaves the table.
+\end{itemize}
 
-\section{Discussion}
-\label{sec:discussion_contact}
+These checks are necessary because a stiffness matrix that is geometrically
+meaningful can still be unsuitable for real hardware if it produces aggressive
+torques or poorly damped contact behavior. Energy-aware impedance control
+studies make the same point from a safety perspective: contact tasks should
+limit not only position error, but also the energy and power that the
+controller can inject during unexpected interaction
+\citep{Hjorth2023EnergyAwareImpedance}.
 
-The expected trade-off is the same physical trade-off that appears throughout
-Cartesian impedance control. Higher stiffness improves pose regulation but
-increases contact forces and commanded torques. Lower stiffness improves
-compliance but can allow excessive displacement and may make the alignment
-motion poorly defined. For the table-contact task, the important design
-question is not simply whether the robot is soft or stiff. The important
-question is where the compliance appears to be located geometrically.
+\section{Logged Data}
+\label{sec:logged_data_contact}
 
-A purely diagonal stiffness matrix can make the robot compliant, but it does
-not directly encode a useful virtual center of rotation. In that case, the
-contact wrench may still produce useful alignment because the contact force
-acts at the tool edge and because the table constrains the motion. However,
-the effective pivot point must then be evaluated from the measured motion
-rather than assumed from the commanded stiffness matrix. This is why the
-instantaneous pole or screw-axis evaluation is important in the direct
-experimental comparison. This interpretation is consistent with the assembly
-literature, where remote or variable compliance centers are useful precisely
-because they turn contact forces into correcting motion instead of jamming
-\citep{Nevins1989ComputerControlledAssembly,Watson1978RCC,Wang2019VariableComplianceCenter,Hartisch2022FlexureRCC}.
+During the experiment, selected measured and computed quantities are written
+to a CSV file for offline evaluation. The main logged quantities are
 
-A fully coupled stiffness matrix based on a selected center point would encode
-the virtual-center behavior more directly. The least-squares identification in
-Section~\ref{sec:effective_stiffness_damping_identification} is therefore used
-to analyze the effective coupling that appears during contact, even when the
-commanded controller gains are first computed from quasi-static contact
-limits and then validated experimentally. For the present thesis, the final
-stiffness selection should satisfy four practical requirements. It should
-reduce the orientation error during contact. It should produce an
-instantaneous pole near the useful contact region. It must be damped enough to
-avoid oscillation. Finally, it must remain compatible with the Panda torque
-limits and the discrete real-time implementation.
+\begin{equation}
+\begin{aligned}
+&
+\mathbf{p}_{\mathrm{EE}},
+R_{\mathrm{EE}},
+\mathbf{p}_d,
+R_d,
+\mathbf{e}_p,
+\mathbf{e}_R,
+\dot{\mathbf{p}}_{\mathrm{EE}},
+\omega_{\mathrm{EE}},
+\\
+&
+\mathbf{f},
+\mathbf{m},
+\mathbf{f}_C,
+\mathbf{m}_C,
+\boldsymbol{\tau}.
+\end{aligned}
+\label{eq:logged_quantities_contact}
+\end{equation}
+
+The vectors \(\mathbf{f}\) and \(\mathbf{m}\) are the Cartesian force and
+moment generated by the impedance controller. No dedicated external
+force/torque sensor is mounted on the robot. Instead, the controller uses the
+external wrench estimated by the robot itself, \texttt{O\_F\_ext\_hat\_K},
+which is reconstructed from the joint torque sensors and the dynamic model.
+This estimate is used for contact detection during the experiment and can be
+logged as \(\mathbf{f}_C\) and \(\mathbf{m}_C\). Because it is a model-based
+estimate rather than a direct measurement at the contact, it is less accurate
+than a dedicated force/torque sensor, especially during fast motion or near
+singular configurations. The passive alignment behavior is therefore evaluated
+from the measured pose displacement, the computed impedance wrench, the
+commanded joint torques, and this estimated external wrench. This limitation
+must be kept in mind when interpreting the results. More elaborate sensorless
+approaches can additionally estimate environment stiffness for impedance
+tuning, including on the Franka Emika Panda, but such estimation is outside the
+implemented scope of the present thesis \citep{Roveda2021SensorlessStiffness}.
+
+\subsection{Commanded and Measured Wrench}
+\label{subsec:commanded_measured_wrench}
+
+Two different Cartesian wrenches appear in the impedance-controlled contact, and
+it is important to keep them apart.
+
+The first is the \emph{commanded} (calculated) impedance wrench. It is computed
+directly by the controller from the pose error and velocity,
+
+\begin{equation}
+W_{\mathrm{imp}}
+=
+\begin{bmatrix} \mathbf{f}\\ \mathbf{m}\end{bmatrix}
+=
+\begin{bmatrix}
+K_p\mathbf{e}_p - D_p\dot{\mathbf{p}}_{\mathrm{EE}}\\
+K_R\mathbf{e}_R - D_R\omega_{\mathrm{EE}}
+\end{bmatrix},
+\label{eq:commanded_wrench_logging}
+\end{equation}
+
+and it is the wrench the controller imposes on the robot through \(J^\top\). It
+is always available, requires no sensor, and is exactly the quantity the
+stiffness and damping matrices produce.
+
+The second is the \emph{measured} (estimated external) wrench
+\(W_{\mathrm{ext}}\), the contact reaction from the table. It is not commanded;
+it is what the environment applies to the tool. The robot provides it directly
+as \texttt{O\_F\_ext\_hat\_K}, a model-based estimate computed from the full
+robot dynamics and the joint-torque sensors and then filtered. This is the
+estimate used in this work.
+
+The same quantity can also be reconstructed by the user from the external joint
+torque \(\tau_{\mathrm{ext}}\). Since an external wrench maps to joint torque by
+\(\tau_{\mathrm{ext}}=J^\top W_{\mathrm{ext}}\), a simple damped least-squares
+inverse \citep{Khatib1987,Chiaverini1994DampedLeastSquares} gives
+
+\begin{equation}
+W_{\mathrm{ext}}
+\approx
+\left(JJ^\top + \lambda^2 I\right)^{-1} J\,\tau_{\mathrm{ext}},
+\qquad
+W_{\mathrm{ext}}
+=
+\begin{bmatrix} \mathbf{f}_{\mathrm{ext}}\\ \mathbf{m}_{\mathrm{ext}}\end{bmatrix},
+\label{eq:external_wrench_estimate}
+\end{equation}
+
+where \(\lambda\) is a small damping factor for robustness near singular
+configurations. For the redundant seven-joint arm, however,
+\(\tau_{\mathrm{ext}}\) can contain a null-space component that corresponds to
+no Cartesian wrench, and the theoretically correct mapping is the dynamically
+consistent inverse \cite{Khatib1987}
+
+\begin{equation}
+W_{\mathrm{ext}}
+=
+\left(J M_q^{-1} J^\top\right)^{-1} J M_q^{-1}\,\tau_{\mathrm{ext}},
+\label{eq:dynamically_consistent_wrench}
+\end{equation}
+
+which weights the inverse by the joint-space mass matrix \(M_q\). The plain
+damped pseudoinverse \eqref{eq:external_wrench_estimate} ignores \(M_q\) and is
+therefore an approximation. Consequently \texttt{O\_F\_ext\_hat\_K} and the
+user-reconstructed wrench estimate the same physical quantity but are
+\emph{not} numerically identical: the robot estimate is the better-conditioned,
+filtered one and is preferred here, while the reconstruction formulas are useful
+mainly when only \(\tau_{\mathrm{ext}}\) is available.
+
+The two wrenches describe the same interaction from opposite sides. During the
+slow, quasi-static contact considered here the tool is close to equilibrium, so
+the commanded impedance wrench balances the external contact wrench
+\citep{Hogan1985,Ott2008},
+
+\begin{equation}
+W_{\mathrm{imp}} \approx -\,W_{\mathrm{ext}}.
+\label{eq:wrench_balance}
+\end{equation}
+
+The restoring spring--damper wrench produced by the controller therefore mirrors
+the contact push at the edge. For the effective-moment identification of
+Section~\ref{sec:effective_stiffness_damping_identification}, the contact moment
+\(M_C\) can be taken from either side: the commanded moment \(\mathbf{m}\) is
+always available and needs no estimation, while the measured moment
+\(\mathbf{m}_{\mathrm{ext}}\) (from \texttt{O\_F\_ext\_hat\_K} or
+\eqref{eq:external_wrench_estimate}) provides an independent check. Because of
+\eqref{eq:wrench_balance} the two should agree up to sign and the small dynamic
+terms, so the choice does not change the identified behavior; it is only a
+matter of which measurement is used.
+
+The balance \eqref{eq:wrench_balance} also serves as a consistency check on the
+logged data. During quasi-static contact the commanded and estimated external
+moments should be equal and opposite, so their agreement over a contact interval
+can be quantified by
+
+\begin{equation}
+r_{\mathrm{check}}
+=
+\frac{\left\|\mathbf{m}+\mathbf{m}_{\mathrm{ext}}\right\|}{\left\|\mathbf{m}\right\|}.
+\label{eq:wrench_consistency_check}
+\end{equation}
+
+A small \(r_{\mathrm{check}}\) confirms three things at once: the motion is slow
+enough for the quasi-static assumption to hold, the impedance model is
+consistent with the real contact, and the external-wrench estimate is
+trustworthy despite the absence of a dedicated force/torque sensor. A large
+\(r_{\mathrm{check}}\) instead flags fast transients, friction, or estimation
+error, and marks intervals that should not be used for the quasi-static
+analysis.
+
+\section{Evaluation Metrics}
+\label{sec:alignment_evaluation}
+
+The orientation error is evaluated using the same rotation-error notation as
+the controller. For the contact-alignment task, it can also be interpreted
+geometrically from the tool normal and the table normal. If \(z_T\) is the
+tool normal and \(n_s\) is the table normal, a simple local alignment error is
+
+\begin{equation}
+\mathbf{e}_R
+=
+z_T
+\times
+n_s .
+\label{eq:contact_alignment_error_cross}
+\end{equation}
+
+Good passive alignment means that the contact-induced motion reduces this
+orientation error. Therefore, the main before--after condition is
+
+\begin{equation}
+\|\mathbf{e}_{R,\mathrm{after}}\|
+<
+\|\mathbf{e}_{R,\mathrm{before}}\|.
+\label{eq:alignment_error_reduction}
+\end{equation}
+
+Equivalently, the improvement can be written as
+
+\begin{equation}
+\Delta e_R
+=
+\|\mathbf{e}_{R,\mathrm{before}}\|
+-
+\|\mathbf{e}_{R,\mathrm{after}}\|.
+\label{eq:alignment_error_improvement}
+\end{equation}
+
+If \(\Delta e_R>0\), the alignment improved during contact. The passive
+rotation itself is described by
+
+\begin{equation}
+\Delta\theta_C
+=
+\theta_{\mathrm{after}}
+-
+\theta_{\mathrm{before}} .
+\label{eq:contact_induced_rotation}
+\end{equation}
+
+The alignment error \(\mathbf{e}_R=z_T\times n_s\) points along the axis that
+rotates the tool normal toward the table normal, that is, along the corrective
+direction. The contact-induced rotation is therefore favorable when it has a
+positive component along this corrective axis,
+
+\begin{equation}
+\mathbf{e}_{R,\mathrm{before}}^\top
+\Delta\theta_C
+>
+0,
+\label{eq:passive_rotation_condition}
+\end{equation}
+
+which is the condition for the passive rotation to reduce the misalignment.
+(The sign follows from \(\mathbf{e}_R=z_T\times n_s\) being the correction axis;
+it is the opposite of a convention in which \(\mathbf{e}_R\) is the
+current-minus-desired axis-angle error.) This condition is used only as a local
+alignment indicator. The final judgement also includes the pole location, force
+level, torque level, and oscillation behavior.
+
+\section{Experimental Procedure}
+\label{sec:experimental_procedure_contact}
+
+The experiment is executed in the following steps:
+
+\begin{enumerate}
+    \item Move the Panda to a safe initial pose above the table.
+    \item Define the table frame, tool edge frame, and selected virtual center
+    \(p_c\).
+    \item Select one candidate stiffness matrix \(K_s^{(j)}\) from the
+    manually defined stiffness set.
+    \item Select damping values and torque limits.
+    \item Move the tool edge slowly into contact with the table.
+    \item Record the pose displacement, impedance wrench, and commanded joint
+    torques during contact.
+    \item Estimate the instantaneous pole or screw axis from the measured
+    translation and rotation.
+    \item Compare the orientation-error reduction, pole location, displacement,
+    force, and torque signals against the design goal.
+\end{enumerate}
+
+The same procedure is repeated for each candidate stiffness setting. The
+comparison is not meant to prove a universal optimal stiffness matrix. Instead,
+it identifies which of the tested settings produces the most useful passive
+self-aligning tendency for the chosen tool, table, and contact configuration.
+The stiffness values are therefore selected experimentally rather than through
+an analytical optimization.
+
+\section{Evaluation Criteria and Acceptance Conditions}
+\label{sec:evaluation_criteria_contact}
+
+The experiment is evaluated using the following criteria:
+
+\begin{itemize}
+    \item \textbf{Alignment direction:} the measured rotation should reduce the
+    angular error between the tool edge and the table.
+    \item \textbf{Virtual-center consistency:} the instantaneous screw axis
+    should pass close to the selected virtual center or the useful contact
+    region.
+    \item \textbf{Contact displacement:} the translational displacement should
+    remain small and bounded.
+    \item \textbf{Torque behavior:} the commanded torques should remain smooth,
+    bounded, and below the selected limits.
+    \item \textbf{Damping behavior:} after contact or release, the response
+    should not show sustained oscillations.
+\end{itemize}
+
+These criteria match the goal of the experiment more directly than the earlier
+set-point and trajectory metrics. The central result is not tracking accuracy
+alone, but whether the selected Cartesian stiffness matrix creates a safe and
+useful passive alignment behavior during contact.
