@@ -676,15 +676,19 @@ in Mozzi-axis descriptions of compliant end-effector motion
 
 The implemented controller, however, uses a diagonal stiffness without this
 coupling, so its centre of compliance is the tool-frame origin and the pivot is
-not placed analytically. For the diagonal controller the pivot location is
-therefore \emph{emergent}: it is set by the contact geometry and the chosen
-gains. The practical procedure is then to choose several representative diagonal
-settings \(K_s^{(j)}\), run the same edge-contact experiment for each, compute
-the instantaneous pole from the measured motion using Chasles' theorem, and
-select the setting whose pole lies closest to the edge---smallest \(e_P\) and
-\(d_{\mathrm{ISA},e}\)---together with acceptable displacement, force, and
-torque. The coupled design \eqref{eq:virtual_center_total_energy} is thus the
-ideal that the diagonal selection approximates.
+not placed analytically. The experiment therefore does not command an active
+rotation about the edge. Instead, the tool is intentionally started with a small
+tilt, lowered until the edge contacts the table, and the contact wrench is
+allowed to rotate the tool passively under the selected compliance. For the
+diagonal controller the pivot location is therefore \emph{emergent}: it is set
+by the contact geometry and the chosen gains. The practical procedure is then to
+choose several representative diagonal settings \(K_s^{(j)}\), run the same
+edge-contact experiment for each, compute the instantaneous pole from the
+measured motion using Chasles' theorem, and select the setting whose pole lies
+closest to the edge---smallest \(e_P\) and \(d_{\mathrm{ISA},e}\)---together
+with acceptable displacement, force, and torque. The coupled design
+\eqref{eq:virtual_center_total_energy} is thus the passive stiffness design
+that the diagonal selection approximates.
 
 \subsection{Designing the Impedance Around a Chosen Pole}
 \label{subsec:impedance_around_pole}
@@ -697,6 +701,14 @@ and then computes the stiffness and damping that place it there. Choosing where
 the tool should pivot and solving for the gains is what it means to select the
 impedance \emph{around} a pole, and it is the inverse of the trial-and-compare
 procedure above.
+
+This formulation does not add a separate force command, moment command, or
+active rotation trajectory. The Cartesian impedance law remains the same; only
+the structure of the gain matrices changes. A diagonal or block-diagonal
+controller uses independent translational and rotational gains, while a
+virtual-center design uses structured off-diagonal terms in \(K\) and \(D\) so
+that the same passive spring--damper law behaves as if it were attached at the
+chosen point \(p_c\).
 
 \paragraph{Two different kinds of coupling.}
 A non-diagonal stiffness can arise in two ways that have very different effects,
@@ -1206,6 +1218,75 @@ set-point and trajectory metrics. The central result is not tracking accuracy
 alone, but whether the selected Cartesian stiffness matrix creates a safe and
 useful passive alignment behavior during contact.
 
+\section{Role of the Stiffness and Damping Methods}
+\label{sec:role_of_gain_methods}
+
+Three related methods are used in this chapter. They are complementary steps of
+one stiffness- and damping-selection workflow. The order matters, because each
+method answers a different question:
+
+\begin{enumerate}
+    \item \textbf{Quasi-static initial selection.} This is the first step,
+    because it can be done before contact data exist. Allowable
+    force--displacement and moment--angle limits are used to compute safe
+    starting values for \(K_{\mathrm{cmd}}\). The damping
+    \(D_{\mathrm{cmd}}\) is then chosen from the same stiffness values using a
+    critically damped or slightly over-damped design. This method gives practical
+    diagonal or block-diagonal gains for the implemented controller. It does
+    not prescribe a pivot point directly; the apparent pole is evaluated after
+    contact.
+
+    \item \textbf{Pole-based virtual-center selection.} This is the second
+    design step once a useful pole or virtual center \(p_c\) has been selected
+    from the desired passive alignment behavior. The same Cartesian impedance
+    law is kept, but the commanded gains are constructed as structured full
+    matrices \(K_{\mathrm{TCP}}\) and \(D_{\mathrm{TCP}}\) using the adjoint
+    transformation in \cref{eq:impedance_around_pole}. The purpose is to make
+    the passive compliance behave as if the tool tends to rotate around the
+    chosen pole. This is still passive gain selection: it does not add an
+    active rotation trajectory, a separate commanded moment, or a new commanded
+    force.
+
+    \item \textbf{Least-squares effective identification.} This is the third
+    step and can only be used after one or more contact trials have been
+    logged. The measured displacement, velocity, force, and moment data are
+    fitted to estimate effective matrices such as
+    \(K_{rt}^{\mathrm{eff}}\), \(D_{rt}^{\mathrm{eff}}\),
+    \(K_R^{\mathrm{eff}}\), and \(D_R^{\mathrm{eff}}\). These matrices describe
+    how the combined robot--tool--contact system actually behaved. They are
+    used to explain the observed passive alignment and to update the next
+    commanded gain choice; they are not the gains that were originally sent to
+    the controller.
+\end{enumerate}
+
+The intended design logic is therefore
+
+\begin{equation}
+\begin{aligned}
+\text{quasi-static start}
+&\;\rightarrow\;
+\text{pole-based gain design}
+\;\rightarrow\;
+\text{contact trial}\\
+&\;\rightarrow\;
+\text{least-squares effective fit}
+\;\rightarrow\;
+\text{refined commanded gains}.
+\end{aligned}
+\label{eq:gain_selection_workflow}
+\end{equation}
+
+In other words, the controller receives commanded gains
+\(K_{\mathrm{cmd}}\) and \(D_{\mathrm{cmd}}\), while the least-squares fit
+estimates apparent or effective gains \(K^{\mathrm{eff}}\) and
+\(D^{\mathrm{eff}}\) after the contact has happened. The effective values
+describe the behavior of the combined robot--tool--contact system, including
+the commanded impedance, the tool offset, the table constraint, friction,
+torque limits, and model or measurement errors. They are therefore diagnostic
+quantities: they tell how the system really behaved during contact and can be
+used to improve the next commanded gain choice, but they are not themselves the
+initial gains applied by the controller.
+
 \section{Quasi-Static Stiffness Computation and Direct Comparison}
 \label{sec:direct_stiffness_comparison}
 
@@ -1322,7 +1403,7 @@ performs a combined sliding and rotational motion.
 \section{Least-Squares Identification of Effective Stiffness and Damping}
 \label{sec:effective_stiffness_damping_identification}
 
-The second evaluation method identifies an effective contact model from the
+The offline identification method identifies an effective contact model from the
 logged table-contact data. It is included as part of the thesis work because
 the direct stiffness comparison tells which commanded setting behaves better,
 but it does not explain how much of the measured self-alignment moment comes
@@ -1338,6 +1419,24 @@ of an effective Cartesian impedance relation
 called effective matrices because they describe the behavior observed during
 contact; they are not necessarily identical to the diagonal gains commanded in
 the controller.
+
+This distinction is important for interpreting the fitted values. The symbols
+with the superscript ``eff'' do not mean that the controller internally changed
+its stiffness or damping during the experiment. They mean that the logged data
+are being approximated by an equivalent linear contact model after the fact.
+
+Repeated trials with the same commanded gains and the same nominal contact
+geometry can be used together in this fit. In that case, the screw-axis
+calculation is used as a consistency check: trials whose instantaneous pole
+clusters around the same useful region are treated as samples of the same
+contact behavior. However, Chasles' theorem does not imply that one fixed pole
+exists for the whole trial. It guarantees an instantaneous screw axis for each
+instantaneous displacement or twist. During real contact the pole can move from
+sample to sample because of friction, sliding, changing contact pressure,
+torque limits, measurement noise, and the fact that the implemented controller
+uses diagonal gains. Therefore the pole is used to filter and interpret the
+motion, while the least-squares fit estimates the effective moment model from
+the logged samples.
 
 At one sample \(i\), the contact moment around the contact point or tool edge
 can be modeled as a linear-in-parameters effective impedance relation
@@ -1541,6 +1640,16 @@ geometry, the tool offset, the Jacobian, friction, table constraints,
 null-space behavior, torque limits, and the fact that the contact force acts
 at the tool edge rather than at the end-effector origin.
 
+For this reason, the fitted matrices are not expected to reproduce the
+configured gains exactly. In an ideal free-space test with clean measurements,
+no contact constraints, no saturation, and a model that matches the controller
+law exactly, the fitted rotational terms could be close to the commanded
+rotational stiffness and damping. In the edge-contact experiment, however, the
+fit describes the \emph{effective} contact behavior. A nonzero
+\(K_{rt}^{\mathrm{eff}}\) can be found even when the commanded
+translation--rotation stiffness block is zero, because the contact geometry and
+tool offset convert translational sliding and force into moment about the edge.
+
 The identified model separates the two stiffness-related moment contributions
 
 \begin{equation}
@@ -1565,11 +1674,11 @@ terms are significant during the contact transient.
 This least-squares model is not used to command the robot online in this
 thesis. Instead, it is an offline analysis method for computing effective
 stiffness and damping contributions from the same logged contact trials used
-for the direct stiffness comparison. The two methods therefore answer
-different questions: the quasi-static method computes and selects a useful
-commanded stiffness and damping setting, while the least-squares fit computes the effective
-translation--rotation and damping behavior that produced the observed
-self-alignment.
+for the direct stiffness comparison. It therefore answers a different question
+from the two gain-design methods: the quasi-static and coupled virtual-center
+methods compute commanded stiffness and damping matrices, while the
+least-squares fit computes the effective translation--rotation and damping
+behavior that produced the observed self-alignment.
 
 \section{Results}
 \label{sec:results_contact}
