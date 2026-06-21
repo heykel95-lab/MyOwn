@@ -860,10 +860,14 @@ stiffness and damping matrices produce.
 The second is the \emph{measured} (estimated external) wrench
 \(W_{\mathrm{ext}}\), the contact reaction from the table. It is not commanded;
 it is what the environment applies to the tool. The robot provides it directly
-as the model-based estimate \texttt{O\_F\_ext\_hat\_K}. Alternatively, it can be
-reconstructed from the external joint torque \(\tau_{\mathrm{ext}}\): since an
-external wrench maps to joint torque by \(\tau_{\mathrm{ext}}=J^\top
-W_{\mathrm{ext}}\), the damped least-squares inverse gives
+as \texttt{O\_F\_ext\_hat\_K}, a model-based estimate computed from the full
+robot dynamics and the joint-torque sensors and then filtered. This is the
+estimate used in this work.
+
+The same quantity can also be reconstructed by the user from the external joint
+torque \(\tau_{\mathrm{ext}}\). Since an external wrench maps to joint torque by
+\(\tau_{\mathrm{ext}}=J^\top W_{\mathrm{ext}}\), a simple damped least-squares
+inverse gives
 
 \begin{equation}
 W_{\mathrm{ext}}
@@ -877,7 +881,25 @@ W_{\mathrm{ext}}
 \end{equation}
 
 where \(\lambda\) is a small damping factor for robustness near singular
-configurations.
+configurations. For the redundant seven-joint arm, however,
+\(\tau_{\mathrm{ext}}\) can contain a null-space component that corresponds to
+no Cartesian wrench, and the theoretically correct mapping is the dynamically
+consistent inverse \cite{Khatib1987}
+
+\begin{equation}
+W_{\mathrm{ext}}
+=
+\left(J M_q^{-1} J^\top\right)^{-1} J M_q^{-1}\,\tau_{\mathrm{ext}},
+\label{eq:dynamically_consistent_wrench}
+\end{equation}
+
+which weights the inverse by the joint-space mass matrix \(M_q\). The plain
+damped pseudoinverse \eqref{eq:external_wrench_estimate} ignores \(M_q\) and is
+therefore an approximation. Consequently \texttt{O\_F\_ext\_hat\_K} and the
+user-reconstructed wrench estimate the same physical quantity but are
+\emph{not} numerically identical: the robot estimate is the better-conditioned,
+filtered one and is preferred here, while the reconstruction formulas are useful
+mainly when only \(\tau_{\mathrm{ext}}\) is available.
 
 The two wrenches describe the same interaction from opposite sides. During the
 slow, quasi-static contact considered here the tool is close to equilibrium, so
@@ -898,6 +920,26 @@ always available and needs no estimation, while the measured moment
 \eqref{eq:wrench_balance} the two should agree up to sign and the small dynamic
 terms, so the choice does not change the identified behavior; it is only a
 matter of which measurement is used.
+
+The balance \eqref{eq:wrench_balance} also serves as a consistency check on the
+logged data. During quasi-static contact the commanded and estimated external
+moments should be equal and opposite, so their agreement over a contact interval
+can be quantified by
+
+\begin{equation}
+r_{\mathrm{check}}
+=
+\frac{\left\|\mathbf{m}+\mathbf{m}_{\mathrm{ext}}\right\|}{\left\|\mathbf{m}\right\|}.
+\label{eq:wrench_consistency_check}
+\end{equation}
+
+A small \(r_{\mathrm{check}}\) confirms three things at once: the motion is slow
+enough for the quasi-static assumption to hold, the impedance model is
+consistent with the real contact, and the external-wrench estimate is
+trustworthy despite the absence of a dedicated force/torque sensor. A large
+\(r_{\mathrm{check}}\) instead flags fast transients, friction, or estimation
+error, and marks intervals that should not be used for the quasi-static
+analysis.
 
 \section{Alignment Evaluation}
 \label{sec:alignment_evaluation}
@@ -1172,9 +1214,23 @@ D_R^{\mathrm{eff}}\omega_i .
 Here, \(\Delta x_{C,i}\) is the translation or sliding displacement of the
 contact point, \(v_{C,i}\) is the corresponding linear velocity,
 \(\Delta\theta_i\) is the angular displacement, and \(\omega_i\) is the
-angular velocity. The contact moment \(M_{C,i}\) may be obtained from a
-measured wrench, or, in the present setup, estimated from the logged impedance
-wrench and the known contact geometry. The term
+angular velocity. The moment in the logs, whether the commanded
+\(\mathbf{m}\) or the estimated external \(\mathbf{m}_{\mathrm{ext}}\), is
+expressed about the tool-frame origin (TCP). The contact moment \(M_{C,i}\) used
+here is the moment about the contact edge, obtained by moving the logged moment
+to the edge with the lever-arm term,
+
+\begin{equation}
+M_{C,i}
+=
+\mathbf{m}_i + r_C \times \mathbf{f}_i ,
+\label{eq:contact_moment_to_edge}
+\end{equation}
+
+where \(r_C=p_C-p_{\mathrm{EE}}\) is the lever arm from the TCP to the edge and
+\((\mathbf{f}_i,\mathbf{m}_i)\) is the logged force and moment; the same
+transformation applies whether the commanded or the measured wrench is used.
+The term
 \(K_{rt}^{\mathrm{eff}}\Delta x_{C,i}\) represents the moment contribution
 caused by translational sliding, while
 \(K_R^{\mathrm{eff}}\Delta\theta_i\) represents the usual rotational

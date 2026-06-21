@@ -768,6 +768,14 @@ experiment.
 The logged quantities include the desired and measured end-effector position,
 the position error, the orientation error, the commanded Cartesian wrench, and
 the commanded joint torques.
+The Cartesian force and moment written to the log are the \emph{commanded}
+impedance wrench \(\mathbf{f}=K_p\mathbf{e}_p-D_p\dot{\mathbf{p}}_{\mathrm{EE}}\),
+\(\mathbf{m}=K_R\mathbf{e}_R-D_R\omega_{\mathrm{EE}}\), not the external contact
+wrench. The robot's estimated external wrench \texttt{O\_F\_ext\_hat\_K} is used
+inside the callback for contact detection and can additionally be logged
+(\(\mathbf{f}_{\mathrm{ext}},\mathbf{m}_{\mathrm{ext}}\)) to enable the
+commanded-versus-measured consistency check discussed in
+Chapter~\ref{ch:experiments}.
 
 Because the controller runs in a real-time torque-control loop with a sampling
 time of approximately \(1\,\mathrm{ms}\), file operations should be kept outside the
