@@ -76,7 +76,8 @@ Eigen::Matrix3d Dp_base =
 // tau_g, tau_c: gravity and Coriolis compensation
 
 Eigen::Vector3d e_p = p_des - p_EE;
-Eigen::Vector3d f = Kp_base * e_p - Dp_base * pdot;
+Eigen::Vector3d pdot_d = Eigen::Vector3d::Zero();
+Eigen::Vector3d f = Kp_base * e_p + Dp_base * (pdot_d - pdot);
 
 Eigen::Matrix<double,6,1> F;
 F.head<3>() = f;

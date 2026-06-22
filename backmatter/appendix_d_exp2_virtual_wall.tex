@@ -76,7 +76,8 @@ Eigen::Matrix3d DR = R_surface *
     .asDiagonal() * R_surface.transpose();
 
 // Control law (same as Experiment 1):
-Eigen::Vector3d f = Kp * e_p - Dp * pdot;
+Eigen::Vector3d pdot_d = Eigen::Vector3d::Zero();
+Eigen::Vector3d f = Kp * e_p + Dp * (pdot_d - pdot);
 Eigen::Vector3d m = KR * e_R - DR * omega;
 Eigen::Matrix<double,6,1> F; F.head<3>()=f; F.tail<3>()=m;
 Eigen::Matrix<double,7,1> tau = J.transpose() * F;

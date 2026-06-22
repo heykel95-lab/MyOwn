@@ -430,13 +430,13 @@ and $\mathbf{e}_R = \mathbf{0}$.
 \subsection{Impedance Wrench}
 
 Assuming the robot is momentarily at rest
-($\dot{\mathbf{p}}_{\mathrm{EE}}=\mathbf{0}$, $\boldsymbol{\omega}_{\mathrm{EE}}=\mathbf{0}$),
+($\dot{p}_d=\mathbf{0}$, $\dot{\mathbf{p}}_{\mathrm{EE}}=\mathbf{0}$, $\boldsymbol{\omega}_{\mathrm{EE}}=\mathbf{0}$),
 the positional force and rotational moment from
 \cref{eq:positional_impedance_force,eq:rotational_impedance_moment} are:
 
 \begin{equation}
 \label{eq:F_panda}
-\mathbf{f} = \mathbf{K}_p\,\mathbf{e}_p - \mathbf{D}_p\,\dot{\mathbf{p}}_{\mathrm{EE}}
+\mathbf{f} = \mathbf{K}_p\,\mathbf{e}_p + \mathbf{D}_p\left(\dot{p}_d-\dot{\mathbf{p}}_{\mathrm{EE}}\right)
 =
 \begin{bmatrix}
 50   & 0  & 0    \\
@@ -631,10 +631,11 @@ Eigen::Matrix3d DR = Eigen::Vector3d{4.47,4.47,28.28}.asDiagonal();
 
 // Cartesian velocity split
 Eigen::Vector3d pdot  = xdot.head<3>();
+Eigen::Vector3d pdot_d = Eigen::Vector3d::Zero();
 Eigen::Vector3d omega = xdot.tail<3>();
 
 // Positional force and rotational moment
-Eigen::Vector3d f = Kp * e_p - Dp * pdot;
+Eigen::Vector3d f = Kp * e_p + Dp * (pdot_d - pdot);
 Eigen::Vector3d m = KR * e_R - DR * omega;
 
 // Combined 6D forces and moments

@@ -767,7 +767,7 @@ The angle \(q_i\) is measured in radians.
 
 Each matrix \({}^{i-1}T_i(q_i)\) describes the relative position and
 orientation between two neighboring link frames.
-In the standard Denavit--Hartenberg convention, this transformation is
+In the standard Denavit--Hartenberg convention~\cite{Denavit1955,Craig2005,Siciliano2009}, this transformation is
 obtained as a product of four elementary homogeneous transformations:
 
 \begin{equation}
@@ -1077,8 +1077,8 @@ Cartesian spring-damper law \cite{Hogan1985,Mayr2024CartesianImpedance},
 \mathbf{f}
 =
 K_{p,0} \mathbf{e}_p
--
-D_{p,0} \dot{\mathbf{p}}_{\mathrm{EE}}
++
+D_{p,0}\left(\dot{p}_d-\dot{\mathbf{p}}_{\mathrm{EE}}\right)
 \in \mathbb{R}^3.
 \label{eq:positional_impedance_force}
 \end{equation}
@@ -1086,12 +1086,14 @@ D_{p,0} \dot{\mathbf{p}}_{\mathrm{EE}}
 Here, \(K_{p,0} \in \mathbb{R}^{3 \times 3}\) is the positional stiffness
 matrix expressed in the base frame, \(D_{p,0} \in \mathbb{R}^{3 \times 3}\) is
 the positional damping matrix expressed in the base frame, and
-\(\dot{\mathbf{p}}_{\mathrm{EE}}\in\mathbb{R}^3\) is the Cartesian linear
-velocity of the end-effector expressed in the same frame.
+\(\dot{\mathbf{p}}_{\mathrm{EE}}\in\mathbb{R}^3\) and
+\(\dot{p}_d\in\mathbb{R}^3\) are the measured and desired Cartesian linear
+velocities expressed in the same frame.
 The stiffness term \(K_{p,0} \mathbf{e}_p\) generates a restoring force
 proportional to the position error, while the damping term
-\(D_{p,0} \dot{\mathbf{p}}_{\mathrm{EE}}\) opposes the Cartesian linear
-velocity of the end-effector.
+\(D_{p,0}(\dot{p}_d-\dot{\mathbf{p}}_{\mathrm{EE}})\) damps the translational
+velocity error. For a fixed setpoint, \(\dot{p}_d=\mathbf{0}\), so this term
+reduces to \(-D_{p,0}\dot{\mathbf{p}}_{\mathrm{EE}}\).
 
 The rotational impedance moment is defined as
 
@@ -1127,7 +1129,7 @@ Cartesian force and a Cartesian moment:
 \end{bmatrix}
 =
 \begin{bmatrix}
-K_{p,0} \mathbf{e}_p - D_{p,0} \dot{\mathbf{p}}_{\mathrm{EE}}\\
+K_{p,0} \mathbf{e}_p + D_{p,0}\left(\dot{p}_d-\dot{\mathbf{p}}_{\mathrm{EE}}\right)\\
 K_{R,0} \mathbf{e}_R - D_{R,0} \omega_{\mathrm{EE}}
 \end{bmatrix}
 \in \mathbb{R}^6.
@@ -1196,7 +1198,7 @@ Cartesian impedance control law:
 =
 J^\top(q)
 \begin{bmatrix}
-K_{p,0} \mathbf{e}_p - D_{p,0} \dot{\mathbf{p}}_{\mathrm{EE}}\\
+K_{p,0} \mathbf{e}_p + D_{p,0}\left(\dot{p}_d-\dot{\mathbf{p}}_{\mathrm{EE}}\right)\\
 K_{R,0} \mathbf{e}_R - D_{R,0} \omega_{\mathrm{EE}}
 \end{bmatrix}.
 \label{eq:cartesian_impedance_control_law}
@@ -1941,7 +1943,9 @@ D=
 \label{eq:stability_stacked_quantities}
 \end{equation}
 
-so that the commanded wrench is \(\mathbf{F}=K\mathbf{e}-D\dot{x}\). The
+For this stability argument the desired pose is constant, so \(\dot{p}_d=0\)
+and the translational velocity-error term reduces to the same negative damping
+term used below. Thus the commanded wrench is \(\mathbf{F}=K\mathbf{e}-D\dot{x}\). The
 block-diagonal structure of \(K\) and \(D\) is exactly the decoupling between
 translation and rotation used in the implemented controller. A single Lyapunov
 candidate for the complete six-dimensional task is the total virtual mechanical
