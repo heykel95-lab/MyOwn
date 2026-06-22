@@ -357,26 +357,26 @@ notation introduced in \cref{subsec:KD_matrices}.
 \begin{enumerate}
   \item The robot is moved to the initial position and orientation on the wall surface
         ($d = 0$, desired orientation $\mathbf{R}_d$ such that the
-        end-effector $z$-axis aligns with $\hat{\mathbf{n}}$).
+        end-effector $z$-axis aligns with $n_s$).
   \item The impedance controller is activated.
   \item A human operator applies forces by hand in three separate trials:
     \begin{itemize}
       \item \textbf{Trial A --- Normal push:}
-            Force applied along $\hat{\mathbf{n}}$.
+            Force applied along $n_s$.
             Expected result: small displacement ($<1\,\mathrm{mm}$),
             large restoring force.
       \item \textbf{Trial B --- In-plane slide:}
-            Force applied along $\hat{\mathbf{t}}_1$ or $\hat{\mathbf{t}}_2$.
+            Force applied along $t_1$ or $t_2$.
             Expected result: end-effector slides freely in the plane;
             no normal displacement.
       \item \textbf{Trial C --- Tilt to contact:}
             Tool starts at an angle to the surface (touching at one point).
             The controller is activated with free tilt
-            ($k_{R,\mathrm{free}}$ about $\hat{\mathbf{t}}_1$,
-            $\hat{\mathbf{t}}_2$).
+            ($k_{R,\mathrm{free}}$ about $t_1$,
+            $t_2$).
             Expected result: the tool tilts freely until its face is
             parallel to the surface (full contact); spinning about
-            $\hat{\mathbf{n}}$ is resisted.
+            $n_s$ is resisted.
     \end{itemize}
   \item Joint torques, end-effector position, and orientation are recorded
         at 1\,kHz throughout each trial.
@@ -401,7 +401,7 @@ for each trial.
          normal displacement remains near zero.
          \textbf{Bottom (Trial C):} a 0.5\,Nm roll torque rotates
          the tool freely ($k_{R,\mathrm{free}}=5\,\mathrm{Nm/rad}$)
-         while spinning about $\hat{\mathbf{n}}$ is blocked ($k_{R,\mathrm{stiff}}=200\,\mathrm{Nm/rad}$).}
+         while spinning about $n_s$ is blocked ($k_{R,\mathrm{stiff}}=200\,\mathrm{Nm/rad}$).}
 \label{fig:exp2_wall_trials}
 \end{figure}
 
@@ -421,16 +421,16 @@ for each trial.
 
 \begin{itemize}
   \item \textbf{Normal displacement
-        \(d(t)=\hat{\mathbf{n}}^\top(\mathbf{p}_{EE}-\mathbf{p}_0)\)}:
+        \(d(t)=n_s^\top(\mathbf{p}_{EE}-\mathbf{p}_0)\)}:
         should remain near zero during in-plane trials and return to zero
         after a normal push.
-  \item \textbf{In-plane position} $\mathbf{p}_{EE} \cdot \hat{\mathbf{t}}_1$
-        and $\mathbf{p}_{EE} \cdot \hat{\mathbf{t}}_2$ vs.\ time:
+  \item \textbf{In-plane position} $\mathbf{p}_{EE} \cdot t_1$
+        and $\mathbf{p}_{EE} \cdot t_2$ vs.\ time:
         should show free motion during in-plane trials.
-  \item \textbf{Tilt angles} about $\hat{\mathbf{t}}_1$ and $\hat{\mathbf{t}}_2$
+  \item \textbf{Tilt angles} about $t_1$ and $t_2$
         extracted from $R_{\mathrm{EE}}$ vs.\ time: should converge freely to
         the angle that brings the tool face parallel to the surface.
-  \item \textbf{Spin angle} about $\hat{\mathbf{n}}$ vs.\ time: should
+  \item \textbf{Spin angle} about $n_s$ vs.\ time: should
         remain near zero ($< 2^{\circ}$) in all trials.
   \item \textbf{Joint torques} $\tau_1, \ldots, \tau_7$ vs.\ time:
         should reveal which joints contribute most to normal stiffness
@@ -446,7 +446,7 @@ for each trial.
 The normal stiffness $k_{\mathrm{stiff}}$ is varied while keeping the
 in-plane and rotational parameters fixed.
 A constant force of approximately $5\,\mathrm{N}$ is applied along
-$\hat{\mathbf{n}}$ by the operator.
+$n_s$ by the operator.
 The steady-state displacement $d_{\mathrm{ss}}$ is measured for three values:
 
 \begin{center}
