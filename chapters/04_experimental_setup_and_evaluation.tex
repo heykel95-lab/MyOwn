@@ -824,12 +824,67 @@ D_{\mathrm{TCP}} = \mathrm{Ad}_g^\top D_{p_c}\,\mathrm{Ad}_g.
 \label{eq:impedance_around_pole}
 \end{equation}
 
-For a diagonal pole-frame stiffness \(K_{p_c}\) with translational block
-\(K_{p,c}\) and rotational block \(K_{R,c}\), the result has the non-zero
-coupling \(K_{pR,\mathrm{task}}=K_{p,c}[r_c]_\times\), which is exactly the block that places
-the pole at \(p_c\). This coupling depends only on the offset \(r_c\) and not on
-the surface inclination, so it is required for a horizontal surface just as
-for an inclined one. The damping is transformed by the \emph{same} adjoint, so
+Writing the lever arm as \(r_c=(r_{c,x},r_{c,y},r_{c,z})\), the skew-symmetric
+matrix appearing in \(\mathrm{Ad}_g\) is
+
+\begin{equation}
+[r_c]_\times =
+\begin{bmatrix}
+0 & -r_{c,z} & r_{c,y}\\
+r_{c,z} & 0 & -r_{c,x}\\
+-r_{c,y} & r_{c,x} & 0
+\end{bmatrix},
+\qquad
+[r_c]_\times\,v = r_c\times v,
+\label{eq:lever_arm_skew}
+\end{equation}
+
+and it is skew-symmetric, \([r_c]_\times^\top=-[r_c]_\times\), as in
+\eqref{eq:skew_symmetric_property}.
+
+Equation~\eqref{eq:impedance_around_pole} is a congruence transformation: it is
+the stiffness seen at the tool frame when the elastic energy is stored by a
+diagonal spring acting on the displacement of the pole point. With the tool-frame
+displacement \(x_{\mathrm{TCP}}=[\,e_{p,\mathrm{task}};\,e_{R,\mathrm{task}}\,]\)
+and the pole displacement \(x_c=\mathrm{Ad}_g\,x_{\mathrm{TCP}}\) from
+\eqref{eq:edge_adjoint_definition},
+
+\begin{equation}
+V=\tfrac12\,x_c^\top K_{p_c}\,x_c
+=\tfrac12\,x_{\mathrm{TCP}}^\top
+\big(\mathrm{Ad}_g^\top K_{p_c}\,\mathrm{Ad}_g\big)x_{\mathrm{TCP}},
+\label{eq:adjoint_energy}
+\end{equation}
+
+so \(K_{\mathrm{TCP}}=\mathrm{Ad}_g^\top K_{p_c}\,\mathrm{Ad}_g\) is symmetric and
+positive (semi-)definite whenever \(K_{p_c}\) is, and \(D_{\mathrm{TCP}}\)
+follows from the same Rayleigh dissipation argument.
+
+Carrying out the product for a block-diagonal pole-frame gain
+\(K_{p_c}=\operatorname{diag}(K_{p,c},K_{R,c})\) and using
+\([r_c]_\times^\top=-[r_c]_\times\) gives the four \(3\times3\) blocks
+explicitly,
+
+\begin{equation}
+\boxed{
+K_{\mathrm{TCP}}=
+\begin{bmatrix}
+K_{p,c} & K_{p,c}\,[r_c]_\times\\[4pt]
+-[r_c]_\times K_{p,c} & K_{R,c}-[r_c]_\times K_{p,c}\,[r_c]_\times
+\end{bmatrix}},
+\label{eq:adjoint_stiffness_blocks}
+\end{equation}
+
+and identically for \(D_{\mathrm{TCP}}\) with \(K_{p,c},K_{R,c}\) replaced by
+\(D_{p,c},D_{R,c}\). The upper-left block \(K_{p,c}\) is unchanged, the upper-right
+coupling block is \(K_{pR,\mathrm{task}}=K_{p,c}[r_c]_\times\), the lower-left
+block is its transpose \(-[r_c]_\times K_{p,c}=K_{pR,\mathrm{task}}^\top\), and the
+rotational block is augmented by \(-[r_c]_\times K_{p,c}[r_c]_\times\).
+
+The coupling block \(K_{pR,\mathrm{task}}=K_{p,c}[r_c]_\times\) in
+\eqref{eq:adjoint_stiffness_blocks} is exactly what places the pole at \(p_c\). It
+depends only on the offset \(r_c\) and not on the surface inclination, so it is
+required for a horizontal surface just as for an inclined one. The damping is transformed by the \emph{same} adjoint, so
 that the spring and the dissipation are both centred at \(p_c\); if only the
 stiffness were referred to \(p_c\) and the damping left at the tool frame, the
 spring would pivot about \(p_c\) while the damping did not, and the transient
@@ -1097,8 +1152,11 @@ caused by translational sliding, while
 impedance contribution. The two damping terms describe moment contributions
 caused by linear and angular velocity.
 
-One sample is not enough to identify all matrices. For \(N_{\mathrm{LS}}\)
-samples, define
+One sample is not enough to identify all matrices: each row of \(A\) has twelve
+unknowns, so at least \(N_{\mathrm{LS}}\ge 12\) samples are required, and they
+must excite all twelve components of \(\varphi_i\) (translation, sliding
+velocity, rotation, and angular velocity) for the fit to be well posed. For
+\(N_{\mathrm{LS}}\) samples, define
 
 \begin{equation}
 \varphi_i
@@ -1195,6 +1253,25 @@ A^\top
 \label{eq:effective_coupling_normal_equation}
 \end{equation}
 
+In practice \(\Phi^\top\Phi\) can be ill-conditioned when the contact motion is
+slow or nearly one-dimensional, so the implemented fit adds a small Tikhonov
+(ridge) term \(\lambda_r\ge 0\) to the \(12\times12\) normal-equation matrix
+before solving,
+
+\begin{equation}
+A^\top
+=
+\left(
+\Phi^\top\Phi + \lambda_r I_{12}
+\right)^{-1}
+\Phi^\top Y,
+\label{eq:effective_coupling_ridge}
+\end{equation}
+
+which recovers the ordinary least-squares estimate
+\eqref{eq:effective_coupling_normal_equation} as \(\lambda_r\to0\) and keeps the
+solution bounded when the regressor is poorly excited.
+
 The matrix \(A\) can then be split into \(K_{rt}^{\mathrm{eff}}\),
 \(D_{rt}^{\mathrm{eff}}\), \(K_R^{\mathrm{eff}}\), and
 \(D_R^{\mathrm{eff}}\). These blocks are the effective stiffness and damping
@@ -1247,6 +1324,24 @@ prediction
 \widehat{D}_{R}^{\mathrm{eff}}\omega_i .
 \label{eq:effective_final_fitted_moment}
 \end{equation}
+
+The quality of the fit is summarized by the root-mean-square moment residual
+over the \(N_{\mathrm{LS}}\) samples,
+
+\begin{equation}
+\mathrm{RMS}
+=
+\sqrt{
+\frac{1}{N_{\mathrm{LS}}}
+\sum_{i=1}^{N_{\mathrm{LS}}}
+\bigl\|M_{C,i}-\widehat{M}_{C,i}\bigr\|^2
+} ,
+\label{eq:effective_fit_rms}
+\end{equation}
+
+which is reported alongside the identified matrices: a small \(\mathrm{RMS}\)
+relative to the measured moment magnitude indicates that the linear effective
+model explains the observed contact moment well.
 
 The identified coupling is useful even when the commanded matrix
 \(K_{\mathrm{task}}^{(j)}\) is diagonal. In that case, the commanded off-diagonal stiffness
@@ -1658,14 +1753,14 @@ d_i
 where \(M_i\) is the corresponding directional entry of the effective
 Cartesian inertia and \(k_i\) is the selected scalar stiffness estimate. This expression is
 used as a reference rather than as an automatic tuning rule, because the real
-controller is discrete, torque limited, affected by model uncertainty, and
+controller is discrete, affected by model uncertainty, and
 interacts with a stiff environment.
 
 The following safety checks are part of the experiment:
 
 \begin{itemize}
-    \item the commanded torque must remain below the selected torque limit;
-    \item the torque-rate limiter must prevent abrupt command changes;
+    \item the commanded torque should remain smooth and within an acceptable
+    range for the tested contact;
     \item the tool displacement must stay within a small, predefined contact
     range;
     \item the rotational displacement must remain below the selected angular

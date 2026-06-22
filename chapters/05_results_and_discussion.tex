@@ -105,9 +105,9 @@ The normal penetration scales approximately as
 displacement but a larger peak contact force, while a more compliant setting
 gives the opposite. The peak commanded joint torque grows with the commanded
 wrench through \(\boldsymbol{\tau}=J^\top\mathbf{F}\), so the stiffer settings
-produce the largest torque peaks. All settings are expected to remain below the
-selected joint-torque limit, and the torque-rate limiter keeps the command
-smooth across the contact transient.
+produce the largest torque peaks. The logged commanded torques are therefore
+checked to ensure that the selected gains do not produce abrupt or excessive
+commands during the contact transient.
 
 \begin{figure}[H]
     \centering
@@ -115,8 +115,6 @@ smooth across the contact transient.
         \draw[->] (0,0) -- (9.2,0) node[right] {time};
         \draw[->] (0,0) -- (0,4.2) node[above] {\(\|f_C\|,\ \|\boldsymbol{\tau}\|\)};
         \draw[dashed] (2,0) -- (2,4) node[above] {contact};
-        % torque limit line
-        \draw[dotted] (0,3.6) -- (9,3.6) node[right] {\footnotesize \(\tau\) limit};
         % contact force: rise at contact, settle
         \draw[very thick] (0,0.1) -- (2,0.1)
             .. controls (2.5,3.0) and (3.2,2.5) .. (5,2.4) -- (8.8,2.35)
@@ -128,7 +126,7 @@ smooth across the contact transient.
     \end{tikzpicture}
     \caption{Qualitative expected contact force \(\|f_C\|\) and largest commanded
     joint torque \(\|\boldsymbol{\tau}\|\) versus time. Both rise at contact and
-    settle; the torque stays below the limit. Illustrative sketch; replaced by
+    settle after the transient. Illustrative sketch; replaced by
     the logged data.}
     \label{fig:results_force_torque}
 \end{figure}

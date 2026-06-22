@@ -17,7 +17,7 @@ and then treated as controller parameters that must be checked experimentally.
 A Lyapunov-based stability analysis was also presented for the ideal compensated closed-loop system, showing that symmetric positive definite stiffness and damping matrices lead to a non-increasing energy function.
 
 The software implementation was organized around the real-time torque-control callback of libfranka.
-At each \(1\,\mathrm{ms}\) control cycle, the robot state is read, the Jacobian and Coriolis term are obtained, the Cartesian impedance law is evaluated, and the final torque command is limited before being returned to the robot.
+At each \(1\,\mathrm{ms}\) control cycle, the robot state is read, the Jacobian and Coriolis term are obtained, the Cartesian impedance law is evaluated, and the final torque command is returned to the robot.
 The implementation also logs the relevant measured and computed quantities to CSV files.
 These logged values include the end-effector position, desired position, positional error, rotational error, Cartesian velocity, Cartesian force and moment, and commanded joint torques.
 
@@ -102,8 +102,8 @@ Second, the compensation terms are obtained from the libfranka model interface a
 Model errors, payload uncertainty, friction, and unmodeled dynamics can influence the measured response.
 These effects are especially relevant at low stiffness values, where friction and small disturbances can have a stronger influence on the final position error.
 
-Third, the stability analysis assumes ideal gravity and Coriolis compensation, continuous-time behavior, a constant desired pose, symmetric positive definite stiffness and damping matrices, and no torque saturation.
-The real implementation is discrete, torque-limited, and affected by measurement noise and model uncertainty.
+Third, the stability analysis assumes ideal gravity and Coriolis compensation, continuous-time behavior, a constant desired pose, and symmetric positive definite stiffness and damping matrices.
+The real implementation is discrete, uses configured Franka collision behavior, and is affected by measurement noise and model uncertainty.
 For this reason, the stability analysis should be interpreted as an ideal reference case, while the experimental plots are needed to evaluate the practical closed-loop behavior.
 Energy-aware impedance-control approaches address this issue more directly by
 monitoring and limiting energy or power flow during contact, which is a useful

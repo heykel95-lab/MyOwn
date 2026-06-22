@@ -133,17 +133,6 @@ inline double smallestSingularValue(const Mat6x7& J) {
   return svd.singularValues().minCoeff();
 }
 
-inline Vec7 limitJointTorqueVectorNorm(const Vec7& v, double max_norm) {
-  if (max_norm <= 0.0) {
-    return v;
-  }
-  const double norm = v.norm();
-  if (norm > max_norm && norm > 1e-12) {
-    return max_norm * v / norm;
-  }
-  return v;
-}
-
 inline Vec7 computeNullspaceTorque(
     const Parameters& params,
     const Model& model,
@@ -174,7 +163,7 @@ inline Vec7 computeNullspaceTorque(
   Eigen::JacobiSVD<Mat6x7> svd_current(J, Eigen::ComputeFullU | Eigen::ComputeFullV);
   Vec7 v7 = svd_current.matrixV().col(6);
   if (v7.norm() <= 1e-9) {
-    return limitJointTorqueVectorNorm(tau_nullspace, params.nullspace_tau_max);
+    return tau_nullspace;
   }
   v7.normalize();
 
@@ -195,8 +184,7 @@ inline Vec7 computeNullspaceTorque(
   const Vec7 tau_sigma = N * (params.nullspace_k_sigma * sigma_direction
                              * params.nullspace_alpha * v7);
 
-  return limitJointTorqueVectorNorm(tau_nullspace + tau_sigma,
-                                    params.nullspace_tau_max);
+  return tau_nullspace + tau_sigma;
 }
 \end{lstlisting}
 

@@ -25,7 +25,7 @@ The implementation follows four main requirements:
     \item The measured robot state, including \(q\), \(\dot{q}\), and \(T_{\mathrm{EE}}\), is read at every control cycle.
     \item The Jacobian and Coriolis terms are obtained from the libfranka model interface.
     \item The Cartesian impedance wrench is computed using the selected stiffness and damping matrices.
-    \item The resulting wrench is mapped to joint torques using \(J^\top(q)\), combined with the null-space torque and the optional Coriolis term, and limited before being sent to the robot.
+    \item The resulting wrench is mapped to joint torques using \(J^\top(q)\), combined with the null-space torque and the optional Coriolis term, and returned to the robot.
 \end{itemize}
 
 \subsection{Control-Loop Data Flow}
@@ -59,8 +59,8 @@ The controller then computes the Cartesian error, evaluates the impedance law, m
 
 This structure follows the control law derived in Chapter~2.
 This implementation chapter therefore focuses on obtaining the required
-quantities from libfranka, evaluating the equations in real time, and ensuring
-that the resulting torque command satisfies the safety limits.
+quantities from libfranka, evaluating the equations in real time, and configuring
+the Franka collision behavior used during the experiment.
 
 \section{Implemented Cartesian Impedance Controller}
 \label{sec:state_model}
@@ -186,15 +186,9 @@ The singular-value direction \(v_7\) is the seventh right singular vector of the
 Jacobian, obtained from its SVD. The sign \(s\) is selected by comparing the
 smallest singular value of the Jacobian at the two candidate configurations
 \(q\pm\alpha_{\mathrm{step}} v_7\), keeping the direction that improves the conditioning, exactly
-as in \cref{eq:nullspace_direction_selection}. The null-space torque is then
-norm-limited so that it remains a bounded secondary contribution,
-
-\begin{equation}
-\left\|\tau_{\mathrm{null}}\right\|\le\tau_{\mathrm{null,max}},
-\qquad
-\tau_{\mathrm{null}}\in\mathbb{R}^{7}.
-\label{eq:implementation_nullspace_limit}
-\end{equation}
+as in \cref{eq:nullspace_direction_selection}. The null-space torque is a
+seven-dimensional joint-torque contribution, \(\tau_{\mathrm{null}}\in\mathbb{R}^{7}\),
+and is added as a secondary term after projection by \(N\).
 
 The final torque command is the Cartesian impedance task torque plus the
 projected null-space torque and the optional Coriolis term,
@@ -527,94 +521,28 @@ The phase therefore determines which stiffness and damping matrices are passed
 to the impedance law and whether the null-space term is active, but the control
 equations within each phase are the ones derived above.
 
-\section{Safety Handling}
+\section{Franka Collision Behavior and Startup Handling}
 \label{sec:torque_saturation_safety}
 
-Several safety mechanisms are implemented to keep the commanded robot motion
-smooth and to reduce the risk of abrupt behavior.
-First, the Cartesian force command is limited by a maximum force magnitude:
+The implementation does not add separate software clipping of the Cartesian
+force, Cartesian moment, null-space torque, or torque rate. Instead, the
+experiment relies on the Franka Control Interface safety layer and on the
+collision behavior configured before the torque-control callback starts.
 
-\begin{equation}
-\left\|
-f_{\mathrm{cmd}}
-\right\|
-\leq
-f_{\max}.
-\label{eq:force_command_limit}
-\end{equation}
+After the user confirms the start of a run, the program first attempts
+automatic error recovery if necessary. It then applies the custom collision
+behavior thresholds through \texttt{robot.setCollisionBehavior}. These
+thresholds define the joint-side torque and Cartesian force/moment sensitivity
+used by the robot controller during the experiment. The thresholds are chosen
+high enough to avoid unnecessary reflex stops during the intended surface
+contact, but they remain part of the robot's internal collision monitoring.
 
-Similarly, the Cartesian moment command is limited by
-
-\begin{equation}
-\left\|
-m_{\mathrm{cmd}}
-\right\|
-\leq
-m_{\max}.
-\label{eq:moment_command_limit}
-\end{equation}
-
-The null-space torque is also limited:
-
-\begin{equation}
-\left\|
-\tau_{\mathrm{null}}
-\right\|
-\leq
-\tau_{\mathrm{null,max}}.
-\label{eq:nullspace_torque_limit}
-\end{equation}
-
-This limit is necessary because the null-space torque is a seven-dimensional
-joint torque vector,
-
-\begin{equation}
-\tau_{\mathrm{null}}
-\in
-\mathbb{R}^{7}.
-\label{eq:implementation_nullspace_torque_dimension}
-\end{equation}
-
-In addition to magnitude limits, a torque-rate limit is applied.
-The change of each joint torque between two consecutive control cycles is
-
-\begin{equation}
-\Delta \tau_i
-=
-\tau_{i,k}
--
-\tau_{i,k-1},
-\label{eq:torque_rate_difference}
-\end{equation}
-
-with
-
-\begin{equation}
-\left|
-\Delta \tau_i
-\right|
-\leq
-\Delta \tau_{\max}.
-\label{eq:torque_rate_limit}
-\end{equation}
-
-This prevents sudden torque jumps and improves the smoothness of the
-controller.
-Furthermore, the controller includes a startup confirmation step.
-After the user presses Enter once, the robot first attempts automatic error
-recovery if necessary, then applies the custom collision behavior thresholds,
-and finally moves to the initial joint configuration.
-
-During the control loop, the user can stop the experiment safely by entering
-\texttt{e} followed by Enter.
-The controller then exits the torque-control callback using a controlled
-\texttt{MotionFinished} command.
-Custom collision thresholds are applied through the Franka collision behavior
-interface.
-These thresholds define the contact and collision sensitivity of the robot
-during the experiment.
-They do not replace the internal safety mechanisms of the robot, but they allow
-the experiment to be configured for controlled manual interaction.
+After the collision behavior is configured, the robot moves to the initial
+joint configuration. If enabled, the gripper is then opened to the configured
+width before contact search begins, so that the tool starts the experiment in
+the intended mechanical state. During the control loop, the user can stop the
+experiment by entering \texttt{e} followed by Enter; the callback then exits by
+returning a \texttt{MotionFinished} command.
 
 \section{Complete Real-Time Callback}
 \label{sec:control_impl}
@@ -630,7 +558,7 @@ The implemented control loop follows the sequence below:
     \item Map the Cartesian wrench to joint torques using \(J^\top(q)\).
     \item Compute and add the projected null-space torque \(\tau_{\mathrm{null}}\).
     \item Add the optional Coriolis compensation.
-    \item Limit the torque command before returning it to libfranka.
+    \item Return the torque command to libfranka.
 \end{enumerate}
 
 The core structure of the implementation is shown in Listing~\ref{lst:app_callback_core} (Appendix~\ref{app:code}).
@@ -647,7 +575,7 @@ the corresponding rotational stiffness values, and the matching damping values.
 
 
 Listing~\ref{lst:app_callback_core} (Appendix~\ref{app:code}) summarizes the main operations performed during one real-time control cycle.
-The callback reads the current robot state, evaluates the Cartesian impedance law, adds the null-space torque and the optional Coriolis term, limits the resulting torque command, and returns it to libfranka.
+The callback reads the current robot state, evaluates the Cartesian impedance law, adds the null-space torque and the optional Coriolis term, and returns the resulting torque command to libfranka.
 If a test configuration uses only translational compliance, the rotational
 control part can be disabled by setting \(K_{R,0}=0_{3\times3}\) and
 \(D_{R,0}=0_{3\times3}\). For the surface-contact alignment experiment,
@@ -655,5 +583,5 @@ however, both translational and rotational components are relevant because the
 contact wrench contains both force and moment terms.
 
 This implementation structure ensures that all quantities required by the controller are evaluated within the real-time callback.
-The torque command is computed from the current robot state at every control cycle and is limited before being returned to libfranka, which helps maintain safe operation during the experiments.
+The torque command is computed from the current robot state at every control cycle, while the experiment-specific contact sensitivity is handled through the configured Franka collision behavior.
 

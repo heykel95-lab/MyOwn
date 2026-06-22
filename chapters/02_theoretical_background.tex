@@ -1856,8 +1856,7 @@ term. The result is a seven-dimensional joint torque,
 \tau_{\mathrm{null}} \in \mathbb{R}^{7},
 \label{eq:nullspace_torque_dimension}
 \end{equation}
-which is norm-limited before use so that it remains a bounded secondary
-contribution. Because every term is projected by \(N\), the restoring spring,
+which is added as a projected secondary contribution. Because every term is projected by \(N\), the restoring spring,
 damping, and singular-value bias act only in the redundant direction and do
 not disturb the regulated Cartesian pose.
 
@@ -1986,22 +1985,23 @@ sense of Lyapunov. Because \(\dot{V}=0\) only for \(\dot{x}=0\), LaSalle's
 invariance principle implies that the regulated Cartesian error converges to
 zero in this ideal case \cite{Siciliano2009}.
 
-The null-space term does not change this conclusion. By construction
+The null-space term does not change this conclusion at the Cartesian-task level. By construction
 \(\tau_{\mathrm{null}}=N\!\left(k_{\mathrm{start}}(q_{\mathrm{start}}-q)-d_{\mathrm{null}}\dot{q}\right)+N(k_\sigma s\alpha_{\mathrm{step}} v_7)\)
 is projected by the damped null-space projector \(N\) of the geometric
 Jacobian, so to first order \(J\dot{q}_{\mathrm{null}}\approx 0\) and it does
 not contribute to the regulated Cartesian velocity \(\dot{x}\). The
 joint-space restoring spring \(k_{\mathrm{start}}(q_{\mathrm{start}}-q)\) and
 the damping term act as a passive spring--damper in the redundant direction,
-and the singular-value term is bounded and norm-limited
-(\cref{eq:nullspace_torque}). Hence the secondary term acts only on the
-redundant degree of freedom and cannot inject energy into the Cartesian task.
+while the singular-value term biases the redundant direction toward a better
+conditioned Jacobian (\cref{eq:nullspace_torque}). Hence the secondary term
+acts only on the redundant degree of freedom and does not directly change the
+Cartesian impedance task.
 
-In practice, torque limits, sampling effects, modeling errors, measurement
+In practice, sampling effects, modeling errors, measurement
 noise, and the contact interaction itself influence the observed behavior.
 Therefore the experimental methodology in Chapter~\ref{ch:methodology} and
 the results discussion in Chapter~\ref{ch:results_discussion} additionally
 examine convergence, steady-state error, overshoot, oscillation, and
-commanded-torque limits from the logged data.
+commanded torques from the logged data.
 
 \fi
