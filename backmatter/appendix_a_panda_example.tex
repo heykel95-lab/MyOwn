@@ -253,9 +253,10 @@ Here:
         affecting the end-effector.
 \end{itemize}
 
-This thesis does not implement a null-space controller.
-The projector $\mathbf{N}$ is computed here purely to illustrate the
-structure of the redundancy.
+The implemented controller uses a projected null-space torque as described in
+\cref{sec:nullspace_optimization_implementation}. In this numerical example,
+the projector $\mathbf{N}$ is computed only to illustrate the structure of the
+redundancy.
 Physically, the non-zero entries in $\mathrm{diag}(\mathbf{N})$ at joints
 1 and 2 mean that a motion along the \emph{difference} of those two joint
 angles moves no Cartesian end-effector coordinate --- it is the one degree
@@ -297,9 +298,11 @@ $k_{\mathrm{free}}=50\,\mathrm{N/m}$,
 $k_{\mathrm{stiff}}=1000\,\mathrm{N/m}$,
 $k_{R,\mathrm{free}}=5\,\mathrm{Nm/rad}$,
 $k_{R,\mathrm{stiff}}=200\,\mathrm{Nm/rad}$.
-For this example the wall normal is $\hat{\mathbf{n}}=[0,0,1]^\top$
-and the wall frame equals the base frame ($\mathbf{W}=\mathbf{I}_3$),
-so the base-frame matrices coincide with the wall-frame matrices:
+For this example the surface normal is \(n_s=[0,0,1]^\top\), with
+\(t_1=[1,0,0]^\top\) and \(t_2=[0,1,0]^\top\). The surface-frame order follows
+\cref{eq:surface_task_frame_matrix}, \(R_{\mathrm{surface}}=[\,n_s\;t_1\;t_2\,]\).
+After transforming the normal-first local gains to the base frame, the
+base-frame translational stiffness is diagonal:
 
 \begin{equation}
 \label{eq:K_panda}
@@ -313,17 +316,17 @@ so the base-frame matrices coincide with the wall-frame matrices:
 \qquad
 \mathbf{K}_R =
 \begin{bmatrix}
-200 & 0   & 0 \\
-0   & 200 & 0 \\
-0   & 0   & 5
+5 & 0 & 0 \\
+0 & 5 & 0 \\
+0 & 0 & 200
 \end{bmatrix}
 \mathrm{Nm/rad}
 \end{equation}
 
-These are diagonal here \emph{only} because $\mathbf{W}=\mathbf{I}_3$
-for this axis-aligned wall.
-For a tilted wall with $\mathbf{W}\neq\mathbf{I}$, applying
-$\mathbf{K}_p=\mathbf{W}\mathbf{K}_{p,\mathrm{local}}\mathbf{W}^\top$
+These are diagonal here \emph{only} because the surface normal and tangents
+coincide with base-frame axes.
+For a tilted wall with \(R_{\mathrm{surface}}\neq I\), applying
+\(K_{p,0}=R_{\mathrm{surface}}K_{p,\mathrm{task}}R_{\mathrm{surface}}^\top\)
 would produce a \textbf{full} $3\times3$ SPD matrix with non-zero
 off-diagonal entries by the same congruence transformation used in
 \cref{eq:positional_stiffness_base}.
@@ -347,14 +350,15 @@ For the numerical example, the damping matrices are selected as:
 \label{eq:DR_panda}
 \mathbf{D}_R =
 \begin{bmatrix}
-28.28 & 0     & 0    \\
-0     & 28.28 & 0    \\
-0     & 0     & 4.47
+4.47 & 0    & 0     \\
+0    & 4.47 & 0     \\
+0    & 0    & 28.28
 \end{bmatrix}
 \mathrm{Nm\,s/rad}
 \end{equation}
 
-Again, diagonal here only because $\mathbf{W}=\mathbf{I}_3$.
+Again, diagonal here only because the surface frame axes coincide with the
+base-frame coordinate axes after the normal-first ordering is transformed.
 For a general wall orientation all four matrices $\mathbf{K}_p$,
 $\mathbf{K}_R$, $\mathbf{D}_p$, $\mathbf{D}_R$ would be full SPD
 $3\times3$ matrices in the base frame.
@@ -614,14 +618,16 @@ if (phi > 1e-6)
                           Delta_R(0,2)-Delta_R(2,0),
                           Delta_R(1,0)-Delta_R(0,1));
 
-// -- STEPS 6-8: Full SPD impedance matrices (wall-frame, W=I here) -
-// K_p and K_R: full 3x3 SPD stiffness matrices
-// (diagonal here only because wall axes align with base axes)
+// -- STEPS 6-8: Full SPD impedance matrices -----------------------
+// Surface-frame order: [normal, tangent_1, tangent_2].
+// The transformed base-frame matrices are diagonal here only because
+// the surface axes coincide with base-frame coordinate axes.
 Eigen::Matrix3d Kp = Eigen::Vector3d{50,50,1000}.asDiagonal();
-Eigen::Matrix3d KR = Eigen::Vector3d{200,200,5}.asDiagonal();
+Eigen::Matrix3d KR = Eigen::Vector3d{5,5,200}.asDiagonal();
 Eigen::Matrix3d Dp = Eigen::Vector3d{14.14,14.14,63.25}.asDiagonal();
-Eigen::Matrix3d DR = Eigen::Vector3d{28.28,28.28,4.47}.asDiagonal();
-// For a tilted wall: Kp = W * Kp_wall * W.T (full matrix)
+Eigen::Matrix3d DR = Eigen::Vector3d{4.47,4.47,28.28}.asDiagonal();
+// For a tilted wall:
+// Kp = R_surface * Kp_task * R_surface.transpose() (full matrix)
 
 // Cartesian velocity split
 Eigen::Vector3d pdot  = xdot.head<3>();
@@ -650,7 +656,7 @@ Eigen::Matrix<double,7,1> tau_task = J.transpose() * F;
 
 // -- NULL-SPACE TORQUE --------------------------------------------
 // In the implemented controller this term is computed from the
-// active-task null-space objective. It is zero in this numerical example.
+// projected null-space objective. It is zero in this numerical example.
 Eigen::Matrix<double,7,1> tau_null = Eigen::Matrix<double,7,1>::Zero();
 
 // -- GRAVITY + CORIOLIS COMPENSATION ------------------------------
@@ -680,7 +686,7 @@ return franka::Torques(tau_out);
 To illustrate how $\mathbf{K}_p$ scales the torque command, the
 normal stiffness $k_{\mathrm{stiff}}$ is varied while keeping the
 same $x$-direction error of $20\,\mathrm{mm}$
-(here $x$ is aligned with $\hat{\mathbf{n}}$, the stiff direction):
+(this scalar example varies the stiffness in the displayed force direction):
 
 \begin{center}
 \renewcommand{\arraystretch}{1.35}

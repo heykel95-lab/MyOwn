@@ -158,14 +158,14 @@ as
 =
 \begin{bmatrix}
 \Delta p_C\\
-\Delta \theta
+\mathbf{e}_{R,\mathrm{task}}
 \end{bmatrix},
 \label{eq:contact_displacement_vector}
 \end{equation}
 
 where \(\Delta p_C\) is the translational displacement associated with the
-contact interval and \(\Delta\theta\) is the small angular displacement. If
-\(\|\Delta\theta\|>0\), the instantaneous pole of the measured motion---the
+contact interval and \(\mathbf{e}_{R,\mathrm{task}}\) is the small angular displacement. If
+\(\|\mathbf{e}_{R,\mathrm{task}}\|>0\), the instantaneous pole of the measured motion---the
 point about which the displacement is, to first order, a pure rotation---follows
 from the standard small-displacement screw relation
 \citep{Murray1994,Doria2019MozziAxis} as
@@ -174,11 +174,11 @@ from the standard small-displacement screw relation
 r_{\mathrm{inst}}
 =
 \frac{
-\Delta\theta
+\mathbf{e}_{R,\mathrm{task}}
 \times
 \Delta p_C
 }{
-\|\Delta\theta\|^2
+\|\mathbf{e}_{R,\mathrm{task}}\|^2
 }.
 \label{eq:instantaneous_pole_displacement}
 \end{equation}
@@ -187,7 +187,7 @@ Here \(r_{\mathrm{inst}}\) is the pole position \emph{relative} to the
 end-effector point whose displacement \(\Delta p_C\) is used, so the absolute
 pole in the base frame is \(p_{\mathrm{pole}}=p_{\mathrm{EE}}+r_{\mathrm{inst}}\).
 The estimate is reliable only when the angular displacement is not too small: if
-\(\|\Delta\theta\|\) is below a small threshold, the division amplifies
+\(\|\mathbf{e}_{R,\mathrm{task}}\|\) is below a small threshold, the division amplifies
 measurement noise and the pole for that interval is discarded.
 
 For the corresponding velocity representation, Chasles' theorem gives the
@@ -350,14 +350,14 @@ as stored elastic energy \citep{Hogan1985,Ott2008,Fasse1997SpatialImpedance},
 V_K
 =
 \frac{1}{2}
-\Delta x^\top
+\mathbf{e}_{\mathrm{task}}^\top
 K_{\mathrm{task}}
-\Delta x,
+\mathbf{e}_{\mathrm{task}},
 \qquad
-\Delta x =
+\mathbf{e}_{\mathrm{task}} =
 \begin{bmatrix}
-\Delta p\\
-\Delta \theta
+\mathbf{e}_{p,\mathrm{task}}\\
+\mathbf{e}_{R,\mathrm{task}}
 \end{bmatrix}.
 \label{eq:contact_elastic_energy}
 \end{equation}
@@ -617,12 +617,12 @@ center produces a related translation of the end-effector
 \citep{Murray1994,Fasse1997SpatialImpedance},
 
 \begin{equation}
-\Delta p
+\mathbf{e}_{p,\mathrm{task}}
 \approx
-\Delta \theta \times r_c
+\mathbf{e}_{R,\mathrm{task}} \times r_c
 =
 -
-[r_c]_\times \Delta \theta.
+[r_c]_\times \mathbf{e}_{R,\mathrm{task}}.
 \label{eq:virtual_center_kinematic_coupling}
 \end{equation}
 
@@ -632,24 +632,24 @@ end-effector origin. For a point \(p_c\), the displacement of that point is
 approximated by
 
 \begin{equation}
-\Delta p_c
+\mathbf{e}_{p,c}
 =
-\Delta p
+\mathbf{e}_{p,\mathrm{task}}
 +
-[r_c]_\times \Delta \theta.
+[r_c]_\times \mathbf{e}_{R,\mathrm{task}}.
 \label{eq:center_point_displacement}
 \end{equation}
 
-Penalizing \(\Delta p_c\) with a translational stiffness \(K_c\) gives the
+Penalizing \(\mathbf{e}_{p,c}\) with a translational stiffness \(K_c\) gives the
 energy term
 
 \begin{equation}
 V_c
 =
 \frac{1}{2}
-\Delta p_c^\top
+\mathbf{e}_{p,c}^\top
 K_c
-\Delta p_c.
+\mathbf{e}_{p,c}.
 \label{eq:center_point_energy}
 \end{equation}
 
@@ -663,23 +663,23 @@ V
 =
 \frac{1}{2}
 \left(
-\Delta p + [r_c]_\times \Delta \theta
+\mathbf{e}_{p,\mathrm{task}} + [r_c]_\times \mathbf{e}_{R,\mathrm{task}}
 \right)^\top
 K_c
 \left(
-\Delta p + [r_c]_\times \Delta \theta
+\mathbf{e}_{p,\mathrm{task}} + [r_c]_\times \mathbf{e}_{R,\mathrm{task}}
 \right)
 +
 \frac{1}{2}
-\Delta \theta^\top
+\mathbf{e}_{R,\mathrm{task}}^\top
 K_{R,c}
-\Delta \theta.
+\mathbf{e}_{R,\mathrm{task}}.
 \label{eq:virtual_center_total_energy}
 \end{equation}
 
 Equation~\eqref{eq:virtual_center_total_energy} is the principled way to place
 the pivot at a chosen point. Choosing the center at the tool edge,
-\(p_c=p_e\), makes \(\Delta p_c\) the displacement of the edge, so penalizing it
+\(p_c=p_e\), makes \(\mathbf{e}_{p,c}\) the displacement of the edge, so penalizing it
 with \(K_c\) builds a stiffness whose centre of compliance is the edge.
 Equivalently, a stiffness defined diagonally in an edge-centred frame,
 \(K_{\mathrm{edge}}\), is mapped to the end-effector frame by the rigid-body
@@ -691,8 +691,8 @@ chosen parallel to the end-effector frame, the displacement of the edge is
 
 \begin{equation}
 \begin{bmatrix}
-\Delta p_c\\
-\Delta \theta
+\mathbf{e}_{p,c}\\
+\mathbf{e}_{R,\mathrm{task}}
 \end{bmatrix}
 =
 \underbrace{
@@ -701,8 +701,8 @@ I_3 & [r_c]_\times\\
 0_3 & I_3
 \end{bmatrix}}_{\mathrm{Ad}_g}
 \begin{bmatrix}
-\Delta p\\
-\Delta \theta
+\mathbf{e}_{p,\mathrm{task}}\\
+\mathbf{e}_{R,\mathrm{task}}
 \end{bmatrix}.
 \label{eq:edge_adjoint_definition}
 \end{equation}
@@ -861,7 +861,7 @@ above fixes the \emph{quasi-static} pole---the centre of compliance---at
 design is good. The screw-motion evaluation of
 Section~\ref{sec:screw_motion_evaluation} is therefore used as a \emph{check},
 not as a menu of live poles: the measured poles are computed with Chasles'
-theorem, the unreliable ones (very small \(\|\Delta\theta\|\)) are discarded, and
+theorem, the unreliable ones (very small \(\|\mathbf{e}_{R,\mathrm{task}}\|\)) are discarded, and
 the remaining cluster is compared with the chosen \(p_c\) through \(e_P\) and
 \(d_{\mathrm{ISA},e}\). Sweeping \(h\) and showing that the measured pole cluster
 follows \(p_c\) demonstrates directly that the impedance has been designed around
@@ -1274,7 +1274,7 @@ K_{rt}^{\mathrm{eff}}\Delta x_C,
 \qquad
 M_{\mathrm{rot}}
 =
-K_R^{\mathrm{eff}}\Delta\theta
+K_R^{\mathrm{eff}}\mathbf{e}_{R,\mathrm{task}}
 \label{eq:effective_moment_contributions}
 \end{equation}
 
@@ -1334,8 +1334,8 @@ as \citep{Hogan1985,Fasse1997SpatialImpedance}
 
 \begin{equation}
 \begin{bmatrix}
-\Delta p\\
-\Delta \theta
+\mathbf{e}_{p,\mathrm{task}}\\
+\mathbf{e}_{R,\mathrm{task}}
 \end{bmatrix}
 \approx
 K_{\mathrm{task}}^{-1} \mathbf{F}_C,
@@ -1350,10 +1350,9 @@ m_C
 \end{equation}
 
 where \(\mathbf{F}_C\) is the contact wrench expressed in the same task frame.
-Here \(\Delta p\) and \(\Delta\theta\) denote the physical translation and
-rotation caused by contact; in the small-error impedance model they correspond
-to the task-frame error components \(\mathbf{e}_{p,\mathrm{task}}\) and
-\(\mathbf{e}_{R,\mathrm{task}}\).
+Here \(\mathbf{e}_{p,\mathrm{task}}\) and \(\mathbf{e}_{R,\mathrm{task}}\) are the
+task-frame translational and rotational error components, that is, the physical
+translation and rotation caused by contact in the small-error impedance model.
 This equation is not used to compute the controller command directly. It is
 used to explain the physical effect of the selected stiffness: for the same
 type of contact wrench, lower stiffness allows a larger displacement and higher

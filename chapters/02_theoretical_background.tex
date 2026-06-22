@@ -1760,16 +1760,16 @@ The SVD is a standard matrix factorization
 \begin{equation}
 J
 =
-U\Sigma V^{\top},
+U_J\Sigma_J V_J^{\top},
 \qquad
-U\in\mathbb{R}^{6\times6},\;
-\Sigma\in\mathbb{R}^{6\times7},\;
-V\in\mathbb{R}^{7\times7},
+U_J\in\mathbb{R}^{6\times6},\;
+\Sigma_J\in\mathbb{R}^{6\times7},\;
+V_J\in\mathbb{R}^{7\times7},
 \label{eq:jacobian_svd}
 \end{equation}
-where \(U\) and \(V\) are orthonormal and \(\Sigma\) contains the non-negative
-singular values \(\sigma_i\). The columns of \(V\) are orthonormal directions
-in joint-velocity space, the columns of \(U\) are the corresponding directions
+where \(U_J\) and \(V_J\) are orthonormal and \(\Sigma_J\) contains the non-negative
+singular values \(\sigma_i\). The columns of \(V_J\) are orthonormal directions
+in joint-velocity space, the columns of \(U_J\) are the corresponding directions
 in Cartesian space, and the singular values give the scaling between them:
 \begin{equation}
 Jv_i
@@ -1778,7 +1778,7 @@ Jv_i
 \label{eq:svd_direction_mapping}
 \end{equation}
 The singular values can be obtained from the eigenvalues of \(JJ^{\top}\),
-since \(JJ^{\top}=U\Sigma\Sigma^{\top}U^{\top}\) gives
+since \(JJ^{\top}=U_J\Sigma_J\Sigma_J^{\top}U_J^{\top}\) gives
 \(\sigma_i=\sqrt{\lambda_i}\) with \(JJ^{\top}u_i=\lambda_i u_i\).
 A large singular value indicates a direction in which a small joint motion
 produces a large Cartesian motion, while a small singular value indicates a
@@ -1794,26 +1794,24 @@ is therefore used as a measure of the kinematic conditioning of the robot
 \cite{Chiaverini1994DampedLeastSquares}.
 
 The secondary objective biases the redundant joint motion so that
-\(\sigma_{\min}\) increases. Because the right singular vectors in \(V\) are
+\(\sigma_{\min}\) increases. Because the right singular vectors in \(V_J\) are
 ordered by decreasing singular value, the weakest joint-space direction is the
 last column. For the seven-joint Panda this is
 \begin{equation}
-n
-=
 v_7
 \in\mathbb{R}^{7},
 \label{eq:nullspace_search_direction}
 \end{equation}
-obtained automatically as the seventh column of \(V\). This vector describes a
+obtained automatically as the seventh column of \(V_J\). This vector describes a
 coordinated direction of motion for all seven joints, not a Cartesian
-direction. Two candidate configurations are formed along \(\pm n\),
+direction. Two candidate configurations are formed along \(\pm v_7\),
 \begin{equation}
-q_{+} = q + \alpha n,
+q_{+} = q + \alpha_{\mathrm{step}} v_7,
 \qquad
-q_{-} = q - \alpha n,
+q_{-} = q - \alpha_{\mathrm{step}} v_7,
 \label{eq:nullspace_candidates}
 \end{equation}
-with a small step size \(\alpha\). The full Jacobian is recomputed at each
+with a small step size \(\alpha_{\mathrm{step}}\). The full Jacobian is recomputed at each
 candidate, and the corresponding smallest singular values are compared:
 \begin{equation}
 s
@@ -1824,7 +1822,7 @@ s
 \end{cases}
 \label{eq:nullspace_direction_selection}
 \end{equation}
-The sign \(s\) selects the direction along \(n\) that improves the
+The sign \(s\) selects the direction along \(v_7\) that improves the
 conditioning. This is a finite-difference approximation of the direction in
 which \(\sigma_{\min}\) increases.
 
@@ -1845,7 +1843,7 @@ d_{\mathrm{null}}\dot{q}
 +
 N
 \left(
-k_{\sigma}\,s\,\alpha\,n
+k_{\sigma}\,s\,\alpha_{\mathrm{step}}\,v_7
 \right).
 \label{eq:nullspace_torque}
 \end{equation}
@@ -1985,7 +1983,7 @@ invariance principle implies that the regulated Cartesian error converges to
 zero in this ideal case \cite{Siciliano2009}.
 
 The null-space term does not change this conclusion. By construction
-\(\tau_{\mathrm{null}}=N\!\left(k_{\mathrm{start}}(q_{\mathrm{start}}-q)-D_{\mathrm{null}}\dot{q}\right)+N(K_\sigma s\alpha n)\)
+\(\tau_{\mathrm{null}}=N\!\left(k_{\mathrm{start}}(q_{\mathrm{start}}-q)-d_{\mathrm{null}}\dot{q}\right)+N(k_\sigma s\alpha_{\mathrm{step}} v_7)\)
 is projected by the damped null-space projector \(N\) of the geometric
 Jacobian, so to first order \(J\dot{q}_{\mathrm{null}}\approx 0\) and it does
 not contribute to the regulated Cartesian velocity \(\dot{x}\). The

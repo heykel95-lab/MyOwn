@@ -4,17 +4,19 @@
 \section{Overview}
 
 Experiment~2 evaluates compliant interaction with a virtual plane.
-The wall is defined by $\hat{\mathbf{n}}=[0,0,1]^\top$, so the normal
-direction coincides with the base-frame $z$-axis and $\mathbf{W}=\mathbf{I}_3$.
+The wall is defined by \(n_s=[0,0,1]^\top\), so the normal direction
+coincides with the base-frame \(z\)-axis. To match the surface-frame
+definition of \cref{eq:surface_task_frame_matrix}, choose
+\(t_1=[1,0,0]^\top\) and \(t_2=[0,1,0]^\top\), giving
+\(R_{\mathrm{surface}}=[\,n_s\;t_1\;t_2\,]\).
 
-\textbf{Why the matrices are diagonal for this specific case:}
-Because $\hat{\mathbf{n}}$ is the $z$-axis and $\hat{\mathbf{t}}_1$,
-$\hat{\mathbf{t}}_2$ are the $x$- and $y$-axes, the wall frame
-$\mathbf{W} = [\hat{\mathbf{t}}_1\;\hat{\mathbf{t}}_2\;\hat{\mathbf{n}}] = \mathbf{I}_3$.
-The base-frame stiffness is therefore
-$\mathbf{K}_p = \mathbf{I}_3\,\mathbf{K}_{p,\mathrm{local}}\,\mathbf{I}_3 = \mathbf{K}_{p,\mathrm{local}}$,
-which is diagonal.
-For any tilted wall ($\mathbf{W}\neq\mathbf{I}_3$), the same procedure
+\textbf{Why the base-frame matrices are diagonal for this specific case:}
+Because \(n_s\), \(t_1\), and \(t_2\) coincide with base-frame axes, the
+transformed matrix remains diagonal even though the surface-frame order is
+normal first. The base-frame stiffness is
+\(K_{p,0}=R_{\mathrm{surface}}\operatorname{diag}(K_n,K_{t_1},K_{t_2})
+R_{\mathrm{surface}}^\top=\operatorname{diag}(K_{t_1},K_{t_2},K_n)\).
+For any tilted wall (\(R_{\mathrm{surface}}\neq\mathbf{I}_3\)), the same procedure
 produces a full $3\times3$ \abbr{SPD} matrix with non-zero off-diagonals.
 
 \section{Simulated Results}
@@ -36,34 +38,42 @@ produces a full $3\times3$ \abbr{SPD} matrix with non-zero off-diagonals.
 \begin{lstlisting}[style=cppstyle,
   caption={Experiment 2: Virtual wall controller with CSV logging},
   label={lst:exp2}]
-// Experiment 2: Virtual Wall (n_hat = [0,0,1], W = I)
+// Experiment 2: Virtual Wall (n_s = [0,0,1])
+// Surface-frame order: [normal, tangent_1, tangent_2]
 // In-plane: k_free=50 N/m;  Normal: k_stiff=1000 N/m
-// Tilt free (t1,t2): k_R_free=5 Nm/rad;  Spin stiff (n): k_R_stiff=200 Nm/rad
+// Tilt free (t1,t2): k_R_free=5 Nm/rad;  Spin stiff (n_s): k_R_stiff=200 Nm/rad
 
-// Wall frame (axis-aligned: W = I_3)
-// Stiffness in wall frame (diagonal because W=I)
-Eigen::Matrix3d Kp_wall, KR_wall;
-Kp_wall <<  50,  0,     0,
-             0, 50,     0,
-             0,  0, 1000;   // [N/m]
-KR_wall << 200,   0,  0,
-             0, 200,  0,
-             0,   0,  5;   // [Nm/rad]
+// Surface frame R_surface = [n_s, t1, t2].
+Eigen::Vector3d n_s(0.0, 0.0, 1.0);
+Eigen::Vector3d t1(1.0, 0.0, 0.0);
+Eigen::Vector3d t2(0.0, 1.0, 0.0);
+Eigen::Matrix3d R_surface;
+R_surface.col(0) = n_s;
+R_surface.col(1) = t1;
+R_surface.col(2) = t2;
 
-// Rotate to base frame: Kp = W * Kp_wall * W^T
-// Here W = I so Kp = Kp_wall (diagonal).
-// For a TILTED wall: W != I and Kp becomes FULL SPD matrix.
-Eigen::Matrix3d W = Eigen::Matrix3d::Identity(); // change for tilted wall
-Eigen::Matrix3d Kp = W * Kp_wall * W.transpose();  // full SPD in general
-Eigen::Matrix3d KR = W * KR_wall * W.transpose();
+// Stiffness in surface frame (normal first, then tangents).
+Eigen::Matrix3d Kp_task, KR_task;
+Kp_task << 1000, 0,  0,
+              0, 50, 0,
+              0, 0, 50;   // [N/m]
+KR_task << 200, 0, 0,
+              0, 5, 0,
+              0, 0, 5;   // [Nm/rad]
+
+// Rotate to base frame: Kp = R_surface * Kp_task * R_surface^T.
+// For this axis-aligned wall the result is diagonal in the base frame;
+// for a tilted wall it becomes a full SPD matrix.
+Eigen::Matrix3d Kp = R_surface * Kp_task * R_surface.transpose();
+Eigen::Matrix3d KR = R_surface * KR_task * R_surface.transpose();
 
 // Damping values selected per principal direction
-Eigen::Matrix3d Dp = W *
-    Eigen::Vector3d(14.14, 14.14, 63.25)
-    .asDiagonal() * W.transpose();
-Eigen::Matrix3d DR = W *
-    Eigen::Vector3d(28.28, 28.28, 4.47)
-    .asDiagonal() * W.transpose();
+Eigen::Matrix3d Dp = R_surface *
+    Eigen::Vector3d(63.25, 14.14, 14.14)
+    .asDiagonal() * R_surface.transpose();
+Eigen::Matrix3d DR = R_surface *
+    Eigen::Vector3d(28.28, 4.47, 4.47)
+    .asDiagonal() * R_surface.transpose();
 
 // Control law (same as Experiment 1):
 Eigen::Vector3d f = Kp * e_p - Dp * pdot;
@@ -118,12 +128,12 @@ t_C, phi_tilt = simulate_sdof(5, 2*np.sqrt(5), 1.0, tau_tilt)
 \toprule
 Direction & \abbr{DOF} & Stiffness & Damping & Physical effect \\
 \midrule
-$\hat{\mathbf{t}}_1$ ($x$) & Free  & $50\,\mathrm{N/m}$    & $14.1\,\mathrm{Ns/m}$      & Slide freely \\
-$\hat{\mathbf{t}}_2$ ($y$) & Free  & $50\,\mathrm{N/m}$    & $14.1\,\mathrm{Ns/m}$      & Slide freely \\
-$\hat{\mathbf{n}}$ ($z$)   & Stiff & $1000\,\mathrm{N/m}$  & $63.2\,\mathrm{Ns/m}$      & Stay on wall \\
-Tilt ($\hat{\mathbf{t}}_1$) & Free  & $5\,\mathrm{Nm/rad}$   & $4.5\,\mathrm{Nm\,s/rad}$  & Tool tilts to full contact \\
-Tilt ($\hat{\mathbf{t}}_2$) & Free  & $5\,\mathrm{Nm/rad}$   & $4.5\,\mathrm{Nm\,s/rad}$  & Tool tilts to full contact \\
-Spin ($\hat{\mathbf{n}}$)   & Stiff & $200\,\mathrm{Nm/rad}$  & $28.3\,\mathrm{Nm\,s/rad}$ & Spinning blocked \\
+\(t_1\) ($x$) & Free  & $50\,\mathrm{N/m}$    & $14.1\,\mathrm{Ns/m}$      & Slide freely \\
+\(t_2\) ($y$) & Free  & $50\,\mathrm{N/m}$    & $14.1\,\mathrm{Ns/m}$      & Slide freely \\
+\(n_s\) ($z$) & Stiff & $1000\,\mathrm{N/m}$  & $63.2\,\mathrm{Ns/m}$      & Stay on wall \\
+Tilt (\(t_1\)) & Free  & $5\,\mathrm{Nm/rad}$   & $4.5\,\mathrm{Nm\,s/rad}$  & Tool tilts to full contact \\
+Tilt (\(t_2\)) & Free  & $5\,\mathrm{Nm/rad}$   & $4.5\,\mathrm{Nm\,s/rad}$  & Tool tilts to full contact \\
+Spin (\(n_s\)) & Stiff & $200\,\mathrm{Nm/rad}$  & $28.3\,\mathrm{Nm\,s/rad}$ & Spinning blocked \\
 \bottomrule
 \end{tabular}
 \end{center}
