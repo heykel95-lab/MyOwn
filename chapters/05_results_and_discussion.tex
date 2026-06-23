@@ -343,3 +343,24 @@ stops digging in. This limit is intrinsic to passive compliance and is shared by
 the decoupled baseline; neither increased push nor live pole tracking removes
 it. Reaching full flatness would require an actively driven, time-varying pole
 or a commanded rotation, which lies outside the passive scope considered here.
+
+\subsection{Commanded Pole versus Achieved Rotation Axis}
+\label{subsec:pole_vs_axis}
+
+A further observation concerns the relation between the \emph{commanded} pole
+and the axis the tool actually rotates about. In free motion the centre of
+compliance is also the centre of rotation, but under a rigid contact the two
+separate. In one run the pole was commanded about \(40\,\mathrm{mm}\) to one side
+of the end-effector origin, yet the measured finite screw axis lay about
+\(50\,\mathrm{mm}\) to the opposite side, close to the contact edge; the two were
+roughly \(90\,\mathrm{mm}\) apart, on opposite sides of the tool tip. The reason
+is that the pressed edge acts as a kinematic hinge: the surface pins the edge, so
+the tool can only pivot about the contact region irrespective of where the
+compliance is centred. Shifting the pole therefore does not relocate the
+rotation axis; it changes the restoring moment applied about the pinned edge,
+which is precisely why a far-side pole increased the tip
+(\cref{tab:coupled_command_campaign}) without moving the measured axis to the
+far side. Concisely, the pole sets the \emph{effort} while the contact sets the
+\emph{axis}. This decoupling, induced by the contact constraint, is the reason
+the commanded pole and the measured finite (Chasles) axis do not coincide and
+should not be expected to.
