@@ -1671,6 +1671,84 @@ mapped to joint torques by \(J^\top(q)\) in the following control law.
 %% ─────────────────────────────────────────────────────────────
 
 %% ─────────────────────────────────────────────────────────────
+\section{Pole-Shifted Coupled Stiffness}
+\label{sec:coupled_pole_stiffness}
+
+The task-frame construction of \cref{eq:full_task_frame_gain_transform} rotates
+the principal stiffness directions but keeps the centre of compliance at the
+end-effector origin (the tool centre point, TCP). A second and independent
+choice is \emph{where} the virtual spring is centred. Shifting the centre of
+compliance from the TCP to another point, called here the \emph{pole}
+\(p_c\), turns the block-diagonal impedance into a fully coupled one. This is
+the mechanism evaluated experimentally in
+\cref{sec:coupled_command_experiment} to bias the passive self-alignment.
+
+Let the lever from the TCP to the pole be
+\begin{equation}
+r_c = p_{\mathrm{EE}} - p_c \in \R{3},
+\end{equation}
+and let \([r_c]_\times\) denote its skew-symmetric cross-product matrix. For a
+pole rigidly attached to the end-effector, a small end-effector twist
+\([\delta p^\top\;\delta\theta^\top]^\top\) maps to the twist at the pole by
+
+\begin{equation}
+\begin{bmatrix}\delta p_c\\[2pt] \delta\theta\end{bmatrix}
+=
+\mathrm{Ad}
+\begin{bmatrix}\delta p\\[2pt] \delta\theta\end{bmatrix},
+\qquad
+\mathrm{Ad}
+=
+\begin{bmatrix}
+\mI_3 & [r_c]_\times\\[2pt]
+0 & \mI_3
+\end{bmatrix}.
+\label{eq:offset_adjoint}
+\end{equation}
+
+The matrix \(\mathrm{Ad}\) is the offset (point-shift) adjoint. It is the
+translational counterpart of the block-diagonal rotation
+\(T_R=\operatorname{diag}(R_{\mathrm{task}},R_{\mathrm{task}})\) of
+\cref{eq:full_task_frame_gain_transform}: \(T_R\) rotates the principal axes,
+whereas \(\mathrm{Ad}\) moves the reference point. If
+\(K_{\mathrm{pole}}=\operatorname{diag}(K_p,K_R)\) is the decoupled spring
+expressed at the pole, energy equivalence gives the equivalent stiffness
+expressed at the TCP,
+
+\begin{equation}
+K_{\mathrm{TCP}}
+=
+\mathrm{Ad}^\top K_{\mathrm{pole}}\,\mathrm{Ad}
+=
+\begin{bmatrix}
+K_p & K_p[r_c]_\times\\[4pt]
+[r_c]_\times^\top K_p & K_R + [r_c]_\times^\top K_p\,[r_c]_\times
+\end{bmatrix},
+\label{eq:coupled_tcp_stiffness}
+\end{equation}
+
+and analogously \(D_{\mathrm{TCP}}=\mathrm{Ad}^\top D_{\mathrm{pole}}\,\mathrm{Ad}\).
+The off-diagonal blocks \(K_p[r_c]_\times\) and \([r_c]_\times^\top K_p\) couple a
+translational error into a restoring moment and a rotational error into a
+restoring force. They are exactly the structured translation--rotation coupling
+that the decoupled command of \cref{eq:cartesian_force_moment_vector} does not
+contain.
+
+Two properties follow directly from \cref{eq:coupled_tcp_stiffness}. First, the
+off-diagonal blocks vanish if and only if \(r_c=0\), i.e.\ when the pole
+coincides with the TCP, in which case \(K_{\mathrm{TCP}}\) reduces to the
+decoupled block-diagonal command. The coupled and decoupled commands are
+therefore \emph{different physical springs} for any non-zero lever, and not two
+parameterizations of the same one. Second, \(\mathrm{Ad}^\top(\cdot)\,\mathrm{Ad}\)
+is a congruence transformation, so by Sylvester's law of inertia it preserves
+the signs of the eigenvalues. Because \(K_{\mathrm{pole}}\) is positive
+semidefinite, \(K_{\mathrm{TCP}}\) is positive semidefinite as well, even though
+many of its individual off-diagonal entries are negative. A negative entry is
+thus a coupling term and not a loss of passivity. The pole position is the
+single geometric parameter that sets both the magnitude and the sign of the
+coupling.
+
+%% ─────────────────────────────────────────────────────────────
 \section{Complete Joint-Torque Command}
 \label{sec:nullspace_svd}
 
