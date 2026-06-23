@@ -364,3 +364,30 @@ far side. Concisely, the pole sets the \emph{effort} while the contact sets the
 \emph{axis}. This decoupling, induced by the contact constraint, is the reason
 the commanded pole and the measured finite (Chasles) axis do not coincide and
 should not be expected to.
+
+A confirming test makes the same point from the opposite direction. When the
+pole was deliberately commanded \emph{at} the previously measured Chasles axis,
+i.e.\ on the edge side where the tool naturally pivots, the alignment was
+suppressed almost entirely: the tip stalled at \(0.6^\circ\) while the contact
+force rose to about \(123\,\mathrm{N}\), the same locked behaviour as the
+pole-on-edge case in \cref{tab:coupled_command_campaign}. Placing the stiff
+compliance on the pivot turns the normal press into an orientation-holding
+moment, so the tool is held rigid instead of being tipped. In other words,
+trying to put the restoring effort \emph{on} the natural axis removes the effort
+that would rotate the tool; the useful pole is always on the far side, away from
+that axis. This is the practical counterpart of the effort/axis distinction
+above: the axis cannot be driven toward by commanding the compliance to sit on
+it.
+
+A side effect of this test is a caution about the diagnostic itself. Because the
+suppressed run rotates by only \(0.6^\circ\), its finite screw axis is
+numerically ill-conditioned: the axis position is obtained by dividing a
+displacement by a near-zero rotation, so it drifts to physically meaningless
+values (here several hundred millimetres from the edge, with a correspondingly
+large pitch), and the per-cycle estimate falls back to a transient value rather
+than a stable one. The finite-axis and instantaneous-pole evaluations are
+therefore only trustworthy when the tip angle is non-trivial; for strongly
+suppressed motions they should be read as ``no well-defined axis'' rather than as
+a measured axis. This also shows that feeding a measured axis back into the pole
+command is self-defeating: the resulting edge-side pole suppresses the rotation,
+which in turn makes the next axis estimate meaningless.
