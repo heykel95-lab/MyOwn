@@ -3,6 +3,11 @@
 This file is the standing editorial guide for this thesis. Update it whenever a
 new recurring preference, technical convention, or evidence rule is agreed.
 The current thesis contains one combined Results and Discussion chapter.
+The completed first contact-alignment campaign is also preserved in
+`backmatter/appendix_previous_campaign.tex`. Keep it as comparison evidence
+while the calibrated-plane, axis-specific campaign is being recorded. Do not
+replace the main results with planned or empty sections; update the main
+chapter only after new measurements have been checked.
 
 ## Scientific narrative
 
