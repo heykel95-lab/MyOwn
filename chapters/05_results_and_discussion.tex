@@ -1,7 +1,7 @@
 \chapter{Results and Discussion}
 \label{ch:results_discussion}
 
-This chapter reports a measured campaign of \(71\) runs, recorded with the
+This chapter reports a measured campaign of \(89\) runs, recorded with the
 controller tagged \texttt{FULL-\hspace{0pt}Working-\hspace{0pt}Clean}. Every number below is
 derived from an archived run rather than from an expectation. The historical
 \texttt{Difference-Chasles-Pole} campaign, which motivated the study, is
@@ -213,7 +213,7 @@ component from the surface tilt, so commanding a pole along \(n\) also
 displaces it along \(t_1\).
 
 \cref{fig:results_pole_component} plots the alignment improvement of all
-\(54\) runs against each pole component in turn.
+\(57\) runs against each pole component in turn.
 
 \begin{figure}[H]
     \centering
@@ -229,13 +229,13 @@ displaces it along \(t_1\).
     \label{fig:results_pole_component}
 \end{figure}
 
-Fitting the improvement against the commanded pole over all \(54\) runs
+Fitting the improvement against the commanded pole over all \(57\) runs
 separates the three axes, and shows that neither in-plane response is linear:
 
 \begin{table}[H]
 \centering
 \caption{Fits of the alignment improvement against the commanded pole
-components, over all \(54\) pole runs.}
+components, over all \(57\) pole runs.}
 \label{tab:results_pole_fit}
 \begin{tabular}{@{}lcc@{}}
 \toprule
@@ -253,9 +253,23 @@ normal only                             & \textbf{0.010} & \(-0.006^\circ/\mathr
 \textbf{The alignment response is a quadratic surface in the two in-plane
 components of the compliance centre, with an interior maximum at
 \(t_1\approx+62\,\mathrm{mm}\), \(t_2\approx+30\,\mathrm{mm}\).} That model
-accounts for \(R^2=0.962\) of the outcome across \(54\) runs. The offset along
+accounts for \(R^2=0.962\) of the outcome across \(57\) runs. The offset along
 the surface normal adds \(0.004\) to that figure, over a range of
 \(277\,\mathrm{mm}\), and is not a design variable.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.82\textwidth]{B_pole_surface.pdf}
+    \caption{The fitted alignment surface over the two in-plane pole
+    components, with the measured runs overlaid and the optimum marked. The
+    grey line is the zero contour: inside it the coupling drives the tool onto
+    the surface, outside it drives the tool away. The runs form a cross rather
+    than a grid --- \(t_1\) was swept at \(t_2\approx0\) and \(t_2\) at
+    \(t_1\approx15\,\mathrm{mm}\) --- so the surface is shaded only where runs
+    support it, and the unsampled corners are left blank rather than
+    extrapolated.}
+    \label{fig:results_pole_surface}
+\end{figure}
 
 The shape matters as much as the location. A linear fit in \(t_1\) alone
 accounts for \(R^2=0.047\): past the optimum the response does not merely
@@ -405,6 +419,53 @@ correcting motion instead of jamming
 The present result adds that the useful placement is a tangential one, and
 that the same mechanism run in reverse is capable of driving the tool away
 from the surface.
+
+\subsection{In the Plane of the Tool, or Above It?}
+\label{sec:discussion_pole_height}
+
+A natural question about the centre of compliance is whether it should lie in
+the plane of the tool face or be displaced above or below it. The measurements
+answer it directly: \textbf{the height does not matter, and the in-plane
+position does.} Over a range of \(277\,\mathrm{mm}\) along the surface normal
+the alignment outcome is essentially unchanged (\(R^2=0.010\) alone,
+\(-0.004^\circ/\mathrm{mm}\) inside the joint model), while the two in-plane
+components account for \(R^2=0.962\) and carry a \(17.3^\circ\) swing.
+
+The mechanism is the one the question itself suggests. The tool arrives tilted
+relative to the physical plane, so contact begins on one edge, and the
+alignment moment about the pole is
+\[
+  M = r_c \times f ,
+\]
+with \(r_c\) the lever from the pole to the contact and \(f\) the contact
+force. Measured across all \(57\) pole runs, that force sits only
+\(10.1^\circ\) off the surface normal --- \(56.0\,\mathrm{N}\) normal against
+\(10.0\,\mathrm{N}\) tangential, a ratio of \(5.6:1\). A component of \(r_c\)
+along the surface normal is therefore very nearly parallel to \(f\), and
+\(r\parallel f\) contributes nothing to the cross product. Raising or lowering
+the compliance centre relative to the tool face slides it along the line of
+action of the contact force, which changes no moment. Only displacing it
+\emph{within} the surface plane creates a lever the normal contact force can
+act on.
+
+The measured asymmetry is in fact stronger than that argument alone predicts. A
+pure lever account gives an effectiveness ratio of \(|f_n|/|f_t|\approx5.6\)
+between in-plane and normal offsets, whereas the fitted slopes differ by about
+a factor of \(25\). The remainder comes from the stiffness side of the
+construction: the coupling terms that a normal pole offset creates act on
+\emph{tangential} displacement, which during set-up is small
+(a few millimetres against roughly \(43\,\mathrm{mm}\) of normal press) and
+largely reacted by friction rather than converted into rotation.
+
+Two consequences follow for design. The compliance centre should be specified
+by its position in the surface plane, and its height treated as a free
+parameter --- one fewer quantity to tune, and one that need not be measured
+accurately. And within the plane the placement is not a monotone preference but
+an optimum, at \(t_1\approx+62\,\mathrm{mm}\) and \(t_2\approx+30\,\mathrm{mm}\)
+for this tool and surface, on the same side as the contacting edge; too little
+offset leaves the coupling unable to generate the alignment moment, and too
+much re-stiffens the rotation through the quadratic lever term until the tool
+is driven away from the surface.
 
 \subsection{Alignment Beyond the Set-Up Phase}
 
