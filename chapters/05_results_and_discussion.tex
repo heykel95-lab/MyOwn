@@ -348,6 +348,46 @@ controller's tie-breaking feature selection reports in \(48\) of \(52\) runs,
 which suggests that selection reflects its \(0.1\,\mathrm{mm}\) tolerance
 rather than the load distribution.
 
+\subsection{The Pole Sets the Effort; the Contact Largely Sets the Axis}
+\label{sec:results_effort_vs_axis}
+
+A separable question is whether the compliance centre determines only how hard
+the tool is driven toward the surface, or also the axis about which it turns.
+The controller reports the finite screw axis of the set-up motion as a
+diagnostic, and although no run was designed around it, \(55\) of the \(57\)
+pole runs rotate by more than \(2^\circ\), which is the threshold below which
+that axis is numerically meaningless.
+
+Across the full commanded pole range --- \(230\,\mathrm{mm}\) along \(t_1\),
+over which the alignment outcome swings \(17.3^\circ\) and changes sign --- the
+measured rotation axis stays within about \(7^\circ\) of a single direction,
+close to the in-plane tangent \(t_2\). The effort is set by the pole; the axis
+is very nearly not.
+
+The invariance is close but not exact. Regressing the axis direction on the
+commanded pole gives \(R^2=0.786\) on its largest component, so the pole does
+have a small systematic influence. That is not an artefact of the pole also
+changing how far the tool turns: the rotation angle alone explains only
+\(R^2=0.138\) of the same quantity, adding it to the pole model lifts \(R^2\)
+by \(0.012\), and restricting to the \(37\) runs that rotate between \(2\) and
+\(4^\circ\) --- where the angle is nearly constant --- leaves both the
+\(7^\circ\) swing and a pole dependence of \(R^2=0.679\).
+
+The reading that fits the measurements is therefore that the contact geometry
+fixes the axis of the alignment motion to within a few degrees, and the
+compliance centre decides how far along that axis the tool is driven, with a
+second-order influence on its direction. This is a useful separation for
+design: the pole can be tuned for the magnitude of the alignment response
+without appreciably redirecting it.
+
+Two limitations attach to this subsection specifically. The screw axis is a
+diagnostic the controller happens to print rather than a designed measurement,
+so the runs vary rotation magnitude alongside pole position and the pole
+sampling is a cross rather than a grid. And the result rests on a single
+contact configuration; whether the axis would follow a deliberately relocated
+contact was not tested, which is the experiment that would establish the
+contact as its cause rather than merely its correlate.
+
 \section{Effect of Damping}
 \label{sec:results_damping}
 
