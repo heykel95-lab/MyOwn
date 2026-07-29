@@ -9,6 +9,14 @@ retained in \cref{sec:coupled_command_experiment} as the prior result that the
 new measurements were designed to test --- and, as reported there, do not
 reproduce in the form originally claimed.
 
+The campaign answers four questions in order. Does the set-up phase reach an
+equilibrium, so that a number taken from it means anything? Is the coupled
+command path arithmetically correct, so that differences between poles are
+real? How large is a difference that is merely noise? And then the substantive
+one: \emph{where should the centre of compliance be placed}? The first three
+are cheap and everything downstream depends on them, so they are answered
+first, in \cref{sec:results_gates}.
+
 \section{Measurement Campaign and Provenance}
 \label{sec:results_provenance}
 
@@ -32,10 +40,13 @@ exact configuration it used.
 \section{Gate Experiments}
 \label{sec:results_gates}
 
-Three gates were run before any parameter study, on the principle that a
-sweep is only interpretable once the quantity being swept is known to be an
-equilibrium, the command path is known to be correct, and the noise floor is
-known.
+Three gates were run before any parameter study. The principle is that a sweep
+is worth nothing until three things are established: that the quantity being
+swept has settled, so it is a property of the configuration rather than of when
+one stopped looking; that the code path producing it computes what it claims
+to; and that one knows how large a difference has to be before it is an effect
+rather than scatter. Each gate below took under half an hour and each changed
+what the rest of the campaign could claim.
 
 \subsection{Equilibrium of the Set-Up Phase}
 \label{sec:results_equilibrium}
@@ -203,17 +214,30 @@ alignment and force but a bound on displacement alone.
 \section{Where the Compliance Centre Must Lie}
 \label{sec:results_pole}
 
-The pole of the coupled impedance was swept along all three axes of the
-surface frame: along the normal (\(24\) runs, eight offsets from \(-120\) to
-\(+160\,\mathrm{mm}\)), along the first surface tangent \(t_1\) (\(18\) runs,
-six offsets from \(-71\) to \(+161\,\mathrm{mm}\)), and along the second
-tangent \(t_2\) (\(12\) runs, four offsets). The two tangential sweeps exist because the normal sweep cannot
-isolate a single component: the configured normal carries a tangential
-component from the surface tilt, so commanding a pole along \(n\) also
-displaces it along \(t_1\).
+This is the substantive question, and answering it took three sweeps rather
+than one, because the first produced a conclusion the second overturned.
 
-\cref{fig:results_pole_component} plots the alignment improvement of all
-\(57\) runs against each pole component in turn.
+The pole was first swept along the \textbf{surface normal}: \(24\) runs at
+eight offsets from \(-120\) to \(+160\,\mathrm{mm}\). Alignment improved
+steadily along it, from \(+1.98^\circ\) with the pole on the contact edge to
+\(+3.47^\circ\) at \(+160\,\mathrm{mm}\). Read alone, that sweep says the
+distance along the normal is the design variable.
+
+It is not, and the reason is geometric. The configured surface normal is
+tilted, so it has a component in the surface plane. Commanding the pole
+``along the normal'' therefore slides it sideways as well, and across that
+sweep the tangential component drifted from \(-5.0\) to \(+27.6\,\mathrm{mm}\)
+without anyone intending it. The normal offset and one tangential offset were
+varied together, and the sweep cannot say which of them did the work.
+
+Separating them required holding one fixed and moving the other. The pole was
+therefore swept along the first surface tangent \(t_1\) (\(18\) runs, six
+offsets from \(-71\) to \(+161\,\mathrm{mm}\)) at a fixed normal offset, and
+then along the second tangent \(t_2\) (\(12\) runs, four offsets), an axis
+which had been held at approximately zero in everything recorded until that
+point. \cref{fig:results_pole_component} plots all \(57\) runs against each
+component in turn, and the answer is visible before any fitting: the two
+in-plane panels show structure and the normal panel does not.
 
 \begin{figure}[H]
     \centering
@@ -229,8 +253,8 @@ displaces it along \(t_1\).
     \label{fig:results_pole_component}
 \end{figure}
 
-Fitting the improvement against the commanded pole over all \(57\) runs
-separates the three axes, and shows that neither in-plane response is linear:
+Fitting confirms it, and shows in passing that neither in-plane response is a
+straight line --- both rise to a maximum and fall away again:
 
 \begin{table}[H]
 \centering
@@ -281,14 +305,11 @@ attributed to the quadratic lever term \([r_c]_\times^\top K_p[r_c]_\times\) in
 confirmed; what the earlier work placed along the surface normal in fact lies
 in the surface plane.
 
-This also reverses the reading of the normal sweep taken in isolation. Along
-the normal alone the improvement rises from \(+1.98^\circ\) at a pole on the
-contact edge to \(+3.47^\circ\) at \(+160\,\mathrm{mm}\), which invites the
-conclusion that the normal offset is the design variable. It is not: across
-that sweep the \(t_1\) component drifts from \(-5.0\) to \(+27.6\,\mathrm{mm}\)
-as a geometric side effect of the surface tilt, and that drift accounts for the
-trend --- a stretch of the \(t_1\) axis that happens to lie on the rising flank
-of the optimum.
+The fitted shape also explains why the normal sweep looked so convincing on its
+own. Its unintended tangential drift, from \(-5.0\) to \(+27.6\,\mathrm{mm}\),
+happens to lie entirely on the rising flank of the \(t_1\) optimum. Sampled
+over that stretch the response is close to linear and monotonically improving,
+which is exactly what a sweep of the design variable would look like.
 
 The model was checked against runs it was not fitted on. Three further runs
 placed the pole on the contact edge, at
