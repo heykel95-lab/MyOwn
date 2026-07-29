@@ -205,88 +205,93 @@ alignment and force but a bound on displacement alone.
 
 The pole of the coupled impedance was swept along all three axes of the
 surface frame: along the normal (\(24\) runs, eight offsets from \(-120\) to
-\(+160\,\mathrm{mm}\)), along the first surface tangent \(t_1\) (\(12\) runs,
-four offsets), and along the second tangent \(t_2\) (\(12\) runs, four
-offsets). The two tangential sweeps exist because the normal sweep cannot
+\(+160\,\mathrm{mm}\)), along the first surface tangent \(t_1\) (\(18\) runs,
+six offsets from \(-71\) to \(+161\,\mathrm{mm}\)), and along the second
+tangent \(t_2\) (\(12\) runs, four offsets). The two tangential sweeps exist because the normal sweep cannot
 isolate a single component: the configured normal carries a tangential
 component from the surface tilt, so commanding a pole along \(n\) also
 displaces it along \(t_1\).
 
 \cref{fig:results_pole_component} plots the alignment improvement of all
-\(48\) runs against each pole component in turn.
+\(54\) runs against each pole component in turn.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{B_pole_component.pdf}
     \caption{Alignment gained toward the measured plane, for the same \(48\)
     runs, against each component of the commanded pole. Both in-plane
-    components govern the outcome; the normal component does not. The vertical
-    spread of the \(t_1\) sweep in the middle panel, where those runs all share
-    \(t_2\approx0\), shows directly that \(t_2\) alone cannot account for
-    them.}
+    components govern the outcome and both turn over inside the tested range;
+    the normal component does not. The curves are marginal fits against one
+    component at a time, so their apparent optima differ from the joint model
+    of \cref{tab:results_pole_fit}. The vertical spread of the \(t_1\) sweep in
+    the middle panel, where those runs all share \(t_2\approx0\), shows
+    directly that \(t_2\) alone cannot account for them.}
     \label{fig:results_pole_component}
 \end{figure}
 
-Fitting the improvement against the commanded pole over all \(48\) runs
-separates the three axes cleanly:
+Fitting the improvement against the commanded pole over all \(54\) runs
+separates the three axes, and shows that neither in-plane response is linear:
 
 \begin{table}[H]
 \centering
-\caption{Linear fits of the alignment improvement against the commanded pole
-components, over all \(48\) pole runs.}
+\caption{Fits of the alignment improvement against the commanded pole
+components, over all \(54\) pole runs.}
 \label{tab:results_pole_fit}
 \begin{tabular}{@{}lcc@{}}
 \toprule
-Model & \(R^2\) & Slope \\
+Model & \(R^2\) & Note \\
 \midrule
-\(t_1\) only            & 0.586 & \(+0.115^\circ/\mathrm{mm}\) \\
-\(t_2\) only            & 0.157 & \(+0.048^\circ/\mathrm{mm}\) \\
-normal only             & \textbf{0.008} & \(-0.005^\circ/\mathrm{mm}\) \\
-\(t_1\) and \(t_2\)     & 0.774 & --- \\
-\(t_1\), \(t_2\), normal& 0.833 & normal \(-0.014^\circ/\mathrm{mm}\) \\
-\(t_1\), \(t_2\), \(t_2^2\) & \textbf{0.917} & \(t_2\) optimum at \(+34\,\mathrm{mm}\) \\
+\(t_1\) linear                          & 0.047 & a straight line is the wrong shape \\
+\(t_1+t_1^2\)                           & 0.644 & \\
+normal only                             & \textbf{0.010} & \(-0.006^\circ/\mathrm{mm}\) \\
+\(t_1+t_1^2+t_2+t_2^2\)                 & \textbf{0.962} & optima at \(+62\) and \(+30\,\mathrm{mm}\) \\
+\quad and the normal                    & 0.966 & normal \(-0.004^\circ/\mathrm{mm}\) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{Both in-plane components of the compliance centre govern the alignment
-response; its position along the surface normal does not.} Over a normal range
-of \(277\,\mathrm{mm}\) the normal offset accounts for \(R^2=0.008\), and
-adding it to the two in-plane terms moves the model only from \(0.774\) to
-\(0.833\). The two tangents are not equivalent: \(t_1\) is about \(2.4\) times
-more influential per millimetre than \(t_2\).
+\textbf{The alignment response is a quadratic surface in the two in-plane
+components of the compliance centre, with an interior maximum at
+\(t_1\approx+62\,\mathrm{mm}\), \(t_2\approx+30\,\mathrm{mm}\).} That model
+accounts for \(R^2=0.962\) of the outcome across \(54\) runs. The offset along
+the surface normal adds \(0.004\) to that figure, over a range of
+\(277\,\mathrm{mm}\), and is not a design variable.
 
-This reverses the reading of the normal sweep taken in isolation. Along the
-normal alone the improvement rises from \(+1.98^\circ\) at a pole on the
+The shape matters as much as the location. A linear fit in \(t_1\) alone
+accounts for \(R^2=0.047\): past the optimum the response does not merely
+flatten, it reverses. At \(t_1=+161\,\mathrm{mm}\) the improvement is
+\(-3.75^\circ\), so a pole placed far beyond the optimum is worse than
+commanding no coupling at all. This is the behaviour the historical campaign
+attributed to the quadratic lever term \([r_c]_\times^\top K_p[r_c]_\times\) in
+\cref{eq:coupled_tcp_stiffness} re-stiffening the rotation. That mechanism is
+confirmed; what the earlier work placed along the surface normal in fact lies
+in the surface plane.
+
+This also reverses the reading of the normal sweep taken in isolation. Along
+the normal alone the improvement rises from \(+1.98^\circ\) at a pole on the
 contact edge to \(+3.47^\circ\) at \(+160\,\mathrm{mm}\), which invites the
 conclusion that the normal offset is the design variable. It is not: across
 that sweep the \(t_1\) component drifts from \(-5.0\) to \(+27.6\,\mathrm{mm}\)
 as a geometric side effect of the surface tilt, and that drift accounts for the
-trend.
-
-The two tangents differ in shape as well as in strength. Along \(t_1\) the
-response is monotonic over the tested range, from \(-10.31^\circ\) at
-\(-72.7\,\mathrm{mm}\) to \(+6.96^\circ\) at \(+46.8\,\mathrm{mm}\) --- a span
-of \(17.3^\circ\) against a noise floor of \(0.4^\circ\) --- and had not turned
-over at the positive extreme. Along \(t_2\) it is not monotonic: \(+39\) beats
-\(+80\,\mathrm{mm}\), and the quadratic fit locates an interior optimum at
-\(+34\,\mathrm{mm}\).
+trend --- a stretch of the \(t_1\) axis that happens to lie on the rising flank
+of the optimum.
 
 The sign matters as much as the magnitude. At sufficiently negative offsets on
 either tangent the coupling does not merely fail to assist: the tool rotates
-away from the surface, by \(10^\circ\) at the negative extreme of \(t_1\) and
-\(6.5^\circ\) at that of \(t_2\), ending further from flat than it arrived. The
-compliance centre can therefore actively fight the alignment it is intended to
-produce, and the boundary between assisting and fighting is crossed within the
-working range of the tool.
+away from the surface, by \(10.31^\circ\) at \(t_1=-70.9\,\mathrm{mm}\) and
+\(6.54^\circ\) at \(t_2=-91.5\,\mathrm{mm}\), ending further from flat than it
+arrived. The compliance centre can therefore actively fight the alignment it is
+intended to produce. Across the full tested range the improvement spans
+\(-10.31^\circ\) to \(+6.96^\circ\), a swing of \(17.3^\circ\) against a noise
+floor of \(0.4^\circ\).
 
-Both sweeps place the useful pole on the positive side of their axis. Taken
-with the reported contacting edge --- which lies at \(-y\) in the end-effector
-frame, and therefore at \(+y\) in the base frame, since the end-effector \(y\)
-axis maps to base \(-y\) --- this places the compliance centre on the
-\emph{same} side as the contacting edge rather than opposite it. That is the
-reverse of the placement rule the experiment was designed to test, and the
-reversal is consistent across two independent axes.
+Both tangential sweeps place the useful pole on the positive side of their
+axis. Taken with the reported contacting edge --- which lies at \(-y\) in the
+end-effector frame, and therefore at \(+y\) in the base frame, since the
+end-effector \(y\) axis maps to base \(-y\) --- this places the compliance
+centre on the \emph{same} side as the contacting edge rather than opposite it.
+That is the reverse of the placement rule the experiment was designed to test,
+and the reversal is consistent across two independent axes.
 
 One qualification is not yet settled. The contacting edge was reported as a
 long \(120\,\mathrm{mm}\) side, but the long sides of the face lie at
@@ -431,10 +436,9 @@ variation from the fixture is contained in the repeatability floor of
 bias absolute values without affecting comparisons between settings, which are
 what this chapter claims.
 
-The sweep along the first surface tangent did not reach an optimum within its
-tested range: its best setting is the most positive offset tested, so that
-optimum is bounded below but not located. The second tangent does have a
-measured optimum. Which edge of the tool face makes first contact was inferred
+Both in-plane optima are interior to the tested ranges and are located by a
+quadratic fit rather than by measurement at the optimum itself; the nearest
+tested settings are \(+62.9\) and \(+39.4\,\mathrm{mm}\). Which edge of the tool face makes first contact was inferred
 from the tool model rather than observed, which leaves the mapping from the
 measured relationship onto a general placement rule open.
 
