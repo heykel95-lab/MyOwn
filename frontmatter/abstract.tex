@@ -1,45 +1,45 @@
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-Collaborative robots that operate close to humans need control that responds to unplanned contact in a safe and compliant way. Cartesian impedance control meets this need by regulating the apparent mechanical impedance at the end-effector, so the robot behaves like a virtual spring-damper system that yields to external forces instead of resisting them rigidly. The resulting behaviour is set by the chosen stiffness and damping matrices, whose formulation and implementation are central to reliable compliant motion.
+Small geometric errors between a rigidly controlled tool and a workpiece can
+produce undesirable contact loads and prevent the tool from aligning with the
+surface. This thesis develops a real-time Cartesian impedance controller for a
+7-\abbr{DOF} Franka Emika Panda and investigates how tangential rotational
+stiffness and the spatial position of a virtual centre of compliance influence
+contact-induced alignment.
 
-This thesis investigates the design and implementation of a real-time Cartesian
-impedance controller for the Franka Emika Panda, a redundant 7-\abbr{DOF}
-collaborative robot. The formulation keeps the relation between pose error,
-impedance wrench, Jacobian mapping, null-space behavior, and joint torques
-traceable.  It distinguishes gains expressed in the base frame from gains in
-the surface frame \([t_1,t_2,n_s]\), and computes phase-dependent damping from a
-model-based Cartesian-inertia estimate.
+The controller uses explicitly defined base and surface frames, phase-dependent
+Cartesian gains, model-based damping, and a Jacobian-transpose joint-torque
+command. During set-up, a pole-frame \(6\times6\) stiffness and damping matrix
+is shifted to the TCP through an adjoint congruence. The resulting
+translation--rotation coupling allows a translational contact response to
+generate a rotational moment about the selected virtual centre. An SVD-based
+null-space controller is implemented for the redundant seventh joint, although
+its effect is not evaluated in a separate experimental campaign.
 
-The controller aligns a configured tool axis, descends to a geometric clearance,
-selects the leading feature of a rectangular tool face, ramps that feature into
-the surface during set-up, and subsequently executes a tangential grinding
-motion.  During set-up, a selectable center of compliance is realized by
-transforming a pole-frame \(6\times6\) stiffness and damping to the TCP with a
-spatial adjoint.  The resulting off-diagonal blocks couple translation and
-rotation while preserving symmetry and positive semidefiniteness.  The
-alignment response during contact is evaluated through the physical tool-axis alignment
-and the displacement of the selected tool feature and TCP.
+The experimental study comprises \(92\) recorded runs, of which \(89\) are
+admissible for their recorded quantities. Five repetitions were performed for
+each tangential rotational-stiffness setting. Reducing the stiffness from
+\(50\) to \(5\,\mathrm{Nm/rad}\) increased the mean alignment improvement from
+approximately \(0.79^\circ\) to \(2.38^\circ\), while the mean
+model-estimated normal load remained within
+\(60.27\)--\(60.77\,\mathrm{N}\).
 
-Redundancy is handled with projected joint damping and an optional
-smallest-singular-value bias.  A tolerance-truncated SVD inverts only retained
-Jacobian singular values, while the seventh right-singular vector supplies the
-structural null direction.  Buffered full-rate and compact diagnostic logs make
-the phase, contact geometry, singular-value probes, and commanded torques
-available for offline evaluation.
+The position of the virtual compliance centre was evaluated along the two
+surface tangents and the physical surface normal. An additive quadratic model
+in the two in-plane coordinates accounts for \(R^2=0.962\) of the alignment
+response over \(57\) position-study runs and predicts a local maximum near
+\(t_1=+62\,\mathrm{mm}\) and \(t_2=+30\,\mathrm{mm}\). This coordinate pair
+was not tested directly. Unsuitable in-plane placements produced negative
+alignment improvements as low as \(-10.31^\circ\). Adding the physical normal
+coordinate increased \(R^2\) only from \(0.962\) to \(0.966\) over the
+investigated range, indicating substantially weaker additional explanatory
+power than the in-plane coordinates.
 
-The controller is evaluated in a campaign of \(89\) provenance-controlled runs,
-gated on a measured equilibrium of the set-up phase, a correctness check of the
-coupled command path, and a repeatability floor from five repetitions. Sweeping
-the centre of compliance across all three axes of the surface frame shows that
-its two \emph{in-plane} components govern the contact alignment as a quadratic
-surface with an interior optimum, while the offset along the surface normal has
-no measurable effect over a range of \(277\,\mathrm{mm}\). Softening the tangential rotational stiffness triples the
-alignment gained during contact at an unchanged contact force, and a
-sufficiently mis-placed compliance centre rotates the tool away from the surface
-rather than onto it.  The thesis thereby
-links the sign and frame conventions of the spatial impedance law to its
-real-time implementation and to the measured interpretation of pole-based
-unscripted task-space alignment experiments.
-
-\cleardoublepage
+The results establish a strong and non-monotonic relationship between
+in-plane compliance-centre placement and contact-induced alignment for the
+investigated configuration. Their generality is limited by the use of one
+robot, tool, workpiece, and fixture; uncertainty in the hand-estimated physical
+plane; cross-shaped rather than full two-dimensional sampling; and the use of
+a model-estimated external wrench instead of an independent force/torque
+sensor.

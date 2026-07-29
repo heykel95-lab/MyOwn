@@ -3,119 +3,79 @@
 
 \section{Summary}
 
-This thesis developed a real-time Cartesian impedance controller for the
-Franka Emika Panda and traced its frame, sign, and reference-point conventions
-from the Cartesian error to the final joint-torque command.  The implemented
-law uses
+This thesis developed and experimentally evaluated a real-time Cartesian
+impedance controller for contact-induced alignment of a rectangular tool on a
+planar workpiece. The controller runs on a 7-\abbr{DOF} Franka Emika Panda and
+uses the joint-torque command
 \[
-\tau_{\mathrm{cmd}}
-  =J^\top w_{\mathrm{cmd}}+\tau_{\mathrm{null}}+c(q,\dot q),
+  \tau_{\mathrm{cmd}}
+  =
+  J^\top w_{\mathrm{cmd}}
+  +\tau_{\mathrm{null}}
+  +c(q,\dot q).
 \]
-with gravity handled by the Franka torque interface.  Translation uses
-\(e_p=p_d-p_{\mathrm{TCP}}\); the restoring rotation vector is obtained from
-\(R_{\mathrm{TCP}}^\top R_d\), mapped to base components, and multiplied by a
-positive rotational stiffness.
+The Cartesian gains are expressed in explicitly defined base and surface
+frames. During set-up, a virtual centre of compliance is introduced by shifting
+a pole-frame \(6\times6\) stiffness and damping matrix to the TCP through an
+adjoint congruence. The resulting off-diagonal blocks couple translational
+error to rotational moment and rotational error to force.
 
-The surface geometry is represented by
-\(R_s=[t_1,t_2,n_s]\).  The controller maps the configured
-\(+z_{\mathrm{EE}}\) tool axis to the signed target \(-n_s\), descends along
-\(-n_s\), selects the leading point, edge, or face of the rectangular tool, and
-switches to set-up at a geometric clearance.  Set-up then ramps the selected
-feature into the plane and ends after a minimum time when the external-moment
-change reaches its threshold, or at the timeout.  Grind freezes the final
-preload and optionally adds a smooth tangential sweep.  The external wrench is
-model-based and is logged during descent, but it does not trigger the clearance
-transition.
-
-A center of compliance is implemented during set-up by the adjoint-congruence
-construction derived once in \cref{sec:coupled_pole_stiffness}. In the active
-tagged configuration, the pole and TCP references are captured at the
-clearance hand-off, so the controller uses the constant lever
-\(r_c=p_{\mathrm{TCP,clr}}-p_c\). The resulting off-diagonal blocks couple
-translation and rotation while preserving symmetry and positive
-semidefiniteness. The experiment evaluates the realized response through the
-physical tool-axis angle and selected-feature/TCP displacement.
-
-Redundancy is handled with a tolerance-truncated SVD of the \(6\times7\)
-Jacobian.  The implementation reciprocates only the retained
-\(\sigma_1,\ldots,\sigma_6\), constructs
-\(N_\tau=(I-J_\rho^+J)^\top\), and uses \(v_7\) as the structural one-dimensional
-null direction at full row rank.  The selected mode can apply projected joint
-damping, a constant-magnitude torque in whichever sign of \(v_7\) improves
-\(\sigma_{\min}\), both terms, or neither.  The probe distance
-\(\alpha_{\mathrm{probe}}\)
-changes only the two sampled configurations; it does not scale the commanded
-torque.
-
-Chapter~\ref{ch:results_discussion} reports \(92\) archived run records, of
-which \(89\) are admissible for the quantities for which they were recorded.
-The campaign was gated before any parameter study on a measured equilibrium of
-the set-up phase, a correctness check of the coupled command path, and a
-five-repetition noise floor. The principal findings are the following.
+The experimental study varied the tangential rotational stiffness and the
+three surface-frame coordinates of the virtual compliance centre. The reported
+data comprise \(92\) run records, of which \(89\) are admissible for their
+recorded quantities. Settling, formulation equivalence, and nominal
+repeatability were evaluated before the parameter studies. The principal
+experimental conclusions are:
 
 \begin{enumerate}
-  \item \textbf{The set-up phase was not sampling an equilibrium.} Its
-        \(4\,\mathrm{s}\) timeout coincided with the end of the press ramp, so
-        the phase terminated during the force overshoot. Equilibrium is reached
-        at \(t\approx4.6\,\mathrm{s}\). Re-evaluating the longer traces shows
-        that the remaining changes after \(5\,\mathrm{s}\) are far below the
-        repeatability floor. Five seconds is therefore supported for the
-        nominal push, while the general stopping rule should be ramp-aware.
-  \item \textbf{The coupled \(6\times6\) path is correct.} Block-diagonal gains
-        driven through it reproduce the decoupled wrench to \(0.34\sigma\), so
-        the pole effects are properties of the coupling and not of its
-        implementation.
-  \item \textbf{The alignment response is a quadratic surface in the two
-        in-plane components of the compliance centre}, with an interior maximum
-        at \(t_1\approx+62\,\mathrm{mm}\), \(t_2\approx+30\,\mathrm{mm}\) and
-        \(R^2=0.962\) over \(57\) pole runs. A pole position held out of the fit
-        is predicted to \(0.14^\circ\), inside the noise floor.
-  \item \textbf{The height of the compliance centre above or below the tool
-        face does not matter} (\(R^2=0.010\) over a \(277\,\mathrm{mm}\) range).
-        The contact force sits only \(10.1^\circ\) off the surface normal, so a
-        pole offset along the normal lies almost parallel to the force and
-        contributes nothing to \(r_c\times f\). Only an in-plane offset creates
-        a lever the contact force can act on.
-  \item \textbf{A mis-placed compliance centre actively fights the alignment.}
-        At sufficiently negative in-plane offsets the tool rotates \emph{away}
-        from the surface, by up to \(10.31^\circ\), ending further from flat
-        than it arrived --- worse than commanding no coupling at all.
-  \item \textbf{Tangential rotational stiffness costs alignment and buys
-        nothing.} Softening \(K_{R,\mathrm{tangent}}\) from \(50\) to
-        \(5\,\mathrm{Nm/rad}\) triples the alignment gained while the steady
-        contact force stays flat near \(60.5\,\mathrm{N}\). The trade-off
-        against contact load assumed in earlier planning does not exist.
-  \item \textbf{The physical plane and commanded tool angle must be
-        independent.} The archived controller uses one configured normal for
-        both. A confirmation controller should obtain the physical plane from
-        three non-collinear probe points and express the intentional command
-        angle as an independent offset about its tangents.
-  \item \textbf{Alignment continues after the set-up phase.} The preload
-        established during set-up produces a further \(0.18\) to
-        \(0.64^\circ\) during grinding, largest where set-up achieved least, so
-        the set-up residuals are upper bounds rather than final values.
-  \item \textbf{Null-space performance is not yet established.} The
-        two-point conditioning method and its logging are implemented, but the
-        archive contains only one usable mode-0 hold and no usable
-        conditioning-torque sweep. No preferred \(k_\sigma\), probe distance or
-        SVD cutoff can yet be claimed.
+  \item Reducing the tangential rotational stiffness from
+        \(50\) to \(5\,\mathrm{Nm/rad}\) increased the mean alignment
+        improvement from approximately \(0.79^\circ\) to \(2.38^\circ\).
+        Across these settings, the mean model-estimated normal load remained
+        within \(60.27\)--\(60.77\,\mathrm{N}\).
+
+  \item The two in-plane coordinates of the virtual compliance centre strongly
+        influenced the alignment response. An additive quadratic model in
+        \(t_1\), \(t_1^2\), \(t_2\), and \(t_2^2\) accounts for
+        \(R^2=0.962\) of the response over the \(57\) position-study runs.
+
+  \item The in-plane response was non-monotonic. The fitted model predicts a
+        local maximum near \(t_1=+62\,\mathrm{mm}\) and
+        \(t_2=+30\,\mathrm{mm}\), whereas sufficiently unsuitable placements
+        produced negative alignment improvements as low as
+        \(-10.31^\circ\). The predicted coordinate pair was not tested
+        directly and is therefore not an experimentally confirmed optimum.
+
+  \item Within the investigated configuration and parameter range, the
+        physical normal coordinate provided little additional explanatory
+        power after the two in-plane coordinates were included: adding it
+        increased \(R^2\) from \(0.962\) to \(0.966\). This is a
+        configuration-specific result rather than evidence that the normal
+        coordinate is irrelevant in every contact geometry.
 \end{enumerate}
 
-One result runs against the geometric expectation that shaped the work. The
-placement rule --- that the centre of compliance belongs opposite the side of
-the tool that contacts first --- is contradicted on both in-plane axes, which
-agree that the useful pole lies on the same side as the reported contacting
-edge. Directly controlling and reversing the first-contact edge remains
-necessary before this relationship is promoted to a general placement rule.
+The observed dependence on compliance-centre position is consistent with the
+translation--rotation coupling of the shifted impedance. In particular, the
+model-estimated external force lies predominantly along the surface normal, so
+an in-plane lever produces a larger moment about the virtual centre than a
+nearly parallel normal lever. The experiment supports this mechanism but does
+not establish a universal placement rule because the physical contact
+location and first-contact edge were not manipulated independently.
 
-The campaign also required the alignment metric itself to be reinterpreted. The
-controller scores alignment against the configured surface normal, which was
-deliberately left \(10.01^\circ\) from the physically measured plane, so the
-printed alignment gain reads backwards --- it grows more negative as the tool
-approaches the real surface. All alignment results are rescored against the
-measured plane. The merged evaluation therefore specifies a three-point
-physical-plane calibration, with the intentional command angle kept separate,
-for the confirmation campaign.
+The set-up response reaches a quasi-steady condition at approximately
+\(4.6\,\mathrm{s}\). Reanalysis of the longer traces shows that the changes
+after \(5\,\mathrm{s}\) are below the repeatability-based interpretation
+threshold for the nominal push parameters. Alignment also continued during the
+operator-terminated grinding phase by a further \(0.18^\circ\) to
+\(0.64^\circ\); because the grinding duration was uncontrolled, this is
+reported as a directional observation rather than a calibrated magnitude.
+
+The SVD-based null-space controller is implemented and instrumented, including
+the distinction between the smallest Jacobian singular value
+\(\sigma_{\min}=\sigma_6\) and the structural null direction \(v_7\).
+However, no controlled sigma-enabled campaign isolates its effect. Improved
+singularity conditioning is therefore not an experimental conclusion of this
+thesis.
 
 \section{Main Contributions}
 \label{sec:main_contributions}
@@ -123,163 +83,103 @@ for the confirmation campaign.
 The main contributions are:
 
 \begin{itemize}
-  \item a frame-consistent Cartesian impedance implementation with explicit
-        position, orientation, wrench-ordering, lever-arm, and contact-moment
-        conventions;
-  \item an implemented center-of-compliance construction that shifts a
-        pole-frame \(6\times6\) stiffness and damping to the TCP through an
-        adjoint congruence;
-  \item a geometric tool and phase supervisor comprising manual guidance/hold,
-        tool-axis alignment, clearance-based descent, set-up, optional gates,
-        and grinding;
-  \item phase-specific gain frames and model-based Cartesian-inertia damping,
-        with manual damping values retained as fallbacks;
-  \item a four-mode null-space controller based on a truncated-SVD
-        pseudoinverse, including the explicit distinction between
-        \(\sigma_{\min}=\sigma_6\) and the structural null vector \(v_7\);
-  \item full-rate and compact ring-buffer logging that exposes the phase,
-        selected tool feature, null-space probes, and final torque command for
-        offline analysis; and
-  \item a provenance-controlled archive of \(92\) run records, \(89\) of them
-        admissible for their recorded quantities, gated on a measured
-        equilibrium, a coupled-path correctness check and a five-repetition
-        noise floor; the campaign establishes a quadratic alignment response
-        in the two in-plane compliance-centre components, a weak normal
-        component and harmful motion under a mis-placed centre.
+  \item implementation of a frame-consistent real-time Cartesian impedance
+        controller with a spatially shifted \(6\times6\) stiffness and damping
+        representation for the 7-\abbr{DOF} Panda;
+
+  \item development of a repeatable surface-contact methodology that separates
+        set-up settling, formulation equivalence, repeatability, stiffness
+        variation, and compliance-centre variation;
+
+  \item quantitative characterization of the influence of tangential
+        rotational stiffness on contact-induced tool alignment; and
+
+  \item experimental characterization of the strong, non-monotonic dependence
+        of alignment on the two in-plane compliance-centre coordinates,
+        including harmful placements and a model-predicted local maximum.
 \end{itemize}
 
 \section{Limitations}
 \label{sec:limitations}
 
-No dedicated force/torque sensor is used. The signal
-\texttt{O\_F\_ext\_hat\_K} is libfranka's model-based estimate referenced to
-stiffness frame \(K\). It remains an implementation diagnostic, and its
-bias-subtracted moment norm is used by the optional set-up exit condition. It
-is not treated as a direct contact-wrench measurement.
+The measurements were obtained with one robot, one primary tool geometry, one
+wooden workpiece, and one fixture arrangement. The extent to which the
+identified response transfers to other tools, surfaces, contact locations,
+friction conditions, and initial angular errors is unknown. The exact material
+grades, surface finish, active payload parameters, robot transforms, and
+real-time-computer hardware were not recorded completely.
 
-The transition called ``first contact'' in several source and CSV identifiers
-is actually the configured \(20\,\mathrm{mm}\) geometric clearance.  The stored
-\texttt{first\_contact\_point} is the selected feature projected onto the
-surface. The general log now carries the tool-axis-to-\(-n_s\) angle
-alongside the rotation error referenced to the frozen clearance orientation, so
-the surface-alignment metric no longer depends on a wrench-comparison model.
-That angle is nevertheless scored against the \emph{configured} surface normal;
-\cref{sec:results_alignment} rescores it against the physically measured plane.
-The active controller does not yet separate a calibrated physical plane from
-an intentionally different command normal. The three-point construction in
-\cref{subsec:results_plane_command_separation} is therefore a required
-confirmation change, not a property of the archived runs.
-The exact clearance comparison uses the most-leading corner, while the
-averaged tied feature supplies the projected reference. In addition, the
-transition callback changes to set-up gains before regenerating the set-up
-target, so the first phase-2 sample can contain a one-cycle approach-target
-mismatch.
+The physical workpiece normal was estimated by hand-seating the tool face
+against the surface three times. The resulting angular spread is approximately
+\(\pm1.9^\circ\). Absolute residual angles inherit this uncertainty, although
+the within-run alignment improvement changes by less than \(0.1^\circ\) across
+the three physical-plane estimates. The controller also uses one configured
+normal for plane height, clearance, surface-frame construction, and commanded
+tool orientation. It does not independently represent a calibrated physical
+plane and an intentional command-angle offset.
 
-The set-up moment threshold of \(150\,\mathrm{N\,m}\) is never reached: the
-measured moment settles near \(30\,\mathrm{N\,m}\), so the phase always exits on
-the timeout and no transition in this campaign is moment-triggered. The timeout
-originally coincided with the end of the press ramp at \(4\,\mathrm{s}\), which
-terminated the phase during the force overshoot; \cref{sec:results_equilibrium}
-measures equilibrium at \(t\approx4.6\,\mathrm{s}\). The longer traces support
-a \(5\,\mathrm{s}\) nominal phase, but the controller still requires a
-ramp-aware convergence exit before that value is generalized to other push
-speeds and depths. The set-up and grind TCP target also
-subtracts a tool offset rotated by the frozen clearance orientation.  If the
-tool rotates appreciably, the live physical feature can move tangentially
-relative to that reference; whether this behavior is desirable must be tested.
-This conversion is stated explicitly in
-\cref{eq:software_ee_target_from_feature}. At the set-up-to-grind hand-off, the
-coupled matrices are replaced immediately by the decoupled blocks in the same
-callback, without interpolation. The commanded wrench and
-\(J^\top w_{\mathrm{cmd}}\) can therefore step at that transition.
+No dedicated force/torque sensor was used. The reported load and equivalent
+contact location are inferred from libfranka's model-estimated external wrench
+\texttt{O\_F\_ext\_hat\_K}. Distributed surface contact, model error, and
+uncertainty in the selected tool feature prevent treating the inferred
+location as an exact physical point contact.
 
-The SVD uses an unscaled geometric Jacobian whose translational and rotational
-rows have different physical units.  Its numerical singular values, cutoff,
-and condition measures are consequently scale- and reference-point-dependent.
-When a direction is omitted by the cutoff, the projector admits that weak task
-direction into its numerical null space.  Moreover, the Euclidean projector is
-not dynamically consistent: in general
-\(JM_q^{-1}\tau_{\mathrm{null}}\ne0\).  The claim is therefore limited to the
-retained kinematic projection, not to zero Cartesian acceleration disturbance.
+The compliance-centre study uses cross-shaped sampling rather than a complete
+two-dimensional grid. Consequently, the additive quadratic model does not
+identify a \(t_1t_2\) interaction, and its predicted local maximum was not
+measured directly. The unused contact-edge configuration provides a held-out
+consistency check only; it does not establish generalisation beyond the
+investigated region.
 
-The sigma torque is a switched, constant-magnitude active bias. Sigma-only mode
-is undamped, the finite probes follow only the instantaneous self-motion
-tangent, and they are not checked against joint limits. The term is therefore a
-two-point conditioning heuristic rather than a passive secondary controller; it
-uses neither the sampled slope magnitude nor an iterative search. Active mode
-evaluates three SVDs and two additional model Jacobians per callback. In the
-current \(11624\)-row trace,
-\(99.51\,\%\) of adjacent callback periods are \(1\,\mathrm{ms}\), giving an
-effective delivered-callback rate of \(993.1\,\mathrm{Hz}\) over
-\(11.704\,\mathrm{s}\). This supports sustained operation in libfranka's
-nominal \(1\,\mathrm{kHz}\) interface, but callback-period spacing and the
-last-100-command reception fraction
-\texttt{control\_command\_success\_rate} do not bound local callback execution
-time; worst-case execution time remains unmeasured. Because the active
-configuration uses projected damping plus this sigma bias during set-up, its
-response is classified as unscripted task-space alignment rather than an
-isolated contact-only response.
+The fixture moved under load, and the tool loosened in the gripper during two
+runs. Those runs were repeated, but neither effect was instrumented. A
+systematic fixture displacement may therefore bias absolute values even when
+run-to-run variation remains within the measured repeatability.
 
-Finally, the configured Franka collision/reflex thresholds are not a software
-wrench, joint-torque, or torque-rate limiter.  Practical safety conclusions
-must therefore be based on supervised trials, the robot's certified safety
-configuration, measured commands, and the controller timing rather than on an
-unimplemented saturation law. The general sequence CSV is written only on the
-normal post-run path; reflex/contact flags and exception-path persistence belong
-to the compact sigma diagnostic and must not be assumed for every sequence.
+The active experiment configuration combines projected joint damping with the
+two-point singular-value bias. Without matched null-space-enabled and
+null-space-disabled trials, its influence on the contact response cannot be
+separated. The geometric Jacobian is unscaled, and the implemented projector
+is kinematic rather than dynamically consistent. The recorded callback spacing
+supports sustained operation near the nominal \(1\,\mathrm{kHz}\) interface
+rate, but worst-case local callback execution time was not measured.
 
 \section{Future Work}
 \label{sec:future}
 
-The tool-axis alignment angle is now logged, which is what made
-Chapter~\ref{ch:results_discussion} quantitative. The remaining fields worth
-adding are the current orientation itself, the desired tool axis, the retained
-SVD rank, and a projector residual such as \(\|JN_q\|\). Logging the orientation
-would remove the one reconstruction step still required in the analysis, where
-the tool axis at the end of the set-up phase is recovered from
-\(-\mathbf e_R\) applied to an assumed starting axis.
+The physical plane should be estimated from at least three non-collinear
+physical probe points after applying the calibrated probe offset. Repeated
+plane estimates and held-out points can then quantify height and normal
+uncertainty. The resulting physical plane should determine clearance,
+projection, the surface frame, and the alignment metric, while the commanded
+tool normal is defined independently through signed angular offsets about the
+surface tangents.
 
-The physical plane should be calibrated from three non-collinear physical
-probe points, with the calibrated probe offset applied before the plane is
-fitted. Repeated calibrations and held-out points should bound the normal and
-height uncertainty. The resulting plane must control height, clearance,
-projection and the physical alignment metric, while the commanded tool normal
-is specified independently by signed angular offsets about the surface
-tangents.
+The model-predicted compliance-centre maximum should be tested using a local
+\(3\times3\) grid around
+\(t_1=[45,60,75]\,\mathrm{mm}\) and
+\(t_2=[15,30,45]\,\mathrm{mm}\), with repeated measurements at each point.
+Matched decoupled, contact-edge-pole, and predicted-pole trials at controlled
+initial errors of \(0^\circ\), \(5^\circ\), and \(10^\circ\) would separate
+controller placement from starting geometry. Repeating these trials at
+different surface locations and with a deliberately reversed first-contact
+edge would test the spatial consistency and sign of the observed response.
 
-The clearance variables should be renamed, and live versus frozen tool-offset
-kinematics should be compared experimentally. The approach-to-set-up hand-off
-should also compute the continuous
-set-up target before enabling the set-up gains/coupled branch, eliminating the
-one-cycle mixed-state callback. The set-up-to-grind hand-off should blend the
-coupled and decoupled matrices to avoid a torque step. The set-up threshold should be retuned against the
-measured external-moment range so that timeout and moment-triggered exits are
-distinguishable. The fixed set-up timeout should be replaced by a ramp-aware
-exit: after the commanded ramp finishes, low alignment and force rates must
-hold for a short dwell, with a calculated hard timeout as fallback. A focused
-\(4.5/5/6/8\,\mathrm{s}\) experiment should confirm the nominal
-\(5\,\mathrm{s}\) setting.
+The nominal set-up duration should be confirmed at
+\(4.5\), \(5\), \(6\), and \(8\,\mathrm{s}\), with repeated trials at
+\(5\,\mathrm{s}\). A general phase transition should depend on completion of
+the commanded press ramp followed by a short interval of low alignment and
+load rates, with a calculated timeout as a fallback.
 
-For the null space, future work should validate parameter ranges, guard
-\(q\pm\alpha_{\mathrm{probe}}\hat v_7\) against joint limits, instrument the
-callback wall-clock duration to bound worst-case execution time, archive the
-timing trace and command-reception rate, and
-compare \(\|JN_q\|\) with the dynamic leakage
-\(\|JM_q^{-1}N_\tau\|\).  A characteristic-length scaling could make the
-geometric-Jacobian singular values more interpretable.  Energy or power
-monitoring could also constrain the active sigma bias
-\citep{Hjorth2023EnergyAwareImpedance}. The pole experiment should additionally
-be repeated with null-space damping only, or as matched sigma-off/sigma-on
-trials, to separate the active secondary bias from the alignment response during
-contact.
+A dedicated force/torque sensor or independent contact instrumentation would
+improve the normal-load estimate and permit a more defensible analysis of
+distributed contact and equivalent contact location. Further experiments
+should also include additional tools, surface materials, fixture conditions,
+and initial orientation errors.
 
-The compliance-centre result should be confirmed on a \(3\times3\) grid around
-the fitted in-plane optimum, followed by matched decoupled, contact-edge-pole
-and optimal-pole runs at controlled \(0^\circ\), \(5^\circ\) and
-\(10^\circ\) command offsets. Repeating the selected controller at separated
-locations on the calibrated plane tests workspace consistency. Finally,
-deliberately reversing the first-contact edge and mirroring the pole provides a
-direct sign test of the placement rule. The selected-feature tolerance should
-also be compared with the observed load distribution, because the current
-tie-breaking feature often reports a corner while the recovered contact lies
-near the middle of the tool face.
+The null-space method requires matched damping-only and
+damping-plus-conditioning trials. These experiments should report
+\(\Delta\sigma_{\min}\), projected joint velocity, Cartesian task drift,
+projector residual, joint motion, and sigma torque. Probe configurations should
+be checked against joint limits, and callback wall-clock duration should be
+instrumented to establish worst-case real-time execution behaviour.

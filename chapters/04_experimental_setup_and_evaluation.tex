@@ -1,49 +1,33 @@
 \chapter{Experimental Methodology}
 \label{ch:methodology}
 
-This chapter defines the experimental methodology for the phase-controlled
-surface-grinding and alignment study.
-
-The method considered here investigates unscripted task-space alignment during
-a phase-controlled surface-grinding sequence. The robot first orients the
-physical grinding-face axis, descends to a geometrically defined clearance,
-presses the selected leading tool feature into the plane during set-up, and then
-executes the grinding motion. The response is evaluated from the physical
-tool-axis angle, the rotation during contact, the feature and TCP
-displacements, and the commanded joint torques.
-
-Here, ``unscripted task-space alignment'' means that set-up holds the clearance
-orientation as a soft reference and commands no time-varying task-space tipping
-trajectory. The active null-space mode nevertheless adds a switched sigma
-torque throughout the automatic sequence. The term therefore does not imply
-isolated passive contact motion or closed-loop passivity.
-
-\section{Experimental Question}
+\section{Experimental Investigation}
 \label{sec:experimental_question}
 
-The central experimental question is:
+The experimental study evaluates the influence of tangential rotational
+stiffness and virtual centre-of-compliance placement on the contact-induced
+alignment of the tool with the workpiece surface. The point-shifted Cartesian
+impedance described in the preceding chapters introduces coupling between
+translational contact forces and rotational motion, making both the rotational
+compliance and the spatial position of the compliance centre relevant to the
+resulting alignment behaviour.
 
-\begin{quote}
-How should the Cartesian stiffness matrix \(K\) be selected so that the
-pole-coupled impedance biases alignment during contact about a chosen local
-linearized center of compliance, while the motion remains smooth and
-within the configured hardware limits?
-\end{quote}
+The investigation consists of two principal parameter studies. First, the
+tangential rotational stiffness is varied while the remaining controller
+parameters are kept constant. Subsequently, the virtual centre of compliance
+is varied along the two tangential directions and the surface normal of the
+local surface frame. Repeated trials quantify the resulting angular alignment
+and model-estimated normal contact load under otherwise comparable conditions.
 
-This question connects three parts of the thesis. First, Cartesian impedance
-control defines the relation between pose displacement and commanded wrench
-\citep{Hogan1985,Ott2008,Albu2003}. Second, stiffness and damping selection
-is a practical design problem in its own right, because the selected gains
-determine how strongly disturbances, contact forces, and task errors are
-converted into motion and commanded torque
-\citep{Pollayil2023ImpedancePlanning}. Third, spatial impedance,
-remote-center-compliance, and variable compliance-center ideas show that
-translation and rotation can be coupled so that contact forces create
-favorable alignment behavior instead of jamming or increasing misalignment
-\citep{Fasse1997SpatialImpedance,Nevins1989ComputerControlledAssembly,Watson1978RCC,Wang2019VariableComplianceCenter,Hartisch2022FlexureRCC}.
-Finally, the Franka Emika Panda implementation must keep the commanded joint
-torques bounded and compatible with the real-time torque-control interface
-\citep{FrankaFCI2023,Mayr2024CartesianImpedance,Hjorth2023EnergyAwareImpedance}.
+The robot first orients the grinding-face axis, descends to a geometrically
+defined clearance, presses the selected leading tool feature into the plane
+during set-up, and then executes the grinding motion. Set-up holds the
+clearance orientation as a soft reference and commands no time-varying
+task-space tipping trajectory. The response is evaluated from the physical
+tool-axis angle, the rotation during contact, and the feature and TCP
+displacements. This procedure separates the effects of rotational compliance
+and compliance-centre placement before their implications for the
+point-shifted impedance formulation are discussed.
 
 \section{Robot and Software Setup}
 \label{sec:robot_software_setup_contact}
@@ -82,98 +66,68 @@ because the external torque command sent through libfranka is already handled
 with robot-side gravity and motor-friction compensation by the Franka Control
 Interface.
 
-The implementation described in this chapter corresponds to the controller tag
-\texttt{FULL-Working-Clean} (commit \texttt{bbe7e85}). Its active sequence is
+The active sequence consists of
 \texttt{approach\_orient}, \texttt{approach\_descend}, \texttt{set\_up}, and
 \texttt{grind}. Hold and manual-guidance modes are available at start-up but are
 not additional contact phases. The null-space mode is selected independently
-and, when enabled, remains active throughout the automatic sequence. The
-version identifier and the parameter files must be recorded with every data set
-so that phase names, gains, tool geometry, durations, and pole offsets are
-unambiguous.
+and, when enabled, remains active throughout the automatic sequence.
 
-\subsection{Reproducibility Record and Missing Run Metadata}
+\subsection{Experimental System and Reproducibility}
 \label{subsec:reproducibility_record}
 
-The software stack inspected on the controller host is Ubuntu~20.04.3 with the
+The controller computer uses Ubuntu~20.04.3 with the
 \texttt{5.9.1-rt20} \texttt{PREEMPT\_RT} kernel, \texttt{g++~9.3} using
-C++14 and \texttt{-O2}, Eigen~3.3.7, and libfranka~0.7.1 at commit
-\texttt{80197c6}. Together with controller tag \texttt{FULL-Working-Clean}
-at commit \texttt{bbe7e85}, these values identify the software build. They do
-not replace the physical metadata that must accompany each experimental
-campaign. Table~\ref{tab:reproducibility_record} separates recovered facts
-from information that is absent from the present repository; an absent entry
-is left explicitly unresolved rather than inferred.
+C++14 and \texttt{-O2}, Eigen~3.3.7, and libfranka~0.7.1.
+Table~\ref{tab:reproducibility_record} summarises the documented experimental
+system. The parameter values used in the individual studies are given in the
+corresponding tables below.
 
 {\small
 \begin{longtable}{@{}
->{\raggedright\arraybackslash}p{0.18\textwidth}
->{\raggedright\arraybackslash}p{0.31\textwidth}
->{\raggedright\arraybackslash}p{0.42\textwidth}@{}}
-\caption{Reproducibility record for the current controller and experimental
-setup.}
+>{\raggedright\arraybackslash}p{0.27\textwidth}
+>{\raggedright\arraybackslash}p{0.66\textwidth}@{}}
+\caption{Documented experimental system and controller environment.}
 \label{tab:reproducibility_record}\\
 \toprule
-Item & Recovered or configured record & Information required with the run \\
+Item & Configuration used in the reported experiments \\
 \midrule
 \endfirsthead
-\multicolumn{3}{c}{\tablename~\thetable\ continued} \\[2pt]
+\multicolumn{2}{c}{\tablename~\thetable\ continued} \\[2pt]
 \toprule
-Item & Recovered or configured record & Information required with the run \\
+Item & Configuration used in the reported experiments \\
 \midrule
 \endhead
 \midrule
-\multicolumn{3}{r}{Continued on the next page} \\
+\multicolumn{2}{r}{Continued on the next page} \\
 \endfoot
 \bottomrule
 \endlastfoot
-Controller &
-\texttt{FULL-Working-Clean}, commit \texttt{bbe7e85} &
-Archive the five parameter files and any uncommitted parameter changes. \\
+Robot and interface &
+Franka Emika Panda operated through the libfranka torque-control interface at
+a nominal \(1\,\mathrm{kHz}\) control rate. \\
 Operating system and kernel &
 Ubuntu~20.04.3; Linux \texttt{5.9.1-rt20} with
-\texttt{PREEMPT\_RT} &
-Record the booted kernel and real-time scheduling settings on the actual run
-date. \\
+\texttt{PREEMPT\_RT}. \\
 Compiler and libraries &
 \texttt{g++~9.3}, C++14, \texttt{-O2}; Eigen~3.3.7;
-libfranka~0.7.1, commit \texttt{80197c6} &
-Archive the build output or dependency manifest. \\
-Real-time computer &
-CPU, memory, network interface, and scheduling configuration are not recorded &
-Record the host model, CPU, memory, FCI network path, process priority, and CPU
-affinity. \\
+libfranka~0.7.1. \\
 Tool and surface &
-Tool-face geometry is configured, but material grades, abrasive/tool part, and
-surface material are not recorded &
-Record material, surface finish, wear state, and tool identifier. \\
-Fixture and friction condition &
-Not recorded &
-Photograph and describe the tool and workpiece fixation; state whether contact
-is dry, lubricated, or uses coolant, and record any measured or assumed
-friction range. \\
-Payload &
-The program calls neither \texttt{setLoad} nor \texttt{setEE}; numeric
-robot-side tool/payload mass, center of mass, and inertia are not archived &
-Record the active payload mass, center of mass, inertia tensor, and the
-procedure used to configure them on the robot. \\
-Robot transforms &
-\texttt{F\_T\_EE} and \texttt{EE\_T\_K} are supplied in the runtime robot
-state, but their numeric matrices are not archived &
-Store both \(4\times4\) transforms with every campaign and identify the TCP and
-stiffness-frame conventions. \\
-Plane calibration &
-The controller records a configured point and normal; no measured calibration
-residual or uncertainty is archived &
-Store the touched points, fitted plane, normal-sign rule, residuals, and
-repeatability estimate described below. \\
+Rectangular wooden tool held in the Franka Hand by custom aluminium fingers;
+wooden workpiece mounted on a raised base board. The configured face dimensions
+and tool offset are reported in
+\cref{tab:active_surface_tool_parameters}. \\
+Contact condition &
+Dry surface contact. No environment friction model or friction coefficient is
+used in the control command. \\
+Recorded quantities &
+Robot pose and velocity, selected tool feature, phase state, Cartesian error,
+commanded joint torque, and robot-model estimate of the external wrench. \\
 \end{longtable}
 }
 
-The controller contains no environment contact or friction model and uses no
-friction coefficient in its command. Friction therefore remains an
-uncontrolled physical property of a run unless the materials, surface
-condition, lubrication state, and an assumed or measured range are recorded.
+The exact material grades, surface finish, payload parameters, robot transforms
+and real-time-computer hardware were not recorded. Their influence is treated
+as a limitation in \cref{sec:limitations}.
 
 \begin{figure}[H]
   \centering
@@ -184,8 +138,8 @@ condition, lubrication state, and an assumed or measured range are recorded.
   fingers and pressed onto a wooden workpiece raised on a base board. The
   approach leaves the tool face a few degrees off parallel, so one edge makes
   contact first. \textbf{(b)} The geometry this defines. The tool is commanded
-  toward the \emph{configured} normal, which is deliberately mis-specified
-  relative to the physical plane, so it arrives tilted with respect to the
+  toward the \emph{configured} normal, which has an intentional angular offset
+  from the physical plane, so it arrives tilted with respect to the
   surface it presses on. The surface frame \([t_1,t_2,n_s]\) is taken at the
   contact, and \(r_c\) is the lever from the contact to the commanded centre of
   compliance \(p_c\) --- the quantity whose placement
@@ -193,47 +147,32 @@ condition, lubrication state, and an assumed or measured range are recorded.
   \label{fig:experimental_setup_photo}
 \end{figure}
 
-\subsection{Plane Calibration Protocol}
+\subsection{Configured and Physical Plane}
 \label{subsec:plane_calibration_protocol}
 
-The source parameters specify a plane analytically, but a reproducible
-experiment should determine it from at least three non-collinear points and
-preferably more than three so that a residual can be estimated. For measured
-surface points \(p_j\), \(j=1,\ldots,N\), compute
+The controller uses the configured plane point
+\(p_s=[\,0.55,\,-0.06,\,0.025\,]^\top\,\mathrm{m}\) and the configured normal
+\(n_{\mathrm{cfg}}\equiv n_s\), obtained from \(a=0^\circ\) and
+\(b=5^\circ\) in \cref{eq:implemented_surface_normal_angles}. This plane
+determines the approach, clearance, feature projection, surface frame and
+commanded tool orientation.
 
-\begin{equation}
-\bar p=\frac{1}{N}\sum_{j=1}^{N}p_j,
-\qquad
-S=\sum_{j=1}^{N}(p_j-\bar p)(p_j-\bar p)^\top .
-\label{eq:plane_fit_scatter}
-\end{equation}
-
-The least-squares plane point is \(p_s=\bar p\), and \(n_s\) is the normalized
-eigenvector of \(S\) associated with its smallest eigenvalue. Its sign is chosen
-against a recorded reference direction so that the commanded descent remains
-\(-n_s\). The normal residual is reported as
-
-\begin{equation}
-\epsilon_{\mathrm{plane,rms}}
-=
-\sqrt{\frac{1}{N}\sum_{j=1}^{N}
-\left[n_s^\top(p_j-\bar p)\right]^2}.
-\label{eq:plane_fit_rms}
-\end{equation}
-
-Repeating the point acquisition provides a position spread for \(p_s\) and an
-angular spread between fitted normals. These two quantities, together with the
-touch/reference tool and the numeric
-\(\texttt{F\_T\_EE}\) and \(\texttt{EE\_T\_K}\) transforms, form the plane
-calibration uncertainty record. With exactly three noiseless points the plane
-is defined, but the same three points cannot provide a meaningful residual
-uncertainty estimate.
+The physical workpiece orientation used for the offline alignment metric was
+estimated separately by seating the tool face against the surface and reading
+back the robot pose. Three repetitions gave
+\(a_{\mathrm{phys}}=-0.72\pm0.31^\circ\) and
+\(b_{\mathrm{phys}}=14.99\pm1.91^\circ\). The corresponding normal is denoted
+\(n_{\mathrm{phys}}\). The angular separation between \(n_{\mathrm{cfg}}\)
+and \(n_{\mathrm{phys}}\) is \(10.01^\circ\), providing the initial geometric
+misalignment for the reported alignment study. The repeatability of the
+hand-seating procedure limits the certainty of absolute residual angles;
+changes measured within a run are less sensitive to this offset.
 
 \section{Contact Geometry}
 \label{sec:contact_geometry}
 
 The task geometry is defined by a surface plane, a tool edge, and a selected
-local linearized center of compliance. Let
+local linearized centre of compliance. Let
 
 \begin{equation}
 n_s \in \mathbb{R}^3,
@@ -314,8 +253,8 @@ and must not be interchanged.
 If a force \(\mathbf{f}\) acts at the contact, the corresponding moment about
 the TCP depends on \(r_C\). Therefore, the selected stiffness
 matrix should not be interpreted only as three independent translational
-springs and three independent rotational springs. For a virtual-center
-behavior, translation and rotation must be selected consistently.
+springs and three independent rotational springs. For a virtual-centre
+behaviour, translation and rotation must be selected consistently.
 
 \section{Gain Selection Methodology}
 \label{sec:cartesian_stiffness_selection}
@@ -400,13 +339,13 @@ Here, \(K_{p,\mathrm{task}}\) relates translational displacement to force,
 off-diagonal blocks \(K_{pR,\mathrm{task}}\) and \(K_{Rp,\mathrm{task}}\)
 describe translation--rotation coupling.
 This block form is useful for explaining the physical coupling between sliding
-and rotation during edge contact. The current controller constructs the full
+and rotation during edge contact. The implemented controller constructs the full
 matrix analytically from a manually selected pole during set-up. The pole and
 the source stiffness blocks are the design variables; the 36 matrix entries are
 not tuned independently.
 
-For a passive linear stiffness, the complete matrix should be symmetric
-positive definite \citep{Fasse1997SpatialImpedance,Ott2008},
+The gain construction uses a symmetric positive-definite stiffness and a
+symmetric positive-semidefinite damping matrix,
 
 \begin{equation}
 K_{\mathrm{task}} = K_{\mathrm{task}}^\top,
@@ -415,37 +354,9 @@ K_{\mathrm{task}} \succ 0.
 \label{eq:contact_stiffness_spd}
 \end{equation}
 
-This condition is important because it allows the stiffness to be interpreted
-as stored elastic energy \citep{Hogan1985,Ott2008,Fasse1997SpatialImpedance},
-
-\begin{equation}
-V_K
-=
-\frac{1}{2}
-\mathbf{e}_{\mathrm{task}}^\top
-K_{\mathrm{task}}
-\mathbf{e}_{\mathrm{task}},
-\qquad
-\mathbf{e}_{\mathrm{task}} =
-\begin{bmatrix}
-\mathbf{e}_{p,\mathrm{task}}\\
-\mathbf{e}_{R,\mathrm{task}}
-\end{bmatrix}.
-\label{eq:contact_elastic_energy}
-\end{equation}
-
-This energy interpretation is also the reason why the thesis separates the
-geometric usefulness of a stiffness setting from its safety. A setting can
-create the intended local center-of-compliance geometry but still be rejected
-if it stores too much energy, creates large torque peaks, or requires damping
-that is not reliable in contact \citep{Hjorth2023EnergyAwareImpedance}.
-Symmetry and positive definiteness of the source stiffness, and positive
-semidefiniteness of the damping, are algebraic properties of the local
-impedance matrices. They do not by themselves prove closed-loop stability or
-passivity of the sampled robot--controller--environment system. Such a claim
-would additionally require the robot dynamics, delays, phase switching,
-time-varying references, active null-space torque, and contact model to be
-included in the analysis.
+The pole-to-TCP congruence preserves these properties. They provide direct
+checks on the assembled \(6\times6\) matrices without introducing additional
+experiment-specific tuning variables.
 
 \subsection{Quasi-Static Stiffness Sizing and Automatic Damping}
 \label{subsec:initial_stiffness_damping_values}
@@ -772,8 +683,8 @@ and rotational blocks but leaves the translation--rotation blocks zero. It
 therefore does not move the centre of compliance away from the TCP. The
 point-shift construction of
 \cref{eq:offset_adjoint,eq:coupled_tcp_stiffness,eq:coupled_tcp_damping}
-creates the required translation--rotation coupling. The complete sign,
-energy, and block-matrix derivation is kept in
+creates the required translation--rotation coupling. The complete sign and
+block-matrix derivation is kept in
 \cref{sec:coupled_pole_stiffness}; it is not repeated here.
 
 The active source stiffness, written wholly in base-frame coordinates, is
@@ -895,7 +806,7 @@ physical alignment signal is added to the run record.
   \label{fig:active_pole_geometry}
 \end{figure}
 
-The selected point \(p_c\) is a local linearized center of compliance. Finite
+The selected point \(p_c\) is a local linearized centre of compliance. Finite
 rotational stiffness, the frozen lever, environment friction and constraints,
 and the active null-space sigma torque mean that it is not necessarily the
 physical pivot observed during contact.
@@ -922,8 +833,9 @@ controller:
     \cref{eq:coupled_tcp_stiffness,eq:coupled_tcp_damping}. Grind immediately
     returns to the decoupled source blocks.
     \item Check the resulting elastic load and joint-torque scales, then change
-    one declared gain family at a time while retaining the controller tag,
-    frame labels, computed damping, and pole offset with the run record.
+    one declared gain family at a time while retaining the frame labels,
+    computed damping, pole offset, and remaining parameters with the run
+    record.
 \end{enumerate}
 
 The resulting workflow is
@@ -1064,30 +976,28 @@ null space instead of being amplified. \\
 \endgroup
 
 The selected \(\alpha_{\mathrm{probe}}\), \(\delta_\sigma\), and \(\rho\)
-trade local validity against numerical resolution; the present records do not
-demonstrate that they are optimal. The two probe configurations are not checked
-against joint limits, and the constant-magnitude sigma torque does not use the
-size of the singular-value improvement. A future sweep should therefore vary
-one of these parameters at a time, record the retained rank and projector
-residual, and reject settings that increase task leakage, chatter, joint-limit
-risk, or callback deadline misses.
+trade local validity against numerical resolution; the reported experiments do
+not establish that they are optimal. The two probe configurations are not
+checked against joint limits, and the constant-magnitude sigma torque does not
+use the size of the singular-value improvement.
 
 \section{Experimental Procedure}
 \label{sec:experimental_procedure_contact}
 
-For the tagged controller version, the experiment is executed as follows:
+The experimental sequence is executed as follows:
 
 \begin{enumerate}
-    \item Record the controller tag and all five parameter files. Move the Panda
-    to the configured initial joint pose, or use the optional damped manual
-    guidance and recapture the selected start pose.
+    \item Record the active parameter set. Move the Panda to the configured
+    initial joint pose, or use the optional damped manual guidance and recapture
+    the selected start pose.
     \item Execute the configured gripper action. In the current configuration
-    this is a grasp at \(70\,\mathrm{mm}\) width and \(60\,\mathrm{N}\), not an
+    this is a grasp at \(70\,\mathrm{mm}\) width and \(60\,\mathrm{N}\), rather
+    than an
     open command.
     \item Construct the known plane and
     \(R_{\mathrm{surface}}=[t_1,t_2,n_s]\), construct the \(40\times120\) mm tool
     face, and set the active base-XYZ pole offset. Configure the Franka collision
-    behavior before starting torque control.
+    behaviour before starting torque control.
     \item In \texttt{approach\_orient}, hold the TCP position and rotate the
     physical \(+Z_{\mathrm{EE}}\) axis toward \(-n_s\). Continue only after at
     least \(0.5\,\mathrm{s}\) and a tool-axis error no greater than
@@ -1133,10 +1043,10 @@ For the tagged controller version, the experiment is executed as follows:
 For a controlled comparison, only the declared independent variable---for
 example block-diagonal versus pole-coupled impedance or the base-XYZ pole
 offset---may change between repetitions. Pool only runs with the same controller
-tag, tool geometry, phase duration, and fixed gains; otherwise report them as
+configuration, tool geometry, phase duration, and fixed gains; otherwise report them as
 separate configurations. The comparison is not meant to
 prove a universal optimal stiffness matrix; it identifies which tested
-centre-of-compliance setting gives the most useful behavior for this tool,
+centre-of-compliance setting gives the most useful behaviour for this tool,
 plane, and contact sequence.
 
 \section{Evaluation Metrics}
@@ -1231,32 +1141,31 @@ after masking, where \(R_{\mathrm{clr}}\) is the orientation frozen at the
 clearance hand-off. This control error begins near zero and can
 \emph{increase} as the tool tips during contact. It must not be plotted as
 \(\theta_{\mathrm{align}}\) without reconstructing the physical tool axis.
-The current general CSV does not contain \(R_{\mathrm{EE}}\) explicitly, so a
-claim of surface-alignment reduction requires either a reconstructable
-orientation reference or an additional logged tool-axis metric.
+The general CSV records the physical tool-axis alignment angle directly. That
+quantity, rather than \(\mathbf e_R\), is used to evaluate alignment with the
+configured surface normal. Evaluation against the physical plane uses the
+separately estimated \(n_{\mathrm{phys}}\).
 
 \subsection{Evaluation Criteria and Acceptance Conditions}
 \label{sec:evaluation_criteria_contact}
 
-The experiment is evaluated using the following criteria:
+The experiment is evaluated using the following quantities:
 
 \begin{itemize}
-    \item \textbf{Alignment direction:} the measured rotation should reduce the
-    angle between the physical grinding-face axis and \(-n_s\).
-    \item \textbf{Pole setting:} record the commanded center-of-compliance
-    offset and compare physical alignment plus selected-feature/TCP
-    displacement across pole settings.
-    \item \textbf{Contact displacement:} the translational displacement should
-    remain small and bounded.
-    \item \textbf{Torque behavior:} the commanded torques should remain smooth,
-    bounded, and below the selected limits.
-    \item \textbf{Damping behavior:} after contact or release, the response
-    should not show sustained oscillations.
+    \item \textbf{Alignment response:} the change in angle between the physical
+    grinding-face axis and \(n_{\mathrm{phys}}\).
+    \item \textbf{Compliance-centre setting:} the commanded surface-frame
+    offset associated with each alignment and displacement result.
+    \item \textbf{Contact displacement:} selected-feature and TCP displacement
+    during set-up.
+    \item \textbf{Load and torque:} model-estimated normal load and commanded
+    joint-torque histories.
+    \item \textbf{Dynamic response:} the presence or absence of sustained
+    oscillation after contact or release.
 \end{itemize}
 
-The central result is not tracking accuracy alone, but whether the selected
-Cartesian stiffness matrix supports useful
-unscripted task-space alignment during contact.
+Together, these quantities characterise alignment, contact loading and
+displacement for each stiffness and compliance-centre setting.
 
 \section{Safety Limits}
 \label{sec:damping_safety_limits_contact}
@@ -1267,7 +1176,7 @@ directional calculation does not itself establish safe contact; the real
 controller remains discrete, model dependent, and coupled to a stiff
 environment \citep{Pollayil2023ImpedancePlanning}.
 
-Before the torque callback, the current configuration calls
+Before the torque callback, the reported configuration calls
 \texttt{setCollisionBehavior} with equal joint-side acceleration and nominal
 thresholds of \(140\,\mathrm{Nm}\), and equal Cartesian force/moment thresholds
 of \(240\,\mathrm{N}\) or \(\mathrm{Nm}\) for all six components. These are
@@ -1307,16 +1216,12 @@ must therefore supplement the CSV when diagnosing an aborted sequence.
 
 These checks are necessary because a stiffness matrix that is geometrically
 meaningful can still be unsuitable for real hardware if it produces aggressive
-torques or poorly damped contact behavior. In particular, the
+torques or poorly damped contact behaviour. In particular, the
 \(150\,\mathrm{Nm}\) set-up threshold is applied to the moment change in
 \texttt{O\_F\_ext\_hat\_K}. This is libfranka's model-based estimate associated
 with stiffness frame \(K\), not a separately measured TCP contact moment. Its
 large value avoids treating ordinary model fluctuations as a contact event and
 makes the timeout the practical default transition. It is an engineering
 placeholder, not a measured safety boundary or a validated contact threshold.
-Its stopping role must be established from the phase logs and retuned against
-the observed moment range before it is used as an event detector.
-Energy-aware impedance control studies make the same point from a safety
-perspective: contact tasks should limit not only position error, but also the
-energy and power that the controller can inject during unexpected interaction
-\citep{Hjorth2023EnergyAwareImpedance}.
+In the reported runs the threshold was not reached, and the set-up phase
+therefore ended at the configured timeout.

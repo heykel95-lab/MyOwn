@@ -1,52 +1,35 @@
 \chapter{Results and Discussion}
 \label{ch:results_discussion}
 
-This chapter reports one consolidated evaluation. The archive contains \(92\)
-run records, of which \(89\) are usable for the quantities for which they were
-recorded. Every numerical result below is derived from an archived run rather
-than from an expectation. Three hold records are excluded from quantitative
-comparison because the general log is missing or the Cartesian task moved
-beyond the registered invariance limit. The exact source commit and effective
-parameter set remain attached to every run.
+The measurement set contains \(92\) run records, of which \(89\) are usable
+for the quantities for which they were recorded. Three hold records are
+excluded from quantitative comparison because the general log is missing or
+the Cartesian task moved beyond the registered invariance limit. Each
+admissible record contains the effective controller parameters and raw signals
+required for its analysis.
 
-The campaign answers four questions in order. Does the set-up phase reach an
-equilibrium, so that a number taken from it means anything? Is the coupled
-command path arithmetically correct, so that differences between poles are
-real? How large is a difference that is merely noise? And then the substantive
-one: \emph{where should the centre of compliance be placed}? The first three
-are cheap and everything downstream depends on them, so they are answered
-first, in \cref{sec:results_gates}.
+Three validation checks precede the parameter studies: settling of the set-up
+phase, equivalence of the decoupled and block-diagonal coupled formulations,
+and repeatability of the nominal configuration. The subsequent studies
+quantify the influence of tangential rotational stiffness and the three
+surface-frame components of the virtual centre of compliance.
 
-\section{Measurement Campaign and Provenance}
+\section{Measurement Campaign and Data Integrity}
 \label{sec:results_provenance}
 
-Each run applies a parameter overlay to the nominal configuration, starts the
-controller, and archives the raw logs together with the effective parameter
-set, the git commit and the complete terminal transcript. The parameter
-directory is restored afterwards from a shell trap, because the controller
-rewrites the auto-computed coupled matrices into its own configuration at the
-end of a set-up phase; without the restore each run would inherit its
-predecessor's state and a sweep would measure its own history.
+Each run uses one parameter set and records the raw signals together with that
+configuration. Metrics are calculated independently from the general data log
+and from the controller's set-up summary. A disagreement flags the record for
+inspection rather than being averaged silently. Quantitative results exclude
+records with missing general data or excessive Cartesian task drift.
 
-Metrics are extracted twice --- once from the CSV and once from the
-controller's printed set-up report --- and a disagreement between the two
-flags the run rather than averaging it in silently. Flags separate into
-\emph{data} faults, where the numbers themselves are untrustworthy, and
-\emph{provenance} caveats, where the repository merely held an uncommitted
-change when the run was recorded. Only the former are excluded from the
-reported means; the latter remain admissible because each run archives the
-exact configuration it used.
-
-\section{Gate Experiments}
+\section{Experimental Validation and Repeatability}
 \label{sec:results_gates}
 
-Three gates were run before any parameter study. The principle is that a sweep
-is worth nothing until three things are established: that the quantity being
-swept has settled, so it is a property of the configuration rather than of when
-one stopped looking; that the code path producing it computes what it claims
-to; and that one knows how large a difference has to be before it is an effect
-rather than scatter. Each gate below took under half an hour and each changed
-what the rest of the campaign could claim.
+The validation measurements establish that the reported values represent a
+settled response, that the two equivalent impedance formulations agree within
+experimental repeatability, and that observed parameter effects exceed the
+run-to-run variation of the nominal configuration.
 
 \subsection{Equilibrium of the Set-Up Phase}
 \label{sec:results_equilibrium}
@@ -57,9 +40,10 @@ commanded press is a ramp whose duration is
 phase was being cut at the instant the ramp completed. Repeating the phase at
 \(4\), \(8\) and \(12\,\mathrm{s}\) gives the tip drift over the final fifth of
 the phase as \(0.147^\circ\), \(0.002^\circ\) and \(0.000^\circ\)
-respectively. The contact force overshoots to approximately \(65\,\mathrm{N}\)
-at \(t=4.0\,\mathrm{s}\) and relaxes to a steady \(60\,\mathrm{N}\) by
-\(t\approx4.6\,\mathrm{s}\), after which tip angle, force and edge travel are
+respectively. The model-estimated normal load overshoots to approximately
+\(65\,\mathrm{N}\) at \(t=4.0\,\mathrm{s}\) and relaxes to a steady
+\(60\,\mathrm{N}\) by \(t\approx4.6\,\mathrm{s}\), after which tip angle,
+estimated load and edge travel are
 constant to the printed resolution for the remaining seven seconds.
 
 The \(4\,\mathrm{s}\) configuration therefore sampled the overshoot of a
@@ -87,7 +71,7 @@ settled portion of the two longer set-up traces.}
 \label{tab:results_five_second_check}
 \begin{tabular}{@{}lccc@{}}
 \toprule
-Trace & Tip difference & Alignment difference & Force difference \\
+Trace & Tip difference & Alignment difference & Load difference \\
 \midrule
 8-second run  & \(0.006^\circ\) & \(0.017^\circ\) & \(0.09\,\mathrm{N}\) \\
 12-second run & \(0.003^\circ\) & \(0.002^\circ\) & \(0.12\,\mathrm{N}\) \\
@@ -95,45 +79,43 @@ Trace & Tip difference & Alignment difference & Force difference \\
 \end{tabular}
 \end{table}
 
-All three differences are far below the repeatability floor. A
+All three differences are below the repeatability-based interpretation
+threshold. A
 \(5\,\mathrm{s}\) set-up is therefore supported for the present push depth and
 speed. It must not become a universal timeout, because the ramp duration
-changes with the captured start height, push end and push speed. The preferred
-policy is ramp completion followed by \(0.5\,\mathrm{s}\) of low alignment and
-force rates, with a hard fallback at the calculated ramp time plus
-\(2\,\mathrm{s}\). For the nominal parameters this normally ends near
-\(5\,\mathrm{s}\), while slower push experiments are allowed to finish their
-ramp.
+changes with the captured start height, push end and push speed. A general
+termination rule must therefore account for ramp completion rather than using
+\(5\,\mathrm{s}\) as an invariant value.
 
-\subsection{Correctness of the Coupled Command Path}
+\subsection{Equivalence of the Decoupled and Coupled Formulations}
 \label{sec:results_g1}
 
-Feeding block-diagonal gains through the coupled \(6\times6\) path must
-reproduce the decoupled wrench exactly; if it does not, every coupled result
-is an implementation artefact. Five decoupled runs give a final tip angle of
-\(2.458\pm0.111^\circ\) and a steady contact force of
+Block-diagonal gains transformed through the coupled \(6\times6\) formulation
+represent the same impedance as the decoupled formulation when the point shift
+is zero. Five decoupled runs give a final tip angle of
+\(2.458\pm0.111^\circ\) and a steady model-estimated normal load of
 \(59.37\pm0.11\,\mathrm{N}\); three block-diagonal coupled runs give
 \(2.537\pm0.232^\circ\) and \(59.02\pm0.65\,\mathrm{N}\). The two groups differ
 by \(0.079^\circ\), which is \(0.34\) times the larger of the two standard
 deviations. Alignment gain and edge travel differ by \(0.31\) and \(0.72\)
-standard deviations respectively. The coupled path is therefore correct, and
-the pole effects reported in \cref{sec:results_pole} are properties of the
-coupling rather than of its implementation.
+standard deviations respectively. No discrepancy exceeding the observed
+repeatability was detected between the formulations under the tested
+conditions.
 
-\subsection{Repeatability and the Noise Floor}
+\subsection{Repeatability-Based Interpretation Threshold}
 \label{sec:results_noise_floor}
 
 Five repetitions of the nominal configuration, with the workpiece physically
-reset between each, give the dispersions in
-\cref{tab:results_noise_floor}. These fix the resolution of every comparison
-in this chapter: no difference smaller than approximately two standard
-deviations is claimed as an effect.
+reset between runs, give the dispersions in
+\cref{tab:results_noise_floor}. Approximately two standard deviations are used
+as a repeatability-based interpretation threshold. This is a practical
+screening criterion for this experiment, not a formal equivalence test.
 
 \begin{table}[H]
 \centering
 \caption{Measured repeatability of the nominal configuration
-(\(n=5\), workpiece reset between runs). The final column is the smallest
-difference that may be claimed as an effect.}
+(\(n=5\), workpiece reset between runs). The final column gives the
+repeatability-based interpretation threshold used in this chapter.}
 \label{tab:results_noise_floor}
 \begin{tabular}{@{}lccc@{}}
 \toprule
@@ -141,7 +123,7 @@ Quantity & Mean & \(\sigma\) & \(2\sigma\) \\
 \midrule
 Final tip angle (\(^\circ\))        & 1.474  & 0.194 & 0.388 \\
 Alignment gain (\(^\circ\))         & $-0.714$ & 0.294 & 0.588 \\
-Steady contact force (N)            & 59.752 & 0.484 & 0.969 \\
+Estimated normal load (N)           & 59.752 & 0.484 & 0.969 \\
 Edge travel (mm)                    & 21.146 & 0.589 & 1.178 \\
 \bottomrule
 \end{tabular}
@@ -152,20 +134,20 @@ Edge travel (mm)                    & 21.146 & 0.589 & 1.178 \\
 
 The alignment quality of interest is the residual angle between the physical
 tool axis and the surface normal,
-\(\theta_{\mathrm{align}}=\cos^{-1}\!\big(a_T^\top(-n_s)\big)\). This is not
+\(\theta_{\mathrm{align,phys}}
+=\cos^{-1}\!\big(a_T^\top(-n_{\mathrm{phys}})\big)\). This is not
 the logged set-up error \(\mathbf e_R\), which is referenced to the
 orientation frozen at geometric clearance and therefore reports how far the
-tool \emph{turned} rather than how flat it ended up. The controller now logs
-\(\theta_{\mathrm{align}}\) directly and prints it before and after the set-up
-phase, which removes the instrumentation gap that made earlier versions of
-this chapter qualitative.
+tool \emph{turned} rather than how flat it ended up. The physical tool-axis
+angle is evaluated before and after the set-up phase.
 
 One further correction is required before the logged values can be
-interpreted, and it inverts the sign of the result if omitted. The controller
-scores \(\theta_{\mathrm{align}}\) against the \emph{configured} surface
-normal, built from the two tilt angles in the parameter set. That
-configuration was deliberately left uncalibrated: the physical plane was
-measured, with the tool face hand-seated flat and the pose read back, at
+interpreted, and it inverts the sign of the result if omitted. The logged angle
+is evaluated against the \emph{configured} surface
+normal, built from the two tilt angles in the parameter set. The configured
+and physical normals were deliberately different to provide the initial
+angular mismatch. The physical plane was estimated by hand-seating the tool
+face and reading back the pose, giving
 \(a=-0.72\pm0.31^\circ\) and \(b=14.99\pm1.91^\circ\) against a configured
 \(a=0^\circ\), \(b=5^\circ\), a mismatch of \(10.01^\circ\). The tool is
 commanded toward the configured normal, so it arrives at contact
@@ -179,53 +161,13 @@ therefore rescored against the measured plane, using the rotation
 carrying the current orientation onto the frozen reference, so the tool's
 actual rotation is its negation.
 
-Two properties of this rescoring should be stated. The \emph{absolute}
+The \emph{absolute}
 residual depends on the measured plane, which three hand-seatings pin only to
 about \(\pm1.9^\circ\). The \emph{improvement} --- how much closer to the
 surface the tool came --- does not: across all three seatings it varies by
 less than \(0.1^\circ\), because the tool rotates in essentially the same
 plane as the mismatch. Improvements are therefore reported as measured values
 and absolute residuals only as a range.
-
-\subsection{Required Separation of Plane Geometry and Commanded Angle}
-\label{subsec:results_plane_command_separation}
-
-The analysis exposes a geometric limitation in the active implementation. One
-configured normal is used for plane height, descent, projection, the surface
-task frame and the desired tool axis. The intended experiment instead requires
-the physical plane to be correct while the tool is deliberately commanded at
-a different angle.
-
-The confirmation controller should define the physical plane from three
-measured, non-collinear contact points:
-\begin{align}
-  u &= p_2-p_1, &
-  v &= p_3-p_1, \\
-  n_s &= \frac{u\times v}{\lVert u\times v\rVert}, &
-  p_s &= \frac{p_1+p_2+p_3}{3}.
-  \label{eq:results_three_point_plane}
-\end{align}
-The normal sign is selected toward free space, and near-collinear or closely
-spaced points are rejected. The measured positions must be physical probe
-points, not uncorrected TCP positions:
-\[
-  p_i=p_{\mathrm{EE},i}
-      +R_{\mathrm{EE},i}c_{\mathrm{probe}}^{EE}.
-\]
-
-The calibrated pair \((p_s,n_s)\) then determines height, clearance,
-projection, the surface frame and the physical alignment metric. The command
-normal remains independent,
-\begin{equation}
-  n_{\mathrm{command}}
-  =
-  R(t_2,\delta_2)R(t_1,\delta_1)n_s,
-  \label{eq:results_command_normal_offset}
-\end{equation}
-so a nonzero \((\delta_1,\delta_2)\) creates the intended initial mismatch
-without moving the geometric plane. This is a methodological correction for
-the confirmation campaign, not a claim that the archived runs used a
-three-point calibration.
 
 \section{Effect of Rotational Stiffness}
 \label{sec:results_summary_table}
@@ -245,7 +187,7 @@ set-up phase.}
 \toprule
 \(K_{R,\mathrm{tangent}}\) (Nm/rad)
 & Tip (\(^\circ\))
-& Steady force (N)
+& Estimated normal load (N)
 & Improvement (\(^\circ\)) \\
 \midrule
 5  & \(2.539\pm0.132\) & \(60.27\pm0.27\) & \(+2.38\pm0.06\) \\
@@ -255,108 +197,102 @@ set-up phase.}
 \end{tabular}
 \end{table}
 
-The response is monotonic and well outside the noise floor: softening the
+The response is monotonic and exceeds the repeatability-based interpretation
+threshold: reducing the
 tangential rotational stiffness from \(50\) to \(5\,\mathrm{Nm/rad}\) triples
 the alignment gained during contact. The \(5\,\mathrm{Nm/rad}\) setting is
 configuration-identical to the decoupled baseline of \cref{sec:results_g1} and
 reproduces it at \(0.7\sigma\), which additionally establishes that the rig
 did not drift across the session.
 
-The steady contact force is flat at approximately \(60.5\,\mathrm{N}\) across
-all three settings. This is worth emphasising because it contradicts the
-trade-off assumed in earlier planning: the rotational stiffness does
-\emph{not} buy alignment at the cost of contact load. It simply costs
-alignment. The selection criterion is consequently not a compromise between
-alignment and force but a bound on displacement alone.
+The mean model-estimated normal load remains in the narrow range
+\(60.27\)--\(60.77\,\mathrm{N}\) across the three settings, while the mean
+alignment response changes from \(0.79^\circ\) to \(2.38^\circ\). Within the
+tested range, the displacement permitted by the softer setting is therefore
+the relevant tuning constraint.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{A2_stiffness_sweep.pdf}
-    \caption{Measured rotational-stiffness sweep, replacing the qualitative
-    sketch of earlier drafts. Error bars are the standard deviation over five
-    repetitions.}
+    \caption{Measured rotational-stiffness sweep. Error bars are the standard
+    deviation over five repetitions.}
     \label{fig:results_orientation_error}
 \end{figure}
 
-\section{Where the Compliance Centre Must Lie}
+\section{Influence of Compliance-Centre Position}
 \label{sec:results_pole}
 
-This is the substantive question, and answering it took three sweeps rather
-than one, because the first produced a conclusion the second overturned.
+The position study contains \(57\) runs. A configured-normal sweep comprises
+\(24\) runs at eight offsets from \(-120\) to \(+160\,\mathrm{mm}\). Because
+the configured normal differs by approximately \(10^\circ\) from the measured
+physical-plane normal, this sweep also changes one physical in-plane component
+from \(-5.0\) to \(+27.6\,\mathrm{mm}\). It therefore does not isolate the
+physical normal coordinate.
 
-The pole was first swept along the \textbf{surface normal}: \(24\) runs at
-eight offsets from \(-120\) to \(+160\,\mathrm{mm}\). Alignment improved
-steadily along it, from \(+1.98^\circ\) with the pole on the contact edge to
-\(+3.47^\circ\) at \(+160\,\mathrm{mm}\). Read alone, that sweep says the
-distance along the normal is the design variable.
-
-It is not, and the reason is geometric. The sweep followed the
-\emph{configured} normal, which differs by approximately \(10^\circ\) from
-the measured physical-plane normal. Relative to the physical plane used to
-score alignment, that direction therefore contains a tangential component.
-Across the sweep the corresponding tangential offset drifted from
-\(-5.0\) to \(+27.6\,\mathrm{mm}\). The physical normal offset and one
-tangential offset were varied together, so the sweep alone cannot identify
-which component produced the response.
-
-Separating them required holding one fixed and moving the other. The pole was
-therefore swept along the first surface tangent \(t_1\) (\(18\) runs, six
-offsets from \(-71\) to \(+161\,\mathrm{mm}\)) at a fixed normal offset, and
-then along the second tangent \(t_2\) (\(12\) runs, four offsets), an axis
-which had been held at approximately zero in everything recorded until that
-point. \cref{fig:results_pole_component} plots all \(57\) runs against each
-component in turn, and the answer is visible before any fitting: the two
-in-plane panels show structure and the normal panel does not.
+The two in-plane coordinates were also varied independently. The first surface
+tangent \(t_1\) was evaluated in \(18\) runs at six offsets from \(-71\) to
+\(+161\,\mathrm{mm}\) while the normal offset was fixed. The second tangent
+\(t_2\) was evaluated in \(12\) runs at four offsets.
+\Cref{fig:results_pole_component} shows pronounced non-monotonic structure for
+both in-plane coordinates and little independent structure for the physical
+normal coordinate.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{B_pole_component.pdf}
     \caption{Alignment gained toward the measured plane, for the same \(57\)
     runs, against each component of the commanded pole. Both in-plane
-    components govern the outcome and both turn over inside the tested range;
-    the normal component does not. The curves are marginal fits against one
-    component at a time, so their apparent optima differ from the joint model
+    components show pronounced non-monotonic responses, whereas the physical
+    normal coordinate provides substantially less explanatory power. The
+    curves are marginal fits against one component at a time, so their fitted
+    maxima differ from the joint model
     of \cref{tab:results_pole_fit}. The vertical spread of the \(t_1\) sweep in
     the middle panel, where those runs all share \(t_2\approx0\), shows
     directly that \(t_2\) alone cannot account for them.}
     \label{fig:results_pole_component}
 \end{figure}
 
-Fitting confirms it, and shows in passing that neither in-plane response is a
-straight line --- both rise to a maximum and fall away again:
+The fitted responses are non-monotonic: both in-plane components rise to a
+maximum and then decrease.
 
 \begin{table}[H]
 \centering
-\caption{Fits of the alignment improvement against the commanded pole
-components, over all \(57\) pole runs.}
+\caption{Fits of the alignment improvement against the commanded
+compliance-centre components over all \(57\) position-study runs. The
+two-dimensional model is additive and contains no \(t_1t_2\) interaction
+term.}
 \label{tab:results_pole_fit}
 \begin{tabular}{@{}lcc@{}}
 \toprule
 Model & \(R^2\) & Note \\
 \midrule
-\(t_1\) linear                          & 0.047 & a straight line is the wrong shape \\
+\(t_1\) linear                          & 0.047 & limited explanatory power \\
 \(t_1+t_1^2\)                           & 0.644 & \\
 normal only                             & \textbf{0.010} & \(-0.006^\circ/\mathrm{mm}\) \\
-\(t_1+t_1^2+t_2+t_2^2\)                 & \textbf{0.962} & optima at \(+62\) and \(+30\,\mathrm{mm}\) \\
+\(t_1+t_1^2+t_2+t_2^2\)                 & \textbf{0.962} & predicted stationary point at \(+62\) and \(+30\,\mathrm{mm}\) \\
 \quad and the normal                    & 0.966 & normal \(-0.004^\circ/\mathrm{mm}\) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{The alignment response is a quadratic surface in the two in-plane
-components of the compliance centre, with an interior maximum at
-\(t_1\approx+62\,\mathrm{mm}\), \(t_2\approx+30\,\mathrm{mm}\).} That model
-accounts for \(R^2=0.962\) of the outcome across \(57\) runs. The offset along
-the surface normal adds \(0.004\) to that figure, over a range of
-\(277\,\mathrm{mm}\), and is not a design variable.
+The additive quadratic response model in the two in-plane components accounts
+for \(R^2=0.962\) of the outcome across \(57\) runs and predicts a local
+maximum near \(t_1=+62\,\mathrm{mm}\) and
+\(t_2=+30\,\mathrm{mm}\). This coordinate pair was not tested directly. The
+cross-shaped sampling also does not identify a possible \(t_1t_2\)
+interaction. Adding the physical normal coordinate increases \(R^2\) from
+\(0.962\) to \(0.966\) over the investigated \(277\,\mathrm{mm}\) range,
+indicating little additional explanatory power for that coordinate under the
+tested conditions.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.82\textwidth]{B_pole_surface.pdf}
-    \caption{The fitted alignment surface over the two in-plane pole
-    components, with the measured runs overlaid and the optimum marked. The
-    grey line is the zero contour: inside it the coupling drives the tool onto
-    the surface, outside it drives the tool away. The runs form a cross rather
+    \caption{The fitted additive quadratic alignment response over the two
+    in-plane compliance-centre components, with the measured runs overlaid and
+    the model-predicted stationary point marked. The
+    grey line is the zero contour separating positive from negative predicted
+    alignment improvement. The runs form a cross rather
     than a grid --- \(t_1\) was swept at \(t_2\approx0\) and \(t_2\) at
     \(t_1\approx15\,\mathrm{mm}\) --- so the surface is shaded only where runs
     support it, and the unsampled corners are left blank rather than
@@ -364,28 +300,30 @@ the surface normal adds \(0.004\) to that figure, over a range of
     \label{fig:results_pole_surface}
 \end{figure}
 
-The shape matters as much as the location. A linear fit in \(t_1\) alone
-accounts for \(R^2=0.047\): past the optimum the response does not merely
-flatten, it reverses. At \(t_1=+161\,\mathrm{mm}\) the improvement is
-\(-3.75^\circ\), so a pole placed far beyond the optimum is worse than
+The response shape is relevant in addition to its fitted maximum. A linear fit
+in \(t_1\) alone accounts for \(R^2=0.047\): beyond the fitted maximum the
+response reverses. At \(t_1=+161\,\mathrm{mm}\) the improvement is
+\(-3.75^\circ\), so a pole placed far beyond that point is worse than
 commanding no coupling at all. The turnover is consistent with the quadratic
 lever contribution \([r_c]_\times^\top K_p[r_c]_\times\) in
 \cref{eq:coupled_tcp_stiffness}, which re-stiffens the rotational block as the
 lever becomes large.
 
-The fitted shape also explains why the normal sweep looked so convincing on its
-own. Its unintended tangential drift, from \(-5.0\) to \(+27.6\,\mathrm{mm}\),
-happens to lie entirely on the rising flank of the \(t_1\) optimum. Sampled
-over that stretch the response is close to linear and monotonically improving,
-which is exactly what a sweep of the design variable would look like.
+The monotonic trend in the configured-normal sweep is consistent with its
+unintended tangential drift from \(-5.0\) to \(+27.6\,\mathrm{mm}\), which lies
+on the rising part of the fitted \(t_1\) response. The configured-normal sweep
+alone therefore cannot be interpreted as an isolated normal-coordinate
+effect.
 
-The model was checked against runs it was not fitted on. Three further runs
+The model was checked against a configuration that was not included in the
+fit. Three further runs
 placed the pole on the contact edge, at
 \((t_1,t_2)=(+5.9,-0.6)\,\mathrm{mm}\), a setting held out of the fit. The
-quadratic surface predicts an improvement of \(+2.44^\circ\) there; the
+additive quadratic model predicts an improvement of \(+2.44^\circ\) there; the
 measured value is \(+2.30\pm0.07^\circ\). The \(0.14^\circ\) discrepancy is
-well inside the \(0.59^\circ\) noise floor, so the surface generalises rather
-than merely interpolating its own training points.
+below the \(0.59^\circ\) repeatability-based interpretation threshold. This
+provides a held-out consistency check, but not broad validation of the response
+outside the sampled cross.
 
 The sign matters as much as the magnitude. At sufficiently negative offsets on
 either tangent the coupling does not merely fail to assist: the tool rotates
@@ -393,40 +331,26 @@ away from the surface, by \(10.31^\circ\) at \(t_1=-70.9\,\mathrm{mm}\) and
 \(6.54^\circ\) at \(t_2=-91.5\,\mathrm{mm}\), ending further from flat than it
 arrived. The compliance centre can therefore actively fight the alignment it is
 intended to produce. Across the full tested range the improvement spans
-\(-10.31^\circ\) to \(+6.96^\circ\), a swing of \(17.3^\circ\) against a noise
-floor of \(0.4^\circ\).
+\(-10.31^\circ\) to \(+6.96^\circ\), a swing of \(17.3^\circ\) against a
+repeatability-based threshold of approximately \(0.4^\circ\).
 
-Both tangential sweeps place the useful pole on the positive side of their
-axis. Taken with the reported contacting edge --- which lies at \(-y\) in the
-end-effector frame, and therefore at \(+y\) in the base frame, since the
-end-effector \(y\) axis maps to base \(-y\) --- this places the compliance
-centre on the \emph{same} side as the contacting edge rather than opposite it.
-That is the reverse of the placement rule the experiment was designed to test,
-and the reversal is consistent across two independent axes.
+For the investigated geometry, beneficial alignment is associated with
+positive offsets along both in-plane surface-frame coordinates. The physical
+first-contact edge was not established independently, so these measurements do
+not support a universal rule relating the pole sign to the contacting edge.
+The equivalent contact location inferred from the model-estimated external
+wrench lies near the middle of the face in \(t_1\), whereas the controller's
+\(0.1\,\mathrm{mm}\) tie-breaking rule reports a corner in \(48\) of \(52\)
+runs. Distributed surface contact and uncertainty in the selected feature
+prevent treating either estimate as an exact physical point contact.
 
-One qualification is not yet settled. The contacting edge was reported as a
-long \(120\,\mathrm{mm}\) side, but the long sides of the face lie at
-\(x=\pm20\,\mathrm{mm}\), not at \(\pm y\). Either the contact is on a short
-\(40\,\mathrm{mm}\) end at \(-y\), or it is on a long side at \(-x\). The
-measured relationships are unaffected --- positive offsets win on both axes
-either way --- but the phrasing of a general placement rule depends on which
-edge it is. Independently, the contact point recovered from the measured wrench
-lies near the middle of the face in \(t_1\) rather than at the corner the
-controller's tie-breaking feature selection reports in \(48\) of \(52\) runs,
-which suggests that selection reflects its \(0.1\,\mathrm{mm}\) tolerance
-rather than the load distribution.
-
-\section{Effect of Damping}
+\section{Observed Dynamic Response}
 \label{sec:results_damping}
 
-The damping coefficients are generated at entry to each phase group. The
-controller symmetrizes \(JM_q^{-1}J^\top\), adds \(10^{-9}I_6\), inverts the
-result, and applies \(d_i=2\zeta\sqrt{\Lambda_{ii}k_i}\) per task coordinate.
-The regularization is a numerical device for the mixed-unit Cartesian matrix,
-not the SVD cutoff used by the null-space projector. No oscillation was
-observed in the rotation-vector response of any run in the campaign;
-\(\zeta\) remains a tuning factor rather than a proof of a coupled-system
-modal damping ratio.
+No sustained oscillation was observed in the rotation-vector response with the
+automatically calculated damping used in the reported runs. Because damping
+was not varied independently, the measurements do not establish a causal
+damping effect or an experimentally identified modal damping ratio.
 
 \section{Null-Space Conditioning: Evidence Boundary}
 \label{sec:results_nullspace}
@@ -438,72 +362,48 @@ the resulting torque through the torque-level null-space projector. The SVD
 inverse uses \(1/\sigma_i\) only for singular values retained by the configured
 relative cutoff.
 
-The logging required to evaluate the method is present:
-\(\sigma_{\min}\), both probes, the selected direction, projected velocity,
-sigma torque, Cartesian task drift and
-\(\lVert Jn_{\mathrm{best}}\rVert\). The experiment set is not complete. The
-archive contains one usable mode-0 hold and no usable conditioning-torque
-sweep. It is therefore not defensible to claim that the active bias improves
-\(\sigma_{\min}\), preserves the Cartesian task within tolerance, or establishes
-a preferred \(k_\sigma\), \(\alpha\) or SVD cutoff.
-
-A valid sigma-enabled result must show more than a positive final
-\(\Delta\sigma_{\min}\):
-\[
-  \Delta\sigma_{\min}>0,\qquad
-  \overline{v_{\mathrm{best}}}>0,\qquad
-  \Delta e_p<1\,\mathrm{mm},\qquad
-  \lVert Jn_{\mathrm{best}}\rVert\ \text{near numerical zero}.
-\]
-Torque and per-joint motion must also be reported. A positive probe with
-negligible projected joint velocity means that the command did not overcome
-the present friction and task effects; it is not evidence of successful
-conditioning. The null-space contribution of this thesis is consequently the
-implemented and instrumented method, while its performance evaluation remains
-open.
+The available measurements contain one usable mode-0 hold and no controlled
+conditioning-torque sweep. They therefore do not establish that the active
+bias improves \(\sigma_{\min}\), preserves the Cartesian task within a stated
+tolerance, or identifies a preferred \(k_\sigma\), \(\alpha\), or SVD cutoff.
+Experimental validation of the null-space strategy remains future work.
 
 \section{Discussion}
 \label{sec:discussion_contact}
 
-\subsection{Where the Compliance Appears to Be Located}
+\subsection{Geometric Interpretation of the Compliance Centre}
 
-The design question for a surface-contact task is not whether the robot is
-soft or stiff, but where the compliance appears to be located geometrically.
-The measurements support that framing and sharpen it: of the two geometric
-degrees of freedom available when placing the compliance centre relative to
-the contact, only the two in-plane ones are load-bearing. A purely diagonal
-stiffness matrix makes the robot compliant without encoding any particular
-centre of compliance, and the resulting alignment is whatever the contact
-geometry happens to produce.
+The measurements show that the spatial location of the compliance centre is
+relevant in addition to the stiffness magnitude. A block-diagonal stiffness
+does not encode a remote centre, whereas the point shift creates structured
+translation--rotation coupling. Within the investigated configuration, this
+coupling is most sensitive to the two in-plane coordinates.
 
 This is consistent with the assembly literature, where remote and variable
 compliance centres are useful precisely because they turn contact forces into
 correcting motion instead of jamming
 \citep{Nevins1989ComputerControlledAssembly,Watson1978RCC,Wang2019VariableComplianceCenter,Hartisch2022FlexureRCC}.
-The present result adds that the useful placement is a tangential one, and
-that the same mechanism run in reverse is capable of driving the tool away
-from the surface.
+For the investigated geometry, suitable in-plane placements increase alignment
+and unsuitable placements rotate the tool away from the desired orientation.
 
-\subsection{In the Plane of the Tool, or Above It?}
+\subsection{Relative Influence of In-Plane and Normal Coordinates}
 \label{sec:discussion_pole_height}
 
-A natural question about the centre of compliance is whether it should lie in
-the plane of the tool face or be displaced above or below it. The measurements
-answer it directly: \textbf{the height does not matter, and the in-plane
-position does.} Over a range of \(277\,\mathrm{mm}\) along the surface normal
-the alignment outcome is essentially unchanged (\(R^2=0.010\) alone,
-\(-0.004^\circ/\mathrm{mm}\) inside the joint model), while the two in-plane
-components account for \(R^2=0.962\) and carry a \(17.3^\circ\) swing.
+Within the investigated configuration and \(277\,\mathrm{mm}\) range,
+inclusion of the physical normal coordinate provides little additional
+explanatory power: \(R^2\) increases from \(0.962\) to \(0.966\). The two
+in-plane coordinates account for the dominant structure and carry a
+\(17.3^\circ\) response range.
 
-The mechanism is the one the question itself suggests. The tool arrives tilted
-relative to the physical plane, so contact begins on one edge, and the
-alignment moment about the pole is
+The tool arrives tilted relative to the physical plane, so contact begins on
+one edge. The alignment moment about the pole is
 \[
   M = r_c \times f ,
 \]
-with \(r_c\) the lever from the pole to the contact and \(f\) the contact
-force. Measured across all \(57\) pole runs, that force sits only
-\(10.1^\circ\) off the surface normal --- \(56.0\,\mathrm{N}\) normal against
+with \(r_c\) the lever from the pole to the contact and \(f\) the equivalent
+contact force. Inferred from the model-estimated external wrench across all
+\(57\) position-study runs, its direction lies only \(10.1^\circ\) from the
+surface normal --- \(56.0\,\mathrm{N}\) normal compared with
 \(10.0\,\mathrm{N}\) tangential, a ratio of \(5.6:1\). A component of \(r_c\)
 along the surface normal is therefore very nearly parallel to \(f\), and
 \(r\parallel f\) contributes nothing to the cross product. Raising or lowering
@@ -512,24 +412,20 @@ action of the contact force, which changes no moment. Only displacing it
 \emph{within} the surface plane creates a lever the normal contact force can
 act on.
 
-The measured asymmetry is in fact stronger than that argument alone predicts. A
-pure lever account gives an effectiveness ratio of \(|f_n|/|f_t|\approx5.6\)
-between in-plane and normal offsets, whereas the fitted slopes differ by about
-a factor of \(25\). The remainder comes from the stiffness side of the
-construction: the coupling terms that a normal pole offset creates act on
-\emph{tangential} displacement, which during set-up is small
-(a few millimetres against roughly \(43\,\mathrm{mm}\) of normal press) and
-largely reacted by friction rather than converted into rotation.
+The measured asymmetry is stronger than the lever-direction argument alone
+predicts. A pure lever account gives an effectiveness ratio of
+\(|f_n|/|f_t|\approx5.6\) between in-plane and normal offsets, whereas the
+fitted slopes differ by about a factor of \(25\). The difference may also
+reflect the stiffness construction: the coupling terms generated by a normal
+pole offset act on tangential displacement, which during set-up is only a few
+millimetres compared with roughly \(43\,\mathrm{mm}\) of normal press.
 
-Two consequences follow for design. The compliance centre should be specified
-by its position in the surface plane, and its height treated as a free
-parameter --- one fewer quantity to tune, and one that need not be measured
-accurately. And within the plane the placement is not a monotone preference but
-an optimum, at \(t_1\approx+62\,\mathrm{mm}\) and \(t_2\approx+30\,\mathrm{mm}\)
-for this tool and surface, on the same side as the contacting edge; too little
-offset leaves the coupling unable to generate the alignment moment, and too
-much re-stiffens the rotation through the quadratic lever term until the tool
-is driven away from the surface.
+For this configuration, the in-plane coordinates should be treated as the
+primary placement variables. The additive quadratic model predicts a local
+maximum near \(t_1=+62\,\mathrm{mm}\) and \(t_2=+30\,\mathrm{mm}\), but that
+combination requires direct experimental confirmation. The measured turnover
+is consistent with the quadratic lever term increasing the effective
+rotational stiffness at large offsets.
 
 \subsection{Alignment Beyond the Set-Up Phase}
 
@@ -544,51 +440,21 @@ magnitude.
 
 \subsection{Practical Implications for Controller Tuning}
 
-Two of the measured results bear directly on tuning. First, the tangential
-rotational stiffness trades alignment against nothing --- the contact force is
-unchanged across a tenfold change in stiffness --- so it should be set as soft
-as the displacement bound permits. Second, the tangential pole offset is worth
-an order of magnitude more alignment than the normal offset and carries a sign
-change, so it is the parameter that requires care and the one whose
-mis-setting is capable of doing harm.
-
-\subsection{Required Confirmation Experiments}
-\label{subsec:results_confirmation_experiments}
-
-The strongest measurements should be confirmed after the three-point plane and
-independent command normal of
-\cref{subsec:results_plane_command_separation} are active. The minimum
-high-value campaign is:
-\begin{enumerate}
-  \item repeat the same three-point calibration five times and validate it
-        with at least two held-out surface points;
-  \item validate the nominal timing at \(4.5\), \(5.0\), \(6.0\) and
-        \(8.0\,\mathrm{s}\), using five repetitions at \(5.0\,\mathrm{s}\);
-  \item sweep signed command offsets of \(0\), \(\pm5^\circ\) and
-        \(\pm10^\circ\) about both surface tangents;
-  \item measure a \(3\times3\) grid around the fitted pole optimum,
-        \(t_1=[45,60,75]\,\mathrm{mm}\) and
-        \(t_2=[15,30,45]\,\mathrm{mm}\), with three repetitions per point;
-  \item compare decoupled impedance, a pole on the selected contact edge and
-        the locally optimal pole at matched initial angular offsets; and
-  \item repeat the selected setting at separated plane locations and with the
-        first-contact edge deliberately reversed.
-\end{enumerate}
-
-The first four establish the calibrated geometry, operational timing and local
-optimum. The final two test whether the measured sign and benefit generalize
-beyond one contact location.
+The rotational stiffness should be selected from the required angular
+compliance and allowable displacement. Across the tested values, the mean
+model-estimated normal load remains within \(0.50\,\mathrm{N}\) while the mean
+alignment response changes by \(1.59^\circ\). Compliance-centre tuning should
+focus first on the two in-plane coordinates, where both the response magnitude
+and its sign vary substantially.
 
 \section{Limitations}
 \label{sec:results_limitations}
 
-The archived physical plane was measured by hand-seating the tool face and
+The physical plane was measured by hand-seating the tool face and
 reading back the pose three times, giving \(\pm1.9^\circ\) on the tilt. Part of
 that spread is seating technique and part is movement of the workpiece.
 Absolute residual angles inherit this uncertainty; the reported improvements
-vary by less than \(0.1^\circ\) across all three seatings. A three-point
-calibration with held-out point residuals is required before absolute
-alignment and clearance are treated as calibrated geometric measurements.
+vary by less than \(0.1^\circ\) across all three seatings.
 
 The workpiece fixture is compliant enough to move under load, and the tool
 came loose in the gripper twice during the campaign, in both cases detected

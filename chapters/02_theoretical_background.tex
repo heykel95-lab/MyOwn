@@ -283,19 +283,19 @@ The previous section introduced the Jacobian matrix, which relates joint
 velocities to Cartesian end-effector velocities.
 In the controller, this relationship is also used to map a Cartesian wrench to
 joint torques \cite{Khatib1987}.
-Before this mapping is introduced, the desired Cartesian interaction behavior
+Before this mapping is introduced, the desired Cartesian interaction behaviour
 is defined using impedance control.
 
-Impedance control imposes a desired dynamic behavior between the end-effector
+Impedance control imposes a desired dynamic behaviour between the end-effector
 motion and the forces acting on it \cite{Hogan1985,Ott2008,Mayr2024CartesianImpedance}.
 Instead of commanding only a desired position, the robot is made to behave like
 a virtual spring-damper system in Cartesian space.
 In this way, deviations from the desired pose generate restoring forces and
-moments, while the damping terms reduce oscillations and dissipate energy.
+moments, while the damping terms reduce oscillations.
 The numerical choice of the stiffness and damping gains is therefore part of
 the controller design, because the same impedance law can produce very
-different contact behavior depending on the selected values
-\cite{Pollayil2023ImpedancePlanning,Hjorth2023EnergyAwareImpedance}.
+different contact behaviour depending on the selected values
+\cite{Pollayil2023ImpedancePlanning}.
 
 The Cartesian error vector was defined as
 
@@ -768,10 +768,11 @@ D_{\mathrm{pole}}
 \begin{bmatrix}D_p&0\\0&D_R\end{bmatrix}.
 \label{eq:pole_block_gains}
 \end{equation}
-Equating the virtual elastic energy,
-\(\tfrac12\mathbf e_c^\top K_{\mathrm{pole}}\mathbf e_c
-=\tfrac12\mathbf e^\top K_{\mathrm{TCP}}\mathbf e\), gives the stiffness
-expressed at the TCP,
+The pole-frame wrench is
+\(w_{\mathrm{pole}}=K_{\mathrm{pole}}\mathbf e_c\). Transforming this
+power-conjugate wrench to the TCP gives
+\(w_{\mathrm{TCP}}=\mathrm{Ad}(r_c)^\top w_{\mathrm{pole}}\), and therefore
+the stiffness expressed at the TCP is
 
 \begin{equation}
 K_{\mathrm{TCP}}
@@ -839,9 +840,8 @@ This construction is a local, small-motion model with \(r_c\) held fixed while
 the wrench is evaluated. In the implemented frozen-pole mode, the selected
 lever is kept constant, so the mapped gain matrices remain constant during the
 motion segment. If the pole or lever is updated continuously, the gain matrices
-become configuration dependent and their time derivatives introduce additional
-terms in an energy or passivity analysis. Accordingly, \(p_c\) is a
-\emph{local linearized center of compliance}, not a guaranteed measured pivot.
+become configuration dependent. Accordingly, \(p_c\) is a
+\emph{local linearized centre of compliance}, not a guaranteed measured pivot.
 It need not coincide with the physical contact point \(p_C\); finite rotational
 stiffness, the frozen lever, the environment constraint and friction, and the
 active sigma term introduced below all influence the observed motion.
@@ -1043,8 +1043,8 @@ The two available torque contributions are
 \label{eq:nullspace_torque_components}
 \end{equation}
 where \(d_{\mathrm{null}}\) is the projected damping coefficient and
-\(k_\sigma\) is the commanded torque magnitude. There is no restoring spring
-to \(q_{\mathrm{start}}\) in the current controller. Its four selectable modes
+\(k_\sigma\) is the commanded torque magnitude. The implemented law has no
+restoring spring to \(q_{\mathrm{start}}\). Its four selectable modes
 are therefore
 \begin{equation}
 \tau_{\mathrm{null}}
@@ -1062,14 +1062,10 @@ The result is a seven-dimensional joint torque,
 \tau_{\mathrm{null}}\in\mathbb{R}^{7}.
 \label{eq:nullspace_torque_dimension}
 \end{equation}
-For \(d_{\mathrm{null}}\geq0\), the damping contribution is dissipative in the
-Euclidean joint-space sense because
-\(\dot q^\top\tau_d=-d_{\mathrm{null}}\dot q^\top N_\tau\dot q\leq0\).
+For \(d_{\mathrm{null}}\geq0\), the first term opposes projected joint motion.
 The sign-selected \(\tau_\sigma\), by contrast, is an active, switched,
-constant-magnitude bias and can either inject or remove mechanical power.
-Sigma-only mode also contains no null-space damping. The SVD construction
-therefore does not by itself establish passivity of the complete secondary
-controller. Finally, if the Jacobian loses row rank, the true null space has
+constant-magnitude bias, and sigma-only mode contains no null-space damping.
+If the Jacobian loses row rank, the true null space has
 dimension greater than one; the implementation still probes only the single
 full-SVD vector \(v_7\), so it does not search over every newly available null
 direction.

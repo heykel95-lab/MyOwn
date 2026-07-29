@@ -55,10 +55,8 @@ do not establish its worst-case execution time. The robot-state field
 100 commands received successfully, not a callback-frequency or execution-time
 measurement, and the current logger does not store that field
 \citep{FrankaFCI2023}.
-The cited trace is operational evidence from the current checkout; the final
-experiment package must archive the CSV together with its checksum, controller
-commit, and parameter files before it is treated as a reproducible timing
-result.
+The cited trace supports sustained operation at the nominal interface rate but
+does not establish a worst-case callback execution bound.
 
 \subsection{Control-Loop Data Flow}
 \label{sec:control_loop_structure}
@@ -267,10 +265,8 @@ uses \texttt{nullspace\_mode=3}, so projected joint damping and the switched
 sigma torque remain active during set-up. The sigma term is an active bias, and
 the Euclidean projector is kinematic rather than dynamically consistent.
 Consequently, the secondary torque can influence the observed contact motion.
-The experiment is therefore described as \emph{unscripted task-space
-alignment}: no time-varying task-space tipping trajectory is prescribed, but
-the observed motion is not claimed to arise solely from an isolated passive
-contact mechanism.
+The term \emph{unscripted task-space alignment} states only that no
+time-varying task-space tipping trajectory is prescribed.
 
 The complete controlled torque remains
 
@@ -718,7 +714,7 @@ reached, or when libfranka stops on a robot-side safety event.
 \label{sec:collision_behavior_safety}
 
 Before torque control starts, the program requests automatic error recovery,
-applies the default Franka behavior, and optionally installs the configured
+applies the default Franka behaviour, and optionally installs the configured
 joint-torque and Cartesian force/moment collision thresholds. The implementation
 does not add separate clipping of the Cartesian wrench, null-space torque, or
 torque rate; robot-side monitoring remains active.
@@ -789,7 +785,7 @@ separate from this control structure.
 \section{Implementation Summary}
 \label{sec:implementation_summary}
 
-The current controller distinguishes surface coordinates, desired tool
+The implemented controller distinguishes surface coordinates, desired tool
 orientation, and physical contact geometry. Its task frame is ordered
 \([t_1,t_2,n_s]\); the configured \(+z_{\mathrm{EE}}\) grinding-face axis is
 aligned with \(-n_s\) by a minimum rotation from the captured start

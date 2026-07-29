@@ -19,7 +19,7 @@ geometric errors can lead to large contact forces.
 
 Collaborative robots are designed to make such interaction tasks more
 practical. They typically include joint torque sensing, collision
-detection, and control interfaces that allow compliant behavior.
+detection, and control interfaces that allow compliant behaviour.
 According to the International Federation of Robotics, collaborative
 robots are becoming an increasingly relevant part of industrial robot
 deployments because they can support flexible human--robot
@@ -52,10 +52,8 @@ small translation and rotation instead of resisting the contact
 rigidly. The resulting translation and rotation observed during contact provide a
 direct geometric description of whether the physical tool axis moves toward
 the surface target and whether the selected tool feature remains sufficiently
-bounded. Therefore, the
-central control design question is not only how to compute a torque
-command, but also how to choose meaningful stiffness and damping
-matrices for the contact geometry.
+bounded. The stiffness and damping matrices must therefore be selected for the
+contact geometry rather than only for free-space pose tracking.
 
 \subsection{Importance of Impedance Control for Contact Tasks}
 The mathematical foundations of this thesis build on standard robotics
@@ -70,27 +68,23 @@ closely connected to operational-space control and the work of Khatib
 \citep{Khatib1987}.
 
 Several previous works have extended impedance control toward more
-complex interaction behavior. Ott et al. discuss Cartesian impedance
+complex interaction behaviour. Ott et al. discuss Cartesian impedance
 control for flexible joint robots and the importance of stable
-interaction behavior \citep{Ott2008}. Albu-Sch\"affer et al. describe
+interaction behaviour \citep{Ott2008}. Albu-Sch\"affer et al. describe
 Cartesian impedance control for torque-controlled lightweight robots,
 which is directly relevant for robots with joint torque sensing
 \citep{Albu2003}. Practical Cartesian impedance implementations for
 robots such as the Franka Emika Panda also show the importance of
-filtering, torque limiting, and null-space behavior in real robot
-experiments \citep{Mayr2024CartesianImpedance}. Recent work on
-energy-aware Cartesian impedance control on a Franka Emika Panda further
-shows that contact tasks must be evaluated not only by tracking accuracy, but
-also by the energy, power, damping, and safety behavior during unexpected
-interaction \citep{Hjorth2023EnergyAwareImpedance}. Villani et al. provide
+filtering, torque limiting, and null-space behaviour in real robot
+experiments \citep{Mayr2024CartesianImpedance}. Villani et al. provide
 a broader view of human--robot collaboration and physical interaction
-in manufacturing \citep{Villani2018HRC}. For the specific question of how
-the center of compliance or stiffness can be chosen in space, the
-spatial impedance formulation of Fasse and Broenink is important
+in manufacturing \citep{Villani2018HRC}. For spatial placement of the centre
+of compliance or stiffness, the spatial impedance formulation of Fasse and
+Broenink is important
 because it shows how translation and rotation can be coupled through a
 selected point \citep{Fasse1997SpatialImpedance}. This is closely
-related to the older remote-center-compliance idea in assembly and to
-variable compliance-center strategies for peg-in-hole tasks, where the
+related to the older remote-centre-compliance idea in assembly and to
+variable compliance-centre strategies for peg-in-hole tasks, where the
 compliance geometry is chosen so that contact forces tend to reduce rather
 than amplify misalignment
 \citep{Nevins1989ComputerControlledAssembly,Watson1978RCC,Wang2019VariableComplianceCenter,Hartisch2022FlexureRCC}.
@@ -117,116 +111,63 @@ must not be inferred from the impedance equation alone.
 
 The contact-alignment task adds another difficulty. A tool that is tilted
 with respect to a surface cannot be aligned by translational compliance
-alone. The orientation behavior must be defined so that the tool can
+alone. The orientation behaviour must be defined so that the tool can
 rotate toward the surface while the contact force remains limited. A selected
-local linearized center of compliance provides a useful way to design this
-behavior by coupling translation and rotation about a chosen point near the
+local linearized centre of compliance provides a useful way to design this
+behaviour by coupling translation and rotation about a chosen point near the
 tool edge or surface contact. It is a task-to-impedance mapping concept, not a
 claim that the measured tool motion has an exact physical pivot. The resulting
 response is therefore evaluated from the measured motion during contact.
 
-\section{Objectives of the Thesis}
+\section{Scope and Contributions}
 \label{sec:objectives}
 
-The objective of this thesis is to design, implement, and evaluate a real-time
-Cartesian impedance controller for the Franka Emika Panda. The controller is
-not evaluated only as a position-tracking controller. Its main purpose is to
-support compliant contact with a known surface and to study whether a selected
-Cartesian stiffness and damping behavior can bias useful alignment during
-contact without prescribing a task-space tipping trajectory.
+This work investigates how tangential rotational stiffness and the spatial
+position of a virtual centre of compliance influence contact-induced
+alignment. A phase-scheduled Cartesian impedance controller is implemented in
+C++ with libfranka and Eigen for the Franka Emika Panda. It uses a
+Jacobian-transpose torque mapping, model-based Coriolis compensation,
+phase-specific Cartesian gains, and damping calculated from a Cartesian-inertia
+estimate. A surface frame expresses normal and tangential task directions
+explicitly.
 
-\subsection{Design of a Cartesian Impedance Controller}
-The first objective is to formulate the Cartesian impedance law used in the
-thesis. The controller computes a Cartesian wrench from position error,
-orientation error, linear velocity, and angular velocity, and maps this wrench
-to joint torques with the transpose of the geometric Jacobian. The stiffness
-and damping matrices are treated as the main design parameters, because they
-define how strongly the robot reacts to pose errors and motion during contact.
+The robot aligns the configured tool axis, approaches the plane to a geometric
+clearance, selects the leading feature of a rectangular tool face, ramps the
+feature into the surface, and then executes tangential grinding motion. During
+set-up, a pole-frame \(6\times6\) stiffness and damping matrix is shifted to
+the TCP through an adjoint congruence. The resulting off-diagonal blocks encode
+the translation--rotation coupling investigated experimentally.
 
-\subsection{Real-Time Implementation on a 7-DOF Collaborative Robot}
-The second objective is to implement the controller on the Franka Emika Panda
-using the Franka Control Interface and libfranka. The implementation must run in
-the real-time torque-control callback, use the robot state and model quantities,
-include Coriolis compensation, handle the redundant seventh joint through a
-null-space term, and verify the commanded torques and callback timing under the
-configured collision/reflex behavior.
+The principal contributions are:
 
-\subsection{Surface-Constrained Motion}
-The third objective is to define the controller behavior with respect to a known
-surface frame. The surface normal and tangent directions are used to express
-stiffness and damping in task-relevant directions. This makes it possible to
-separate normal compliance, tangential motion, and rotational behavior relative
-to the surface instead of tuning all gains only in the robot base frame.
+\begin{itemize}
+  \item a frame-consistent real-time Cartesian impedance controller with a
+        spatially shifted centre of compliance;
+  \item a repeatable methodology for evaluating contact-induced tool alignment;
+  \item quantitative measurement of the effect of tangential rotational
+        stiffness; and
+  \item experimental characterization of the non-monotonic dependence of
+        alignment on the two in-plane compliance-centre coordinates.
+\end{itemize}
 
-\subsection{Unscripted Task-Space Alignment During Contact}
-The fourth objective is to study the alignment response during contact after a controlled approach to
-the surface. In free space the controller first aligns the configured physical
-tool axis with the signed surface normal. During set-up, the selected tool edge
-is then pressed toward the plane while the impedance---rather than a scripted
-rotation trajectory---determines the residual tipping motion caused by contact.
-A selected center of compliance couples translation and rotation through a
-spatial adjoint. The active null-space mode also applies the sigma bias, which
-can influence the observed motion. The response is therefore classified as
-unscripted task-space alignment rather than isolated passive motion and is
-evaluated through the physical tool-axis angle and the selected-feature/TCP
-displacement.
-
-\section{Scope and Contributions}
-\subsection{Scope of the Implemented Controller}
-This thesis focuses on a phase-scheduled Cartesian impedance controller
-implemented in C++ with libfranka and Eigen. The controller follows a
-Jacobian-transpose torque mapping and uses the model quantities
-provided by libfranka. It does not attempt to implement a full
-operational-space inverse-dynamics controller, adaptive impedance
-control, or online surface estimation. The surface is treated as a
-given task geometry, for example through a surface normal and a point
-on the surface. This scope is appropriate for investigating the core
-question of how the controller behavior depends on the selected
-six-dimensional impedance parameters. Stiffness remains configured per phase;
-damping can be computed once for each phase group from the model-based
-Cartesian inertia and a configured damping factor.
-
-The main contributions of the thesis follow directly from this scope. On the
-practical side, the work configures and uses the Franka Emika Panda through the
-\abbr{FCI} and libfranka in a C++ development environment, and on this basis
-formulates a Cartesian impedance controller that computes a wrench from the pose
-error, maps it to joint torques with the Jacobian transpose, and adds
-model-based Coriolis compensation. Around this core law, task-dependent
-stiffness and damping matrices are constructed in explicitly stated base and
-surface frames. A geometric phase supervisor aligns the tool, approaches the
-plane to a configured clearance, selects and locks a rectangular-face contact
-feature, ramps the set-up press, and then executes the grinding motion. During
-set-up, a chosen center of compliance is implemented directly by transforming
-a pole-frame \(6\times6\) stiffness and damping through the spatial adjoint;
-the resulting off-diagonal blocks couple translation and rotation.
-
-The resulting contact motion is analysed using physical alignment and
-displacement metrics. Finally, the controller integrates projected joint damping and a finite-difference
-smallest-singular-value bias for the redundant 7-\abbr{DOF} arm. Its
-truncated-SVD implementation explicitly separates the structural null vector
-from the right-singular direction \(v_6\) associated with the reported
-\(\sigma_{\min}=\sigma_6\), whether or not that value passes the inverse
-cutoff.
-
-The work therefore connects the theoretical concepts of impedance
-control, center-of-compliance design, and redundancy resolution with a
-real-time implementation on the Panda robot. The emphasis is on
-understanding how the impedance parameters influence the observed
-contact response and what stiffness selection supports useful unscripted
-contact alignment under a chosen pole-coupled impedance.
+The implementation also contains projected joint damping and a two-point
+smallest-singular-value bias for the redundant seventh joint. These terms
+complete the controller architecture, but their effect is not treated as an
+experimentally established contribution. Full operational-space inverse
+dynamics, adaptive impedance, online surface estimation, and claims concerning
+human safety are outside the scope.
 
 \section{Thesis Structure}
 Chapter~\ref{ch:theory} develops the theoretical background for coordinate
-frames, kinematics, Cartesian impedance control, null-space behavior,
+frames, kinematics, Cartesian impedance control, null-space behaviour,
 and stiffness and damping representation.
 Chapter~\ref{ch:implementation} describes the real-time controller
 implementation on the Panda.
 Chapter~\ref{ch:methodology} presents the experimental methodology, including
 the robot setup, contact geometry, gain-selection workflow, logged data, and
 evaluation metrics.
-Chapter~\ref{ch:results_discussion} separates qualitative design expectations
-from the measured historical coupled-pole campaign and records the controller
-revision to which those measurements belong.
+Chapter~\ref{ch:results_discussion} reports the validation checks, stiffness
+study, compliance-centre study, mechanistic interpretation, and limitations.
 Chapter~\ref{ch:conclusion} summarises the conclusions, limitations, and
 future work.
 
