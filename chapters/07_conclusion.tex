@@ -47,17 +47,20 @@ damping, a constant-magnitude torque in whichever sign of \(v_7\) improves
 changes only the two sampled configurations; it does not scale the commanded
 torque.
 
-Chapter~\ref{ch:results_discussion} reports a campaign of \(89\) runs recorded
-with \texttt{FULL-Working-Clean}, gated before any parameter study on a measured
-equilibrium of the set-up phase, a correctness check of the coupled command
-path, and a five-repetition noise floor. The principal measured findings are the
-following.
+Chapter~\ref{ch:results_discussion} reports \(92\) archived run records, of
+which \(89\) are admissible for the quantities for which they were recorded.
+The campaign was gated before any parameter study on a measured equilibrium of
+the set-up phase, a correctness check of the coupled command path, and a
+five-repetition noise floor. The principal findings are the following.
 
 \begin{enumerate}
   \item \textbf{The set-up phase was not sampling an equilibrium.} Its
         \(4\,\mathrm{s}\) timeout coincided with the end of the press ramp, so
         the phase terminated during the force overshoot. Equilibrium is reached
-        at \(t\approx4.6\,\mathrm{s}\); the timeout is now \(12\,\mathrm{s}\).
+        at \(t\approx4.6\,\mathrm{s}\). Re-evaluating the longer traces shows
+        that the remaining changes after \(5\,\mathrm{s}\) are far below the
+        repeatability floor. Five seconds is therefore supported for the
+        nominal push, while the general stopping rule should be ramp-aware.
   \item \textbf{The coupled \(6\times6\) path is correct.} Block-diagonal gains
         driven through it reproduce the decoupled wrench to \(0.34\sigma\), so
         the pole effects are properties of the coupling and not of its
@@ -82,36 +85,37 @@ following.
         \(5\,\mathrm{Nm/rad}\) triples the alignment gained while the steady
         contact force stays flat near \(60.5\,\mathrm{N}\). The trade-off
         against contact load assumed in earlier planning does not exist.
-  \item \textbf{The compliance centre sets the effort, and the contact
-        geometry very nearly sets the axis.} Over the \(230\,\mathrm{mm}\) of
-        pole travel across which the alignment outcome swings \(17.3^\circ\)
-        and changes sign, the measured rotation axis stays within about
-        \(7^\circ\) of one direction. The pole retains a small systematic
-        influence on it, which survives controlling for rotation magnitude, so
-        the separation is close rather than exact.
+  \item \textbf{The physical plane and commanded tool angle must be
+        independent.} The archived controller uses one configured normal for
+        both. A confirmation controller should obtain the physical plane from
+        three non-collinear probe points and express the intentional command
+        angle as an independent offset about its tangents.
   \item \textbf{Alignment continues after the set-up phase.} The preload
         established during set-up produces a further \(0.18\) to
         \(0.64^\circ\) during grinding, largest where set-up achieved least, so
         the set-up residuals are upper bounds rather than final values.
+  \item \textbf{Null-space performance is not yet established.} The
+        two-point conditioning method and its logging are implemented, but the
+        archive contains only one usable mode-0 hold and no usable
+        conditioning-torque sweep. No preferred \(k_\sigma\), probe distance or
+        SVD cutoff can yet be claimed.
 \end{enumerate}
 
-Two results run against expectations that shaped the work. The geometric
+One result runs against the geometric expectation that shaped the work. The
 placement rule --- that the centre of compliance belongs opposite the side of
 the tool that contacts first --- is contradicted on both in-plane axes, which
-agree that the useful pole lies on the same side as the contacting edge. And
-the older \texttt{Difference-Chasles-Pole} campaign, retained for comparison,
-is only partly reproduced: its qualitative claim that pole placement decides
-whether the coupling resists or assists alignment is confirmed, together with
-the quadratic lever term that produces an optimum, but its attribution of the
-effect to the offset along the surface normal is not. That campaign varied the
-in-plane component without isolating it.
+agree that the useful pole lies on the same side as the reported contacting
+edge. Directly controlling and reversing the first-contact edge remains
+necessary before this relationship is promoted to a general placement rule.
 
 The campaign also required the alignment metric itself to be reinterpreted. The
 controller scores alignment against the configured surface normal, which was
 deliberately left \(10.01^\circ\) from the physically measured plane, so the
 printed alignment gain reads backwards --- it grows more negative as the tool
 approaches the real surface. All alignment results are rescored against the
-measured plane.
+measured plane. The merged evaluation therefore specifies a three-point
+physical-plane calibration, with the intentional command angle kept separate,
+for the confirmation campaign.
 
 \section{Main Contributions}
 \label{sec:main_contributions}
@@ -136,14 +140,12 @@ The main contributions are:
   \item full-rate and compact ring-buffer logging that exposes the phase,
         selected tool feature, null-space probes, and final torque command for
         offline analysis; and
-  \item a provenance-controlled measurement campaign of \(89\) runs, gated on a
-        measured equilibrium, a coupled-path correctness check and a
-        five-repetition noise floor, establishing that the alignment response
-        is a quadratic surface in the two in-plane components of the compliance
-        centre with an interior optimum, that its offset along the surface
-        normal is irrelevant because the contact force is nearly parallel to
-        it, and that a mis-placed centre drives the tool away from the surface
-        rather than onto it.
+  \item a provenance-controlled archive of \(92\) run records, \(89\) of them
+        admissible for their recorded quantities, gated on a measured
+        equilibrium, a coupled-path correctness check and a five-repetition
+        noise floor; the campaign establishes a quadratic alignment response
+        in the two in-plane compliance-centre components, a weak normal
+        component and harmful motion under a mis-placed centre.
 \end{itemize}
 
 \section{Limitations}
@@ -162,8 +164,11 @@ surface. The general log now carries the tool-axis-to-\(-n_s\) angle
 alongside the rotation error referenced to the frozen clearance orientation, so
 the surface-alignment metric no longer depends on a wrench-comparison model.
 That angle is nevertheless scored against the \emph{configured} surface normal;
-\cref{sec:results_alignment} rescores it against the physically measured plane,
-which is required because the configured tilt is deliberately mis-specified.
+\cref{sec:results_alignment} rescores it against the physically measured plane.
+The active controller does not yet separate a calibrated physical plane from
+an intentionally different command normal. The three-point construction in
+\cref{subsec:results_plane_command_separation} is therefore a required
+confirmation change, not a property of the archived runs.
 The exact clearance comparison uses the most-leading corner, while the
 averaged tied feature supplies the projected reference. In addition, the
 transition callback changes to set-up gains before regenerating the set-up
@@ -175,8 +180,10 @@ measured moment settles near \(30\,\mathrm{N\,m}\), so the phase always exits on
 the timeout and no transition in this campaign is moment-triggered. The timeout
 originally coincided with the end of the press ramp at \(4\,\mathrm{s}\), which
 terminated the phase during the force overshoot; \cref{sec:results_equilibrium}
-measures equilibrium at \(t\approx4.6\,\mathrm{s}\) and the timeout is now
-\(12\,\mathrm{s}\).  The set-up and grind TCP target also
+measures equilibrium at \(t\approx4.6\,\mathrm{s}\). The longer traces support
+a \(5\,\mathrm{s}\) nominal phase, but the controller still requires a
+ramp-aware convergence exit before that value is generalized to other push
+speeds and depths. The set-up and grind TCP target also
 subtracts a tool offset rotated by the frozen clearance orientation.  If the
 tool rotates appreciably, the live physical feature can move tangentially
 relative to that reference; whether this behavior is desirable must be tested.
@@ -232,6 +239,14 @@ would remove the one reconstruction step still required in the analysis, where
 the tool axis at the end of the set-up phase is recovered from
 \(-\mathbf e_R\) applied to an assumed starting axis.
 
+The physical plane should be calibrated from three non-collinear physical
+probe points, with the calibrated probe offset applied before the plane is
+fitted. Repeated calibrations and held-out points should bound the normal and
+height uncertainty. The resulting plane must control height, clearance,
+projection and the physical alignment metric, while the commanded tool normal
+is specified independently by signed angular offsets about the surface
+tangents.
+
 The clearance variables should be renamed, and live versus frozen tool-offset
 kinematics should be compared experimentally. The approach-to-set-up hand-off
 should also compute the continuous
@@ -239,7 +254,11 @@ set-up target before enabling the set-up gains/coupled branch, eliminating the
 one-cycle mixed-state callback. The set-up-to-grind hand-off should blend the
 coupled and decoupled matrices to avoid a torque step. The set-up threshold should be retuned against the
 measured external-moment range so that timeout and moment-triggered exits are
-distinguishable.
+distinguishable. The fixed set-up timeout should be replaced by a ramp-aware
+exit: after the commanded ramp finishes, low alignment and force rates must
+hold for a short dwell, with a calculated hard timeout as fallback. A focused
+\(4.5/5/6/8\,\mathrm{s}\) experiment should confirm the nominal
+\(5\,\mathrm{s}\) setting.
 
 For the null space, future work should validate parameter ranges, guard
 \(q\pm\alpha_{\mathrm{probe}}\hat v_7\) against joint limits, instrument the
@@ -254,18 +273,13 @@ be repeated with null-space damping only, or as matched sigma-off/sigma-on
 trials, to separate the active secondary bias from the alignment response during
 contact.
 
-The coupled-pole campaign has now been repeated with
-\texttt{FULL-Working-Clean} and multiple repetitions, and three questions it
-raised remain open. The tangential sweep had not reached an optimum at the
-positive end of its tested range, so the best placement is bounded below but not
-located: the response is a quadratic surface in the two in-plane pole
-components with an interior maximum, so the remaining question is how sharply
-that maximum sits rather than where. The geometric placement rule --- that the centre of compliance belongs
-opposite the side of the tool that contacts first --- is contradicted on both
-tangential axes, which agree that the useful pole lies on the same side as the
-contacting edge; confirming which edge that is by direct observation would
-settle how the rule should be restated.
-And the contact itself, recovered from the measured wrench, sits near the middle
-of the tool face rather than at the corner the controller's tie-breaking
-feature selection reports, which suggests the selection tolerance should be
-compared against the measured load distribution.
+The compliance-centre result should be confirmed on a \(3\times3\) grid around
+the fitted in-plane optimum, followed by matched decoupled, contact-edge-pole
+and optimal-pole runs at controlled \(0^\circ\), \(5^\circ\) and
+\(10^\circ\) command offsets. Repeating the selected controller at separated
+locations on the calibrated plane tests workspace consistency. Finally,
+deliberately reversing the first-contact edge and mirroring the pole provides a
+direct sign test of the placement rule. The selected-feature tolerance should
+also be compared with the observed load distribution, because the current
+tie-breaking feature often reports a corner while the recovered contact lies
+near the middle of the tool face.
