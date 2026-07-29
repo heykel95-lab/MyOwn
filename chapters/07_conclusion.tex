@@ -48,18 +48,63 @@ changes only the two sampled configurations; it does not scale the commanded
 torque.
 
 Chapter~\ref{ch:results_discussion} reports a campaign of \(89\) runs recorded
-with \texttt{FULL-Working-Clean}, gated on a measured equilibrium, a coupled-path
-correctness check and a five-repetition noise floor. Its central result is that
-the placement of the centre of compliance governs the contact alignment through
-its two \emph{in-plane} components: over \(48\) pole runs swept along all
-three axes of the surface frame, the two tangential offsets account for the
-alignment outcome as a quadratic surface with an interior maximum
-(\(R^2=0.962\)), while the offset along the surface normal does not
-(\(R^2=0.010\) alone, and \(0.004\) added to the joint model). The older
-\texttt{Difference-Chasles-Pole} results are retained alongside it for
-comparison. Their qualitative claim --- that pole placement decides whether the
-coupling resists or assists alignment --- is confirmed; their attribution of the
-effect to the normal offset is not.
+with \texttt{FULL-Working-Clean}, gated before any parameter study on a measured
+equilibrium of the set-up phase, a correctness check of the coupled command
+path, and a five-repetition noise floor. The principal measured findings are the
+following.
+
+\begin{enumerate}
+  \item \textbf{The set-up phase was not sampling an equilibrium.} Its
+        \(4\,\mathrm{s}\) timeout coincided with the end of the press ramp, so
+        the phase terminated during the force overshoot. Equilibrium is reached
+        at \(t\approx4.6\,\mathrm{s}\); the timeout is now \(12\,\mathrm{s}\).
+  \item \textbf{The coupled \(6\times6\) path is correct.} Block-diagonal gains
+        driven through it reproduce the decoupled wrench to \(0.34\sigma\), so
+        the pole effects are properties of the coupling and not of its
+        implementation.
+  \item \textbf{The alignment response is a quadratic surface in the two
+        in-plane components of the compliance centre}, with an interior maximum
+        at \(t_1\approx+62\,\mathrm{mm}\), \(t_2\approx+30\,\mathrm{mm}\) and
+        \(R^2=0.962\) over \(57\) pole runs. A pole position held out of the fit
+        is predicted to \(0.14^\circ\), inside the noise floor.
+  \item \textbf{The height of the compliance centre above or below the tool
+        face does not matter} (\(R^2=0.010\) over a \(277\,\mathrm{mm}\) range).
+        The contact force sits only \(10.1^\circ\) off the surface normal, so a
+        pole offset along the normal lies almost parallel to the force and
+        contributes nothing to \(r_c\times f\). Only an in-plane offset creates
+        a lever the contact force can act on.
+  \item \textbf{A mis-placed compliance centre actively fights the alignment.}
+        At sufficiently negative in-plane offsets the tool rotates \emph{away}
+        from the surface, by up to \(10.31^\circ\), ending further from flat
+        than it arrived --- worse than commanding no coupling at all.
+  \item \textbf{Tangential rotational stiffness costs alignment and buys
+        nothing.} Softening \(K_{R,\mathrm{tangent}}\) from \(50\) to
+        \(5\,\mathrm{Nm/rad}\) triples the alignment gained while the steady
+        contact force stays flat near \(60.5\,\mathrm{N}\). The trade-off
+        against contact load assumed in earlier planning does not exist.
+  \item \textbf{Alignment continues after the set-up phase.} The preload
+        established during set-up produces a further \(0.18\) to
+        \(0.64^\circ\) during grinding, largest where set-up achieved least, so
+        the set-up residuals are upper bounds rather than final values.
+\end{enumerate}
+
+Two results run against expectations that shaped the work. The geometric
+placement rule --- that the centre of compliance belongs opposite the side of
+the tool that contacts first --- is contradicted on both in-plane axes, which
+agree that the useful pole lies on the same side as the contacting edge. And
+the older \texttt{Difference-Chasles-Pole} campaign, retained for comparison,
+is only partly reproduced: its qualitative claim that pole placement decides
+whether the coupling resists or assists alignment is confirmed, together with
+the quadratic lever term that produces an optimum, but its attribution of the
+effect to the offset along the surface normal is not. That campaign varied the
+in-plane component without isolating it.
+
+The campaign also required the alignment metric itself to be reinterpreted. The
+controller scores alignment against the configured surface normal, which was
+deliberately left \(10.01^\circ\) from the physically measured plane, so the
+printed alignment gain reads backwards --- it grows more negative as the tool
+approaches the real surface. All alignment results are rescored against the
+measured plane.
 
 \section{Main Contributions}
 \label{sec:main_contributions}
@@ -86,9 +131,12 @@ The main contributions are:
         offline analysis; and
   \item a provenance-controlled measurement campaign of \(89\) runs, gated on a
         measured equilibrium, a coupled-path correctness check and a
-        five-repetition noise floor, establishing that the two in-plane
-        components of the compliance centre govern contact alignment while its
-        offset along the surface normal does not.
+        five-repetition noise floor, establishing that the alignment response
+        is a quadratic surface in the two in-plane components of the compliance
+        centre with an interior optimum, that its offset along the surface
+        normal is irrelevant because the contact force is nearly parallel to
+        it, and that a mis-placed centre drives the tool away from the surface
+        rather than onto it.
 \end{itemize}
 
 \section{Limitations}
