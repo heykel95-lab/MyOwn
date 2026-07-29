@@ -129,17 +129,26 @@ normal and the physical plane. Only its dispersion is used here as a
 repeatability scale; the parameter studies below use the rescored
 physical-plane improvement.
 
-\section{Measuring Alignment Against the Physical Plane}
+\section{EE-Inferred Alignment Against the Physical Plane}
 \label{sec:results_alignment}
 
-The alignment quality of interest is the residual angle between the physical
-tool axis and the surface normal,
+The computed alignment quantity is the residual angle between the
+EE-inferred tool axis and the surface normal,
 \(\theta_{\mathrm{align,phys}}
-=\cos^{-1}\!\big(a_T^\top(-n_{\mathrm{phys}})\big)\). This is not
+=\cos^{-1}\!\big(\widehat a_T^\top(-n_{\mathrm{phys}})\big)\). This is not
 the logged set-up error \(\mathbf e_R\), which is referenced to the
 orientation frozen at geometric clearance and therefore reports how far the
-tool \emph{turned} rather than how flat it ended up. The physical tool-axis
-angle is evaluated before and after the set-up phase.
+EE \emph{turned} rather than how flat the tool ended up. The tool-axis
+proxy is evaluated before and after the set-up phase.
+
+The inference assumes a fixed tool-to-EE transform. The tool holder instead
+permits approximately \(\pm2^\circ\) of rotation about \(y_{\mathrm{EE}}\).
+During the zero-offset checks the grinding face was placed completely flat on
+the plane; an EE rotation recorded while the face remained seated can
+therefore be relative motion in the gripper rather than physical loss of
+flatness. The metric cannot separate these motions. Results based on this
+signal quantify the combined robot--gripper--tool response and must not be
+interpreted as an independently measured physical-face angle.
 
 One further correction is required before the logged values can be
 interpreted, and it inverts the sign of the result if omitted. The logged angle
@@ -335,6 +344,68 @@ wrench lies near the middle of the face in \(t_1\), whereas the controller's
 runs. Distributed surface contact and uncertainty in the selected feature
 prevent treating either estimate as an exact physical point contact.
 
+\section{Axis-Specific Compliance-Centre Pilot}
+\label{sec:results_axis_specific_coc_pilot}
+
+The calibrated-plane pilot of
+\cref{subsec:axis_specific_coc_pilot} isolates the lever required to generate a
+moment about \(t_1\). The two decoupled references improved the excited-axis
+component by \(0.81\pm0.06^\circ\), but the operator observed that contact
+remained on one edge. Activating \(r_{c,t_2}=+60\,\mathrm{mm}\) reduced the
+excited-axis improvement to \(0.48^\circ\) and did not produce full-face
+contact. Reversing the sign to \(-60\,\mathrm{mm}\) produced the intended
+physical response: the original edge remained in contact while the opposite
+edge descended until the complete face contacted the plane.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Axis-specific compliance-centre pilot.}
+\label{tab:axis_specific_coc_pilot}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Condition & \(n\) & \(t_1\) improvement & Final angle & \(t_{90}\) & Steady load \\
+& & (\(^\circ\)) & (\(^\circ\)) & (s) & (N) \\
+\midrule
+Decoupled &
+2 & \(0.81\pm0.06\) & \(2.01\pm0.05\) & \(1.58\pm0.15\) &
+\(48.79\pm0.67\) \\
+\(r_{c,t_2}=+60\,\mathrm{mm}\) &
+1 & \(0.48\) & \(2.26\) & \(0.34\) & \(50.54\) \\
+\(r_{c,t_2}=-60\,\mathrm{mm}\) &
+1 & \(1.57\) & \(1.32\) & \(1.31\) & \(43.85\) \\
+\(r_{c,t_2}=-40\,\mathrm{mm}\) &
+3 & \(1.83\pm0.05\) & \(1.11\pm0.04\) &
+\(1.535\pm0.015\) & \(44.83\pm0.15\) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The \(-40\,\mathrm{mm}\) condition reached full-face contact in all three
+repetitions. The EE-inferred total improvement was
+\(1.70\pm0.05^\circ\), the maximum model-estimated load was
+\(54.78\pm0.21\,\mathrm{N}\), and the selected-feature travel was
+\(2.813\pm0.029\,\mathrm{mm}\). The response time varied by only
+\(0.015\,\mathrm{s}\) across repetitions, consistent with the operator's
+assessment that their speeds were nearly identical.
+
+The \(-40\,\mathrm{mm}\) condition appeared slightly slower than the
+\(-60\,\mathrm{mm}\) condition. This does not indicate a larger rotational
+stiffness. For \(r_c=r_{c,t_2}t_2\), the normal-force coupling moment scales
+approximately with \(\lvert r_{c,t_2}\rvert\lvert f_n\rvert\), whereas the
+added \(t_1\)-axis rotational stiffness is
+\(K_{p,n}r_{c,t_2}^2\). Reducing the lever from \(60\) to \(40\,\mathrm{mm}\)
+therefore decreases both quantities; the weaker coupling moment explains the
+slower response. The \(-40\,\mathrm{mm}\) setting was retained because it
+combined repeatable full-face contact with the lower EE-inferred final error.
+
+These measurements select a sign and provisional magnitude for the
+\(t_1\)-alignment campaign only. The corresponding \(t_2\)-alignment lever
+lies along \(t_1\) and requires its own sign check. Moreover, all pilot runs
+used the non-rigid mount profile. Full-face contact is therefore a repeatable
+operator observation, while the angular values quantify the EE-inferred
+mounted-system response rather than an independently measured tool-face angle.
+
 \section{Null-Space Validation Status}
 \label{sec:results_nullspace}
 
@@ -444,11 +515,19 @@ vary by less than \(0.1^\circ\) across all three seatings.
 
 The workpiece fixture is compliant enough to move under load, and the tool
 came loose in the gripper twice during the campaign, in both cases detected
-and the affected runs re-recorded. Neither was instrumented. Run-to-run
+and the affected runs re-recorded. In addition to those discrete events, the
+mounted tool has approximately \(\pm2^\circ\) of rotational play about
+\(y_{\mathrm{EE}}\). This direction is close to the dominant in-plane response
+for the tested pose but is not identically \(t_2\), which is a calibrated
+base-frame surface axis. Neither the relative tool angle nor its motion during
+contact was instrumented. Consequently, an EE-derived angular change can
+include motion of the tool within the gripper, and a physically flat tool can
+coexist with a nonzero inferred residual. Run-to-run
 variation from the fixture is contained in the repeatability floor of
 \cref{tab:results_noise_floor}; a systematic component would not be, and would
-bias absolute values without affecting comparisons between settings, which are
-what this chapter claims.
+bias absolute values. Comparisons between settings remain descriptive of the
+combined mounted system but do not isolate controller compliance from gripper
+compliance.
 
 Both in-plane optima are interior to the tested ranges and are located by a
 quadratic fit through a cross-shaped sample rather than by a full local grid;

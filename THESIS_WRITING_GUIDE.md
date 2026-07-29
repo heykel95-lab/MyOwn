@@ -149,6 +149,16 @@ Distinguish:
 2. model-based interpretation;
 3. hypothesis requiring another experiment.
 
+Trace every geometric metric through its measurement chain. The controller
+reconstructs the tool axis from the EE pose and a nominal tool-to-EE transform.
+Because the mounted tool can rotate approximately ±2° about \(y_{EE}\), call
+this quantity the **EE-inferred tool axis**, not a directly measured physical
+tool-face axis. Do not rename \(y_{EE}\) as \(t_2\) without transforming it
+into the calibrated surface frame. State that the current angular results
+describe the combined robot–gripper–tool response and cannot separate
+controller compliance from gripper compliance. A visually or physically flat
+tool may coexist with a changing EE-inferred angle.
+
 Use `model-estimated external wrench` for
 `O_F_ext_hat_K`. Do not call it a directly measured wrench. A location inferred
 from that signal is an `equivalent contact location`, not necessarily a
@@ -257,6 +267,23 @@ The principal experimental conclusions are:
 
 Basic settling, formulation-equivalence, and repeatability checks support the
 measurements but should not dominate the conclusion.
+
+### Follow-on pilots
+
+When a calibrated pilot is recorded after the main campaign:
+
+- label it as a separate pilot and do not silently add it to the earlier run
+  count;
+- state which earlier runs are decoupled controls and which runs activate the
+  point-shifted law;
+- report the controller lever using
+  \(r_c=p_{\mathrm{TCP}}-p_c\), rather than calling its sign simply “left” or
+  “right”;
+- retain the EE-inferred metric and the operator-observed contact state as
+  separate outcomes when tool-to-gripper motion is unmeasured;
+- report mean and sample standard deviation only for repeated conditions; and
+- call a selected lever provisional until the orthogonal axis and an
+  independent physical-angle measurement have been checked.
 
 ## Energy, passivity, and stability
 

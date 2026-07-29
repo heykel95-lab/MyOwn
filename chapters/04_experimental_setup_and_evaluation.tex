@@ -79,12 +79,56 @@ Cases A--E contain \(88\) contact runs. The null-space records are not included
 as a sixth experimental case because no matched conditioning-torque sweep was
 completed.
 
+\subsection{Axis-Specific Compliance-Centre Pilot}
+\label{subsec:axis_specific_coc_pilot}
+
+A subsequent pilot was performed on the separately calibrated horizontal plane
+to select the sign and an initial magnitude of the compliance-centre lever for
+an imposed rotation about \(t_1\). These records are analysed separately from
+Cases A--E and are not included in their run count. The plane calibration,
+tool-axis calibration, gains, press trajectory and initial orientation command
+were held fixed. The nominal command was \(5^\circ\) about \(t_1\); because
+approach descent begins when the tool axis is within \(2^\circ\) of that
+command, the measured EE-inferred angle at the clearance hand-off was
+approximately \(2.81^\circ\).
+
+The pilot first recorded two decoupled reference runs. It then enabled the
+point-shifted law with
+\[
+  K_{\mathrm{TCP}}
+  =
+  A(r_c)^\top
+  \operatorname{blkdiag}(K_p,K_R)
+  A(r_c),
+  \qquad
+  r_c=p_{\mathrm{TCP}}-p_c ,
+\]
+and tested \(r_{c,t_2}=+60\,\mathrm{mm}\),
+\(-60\,\mathrm{mm}\), and \(-40\,\mathrm{mm}\). The final
+\(-40\,\mathrm{mm}\) condition was repeated three times. The common settings
+were
+\[
+  K_p=\operatorname{diag}(2000,2000,800)\,\mathrm{N/m},
+  \qquad
+  K_R=\operatorname{diag}(5,5,50)\,\mathrm{Nm/rad},
+\]
+a \(60\,\mathrm{mm}\) virtual press, a \(50\,\mathrm{mm/s}\) press rate and a
+\(5\,\mathrm{s}\) set-up interval. Null-space damping was enabled without the
+active singular-value bias.
+
+In addition to the EE-inferred angular quantities and model-estimated load, the
+operator recorded whether contact remained on one edge or developed into
+full-face contact. This observation is qualitative. The stored
+\texttt{play2} mount profile records up to approximately \(2^\circ\) of
+unmeasured tool motion relative to the EE, so the visual contact state and the
+EE-inferred residual are retained as distinct quantities.
+
 The robot first orients the grinding-face axis, descends to a geometrically
 defined clearance, presses the selected leading tool feature into the plane
 during set-up, and then executes the grinding motion. Set-up holds the
 clearance orientation as a soft reference and commands no time-varying
-task-space tipping trajectory. The response is evaluated from the physical
-tool-axis angle, the rotation during contact, and the feature and TCP
+task-space tipping trajectory. The response is evaluated from the
+EE-inferred tool-axis angle, the rotation during contact, and the feature and TCP
 displacements. This procedure separates the effects of rotational compliance
 and compliance-centre placement before their implications for the
 point-shifted impedance formulation are discussed.
@@ -294,9 +338,20 @@ R_d a_{\mathrm{tool,EE}}=-n_s .
 \end{equation}
 
 The minus sign points the \(+Z_{\mathrm{EE}}\) grinding face toward the surface.
-The controller applies the minimum rotation that maps the starting physical
+The controller applies the minimum rotation that maps the starting nominal
 tool axis to \(-n_s\), thereby preserving the remaining twist as closely as
 possible; it does not set \(R_d=R_{\mathrm{surface}}\).
+
+The parallel-jaw grasp does not make the tool-to-EE transform perfectly
+torsionally rigid. Manual inspection showed approximately
+\(\pm2^\circ\) of relative tool rotation about \(y_{\mathrm{EE}}\). For the
+tested mounting pose this direction lies mainly in the surface-tangent plane
+and is informally associated with the \(t_2\) response. It is nevertheless
+written as \(y_{\mathrm{EE}}\) here: \(t_2\) is defined in the base frame by
+the calibrated plane, whereas
+\(y_{\mathrm{EE}}=R_{\mathrm{EE}}e_{y,\mathrm{EE}}\) changes with the EE
+orientation, so the two axes must not be identified without an explicit
+frame transformation.
 
 The selected centre of compliance is represented by a point \(p_c\), with the
 pole-to-TCP lever \(r_c=p_{\mathrm{TCP}}-p_c\) defined in
@@ -764,7 +819,7 @@ diagonal in surface coordinates \([t_1,t_2,n_s]\).
 
 This construction changes the gain matrices without adding a separate force,
 moment, or time-varying task-space rotation command. Its experimental effect is
-judged from the physical tool-axis alignment, selected-feature and TCP
+judged from the EE-inferred tool-axis alignment, selected-feature and TCP
 displacements, and commanded joint torques.
 
 \paragraph{Choosing the pole.}
@@ -1092,7 +1147,9 @@ The experimental sequence is executed as follows:
     \item Execute the configured gripper action. In the current configuration
     this is a grasp at \(70\,\mathrm{mm}\) width and \(60\,\mathrm{N}\), rather
     than an
-    open command.
+    open command. Seat the tool consistently within its approximately
+    \(\pm2^\circ\) rotational play about \(y_{\mathrm{EE}}\), and record this
+    non-rigid mounting condition with the run metadata.
     \item Construct the known plane and
     \(R_{\mathrm{surface}}=[t_1,t_2,n_s]\), construct the \(40\times120\) mm tool
     face, and set the active base-XYZ pole offset. Configure the Franka collision
@@ -1135,7 +1192,7 @@ The experimental sequence is executed as follows:
     is no longer active. A wrench and \(J^\top w_{\mathrm{cmd}}\) step is
     therefore possible at this hand-off.
     \item Stop with \texttt{e+Enter}, persist the buffered log, and evaluate the
-    physical tool-axis error, edge/TCP displacement, commanded joint-torque
+    EE-inferred tool-axis error, edge/TCP displacement, commanded joint-torque
     trace, and phase timing.
 \end{enumerate}
 
@@ -1153,7 +1210,24 @@ plane, and contact sequence.
 
 The tool-axis alignment metric must be distinguished from the controller's
 rotation error. Let
-\(a_T=R_{\mathrm{EE}}a_{\mathrm{tool,EE}}\) be the current grinding-face axis.
+\(\widehat a_T=R_{\mathrm{EE}}a_{\mathrm{tool,EE}}^0\) be the grinding-face
+axis inferred from the nominal calibrated tool-to-EE transform. If
+\(Q_g(t)\) denotes the unmeasured relative rotation of the tool in the
+gripper, the actual physical axis is
+
+\begin{equation}
+a_T
+=
+R_{\mathrm{EE}}Q_g(t)a_{\mathrm{tool,EE}}^0,
+\qquad
+\lvert\theta_g(t)\rvert\lesssim2^\circ
+\ \text{about }y_{\mathrm{EE}} .
+\label{eq:tool_mount_play}
+\end{equation}
+
+The controller logs \(\widehat a_T\), not \(a_T\). The following alignment
+angles therefore use \(\widehat a_T\) and are EE-inferred quantities. They
+coincide with physical tool-face angles only when \(Q_g(t)=I\).
 Two signed target axes are required:
 
 \begin{equation}
@@ -1163,9 +1237,9 @@ a_{\mathrm{phys}}&=-n_{\mathrm{phys}},\\
 \theta_{\mathrm{align},j}
 &=
 \cos^{-1}\!\left(
-\operatorname{clip}(a_T^\top a_j,-1,1)
+\operatorname{clip}(\widehat a_T^\top a_j,-1,1)
 \right),&
-\mathbf{e}_{\mathrm{align},j}&=a_T\times a_j,
+\mathbf{e}_{\mathrm{align},j}&=\widehat a_T\times a_j,
 \quad j\in\{\mathrm{cfg},\mathrm{phys}\}.
 \end{aligned}
 \label{eq:contact_alignment_error_cross}
@@ -1175,10 +1249,11 @@ The minus signs are required by the current tool-axis convention. The
 controller field \texttt{alignment\_angle\_deg} records
 \(\theta_{\mathrm{align,cfg}}\), the angle to the configured normal. This
 online quantity verifies the implemented command geometry, but it is not the
-reported physical-plane alignment because \(n_s\) and
-\(n_{\mathrm{phys}}\) intentionally differ in the recorded campaign.
+directly measured physical-tool alignment: \(n_s\) and
+\(n_{\mathrm{phys}}\) differ in the recorded campaign, and \(Q_g(t)\) is not
+measured.
 
-The primary experimental metric is instead the offline angle
+The primary computed metric is instead the offline EE-inferred angle
 \(\theta_{\mathrm{align,phys}}\). Set-up improves alignment when
 
 \begin{equation}
@@ -1200,7 +1275,10 @@ The corresponding physical-plane improvement is
 \end{equation}
 
 Thus \(\Delta\theta_{\mathrm{align,phys}}>0\) means that alignment with the
-measured plane improved during contact. The rotation during contact itself is
+measured plane improved under the rigid-mount assumption. With the observed
+gripper play, it describes the combined robot--gripper--tool response and
+cannot prove the physical-face rotation independently. The rotation during
+contact itself is
 described by the base-frame rotation vector of the finite before--after
 relative rotation,
 
@@ -1214,8 +1292,8 @@ R_{\mathrm{after}}R_{\mathrm{before}}^\top
 \end{equation}
 
 The physical-plane corrective vector
-\(\mathbf{e}_{\mathrm{align,phys}}=a_T\times(-n_{\mathrm{phys}})\) points
-locally along the rotation that carries the physical tool axis toward the
+\(\mathbf{e}_{\mathrm{align,phys}}=\widehat a_T\times(-n_{\mathrm{phys}})\) points
+locally along the rotation that carries the EE-inferred tool axis toward the
 measured plane normal. The rotation during contact is favorable when it has a
 positive component along this corrective axis,
 
@@ -1250,12 +1328,13 @@ During set-up, the controller instead logs
 after masking, where \(R_{\mathrm{clr}}\) is the orientation frozen at the
 clearance hand-off. This control error begins near zero and can
 \emph{increase} as the tool tips during contact. It must not be plotted as
-\(\theta_{\mathrm{align},j}\) without reconstructing the physical tool axis.
-The general CSV records the angle of the physical tool axis to the configured
-normal directly as \texttt{alignment\_angle\_deg}. It is used as an online
-geometry check. The reported alignment outcome is rescored offline against the
-separately estimated \(n_{\mathrm{phys}}\), as described in
-\cref{sec:results_alignment}.
+\(\theta_{\mathrm{align},j}\) without reconstructing the nominal tool axis.
+The general CSV records the angle of the EE-inferred tool axis to the
+configured normal directly as \texttt{alignment\_angle\_deg}. It is used as
+an online geometry check. The reported alignment outcome is rescored offline
+against the separately estimated \(n_{\mathrm{phys}}\), as described in
+\cref{sec:results_alignment}; the unmeasured \(Q_g(t)\) remains outside that
+rescoring.
 
 \subsection{Metric Use by Experimental Case}
 \label{sec:evaluation_criteria_contact}

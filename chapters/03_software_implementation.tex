@@ -383,6 +383,14 @@ For the grinding tool used here,
 \(a_{\mathrm{EE}}=+z_{\mathrm{EE}}\) and \(s_a=-1\); hence the positive
 end-effector \(z\)-axis is aligned with \(-n_s\), toward the surface.
 
+This construction assumes that \(a_{\mathrm{EE}}\) is constant. In the
+experimental hardware, however, the grinding tool can rotate relative to the
+gripper by approximately \(\pm2^\circ\) about \(y_{\mathrm{EE}}\). The
+controller has no sensor for this internal motion. Consequently,
+\(R_{\mathrm{EE}}a_{\mathrm{EE}}\) is the tool axis inferred from the nominal
+mounting transform; it is not an independent measurement of the physical
+grinding-face axis while the tool moves in the gripper.
+
 At the captured start orientation \(R_{\mathrm{start}}\), the initial physical
 axis is \(a_0=R_{\mathrm{start}}a_{\mathrm{EE}}\). The code computes the minimum
 rotation \(R_{\min}(a_0\rightarrow a_d)\) between these two unit vectors and
@@ -677,7 +685,7 @@ to place the robot before either choice.
 
     \item \textbf{Approach orient.} The TCP remains at the captured start
     position while the desired orientation minimally aligns the configured
-    physical tool axis with its signed target. The transition requires both the
+    nominal tool axis with its signed target. The transition requires both the
     configured minimum time and a tool-axis angular error below the threshold.
     It does not require the complete orientation error to vanish.
 
