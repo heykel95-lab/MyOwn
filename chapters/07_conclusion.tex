@@ -51,9 +51,11 @@ Chapter~\ref{ch:results_discussion} reports a campaign of \(71\) runs recorded
 with \texttt{FULL-Working-Clean}, gated on a measured equilibrium, a coupled-path
 correctness check and a five-repetition noise floor. Its central result is that
 the placement of the centre of compliance governs the contact alignment through
-its \emph{tangential} component: over \(36\) pole runs the tangential offset
-accounts for the alignment outcome (\(R^2=0.907\)) while the offset along the
-surface normal does not (\(R^2=0.005\)). The older
+its two \emph{in-plane} components: over \(48\) pole runs swept along all
+three axes of the surface frame, the two tangential offsets account for the
+alignment outcome while the offset along the surface normal does not
+(\(R^2=0.008\) alone, and \(-0.014^\circ/\mathrm{mm}\) when fitted
+alongside them). The older
 \texttt{Difference-Chasles-Pole} results are retained alongside it for
 comparison. Their qualitative claim --- that pole placement decides whether the
 coupling resists or assists alignment --- is confirmed; their attribution of the
@@ -78,15 +80,15 @@ The main contributions are:
         with manual damping values retained as fallbacks;
   \item a four-mode null-space controller based on a truncated-SVD
         pseudoinverse, including the explicit distinction between
-        \(\sigma_{\min}=\sigma_6\) and the structural null vector \(v_7\); and
+        \(\sigma_{\min}=\sigma_6\) and the structural null vector \(v_7\);
   \item full-rate and compact ring-buffer logging that exposes the phase,
         selected tool feature, null-space probes, and final torque command for
         offline analysis; and
   \item a provenance-controlled measurement campaign of \(71\) runs, gated on a
         measured equilibrium, a coupled-path correctness check and a
-        five-repetition noise floor, establishing that the tangential component
-        of the compliance centre governs contact alignment while the normal
-        component does not.
+        five-repetition noise floor, establishing that the two in-plane
+        components of the compliance centre govern contact alignment while its
+        offset along the surface normal does not.
 \end{itemize}
 
 \section{Limitations}
@@ -201,10 +203,12 @@ The coupled-pole campaign has now been repeated with
 \texttt{FULL-Working-Clean} and multiple repetitions, and three questions it
 raised remain open. The tangential sweep had not reached an optimum at the
 positive end of its tested range, so the best placement is bounded below but not
-located. The pole component along the second surface tangent was held at
-approximately zero throughout and has never been swept, which leaves the
-geometric placement rule --- that the centre of compliance belongs opposite the
-side of the tool that contacts first --- untested on the axis it concerns.
+located along the first tangent, although the second tangent has a measured
+optimum. The geometric placement rule --- that the centre of compliance belongs
+opposite the side of the tool that contacts first --- is contradicted on both
+tangential axes, which agree that the useful pole lies on the same side as the
+contacting edge; confirming which edge that is by direct observation would
+settle how the rule should be restated.
 And the contact itself, recovered from the measured wrench, sits near the middle
 of the tool face rather than at the corner the controller's tie-breaking
 feature selection reports, which suggests the selection tolerance should be

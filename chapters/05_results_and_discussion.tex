@@ -203,63 +203,102 @@ alignment and force but a bound on displacement alone.
 \section{Where the Compliance Centre Must Lie}
 \label{sec:results_pole}
 
-The pole of the coupled impedance was then swept in two directions: along the
-surface normal (\(24\) runs, eight offsets from \(-120\) to
-\(+160\,\mathrm{mm}\)) and along the surface tangent (\(12\) runs, four
-offsets at a fixed normal offset of approximately \(100\,\mathrm{mm}\)). The
-tangential sweep exists because the normal sweep cannot separate the two
-components: the configured normal carries a tangential component from the
-surface tilt, so commanding a pole along the normal also displaces it
-tangentially.
+The pole of the coupled impedance was swept along all three axes of the
+surface frame: along the normal (\(24\) runs, eight offsets from \(-120\) to
+\(+160\,\mathrm{mm}\)), along the first surface tangent \(t_1\) (\(12\) runs,
+four offsets), and along the second tangent \(t_2\) (\(12\) runs, four
+offsets). The two tangential sweeps exist because the normal sweep cannot
+isolate a single component: the configured normal carries a tangential
+component from the surface tilt, so commanding a pole along \(n\) also
+displaces it along \(t_1\).
 
 \cref{fig:results_pole_component} plots the alignment improvement of all
-\(36\) runs against each pole component in turn.
+\(48\) runs against each pole component in turn.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{B_pole_component.pdf}
-    \caption{Alignment gained toward the measured plane, for the same runs,
-    against the tangential (left) and normal (right) components of the
-    commanded pole. The tangential component accounts for the outcome; the
-    normal component does not. The twelve tangential-sweep runs share a normal
-    offset of about \(100\,\mathrm{mm}\) and span \(-11^\circ\) to
-    \(+7^\circ\), which is visible as the vertical spread in the right panel.}
+    \caption{Alignment gained toward the measured plane, for the same \(48\)
+    runs, against each component of the commanded pole. Both in-plane
+    components govern the outcome; the normal component does not. The vertical
+    spread of the \(t_1\) sweep in the middle panel, where those runs all share
+    \(t_2\approx0\), shows directly that \(t_2\) alone cannot account for
+    them.}
     \label{fig:results_pole_component}
 \end{figure}
 
-A linear fit over all \(36\) runs gives \(R^2=0.907\) against the tangential
-component, with a slope of \(+0.125^\circ\) per millimetre of pole offset, and
-\(R^2=0.005\) against the normal component. The tangential position of the
-compliance centre governs the alignment response; the normal position, over a
-range of \(277\,\mathrm{mm}\), does not measurably affect it.
+Fitting the improvement against the commanded pole over all \(48\) runs
+separates the three axes cleanly:
+
+\begin{table}[H]
+\centering
+\caption{Linear fits of the alignment improvement against the commanded pole
+components, over all \(48\) pole runs.}
+\label{tab:results_pole_fit}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Model & \(R^2\) & Slope \\
+\midrule
+\(t_1\) only            & 0.586 & \(+0.115^\circ/\mathrm{mm}\) \\
+\(t_2\) only            & 0.157 & \(+0.048^\circ/\mathrm{mm}\) \\
+normal only             & \textbf{0.008} & \(-0.005^\circ/\mathrm{mm}\) \\
+\(t_1\) and \(t_2\)     & 0.774 & --- \\
+\(t_1\), \(t_2\), normal& 0.833 & normal \(-0.014^\circ/\mathrm{mm}\) \\
+\(t_1\), \(t_2\), \(t_2^2\) & \textbf{0.917} & \(t_2\) optimum at \(+34\,\mathrm{mm}\) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Both in-plane components of the compliance centre govern the alignment
+response; its position along the surface normal does not.} Over a normal range
+of \(277\,\mathrm{mm}\) the normal offset accounts for \(R^2=0.008\), and
+adding it to the two in-plane terms moves the model only from \(0.774\) to
+\(0.833\). The two tangents are not equivalent: \(t_1\) is about \(2.4\) times
+more influential per millimetre than \(t_2\).
 
 This reverses the reading of the normal sweep taken in isolation. Along the
 normal alone the improvement rises from \(+1.98^\circ\) at a pole on the
 contact edge to \(+3.47^\circ\) at \(+160\,\mathrm{mm}\), which invites the
 conclusion that the normal offset is the design variable. It is not: across
-that sweep the tangential component drifts from \(-5.0\) to
-\(+27.6\,\mathrm{mm}\) as a geometric side effect of the surface tilt, and
-that drift accounts for the trend. The tangential sweep, which holds the
-normal offset fixed, spans \(-10.31^\circ\) at a tangential offset of
-\(-72.7\,\mathrm{mm}\) to \(+6.96^\circ\) at \(+46.8\,\mathrm{mm}\) --- a range
-of \(17.3^\circ\) against a noise floor of \(0.4^\circ\), and an order of
-magnitude larger than anything the normal sweep produced.
+that sweep the \(t_1\) component drifts from \(-5.0\) to \(+27.6\,\mathrm{mm}\)
+as a geometric side effect of the surface tilt, and that drift accounts for the
+trend.
 
-The sign matters as much as the magnitude. At sufficiently negative tangential
-offsets the coupling does not merely fail to assist: the tool rotates
-\(10^\circ\) \emph{away} from the surface, ending further from flat than it
-arrived. The compliance centre can therefore actively fight the alignment it
-is intended to produce, and the boundary between assisting and fighting is
-crossed within the working range of the tool.
+The two tangents differ in shape as well as in strength. Along \(t_1\) the
+response is monotonic over the tested range, from \(-10.31^\circ\) at
+\(-72.7\,\mathrm{mm}\) to \(+6.96^\circ\) at \(+46.8\,\mathrm{mm}\) --- a span
+of \(17.3^\circ\) against a noise floor of \(0.4^\circ\) --- and had not turned
+over at the positive extreme. Along \(t_2\) it is not monotonic: \(+39\) beats
+\(+80\,\mathrm{mm}\), and the quadratic fit locates an interior optimum at
+\(+34\,\mathrm{mm}\).
 
-Two qualifications apply. The tangential sweep had not reached an optimum at
-its positive extreme, so \(+46.8\,\mathrm{mm}\) is the best measured setting
-rather than the best attainable one. And the mapping from this result onto a
-placement rule of the form ``the compliance centre belongs opposite the
-contact'' requires knowing which edge of the tool face touches first; the
-controller's contact selection consistently reports one corner, in \(48\) of
-\(52\) runs, but this is a geometric prediction from the tool model and was
-not confirmed by direct observation.
+The sign matters as much as the magnitude. At sufficiently negative offsets on
+either tangent the coupling does not merely fail to assist: the tool rotates
+away from the surface, by \(10^\circ\) at the negative extreme of \(t_1\) and
+\(6.5^\circ\) at that of \(t_2\), ending further from flat than it arrived. The
+compliance centre can therefore actively fight the alignment it is intended to
+produce, and the boundary between assisting and fighting is crossed within the
+working range of the tool.
+
+Both sweeps place the useful pole on the positive side of their axis. Taken
+with the reported contacting edge --- which lies at \(-y\) in the end-effector
+frame, and therefore at \(+y\) in the base frame, since the end-effector \(y\)
+axis maps to base \(-y\) --- this places the compliance centre on the
+\emph{same} side as the contacting edge rather than opposite it. That is the
+reverse of the placement rule the experiment was designed to test, and the
+reversal is consistent across two independent axes.
+
+One qualification is not yet settled. The contacting edge was reported as a
+long \(120\,\mathrm{mm}\) side, but the long sides of the face lie at
+\(x=\pm20\,\mathrm{mm}\), not at \(\pm y\). Either the contact is on a short
+\(40\,\mathrm{mm}\) end at \(-y\), or it is on a long side at \(-x\). The
+measured relationships are unaffected --- positive offsets win on both axes
+either way --- but the phrasing of a general placement rule depends on which
+edge it is. Independently, the contact point recovered from the measured wrench
+lies near the middle of the face in \(t_1\) rather than at the corner the
+controller's tie-breaking feature selection reports in \(48\) of \(52\) runs,
+which suggests that selection reflects its \(0.1\,\mathrm{mm}\) tolerance
+rather than the load distribution.
 
 \section{Effect of Damping}
 \label{sec:results_damping}
@@ -341,7 +380,7 @@ The design question for a surface-contact task is not whether the robot is
 soft or stiff, but where the compliance appears to be located geometrically.
 The measurements support that framing and sharpen it: of the two geometric
 degrees of freedom available when placing the compliance centre relative to
-the contact, only the tangential one is load-bearing. A purely diagonal
+the contact, only the two in-plane ones are load-bearing. A purely diagonal
 stiffness matrix makes the robot compliant without encoding any particular
 centre of compliance, and the resulting alignment is whatever the contact
 geometry happens to produce.
@@ -392,9 +431,10 @@ variation from the fixture is contained in the repeatability floor of
 bias absolute values without affecting comparisons between settings, which are
 what this chapter claims.
 
-The tangential pole sweep did not reach an optimum within its tested range:
-its best setting is the most positive offset tested, so the optimum is bounded
-below but not located. Which edge of the tool face makes first contact was inferred
+The sweep along the first surface tangent did not reach an optimum within its
+tested range: its best setting is the most positive offset tested, so that
+optimum is bounded below but not located. The second tangent does have a
+measured optimum. Which edge of the tool face makes first contact was inferred
 from the tool model rather than observed, which leaves the mapping from the
 measured relationship onto a general placement rule open.
 
