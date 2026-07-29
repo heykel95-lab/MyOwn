@@ -47,12 +47,17 @@ damping, a constant-magnitude torque in whichever sign of \(v_7\) improves
 changes only the two sampled configurations; it does not scale the commanded
 torque.
 
-The measured coupled-pole results retained in
-Chapter~\ref{ch:results_discussion} belong to the historical controller tag
-\texttt{Difference-Chasles-Pole}.  They demonstrate that the adjoint coupling
-and pole placement change the tip and edge displacement, but they are not attributed to
-the later \texttt{FULL-Working-Clean} phase logic or parameters without new
-trials.
+Chapter~\ref{ch:results_discussion} reports a campaign of \(71\) runs recorded
+with \texttt{FULL-Working-Clean}, gated on a measured equilibrium, a coupled-path
+correctness check and a five-repetition noise floor. Its central result is that
+the placement of the centre of compliance governs the contact alignment through
+its \emph{tangential} component: over \(36\) pole runs the tangential offset
+accounts for the alignment outcome (\(R^2=0.907\)) while the offset along the
+surface normal does not (\(R^2=0.005\)). The older
+\texttt{Difference-Chasles-Pole} results are retained alongside it for
+comparison. Their qualitative claim --- that pole placement decides whether the
+coupling resists or assists alignment --- is confirmed; their attribution of the
+effect to the normal offset is not.
 
 \section{Main Contributions}
 \label{sec:main_contributions}
@@ -76,7 +81,12 @@ The main contributions are:
         \(\sigma_{\min}=\sigma_6\) and the structural null vector \(v_7\); and
   \item full-rate and compact ring-buffer logging that exposes the phase,
         selected tool feature, null-space probes, and final torque command for
-        offline analysis.
+        offline analysis; and
+  \item a provenance-controlled measurement campaign of \(71\) runs, gated on a
+        measured equilibrium, a coupled-path correctness check and a
+        five-repetition noise floor, establishing that the tangential component
+        of the compliance centre governs contact alignment while the normal
+        component does not.
 \end{itemize}
 
 \section{Limitations}
@@ -91,20 +101,25 @@ is not treated as a direct contact-wrench measurement.
 The transition called ``first contact'' in several source and CSV identifiers
 is actually the configured \(20\,\mathrm{mm}\) geometric clearance.  The stored
 \texttt{first\_contact\_point} is the selected feature projected onto the
-surface. Furthermore, the current general log stores the rotation error
-relative to the frozen clearance
-orientation, not the tool-axis-to-\(-n_s\) angle.  A direct surface-alignment
-metric therefore requires an additional logged orientation or tool-axis field.
+surface. The general log now carries the tool-axis-to-\(-n_s\) angle
+alongside the rotation error referenced to the frozen clearance orientation, so
+the surface-alignment metric no longer depends on a wrench-comparison model.
+That angle is nevertheless scored against the \emph{configured} surface normal;
+\cref{sec:results_alignment} rescores it against the physically measured plane,
+which is required because the configured tilt is deliberately mis-specified.
 The exact clearance comparison uses the most-leading corner, while the
 averaged tied feature supplies the projected reference. In addition, the
 transition callback changes to set-up gains before regenerating the set-up
 target, so the first phase-2 sample can contain a one-cycle approach-target
 mismatch.
 
-The current set-up moment threshold is \(150\,\mathrm{N\,m}\), while the
-configured ramp and timeout both end near \(4\,\mathrm{s}\).  The timeout may
-therefore dominate in practice and must be verified from the phase log before
-calling a transition moment-triggered.  The set-up and grind TCP target also
+The set-up moment threshold of \(150\,\mathrm{N\,m}\) is never reached: the
+measured moment settles near \(30\,\mathrm{N\,m}\), so the phase always exits on
+the timeout and no transition in this campaign is moment-triggered. The timeout
+originally coincided with the end of the press ramp at \(4\,\mathrm{s}\), which
+terminated the phase during the force overshoot; \cref{sec:results_equilibrium}
+measures equilibrium at \(t\approx4.6\,\mathrm{s}\) and the timeout is now
+\(12\,\mathrm{s}\).  The set-up and grind TCP target also
 subtracts a tool offset rotated by the frozen clearance orientation.  If the
 tool rotates appreciably, the live physical feature can move tangentially
 relative to that reference; whether this behavior is desirable must be tested.
@@ -152,10 +167,13 @@ to the compact sigma diagnostic and must not be assumed for every sequence.
 \section{Future Work}
 \label{sec:future}
 
-The first implementation priority is to log the current orientation, current
-and desired tool axes, retained SVD rank, and a projector residual such as
-\(\|JN_q\|\). These fields would make the alignment and null-space claims
-directly testable without relying on a wrench-comparison model.
+The tool-axis alignment angle is now logged, which is what made
+Chapter~\ref{ch:results_discussion} quantitative. The remaining fields worth
+adding are the current orientation itself, the desired tool axis, the retained
+SVD rank, and a projector residual such as \(\|JN_q\|\). Logging the orientation
+would remove the one reconstruction step still required in the analysis, where
+the tool axis at the end of the set-up phase is recovered from
+\(-\mathbf e_R\) applied to an assumed starting axis.
 
 The clearance variables should be renamed, and live versus frozen tool-offset
 kinematics should be compared experimentally. The approach-to-set-up hand-off
@@ -179,11 +197,15 @@ be repeated with null-space damping only, or as matched sigma-off/sigma-on
 trials, to separate the active secondary bias from the alignment response during
 contact.
 
-Finally, the full coupled-pole campaign should be repeated with
-\texttt{FULL-Working-Clean}, the exact configuration in
-Appendix~\ref{app:controller_parameters}, multiple repetitions, and the added
-orientation/tool-axis signals. This would separate the effect of pole placement
-from the changes in tool geometry, phase timing, auto damping, and set-up-only
-coupling, and would provide a defensible current-version comparison of physical
-alignment, selected-feature/TCP displacement, and commanded torque across pole
-placements.
+The coupled-pole campaign has now been repeated with
+\texttt{FULL-Working-Clean} and multiple repetitions, and three questions it
+raised remain open. The tangential sweep had not reached an optimum at the
+positive end of its tested range, so the best placement is bounded below but not
+located. The pole component along the second surface tangent was held at
+approximately zero throughout and has never been swept, which leaves the
+geometric placement rule --- that the centre of compliance belongs opposite the
+side of the tool that contacts first --- untested on the axis it concerns.
+And the contact itself, recovered from the measured wrench, sits near the middle
+of the tool face rather than at the corner the controller's tie-breaking
+feature selection reports, which suggests the selection tolerance should be
+compared against the measured load distribution.
