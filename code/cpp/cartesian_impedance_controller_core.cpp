@@ -152,24 +152,13 @@ robot.control([&](const franka::RobotState& state,
   // Compute the Cartesian position error.
   Eigen::Vector3d e_p = p_d_current - p_EE;
 
-  // Compute the relative rotation from desired orientation to current orientation.
-  Eigen::Matrix3d dR = R_d.transpose() * R_EE;
-
-  // Compute the rotation angle from the trace of the relative rotation matrix.
-  double cos_phi = (dR.trace() - 1.0) / 2.0;
-  cos_phi = std::min(1.0, std::max(-1.0, cos_phi));
-  double phi = std::acos(cos_phi);
-
-  // Compute the rotational error vector using the axis-angle representation.
-  Eigen::Vector3d e_R;
-  if (phi < 1e-6) {
-    e_R.setZero();
-  } else {
-    e_R =
-        phi / (2.0 * std::sin(phi)) *
-        Eigen::Vector3d(dR(2, 1) - dR(1, 2),
-                        dR(0, 2) - dR(2, 0),
-                        dR(1, 0) - dR(0, 1));
+  // Restoring current-to-desired error. AngleAxis components first live in the
+  // current EE frame and are then mapped to the base frame used by KR_base.
+  const Eigen::Matrix3d dR = R_EE.transpose() * R_d;
+  const Eigen::AngleAxisd angle_axis(dR);
+  Eigen::Vector3d e_R = Eigen::Vector3d::Zero();
+  if (std::abs(angle_axis.angle()) >= 1e-9) {
+    e_R = R_EE * angle_axis.axis() * angle_axis.angle();
   }
 
   // Compute the positional impedance force.

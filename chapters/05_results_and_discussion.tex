@@ -4,41 +4,65 @@
 \section{Overview of Tested Gain Settings}
 \label{sec:results_contact}
 
-This section reports the surface-contact experiment for the candidate stiffness
-settings of Table~\ref{tab:example_candidate_stiffness_sets}. The values given
-below are \emph{illustrative expectations} derived from the contact physics:
-they show the trends and the order of magnitude anticipated for each setting,
-and they are replaced by the measured values once the logged trials are
-available. The figures are \emph{qualitative} sketches of the corresponding
-expected signals, not plots of measured data.
+This section preserves the \emph{historical planned} five-case surface-contact
+study. Its \(10^\circ\) starting misalignment predates the current approach
+gate, which requires the tool-axis error to be no greater than
+\(0.035\,\mathrm{rad}\) (about \(2^\circ\)) before descent. The values below are
+\emph{illustrative expectations} derived from the contact geometry: they show
+the motion trends anticipated for each setting.
+They are replaced only by provenance-controlled orientation, tool-feature, and
+TCP-displacement signals. The figures are \emph{qualitative} sketches of the
+corresponding expected motion, not plots of measured data.
 
-\section{Passive Orientation Alignment}
+Two controller versions must be kept separate in this chapter.  The measured
+coupled-pole campaign in
+\cref{sec:coupled_command_experiment} was produced with the
+historical controller tag \texttt{Difference-Chasles-Pole}
+(commit \texttt{491822e}).  The implementation documented in
+Chapters~\ref{ch:implementation} and~\ref{ch:methodology} is the later tag
+\texttt{FULL-Working-Clean} (commit \texttt{bbe7e85}).  The later controller
+uses a different phase supervisor, tool geometry, damping computation, timing,
+and a three-component pole offset.  Consequently, the historical measurements
+support the pole/adjoint mechanism but are not presented as validation of every
+parameter or transition in the current controller.
+
+\section{Orientation Alignment During Contact}
 \label{sec:results_alignment}
 
 The decisive variable is the rotational stiffness about the alignment axes.
 With high rotational stiffness (Test~1), the controller holds the commanded
-orientation and resists the contact-induced rotation, so the contact moment is
+orientation and resists rotation during contact, so the contact moment is
 largely reacted as joint torque and the tool barely rotates. The residual
-misalignment stays close to the initial value, \(\Delta e_R\approx0\), and the
-peak contact force at the leading edge is high. As the rotational stiffness is
-reduced (Tests~2 and~3), the moment produced by the downward force at the tool
-edge increasingly rotates the tool toward the surface, so \(\Delta e_R\) becomes
-positive and the orientation error decreases while the peak contact force drops.
+misalignment stays close to the initial value,
+\(\Delta\theta_{\mathrm{align}}\approx0\), and the
+leading edge produces little corrective rotation. As the rotational stiffness
+is reduced (Tests~2 and~3), the commanded press and the opposing
+environment-on-tool reaction form an action--reaction pair; the reaction at
+the offset leading edge increasingly rotates the tool toward the surface, so
+\(\Delta\theta_{\mathrm{align}}\) becomes positive and the physical tool-axis
+alignment angle decreases.
 Adding lateral compliance (Test~4) lets the tool both slide and rotate, which
-is expected to give the most complete passive alignment. With an over-soft
+is expected to give the most complete alignment response during contact. With an over-soft
 setting (Test~5), the displacement becomes large and the alignment motion
 poorly defined, so this setting is expected to be rejected on the safety and
 displacement criteria.
+
+These quantities refer to
+\(\theta_{\mathrm{align}}=\cos^{-1}(a_T^\top(-n_s))\), not to the logged
+set-up controller error \(\mathbf e_R\). The latter is relative to the
+orientation frozen at geometric clearance and can grow during a favorable
+alignment motion. The current general CSV therefore needs an added orientation
+or tool-axis signal before this physical angle can be evaluated.
 
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[scale=1.0]
         \draw[->] (0,0) -- (9.2,0) node[right] {time};
-        \draw[->] (0,0) -- (0,4.2) node[above] {\(\|\mathbf{e}_R\|\)};
-        \draw[dashed] (2,0) -- (2,4) node[above] {contact};
+        \draw[->] (0,0) -- (0,4.2) node[above] {\(\theta_{\mathrm{align}}\)};
+        \draw[dashed] (2,0) -- (2,4) node[above] {verified contact};
         % shared initial misalignment before contact
         \draw[very thick] (0,3.4) -- (2,3.4);
-        \node[left] at (0,3.4) {\footnotesize \(e_{R,b}\)};
+        \node[left] at (0,3.4) {\footnotesize \(\theta_{\mathrm{align},b}\)};
         % Test 1: stiff, stays high
         \draw[very thick] (2,3.4) .. controls (4,3.2) and (6.5,3.05) .. (8.6,3.0)
             node[right] {\footnotesize stiff (Test~1)};
@@ -49,86 +73,12 @@ displacement criteria.
         \draw[very thick] (2,3.4) .. controls (3.6,1.1) and (6.5,0.55) .. (8.6,0.5)
             node[right] {\footnotesize soft+lateral (Test~4)};
     \end{tikzpicture}
-    \caption{Qualitative expected orientation-error magnitude
-    \(\|\mathbf{e}_R\|\) versus time during contact. Lower rotational stiffness
-    (and added lateral compliance) is expected to give a larger drop after
-    contact. Illustrative sketch; replaced by the logged data.}
+    \caption{Qualitative expected physical tool-axis alignment angle
+    \(\theta_{\mathrm{align}}\) versus time after verified contact. Lower
+    rotational stiffness (and added lateral compliance) is expected to give a
+    larger drop. Illustrative sketch; it cannot be replaced from the current
+    CSV until the tool orientation or axis is logged.}
     \label{fig:results_orientation_error}
-\end{figure}
-
-\section{Instantaneous Pole and Virtual-Center Consistency}
-\label{sec:results_pole}
-
-The instantaneous pole of the measured motion
-(\cref{eq:instantaneous_pole_displacement}) indicates where the passive motion
-appears to pivot. With stiff rotation, the small rotation occurs essentially
-about the tool-frame origin, so the pole lies far from the contact edge and the
-pole error \(e_P\) is large. With compliant rotation and added lateral
-compliance, the pole is expected to migrate toward the contact edge and the
-surface, reducing \(e_P\) and matching the useful passive pivot near the
-contact. This is the geometric signature of good passive self-alignment.
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}[scale=1.0]
-        % surface
-        \draw[very thick] (0,0) -- (10,0);
-        \node[anchor=north east] at (10,0) {\footnotesize surface};
-        % tilted tool resting on its edge
-        \draw[very thick] (3,0) -- (6.6,2.7);
-        \node[anchor=south] at (6.7,2.7) {\footnotesize tool};
-        % contact edge
-        \fill (3,0) circle (2.2pt);
-        \node[anchor=north] at (3,-0.08) {\footnotesize edge \(p_e\)};
-        % downward contact force, to the left of the tool
-        \draw[->, thick] (2.1,1.1) -- (2.1,0.15);
-        \node[anchor=east] at (2.05,0.65) {\footnotesize \(f_C\)};
-        % pole near edge (compliant): good
-        \fill (3.6,0.3) circle (2.2pt);
-        \node[anchor=west] at (3.8,0.18) {\footnotesize pole (compliant): near edge};
-        % pole near wrist (stiff): bad
-        \fill (6.2,2.4) circle (2.2pt);
-        \node[anchor=west] at (6.4,2.25) {\footnotesize pole (stiff): near wrist};
-    \end{tikzpicture}
-    \caption{Qualitative sketch of the instantaneous pole. A compliant setting
-    places the pivot near the contact edge, so the tool face rocks flat onto the
-    surface; a stiff setting leaves the pivot near the wrist, so the edge scrapes
-    instead. Illustrative; the measured pole is computed from the logged motion.}
-    \label{fig:results_pole_geometry}
-\end{figure}
-
-\section{Contact Displacement, Force, and Commanded Torque}
-\label{sec:results_force_torque}
-
-The normal penetration scales approximately as
-\(\Delta x_n\approx \|f_C\|/K_n\), so a stiffer normal direction gives a smaller
-displacement but a larger peak contact force, while a more compliant setting
-gives the opposite. The peak commanded joint torque grows with the commanded
-wrench through \(\boldsymbol{\tau}=J^\top\mathbf{F}\), so the stiffer settings
-produce the largest torque peaks. The logged commanded torques are therefore
-checked to ensure that the selected gains do not produce abrupt or excessive
-commands during the contact transient.
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}[scale=1.0]
-        \draw[->] (0,0) -- (9.2,0) node[right] {time};
-        \draw[->] (0,0) -- (0,4.2) node[above] {\(\|f_C\|,\ \|\boldsymbol{\tau}\|\)};
-        \draw[dashed] (2,0) -- (2,4) node[above] {contact};
-        % contact force: rise at contact, settle
-        \draw[very thick] (0,0.1) -- (2,0.1)
-            .. controls (2.5,3.0) and (3.2,2.5) .. (5,2.4) -- (8.8,2.35)
-            node[right] {\footnotesize \(\|f_C\|\)};
-        % commanded torque: rise lower, stays under limit
-        \draw[very thick] (0,0.05) -- (2,0.05)
-            .. controls (2.5,2.1) and (3.2,1.7) .. (5,1.65) -- (8.8,1.6)
-            node[right] {\footnotesize \(\|\boldsymbol{\tau}\|\)};
-    \end{tikzpicture}
-    \caption{Qualitative expected contact force \(\|f_C\|\) and largest commanded
-    joint torque \(\|\boldsymbol{\tau}\|\) versus time. Both rise at contact and
-    settle after the transient. Illustrative sketch; replaced by
-    the logged data.}
-    \label{fig:results_force_torque}
 \end{figure}
 
 \section{Effect of Stiffness Selection}
@@ -137,36 +87,35 @@ commands during the contact transient.
 Table~\ref{tab:results_contact_summary} collects the illustrative expected
 outcomes for each candidate setting. The ranking that follows from the reasoning
 above places the low-rotational-stiffness setting with added lateral compliance
-(Test~4) as the best passive self-alignment candidate: it gives the largest
-orientation-error reduction (\(\Delta e_R\approx8.5^\circ\)), the pole closest to
-the edge (\(e_P\approx8\,\mathrm{mm}\)), and a moderate contact force and torque.
+(Test~4) as the best contact-alignment candidate: it gives the largest
+physical alignment improvement
+(\(\Delta\theta_{\mathrm{align}}\approx8.5^\circ\)) while the intended
+selection criterion requires bounded feature and TCP displacement.
 The stiff setting (Test~1) is the worst for alignment
-(\(\Delta e_R\approx1^\circ\), \(e_P\approx80\,\mathrm{mm}\)), and the over-soft
-setting (Test~5) is rejected because, although it rotates, its pole drifts away
-from the edge (\(e_P\approx35\,\mathrm{mm}\)) and the displacement becomes large.
+(\(\Delta\theta_{\mathrm{align}}\approx1^\circ\)). The over-soft
+setting (Test~5) is rejected because, although it rotates, its
+displacement becomes large.
 
 \begin{table}[H]
 \centering
 \caption{Illustrative expected outcomes of the candidate stiffness settings in
 the edge-contact alignment experiment; \(b\) and \(a\) denote before and after
-contact-induced alignment. These values indicate the anticipated trends and are
-replaced by the measured data.}
+the alignment interval during contact. These values indicate the anticipated trends and are
+replaced only by provenance-controlled physical-alignment and
+tool-feature/TCP-displacement signals.}
 \label{tab:results_contact_summary}
-\begin{tabular}{@{}ccccccc@{}}
+\begin{tabular}{@{}cccc@{}}
 \toprule
 Test
-& \(\|\mathbf{e}_{R,b}\|\) (\(^\circ\))
-& \(\|\mathbf{e}_{R,a}\|\) (\(^\circ\))
-& \(\Delta e_R\) (\(^\circ\))
-& \(e_P\) (mm)
-& \(\|f_C\|_{\max}\) (N)
-& \(\|\boldsymbol{\tau}\|_{\max}\) (Nm) \\
+& \(\theta_{\mathrm{align},b}\) (\(^\circ\))
+& \(\theta_{\mathrm{align},a}\) (\(^\circ\))
+& \(\Delta\theta_{\mathrm{align}}\) (\(^\circ\)) \\
 \midrule
-1 & 10 & 9.0 & 1.0 & 80 & 18 & 28 \\
-2 & 10 & 6.0 & 4.0 & 45 & 15 & 22 \\
-3 & 10 & 3.0 & 7.0 & 22 & 12 & 16 \\
-4 & 10 & 1.5 & 8.5 & 8  & 10 & 14 \\
-5 & 10 & 2.0 & 8.0 & 35 & 6  & 9 \\
+1 & 10 & 9.0 & 1.0 \\
+2 & 10 & 6.0 & 4.0 \\
+3 & 10 & 3.0 & 7.0 \\
+4 & 10 & 1.5 & 8.5 \\
+5 & 10 & 2.0 & 8.0 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -174,103 +123,70 @@ Test
 \section{Effect of Damping}
 \label{sec:results_damping}
 
-With the damping initialized from the critical-damping approximation, the
-contact response is expected to settle without sustained oscillation. An
-under-damped setting would show oscillation in the orientation error and the
-contact force after the tool touches or leaves the surface; the selected damping
-values are checked against this on the logged signals.
-
-\section{Least-Squares Identification Results}
-\label{sec:results_ls}
-
-Finally, the least-squares identification of
-Section~\ref{sec:effective_stiffness_damping_identification} is expected to show
-that for the stiff settings the alignment moment is dominated by the rotational
-term \(M_{\mathrm{rot}}=K_R^{\mathrm{eff}}\Delta\theta\), whereas for the
-compliant setting with lateral sliding the translational term
-\(M_{\mathrm{trans}}=K_{rt}^{\mathrm{eff}}\Delta x_C\) contributes a
-significant share, confirming that sliding is part of the passive alignment.
-Illustrative fitted values \(K_{rt}^{\mathrm{eff}}\),
-\(D_{rt}^{\mathrm{eff}}\), \(K_R^{\mathrm{eff}}\), and \(D_R^{\mathrm{eff}}\)
-are reported in Table~\ref{tab:results_effective_fit}; the values from the
-logged fit replace them.
-
-\begin{table}[H]
-\centering
-\caption{Illustrative effective stiffness and damping contributions for the
-best setting (Test~4), identified by the least-squares fit. Example values
-indicating the expected split between translation and rotation; replaced by the
-fitted values from the logged data.}
-\label{tab:results_effective_fit}
-\begin{tabular}{@{}llc@{}}
-\toprule
-Quantity & Symbol & Value \\
-\midrule
-Translation--rotation stiffness & \(K_{rt}^{\mathrm{eff}}\) & \(15\ \mathrm{Nm/m}\) \\
-Translation--rotation damping & \(D_{rt}^{\mathrm{eff}}\) & \(1.2\ \mathrm{Nm\,s/m}\) \\
-Rotational stiffness & \(K_R^{\mathrm{eff}}\) & \(6\ \mathrm{Nm/rad}\) \\
-Rotational damping & \(D_R^{\mathrm{eff}}\) & \(0.3\ \mathrm{Nm\,s/rad}\) \\
-\bottomrule
-\end{tabular}
-\end{table}
+The damping coefficients used by the controller are generated at entry to each
+phase group. It symmetrizes \(JM_q^{-1}J^\top\), adds \(10^{-9}I_6\), inverts
+the result, and applies \(d_i=2\zeta\sqrt{\Lambda_{ii}k_i}\) per task
+coordinate. The regularization is a numerical device for the mixed-unit
+Cartesian matrix, not the SVD cutoff used by the null-space projector.
+Oscillation in the rotation-vector response would indicate insufficient
+directional damping for that run; \(\zeta\) is a tuning factor rather than a
+proof of a coupled-system modal damping ratio.
 
 \section{Discussion}
 \label{sec:discussion_contact}
 
-\subsection{Comparison with Expected Passive Alignment Behaviour}
+\subsection{Comparison with Expected Contact-Alignment Behaviour}
 
 The expected trade-off is the same physical trade-off that appears throughout
 Cartesian impedance control. Higher stiffness improves pose regulation but
-increases contact forces and commanded torques. Lower stiffness improves
-compliance but can allow excessive displacement and may make the alignment
-motion poorly defined. For the surface-contact task, the important design
-question is not simply whether the robot is soft or stiff. The important
-question is where the compliance appears to be located geometrically.
+resists motion during contact. Lower stiffness improves compliance but can
+allow excessive displacement and may make the alignment motion poorly defined.
+For the surface-contact task, the important design question is not simply
+whether the robot is soft or stiff. The important question is where the
+compliance appears to be located geometrically.
 
 \subsection{Practical Implications for Controller Tuning}
 
 A purely diagonal stiffness matrix can make the robot compliant, but it does
-not directly encode a useful virtual center of rotation. In that case, the
+not directly encode a selected local linearized center of compliance. In that case, the
 contact wrench may still produce useful alignment because the contact force
 acts at the tool edge and because the surface constrains the motion. However,
-the effective pivot point must then be evaluated from the measured motion
-rather than assumed from the commanded stiffness matrix. This is why the
-instantaneous pole or screw-axis evaluation is important in the direct
-experimental comparison. This interpretation is consistent with the assembly
+the result must be evaluated from physical tool-axis alignment and
+feature/TCP displacement rather than inferred from the commanded stiffness
+matrix alone. This interpretation is consistent with the assembly
 literature, where remote or variable compliance centers are useful precisely
 because they turn contact forces into correcting motion instead of jamming
 \citep{Nevins1989ComputerControlledAssembly,Watson1978RCC,Wang2019VariableComplianceCenter,Hartisch2022FlexureRCC}.
 
 \subsection{Limitations of the Current Qualitative Results}
 
-The numerical values in this chapter are still qualitative expectations because
-the final logged contact data are not available yet. They are used to show the
-physically expected trends, the required plots, and the interpretation method.
-The final validation requires measured repetitions with the same candidate
-gains, the logged pose and wrench signals, and the fitted effective stiffness
-and damping matrices.
+The numerical values in the planned-study tables remain qualitative
+expectations. A local current-schema CSV exists in the controller working tree,
+but it has not been archived with a run manifest that binds it to a committed
+configuration and it lacks the orientation needed for
+\(\theta_{\mathrm{align}}\). It is therefore not silently promoted to final
+evidence here. Final validation requires provenance-controlled repetitions,
+the physical tool-axis signal, and selected-feature/TCP displacement.
 
 \subsection{Practical Implications of Coupled Gain Design}
 
-A fully coupled stiffness matrix based on a selected center point would encode
-the virtual-center behavior more directly. The least-squares identification in
-Section~\ref{sec:effective_stiffness_damping_identification} is therefore used
-to analyze the effective coupling that appears during contact, even when the
-commanded controller gains are first computed from quasi-static contact
-limits and then validated experimentally. For the present thesis, the final
-stiffness selection should satisfy four practical requirements. It should
-reduce the orientation error during contact. It should produce an
-instantaneous pole near the useful contact region. It must be damped enough to
-avoid oscillation. Finally, it must remain compatible with the Panda torque
-limits and the discrete real-time implementation.
+The current set-up phase implements this construction directly.  A
+block-diagonal pole-frame impedance is shifted to the TCP by the adjoint
+congruence of Section~\ref{sec:coupled_pole_stiffness}, producing the
+translation--rotation blocks commanded by the controller. The selected
+impedance should reduce the relevant surface-alignment angle, avoid excessive
+contact loads, remain adequately damped, and respect both the configured Panda
+collision/reflex thresholds and the discrete real-time timing budget. These
+thresholds are not a software torque clamp.
 
-\section{Decoupled versus Coupled Wrench Command}
+\section{Decoupled versus Pole-Coupled Impedance}
 \label{sec:coupled_command_experiment}
 
-The coupled gain design discussed in the previous section was implemented and
-tested directly, using the pole-shifted stiffness of
-\cref{eq:coupled_tcp_stiffness}. During the post-contact alignment phase the
-controller can command either the decoupled wrench of
+This section reports the historical \texttt{Difference-Chasles-Pole} campaign,
+in which the coupled gain design was implemented and tested directly using the
+pole-shifted stiffness of \cref{eq:coupled_tcp_stiffness}. During that
+controller's post-contact alignment phase it could command either the
+decoupled wrench of
 \cref{eq:cartesian_force_moment_vector} or the coupled wrench
 \(w = K_{\mathrm{TCP}}\,e + D_{\mathrm{TCP}}\,\dot{e}\), with the pole placed at a
 chosen offset from the contact edge along the surface-normal direction. All runs
@@ -278,116 +194,80 @@ start from the same fixed joint configuration and use the same downward contact
 search and the same \(7\,\mathrm{s}\) alignment phase, so that only the command
 and the pole differ. They are compared in
 \cref{tab:coupled_command_campaign} by the final tip angle (the rotation away
-from the orientation held at first contact), the steady contact force, the
-travel of the contact edge, and the distance of the measured screw axis from the
-edge, where a smaller distance indicates a cleaner rotation about the contact
-edge.
+from the orientation held at first contact) and the travel of the contact edge.
 
 \begin{table}[H]
 \centering
-\caption{Effect of the wrench command and the pole placement on the passive edge
-alignment. All coupled runs use the same diagonal post-contact gains; only the
-pole differs. A positive offset moves the pole from the contact edge across the
-TCP to the opposite side.}
+\caption{Historical \texttt{Difference-Chasles-Pole} campaign: effect of the
+impedance structure and pole placement on edge alignment during contact. All coupled runs
+use the same diagonal pole-frame gains; only the pole differs. A positive
+legacy scalar offset moves the pole from the contact edge across the TCP to the
+opposite side.}
 \label{tab:coupled_command_campaign}
-\begin{tabular}{@{}lccccc@{}}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lccc@{}}
 \toprule
-Command / pole & Offset (m) & Tip (deg) & Force (N) & Edge (mm) & Axis dist. (mm)\\
+Controller / pole & Offset (m) & Tip (deg) & Edge (mm)\\
 \midrule
-Decoupled baseline (pole at TCP) & --- & 9.0 & 106 & 6.0 & 36\\
-Coupled, pole on the edge & 0.00 & 0.6 & 122 & 9.1 & ---\\
-Coupled, pole on the far side & $+0.08$ & 11.2 & 79 & 4.2 & 19\\
-Coupled, pole further out & $+0.12$ & 9.7 & 54 & 3.0 & ---\\
-Coupled, far pole, higher push & $+0.08$ & 10.3 & 119 & 5.4 & ---\\
-Coupled, far pole, live tracking & $+0.08$ & 10.1 & 81 & 4.1 & 21\\
+Decoupled baseline (pole at TCP) & --- & 9.0 & 6.0\\
+Coupled, pole on the edge & 0.00 & 0.6 & 9.1\\
+Coupled, pole on the far side & $+0.08$ & 11.2 & 4.2\\
+Coupled, pole further out & $+0.12$ & 9.7 & 3.0\\
+Coupled, far pole, higher push & $+0.08$ & 10.3 & 5.4\\
+Coupled, far pole, live tracking & $+0.08$ & 10.1 & 4.1\\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 As a consistency check, feeding the decoupled gains through the coupled command
 path with the pole at the TCP reproduced the decoupled baseline
-(\(8.6^\circ\) tip at the same force), which confirms that the differences
-observed for other poles are a genuine effect of the coupling and not an
-implementation artefact.
+(\(8.6^\circ\) tip), which confirms that the differences observed for other
+poles are a genuine effect of the coupling and not an implementation artefact.
 
 The runs can be read as follows. The decoupled baseline tipped the tool by
-\(9.0^\circ\) at a steady \(106\,\mathrm{N}\). Placing the pole on the contact
-edge almost completely suppressed the tip (\(0.6^\circ\)): the off-diagonal block
+\(9.0^\circ\). Placing the pole on the contact edge almost completely suppressed
+the tip (\(0.6^\circ\)): the off-diagonal block
 \([r_c]_\times^\top K_p\) converts the normal press into an orientation-holding
 moment, so the tool stays rigid about the edge and only slides tangentially.
 Moving the pole to the opposite side of the TCP reverses the sign of the
 coupling, so that it now assists the tip; the tool then reached
-\(11.2^\circ\), exceeding the baseline while using less contact force
-(\(79\,\mathrm{N}\)) and producing less edge travel and a screw axis about twice
-as close to the contact edge. Increasing the offset further reduced the tip
+\(11.2^\circ\), exceeding the baseline while producing less edge travel.
+Increasing the offset
+further reduced the tip
 again (\(9.7^\circ\)), because the quadratic term
 \([r_c]_\times^\top K_p\,[r_c]_\times\) in \cref{eq:coupled_tcp_stiffness} grows
 with the square of the lever and re-stiffens the rotation; the assist therefore
-has a clear optimum. Increasing the translational push raised the contact force
-to \(119\,\mathrm{N}\) but did not increase the tip, which shows that the
-equilibrium is limited by the geometry of the spring and not by the available
-press. Recomputing the pole from the moving edge each cycle gave essentially the
-same equilibrium and remained stable, so a constant pole pinned at first contact
-is preferred for its predictability.
+has a clear optimum. Increasing the translational push did not increase the
+tip. Recomputing the pole from the moving edge each cycle gave essentially the
+same equilibrium without an observed oscillation or reflex stop, so a constant
+pole pinned at first contact is preferred for its predictability.
 
-These results confirm the central distinction between the two commands. A
+These results confirm the central distinction between the two impedance
+structures. A
 coupled, pole-based wrench is not equivalent to the decoupled wrench unless the
 pole lies at the TCP, and the pole position alone decides whether the coupling
-resists or assists the passive alignment. With an assisting pole on the far
+resists or assists the alignment response during contact. With an assisting pole on the far
 side of the contact edge, the coupled command improves the alignment over the
-decoupled baseline: a larger tip at lower contact force, less edge sliding, and a
-rotation axis closer to the physical contact edge. All single-pole variants
+decoupled baseline: a larger tip and less edge sliding. All single-pole variants
 nevertheless settle at an equilibrium short of full flatness, because the
 contact moment that drives the rotation decays as the tool tips and the edge
-stops digging in. This limit is intrinsic to passive compliance and is shared by
-the decoupled baseline; neither increased push nor live pole tracking removes
-it. Reaching full flatness would require an actively driven, time-varying pole
-or a commanded rotation, which lies outside the passive scope considered here.
+stops digging in. Neither increased push nor live pole tracking removed this
+limit in the historical trials. Reaching full flatness would require a
+different active reference strategy, such as a time-varying pole or a commanded
+rotation, which was not part of that campaign.
 
-\subsection{Commanded Pole versus Achieved Rotation Axis}
-\label{subsec:pole_vs_axis}
-
-A further observation concerns the relation between the \emph{commanded} pole
-and the axis the tool actually rotates about. In free motion the centre of
-compliance is also the centre of rotation, but under a rigid contact the two
-separate. In one run the pole was commanded about \(40\,\mathrm{mm}\) to one side
-of the end-effector origin, yet the measured finite screw axis lay about
-\(50\,\mathrm{mm}\) to the opposite side, close to the contact edge; the two were
-roughly \(90\,\mathrm{mm}\) apart, on opposite sides of the tool tip. The reason
-is that the pressed edge acts as a kinematic hinge: the surface pins the edge, so
-the tool can only pivot about the contact region irrespective of where the
-compliance is centred. Shifting the pole therefore does not relocate the
-rotation axis; it changes the restoring moment applied about the pinned edge,
-which is precisely why a far-side pole increased the tip
-(\cref{tab:coupled_command_campaign}) without moving the measured axis to the
-far side. Concisely, the pole sets the \emph{effort} while the contact sets the
-\emph{axis}. This decoupling, induced by the contact constraint, is the reason
-the commanded pole and the measured finite (Chasles) axis do not coincide and
-should not be expected to.
-
-A confirming test makes the same point from the opposite direction. When the
-pole was deliberately commanded \emph{at} the previously measured Chasles axis,
-i.e.\ on the edge side where the tool naturally pivots, the alignment was
-suppressed almost entirely: the tip stalled at \(0.6^\circ\) while the contact
-force rose to about \(123\,\mathrm{N}\), the same locked behaviour as the
-pole-on-edge case in \cref{tab:coupled_command_campaign}. Placing the stiff
-compliance on the pivot turns the normal press into an orientation-holding
-moment, so the tool is held rigid instead of being tipped. In other words,
-trying to put the restoring effort \emph{on} the natural axis removes the effort
-that would rotate the tool; the useful pole is always on the far side, away from
-that axis. This is the practical counterpart of the effort/axis distinction
-above: the axis cannot be driven toward by commanding the compliance to sit on
-it.
-
-A side effect of this test is a caution about the diagnostic itself. Because the
-suppressed run rotates by only \(0.6^\circ\), its finite screw axis is
-numerically ill-conditioned: the axis position is obtained by dividing a
-displacement by a near-zero rotation, so it drifts to physically meaningless
-values (here several hundred millimetres from the edge, with a correspondingly
-large pitch), and the per-cycle estimate falls back to a transient value rather
-than a stable one. The finite-axis and instantaneous-pole evaluations are
-therefore only trustworthy when the tip angle is non-trivial; for strongly
-suppressed motions they should be read as ``no well-defined axis'' rather than as
-a measured axis. This also shows that feeding a measured axis back into the pole
-command is self-defeating: the resulting edge-side pole suppresses the rotation,
-which in turn makes the next axis estimate meaningless.
+The current controller does not reproduce this campaign by merely loading the
+same scalar offset. It activates the coupled law only in \texttt{set\_up} and
+defines
+\[
+  p_c=p_{\Pi,\mathrm{clr}}+
+  [-0.04,\ 0.08,\ 0]^\top\,\mathrm{m}
+\]
+in base coordinates, where \(p_{\Pi,\mathrm{clr}}\) is the selected feature
+projected onto the plane at the \(20\,\mathrm{mm}\) geometric clearance. The
+source names this reference \texttt{first\_contact\_point}, but it is neither a
+live edge nor a force-detected contact point.
+New measurements with \texttt{FULL-Working-Clean} are therefore required before
+the table above can be attributed to the current state machine or parameter
+set.

@@ -1,45 +1,252 @@
 \chapter{Controller Parameters}
 \label{app:controller_parameters}
 
-This appendix lists the controller parameters used in the experiments. The
-final numerical values are inserted once the trials are completed.
+This appendix records the active configuration of
+\texttt{surface\_grinding\_controller} at controller tag
+\texttt{FULL-Working-Clean} (commit \texttt{bbe7e85}).  It is a reproducibility
+record for the implementation described in Chapters~\ref{ch:implementation}
+and~\ref{ch:methodology}. The controller loads the disjoint files
+\texttt{common.txt},
+\texttt{safety.txt}, \texttt{sequence.txt}, \texttt{hold.txt}, and
+\texttt{guidance.txt} in that order.
 
-\section*{Tested Cartesian stiffness and damping}
+\section{Surface and Tool Geometry}
+
+The plane satisfies
+\[
+ n_s^\top(p-p_s)=0,\qquad
+ n_s=R_y(b)R_x(a)e_z ,
+\]
+and the surface-frame column order is \([t_1,t_2,n_s]\).
+
 \begin{table}[H]
 \centering
-\caption{Tested Cartesian stiffness and damping settings (surface frame).
-Translational stiffness in \(\mathrm{N/m}\), rotational in \(\mathrm{Nm/rad}\);
-damping in the corresponding units.}
-\label{tab:tested_parameters}
-\begin{tabular}{@{}clll@{}}
+\caption{Active surface and tool parameters.  Vectors without another stated
+frame are expressed in the robot base frame.}
+\label{tab:active_surface_tool_parameters}
+\small
+\begin{tabular}{@{}
+>{\raggedright\arraybackslash}p{0.26\textwidth}
+>{\raggedright\arraybackslash}p{0.39\textwidth}
+>{\raggedright\arraybackslash}p{0.26\textwidth}@{}}
 \toprule
-Test & \(K_n,K_{t_1},K_{t_2}\) & \(K_{r,n},K_{r,t_1},K_{r,t_2}\) & \(D_{\mathrm{task}}^{(j)}\) \\
+Quantity & Configuration key & Value \\
 \midrule
-1 & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] \\
-2 & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] \\
-3 & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] \\
-4 & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] \\
-5 & [\,\ldots\,] & [\,\ldots\,] & [\,\ldots\,] \\
+Surface point & \texttt{surface\_point} &
+  \([0.55,-0.06,0.025]\,\mathrm{m}\) \\
+Surface tilts & \(a,b\) & \(0^\circ,5^\circ\) \\
+Entered first tangent & \texttt{alignment\_target\_tangent1} &
+  \([1,0,0]\) \\
+Tool axis in EE & \texttt{tool\_axis\_ee} & \(+e_{z,\mathrm{EE}}\) \\
+Signed alignment target & \texttt{tool\_axis\_target\_sign} & \(-n_s\) \\
+Grinding-face centre in EE & \texttt{tool\_contact\_face\_center\_ee} &
+  \([0,0,0.020]\,\mathrm{m}\) \\
+Grinding-face size & width \(\times\) length &
+  \(0.040\times0.120\,\mathrm{m}\) \\
+Feature tie tolerance &
+  \texttt{tool\_contact\_feature\_}\newline\texttt{tie\_tolerance} &
+  \(10^{-4}\,\mathrm{m}\) \\
+Initial-joint case & \texttt{q\_init\_case} & \texttt{tilted\_tool} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\section*{Null-space and collision-behavior parameters}
+The corresponding initial joint vector is
+\[
+\begin{aligned}
+q_{\mathrm{init}}={}&[
+-0.047771,\ 0.315777,\ -0.089546,\ -2.143518,\\
+&\hspace{2.7em}0.306679,\ 2.434032,\ 0.467459]^\top\ \mathrm{rad}.
+\end{aligned}
+\]
+
+\section{Phase Sequence and Impedance}
+
 \begin{table}[H]
 \centering
-\caption{Null-space gains and Franka collision-behavior thresholds.}
-\label{tab:nullspace_safety_parameters}
-\begin{tabular}{@{}lll@{}}
+\caption{Active phase and mode gains. Each bracket follows the frame order
+stated with the stiffness. Displayed Cartesian damping values are fallbacks;
+automatic damping is active.}
+\label{tab:active_phase_gains}
+\small
+\begin{tabular}{@{}
+>{\raggedright\arraybackslash}p{0.23\textwidth}
+>{\raggedright\arraybackslash}p{0.40\textwidth}
+>{\raggedright\arraybackslash}p{0.28\textwidth}@{}}
 \toprule
-Parameter & Symbol & Value \\
+Phase / quantity & Active stiffness and frame & Damping fallback \\
 \midrule
-Projector damping & \(\lambda\) & \(0.05\) \\
-Null-space stiffness & \(k_{\mathrm{start}}\) & [\,\ldots\,] \\
-Null-space damping & \(d_{\mathrm{null}}\) & [\,\ldots\,] \\
-Sigma-min weight & \(k_\sigma\) & [\,\ldots\,] \\
-Null-space step size & \(\alpha\) & [\,\ldots\,] \\
-Collision torque threshold & \texttt{collision\_torque\_acc/nom} & [\,\ldots\,] \\
-Collision force/moment threshold & \texttt{collision\_force\_acc/nom} & [\,\ldots\,] \\
+Approach translation &
+  \([150,150,150]\,\mathrm{N/m}\), surface \([t_1,t_2,n_s]\) &
+  \([20,20,20]\,\mathrm{N\,s/m}\) \\
+Approach rotation &
+  \([90,90,90]\,\mathrm{N\,m/rad}\), surface \([t_1,t_2,n_s]\) &
+  \([12,12,12]\,\mathrm{N\,m\,s/rad}\) \\
+Pre-set-up gate translation &
+  \(5000\,\mathrm{N/m}\), isotropic base &
+  \(200\,\mathrm{N\,s/m}\) \\
+Pre-set-up gate rotation &
+  \(90\,\mathrm{N\,m/rad}\), inherited approach rotation &
+  inherited cached approach \(D_R\) \\
+Set-up translation (pole source) &
+  \([2000,2000,350]\,\mathrm{N/m}\), base \([x,y,z]\) &
+  \([10,10,175]\,\mathrm{N\,s/m}\) \\
+Set-up rotation (pole source) &
+  \([5,5,50]\,\mathrm{N\,m/rad}\), surface \([t_1,t_2,n_s]\) &
+  \([10.01,10.01,10]\,\mathrm{N\,m\,s/rad}\) \\
+Grind translation (decoupled) &
+  \([2000,2000,350]\,\mathrm{N/m}\), base \([x,y,z]\) &
+  \([10,10,175]\,\mathrm{N\,s/m}\) \\
+Grind rotation (decoupled) &
+  \([5,5,50]\,\mathrm{N\,m/rad}\), surface \([t_1,t_2,n_s]\) &
+  \([10.01,10.01,10]\,\mathrm{N\,m\,s/rad}\) \\
+Hold translation &
+  \(300\,\mathrm{N/m}\), isotropic base &
+  \(50\,\mathrm{N\,s/m}\) \\
+Hold rotation &
+  \(40\,\mathrm{N\,m/rad}\), isotropic base &
+  \(8\,\mathrm{N\,m\,s/rad}\) \\
+Manual guidance &
+  no Cartesian stiffness; joint coordinates &
+  \(0.5\,\mathrm{N\,m\,s/rad}\) joint damping \\
 \bottomrule
 \end{tabular}
+\end{table}
+
+The enabled pre-set-up gate overrides only translational stiffness. The
+optional pre-grind gate is disabled; if enabled, it remains in set-up and keeps
+the coupled pressed law rather than using the pre-set-up gate gains.
+
+\begin{table}[H]
+\centering
+\caption{Active phase-transition and trajectory parameters.}
+\label{tab:active_phase_timing}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lll@{}}
+\toprule
+Quantity & Configuration key & Value \\
+\midrule
+Orient minimum time & \texttt{approach\_orient\_min\_time} & \(0.5\,\mathrm{s}\) \\
+Tool-axis switch tolerance &
+  \texttt{approach\_orient\_error\_threshold} & \(0.035\,\mathrm{rad}\) \\
+Descent speed / maximum distance &
+  \texttt{descend\_speed}, \texttt{descend\_max\_distance} &
+  \(0.1\,\mathrm{m/s}\), \(0.640\,\mathrm{m}\) \\
+Surface clearance & \texttt{descend\_surface\_clearance} &
+  \(0.020\,\mathrm{m}\) \\
+Set-up minimum time / timeout &
+  \texttt{setup\_min\_time}, \texttt{setup\_timeout} &
+  \(2.0\,\mathrm{s}\), \(4.0\,\mathrm{s}\) \\
+Set-up moment-change threshold &
+  \texttt{setup\_moment\_threshold} & \(150\,\mathrm{N\,m}\) \\
+Set-up push speed / endpoint &
+  \texttt{setup\_push\_speed}, \texttt{setup\_push\_end} &
+  \(0.050\,\mathrm{m/s}\), \(0.180\,\mathrm{m}\) \\
+Grind sweep & axis, amplitude, frequency &
+  \(t_2,\ 0.030\,\mathrm{m},\ 0.2\,\mathrm{Hz}\) \\
+Pre-set-up / pre-grind gates &
+  \texttt{pause\_before\_set\_up}, \texttt{pause\_before\_grind} &
+enabled, disabled \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\section{Automatic Damping and Center of Compliance}
+
+Automatic damping uses
+\[
+\mathcal H=JM_q^{-1}J^\top,\qquad
+\Lambda=
+\left(
+\tfrac12(\mathcal H+\mathcal H^\top)
++10^{-9}I
+\right)^{-1},
+\qquad d_i=2\zeta\sqrt{\Lambda_{ii}k_i}.
+\]
+It is enabled for hold, approach, set-up/grind, and the pause gate. The
+approach factor is \(\zeta=1.9\); set-up/grind use \(\zeta=1.0\). Hold fits one
+common factor so that its three translational values are close to
+\(50\,\mathrm{N\,s/m}\). At the pre-set-up pause gate, the translational fit
+targets the configured \texttt{pause\_hold\_Dp}, while the rotational fit
+targets the cached approach rotational damping expressed in the surface frame.
+For a unit-factor vector \(c_i=2\sqrt{\Lambda_{ii}k_i}\) and target \(d^\star\),
+each fitted factor is
+\[
+\beta^\star=\frac{c^\top d^\star}{c^\top c}.
+\]
+Hold uses one factor fitted from translation and applies it to translation and
+rotation. The gate fits separate translational and rotational factors.
+There is no separate manual pause-rotation target. If the inertia estimate is
+invalid, translation falls back to \texttt{pause\_hold\_Dp} while rotation
+inherits the cached or manual approach damping. The configured maximum
+coefficient is \(8000\), and the manual values in
+Table~\ref{tab:active_phase_gains} are fallbacks rather than per-axis floors.
+The numerical automatic coefficients depend on the phase-entry pose and are
+printed to the terminal; they are not columns of the general sequence CSV.
+
+For set-up, the source damping blocks are calculated from TCP task inertia and
+then shifted through the pole. This preserves symmetry and positive
+semidefiniteness, but the factor \(\zeta=1\) remains a directional tuning
+heuristic; it does not establish a pole-level modal damping ratio for the
+coupled robot--contact system.
+
+The coupled \(6\times6\) law is enabled only during set-up.  Its active source
+is the manual frozen pole
+\[
+p_c=p_{\Pi,\mathrm{clr}}+
+[-0.04,\ 0.08,\ 0]^\top\ \mathrm{m},
+\qquad r_c=p_{\mathrm{TCP,clr}}-p_c .
+\]
+Here \(p_{\Pi,\mathrm{clr}}\) is the selected tool feature projected onto the
+surface at the \(20\,\mathrm{mm}\) geometric clearance hand-off. In the source,
+this geometric reference is stored as \texttt{first\_contact\_point}; it is not
+a force-detected contact edge. The TCP position is captured at the same
+hand-off, so this active \(r_c\) is constant throughout set-up. With
+\texttt{coupled\_pole\_manual=1}, the matrices constructed from this frozen pole
+are the active set-up gains.
+
+\section{Null-Space and Run-Support Parameters}
+
+The quantitative interpretation and validation limits of the five null-space
+parameters are given once in
+\cref{subsec:nullspace_parameter_rationale}. The final two rows of
+Table~\ref{tab:nullspace_safety_parameters} are Franka collision/reflex
+thresholds configured through the libfranka collision-behavior interface; they
+are neither commanded-torque saturation nor a software wrench limiter.
+
+\begin{table}[H]
+\centering
+\caption{Active null-space and run-support parameters.}
+\label{tab:nullspace_safety_parameters}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lll@{}}
+\toprule
+Parameter & Symbol / key & Value \\
+\midrule
+Null-space mode & \texttt{nullspace\_mode} & \(3\) (damping \(+\) sigma) \\
+Null-space damping & \(d_{\mathrm{null}}\) & \(2.0\,\mathrm{N\,m\,s/rad}\) \\
+Sigma torque magnitude & \(k_\sigma\) & \(1.0\,\mathrm{N\,m}\) \\
+Probe distance & \(\alpha_{\mathrm{probe}}\) & \(0.08\,\mathrm{rad}\) \\
+Sigma difference deadband & \(\delta_\sigma\) & \(10^{-6}\) \\
+Relative SVD cutoff & \(\rho\) & \(10^{-4}\) \\
+Full-log sampling / capacity & \texttt{log\_every\_n\_cycles}, rows &
+  every callback (\(1\)), \(120000\) \\
+Compact sigma period / capacity & period, rows &
+  \(0.05\,\mathrm{s}\), \(20000\) \\
+Run duration / stop & \texttt{experiment\_duration} &
+  \(0\,\mathrm{s}\): indefinite until \texttt{e+Enter} \\
+Gripper grasp & width, speed, force &
+  \(0.070\,\mathrm{m}\), \(0.050\,\mathrm{m/s}\), \(60\,\mathrm{N}\) \\
+Gripper failure policy & \texttt{require\_gripper\_open} &
+  \(0\): failed grasp is reported but nonfatal \\
+Manual-guidance damping & \texttt{manual\_guidance\_damping} &
+  \(0.5\,\mathrm{N\,m\,s/rad}\) \\
+Joint-side collision threshold & acceleration/nominal &
+  \(140\,\mathrm{N\,m}\) on each axis \\
+Cartesian collision threshold & acceleration/nominal &
+  \(240\,\mathrm{N}\) or \(\mathrm{N\,m}\) on each channel \\
+\bottomrule
+\end{tabular}
+}
 \end{table}

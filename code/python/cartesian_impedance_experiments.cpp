@@ -266,28 +266,16 @@ Eigen::Matrix3d computeDesiredOrientation(
 
 
 // Define function computeOrientationError:
-// compute the rotational error vector from desired and current orientations.
+// Compute the restoring rotation vector in base-frame components.
 Eigen::Vector3d computeOrientationError(
     const Eigen::Matrix3d& R_d,
     const Eigen::Matrix3d& R_EE) {
 
-  Eigen::Matrix3d dR = R_d.transpose() * R_EE;
-
-  double cos_phi = (dR.trace() - 1.0) / 2.0;
-  cos_phi = std::min(1.0, std::max(-1.0, cos_phi));
-
-  double phi = std::acos(cos_phi);
-
-  Eigen::Vector3d e_R;
-
-  if (phi < 1e-6) {
-    e_R.setZero();
-  } else {
-    e_R =
-        phi / (2.0 * std::sin(phi)) *
-        Eigen::Vector3d(dR(2, 1) - dR(1, 2),
-                        dR(0, 2) - dR(2, 0),
-                        dR(1, 0) - dR(0, 1));
+  const Eigen::Matrix3d dR = R_EE.transpose() * R_d;
+  const Eigen::AngleAxisd angle_axis(dR);
+  Eigen::Vector3d e_R = Eigen::Vector3d::Zero();
+  if (std::abs(angle_axis.angle()) >= 1e-9) {
+    e_R = R_EE * angle_axis.axis() * angle_axis.angle();
   }
 
   return e_R;

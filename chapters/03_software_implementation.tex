@@ -1,202 +1,283 @@
 \chapter{Controller Design and Implementation}
 \label{ch:implementation}
 
-This chapter describes the implementation of the Cartesian impedance controller derived in Chapter~2 for the Franka Emika Panda.
-The implementation involves accessing model quantities through libfranka, evaluating the controller within the \(1\,\mathrm{ms}\) Franka Control Interface cycle, and mapping the Cartesian wrench to joint torques.
+This chapter describes the implementation of the Cartesian impedance
+controller used for the surface-grinding experiments. The implementation is
+written in C++ with libfranka and Eigen and is evaluated in the \(1\,\mathrm{ms}\)
+Franka Control Interface cycle. In addition to the Cartesian impedance law, the
+software contains the surface and tool geometry, the approach--set-up--grind
+state machine, the pole-shifted coupled stiffness used during set-up, and the
+SVD-based null-space controller.
 
 \section{Real-Time Control Architecture}
 \label{sec:implementation_scope}
 
-The controller is implemented in C++ using libfranka and Eigen.
-The libfranka library provides access to the robot state, the model interface, and the real-time torque-control callback.
-Eigen is used for matrix and vector operations, such as computing Cartesian velocities, evaluating the impedance law, and mapping Cartesian quantities to joint torques.
+The controller is divided into parameter handling, real-time control
+mathematics, the phase machine, terminal interaction, and post-run reporting.
+Five parameter files are merged at start-up: the common robot, logging,
+surface, tool, gripper, and null-space settings; collision thresholds; sequence
+settings; hold settings; and manual-guidance settings. No parameter file is read
+inside the real-time callback.
 
-The implementation is organized around the real-time callback function
-\texttt{robot.control}.
-This structure is required because the controller must compute and return a new
-torque command within each \(1\,\mathrm{ms}\) control cycle.
-Each experiment uses the same basic control-loop structure.
-Only the desired end-effector pose and the stiffness and damping matrices are
-changed between experiments.
-
-The implementation follows four main requirements:
+The callback receives the measured robot state and evaluates the following
+operations on every cycle:
 
 \begin{itemize}
-    \item The measured robot state, including \(q\), \(\dot{q}\), and \(T_{\mathrm{EE}}\), is read at every control cycle.
-    \item The Jacobian and Coriolis terms are obtained from the libfranka model interface.
-    \item The Cartesian impedance wrench is computed using the selected stiffness and damping matrices.
-    \item The resulting wrench is mapped to joint torques using \(J^\top(q)\), combined with the null-space torque and the optional Coriolis term, and returned to the robot.
+    \item read \(q\), \(\dot q\), the end-effector pose, and the model-based
+    external-wrench estimate;
+    \item obtain the geometric Jacobian and Coriolis vector from the libfranka
+    model and obtain the mass matrix when a phase-dependent damping estimate
+    must be initialized;
+    \item update the active motion phase and its Cartesian reference;
+    \item select the phase-dependent gains and, when enabled, the
+    task-inertia-based damping;
+    \item compute the Cartesian wrench and the SVD-based null-space torque; and
+    \item return the task torque, null-space torque, and Coriolis term to
+    libfranka.
 \end{itemize}
+
+The large experiment log and the compact singular-value diagnostic log are
+stored in preallocated buffers. File output is performed after the control loop,
+not in the \(1\,\mathrm{ms}\) callback.
+
+With the active null-space mode, each callback evaluates one SVD of the current
+Jacobian and two further SVDs at the two probe configurations. The probes also
+require two additional calls to \texttt{model.zeroJacobian}. A current
+full-rate implementation trace contains \(11624\) rows over \(11.704\,\mathrm{s}\):
+\(99.51\,\%\) of adjacent callback timestamps are separated by exactly
+\(1\,\mathrm{ms}\), and the effective delivered-callback rate is
+\(993.1\,\mathrm{Hz}\). This demonstrates sustained execution of the active
+three-SVD law in libfranka's nominal \(1\,\mathrm{kHz}\) torque interface.
+However, the timestamps accumulate the callback period supplied by libfranka;
+they do not measure the callback's local wall-clock execution time and therefore
+do not establish its worst-case execution time. The robot-state field
+\texttt{control\_command\_success\_rate} is the fraction of the last
+100 commands received successfully, not a callback-frequency or execution-time
+measurement, and the current logger does not store that field
+\citep{FrankaFCI2023}.
+The cited trace is operational evidence from the current checkout; the final
+experiment package must archive the CSV together with its checksum, controller
+commit, and parameter files before it is treated as a reproducible timing
+result.
 
 \subsection{Control-Loop Data Flow}
 \label{sec:control_loop_structure}
 
-Figure~\ref{fig:software_data_flow} shows the data flow of the implemented controller.
-At each control step, the Franka Control Interface provides the current robot state, while the libfranka model interface provides the required kinematic and dynamic quantities.
-The controller then computes the Cartesian error, evaluates the impedance law, maps the resulting wrench to joint torques, adds the projected null-space torque and the optional Coriolis term, and returns the final torque command.
+Figure~\ref{fig:software_data_flow} shows the implemented data flow. The phase
+manager uses the configured plane and tool geometry to generate \(p_d\),
+\(\dot p_d\), and \(R_d\). The gain selector supplies either the decoupled
+Cartesian gains or, during set-up only, their pole-shifted \(6\times6\)
+counterpart. The Coriolis vector is always included in the controlled phases.
 
 \begin{figure}[h]
     \centering
     \begin{tikzpicture}[
-        block/.style={draw, rounded corners, minimum width=4.2cm, minimum height=1.1cm, align=center},
+        block/.style={draw, rounded corners, minimum width=5.0cm,
+                      minimum height=1.0cm, align=center},
         arrow/.style={->, thick}
     ]
-        \node[block] (state) {Robot State\\ \(q,\dot{q},T_{\mathrm{EE}}\)};
-        \node[block, below=0.9cm of state] (model) {Model Interface\\ \(J(q),\tau_c(q,\dot{q})\)};
-        \node[block, below=0.9cm of model] (controller) {Impedance and Null-Space Controller\\ \(F=\begin{bmatrix} f\\ m \end{bmatrix},\ \tau_{\mathrm{null}}\)};
-        \node[block, below=0.9cm of controller] (torque) {Torque Command\\
-        \(\begin{aligned}
-        \tau_{\mathrm{cmd}}={}&J^\top(q)\mathbf{F}+\tau_{\mathrm{null}}        &+\tau_c(q,\dot{q})
-        \end{aligned}\)};
+        \node[block] (state) {Robot state and model\\
+        \(q,\dot q,T_{\mathrm{EE}},J,M,\tau_c,\widehat{\mathbf F}_{\mathrm{ext}}\)};
+        \node[block, below=0.7cm of state] (phase) {Geometry and phase manager\\
+        \(p_d,\dot p_d,R_d,\text{ phase gains}\)};
+        \node[block, below=0.7cm of phase] (control) {Cartesian impedance and null space\\
+        \(\mathbf F_{\mathrm{cmd}},\tau_{\mathrm{null}}\)};
+        \node[block, below=0.7cm of control] (torque) {Torque command\\
+        \(\tau_{\mathrm{cmd}}
+        =J^\top\mathbf F_{\mathrm{cmd}}+\tau_{\mathrm{null}}+\tau_c\)};
 
-        \draw[arrow] (state) -- (model);
-        \draw[arrow] (model) -- (controller);
-        \draw[arrow] (controller) -- (torque);
+        \draw[arrow] (state) -- (phase);
+        \draw[arrow] (phase) -- (control);
+        \draw[arrow] (control) -- (torque);
     \end{tikzpicture}
-    \caption{Real-time data flow of the impedance controller implemented with libfranka.}
+    \caption{Real-time data flow of the implemented surface-grinding controller.}
     \label{fig:software_data_flow}
 \end{figure}
-
-This structure follows the control law derived in Chapter~2.
-This implementation chapter therefore focuses on obtaining the required
-quantities from libfranka, evaluating the equations in real time, and configuring
-the Franka collision behavior used during the experiment.
 
 \section{Implemented Cartesian Impedance Controller}
 \label{sec:state_model}
 
-At the beginning of each control callback, the current joint configuration \(q\) and joint velocity vector \(\dot{q}\) are read from \texttt{franka::RobotState} and mapped to Eigen vectors.
-The end-effector transformation is obtained from \texttt{state.O\_T\_EE}, which contains the homogeneous transformation matrix \(T_{\mathrm{EE}}\) of the libfranka end-effector/tool frame with respect to the robot base frame.
-Thus, the position vector \(p_{\mathrm{EE}}\) used by the controller is the Cartesian position of this tool-frame origin, not an independently reconstructed DH point.
+At the beginning of a control cycle, the joint configuration and velocity are
+mapped from \texttt{franka::RobotState}. The transformation
+\texttt{state.O\_T\_EE} supplies the position \(p_{\mathrm{EE}}\) and orientation
+\(R_{\mathrm{EE}}\) of the configured libfranka end-effector frame in the robot
+base frame. The implementation does not reconstruct this pose from a separate
+DH model.
 
-Although the theoretical forward kinematics can be constructed from the DH parameters, the implementation uses the kinematic quantities provided directly by libfranka.
-The measured end-effector transformation is read from \texttt{state.O\_T\_EE}, and the Jacobian is obtained from the libfranka model interface.
-
-The geometric Jacobian is obtained using
+The geometric Jacobian is obtained with
 
 \begin{lstlisting}[language=C++]
 model.zeroJacobian(franka::Frame::kEndEffector, state)
 \end{lstlisting}
 
-and is used for two purposes.
-First, it maps joint velocities to Cartesian velocities,
+and maps the measured joint velocity to the base-frame Cartesian velocity,
 
 \begin{equation}
-\dot{x}
-=
-J(q)\dot{q}.
+\begin{bmatrix}
+\dot p_{\mathrm{EE}}\\
+\omega_{\mathrm{EE}}
+\end{bmatrix}
+=J(q)\dot q .
 \label{eq:software_cartesian_velocity}
 \end{equation}
 
-Second, its transpose is used to map the Cartesian wrench to joint torques
-\cite{Khatib1987},
+The controller uses the restoring position-error convention
+\(e_p=p_d-p_{\mathrm{EE}}\). Its orientation error is obtained from the
+current-to-desired relative rotation,
+
+\begin{equation}
+R_\Delta=R_{\mathrm{EE}}^\top R_d,
+\qquad
+e_R
+=
+R_{\mathrm{EE}}\,
+\operatorname{Log}(R_\Delta)^\vee .
+\label{eq:software_orientation_error}
+\end{equation}
+
+Thus \(e_R\) is the corrective axis--angle vector expressed in the base frame.
+The decoupled Cartesian wrench is
+
+\begin{equation}
+\mathbf F_{\mathrm{cmd}}
+=
+\begin{bmatrix}f\\m\end{bmatrix},
+\qquad
+\begin{aligned}
+f&=K_p e_p+D_p(\dot p_d-\dot p_{\mathrm{EE}}),\\
+m&=K_R e_R-D_R\omega_{\mathrm{EE}} .
+\end{aligned}
+\label{eq:software_decoupled_wrench}
+\end{equation}
+
+The wrench ordering is force followed by moment. Both quantities and the
+end-effector Jacobian are expressed consistently in the base frame. The task
+torque is therefore
 
 \begin{equation}
 \tau_{\mathrm{task}}
 =
-J^\top(q)\mathbf{F}.
+J^\top(q)\mathbf F_{\mathrm{cmd}} .
 \label{eq:software_task_torque}
 \end{equation}
 
-The Coriolis term is also obtained from the libfranka model interface.
-Together with the projected null-space torque, it is added after the task torque has been computed, resulting in the commanded torque
+For all impedance-controlled phases, the returned command is
 
 \begin{equation}
 \tau_{\mathrm{cmd}}
 =
-J^\top(q)\mathbf{F}
+J^\top(q)\mathbf F_{\mathrm{cmd}}
 +
 \tau_{\mathrm{null}}
 +
-\tau_c(q,\dot{q}).
+\tau_c(q,\dot q).
 \label{eq:software_commanded_torque}
 \end{equation}
 
-An explicit gravity term \(\tau_g(q)\) is not added in this software equation,
-because gravity compensation is already performed internally by libfranka. In
-the external joint-torque control mode of the Franka Control Interface, the
-robot runs its own rigid-body model and continuously compensates the gravity
-torque on board; the torque commanded through libfranka is added \emph{on top
-of} this internal gravity compensation, so the command is interpreted as the
-torque \emph{excluding} gravity \cite{FrankaFCI2023}. The user callback
-therefore forms the commanded torque from the Cartesian task torque, the
-null-space torque, and the Coriolis term only, exactly as in the official
-libfranka Cartesian impedance example~\cite{libfrankaCartesianExample}.
-Gravity is thus not missing from the physical control loop---it is taken into
-account one level below the user-level torque equation---and adding a separate
-gravity vector here would compensate the same effect twice.
+The Coriolis vector is obtained from \texttt{model.coriolis(state)} and is
+always added; it is not a run-time option. An explicit gravity vector is not
+added because the Franka Control Interface compensates gravity internally in
+external joint-torque mode \cite{FrankaFCI2023}. This follows the torque
+structure of the official libfranka Cartesian impedance example
+\cite{libfrankaCartesianExample}. Manual guidance is the one separate control
+case: it returns \(\tau_c-d_{\mathrm{guide}}\dot q\) and bypasses the Cartesian
+and null-space laws.
 
-This expression is the implementation form of the torque structure derived in
-Chapter~2.
-The purpose of this chapter is therefore to describe how the required
-quantities are accessed, evaluated, and combined inside the real-time callback.
+\section{SVD-Based Null-Space Control}
+\label{sec:nullspace_conditioning_implementation}
 
-\section{Complete Torque Command}
-\label{sec:nullspace_optimization_implementation}
-
-The null-space theory was derived in \cref{sec:nullspace_svd}. In the
-implementation, the damped null-space projector is built from the full
-\(6\times7\) geometric Jacobian, not from a row-reduced task Jacobian
-\cite{Khatib1987,Dietrich2015NullspaceSurvey,Chiaverini1994DampedLeastSquares}:
+The implementation constructs the torque projector from the full
+\(6\times7\) geometric Jacobian. For
+\[
+J=U\Sigma V^\top ,
+\]
+let \(\sigma_{\max}\) be the largest singular value and let
+\(\rho\) be the configured relative tolerance. The cutoff is
+\(\varepsilon_\rho=\rho\sigma_{\max}\), and the
+truncated Moore--Penrose inverse used by the software is
 
 \begin{equation}
-N
+J_\rho^+
 =
-I
--
-J^\top
-\left(
-JJ^\top+\lambda^2 I
-\right)^{-1}
-J,
+\sum_{\sigma_i>\varepsilon_\rho}
+\frac{1}{\sigma_i}v_i u_i^\top,
 \qquad
-\lambda=0.05 .
+N_\tau
+=
+\left(I-J_\rho^+J\right)^\top .
 \label{eq:implementation_full_projector}
 \end{equation}
 
-The inverse is evaluated with a numerically stable solve rather than an
-explicit matrix inversion. Because the full Cartesian task is used, the
-projector preserves the complete end-effector pose while still leaving the one
-redundant joint direction of the seven-joint arm available for a secondary
-objective.
+Singular directions at or below the cutoff are omitted rather than inverted.
+The resulting \(N_\tau\) is symmetrized numerically to remove round-off
+asymmetry. At full row rank, the seven-joint arm has a one-dimensional
+kinematic null space. The implementation takes its unit direction as the
+seventh column \(\hat v_7=V(:,7)\).
 
-The null-space torque has three projected contributions. A joint-space
-restoring spring keeps the redundant motion near the start configuration
-\(q_{\mathrm{start}}\), a damping term removes redundant joint velocity, and the
-singular-value term biases the configuration toward better conditioning:
+To choose a direction that locally increases the smallest singular value, the
+Jacobian is recomputed at two probe configurations,
+
+\begin{equation}
+q_+=q+\alpha_{\mathrm{probe}}\hat v_7,
+\qquad
+q_-=q-\alpha_{\mathrm{probe}}\hat v_7.
+\label{eq:implementation_sigma_probes}
+\end{equation}
+
+The selector \(s\in\{-1,0,+1\}\) points toward the probe with the larger
+\(\sigma_{\min}\). If
+\(\left|\sigma_{\min}(J(q_+))-\sigma_{\min}(J(q_-))\right|\) is not greater
+than the configured deadband, \(s=0\) and the singular-value push is
+suppressed. The probe distance \(\alpha_{\mathrm{probe}}\) determines only
+where the two Jacobians are evaluated; it
+does not multiply the commanded torque.
+The two configurations lie on the straight line tangent to the instantaneous
+self-motion direction. For finite \(\alpha_{\mathrm{probe}}\), they are not
+obtained by integrating the constant-pose self-motion manifold, so preservation
+of the end-effector pose is only a first-order property of the probe direction.
+The implementation also does not check \(q_+\) and \(q_-\) against joint
+limits. Because the comparison selects only a sign and the applied torque has
+fixed magnitude, this is a two-point smallest-singular-value conditioning
+heuristic. It neither uses the sampled slope magnitude nor guarantees monotonic
+improvement.
+
+Four selectable laws are implemented:
 
 \begin{equation}
 \tau_{\mathrm{null}}
 =
-N
-\left(
-k_{\mathrm{start}}\left(q_{\mathrm{start}}-q\right)
--
-d_{\mathrm{null}}\dot{q}
-\right)
-+
-N
-\left(
-k_{\sigma}\,s\,\alpha_{\mathrm{step}}\,v_7
-\right).
+\begin{cases}
+0,
+& \text{off},\\[2pt]
+-d_{\mathrm{null}}N_\tau\dot q,
+& \text{null-space damping},\\[2pt]
+k_\sigma N_\tau(s\hat v_7),
+& \text{singular-value push},\\[2pt]
+-d_{\mathrm{null}}N_\tau\dot q+k_\sigma N_\tau(s\hat v_7),
+& \text{damping and singular-value push}.
+\end{cases}
 \label{eq:implementation_nullspace_torque}
 \end{equation}
 
-The singular-value direction \(v_7\) is the seventh right singular vector of the
-Jacobian, obtained from its SVD. The sign \(s\) is selected by comparing the
-smallest singular value of the Jacobian at the two candidate configurations
-\(q\pm\alpha_{\mathrm{step}} v_7\), keeping the direction that improves the conditioning, exactly
-as in \cref{eq:nullspace_direction_selection}. The null-space torque is a
-seven-dimensional joint-torque contribution, \(\tau_{\mathrm{null}}\in\mathbb{R}^{7}\),
-and is added as a secondary term after projection by \(N\).
+There is no return-to-start spring in the current implementation. Null-space
+control is evaluated in hold, approach-orient, approach-descend, set-up, and
+grind whenever the selected mode enables it. It is not switched off during the
+approach and it is bypassed only in manual guidance. The active configuration
+uses \texttt{nullspace\_mode=3}, so projected joint damping and the switched
+sigma torque remain active during set-up. The sigma term is an active bias, and
+the Euclidean projector is kinematic rather than dynamically consistent.
+Consequently, the secondary torque can influence the observed contact motion.
+The experiment is therefore described as \emph{unscripted task-space
+alignment}: no time-varying task-space tipping trajectory is prescribed, but
+the observed motion is not claimed to arise solely from an isolated passive
+contact mechanism.
 
-The final torque command is the Cartesian impedance task torque plus the
-projected null-space torque and the optional Coriolis term,
+The complete controlled torque remains
 
 \begin{equation}
 \tau_{\mathrm{cmd}}
 =
-J^\top(q)\,\mathbf{F}_{\mathrm{cmd}}
+J^\top(q)\mathbf F_{\mathrm{cmd}}
 +
 \tau_{\mathrm{null}}
 +
@@ -204,384 +285,523 @@ J^\top(q)\,\mathbf{F}_{\mathrm{cmd}}
 \label{eq:implementation_final_torque_with_nullspace}
 \end{equation}
 
-Because every null-space contribution is projected by \(N\), the restoring
-spring, the damping, and the singular-value bias act only in the redundant
-direction and do not disturb the regulated Cartesian pose. The implementation
-is given in Listing~\ref{lst:app_nullspace} (Appendix~\ref{app:code}).
+The singular values are computed from the unscaled geometric Jacobian. Because
+its translational and rotational rows have different physical units, the
+reported \(\sigma_{\min}\) is an implementation-specific conditioning metric,
+not a unit-invariant scalar.
 
-\section{Surface-Frame Control Mode}
+\section{Surface and Tool Geometry}
 \label{sec:surface_task_plane}
 
-The controller regulates contact with a planar surface of arbitrary
-orientation. Instead of selecting individual base-frame axes, the task is
-described by the surface task frame
-\(R_{\mathrm{surface}}=[\,n_s\;t_1\;t_2\,]\) introduced in
-\cref{subsec:surface_task_frame}, built from a surface normal \(n_s\) and a
-tangent \(t_1\). This generalizes the earlier axis-aligned planes: a
-\(y\)-\(z\) plane corresponds to \(n_s=[1\;0\;0]^\top\), an \(x\)-\(z\) plane to
-\(n_s=[0\;1\;0]^\top\), and an \(x\)-\(y\) plane to \(n_s=[0\;0\;1]^\top\),
-while any other unit normal describes an inclined plane.
+\subsection{Surface Task Frame}
 
-\subsection{Plane Projection of the Desired Position}
-\label{sec:plane_projection}
-
-The plane constraint regulates only the deviation of the end-effector along the
-surface normal and leaves the in-plane motion free. With a point \(p_{\mathrm{plane}}\)
-on the surface, the signed normal distance of the end-effector is
+The configured plane is
 
 \begin{equation}
-d_n
-=
-n_s^\top\left(p_{\mathrm{plane}}-p_{\mathrm{EE}}\right),
-\label{eq:signed_normal_distance}
-\end{equation}
-
-and the desired position is obtained by projecting the current position back
-onto the plane,
-
-\begin{equation}
-p_d
-=
-p_{\mathrm{EE}}
-+
-d_n\,n_s .
-\label{eq:plane_projected_desired_position}
-\end{equation}
-
-The resulting position error therefore lies entirely along the surface normal,
-
-\begin{equation}
-\mathbf{e}_p
-=
-p_d-p_{\mathrm{EE}}
-=
-d_n\,n_s ,
-\label{eq:plane_projected_position_error}
-\end{equation}
-
-so the impedance controller pulls the tool toward the plane in the normal
-direction while the two tangential directions remain free for sliding. The same
-expression covers axis-aligned and inclined planes, which is the difference
-from the earlier axis-selection scheme that could only fix whole base-frame
-axes. The corresponding implementation is shown in
-Listing~\ref{lst:app_desired_motion} (Appendix~\ref{app:code}).
-
-\subsection{Surface-Frame Gains and Rotational Constraint}
-\label{sec:surface_frame_gains}
-
-The stiffness and damping used in the contact task are diagonal in the surface
-frame and expressed in the base frame with the spatial gain matrix of
-\cref{eq:spatial_gain_matrix}, so that the normal stiffness \(K_n\) and the two
-tangential stiffnesses \(K_{t_1},K_{t_2}\) act along the physically meaningful
-directions of the plane.
-
-The rotational behavior is constrained in the same surface frame. The
-orientation error is first expressed in the surface frame, the released
-rotational components are set to zero, and the result is rotated back into the
-base frame,
-
-\begin{equation}
-\mathbf{e}_{R,\mathrm{task}}
-=
-R_{\mathrm{surface}}^\top\,\mathbf{e}_R,
-\qquad
-\mathbf{e}_R
-\leftarrow
-R_{\mathrm{surface}}\,\mathbf{e}_{R,\mathrm{task}} ,
-\label{eq:surface_rotational_mask}
-\end{equation}
-
-where the components of \(\mathbf{e}_{R,\mathrm{task}}\) corresponding to free
-rotational directions (about the normal or a tangent) are removed before the
-back-rotation. Setting a component of \(\mathbf{e}_R\) to zero removes the
-orientation spring about that axis: the rotational moment there reduces to
-\(-D_{R,0}\omega_{\mathrm{EE}}\), pure damping. The controller therefore applies
-\emph{no active rotation} toward \(R_d\) about a released axis; the tool aligns there
-\emph{purely passively}, driven only by the contact moment, while the remaining
-constrained directions keep their orientation spring. The surface frame, the
-spatial gain matrix, and the rotational mask are implemented in
-Listings~\ref{lst:app_surface_gains} and~\ref{lst:app_orientation}
-(Appendix~\ref{app:code}).
-
-\subsection{Tool Orientation for a Given Surface}
-\label{sec:tool_orientation_given_surface}
-
-If the surface is known in advance, the tool orientation can be defined from
-the surface geometry and then used as the desired orientation \(R_d\) of the
-orientation controller.
-This is different from automatically detecting an unknown surface during
-contact.
-In this case, the surface information is assumed to be given by the task
-definition, for example as a surface normal vector.
-
-Let
-
-\begin{equation}
-n_s
-\in
-\mathbb{R}^{3},
+n_s^\top(p-p_s)=0,
 \qquad
 \|n_s\|=1,
 \label{eq:given_surface_normal}
 \end{equation}
 
-be the unit normal vector of the given surface, expressed in the base frame.
-For a planar surface, \(n_s\) is constant.
-For a curved surface, \(n_s\) can be interpreted as the local normal at the
-current contact or reference point.
-To make the tool frame parallel to the surface, one axis of the end-effector
-frame is aligned with this normal.
-In this work, the tool approach direction is represented by the
-\(z_{\mathrm{EE}}\)-axis.
-Therefore, a natural choice is
+where \(p_s\) and \(n_s\) are expressed in the robot base frame. In the current
+software the normal is generated from tilts \(a\) about base \(x\) and \(b\)
+about base \(y\):
 
 \begin{equation}
-z_d
+n_s
+=R_y(b)R_x(a)
+\begin{bmatrix}0\\0\\1\end{bmatrix}
 =
-n_s .
-\label{eq:desired_tool_z_axis}
+\begin{bmatrix}
+\sin b\cos a\\
+-\sin a\\
+\cos b\cos a
+\end{bmatrix}.
+\label{eq:software_surface_normal_angles}
 \end{equation}
 
-The remaining two axes of the desired orientation must lie in the tangent
-plane of the surface.
-Let \(a\in\mathbb{R}^{3}\) be an auxiliary direction that is not parallel to
-\(n_s\).
-A first tangent direction can be computed by projecting \(a\) onto the tangent
-plane and normalizing it:
+An entered auxiliary tangent \(a_s\) is projected onto the plane and normalized,
 
 \begin{equation}
-x_d
+t_1
 =
-\frac{
-a
--
-n_s
-\left(
-n_s^{\top}a
-\right)}
-{\left\|
-a
--
-n_s
-\left(
-n_s^{\top}a
-\right)
-\right\|}.
+\frac{a_s-n_s(n_s^\top a_s)}
+{\|a_s-n_s(n_s^\top a_s)\|},
 \label{eq:surface_tangent_x_axis}
 \end{equation}
 
-The second tangent direction is then obtained from the cross product
+and the second tangent is
 
 \begin{equation}
-y_d
-=
-z_d
-\times
-x_d .
+t_2=n_s\times t_1 .
 \label{eq:surface_tangent_y_axis}
 \end{equation}
 
-The desired orientation matrix is formed from these three orthonormal axes:
+The implementation stores the surface frame in the explicit column order
+
+\begin{equation}
+R_s=
+\begin{bmatrix}
+t_1&t_2&n_s
+\end{bmatrix}.
+\label{eq:software_surface_frame_order}
+\end{equation}
+
+Consequently, every parameter triple named
+\texttt{tangent1/tangent2/normal} is stored as
+\(\operatorname{diag}(k_{t_1},k_{t_2},k_n)\) before being rotated to the base
+frame:
+
+\begin{equation}
+K_0
+=
+R_s
+\operatorname{diag}(k_{t_1},k_{t_2},k_n)
+R_s^\top .
+\label{eq:software_surface_gain_transform}
+\end{equation}
+
+\subsection{Signed Tool-Axis Alignment}
+\label{sec:tool_orientation_given_surface}
+
+The surface frame and the desired tool orientation have different roles.
+\(R_s\) defines gain and mask coordinates; it is not assigned directly as
+\(R_d\). Let \(a_{\mathrm{EE}}\) be the configured physical tool axis in the
+end-effector frame and let \(s_a\in\{-1,+1\}\) be the target sign. The required
+axis in the base frame is
+
+\begin{equation}
+a_d=s_a n_s .
+\label{eq:desired_tool_z_axis}
+\end{equation}
+
+For the grinding tool used here,
+\(a_{\mathrm{EE}}=+z_{\mathrm{EE}}\) and \(s_a=-1\); hence the positive
+end-effector \(z\)-axis is aligned with \(-n_s\), toward the surface.
+
+At the captured start orientation \(R_{\mathrm{start}}\), the initial physical
+axis is \(a_0=R_{\mathrm{start}}a_{\mathrm{EE}}\). The code computes the minimum
+rotation \(R_{\min}(a_0\rightarrow a_d)\) between these two unit vectors and
+sets
 
 \begin{equation}
 R_d
 =
-\begin{bmatrix}
-x_d & y_d & z_d
-\end{bmatrix}.
+R_{\min}(a_0\rightarrow a_d)R_{\mathrm{start}} .
 \label{eq:desired_orientation_from_surface}
 \end{equation}
 
-With this construction, the desired tool orientation is no longer chosen
-arbitrarily.
-It is calculated from the given surface normal.
-The controller can then use the same orientation error computation as in the
-standard implementation:
+This aligns the selected physical axis while changing the start-frame twist as
+little as possible. The current orientation error is then
 
 \begin{equation}
-\mathbf{e}_R
+e_R
 =
-\mathrm{orientationError}
-\left(
-R_{\mathrm{EE}},R_d
-\right).
+R_{\mathrm{EE}}\,
+\operatorname{Log}\!\left(R_{\mathrm{EE}}^\top R_d\right)^\vee .
 \label{eq:surface_orientation_error}
 \end{equation}
 
-Here \(R_d\) serves only as a \emph{reference} orientation; whether the
-controller acts on a given axis depends on the rotational mask. If an axis is
-regulated, the controller drives that component of the orientation toward
-\(R_d\); if an axis is released by the surface-frame mask of
-\cref{eq:surface_rotational_mask}, no orientation spring acts there and the tool
-stays compliant. For the passive self-alignment task the alignment axes are
-released, so \(R_d\) is not actively pursued about them: it merely defines a
-nominal surface-parallel reference, while the actual alignment about those axes
-comes from the contact moment (Section~\ref{sec:self_alignment_virtual_center}).
-The plane projection still defines the regulated normal direction.
-
-For axis-aligned planes, which are special cases of the general surface frame,
-the surface normal is especially simple.
-A \(y\)-\(z\) plane has normal
+The optional rotational mask uses the same
+\([t_1,t_2,n_s]\) order:
 
 \begin{equation}
-n_s
-=
-\begin{bmatrix}
-1 & 0 & 0
-\end{bmatrix}^{\top},
+e_{R,s}=R_s^\top e_R,
+\qquad
+e_R\leftarrow
+R_s
+\operatorname{diag}(\mu_{t_1},\mu_{t_2},\mu_n)e_{R,s},
+\quad
+\mu_i\in\{0,1\}.
+\label{eq:surface_rotational_mask}
+\end{equation}
+
+A zero flag removes the corresponding orientation-spring component. In the
+current experiment parameters all three flags are enabled; the tipping axes
+are compliant because their rotational stiffness is low, not because their
+orientation error is discarded. Once clearance is reached, set-up and grind
+use the captured clearance orientation as \(R_d\).
+
+For reference, an axis-aligned \(y\)-\(z\) plane has
+
+\begin{equation}
+n_s=
+\begin{bmatrix}1&0&0\end{bmatrix}^\top .
 \label{eq:yz_plane_surface_normal}
 \end{equation}
 
-while an \(x\)-\(z\) plane has normal
-\([0\;1\;0]^{\top}\), and an \(x\)-\(y\) plane has normal
-\([0\;0\;1]^{\top}\).
-For a general non-axis-aligned surface, the same method can still be used if
-the surface normal is provided by the task description, a CAD model, a
-trajectory planner, or an external perception/contact-estimation method.
-The present controller does not estimate this normal by itself; it only uses
-the desired orientation that is supplied to it.
+The same implementation applies to an inclined plane because all geometry is
+expressed through \(p_s\), \(n_s\), and \(R_s\).
 
-\section{Passive Self-Alignment Strategy}
+\subsection{Rectangular Grinding Face and Clearance}
+\label{sec:tool_contact_geometry}
+
+The controlled contact geometry is a rectangular face attached to the
+end-effector. If \(c_{\mathrm{EE}}\) is its centre and \(w_{\mathrm{EE}}\) and
+\(\ell_{\mathrm{EE}}\) are its half-width and half-length vectors, its four
+corners are
+
+\begin{equation}
+c_i
+\in
+\left\{
+c_{\mathrm{EE}}\pm w_{\mathrm{EE}}\pm\ell_{\mathrm{EE}}
+\right\}.
+\label{eq:software_tool_face_corners}
+\end{equation}
+
+The descend direction is \(d=-n_s\). Before set-up, the code evaluates
+\((R_{\mathrm{EE}}c_i)^\top d\) and selects the corners with the greatest
+projection. Tied corners are averaged within a configurable tolerance.
+Therefore the active controlled feature can be the face centre, an edge centre,
+or a corner rather than an arbitrarily selected vertex. Its current base-frame
+position is
+
+\[
+p_C=p_{\mathrm{EE}}+R_{\mathrm{EE}}c_C .
+\]
+
+Let
+\[
+\ell_{\mathrm{lead}}
+=\max_i (R_{\mathrm{EE}}c_i)^\top d .
+\]
+The exact leading-corner height used for the clearance comparison is
+\[
+h_{\mathrm{lead}}
+=n_s^\top(p_{\mathrm{EE}}-p_s)-\ell_{\mathrm{lead}} .
+\]
+Separately, the signed height of the averaged controlled feature is
+
+\begin{equation}
+h_C=n_s^\top(p_C-p_s).
+\label{eq:signed_normal_distance}
+\end{equation}
+
+The corresponding point on the plane is
+
+\begin{equation}
+p_C^\Pi=p_C-h_Cn_s .
+\label{eq:plane_projected_desired_position}
+\end{equation}
+
+During approach-descend the state transition is triggered when
+\(h_{\mathrm{lead}}\) reaches the configured clearance. The averaged feature
+\(p_C\) is used for control continuity and projection, but not for this exact
+comparison. The two heights can differ by at most the configured
+\(0.1\,\mathrm{mm}\) tie tolerance. This is a geometric transition. The
+external-force estimate is available for diagnostics, but it is not used to
+decide the transition.
+
+At the transition the active feature, TCP pose, clearance orientation, and
+external-wrench bias are frozen. With the signed set-up push coordinate
+\(\delta_{\mathrm{push},0}=-h_C\), the desired feature position is continuous:
+
+\begin{equation}
+p_{C,d}(\delta_{\mathrm{push}})
+=p_C^\Pi+\delta_{\mathrm{push}}(-n_s),
+\qquad
+p_{C,d}(\delta_{\mathrm{push},0})=p_C .
+\label{eq:plane_projected_position_error}
+\end{equation}
+
+Increasing \(\delta_{\mathrm{push}}\) moves the selected feature into the surface along
+\(-n_s\).
+
+Let \(c_{C,\mathrm{EE}}\) denote the selected feature offset frozen in the
+end-effector frame at clearance, and let
+\(R_{\mathrm{clr}}=R_{\mathrm{contact,start}}\). The Cartesian position
+reference supplied to the end-effector impedance is
+
+\begin{equation}
+p_{\mathrm{EE},d}
+=
+p_{C,d}-R_{\mathrm{clr}}c_{C,\mathrm{EE}} .
+\label{eq:software_ee_target_from_feature}
+\end{equation}
+
+This conversion uses the frozen clearance orientation, not the live
+\(R_{\mathrm{EE}}\). The current physical feature remains
+\(p_C=p_{\mathrm{EE}}+R_{\mathrm{EE}}c_{C,\mathrm{EE}}\); therefore, if the
+tool rotates during set-up, it need not coincide exactly with the constructed
+feature reference \(p_{C,d}\).
+
+There is one implementation-level hand-off caveat. In the callback that first
+satisfies the clearance test, the phase variable is changed to
+\texttt{set\_up} before gain selection, while the desired position and velocity
+still contain that callback's approach values. The set-up gains and coupled
+branch can therefore act on the old approach target for one sample; the
+continuous target in \cref{eq:plane_projected_position_error} is generated on
+the following callback. The first logged phase-2 row must not be treated as an
+already settled set-up sample, and eliminating this one-cycle mismatch is a
+recommended implementation correction.
+
+\section{Phase-Dependent Gains and Automatic Damping}
+\label{sec:surface_frame_gains}
+
+The gain frames depend on the active phase:
+
+\begin{itemize}
+    \item approach-orient and approach-descend share translational and
+    rotational gains specified in the surface frame
+    \([t_1,t_2,n_s]\);
+    \item set-up and grind use translational gains diagonal in base
+    \([x,y,z]\), but rotational gains diagonal in
+    \([t_1,t_2,n_s]\);
+    \item hold uses isotropic base-frame translational and rotational gains; and
+    \item an optional phase gate replaces the translational gains by a stiff,
+    isotropic base-frame position lock while the run is paused.
+\end{itemize}
+
+When automatic damping is enabled, the controller obtains the joint-space mass
+matrix \(M(q)\) on entry to a phase group, estimates the Cartesian inertia, and
+caches the resulting damping for that group:
+
+\begin{equation}
+\Lambda
+=
+\left(
+  \tfrac{1}{2}
+  \left(JM^{-1}J^\top+
+        \left(JM^{-1}J^\top\right)^\top\right)
+  +10^{-9}I_6
+\right)^{-1}.
+\label{eq:software_cartesian_inertia}
+\end{equation}
+
+The estimate is rotated into the coordinate frame used by the relevant gain
+block. For each diagonal direction \(i\), damping is selected as
+
+\begin{equation}
+d_i
+=
+2\zeta\sqrt{\Lambda_{ii}k_i},
+\label{eq:software_auto_damping}
+\end{equation}
+
+subject to an optional manual per-axis floor and the configured upper bound.
+The floor is disabled in the current parameter set, so the manual entries are
+fallbacks rather than lower bounds. Approach translation and rotation use the
+surface-frame inertia. During set-up and grind, translation uses the base-frame
+inertia whereas rotation uses the surface-frame inertia. Hold uses the
+base-frame inertia and can fit one damping factor toward the configured manual
+translational damping. At the pre-set-up pause gate, separate scalar factors are
+fitted: translation targets the configured \texttt{pause\_hold\_Dp}, whereas
+rotation targets the cached approach rotational damping expressed in the
+surface frame. There is no separate manual pause-rotation target. If the gate
+inertia estimate is invalid, translation falls back to
+\texttt{pause\_hold\_Dp} and rotation inherits the cached or manual approach
+damping.
+
+The implementation checks the factorization, finiteness,
+and positivity of the required diagonal entries and caps every coefficient at
+\(8000\) in its corresponding damping unit. An invalid approach or
+set-up/grind estimate is retried while that phase group remains active; an
+invalid hold or pause-gate estimate latches the appropriate manual fallback for
+that entry. Disabling automatic damping also selects the manual matrix. The
+\(10^{-9}\) regularization belongs only to this mixed translational--rotational
+task-inertia estimate and is distinct from the relative SVD cutoff used for
+null-space projection.
+
+\section{Pole-Shifted Coupled Control During Set-Up}
 \label{sec:self_alignment_virtual_center}
 
-The orientation construction in Section~\ref{sec:tool_orientation_given_surface}
-defines the reference orientation associated with the surface. For the
-self-alignment test, however, the tool is deliberately started with a small
-orientation error relative to this surface orientation. This intentional tilt is
-not an active alignment command; it is the initial misalignment that the contact
-experiment is meant to reduce passively. When the tool edge is pressed onto the
-surface by the downward motion, the contact force acts at the edge, which is
-offset from the tool-frame origin, and therefore produces a moment. Under the
-compliant (low) rotational stiffness, this moment can rotate the tool toward the
-surface orientation, reducing the misalignment on its own.
-No active rotation about a virtual center is used, and no virtual-center
-coupling is added to the commanded Cartesian force or moment. The controller
-therefore keeps the standard impedance structure from Chapter~\ref{ch:theory}:
-the commanded force is computed from the translational error and velocity, and
-the commanded moment is computed from the orientation error and angular
-velocity. The virtual center is only an interpretation of the measured passive
-motion, evaluated later from the instantaneous pole or screw axis.
+The normal controller path uses the decoupled wrench of
+\cref{eq:software_decoupled_wrench}. During the \texttt{set\_up} phase only, the
+software can instead use a pole-shifted \(6\times6\) stiffness and damping
+matrix. The callback instantiates the point-shift law derived once in
+\cref{sec:coupled_pole_stiffness}, using
+\(K_{\mathrm{pole}}=\operatorname{diag}(K_p,K_R)\) and
+\(D_{\mathrm{pole}}=\operatorname{diag}(D_p,D_R)\). With
+\[
+\Delta x=
+\begin{bmatrix}e_p\\e_R\end{bmatrix},
+\qquad
+\Delta v=
+\begin{bmatrix}\dot p_d-\dot p_{\mathrm{EE}}\\-\omega_{\mathrm{EE}}\end{bmatrix},
+\]
+the coupled set-up command is
 
-For the self-aligning surface task, the surface-parallel orientation is
-constructed from the given surface normal, as described in
-Section~\ref{sec:tool_orientation_given_surface}. The actual commanded start
-orientation used for the test may include a deliberate offset from this
-surface-parallel orientation so that passive alignment can be observed.
-The rotational stiffness can be chosen lower around the axes that should align
-compliantly, while the translational stiffness regulates the constrained
-surface direction.
-During contact, the downward force lets the tool rotate toward the surface
-orientation passively. The virtual center is only the point about which this
-measured rotation appears to pivot; it is not a point imposed by the commanded
-wrench.
+\begin{equation}
+\mathbf F_{\mathrm{cmd}}
+=K_{\mathrm{TCP}}\Delta x+D_{\mathrm{TCP}}\Delta v .
+\label{eq:software_coupled_wrench}
+\end{equation}
 
-Thus, the implemented self-alignment relies on two passive ingredients.
-First, the surface normal defines the reference orientation and the intentional
-initial tilt defines the misalignment to be tested. Second, the downward contact
-force at the offset tool edge produces the moment
-that, under the compliant rotational stiffness, rotates the tool into
-alignment. The plane constraint and this rotational compliance are sufficient
-for the passive behavior. Separately, if the surface were not given in
-advance, an additional estimation layer would be necessary to determine
-\(p_s\) and \(n_s\) from contact forces, external torque estimates, vision, or
-another sensor source; that surface-estimation problem is also not part of the
-implemented controller.
+In manual-pole mode the pole is the frozen projected-clearance reference or the
+live selected tool feature plus the configured base-frame XYZ offset. The
+frozen source is the variable \texttt{first\_contact\_point}, but it is captured
+at geometric clearance rather than force contact. In the active configuration,
+\texttt{coupled\_pole\_freeze\_at\_contact=1}, the TCP reference is frozen at
+the same hand-off and the lever actually passed to the congruence is
+\[
+r_c=p_{\mathrm{TCP,clr}}-p_c .
+\]
+Consequently both \(p_c\) and \(r_c\) are constant throughout set-up; the live
+option instead recomputes both references. The implementation can
+alternatively use the unshifted block-diagonal matrix as a consistency check or
+load previously saved full matrices. The coupled path is not active in grind:
+grind shares the set-up gain values but returns to the decoupled wrench law.
+This change is immediate. In the set-up callback that satisfies the exit
+condition, the phase is assigned to \texttt{grind} before the wrench branch is
+selected later in that same callback. That sample therefore already uses the
+decoupled blocks. No interpolation is performed between
+\(K_{\mathrm{TCP}},D_{\mathrm{TCP}}\) and the decoupled matrices. Although the
+normal preload reference is continuous, the commanded wrench and
+\(J^\top\mathbf F_{\mathrm{cmd}}\) can therefore exhibit a step at the
+transition.
 
-\subsection{Control Phases}
+The tool can still rotate under the physical edge-contact moment because the
+tipping stiffnesses are compliant. The software does not prescribe a rotation
+trajectory during set-up; it holds the captured clearance orientation as a soft
+reference while pressing the selected feature.
+
+\section{Control Phases}
 \label{sec:control_phases}
 
-The surface-contact experiment runs through a short sequence of control phases.
-Each phase selects the current reference orientation and the gain set used in the
-impedance law, which is why the callback uses the phase-dependent symbols
-\(R_{d,\mathrm{phase}}\) and \(K_{p,\mathrm{used}},K_{R,\mathrm{used}}\) rather
-than a single fixed gain matrix.
+The program can start either a stationary hold or the
+approach--set-up--grind sequence. A separate manual-guidance start can be used
+to place the robot before either choice.
 
 \begin{enumerate}
-    \item \textbf{Prepare tilted start pose.} At the start pose, the tool is
-    moved to a controlled orientation with a small known tilt relative to the
-    surface-parallel reference orientation constructed from the surface normal
-    (Section~\ref{sec:tool_orientation_given_surface}). This tilt is introduced
-    intentionally so that the following contact phase can test passive
-    self-alignment. The null-space optimization is disabled in this phase.
-    \item \textbf{Contact search.} The tool moves slowly along the surface
-    normal with soft translational gains until contact is detected from the
-    robot's estimated external wrench. The null-space optimization is still
-    disabled, so the search motion stays purely along the approach direction.
-    \item \textbf{Post-contact alignment.} Once contact is detected, the
-    controller switches to compliant rotational gains. The downward contact
-    force at the offset tool edge then passively rotates the tool into
-    alignment with the surface, as described in
-    Section~\ref{sec:self_alignment_virtual_center}. The null-space
-    optimization is re-enabled.
-    \item \textbf{Surface impedance.} The controller holds the plane constraint
-    and the surface-frame impedance while the tool remains in contact.
+    \item \textbf{Hold and manual guide.} Hold regulates the captured start pose
+    with isotropic gains and the selected null-space mode. From hold, the user
+    can enter manual guide, which commands Coriolis compensation and joint
+    damping only. Recapturing stores the hand-moved pose and its wrench bias and
+    resumes hold. Manual guidance can also be selected at start-up before the
+    sequence begins.
+
+    \item \textbf{Approach orient.} The TCP remains at the captured start
+    position while the desired orientation minimally aligns the configured
+    physical tool axis with its signed target. The transition requires both the
+    configured minimum time and a tool-axis angular error below the threshold.
+    It does not require the complete orientation error to vanish.
+
+    \item \textbf{Approach descend.} The TCP reference moves at the configured
+    speed along \(-n_s\), subject to a maximum-distance guard. The active
+    rectangular-face feature is reevaluated until the clearance is reached.
+    The transition to set-up is based on the exact leading-corner height
+    \(h_{\mathrm{lead}}\) defined above, not on the averaged-feature height
+    \(h_C\) or estimated contact force.
+
+    \item \textbf{Optional pre-set-up gate.} When enabled, reaching the
+    clearance arms an Enter gate. A stiff position lock holds the actual pose,
+    and the descend clock is frozen until the user continues.
+
+    \item \textbf{Set-up.} The selected feature and clearance references are
+    frozen. Its signed coordinate is ramped continuously from the captured
+    value toward the configured set-up endpoint at the configured push speed.
+    The orientation target remains the captured clearance orientation. The
+    phase ends when the bias-subtracted external-moment norm exceeds its
+    threshold after the minimum set-up time, or when the independent set-up
+    timeout is reached. Force is logged but is not an exit condition. The
+    pole-shifted coupled law, when enabled, is applied only in this phase.
+
+    \item \textbf{Optional pre-grind gate.} When enabled, the controller remains
+    in set-up and continues evaluating its pressed reference until the user
+    proceeds.
+
+    \item \textbf{Grind.} The final set-up push is frozen as the grinding
+    preload. The reference either executes a smooth back-and-forth sweep along
+    \(t_1\) or \(t_2\), or holds only the normal penetration while allowing
+    free tangential sliding. Grind uses the set-up gain values with the
+    decoupled Cartesian law.
 \end{enumerate}
 
-The phase therefore determines which stiffness and damping matrices are passed
-to the impedance law and whether the null-space term is active, but the control
-equations within each phase are the ones derived above.
+All non-manual phases evaluate the selected null-space mode. The run terminates
+when the configured experiment duration expires, when the user enters
+\texttt{e} followed by Enter, when the descend maximum-distance guard is
+reached, or when libfranka stops on a robot-side safety event.
 
 \section{Franka Collision Behavior and Startup Handling}
-\label{sec:torque_saturation_safety}
+\label{sec:collision_behavior_safety}
 
-The implementation does not add separate software clipping of the Cartesian
-force, Cartesian moment, null-space torque, or torque rate. Instead, the
-experiment relies on the Franka Control Interface safety layer and on the
-collision behavior configured before the torque-control callback starts.
+Before torque control starts, the program requests automatic error recovery,
+applies the default Franka behavior, and optionally installs the configured
+joint-torque and Cartesian force/moment collision thresholds. The implementation
+does not add separate clipping of the Cartesian wrench, null-space torque, or
+torque rate; robot-side monitoring remains active.
 
-After the user confirms the start of a run, the program first attempts
-automatic error recovery if necessary. It then applies the custom collision
-behavior thresholds through \texttt{robot.setCollisionBehavior}. These
-thresholds define the joint-side torque and Cartesian force/moment sensitivity
-used by the robot controller during the experiment. The thresholds are chosen
-high enough to avoid unnecessary reflex stops during the intended surface
-contact, but they remain part of the robot's internal collision monitoring.
+The start-up menu can move the arm to the configured \(q_{\mathrm{init}}\), open
+or grasp the tool with the Franka hand, enter manual guidance, and choose
+between sequence and hold operation. The automatic gripper action is also
+configurable: it may open the hand or grasp the tool, and it can retain an
+already valid grasp rather than reopening the fingers. If the gripper action is
+configured as mandatory, failure stops the run before the torque callback.
 
-After the collision behavior is configured, the robot moves to the initial
-joint configuration. If enabled, the gripper is then opened to the configured
-width before contact search begins, so that the tool starts the experiment in
-the intended mechanical state. During the control loop, the user can stop the
-experiment by entering \texttt{e} followed by Enter; the callback then exits by
-returning a \texttt{MotionFinished} command.
+During start-up guidance and the in-loop manual-guide phase, the returned torque
+is \(\tau_c-d_{\mathrm{guide}}\dot q\). The user may open or close the hand
+during start-up guidance and then capture the current pose as the start of
+sequence or hold operation.
+
+\section{Logging and Post-Run Diagnostics}
+\label{sec:software_logging}
+
+Two independent buffered logs are implemented:
+
+\begin{enumerate}
+    \item The general experiment log is a pre-sized ring buffer sampled every
+    configured number of control cycles. It records phase, null-space mode,
+    measured and desired positions, controlled feature and edge references,
+    Cartesian errors and velocities, commanded and estimated external
+    wrenches, wrench biases, set-up push, singular-value diagnostics,
+    null-space torque magnitude, and commanded joint torques.
+
+    \item Sigma-enabled hold tests additionally use a compact, lower-rate
+    diagnostic buffer. Besides normal samples, it stores explicit
+    \texttt{hold\_start}, \texttt{manual\_guide\_start},
+    \texttt{recapture}, \texttt{stop}, and \texttt{exception} events. A
+    recapture increments the segment identifier and resets the phase time,
+    which separates repeated manual push-and-release trials.
+\end{enumerate}
+
+The compact diagnostic is persisted before the larger general CSV and is also
+written after a control exception so that the partial trace is retained. The
+general ring buffer is unwrapped into chronological order after a normal
+control-loop exit. Neither logger performs file I/O in the real-time callback.
 
 \section{Complete Real-Time Callback}
 \label{sec:control_impl}
 
-The implemented control loop follows the sequence below:
+The callback can be summarized as follows:
 
 \begin{enumerate}
-    \item Read the current joint state \(q\), \(\dot{q}\), and end-effector transformation \(T_{\mathrm{EE}}\).
-    \item Compute the geometric Jacobian \(J(q)\).
-    \item Compute the Cartesian velocity using \(\dot{x}=J(q)\dot{q}\).
-    \item Compute the position and orientation errors.
-    \item Evaluate the Cartesian impedance wrench.
-    \item Map the Cartesian wrench to joint torques using \(J^\top(q)\).
-    \item Compute and add the projected null-space torque \(\tau_{\mathrm{null}}\).
-    \item Add the optional Coriolis compensation.
-    \item Return the torque command to libfranka.
+    \item Read \(q\), \(\dot q\), \(T_{\mathrm{EE}}\), the external estimates,
+    and contact flags.
+    \item Obtain \(J(q)\), calculate \(J\dot q\), and update manual-guidance
+    requests when applicable.
+    \item Select the active rectangular-face feature and evaluate the phase
+    transition and desired motion.
+    \item Compute \(e_p\), the corrective base-frame \(e_R\), and the
+    phase-specific automatic or fallback damping.
+    \item Form either the decoupled wrench or the set-up-only coupled wrench.
+    \item Compute the truncated-SVD null-space torque for the selected mode.
+    \item Return
+    \(J^\top\mathbf F_{\mathrm{cmd}}+\tau_{\mathrm{null}}+\tau_c\).
+    \item Copy the selected signals into the bounded in-memory log buffers.
 \end{enumerate}
 
-The core structure of the implementation is shown in Listing~\ref{lst:app_callback_core} (Appendix~\ref{app:code}).
-The listing keeps only the operations needed to show the control flow.
-Task-specific files define the desired end-effector pose, the surface-contact
-configuration, and the candidate impedance parameters used for a given test.
-They specify the surface-frame translational stiffness values
-\(K_n\), \(K_{t_1}\), and \(K_{t_2}\) (normal and two tangential directions),
-the corresponding rotational stiffness values, and the matching damping values.
-
+The core callback and supporting mathematical routines are reproduced in
+Appendix~\ref{app:code}. The parameter values used for a particular run remain
+separate from this control structure.
 
 \section{Implementation Summary}
 \label{sec:implementation_summary}
 
+The current controller distinguishes surface coordinates, desired tool
+orientation, and physical contact geometry. Its task frame is ordered
+\([t_1,t_2,n_s]\); the configured \(+z_{\mathrm{EE}}\) grinding-face axis is
+aligned with \(-n_s\) by a minimum rotation from the captured start
+orientation; and a rectangular face determines the actual controlled edge,
+corner, or face centre. The approach-to-set-up transition is geometric, while
+the set-up exit uses a moment threshold with minimum-time and timeout guards.
 
-Listing~\ref{lst:app_callback_core} (Appendix~\ref{app:code}) summarizes the main operations performed during one real-time control cycle.
-The callback reads the current robot state, evaluates the Cartesian impedance law, adds the null-space torque and the optional Coriolis term, and returns the resulting torque command to libfranka.
-If a test configuration uses only translational compliance, the rotational
-control part can be disabled by setting \(K_{R,0}=0_{3\times3}\) and
-\(D_{R,0}=0_{3\times3}\). For the surface-contact alignment experiment,
-however, both translational and rotational components are relevant because the
-contact wrench contains both force and moment terms.
-
-This implementation structure ensures that all quantities required by the controller are evaluated within the real-time callback.
-The torque command is computed from the current robot state at every control cycle, while the experiment-specific contact sensitivity is handled through the configured Franka collision behavior.
-
+The pole-shifted coupled impedance is available during set-up. In the active
+frozen-pole configuration its constant lever is
+\(r_c=p_{\mathrm{TCP,clr}}-p_c\); the general live-point relation is
+\(p_{\mathrm{TCP}}-p_c\). The null-space law uses a tolerance-truncated SVD
+projector and selectable off, damping, singular-value, or combined modes in
+every non-manual phase. Phase-specific task-inertia damping, configurable
+start-up and gripper handling, and two post-run log streams complete the
+implemented software path.

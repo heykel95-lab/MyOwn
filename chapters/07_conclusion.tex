@@ -3,159 +3,187 @@
 
 \section{Summary}
 
-This thesis developed and evaluated a Cartesian impedance controller for the Franka Emika Panda.
-It combined forward kinematics, differential kinematics, Jacobian-based force and moment mapping, and Cartesian impedance control with a C++ implementation using libfranka and Eigen.
-The controller computes Cartesian forces and moments from position, orientation, linear velocity, and angular velocity errors, and maps them to joint torques using the transpose of the geometric Jacobian.
-The Coriolis term is added from the libfranka model interface, while gravity compensation is handled by the Franka Control Interface for the external torque command.
-For the redundant 7-\abbr{DOF} arm, a projected null-space term adds joint-space damping and a smallest-singular-value optimization, so that secondary joint motion does not disturb the regulated Cartesian task.
+This thesis developed a real-time Cartesian impedance controller for the
+Franka Emika Panda and traced its frame, sign, and reference-point conventions
+from the Cartesian error to the final joint-torque command.  The implemented
+law uses
+\[
+\tau_{\mathrm{cmd}}
+  =J^\top w_{\mathrm{cmd}}+\tau_{\mathrm{null}}+c(q,\dot q),
+\]
+with gravity handled by the Franka torque interface.  Translation uses
+\(e_p=p_d-p_{\mathrm{TCP}}\); the restoring rotation vector is obtained from
+\(R_{\mathrm{TCP}}^\top R_d\), mapped to base components, and multiplied by a
+positive rotational stiffness.
 
-The theoretical part showed how the end-effector pose is represented by a homogeneous transformation matrix and how the position and orientation errors are defined.
-The Denavit--Hartenberg convention was introduced to explain the structure of forward kinematics, while the implementation itself uses the measured end-effector transformation and Jacobian provided directly by libfranka.
-The stiffness and damping matrices were defined in the end-effector frame and transformed into the base frame, allowing direction-dependent impedance behavior.
-The initial damping values were selected from a critical-damping approximation
-and then treated as controller parameters that must be checked experimentally.
-A Lyapunov-based stability analysis was also presented for the ideal compensated closed-loop system, showing that symmetric positive definite stiffness and damping matrices lead to a non-increasing energy function.
+The surface geometry is represented by
+\(R_s=[t_1,t_2,n_s]\).  The controller maps the configured
+\(+z_{\mathrm{EE}}\) tool axis to the signed target \(-n_s\), descends along
+\(-n_s\), selects the leading point, edge, or face of the rectangular tool, and
+switches to set-up at a geometric clearance.  Set-up then ramps the selected
+feature into the plane and ends after a minimum time when the external-moment
+change reaches its threshold, or at the timeout.  Grind freezes the final
+preload and optionally adds a smooth tangential sweep.  The external wrench is
+model-based and is logged during descent, but it does not trigger the clearance
+transition.
 
-The software implementation was organized around the real-time torque-control callback of libfranka.
-At each \(1\,\mathrm{ms}\) control cycle, the robot state is read, the Jacobian and Coriolis term are obtained, the Cartesian impedance law is evaluated, and the final torque command is returned to the robot.
-The implementation also logs the relevant measured and computed quantities to CSV files.
-These logged values include the end-effector position, desired position, positional error, rotational error, Cartesian velocity, Cartesian force and moment, and commanded joint torques.
+A center of compliance is implemented during set-up by the adjoint-congruence
+construction derived once in \cref{sec:coupled_pole_stiffness}. In the active
+tagged configuration, the pole and TCP references are captured at the
+clearance hand-off, so the controller uses the constant lever
+\(r_c=p_{\mathrm{TCP,clr}}-p_c\). The resulting off-diagonal blocks couple
+translation and rotation while preserving symmetry and positive
+semidefiniteness. The experiment evaluates the realized response through the
+physical tool-axis angle and selected-feature/TCP displacement.
 
-The current experimental focus is a surface-contact alignment task. In this
-experiment, a tool edge contacts a surface and the external contact wrench
-produces both force and moment components. The tool is deliberately started
-with a small orientation error relative to the surface so that the experiment
-can test whether contact reduces this misalignment passively. Because the robot
-is controlled by Cartesian impedance, the contact wrench can create a small
-translational and rotational displacement. The thesis proposes to evaluate this
-displacement as a screw motion and to use the corresponding instantaneous screw
-axis, or the closest point of that axis to the tool edge, as a geometric
-description of the passive alignment behavior.
-The initial stiffness values are computed from a quasi-static compliance
-relation between allowable contact force or moment and allowable displacement
-or rotation. The damping values are initialized from a critical-damping
-approximation and then checked experimentally for smooth, non-oscillatory
-contact behavior.
-In addition, the evaluation includes a least-squares identification method for
-computing effective translation--rotation stiffness and damping matrices from
-the logged contact motion and the estimated contact moment. This gives a
-second description of the same alignment behavior: the screw-axis analysis
-describes where the motion appears to pivot, while the fitted effective
-matrices describe which translational, rotational, and damping terms
-contribute to the alignment moment.
+Redundancy is handled with a tolerance-truncated SVD of the \(6\times7\)
+Jacobian.  The implementation reciprocates only the retained
+\(\sigma_1,\ldots,\sigma_6\), constructs
+\(N_\tau=(I-J_\rho^+J)^\top\), and uses \(v_7\) as the structural one-dimensional
+null direction at full row rank.  The selected mode can apply projected joint
+damping, a constant-magnitude torque in whichever sign of \(v_7\) improves
+\(\sigma_{\min}\), both terms, or neither.  The probe distance
+\(\alpha_{\mathrm{probe}}\)
+changes only the two sampled configurations; it does not scale the commanded
+torque.
 
-Overall, the implemented controller provides the basis for investigating the
-main design question of the thesis: how the Cartesian stiffness matrix should
-be selected so that contact produces passive self-alignment around a useful
-virtual center of rotation. The central trade-off remains the practical
-trade-off of impedance control: higher stiffness improves pose regulation but
-increases contact forces and commanded torques, while lower stiffness improves
-compliance but allows larger displacement. For the selected experiment, the
-additional requirement is that the compliance should be located geometrically
-in a useful place, not only made softer in an arbitrary Cartesian direction.
-This connects the controller implementation to the same design problem treated
-in impedance-planning and compliance-center assembly work: the useful gain
-setting is the one that combines accuracy, safety, damping, and favorable
-contact geometry \citep{Pollayil2023ImpedancePlanning,Wang2019VariableComplianceCenter}.
+The measured coupled-pole results retained in
+Chapter~\ref{ch:results_discussion} belong to the historical controller tag
+\texttt{Difference-Chasles-Pole}.  They demonstrate that the adjoint coupling
+and pole placement change the tip and edge displacement, but they are not attributed to
+the later \texttt{FULL-Working-Clean} phase logic or parameters without new
+trials.
 
 \section{Main Contributions}
 \label{sec:main_contributions}
 
-This thesis makes several connected contributions. At its centre is a
-reproducible real-time Cartesian impedance controller for the Franka Emika
-Panda, implemented in C++ with libfranka and Eigen using Jacobian-transpose
-torque mapping and model-based Coriolis compensation. On top of this core
-controller, a surface-frame control mode aligns the stiffness and damping with
-an arbitrary contact plane and projects the desired position onto that plane,
-while null-space damping and a smallest-singular-value optimization handle the
-redundancy of the 7-\abbr{DOF} arm. Building on this foundation, the thesis
-develops a passive self-alignment formulation in which the contact moment at the
-offset tool edge rotates the tool toward the surface under a compliant
-rotational stiffness, and interprets the resulting motion geometrically through
-its instantaneous screw axis (Chasles' theorem). To choose and analyse the gains
-systematically, a two-part gain-selection methodology combines a quasi-static
-stiffness and damping design with an offline least-squares identification of the
-effective translation--rotation impedance. Finally, a memory-buffered
-data-logging scheme and an offline analysis pipeline tie these elements together
-by making the contact experiments measurable and repeatable.
+The main contributions are:
+
+\begin{itemize}
+  \item a frame-consistent Cartesian impedance implementation with explicit
+        position, orientation, wrench-ordering, lever-arm, and contact-moment
+        conventions;
+  \item an implemented center-of-compliance construction that shifts a
+        pole-frame \(6\times6\) stiffness and damping to the TCP through an
+        adjoint congruence;
+  \item a geometric tool and phase supervisor comprising manual guidance/hold,
+        tool-axis alignment, clearance-based descent, set-up, optional gates,
+        and grinding;
+  \item phase-specific gain frames and model-based Cartesian-inertia damping,
+        with manual damping values retained as fallbacks;
+  \item a four-mode null-space controller based on a truncated-SVD
+        pseudoinverse, including the explicit distinction between
+        \(\sigma_{\min}=\sigma_6\) and the structural null vector \(v_7\); and
+  \item full-rate and compact ring-buffer logging that exposes the phase,
+        selected tool feature, null-space probes, and final torque command for
+        offline analysis.
+\end{itemize}
 
 \section{Limitations}
 \label{sec:limitations}
 
-Several limitations of the work presented in this thesis remain.
-First, the evaluation is based on logged robot states and commanded torques.
-No dedicated external force/torque sensor is used; the controller relies on the
-robot's model-based external wrench estimate \texttt{O\_F\_ext\_hat\_K} for
-contact detection, so the surface-contact wrench is estimated rather than
-measured directly. The passive alignment behavior is therefore evaluated from
-the resulting displacement, the computed impedance wrench, the commanded
-torques, and this estimated external wrench rather than from a directly
-measured force-displacement relation. A dedicated force/torque sensor or more
-elaborate sensorless force and environment-stiffness estimation could reduce
-this limitation, but it would require an additional measurement or estimation
-layer beyond the implemented controller \citep{Roveda2021SensorlessStiffness}.
-For the same reason, the least-squares stiffness and damping matrices should
-be interpreted as effective contact models derived from the available logged
-signals, not as direct measurements of the physical surface or tool stiffness.
+No dedicated force/torque sensor is used. The signal
+\texttt{O\_F\_ext\_hat\_K} is libfranka's model-based estimate referenced to
+stiffness frame \(K\). It remains an implementation diagnostic, and its
+bias-subtracted moment norm is used by the optional set-up exit condition. It
+is not treated as a direct contact-wrench measurement.
 
-Second, the compensation terms are obtained from the libfranka model interface and depend on the nominal robot model.
-Model errors, payload uncertainty, friction, and unmodeled dynamics can influence the measured response.
-These effects are especially relevant at low stiffness values, where friction and small disturbances can have a stronger influence on the final position error.
+The transition called ``first contact'' in several source and CSV identifiers
+is actually the configured \(20\,\mathrm{mm}\) geometric clearance.  The stored
+\texttt{first\_contact\_point} is the selected feature projected onto the
+surface. Furthermore, the current general log stores the rotation error
+relative to the frozen clearance
+orientation, not the tool-axis-to-\(-n_s\) angle.  A direct surface-alignment
+metric therefore requires an additional logged orientation or tool-axis field.
+The exact clearance comparison uses the most-leading corner, while the
+averaged tied feature supplies the projected reference. In addition, the
+transition callback changes to set-up gains before regenerating the set-up
+target, so the first phase-2 sample can contain a one-cycle approach-target
+mismatch.
 
-Third, the stability analysis assumes ideal gravity and Coriolis compensation, continuous-time behavior, a constant desired pose, and symmetric positive definite stiffness and damping matrices.
-The real implementation is discrete, uses configured Franka collision behavior, and is affected by measurement noise and model uncertainty.
-For this reason, the stability analysis should be interpreted as an ideal reference case, while the experimental plots are needed to evaluate the practical closed-loop behavior.
-Energy-aware impedance-control approaches address this issue more directly by
-monitoring and limiting energy or power flow during contact, which is a useful
-future extension for safer self-alignment experiments
-\citep{Hjorth2023EnergyAwareImpedance}.
+The current set-up moment threshold is \(150\,\mathrm{N\,m}\), while the
+configured ramp and timeout both end near \(4\,\mathrm{s}\).  The timeout may
+therefore dominate in practice and must be verified from the phase log before
+calling a transition moment-triggered.  The set-up and grind TCP target also
+subtracts a tool offset rotated by the frozen clearance orientation.  If the
+tool rotates appreciably, the live physical feature can move tangentially
+relative to that reference; whether this behavior is desirable must be tested.
+This conversion is stated explicitly in
+\cref{eq:software_ee_target_from_feature}. At the set-up-to-grind hand-off, the
+coupled matrices are replaced immediately by the decoupled blocks in the same
+callback, without interpolation. The commanded wrench and
+\(J^\top w_{\mathrm{cmd}}\) can therefore step at that transition.
 
-Finally, the orientation controller is based on a local rotation-vector error.
-This representation is suitable for the tested motions, but rotations close to \(180^\circ\) require special numerical handling.
-The controller should therefore be tested carefully before applying it to tasks with very large orientation errors.
-The virtual-center formulation is presently treated as a passive gain-design
-direction, not as an additional active rotation command. A fully selectable
-virtual center of rotation above, below, or on the surface is not yet implemented
-as a mature coupled gain construction. Thus, the implemented controller can
-test passive alignment from an intentionally tilted start pose with diagonal
-Cartesian gains, but complete virtual-center behavior would require the
-structured translation--rotation coupling to be included directly in the
-stiffness and damping matrices used by the real-time impedance law.
+The SVD uses an unscaled geometric Jacobian whose translational and rotational
+rows have different physical units.  Its numerical singular values, cutoff,
+and condition measures are consequently scale- and reference-point-dependent.
+When a direction is omitted by the cutoff, the projector admits that weak task
+direction into its numerical null space.  Moreover, the Euclidean projector is
+not dynamically consistent: in general
+\(JM_q^{-1}\tau_{\mathrm{null}}\ne0\).  The claim is therefore limited to the
+retained kinematic projection, not to zero Cartesian acceleration disturbance.
+
+The sigma torque is a switched, constant-magnitude active bias. Sigma-only mode
+is undamped, the finite probes follow only the instantaneous self-motion
+tangent, and they are not checked against joint limits. The term is therefore a
+two-point conditioning heuristic rather than a passive secondary controller; it
+uses neither the sampled slope magnitude nor an iterative search. Active mode
+evaluates three SVDs and two additional model Jacobians per callback. In the
+current \(11624\)-row trace,
+\(99.51\,\%\) of adjacent callback periods are \(1\,\mathrm{ms}\), giving an
+effective delivered-callback rate of \(993.1\,\mathrm{Hz}\) over
+\(11.704\,\mathrm{s}\). This supports sustained operation in libfranka's
+nominal \(1\,\mathrm{kHz}\) interface, but callback-period spacing and the
+last-100-command reception fraction
+\texttt{control\_command\_success\_rate} do not bound local callback execution
+time; worst-case execution time remains unmeasured. Because the active
+configuration uses projected damping plus this sigma bias during set-up, its
+response is classified as unscripted task-space alignment rather than an
+isolated contact-only response.
+
+Finally, the configured Franka collision/reflex thresholds are not a software
+wrench, joint-torque, or torque-rate limiter.  Practical safety conclusions
+must therefore be based on supervised trials, the robot's certified safety
+configuration, measured commands, and the controller timing rather than on an
+unimplemented saturation law. The general sequence CSV is written only on the
+normal post-run path; reflex/contact flags and exception-path persistence belong
+to the compact sigma diagnostic and must not be assumed for every sequence.
 
 \section{Future Work}
 \label{sec:future}
 
-The controller and evaluation can be extended in several directions.
-An external force/torque sensor could be added to measure interaction forces directly.
-This would allow the compliance behavior to be evaluated using measured force-displacement curves and would make it possible to study contact tasks more accurately.
+The first implementation priority is to log the current orientation, current
+and desired tool axes, retained SVD rank, and a projector residual such as
+\(\|JN_q\|\). These fields would make the alignment and null-space claims
+directly testable without relying on a wrench-comparison model.
 
-The implemented null-space control can be extended further.
-Since the Franka Emika Panda has seven joints, one redundant degree of freedom remains for a six-dimensional Cartesian task.
-At present this redundancy is used for joint-space damping and a smallest-singular-value optimization; it could additionally be used for joint-limit avoidance, posture optimization, or keeping the robot away from singular configurations while maintaining the desired end-effector behavior.
+The clearance variables should be renamed, and live versus frozen tool-offset
+kinematics should be compared experimentally. The approach-to-set-up hand-off
+should also compute the continuous
+set-up target before enabling the set-up gains/coupled branch, eliminating the
+one-cycle mixed-state callback. The set-up-to-grind hand-off should blend the
+coupled and decoupled matrices to avoid a torque step. The set-up threshold should be retuned against the
+measured external-moment range so that timeout and moment-triggered exits are
+distinguishable.
 
-Another possible extension is adaptive impedance control.
-Instead of selecting fixed stiffness and damping values before each experiment,
-the controller could adjust these parameters online depending on the task
-phase, contact error, or estimated external interaction.
-This would allow the robot to be stiff during accurate positioning and softer
-during surface contact or human interaction.
+For the null space, future work should validate parameter ranges, guard
+\(q\pm\alpha_{\mathrm{probe}}\hat v_7\) against joint limits, instrument the
+callback wall-clock duration to bound worst-case execution time, archive the
+timing trace and command-reception rate, and
+compare \(\|JN_q\|\) with the dynamic leakage
+\(\|JM_q^{-1}N_\tau\|\).  A characteristic-length scaling could make the
+geometric-Jacobian singular values more interpretable.  Energy or power
+monitoring could also constrain the active sigma bias
+\citep{Hjorth2023EnergyAwareImpedance}. The pole experiment should additionally
+be repeated with null-space damping only, or as matched sigma-off/sigma-on
+trials, to separate the active secondary bias from the alignment response during
+contact.
 
-The surface-contact experiment could be extended with an explicit
-virtual-center gain construction. In such a passive impedance design, the user
-could choose whether the effective rotation point lies on the surface, above the
-surface, or below the surface, and this choice would define coupled stiffness and
-damping matrices through the lever arm to that point. The impedance law would
-still compute its force and moment from the same spring--damper relation; the
-difference would be the structured off-diagonal coupling in \(K\) and \(D\). For
-a known surface, the required information would be a point on the surface and
-the surface normal. If the surface were unknown before contact, an additional
-surface-estimation method would be required before the same self-aligning
-impedance formulation could be used.
-
-The experimental evaluation could also be expanded with repeated surface-contact
-trials, different tool-edge geometries, different virtual-center locations,
-larger initial angular errors, and different payloads. This would make it
-possible to quantify repeatability and robustness more precisely.
-Finally, further refining the operational-space inertia model and its use in
-damping selection could improve the dynamic behavior during contact approach,
-contact release, and faster tool motions near the surface.
+Finally, the full coupled-pole campaign should be repeated with
+\texttt{FULL-Working-Clean}, the exact configuration in
+Appendix~\ref{app:controller_parameters}, multiple repetitions, and the added
+orientation/tool-axis signals. This would separate the effect of pole placement
+from the changes in tool geometry, phase timing, auto damping, and set-up-only
+coupling, and would provide a defensible current-version comparison of physical
+alignment, selected-feature/TCP displacement, and commanded torque across pole
+placements.

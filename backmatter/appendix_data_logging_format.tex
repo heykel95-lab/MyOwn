@@ -1,50 +1,158 @@
 \chapter{Data Logging Format}
 \label{app:data_logging_format}
 
-This appendix documents the format of the CSV log produced by the controller.
+The controller produces two complementary CSV files.  Both are filled from
+preallocated ring buffers; no file input/output or dynamic buffer growth occurs
+inside the \(1\,\mathrm{kHz}\) control callback.  When a buffer wraps, the
+oldest rows are replaced and the retained rows are reordered chronologically
+before writing.
 
-\paragraph{Timing.}
-The controller runs in the \(1\,\mathrm{ms}\) real-time torque-control callback.
-To avoid disturbing the loop timing, the logged values are stored in a
-preallocated in-memory buffer during the callback; the CSV file is created and
-written \emph{after} the control loop has finished.
+\section{General Control Log}
 
-\paragraph{Columns.}
-Each row corresponds to one logged control cycle (optionally decimated). The
-columns are:
+With the active configuration,
+\texttt{surface\_grinding\_controller\_log.csv} records every control cycle and
+retains the most recent \(120000\) rows.  It is written after a normal stop.
+The \texttt{phase} integer uses the enumeration
+\[
+\begin{array}{c|*{6}{>{\scriptstyle}c}}
+\texttt{phase} &0&1&2&3&4&5\\ \hline
+\text{state}&
+\texttt{approach\_orient}&
+\texttt{approach\_descend}&
+\texttt{set\_up}&
+\texttt{grind}&
+\texttt{hold}&
+\texttt{manual\_guide}.
+\end{array}
+\]
 
-\begin{table}[H]
-\centering
-\caption{CSV log columns and their meaning.}
-\label{tab:csv_columns}
-\begin{tabular}{@{}lll@{}}
+The 112 columns are grouped in Table~\ref{tab:csv_column_groups}.  A suffix
+\texttt{\_x,\_y,\_z} denotes the three base-frame components and
+\texttt{\_1..\_7} denotes joint components.
+
+\begin{longtable}{@{}p{0.32\textwidth}p{0.61\textwidth}@{}}
+\caption{Column groups in the general controller log.}
+\label{tab:csv_column_groups}\\
 \toprule
-Column(s) & Symbol & Meaning \\
+Column group & Meaning \\
 \midrule
-\texttt{time} & \(t\) & time since start [s] \\
-\texttt{p\_EE\_\{x,y,z\}} & \(p_{\mathrm{EE}}\) & end-effector position [m] \\
-\texttt{p\_d\_\{x,y,z\}} & \(p_d\) & desired position [m] \\
-\texttt{p\_end\_\{x,y,z\}} & \(p_{\mathrm{end}}\) & target / end position [m] \\
-\texttt{e\_p\_\{x,y,z\}} & \(\mathbf{e}_p\) & position error [m] \\
-\texttt{e\_R\_\{x,y,z\}} & \(\mathbf{e}_R\) & orientation error [rad] \\
-\texttt{pdot\_\{x,y,z\}} & \(\dot{p}_{\mathrm{EE}}\) & linear velocity [m/s] \\
-\texttt{pdot\_d\_\{x,y,z\}} & \(\dot{p}_d\) & desired linear velocity [m/s] \\
-\texttt{omega\_\{x,y,z\}} & \(\omega_{\mathrm{EE}}\) & angular velocity [rad/s] \\
-\texttt{f\_\{x,y,z\}} & \(\mathbf{f}\) & commanded impedance force [N] \\
-\texttt{m\_\{x,y,z\}} & \(\mathbf{m}\) & commanded impedance moment [Nm] \\
-\texttt{tau\_cmd\_1..7} & \(\boldsymbol{\tau}\) & commanded joint torques [Nm] \\
+\endfirsthead
+\multicolumn{2}{@{}l}{\textit{Table~\thetable\ continued}}\\
+\toprule
+Column group & Meaning \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r@{}}{\textit{Continued on next page}}\\
+\endfoot
 \bottomrule
-\end{tabular}
-\end{table}
+\endlastfoot
+\texttt{time}, \texttt{phase} &
+Run time and active control state.\\
+\texttt{p\_EE}, \texttt{p\_d} &
+EE/TCP position and phase-generated desired position [m].\\
+\texttt{tool\_contact}, \texttt{edge\_target} &
+Live selected tool feature and its commanded reference [m].\\
+\texttt{first\_contact\_tcp}, \texttt{first\_contact} &
+TCP and projected surface reference captured at the clearance transition.
+Despite the legacy column names, these are not force-detected contact points.\\
+\texttt{tool\_contact\_offset\_ee} &
+Selected face/edge/corner offset expressed in the EE frame [m].\\
+\texttt{e\_p}, \texttt{e\_R}, \texttt{pdot},
+\texttt{pdot\_d}, \texttt{omega} &
+Position and base-frame rotation-vector errors, linear velocities, and angular
+velocity. During set-up, \texttt{e\_R} is relative to the frozen clearance
+orientation; it is not itself the angle between the tool axis and the surface.\\
+\texttt{f}, \texttt{m} &
+Commanded Cartesian impedance force [N] and moment [N\,m].\\
+\texttt{external\_force}, \texttt{external\_moment} &
+The components copied from libfranka's
+\texttt{O\_F\_ext\_hat\_K}.  They are expressed in the base orientation but
+referenced to stiffness frame \(K\).\\
+\texttt{contact\_force\_bias},
+\texttt{contact\_moment\_bias} &
+External-wrench values captured at the clearance-to-set-up transition.\\
+\texttt{force\_after\_contact},
+\texttt{moment\_after\_contact} &
+External estimate minus the corresponding captured bias.  ``After contact'' is
+another retained legacy name; the reference event is geometric clearance.\\
+\texttt{push} &
+Signed set-up penetration or frozen grind preload [m].\\
+\texttt{nullspace\_mode},
+\texttt{sigma\_samples\_valid},
+\texttt{sigma\_direction\_valid},
+\texttt{sigma\_push\_active} &
+Selected law, sample/direction validity, and activity flags [-].\\
+\texttt{sigma\_current}, \texttt{sigma\_plus},
+\texttt{sigma\_minus}, \texttt{sigma\_difference} &
+Current and two finite-difference smallest-singular-value samples
+[scale dependent].\\
+\texttt{sigma\_direction}, \texttt{sigma\_alpha},
+\texttt{sigma\_k\_sigma}, \texttt{sigma\_deadband} &
+Selected sign [-], probe distance [rad], sigma torque magnitude [N\,m], and
+singular-value deadband [scale dependent].\\
+\texttt{sigma\_n\_best\_1..7} &
+Sign-selected structural-null direction [-].\\
+\texttt{nullspace\_dq\_1..7} &
+Projected joint velocity [rad/s].\\
+\texttt{tau\_sigma\_1..7} &
+Sigma torque [N\,m].\\
+\texttt{sigma\_dominant\_*},
+\texttt{nullspace\_velocity\_}\newline
+\texttt{dominant\_*},
+\texttt{sigma\_Jn\_norm} &
+Diagnostic component indices/shares [-] and the scale-dependent numerical
+residual \(\|J n_{\mathrm{best}}\|\).\\
+\texttt{tau\_sigma\_norm},
+\texttt{nullspace\_speed},
+\texttt{sigma\_speed\_}\newline
+\texttt{toward\_better},
+\texttt{tau\_nullspace\_norm} &
+Sigma-torque norm [N\,m], projected speed [rad/s], signed motion along the
+selected structural-null direction [rad/s], and total null-space-torque norm
+[N\,m].\\
+\texttt{tau\_cmd\_1..7} &
+Final commanded joint torque after task, null-space, and Coriolis terms [N\,m].\\
+\end{longtable}
 
-The logged force and moment \(\mathbf{f},\mathbf{m}\) are the \emph{commanded}
-impedance wrench (Section~\ref{subsec:commanded_measured_wrench}). The robot's
-estimated external wrench \texttt{O\_F\_ext\_hat\_K} can additionally be logged
-as \(\mathbf{f}_{\mathrm{ext}},\mathbf{m}_{\mathrm{ext}}\) to enable the
-commanded-versus-measured consistency check.
+The external-force signal is a model-based estimate referenced to stiffness
+frame \(K\), not a direct force-sensor measurement.  The offline evaluation uses
+only its bias-corrected magnitude as a force diagnostic and, when available, to
+narrow the phase-2 analysis window.
 
-\paragraph{Offline analysis.}
-The log is processed by the script
-\texttt{code/python/evaluate\_contact\_alignment.py}, which computes the
-orientation-error reduction, the instantaneous pole, the pole error, the
-least-squares effective impedance, and the evaluation figures.
+\section{Compact Sigma Diagnostic Log}
+
+\texttt{surface\_grinding\_controller\_sigma\_debug.csv} is sampled at
+\(20\,\mathrm{Hz}\) during sigma-enabled hold tests.  It records:
+
+\begin{itemize}
+  \item \texttt{hold\_start}, \texttt{manual\_guide\_start},
+        \texttt{recapture}, \texttt{sample}, \texttt{stop}, and
+        \texttt{exception} events, with a new segment identifier after each
+        recapture;
+  \item raw \(q,\dot q\), \(n_{\mathrm{best}}\), \(N_\tau\dot q\), and
+        \(\tau_\sigma\);
+  \item the sigma samples, finite-difference confidence, sigma power, and motion
+        toward the selected direction;
+  \item Cartesian error/speed, task and null-space torque norms,
+        external-force and joint-torque diagnostics, contact flags, and
+        interval peaks.
+\end{itemize}
+
+The compact buffer retains \(20000\) rows and is written before the larger log.
+It is also persisted when a libfranka reflex or another exception terminates
+the run, which preserves the diagnostic trace that led to the stop.
+
+\section{Offline Interpretation}
+
+The script \texttt{code/python/evaluate\_contact\_alignment.py} accepts both the
+current schema and the legacy experiment schema. For current logs it starts
+from phase~2 and, when available, narrows the window with the bias-corrected
+external-force norm; otherwise the set-up window is explicitly marked
+contact-unverified. It labels \(\mathbf e_R\) as a clearance-relative
+controller error rather than a physical alignment angle and uses the logged
+tool feature to evaluate its displacement when that signal is available.
+The remaining scalar diagnostics are the commanded Cartesian-force peak, the
+bias-corrected external-force-estimate peak, and the commanded joint-torque
+peak. The generated figures show the clearance-relative rotation error, the
+selected-feature/TCP displacement, and the force and joint-torque histories.

@@ -62,32 +62,12 @@
 % Optional shorter theory draft: set true to stop Chapter 2 after forward kinematics.
 \ProfessorStopAfterForwardKinematicsfalse
 
-% Appendices
-\newif\ifProfessorIncludeAppendixA
-\newif\ifProfessorIncludeAppendixB
-\newif\ifProfessorIncludeAppendixC
-\newif\ifProfessorIncludeAppendixD
-\newif\ifProfessorIncludeAppendixE
-\newif\ifProfessorIncludeAppendixF
+% Current appendices
 \newif\ifProfessorIncludeAppendixCode
 \newif\ifProfessorIncludeAnyAppendix
 
-% Appendices are archived for later reuse and hidden from the current
-% step-by-step thesis build.
-\ProfessorIncludeAppendixAfalse
-\ProfessorIncludeAppendixBfalse
-\ProfessorIncludeAppendixCfalse
-\ProfessorIncludeAppendixDfalse
-\ProfessorIncludeAppendixEfalse
-\ProfessorIncludeAppendixFfalse
 \ProfessorIncludeAppendixCodetrue
 
-\ifProfessorIncludeAppendixA\ProfessorIncludeAnyAppendixtrue\fi
-\ifProfessorIncludeAppendixB\ProfessorIncludeAnyAppendixtrue\fi
-\ifProfessorIncludeAppendixC\ProfessorIncludeAnyAppendixtrue\fi
-\ifProfessorIncludeAppendixD\ProfessorIncludeAnyAppendixtrue\fi
-\ifProfessorIncludeAppendixE\ProfessorIncludeAnyAppendixtrue\fi
-\ifProfessorIncludeAppendixF\ProfessorIncludeAnyAppendixtrue\fi
 \ifProfessorIncludeAppendixCode\ProfessorIncludeAnyAppendixtrue\fi
 
 \begin{document}
@@ -104,21 +84,7 @@
 \ProfessorFallbackLabel{ch:methodology}{4}{Experimental Methodology}
 \ProfessorFallbackLabel{ch:results_discussion}{5}{Results and Discussion}
 \ProfessorFallbackLabel{ch:conclusion}{6}{Conclusion and Future Work}
-\ProfessorFallbackLabel{sec:exp_stability}{4.1}{Preliminary: Stability Analysis}
 \ProfessorFallbackLabel{sec:future}{6.4}{Future Work}
-\ProfessorFallbackLabel{app:panda}{A}{Panda Numerical Example}
-\ProfessorFallbackLabel{app:panda_params}{A.1}{Panda Parameters}
-\ProfessorFallbackLabel{app:panda_fk}{A.2}{Forward Kinematics}
-\ProfessorFallbackLabel{app:panda_jacobian}{A.3}{Jacobian}
-\ProfessorFallbackLabel{app:panda_pinv}{A.4}{Pseudoinverse}
-\ProfessorFallbackLabel{app:panda_matrices}{A.5}{Impedance Matrices}
-\ProfessorFallbackLabel{app:panda_force}{A.6}{Pose Error and Impedance Wrench}
-\ProfessorFallbackLabel{app:panda_torques}{A.7}{Joint Torques}
-\ProfessorFallbackLabel{app:panda_loop}{A.8}{Control Loop}
-\ProfessorFallbackLabel{app:panda_stiffness}{A.9}{Stiffness Variation}
-\@ifundefined{r@sec:exp_stability@cref}{%
-  \@namedef{r@sec:exp_stability@cref}{{[section][1][4]4.1}{[1][0][]0}{}{}{}}%
-}{}%
 \@ifundefined{r@sec:future@cref}{%
   \@namedef{r@sec:future@cref}{{[section][3][5]5.3}{[1][0][]0}{}{}{}}%
 }{}%
@@ -189,11 +155,13 @@
 \ifProfessorIncludeExperiments
   \setcounter{chapter}{3}
   \input{chapters/04_experimental_setup_and_evaluation}
+  \setcounter{chapter}{4}
+  \input{chapters/05_results_and_discussion}
 \fi
 
 % chapters/06_experiments.tex is an archived earlier experiment-design draft.
 \ifProfessorIncludeConclusion
-  \setcounter{chapter}{4}
+  \setcounter{chapter}{5}
   \input{chapters/07_conclusion}
 \fi
 
@@ -210,36 +178,9 @@
   \ifProfessorIncludeAppendixCode
     \setcounter{chapter}{0}
     \input{backmatter/appendix_code}
-  \fi
-
-  \ifProfessorIncludeAppendixA
-    \setcounter{chapter}{0}
-    \input{backmatter/appendix_a_panda_example}
-  \fi
-
-  \ifProfessorIncludeAppendixB
-    \setcounter{chapter}{1}
-    \input{backmatter/appendix_b_data_logging}
-  \fi
-
-  \ifProfessorIncludeAppendixC
-    \setcounter{chapter}{2}
-    \input{backmatter/appendix_c_exp1_rotated_tracking}
-  \fi
-
-  \ifProfessorIncludeAppendixD
-    \setcounter{chapter}{3}
-    \input{backmatter/appendix_d_exp2_virtual_wall}
-  \fi
-
-  \ifProfessorIncludeAppendixE
-    \setcounter{chapter}{4}
-    \input{backmatter/appendix_e_exp3_stiffness}
-  \fi
-
-  \ifProfessorIncludeAppendixF
-    \setcounter{chapter}{5}
-    \input{backmatter/appendix_f_exp4_configuration}
+    \input{backmatter/appendix_data_logging_format}
+    \input{backmatter/appendix_additional_plots}
+    \input{backmatter/appendix_controller_parameters}
   \fi
 \fi
 

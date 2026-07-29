@@ -103,22 +103,24 @@ Here:
   \item $p_z = 0.3952\,\mathrm{m}$: height above the mounting surface.
 \end{itemize}
 
-\subsection{Intermediate Joint Origins and Axes}
+\subsection{Joint-Axis Points and Directions}
 
-\cref{tab:panda_fk} lists the joint frame origins $\mathbf{p}_k$ and rotation
-axes $\mathbf{z}_k$ in the base frame, extracted from the cumulative
-transformation matrices $\mT_0^k(\vq_0)$ for $k = 1,\ldots,7$.
-These are required to construct the Jacobian columns in Step 2.
+\cref{tab:panda_fk} lists, for each joint \(i\), a point
+\(\mathbf p_{i-1}\) on its axis and its rotation axis
+\(\mathbf z_{i-1}\), expressed in the base frame. They are extracted from
+\(\mT_0^{i-1}(\vq_0)\) for \(i=1,\ldots,7\), including
+\(\mT_0^0=I\) for joint~1, and are used to construct the Jacobian columns.
 
 \begin{table}[htb]
 \centering
-\caption{Joint frame origins $\mathbf{p}_k$ and rotation axes $\mathbf{z}_k$
-         at the home configuration $\vq_0$.}
+\caption{Axis points \(\mathbf p_{i-1}\) and directions
+         \(\mathbf z_{i-1}\) for joints \(i=1,\ldots,7\) at
+         \(\vq_0\), using the standard-DH indexing.}
 \label{tab:panda_fk}
 \renewcommand{\arraystretch}{1.3}
 \begin{tabular}{@{}cp{3.0cm}p{1.8cm}p{6.5cm}@{}}
 \toprule
-$k$ & $p_{k,x}$ [m] & $p_{k,y}$ [m] & $p_{k,z}$ [m] \\
+Joint \(i\) & $p_{i-1,x}$ [m] & $p_{i-1,y}$ [m] & $p_{i-1,z}$ [m] \\
 \midrule
 1 & $0.0000$ & $0.0000$ & $0.0000$ \\
 2 & $0.0000$ & $0.0000$ & $0.3330$ \\
@@ -128,7 +130,7 @@ $k$ & $p_{k,x}$ [m] & $p_{k,y}$ [m] & $p_{k,z}$ [m] \\
 6 & $0.2234$ & $0.6074$ & $0.3330$ \\
 7 & $0.2234$ & $0.6074$ & $0.3330$ \\
 \midrule
-$k$ & $z_{k,x}$ & $z_{k,y}$ & $z_{k,z}$ \\
+Joint \(i\) & $z_{i-1,x}$ & $z_{i-1,y}$ & $z_{i-1,z}$ \\
 \midrule
 1 & $\phantom{-}0.0000$ & $\phantom{-}0.0000$ & $+1.0000$ \\
 2 & $\phantom{-}0.0000$ & $\phantom{-}0.0000$ & $+1.0000$ \\
@@ -150,10 +152,11 @@ Applying \cref{eq:jacobian_column} for each joint using the values from
 \cref{tab:panda_fk} and the end-effector position \cref{eq:pe_panda}:
 
 \begin{equation}
-\mJ_k =
+\mJ_i =
 \begin{bmatrix}
-\mathbf{z}_k \times (\mathbf{p}_{EE} - \mathbf{p}_k) \\[3pt]
-\mathbf{z}_k
+\mathbf{z}_{i-1} \times
+(\mathbf{p}_{\mathrm{EE}} - \mathbf{p}_{i-1}) \\[3pt]
+\mathbf{z}_{i-1}
 \end{bmatrix}
 \end{equation}
 
@@ -176,9 +179,10 @@ The rows correspond to $[v_x,\;v_y,\;v_z,\;\omega_x,\;\omega_y,\;\omega_z]$
 and the columns to joints 1 through 7.
 
 \begin{remark}
-Columns 1 and 2 of $\mJ(\vq_0)$ are nearly identical, because joints 1 and 2
-share the same rotation axis direction ($+z_0$) at the home configuration and
-have the same lever arm to the end-effector.
+Columns 1 and 2 of $\mJ(\vq_0)$ are identical in this numerical model because
+\(z_0=z_1\) at the home configuration and \(p_1-p_0\) is parallel to that
+common axis. Their different axis points therefore differ only by a component
+that vanishes in the cross product.
 This is characteristic of the Panda's geometry at $\vq_0$; it changes with the
 robot's configuration.
 \end{remark}
@@ -254,7 +258,7 @@ Here:
 \end{itemize}
 
 The implemented controller uses a projected null-space torque as described in
-\cref{sec:nullspace_optimization_implementation}. In this numerical example,
+\cref{sec:nullspace_conditioning_implementation}. In this numerical example,
 the projector $\mathbf{N}$ is computed only to illustrate the structure of the
 redundancy.
 Physically, the non-zero entries in $\mathrm{diag}(\mathbf{N})$ at joints

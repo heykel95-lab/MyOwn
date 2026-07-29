@@ -1,28 +1,26 @@
 \chapter{Controller Source Listings}
 \label{app:code}
 
-This appendix collects the source listings of the implemented Cartesian
-impedance controller. The code is taken from the controller used for the
-table-contact experiment and is referenced from
-Chapter~\ref{ch:implementation} where the corresponding equations are derived.
-The listings use the C++ types \texttt{Vec3}, \texttt{Vec6}, \texttt{Vec7},
-\texttt{Mat3}, and \texttt{Mat6x7} as aliases for the corresponding fixed-size
-Eigen matrices, and \texttt{Parameters} for the controller configuration
-struct.
+This appendix contains abridged production excerpts from the surface-grinding
+controller at tag
+\texttt{FULL-Working-Clean} (commit \texttt{bbe7e85}).  Guards, diagnostic
+fields, and printing are elided only where stated.  The excerpts use fixed-size
+Eigen aliases such as \texttt{Vec3}, \texttt{Vec7}, \texttt{Mat3},
+\texttt{Mat6x6}, and \texttt{Mat6x7}.
 
 \section{Surface Task Frame and Spatial Gains}
 \label{app:surface_gains}
 
-The surface task frame is built from a plane normal and a tangent. The spatial
-gain matrix expresses diagonal surface-frame gains in the base frame, as in
-\cref{eq:spatial_gain_matrix}.
+The frame order is \([t_1,t_2,n_s]\).  Because
+\(t_2=n_s\times t_1\), this column order is right-handed.
 
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Surface task frame and spatial gain matrix.}, label={lst:app_surface_gains}]
-inline Mat3 makeSurfaceFrameFromNormalTangent(
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Surface frame and gain transformation used by the controller.}, label={lst:app_surface_gains}]
+Mat3 makeSurfaceFrameFromNormalTangent(
     const Vec3& normal_input, const Vec3& tangent1_input) {
-  const Vec3 normal = normalizedOrFallback(normal_input, Vec3(1.0, 0.0, 0.0));
-  Vec3 tangent1 = tangent1_input - normal * normal.dot(tangent1_input);
-
+  const Vec3 normal =
+      normalizedOrFallback(normal_input, Vec3(1.0, 0.0, 0.0));
+  Vec3 tangent1 =
+      tangent1_input - normal * normal.dot(tangent1_input);
   if (tangent1.norm() <= 1e-9) {
     Vec3 fallback(0.0, 1.0, 0.0);
     if (std::abs(normal.dot(fallback)) > 0.95) {
@@ -30,206 +28,309 @@ inline Mat3 makeSurfaceFrameFromNormalTangent(
     }
     tangent1 = fallback - normal * normal.dot(fallback);
   }
-
   tangent1.normalize();
-  Vec3 tangent2 = normal.cross(tangent1);
-  tangent2.normalize();
+  const Vec3 tangent2 = normal.cross(tangent1).normalized();
 
   Mat3 R_surface;
-  R_surface.col(0) = normal;
-  R_surface.col(1) = tangent1;
-  R_surface.col(2) = tangent2;
+  R_surface.col(0) = tangent1;
+  R_surface.col(1) = tangent2;
+  R_surface.col(2) = normal;
   return R_surface;
 }
 
-inline Mat3 makeSpatialGainMatrix(
-    const Vec3& diagonal_in_surface_frame, const Mat3& R_surface) {
-  return R_surface * diagonal_in_surface_frame.asDiagonal()
-         * R_surface.transpose();
+Mat3 makeSpatialGainMatrix(
+    const Vec3& diagonal_in_task_frame, const Mat3& R_task) {
+  return R_task * diagonal_in_task_frame.asDiagonal()
+       * R_task.transpose();
 }
 \end{lstlisting}
 
-\section{Plane Projection of the Desired Motion}
-\label{app:desired_motion}
-
-The desired position follows a smooth trajectory in free space and is projected
-onto the surface plane when the constraint is enabled, as in
-\cref{eq:signed_normal_distance,eq:plane_projected_desired_position}.
-
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Desired motion with plane projection.}, label={lst:app_desired_motion}]
-inline DesiredMotion computeDesiredMotion(
-    const Parameters& params,
-    double time,
-    const Vec3& p_start,
-    const Vec3& p_EE,
-    const Mat3& R_surface,
-    const Vec3& plane_point) {
-  DesiredMotion desired{p_start, Vec3::Zero()};
-
-  if (!params.hold_mode) {
-    const double r = time / params.trajectory_duration;
-    const double s = smoothStep(r);
-    const double s_dot = smoothStepDerivative(r, params.trajectory_duration);
-    desired.p_d = p_start + s * params.delta_p;
-    desired.pdot_d = s_dot * params.delta_p;
-  }
-
-  if (params.constraint_enabled) {
-    const Vec3 normal = R_surface.col(0);
-    // signed_distance = n_s^T (p_plane - p_EE); p_d = p_EE + signed_distance * n_s
-    const double signed_distance = normal.dot(plane_point - p_EE);
-    desired.p_d = p_EE + signed_distance * normal;
-    desired.pdot_d.setZero();
-  }
-
-  return desired;
-}
-\end{lstlisting}
-
-\section{Orientation Error and Rotational Constraint}
+\section{Tool Orientation and Rotation Error}
 \label{app:orientation}
 
-The orientation error is returned in the base frame
-(\cref{eq:rotation_error_vector}), and the rotational constraint is applied in
-the surface frame (\cref{eq:surface_rotational_mask}).
+The physical tool axis is configured in the EE frame.  The desired orientation
+is the minimum rotation of the captured start orientation that maps this axis
+onto the signed normal; it is not obtained by assigning the complete surface
+frame to the EE frame.
 
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Base-frame orientation error and surface-frame rotational mask.}, label={lst:app_orientation}]
-inline Vec3 orientationError(const Mat3& R_current, const Mat3& R_desired) {
-  Mat3 R_error = R_current.transpose() * R_desired;
-  Eigen::AngleAxisd angle_axis(R_error);
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Signed tool-axis target and restoring rotation-vector error.}, label={lst:app_orientation}]
+Vec3 desiredToolAxisInBase(
+    const Parameters& p, const Mat3& R_surface) {
+  const double sign = (p.tool_axis_target_sign >= 0.0) ? 1.0 : -1.0;
+  return sign * R_surface.col(2);  // normal is column 2
+}
 
-  if (std::abs(angle_axis.angle()) < 1e-9) {
+Mat3 makeToolOrientationForAlignmentTarget(
+    const Parameters& p, const Mat3& R_surface,
+    const Mat3& R_start) {
+  const Vec3 a_start =
+      (R_start * p.tool_axis_ee.normalized()).normalized();
+  const Vec3 a_target =
+      desiredToolAxisInBase(p, R_surface).normalized();
+  return rotationBetweenUnitVectors(a_start, a_target) * R_start;
+}
+
+Vec3 orientationError(
+    const Mat3& R_current, const Mat3& R_desired) {
+  const Mat3 R_error = R_current.transpose() * R_desired;
+  const Eigen::AngleAxisd aa(R_error);
+  if (std::abs(aa.angle()) < 1e-9) {
     return Vec3::Zero();
   }
-  // Rotate the axis-angle error into the base frame.
-  return R_current * angle_axis.axis() * angle_axis.angle();
-}
-
-inline Vec3 applyRotationalAxisMask(
-    const Parameters& params, Vec3 e_R, const Mat3& R_surface) {
-  if (!params.constraint_enabled) {
-    return e_R;
-  }
-
-  Vec3 e_R_task = R_surface.transpose() * e_R;
-  e_R_task(0) = params.constrain_rotation_about_surface_normal   ? e_R_task(0) : 0.0;
-  e_R_task(1) = params.constrain_rotation_about_surface_tangent1 ? e_R_task(1) : 0.0;
-  e_R_task(2) = params.constrain_rotation_about_surface_tangent2 ? e_R_task(2) : 0.0;
-
-  return R_surface * e_R_task;
+  return R_current * aa.axis() * aa.angle();  // base components
 }
 \end{lstlisting}
+
+\section{Geometric Clearance and Phase Targets}
+\label{app:desired_motion}
+
+The old generic ``project the EE origin onto the plane'' constraint is not part
+of the production controller.  The leading point, edge, or face of the
+rectangular tool is selected along the descent direction.  The transition into
+set-up is based on the exact most-leading corner height; the average of corners
+tied within \(0.1\,\mathrm{mm}\) supplies the controlled feature and projected
+reference. External force is diagnostic only. The following excerpt is
+abridged from the phase switch.
+
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Phase-dependent tool-feature targets (abridged).}, label={lst:app_desired_motion}]
+const Vec3 descend_direction = -R_surface.col(2);
+double leading_projection = 0.0;
+const Vec3 tool_contact_offset_ee =
+    selectLeadingToolContact(R_EE, leading_projection);
+const Vec3 tool_contact =
+    p_EE + R_EE * tool_contact_offset_ee;
+
+case ControlPhase::kApproachDescend: {
+  desired.p_d = p_start + distance * descend_direction;
+  desired.pdot_d = params.descend_speed * descend_direction;
+
+  const Vec3 normal = -descend_direction;
+  const double leading_corner_height =
+      normal.dot(p_EE - surface_point) - leading_projection;
+  const double controlled_feature_height =
+      normal.dot(tool_contact - surface_point);
+  const bool clearance_reached =
+      leading_corner_height <= params.descend_surface_clearance;
+
+  if (clearance_reached && !gate_blocking) {
+    active_tool_contact_offset_ee = tool_contact_offset_ee;
+    first_contact_tcp = p_EE;  // legacy name: captured at clearance
+    first_contact_point =
+        tool_contact - controlled_feature_height * normal;
+    setup_push_start = -controlled_feature_height;
+    R_contact_start = R_EE;
+    phase = ControlPhase::kSetUp;
+  }
+  break;
+}
+
+case ControlPhase::kSetUp: {
+  const double push =
+      setUpPush(params, phase_time, setup_push_start,
+                setup_push_velocity);
+  const Vec3 edge_target =
+      first_contact_point + push * descend_direction;
+  desired.p_d =
+      edge_target - R_contact_start * tool_contact_offset_ee;
+  desired.pdot_d = setup_push_velocity * descend_direction;
+  // Exit after minimum time on moment-delta norm, or on timeout.
+  break;
+}
+
+case ControlPhase::kGrind: {
+  // Keep the final set-up push and optionally add a smooth
+  // ping-pong displacement along tangent1 or tangent2.
+  edge_target = first_contact_point
+              + grind_push * descend_direction
+              + sweep_s * grind_tangent;
+  desired.p_d =
+      edge_target - R_contact_start * tool_contact_offset_ee;
+  desired.pdot_d = sweep_s_dot * grind_tangent;
+  break;
+}
+\end{lstlisting}
+
+The identifiers \texttt{first\_contact\_*} are retained source names.  They are
+captured at the configured clearance, not at a force-detected first contact.
+
+\section{Center of Compliance and the Offset Adjoint}
+\label{app:center_compliance}
+
+The lever passed to the implementation points from the selected pole to the
+TCP:
+\[
+r_c=p_{\mathrm{TCP}}-p_c.
+\]
+The same congruence is applied to stiffness and damping. In the active frozen
+configuration, \texttt{edge\_ref} and \texttt{tcp\_ref} below are both the
+clearance-hand-off values, so the implemented
+\(r_c=p_{\mathrm{TCP,clr}}-p_c\) is constant during set-up. The live option uses
+the same expression with current references.
+
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Pole-to-TCP adjoint and congruence transform.}, label={lst:app_compliance_adjoint}]
+Mat3 skewMatrix(const Vec3& r) {
+  Mat3 S;
+  S << 0.0, -r(2),  r(1),
+       r(2),  0.0, -r(0),
+      -r(1),  r(0),  0.0;
+  return S;
+}
+
+Mat6x6 offsetAdjoint(const Vec3& r_c) {
+  Mat6x6 A = Mat6x6::Zero();
+  A.block<3,3>(0,0) = Mat3::Identity();
+  A.block<3,3>(0,3) = skewMatrix(r_c);
+  A.block<3,3>(3,3) = Mat3::Identity();
+  return A;
+}
+
+Mat6x6 adjointTransformedGain(
+    const Mat6x6& gain_at_pole, const Vec3& r_c) {
+  const Mat6x6 A = offsetAdjoint(r_c);
+  return A.transpose() * gain_at_pole * A;
+}
+
+const Vec3 pole = edge_ref + params.coupled_pole_from_edge;
+const Vec3 r_c = tcp_ref - pole;
+K_tcp = adjointTransformedGain(
+    blockDiagonal(Kp_used, KR_used), r_c);
+D_tcp = adjointTransformedGain(
+    blockDiagonal(Dp_used, DR_used), r_c);
+\end{lstlisting}
+
+\section{Task-Inertia Damping}
+\label{app:auto_damping}
+
+The joint-space mass matrix is solved rather than explicitly inverted.
+A \(10^{-9}\) diagonal regularization is used only for the task-inertia
+calculation; it is not the null-space pseudoinverse cutoff.
+
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Task-inertia estimate and per-axis damping.}, label={lst:app_auto_damping}]
+const Mat7x6 Minv_Jt = mass.ldlt().solve(J.transpose());
+Mat6x6 Lambda_inv = J * Minv_Jt;
+Lambda_inv = 0.5 * (Lambda_inv + Lambda_inv.transpose());
+Lambda_inv.diagonal().array() += 1e-9;
+Mat6x6 Lambda =
+    Lambda_inv.ldlt().solve(Mat6x6::Identity());
+
+const Mat6x6 T_task = blockDiagonalRotation(R_task);
+const Mat6x6 Lambda_task =
+    T_task.transpose() * Lambda * T_task;
+
+for (int i = 0; i < 3; ++i) {
+  Dp(i) = 2.0 * zeta
+        * std::sqrt(Lambda_task(i, i) * Kp(i));
+  DR(i) = 2.0 * zeta
+        * std::sqrt(Lambda_task(i + 3, i + 3) * KR(i));
+}
+\end{lstlisting}
+
+The complete implementation rejects failed factorizations, non-finite
+matrices, and non-positive directional inertias. It applies an optional manual
+per-axis floor (disabled by the current parameters), caps each result at
+\(8000\) in the corresponding damping unit, and uses the phase-specific manual
+matrix when the estimate is unavailable. Approach and set-up/grind retry an
+invalid estimate on subsequent callbacks; hold and the pause gate latch their
+fallback for the current entry.
 
 \section{Null-Space Torque}
 \label{app:nullspace}
 
-The null-space torque uses the damped projector of the full Jacobian, a
-return-to-start spring, joint-space damping, and the smallest-singular-value
-optimization, as in \cref{eq:implementation_full_projector,eq:implementation_nullspace_torque}.
+For \(J\in\mathbb R^{6\times7}\), Eigen returns six singular values and a full
+\(7\times7\) right-singular matrix.  Column six in zero-based C++ indexing is
+therefore \(v_7\), the structural null vector; it is distinct from \(v_6\), the
+right-singular vector paired with \(\sigma_{\min}=\sigma_6\).
 
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Full-Jacobian null-space torque with return-to-start and sigma-min optimization.}, label={lst:app_nullspace}]
-inline double smallestSingularValue(const Mat6x7& J) {
-  Eigen::JacobiSVD<Mat6x7> svd(J, Eigen::ComputeFullU | Eigen::ComputeFullV);
-  return svd.singularValues().minCoeff();
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Truncated-SVD torque projector and the four-mode null-space law (abridged).}, label={lst:app_nullspace}]
+Eigen::JacobiSVD<Mat6x7> svd(
+    J, Eigen::ComputeFullU | Eigen::ComputeFullV);
+const auto sigma = svd.singularValues();       // sigma_1 ... sigma_6
+const double cutoff =
+    params.nullspace_svd_relative_tolerance * sigma.maxCoeff();
+
+Mat7x6 J_pinv = Mat7x6::Zero();
+for (int i = 0; i < 6; ++i) {
+  if (sigma(i) > cutoff) {
+    J_pinv += (1.0 / sigma(i))
+            * svd.matrixV().col(i)
+            * svd.matrixU().col(i).transpose();
+  }
 }
 
-inline Vec7 computeNullspaceTorque(
-    const Parameters& params,
-    const Model& model,
-    const RobotState& state,
-    const Mat6x7& J,
-    const Vec7& dq,
-    const Vec7& q_start) {
-  Vec7 tau_nullspace = Vec7::Zero();
-  if (!params.use_nullspace_optimization) {
-    return tau_nullspace;
-  }
+Mat7x7 N_tau =
+    Mat7x7::Identity() - J.transpose() * J_pinv.transpose();
+N_tau = 0.5 * (N_tau + N_tau.transpose());
 
-  Map<const Vec7> q_current(state.q.data());
-  const Mat7x7 I7 = Mat7x7::Identity();
-  const Mat6x6 I6 = Mat6x6::Identity();
-  const double lambda = 0.05;
+const Vec7 dq_N = N_tau * dq;
+const Vec7 tau_d =
+    damping_enabled ? -params.nullspace_damping * dq_N
+                    : Vec7::Zero();
 
-  // Damped null-space projector of the full Jacobian:
-  //   N = I - J^T (J J^T + lambda^2 I)^(-1) J
-  const Mat6x6 JJt_damped = J * J.transpose() + lambda * lambda * I6;
-  const Mat7x7 N = I7 - J.transpose() * JJt_damped.ldlt().solve(J);
+Vec7 n = svd.matrixV().col(6).normalized();    // v_7
+const double alpha = std::abs(params.nullspace_alpha);
+const double sigma_plus  = sigmaMinAt(q + alpha * n);
+const double sigma_minus = sigmaMinAt(q - alpha * n);
+const double difference = sigma_plus - sigma_minus;
 
-  // Return-to-start spring and joint-space damping, projected into the null space.
-  tau_nullspace = N * (params.nullspace_k_start * (q_start - q_current)
-                       - params.nullspace_damping * dq);
+Vec7 tau_sigma = Vec7::Zero();
+if (std::abs(difference) > params.nullspace_sigma_deadband) {
+  const double sign = (difference > 0.0) ? 1.0 : -1.0;
+  tau_sigma = params.nullspace_k_sigma
+            * N_tau * (sign * n);
+}
 
-  // Smallest-singular-value direction v_7: last right singular vector of J.
-  Eigen::JacobiSVD<Mat6x7> svd_current(J, Eigen::ComputeFullU | Eigen::ComputeFullV);
-  Vec7 v7 = svd_current.matrixV().col(6);
-  if (v7.norm() <= 1e-9) {
-    return tau_nullspace;
-  }
-  v7.normalize();
-
-  // Compare sigma_min at the two candidate configurations q +/- alpha v_7.
-  const Vec7 q_plus = q_current + params.nullspace_alpha * v7;
-  const Vec7 q_minus = q_current - params.nullspace_alpha * v7;
-  const std::array<double, 42> J_plus_array = model.zeroJacobian(
-      Frame::kEndEffector, vec7ToArray(q_plus), state.F_T_EE, state.EE_T_K);
-  const std::array<double, 42> J_minus_array = model.zeroJacobian(
-      Frame::kEndEffector, vec7ToArray(q_minus), state.F_T_EE, state.EE_T_K);
-  Map<const Mat6x7> J_plus(J_plus_array.data());
-  Map<const Mat6x7> J_minus(J_minus_array.data());
-
-  const double sigma_min_plus = smallestSingularValue(J_plus);
-  const double sigma_min_minus = smallestSingularValue(J_minus);
-  const double sigma_direction = (sigma_min_plus > sigma_min_minus) ? 1.0 : -1.0;
-
-  const Vec7 tau_sigma = N * (params.nullspace_k_sigma * sigma_direction
-                             * params.nullspace_alpha * v7);
-
-  return tau_nullspace + tau_sigma;
+switch (params.nullspace_mode) {
+  case NullspaceMode::kOff:             return Vec7::Zero();
+  case NullspaceMode::kDampingOnly:     return tau_d;
+  case NullspaceMode::kSigmaOnly:       return tau_sigma;
+  case NullspaceMode::kDampingAndSigma: return tau_d + tau_sigma;
 }
 \end{lstlisting}
+
+Here the code variable \texttt{alpha} represents
+\(\alpha_{\mathrm{probe}}\) and changes only the two sampled configurations.
+It does not
+multiply the active torque.  Singular values at or below the cutoff are not
+reciprocated. For compactness, this excerpt omits the active guards on the
+structural-null-vector norm, non-zero probe distance, and finiteness of the two
+sampled singular values; failure of any guard suppresses the sigma push. The
+production path does not separately test the current SVD or projector for
+finiteness, and it does not check the two probe configurations against joint
+limits. The diagnostic field \texttt{direction\_valid} records that a sign was
+selected; it is not an additional input guard.
 
 \section{Core Control Callback}
 \label{app:callback_core}
 
-The core of the real-time callback evaluates the impedance wrench, maps it to
-joint torques, adds the projected null-space torque and the Coriolis term, and
-returns the command. The gain matrices \texttt{Kp\_used}, \texttt{KR\_used},
-etc. are the phase-dependent surface-frame gains selected by the control phase.
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Core impedance, coupled set-up, and torque composition.}, label={lst:app_callback_core}]
+const Vec3 e_p = desired.p_d - p_EE;
+const Vec3 e_R = applyRotationalAxisMask(
+    params, orientationError(R_EE, R_d_used), R_surface);
 
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Core of the real-time impedance-control callback.}, label={lst:app_callback_core}]
-// Differential kinematics and current pose.
-Vec6 xdot = J * dq;
-Vec3 pdot = xdot.head<3>();
-Vec3 omega = xdot.tail<3>();
-Vec3 p_EE = T_EE.block<3, 1>(0, 3);
-Mat3 R_EE = T_EE.block<3, 3>(0, 0);
+Vec6 dx, dv;
+dx << e_p, e_R;
+dv << desired.pdot_d - pdot, -omega;
 
-// Desired motion: smooth trajectory in free space, plane projection in contact.
-DesiredMotion desired = computeDesiredMotion(
-    params, time, p_start, p_EE, R_surface, plane_point);
-Vec3 e_p = desired.p_d - p_EE;
-
-// Base-frame orientation error, masked in the surface frame.
-Vec3 e_R = applyRotationalAxisMask(
-    params, orientationError(R_EE, R_d_phase), R_surface);
-
-// Impedance wrench with phase-dependent surface-frame gains.
-Vec3 f = Kp_used * e_p + Dp_used * (desired.pdot_d - pdot);
-Vec3 m = KR_used * e_R - DR_used * omega;
 Vec6 wrench;
-wrench.head<3>() = f;
-wrench.tail<3>() = m;
-
-Vec7 tau_task = J.transpose() * wrench;
-
-// Null-space torque is enabled once contact search and orientation are done.
-Vec7 tau_nullspace = Vec7::Zero();
-if (nullspace_active) {
-  tau_nullspace = computeNullspaceTorque(params, model, state, J, dq, q_start);
+if (phase == ControlPhase::kSetUp &&
+    params.use_coupled_stiffness) {
+  // K_tcp and D_tcp come from block-diagonal, manual-pole,
+  // or saved-matrix selection.
+  wrench = K_tcp * dx + D_tcp * dv;
+} else {
+  wrench.head<3>() =
+      Kp_used * e_p + Dp_used * dv.head<3>();
+  wrench.tail<3>() =
+      KR_used * e_R - DR_used * omega;
 }
 
-Array7 coriolis_array = model.coriolis(state);
-Map<const Vec7> coriolis(coriolis_array.data());
-
-Vec7 tau_cmd = tau_task + tau_nullspace + coriolis;
+const Vec7 tau_task = J.transpose() * wrench;
+const Vec7 tau_null = computeNullspaceTorque(
+    params, model, state, J, dq, sigma_diagnostics);
+const Array7 coriolis_array = model.coriolis(state);
+const Eigen::Map<const Vec7> coriolis(coriolis_array.data());
+const Vec7 tau_cmd = tau_task + tau_null + coriolis;
 \end{lstlisting}
+
+The null-space function is called in every non-manual phase.  Manual guidance
+uses its separate Coriolis-plus-joint-damping branch.

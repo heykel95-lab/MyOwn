@@ -7,21 +7,28 @@ This thesis investigates the design and implementation of a real-time Cartesian
 impedance controller for the Franka Emika Panda, a redundant 7-\abbr{DOF}
 collaborative robot. The formulation keeps the relation between pose error,
 impedance wrench, Jacobian mapping, null-space behavior, and joint torques
-traceable, and defines the stiffness and damping matrices in a task frame
-aligned with the contact surface before transforming them into the base frame.
+traceable.  It distinguishes gains expressed in the base frame from gains in
+the surface frame \([t_1,t_2,n_s]\), and computes phase-dependent damping from a
+model-based Cartesian-inertia estimate.
 
-The experimental focus is narrowed to a contact-alignment task. A tool edge is
-brought into contact with a surface. The downward contact force acts at the
-offset tool edge and produces a moment that, under a compliant rotational
-stiffness, rotates the tool toward the surface, so the alignment is passive rather
-than commanded. The resulting displacement combines translation and rotation as
-a screw motion, whose instantaneous axis describes the passive alignment
-tendency. The central question is how to select the Cartesian stiffness so that
-this passive self-alignment is useful and pivots near the contact, while the
-robot remains compliant and the Franka collision behavior is configured for the
-experiment.
-Initial candidates are computed from a quasi-static compliance relation and a
-critical-damping approximation and compared experimentally; a least-squares
-fit then identifies the effective translation--rotation stiffness and damping.
+The controller aligns a configured tool axis, descends to a geometric clearance,
+selects the leading feature of a rectangular tool face, ramps that feature into
+the surface during set-up, and subsequently executes a tangential grinding
+motion.  During set-up, a selectable center of compliance is realized by
+transforming a pole-frame \(6\times6\) stiffness and damping to the TCP with a
+spatial adjoint.  The resulting off-diagonal blocks couple translation and
+rotation while preserving symmetry and positive semidefiniteness.  The
+alignment response during contact is evaluated through the physical tool-axis alignment
+and the displacement of the selected tool feature and TCP.
+
+Redundancy is handled with projected joint damping and an optional
+smallest-singular-value bias.  A tolerance-truncated SVD inverts only retained
+Jacobian singular values, while the seventh right-singular vector supplies the
+structural null direction.  Buffered full-rate and compact diagnostic logs make
+the phase, contact geometry, singular-value probes, and commanded torques
+available for offline evaluation.  The thesis thereby
+links the sign and frame conventions of the spatial impedance law to its
+real-time implementation and to the interpretation of pole-based
+unscripted task-space alignment experiments.
 
 \cleardoublepage
