@@ -19,9 +19,9 @@ Use declarative scientific prose. Do not create headings or passages framed as
 “Research Question”, “Experimental Question”, “RQ1”, “central question”, or
 similar. State the investigated dependencies directly. For example:
 
-> The experimental study evaluates the influence of tangential rotational
-> stiffness and virtual centre-of-compliance placement on contact-induced tool
-> alignment.
+> The experimental study evaluates the influence of the paired surface-tangent
+> rotational stiffness \(K_{R,t_1}=K_{R,t_2}\) and virtual
+> centre-of-compliance placement on contact-induced tool alignment.
 
 Use “aim”, “objective”, and “investigation” sparingly. Avoid proposal wording
 for completed work (`will investigate`, `is planned`, `will be evaluated`).
@@ -67,6 +67,54 @@ increased as rotational stiffness decreased” over inflated wording.
 
 Use British spelling consistently, including `centre`, `behaviour`, and
 `optimisation`, except in literal software identifiers.
+
+## Figures and tables
+
+Keep figure and table captions short, preferably one line and normally below
+about 12 words. Use a descriptive noun phrase that identifies the plotted
+quantity, comparison, geometry, or parameter set.
+
+Good examples:
+
+- `Set-up settling at 4, 8, and 12 s.`
+- `Paired tangent-axis stiffness results (n=5 per setting).`
+- `Alignment response by compliance-centre coordinate.`
+- `Phase-specific automatic-damping policy.`
+
+Do not place the interpretation, complete procedure, limitations, or a second
+discussion paragraph inside the caption. Put that information in the body text
+immediately before or after the figure or table. A caption may retain essential
+sample-size or uncertainty notation such as `n=5` or `mean ± SD`.
+
+Use an optional short LaTeX caption only when a longer self-contained caption
+is scientifically necessary:
+
+```tex
+\caption[Short list entry]{Longer caption required to interpret the item.}
+```
+
+The List of Figures and List of Tables must always contain concise entries.
+
+Never use “tangential stiffness” for a parameter sweep without naming the
+axis. State \(t_1\), \(t_2\), or explicitly state that both entries were
+changed together. In the completed Case-D campaign,
+\(K_{R,t_1}=K_{R,t_2}\) was assigned the common values 5, 15, and
+50 Nm/rad. These data establish the effect of the paired setting and must not
+be described as an isolated \(t_1\)- or \(t_2\)-axis effect.
+
+Plots must use the same typeface as the thesis. This document loads
+`lmodern`, so generated plots use LaTeX-rendered Latin Modern Roman and Latin
+Modern mathematics; do not substitute Times New Roman or a sans-serif default.
+Export plots as vector PDF with embedded fonts.
+
+Design each plot at approximately its final printed width instead of creating
+an oversized canvas that LaTeX later shrinks. Normally use labels of at least
+9--10 pt and tick labels of at least 8.5--9 pt at final size. Prefer short axis
+labels, a restrained colour-blind-safe palette, light horizontal grids, and
+open markers that remain legible in print. Remove internal plot titles that
+repeat the caption, unused panels, and diagnostics that are not discussed in
+the text. Visually inspect every plot inside the compiled thesis, not only as a
+standalone file.
 
 ## Repository and software language
 
@@ -163,6 +211,23 @@ It should state:
 - response metrics and steady-state calculation;
 - repeatability assessment.
 
+Introduce the complete experimental campaign before the detailed procedure.
+Use stable, concise case identifiers such as `Case A`, `Case B`, and `Case C`
+when several validation checks and parameter studies are reported. Group the
+cases briefly in prose or bullets and provide one compact table containing:
+
+- case identifier and short name;
+- varied quantity or comparison;
+- tested settings and repetitions;
+- purpose or principal outcome.
+
+Use the same identifiers in the Results and Discussion headings. Do not assign
+a completed case identifier to an unfinished, exploratory, or diagnostic run.
+The case counts must reconcile with the stated total number of analysed runs.
+When different cases use different outcomes, include a second compact mapping
+from each case to the metrics actually used in its Results section. Do not
+present a logged diagnostic as a universal primary metric.
+
 Keep the configured normal \(n_{\mathrm{cfg}}\) distinct from the physical
 normal \(n_{\mathrm{phys}}\). Describe only the physical-plane method actually
 used for the reported data. A proposed three-point calibration belongs in
@@ -175,9 +240,10 @@ scientific purpose statement.
 
 The principal experimental conclusions are:
 
-1. Lower tangential rotational stiffness increased contact-induced alignment
-   over the tested range. Report the corresponding estimated normal-load
-   range without claiming formal equivalence.
+1. Lowering the paired tangent-axis rotational stiffness
+   \(K_{R,t_1}=K_{R,t_2}\) increased contact-induced alignment over the tested
+   range. Report the corresponding estimated normal-load range without
+   claiming formal equivalence or an isolated effect of either tangent axis.
 2. Both in-plane compliance-centre coordinates strongly influenced alignment.
 3. The in-plane response was non-monotonic, and unsuitable placements reduced
    alignment or rotated the tool away from the desired orientation.

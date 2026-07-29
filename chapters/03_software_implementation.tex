@@ -88,7 +88,7 @@ counterpart. The Coriolis vector is always included in the controlled phases.
         \draw[arrow] (phase) -- (control);
         \draw[arrow] (control) -- (torque);
     \end{tikzpicture}
-    \caption{Real-time data flow of the implemented surface-grinding controller.}
+    \caption{Real-time controller data flow.}
     \label{fig:software_data_flow}
 \end{figure}
 
@@ -343,6 +343,13 @@ t_1&t_2&n_s
 \end{bmatrix}.
 \label{eq:software_surface_frame_order}
 \end{equation}
+
+The active parameter file sets \(a_s=[\,1,0,0\,]^\top\). With the active
+surface tilts \(a=0^\circ\) and \(b=5^\circ\), this gives
+\(t_1=[\,\cos5^\circ,0,-\sin5^\circ\,]^\top\) and
+\(t_2=[\,0,1,0\,]^\top\). The names \texttt{tangent1} and
+\texttt{tangent2} therefore refer to these two specific axes, not to an
+interchangeable generic tangential direction.
 
 Consequently, every parameter triple named
 \texttt{tangent1/tangent2/normal} is stored as

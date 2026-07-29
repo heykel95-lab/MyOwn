@@ -1,18 +1,18 @@
 \chapter{Results and Discussion}
 \label{ch:results_discussion}
 
-The measurement set contains \(92\) run records, of which \(89\) are usable
-for the quantities for which they were recorded. Three hold records are
-excluded from quantitative comparison because the general log is missing or
-the Cartesian task moved beyond the registered invariance limit. Each
-admissible record contains the effective controller parameters and raw signals
-required for its analysis.
+The measurement set contains \(92\) run records. The \(88\) completed contact
+runs form experimental Cases A--E defined in
+\cref{tab:experimental_test_cases}. One additional usable mode-0 hold record is
+retained only as a null-space diagnostic. Three further hold records are
+excluded because the general log is missing or the Cartesian task moved beyond
+the registered invariance limit.
 
-Three validation checks precede the parameter studies: settling of the set-up
-phase, equivalence of the decoupled and block-diagonal coupled formulations,
-and repeatability of the nominal configuration. The subsequent studies
-quantify the influence of tangential rotational stiffness and the three
-surface-frame components of the virtual centre of compliance.
+Cases A--C validate the measurement procedure. Cases D--E then quantify the
+influence of the paired tangent-axis rotational stiffness
+\(K_{R,t_1}=K_{R,t_2}\) and the three surface-frame components of the virtual
+centre of compliance. This case notation is retained throughout the chapter so
+that every result can be traced to its experimental design.
 
 \section{Measurement Campaign and Data Integrity}
 \label{sec:results_provenance}
@@ -23,7 +23,7 @@ and from the controller's set-up summary. A disagreement flags the record for
 inspection rather than being averaged silently. Quantitative results exclude
 records with missing general data or excessive Cartesian task drift.
 
-\section{Experimental Validation and Repeatability}
+\section{Validation Cases A--C}
 \label{sec:results_gates}
 
 The validation measurements establish that the reported values represent a
@@ -31,7 +31,7 @@ settled response, that the two equivalent impedance formulations agree within
 experimental repeatability, and that observed parameter effects exceed the
 run-to-run variation of the nominal configuration.
 
-\subsection{Equilibrium of the Set-Up Phase}
+\subsection{Case A: Set-Up Settling}
 \label{sec:results_equilibrium}
 
 The set-up phase was originally terminated by a \(4\,\mathrm{s}\) timeout. The
@@ -56,18 +56,14 @@ Re-evaluating the existing \(8\)- and \(12\,\mathrm{s}\) traces at
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.72\textwidth]{G2_equilibrium.pdf}
-    \caption{Final tip angle against set-up phase duration. The \(4\,\mathrm{s}\)
-    configuration terminates during the ramp overshoot; the \(8\) and
-    \(12\,\mathrm{s}\) runs agree to within the repeatability of
-    \cref{sec:results_noise_floor}.}
+    \includegraphics[width=\textwidth]{G2_equilibrium.pdf}
+    \caption{Set-up settling at \(4\), \(8\), and \(12\,\mathrm{s}\).}
     \label{fig:results_equilibrium}
 \end{figure}
 
 \begin{table}[H]
 \centering
-\caption{Difference between the state at \(5\,\mathrm{s}\) and the final
-settled portion of the two longer set-up traces.}
+\caption{Residual changes after \(t=5\,\mathrm{s}\).}
 \label{tab:results_five_second_check}
 \begin{tabular}{@{}lccc@{}}
 \toprule
@@ -87,7 +83,7 @@ changes with the captured start height, push end and push speed. A general
 termination rule must therefore account for ramp completion rather than using
 \(5\,\mathrm{s}\) as an invariant value.
 
-\subsection{Equivalence of the Decoupled and Coupled Formulations}
+\subsection{Case B: Formulation Equivalence}
 \label{sec:results_g1}
 
 Block-diagonal gains transformed through the coupled \(6\times6\) formulation
@@ -102,7 +98,7 @@ standard deviations respectively. No discrepancy exceeding the observed
 repeatability was detected between the formulations under the tested
 conditions.
 
-\subsection{Repeatability-Based Interpretation Threshold}
+\subsection{Case C: Nominal Repeatability}
 \label{sec:results_noise_floor}
 
 Five repetitions of the nominal configuration, with the workpiece physically
@@ -113,21 +109,25 @@ screening criterion for this experiment, not a formal equivalence test.
 
 \begin{table}[H]
 \centering
-\caption{Measured repeatability of the nominal configuration
-(\(n=5\), workpiece reset between runs). The final column gives the
-repeatability-based interpretation threshold used in this chapter.}
+\caption{Nominal-configuration repeatability (\(n=5\)).}
 \label{tab:results_noise_floor}
 \begin{tabular}{@{}lccc@{}}
 \toprule
 Quantity & Mean & \(\sigma\) & \(2\sigma\) \\
 \midrule
 Final tip angle (\(^\circ\))        & 1.474  & 0.194 & 0.388 \\
-Alignment gain (\(^\circ\))         & $-0.714$ & 0.294 & 0.588 \\
+Configured-normal change (\(^\circ\)) & $-0.714$ & 0.294 & 0.588 \\
 Estimated normal load (N)           & 59.752 & 0.484 & 0.969 \\
 Edge travel (mm)                    & 21.146 & 0.589 & 1.178 \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+The configured-normal change is the controller-logged before--after quantity.
+Its negative mean reflects the deliberate difference between the commanded
+normal and the physical plane. Only its dispersion is used here as a
+repeatability scale; the parameter studies below use the rescored
+physical-plane improvement.
 
 \section{Measuring Alignment Against the Physical Plane}
 \label{sec:results_alignment}
@@ -152,6 +152,10 @@ face and reading back the pose, giving
 \(a=0^\circ\), \(b=5^\circ\), a mismatch of \(10.01^\circ\). The tool is
 commanded toward the configured normal, so it arrives at contact
 \(10.01^\circ\) away from the surface it is actually pressing on.
+Expressed about the configured surface-frame tangents, this normal mismatch is
+approximately \(-0.72^\circ\) about \(t_1\) and \(+9.99^\circ\) about
+\(t_2\). The imposed alignment demand is therefore predominantly a
+\(t_2\)-axis rotation.
 
 The consequence is that the printed alignment gain reads backwards: it becomes
 \emph{more negative} the closer the tool gets to the real plane, because it
@@ -169,23 +173,22 @@ less than \(0.1^\circ\), because the tool rotates in essentially the same
 plane as the mismatch. Improvements are therefore reported as measured values
 and absolute residuals only as a range.
 
-\section{Effect of Rotational Stiffness}
+\section{Case D: Paired Tipping Stiffness}
 \label{sec:results_summary_table}
 
-The rotational stiffness about the tipping axes was swept with the decoupled
-command, five repetitions per setting.
+The rotational stiffnesses about both tipping axes were swept together with
+the decoupled command, five repetitions per setting. Specifically, each test
+assigned the same value to \(K_{R,t_1}\) and \(K_{R,t_2}\); neither axis was
+varied independently.
 \cref{tab:results_contact_summary} reports the outcome.
 
 \begin{table}[H]
 \centering
-\caption{Measured effect of the tangential rotational stiffness on contact
-alignment (decoupled command, \(n=5\) per setting). ``Improvement'' is the
-reduction in the angle between the tool axis and the measured plane across the
-set-up phase.}
+\caption{Paired tangent-axis stiffness results (\(n=5\) per setting).}
 \label{tab:results_contact_summary}
 \begin{tabular}{@{}lccc@{}}
 \toprule
-\(K_{R,\mathrm{tangent}}\) (Nm/rad)
+\(K_{R,t_1}=K_{R,t_2}\) (Nm/rad)
 & Tip (\(^\circ\))
 & Estimated normal load (N)
 & Improvement (\(^\circ\)) \\
@@ -198,9 +201,9 @@ set-up phase.}
 \end{table}
 
 The response is monotonic and exceeds the repeatability-based interpretation
-threshold: reducing the
-tangential rotational stiffness from \(50\) to \(5\,\mathrm{Nm/rad}\) triples
-the alignment gained during contact. The \(5\,\mathrm{Nm/rad}\) setting is
+threshold: reducing both tangent-axis rotational stiffnesses from \(50\) to
+\(5\,\mathrm{Nm/rad}\) triples the alignment gained during contact. The
+\(5\,\mathrm{Nm/rad}\) paired setting is
 configuration-identical to the decoupled baseline of \cref{sec:results_g1} and
 reproduces it at \(0.7\sigma\), which additionally establishes that the rig
 did not drift across the session.
@@ -211,15 +214,21 @@ alignment response changes from \(0.79^\circ\) to \(2.38^\circ\). Within the
 tested range, the displacement permitted by the softer setting is therefore
 the relevant tuning constraint.
 
+Because the initial mismatch is dominated by rotation about \(t_2\), this
+campaign mainly exercises \(t_2\)-axis compliance. However, both gains changed
+together, so the measured effect belongs to the common paired setting and
+cannot be attributed quantitatively to \(K_{R,t_2}\) alone. Separate
+one-axis-at-a-time sweeps would be required to compare the sensitivities to
+\(K_{R,t_1}\) and \(K_{R,t_2}\).
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{A2_stiffness_sweep.pdf}
-    \caption{Measured rotational-stiffness sweep. Error bars are the standard
-    deviation over five repetitions.}
+    \caption{Paired tangent-axis stiffness sweep (mean \(\pm\) SD).}
     \label{fig:results_orientation_error}
 \end{figure}
 
-\section{Influence of Compliance-Centre Position}
+\section{Case E: Compliance-Centre Position}
 \label{sec:results_pole}
 
 The position study contains \(57\) runs. A configured-normal sweep comprises
@@ -240,15 +249,7 @@ normal coordinate.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{B_pole_component.pdf}
-    \caption{Alignment gained toward the measured plane, for the same \(57\)
-    runs, against each component of the commanded pole. Both in-plane
-    components show pronounced non-monotonic responses, whereas the physical
-    normal coordinate provides substantially less explanatory power. The
-    curves are marginal fits against one component at a time, so their fitted
-    maxima differ from the joint model
-    of \cref{tab:results_pole_fit}. The vertical spread of the \(t_1\) sweep in
-    the middle panel, where those runs all share \(t_2\approx0\), shows
-    directly that \(t_2\) alone cannot account for them.}
+    \caption{Alignment response by compliance-centre coordinate.}
     \label{fig:results_pole_component}
 \end{figure}
 
@@ -257,10 +258,7 @@ maximum and then decrease.
 
 \begin{table}[H]
 \centering
-\caption{Fits of the alignment improvement against the commanded
-compliance-centre components over all \(57\) position-study runs. The
-two-dimensional model is additive and contains no \(t_1t_2\) interaction
-term.}
+\caption{Compliance-centre fits (\(n=54\); E1 held out).}
 \label{tab:results_pole_fit}
 \begin{tabular}{@{}lcc@{}}
 \toprule
@@ -276,7 +274,8 @@ normal only                             & \textbf{0.010} & \(-0.006^\circ/\mathr
 \end{table}
 
 The additive quadratic response model in the two in-plane components accounts
-for \(R^2=0.962\) of the outcome across \(57\) runs and predicts a local
+for \(R^2=0.962\) of the outcome across the \(54\) fitted sweep runs and
+predicts a local
 maximum near \(t_1=+62\,\mathrm{mm}\) and
 \(t_2=+30\,\mathrm{mm}\). This coordinate pair was not tested directly. The
 cross-shaped sampling also does not identify a possible \(t_1t_2\)
@@ -287,16 +286,8 @@ tested conditions.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.82\textwidth]{B_pole_surface.pdf}
-    \caption{The fitted additive quadratic alignment response over the two
-    in-plane compliance-centre components, with the measured runs overlaid and
-    the model-predicted stationary point marked. The
-    grey line is the zero contour separating positive from negative predicted
-    alignment improvement. The runs form a cross rather
-    than a grid --- \(t_1\) was swept at \(t_2\approx0\) and \(t_2\) at
-    \(t_1\approx15\,\mathrm{mm}\) --- so the surface is shaded only where runs
-    support it, and the unsampled corners are left blank rather than
-    extrapolated.}
+    \includegraphics[width=\textwidth]{B_pole_surface.pdf}
+    \caption{Additive quadratic response in the compliance-centre plane.}
     \label{fig:results_pole_surface}
 \end{figure}
 
@@ -310,10 +301,10 @@ lever contribution \([r_c]_\times^\top K_p[r_c]_\times\) in
 lever becomes large.
 
 The monotonic trend in the configured-normal sweep is consistent with its
-unintended tangential drift from \(-5.0\) to \(+27.6\,\mathrm{mm}\), which lies
-on the rising part of the fitted \(t_1\) response. The configured-normal sweep
-alone therefore cannot be interpreted as an isolated normal-coordinate
-effect.
+unintended in-plane drift along \(t_1\), from \(-5.0\) to
+\(+27.6\,\mathrm{mm}\), which lies on the rising part of the fitted \(t_1\)
+response. The configured-normal sweep alone therefore cannot be interpreted as
+an isolated normal-coordinate effect.
 
 The model was checked against a configuration that was not included in the
 fit. Three further runs
@@ -344,19 +335,12 @@ wrench lies near the middle of the face in \(t_1\), whereas the controller's
 runs. Distributed surface contact and uncertainty in the selected feature
 prevent treating either estimate as an exact physical point contact.
 
-\section{Observed Dynamic Response}
-\label{sec:results_damping}
-
-No sustained oscillation was observed in the rotation-vector response with the
-automatically calculated damping used in the reported runs. Because damping
-was not varied independently, the measurements do not establish a causal
-damping effect or an experimentally identified modal damping ratio.
-
-\section{Null-Space Conditioning: Evidence Boundary}
+\section{Null-Space Validation Status}
 \label{sec:results_nullspace}
 
-The controller implements a two-point smallest-singular-value conditioning
-bias. It compares \(\sigma_{\min}(q+\alpha v_7)\) and
+The null-space diagnostic is not one of the completed experimental Cases
+A--E. The controller implements a two-point smallest-singular-value
+conditioning bias. It compares \(\sigma_{\min}(q+\alpha v_7)\) and
 \(\sigma_{\min}(q-\alpha v_7)\), selects the better sampled sign, and projects
 the resulting torque through the torque-level null-space projector. The SVD
 inverse uses \(1/\sigma_i\) only for singular values retained by the configured
@@ -443,9 +427,11 @@ magnitude.
 The rotational stiffness should be selected from the required angular
 compliance and allowable displacement. Across the tested values, the mean
 model-estimated normal load remains within \(0.50\,\mathrm{N}\) while the mean
-alignment response changes by \(1.59^\circ\). Compliance-centre tuning should
-focus first on the two in-plane coordinates, where both the response magnitude
-and its sign vary substantially.
+alignment response changes by \(1.59^\circ\). This comparison applies to the
+common setting \(K_{R,t_1}=K_{R,t_2}\), not to either tangent axis in
+isolation. Compliance-centre tuning should focus first on the two in-plane
+coordinates, where both the response magnitude and its sign vary
+substantially.
 
 \section{Limitations}
 \label{sec:results_limitations}

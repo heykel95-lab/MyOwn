@@ -4,20 +4,80 @@
 \section{Experimental Investigation}
 \label{sec:experimental_question}
 
-The experimental study evaluates the influence of tangential rotational
-stiffness and virtual centre-of-compliance placement on the contact-induced
-alignment of the tool with the workpiece surface. The point-shifted Cartesian
-impedance described in the preceding chapters introduces coupling between
+The experimental study evaluates the influence of the common rotational
+stiffness about the two surface tangents,
+\(K_{R,t_1}=K_{R,t_2}\), and virtual centre-of-compliance placement on the
+contact-induced alignment of the tool with the workpiece surface. The
+point-shifted Cartesian impedance described in the preceding chapters
+introduces coupling between
 translational contact forces and rotational motion, making both the rotational
 compliance and the spatial position of the compliance centre relevant to the
 resulting alignment behaviour.
 
-The investigation consists of two principal parameter studies. First, the
-tangential rotational stiffness is varied while the remaining controller
-parameters are kept constant. Subsequently, the virtual centre of compliance
-is varied along the two tangential directions and the surface normal of the
-local surface frame. Repeated trials quantify the resulting angular alignment
-and model-estimated normal contact load under otherwise comparable conditions.
+The investigation consists of two principal parameter studies. First, both
+tangent-axis rotational stiffnesses are assigned the same test value and
+varied together while the remaining controller parameters are kept constant.
+Thus, this study evaluates the paired setting
+\(K_{R,t_1}=K_{R,t_2}\); it is not a separate \(t_1\)- and \(t_2\)-axis
+sweep. Subsequently, the virtual centre of compliance is varied along
+\(t_1\), \(t_2\), and the surface normal \(n_s\) of the local surface frame.
+Repeated trials quantify the resulting angular alignment and model-estimated
+normal contact load under otherwise comparable conditions.
+
+The completed measurements are organised as five experimental cases:
+
+\begin{itemize}
+    \item Cases A--C validate settling, formulation equivalence, and
+    repeatability before interpreting parameter effects.
+    \item Cases D--E evaluate rotational stiffness and compliance-centre
+    position, respectively.
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Completed experimental cases.}
+\label{tab:experimental_test_cases}
+\begin{tabular}{@{}
+>{\centering\arraybackslash}p{0.07\textwidth}
+>{\raggedright\arraybackslash}p{0.24\textwidth}
+>{\raggedright\arraybackslash}p{0.32\textwidth}
+>{\raggedright\arraybackslash}p{0.27\textwidth}@{}}
+\toprule
+Case & Test & Design & Purpose \\
+\midrule
+A &
+Set-up settling &
+\(4\), \(8\), and \(12\,\mathrm{s}\); one run per duration
+(\(n=3\)) &
+Determine when the set-up response is sufficiently settled for evaluation. \\
+B &
+Formulation equivalence &
+Decoupled command (\(n=5\)) versus zero-shift coupled command (\(n=3\)) &
+Check that mathematically equivalent impedance forms agree within
+repeatability. \\
+C &
+Nominal repeatability &
+Five nominal runs with the workpiece reset between runs (\(n=5\)) &
+Establish the run-to-run interpretation threshold. \\
+D &
+Paired tipping stiffness &
+\(K_{R,t_1}=K_{R,t_2}=5,\ 15,\ 50\,\mathrm{Nm/rad}\);
+five runs per setting (\(n=15\)) &
+Measure the influence of tipping stiffness on contact-induced alignment. \\
+E &
+Compliance-centre position &
+Edge check E1 (\(n=3\)); configured-normal sweep E2 (\(n=24\));
+\(t_1\) sweep E3 (\(n=18\)); \(t_2\) sweep E4 (\(n=12\));
+total \(n=57\) &
+Measure the alignment response to the three compliance-centre coordinates. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Cases A--E contain \(88\) contact runs. The null-space records are not included
+as a sixth experimental case because no matched conditioning-torque sweep was
+completed.
 
 The robot first orients the grinding-face axis, descends to a geometrically
 defined clearance, presses the selected leading tool feature into the plane
@@ -86,7 +146,7 @@ corresponding tables below.
 \begin{longtable}{@{}
 >{\raggedright\arraybackslash}p{0.27\textwidth}
 >{\raggedright\arraybackslash}p{0.66\textwidth}@{}}
-\caption{Documented experimental system and controller environment.}
+\caption{Experimental system.}
 \label{tab:reproducibility_record}\\
 \toprule
 Item & Configuration used in the reported experiments \\
@@ -132,18 +192,7 @@ as a limitation in \cref{sec:limitations}.
 \begin{figure}[H]
   \centering
   \resizebox{\textwidth}{!}{\input{figures/setup_schematic.tex}}
-  \caption[Experimental set-up and the contact geometry it defines]{The
-  experimental set-up, drawn from photographs of the rig. \textbf{(a)} Side
-  elevation: the wooden tool is held in the Franka Hand by custom aluminium
-  fingers and pressed onto a wooden workpiece raised on a base board. The
-  approach leaves the tool face a few degrees off parallel, so one edge makes
-  contact first. \textbf{(b)} The geometry this defines. The tool is commanded
-  toward the \emph{configured} normal, which has an intentional angular offset
-  from the physical plane, so it arrives tilted with respect to the
-  surface it presses on. The surface frame \([t_1,t_2,n_s]\) is taken at the
-  contact, and \(r_c\) is the lever from the contact to the commanded centre of
-  compliance \(p_c\) --- the quantity whose placement
-  \cref{sec:results_pole} measures.}
+  \caption{Experimental set-up and surface-frame contact geometry.}
   \label{fig:experimental_setup_photo}
 \end{figure}
 
@@ -215,6 +264,16 @@ consistent with the surface task frame of
 \cref{eq:surface_task_frame_matrix}. Consequently, every surface-frame vector
 or diagonal gain in this chapter follows the order
 \([\,t_1,t_2,n_s\,]\), unless a table explicitly states another semantic order.
+For the active auxiliary direction \(a_s=e_x\) and \(a=0^\circ\),
+\(b=5^\circ\), these axes are
+\[
+t_1=[\,\cos 5^\circ,\ 0,\ -\sin 5^\circ\,]^\top,
+\qquad
+t_2=[\,0,\ 1,\ 0\,]^\top .
+\]
+Thus, rotation about \(t_2\) is rotation about base \(y\), whereas rotation
+about \(t_1\) is tipping about the orthogonal tangent in the tilted base
+\(x\)-\(z\) plane.
 
 The grinding face is represented explicitly rather than by one fixed point. Its
 centre is \(20\,\mathrm{mm}\) along \(+Z_{\mathrm{EE}}\) from the end-effector
@@ -524,9 +583,7 @@ source blocks without the pole shift.
 \begin{table}[H]
 \centering
 \small
-\caption{Phase-complete active stiffness and equivalent design-point
-interpretation. The design points reproduce or explain the selected values;
-they are not measured contact loads or certified limits.}
+\caption{Phase-specific stiffness and design points.}
 \label{tab:active_stiffness_design_points}
 \begin{tabular}{@{}
 >{\raggedright\arraybackslash}p{0.16\textwidth}
@@ -620,8 +677,7 @@ target vector \(d^\star\) is
 \begin{table}[H]
 \centering
 \small
-\caption{Active automatic-damping policy. Bracketed fallbacks follow the frame
-order in the second column.}
+\caption{Phase-specific automatic-damping policy.}
 \label{tab:active_automatic_damping_policy}
 \begin{tabular}{@{}
 >{\raggedright\arraybackslash}p{0.17\textwidth}
@@ -798,11 +854,7 @@ physical alignment signal is added to the run record.
       node[right=4pt,yshift=5pt] {selected feature at clearance};
     \filldraw (T) circle (1.6pt) node[above right] {$p_{\mathrm{TCP}}$};
   \end{tikzpicture}
-  \caption{Schematic frozen set-up geometry. The pole is offset from the
-  selected feature projected onto the plane, whereas the congruence uses the
-  pole-to-TCP lever \(r_c\). Because the offset is specified in base XYZ,
-  \(p_c\) need not lie exactly in the surface plane. The drawing is not to
-  scale.}
+  \caption{Frozen pole-to-TCP geometry during set-up.}
   \label{fig:active_pole_geometry}
 \end{figure}
 
@@ -852,52 +904,100 @@ The resulting workflow is
 \label{eq:gain_selection_workflow}
 \end{equation}
 
-\subsection{Controlled Adjustment Around the Active Gains}
+\subsection{One-at-a-Time Gain Adjustment}
 \label{sec:direct_stiffness_comparison}
 
-Let \(k_i^{(0)}\) denote one active principal value from
-\cref{tab:active_stiffness_design_points}. A reproducible local sweep uses
+After the initial stiffness values have been selected, a parameter study can
+determine how sensitive the response is to each value. Only one stiffness
+coordinate is changed in a given study so that its effect is not mixed with
+changes in other controller parameters.
+
+Let \(k_{i,\mathrm{base}}\) be the value currently used by the controller for
+coordinate \(i\), as listed in
+\cref{tab:active_stiffness_design_points}. Candidate values for a local study
+are calculated as
 
 \begin{equation}
-k_i^{(\alpha)}=\alpha k_i^{(0)},
+k_{i,\mathrm{test}}=\alpha k_{i,\mathrm{base}},
 \qquad
 \alpha\in\{0.5,\ 0.75,\ 1.0,\ 1.25,\ 1.5\},
 \label{eq:active_gain_scale_sweep}
 \end{equation}
 
-while all other source gains, the pole offset, phase timing, and null-space
-parameters remain fixed. The design load in that coordinate scales by
-\(\alpha\). At an unchanged pose and with the same automatic-damping factor,
-\cref{eq:directional_damping_heuristic} gives
+where \(\alpha=1\) reproduces the current controller value. For example, the
+two set-up tipping stiffnesses are
+\(K_{R,t_1}=K_{R,t_2}=5\,\mathrm{Nm/rad}\). If their equality is retained,
+the common local candidates are \(2.5\), \(3.75\), \(5.0\), \(6.25\), and
+\(7.5\,\mathrm{Nm/rad}\) for both entries. This example defines a possible
+paired fine-tuning study; it is not the \(5/15/50\,\mathrm{Nm/rad}\)
+comparison reported in \cref{sec:results_summary_table}.
+
+All other source gains, the pole offset, phase timing, and null-space
+parameters are held constant during such a study. Consequently, any systematic
+change in the measured response can be associated with the selected stiffness
+coordinate. For the same displacement or angular error, the corresponding
+elastic force or moment is multiplied by \(\alpha\).
+
+The damping coefficient does not need to be tuned independently. When the
+controller next enters the relevant phase group, it recalculates damping from
+the changed stiffness and the task inertia. If the entry pose and the
+automatic-damping factor are unchanged, then
+\cref{eq:directional_damping_heuristic} gives approximately
 
 \begin{equation}
-d_i^{(\alpha)}
+d_{i,\mathrm{test}}
 \approx
-\sqrt{\alpha}\,d_i^{(0)} .
+\sqrt{\alpha}\,d_{i,\mathrm{base}} .
 \label{eq:damping_change_with_stiffness}
 \end{equation}
 
-The controller performs this damping update automatically on the next entry to
-the relevant phase group; a cached coefficient is not recomputed continuously
-within the phase.
+For example, doubling a stiffness increases the corresponding damping
+coefficient by approximately \(\sqrt{2}\), not by a factor of two. The
+coefficient is cached at phase-group entry and is not recomputed continuously
+within that phase.
 
-For contact-alignment tuning, the first independent family is
-\((K_{R,t_1},K_{R,t_2})\), because it directly sets the allowed tipping
-deflection. \(K_{R,n}\) is kept separate because it restrains twist. The next
-families are the base \(x,y\) translation values and the effective normal
-stiffness. If a new target \(k_{n,\mathrm{eff}}^\star\) is chosen while \(k_x\)
-and the surface tilt \(b\) are fixed, the required base-\(z\) value follows
-from
+For broad contact-alignment tuning, the common value
+\(K_{R,t_1}=K_{R,t_2}\) is varied first because the pair controls the tool's
+resistance to tipping. A subsequent axis-specific study must vary
+\(K_{R,t_1}\) while holding \(K_{R,t_2}\) fixed, and then reverse these roles;
+the paired sweep cannot identify their individual effects. The normal
+rotational stiffness \(K_{R,n}\) is treated separately because it resists
+twist about the surface normal. Translational stiffness can then be studied in
+the base \(x\) and \(y\) directions and in the effective surface-normal
+direction.
+
+The set-up translational stiffness is diagonal in the base frame, whereas the
+surface is tilted. Therefore, a desired effective normal stiffness
+\(k_{n,\mathrm{eff}}^\star\) cannot generally be assigned directly to the
+base-\(z\) entry. If \(k_x\) and the surface tilt \(b\) remain fixed, the
+required base-\(z\) stiffness is
 \[
 k_z
 =
 \frac{k_{n,\mathrm{eff}}^\star-k_x\sin^2 b}{\cos^2 b},
 \]
-not by assigning the desired normal value directly to \(K_{p,zz}\).
-Approach, gate, and hold gains are changed with the corresponding design pairs
-in \cref{tab:active_stiffness_design_points}. Every run records the printed
-automatic-damping coefficients because they cannot be reconstructed from
-stiffness alone without the entry pose, \(J\), and \(M_q\).
+which accounts for the surface orientation.
+
+The same one-at-a-time rule applies to the approach, gate, and hold gains using
+the design pairs in \cref{tab:active_stiffness_design_points}. Each run records
+the damping values printed by the controller because stiffness alone is
+insufficient to reconstruct them without the phase-entry pose, Jacobian \(J\),
+and joint-space mass matrix \(M_q\).
+
+\paragraph{Evaluation of candidate gains.}
+Each candidate stiffness is compared using the evaluation quantities defined
+in \cref{sec:alignment_evaluation}. The primary outcome is the physical-plane
+alignment improvement
+\(\Delta\theta_{\mathrm{align,phys}}\). Contact-induced rotation, the
+physical-plane residual angle, selected-feature and TCP displacement, and the
+model-estimated normal load provide the secondary comparison. The reported
+\(5/15/50\,\mathrm{Nm/rad}\) study in
+\cref{sec:results_summary_table} uses contact-induced rotation,
+physical-plane improvement, and estimated normal load; the displacement
+signals remain available as run diagnostics. Repeated settings are summarised
+by their mean and standard deviation. A change is interpreted as a parameter
+effect only when it exceeds the Case-C repeatability scale and is not explained
+by an incompatible change in loading or displacement.
 
 \subsection{Null-Space Conditioning Parameter Rationale}
 \label{subsec:nullspace_parameter_rationale}
@@ -916,8 +1016,7 @@ design optima and have not yet been validated by a parameter sweep.
 >{\raggedright\arraybackslash}p{0.20\textwidth}
 >{\raggedright\arraybackslash}p{0.17\textwidth}
 >{\raggedright\arraybackslash}p{0.54\textwidth}@{}}
-\caption{Active null-space parameters, their immediate quantitative effect,
-and their present engineering rationale.}
+\caption{Null-space parameter selection.}
 \label{tab:nullspace_parameter_rationale}\\
 \toprule
 Parameter & Active value & Quantitative consequence and rationale \\
@@ -1052,47 +1151,58 @@ plane, and contact sequence.
 \section{Evaluation Metrics}
 \label{sec:alignment_evaluation}
 
-The physical alignment metric must be distinguished from the controller's
+The tool-axis alignment metric must be distinguished from the controller's
 rotation error. Let
-\(a_T=R_{\mathrm{EE}}a_{\mathrm{tool,EE}}\) be the current grinding-face axis and
-let \(a_d=-n_s\) be its configured target. The tool-axis alignment angle and its
-small-angle corrective vector are
+\(a_T=R_{\mathrm{EE}}a_{\mathrm{tool,EE}}\) be the current grinding-face axis.
+Two signed target axes are required:
 
 \begin{equation}
-\theta_{\mathrm{align}}
-=
-\cos^{-1}\!\left(\operatorname{clip}(a_T^\top a_d,-1,1)\right),
-\qquad
-\mathbf{e}_{\mathrm{align}}=a_T\times a_d .
+\begin{aligned}
+a_{\mathrm{cfg}}&=-n_s, &
+a_{\mathrm{phys}}&=-n_{\mathrm{phys}},\\
+\theta_{\mathrm{align},j}
+&=
+\cos^{-1}\!\left(
+\operatorname{clip}(a_T^\top a_j,-1,1)
+\right),&
+\mathbf{e}_{\mathrm{align},j}&=a_T\times a_j,
+\quad j\in\{\mathrm{cfg},\mathrm{phys}\}.
+\end{aligned}
 \label{eq:contact_alignment_error_cross}
 \end{equation}
 
-The minus sign in \(a_d=-n_s\) is essential for the current tool convention.
-The approach phase already reduces this angle below \(0.035\,\mathrm{rad}\);
-set-up evaluates whether contact reduces the remaining error further. The main
-before--after condition is therefore
+The minus signs are required by the current tool-axis convention. The
+controller field \texttt{alignment\_angle\_deg} records
+\(\theta_{\mathrm{align,cfg}}\), the angle to the configured normal. This
+online quantity verifies the implemented command geometry, but it is not the
+reported physical-plane alignment because \(n_s\) and
+\(n_{\mathrm{phys}}\) intentionally differ in the recorded campaign.
+
+The primary experimental metric is instead the offline angle
+\(\theta_{\mathrm{align,phys}}\). Set-up improves alignment when
 
 \begin{equation}
-\theta_{\mathrm{align,after}}
+\theta_{\mathrm{align,phys,after}}
 <
-\theta_{\mathrm{align,before}}.
+\theta_{\mathrm{align,phys,before}}.
 \label{eq:alignment_error_reduction}
 \end{equation}
 
-Equivalently, the improvement can be written as
+The corresponding physical-plane improvement is
 
 \begin{equation}
-\Delta\theta_{\mathrm{align}}
+\Delta\theta_{\mathrm{align,phys}}
 =
-\theta_{\mathrm{align,before}}
+\theta_{\mathrm{align,phys,before}}
 -
-\theta_{\mathrm{align,after}}.
+\theta_{\mathrm{align,phys,after}}.
 \label{eq:alignment_error_improvement}
 \end{equation}
 
-If \(\Delta\theta_{\mathrm{align}}>0\), the physical alignment improved during
-contact. The rotation during contact itself is described by the base-frame rotation
-vector of the finite before--after relative rotation,
+Thus \(\Delta\theta_{\mathrm{align,phys}}>0\) means that alignment with the
+measured plane improved during contact. The rotation during contact itself is
+described by the base-frame rotation vector of the finite before--after
+relative rotation,
 
 \begin{equation}
 \Delta\boldsymbol{\theta}_C
@@ -1103,14 +1213,14 @@ R_{\mathrm{after}}R_{\mathrm{before}}^\top
 \label{eq:contact_induced_rotation}
 \end{equation}
 
-The corrective vector
-\(\mathbf{e}_{\mathrm{align}}=a_T\times(-n_s)\) points locally along the
-rotation that carries the physical tool axis toward its configured target. The
-rotation during contact is favorable when it has a positive component along
-this corrective axis,
+The physical-plane corrective vector
+\(\mathbf{e}_{\mathrm{align,phys}}=a_T\times(-n_{\mathrm{phys}})\) points
+locally along the rotation that carries the physical tool axis toward the
+measured plane normal. The rotation during contact is favorable when it has a
+positive component along this corrective axis,
 
 \begin{equation}
-\mathbf{e}_{\mathrm{align,before}}^\top
+\mathbf{e}_{\mathrm{align,phys,before}}^\top
 \Delta\boldsymbol{\theta}_C
 >
 0,
@@ -1140,32 +1250,85 @@ During set-up, the controller instead logs
 after masking, where \(R_{\mathrm{clr}}\) is the orientation frozen at the
 clearance hand-off. This control error begins near zero and can
 \emph{increase} as the tool tips during contact. It must not be plotted as
-\(\theta_{\mathrm{align}}\) without reconstructing the physical tool axis.
-The general CSV records the physical tool-axis alignment angle directly. That
-quantity, rather than \(\mathbf e_R\), is used to evaluate alignment with the
-configured surface normal. Evaluation against the physical plane uses the
-separately estimated \(n_{\mathrm{phys}}\).
+\(\theta_{\mathrm{align},j}\) without reconstructing the physical tool axis.
+The general CSV records the angle of the physical tool axis to the configured
+normal directly as \texttt{alignment\_angle\_deg}. It is used as an online
+geometry check. The reported alignment outcome is rescored offline against the
+separately estimated \(n_{\mathrm{phys}}\), as described in
+\cref{sec:results_alignment}.
 
-\subsection{Evaluation Criteria and Acceptance Conditions}
+\subsection{Metric Use by Experimental Case}
 \label{sec:evaluation_criteria_contact}
 
-The experiment is evaluated using the following quantities:
+The completed cases do not all use the same outcome. Cases D--E use
+physical-plane alignment improvement as the primary response, whereas Cases
+A--C establish settling, formulation consistency, and repeatability using the
+signals appropriate to those checks.
 
-\begin{itemize}
-    \item \textbf{Alignment response:} the change in angle between the physical
-    grinding-face axis and \(n_{\mathrm{phys}}\).
-    \item \textbf{Compliance-centre setting:} the commanded surface-frame
-    offset associated with each alignment and displacement result.
-    \item \textbf{Contact displacement:} selected-feature and TCP displacement
-    during set-up.
-    \item \textbf{Load and torque:} model-estimated normal load and commanded
-    joint-torque histories.
-    \item \textbf{Dynamic response:} the presence or absence of sustained
-    oscillation after contact or release.
-\end{itemize}
+\noindent\textbf{Primary---physical-plane alignment improvement.}
+\(\Delta\theta_{\mathrm{align,phys}}\), with a positive value denoting
+improvement.
 
-Together, these quantities characterise alignment, contact loading and
-displacement for each stiffness and compliance-centre setting.
+\noindent\textbf{Physical-plane residual.}
+\(\theta_{\mathrm{align,phys,after}}\), reported as a range when the
+physical-plane calibration uncertainty affects its absolute value.
+
+\noindent\textbf{Contact-induced rotation.}
+The magnitude and direction of the finite before--after rotation
+\(\Delta\boldsymbol{\theta}_C\).
+
+\noindent\textbf{Contact displacement.}
+Selected-feature and TCP displacement during set-up.
+
+\noindent\textbf{Load diagnostic.}
+The steady model-estimated normal load, explicitly distinguished from a direct
+force measurement.
+
+\noindent\textbf{Settling check.}
+The residual changes in tip angle, configured-normal angle, and estimated load
+after the selected evaluation time.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Metric use by experimental case.}
+\label{tab:metrics_by_test_case}
+\begin{tabular}{@{}
+>{\centering\arraybackslash}p{0.07\textwidth}
+>{\raggedright\arraybackslash}p{0.40\textwidth}
+>{\raggedright\arraybackslash}p{0.42\textwidth}@{}}
+\toprule
+Case & Quantities used & Role in the evaluation \\
+\midrule
+A &
+Tip drift, configured-normal-angle change, and estimated-load change &
+Determine whether the response has settled after ramp completion. \\
+B &
+Final tip angle, configured-normal change, edge travel, and steady
+model-estimated load &
+Check agreement between the decoupled and zero-shift coupled formulations. \\
+C &
+The Case-B quantities, reported as mean, standard deviation, and
+approximately \(2\sigma\) &
+Define the repeatability-based interpretation scale for later comparisons. \\
+D &
+Contact-induced rotation, physical-plane alignment improvement, and steady
+model-estimated normal load &
+Quantify the response to the paired setting
+\(K_{R,t_1}=K_{R,t_2}\). \\
+E &
+Physical-plane alignment improvement and the surface-frame
+compliance-centre coordinates &
+Fit and check the coordinate-dependent alignment response. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The stiffness or compliance-centre setting is the independent variable stored
+with each run, not an evaluation metric. The reported studies compare the
+primary alignment outcome together with displacement and estimated load; they
+do not use commanded torque or an oscillation/stability score as experimental
+outcomes.
 
 \section{Safety Limits}
 \label{sec:damping_safety_limits_contact}

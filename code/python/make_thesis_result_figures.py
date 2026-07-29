@@ -15,6 +15,39 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 
+# The thesis loads \usepackage{lmodern}.  Using LaTeX for all plot text makes
+# labels and mathematics use the same Latin Modern fonts as the document.
+plt.rcParams.update(
+    {
+        "text.usetex": True,
+        "text.latex.preamble": r"\usepackage{lmodern}\usepackage{amsmath}",
+        "font.family": "serif",
+        "font.serif": ["Latin Modern Roman"],
+        "font.size": 9.5,
+        "axes.labelsize": 9.5,
+        "axes.titlesize": 9.5,
+        "xtick.labelsize": 8.5,
+        "ytick.labelsize": 8.5,
+        "legend.fontsize": 8.5,
+        "axes.linewidth": 0.8,
+        "lines.linewidth": 1.4,
+        "lines.markersize": 5.5,
+        "grid.color": "0.85",
+        "grid.linewidth": 0.6,
+        "grid.alpha": 0.8,
+        "axes.unicode_minus": False,
+        "savefig.facecolor": "white",
+    }
+)
+
+
+BLUE = "#0072B2"
+ORANGE = "#D55E00"
+GREEN = "#009E73"
+INK = "#303030"
+LIGHT_INK = "#8A8A8A"
+
+
 DATA_FLAGS = {
     "not-converged",
     "no-setup-phase",
@@ -38,8 +71,33 @@ def admissible(row: dict[str, str]) -> bool:
 
 def save(fig: plt.Figure, output_dir: Path, name: str) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
-    fig.savefig(output_dir / name, bbox_inches="tight")
+    fig.savefig(
+        output_dir / name,
+        bbox_inches="tight",
+        pad_inches=0.04,
+        metadata={"Creator": "Matplotlib with LaTeX/Latin Modern"},
+    )
     plt.close(fig)
+
+
+def grouped_mean_sd(
+    x: np.ndarray, y: np.ndarray
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Return one mean and sample SD for each distinct x coordinate."""
+    x_values = np.unique(x)
+    means = np.array([np.mean(y[x == value]) for value in x_values])
+    errors = np.array(
+        [
+            np.std(y[x == value], ddof=1) if np.sum(x == value) > 1 else 0.0
+            for value in x_values
+        ]
+    )
+    return x_values, means, errors
+
+
+def remove_top_and_right_spines(ax: plt.Axes) -> None:
+    for name in ("top", "right"):
+        ax.spines[name].set_visible(False)
 
 
 def stiffness_figure(rows: list[dict[str, str]], output_dir: Path) -> None:
@@ -52,11 +110,18 @@ def stiffness_figure(rows: list[dict[str, str]], output_dir: Path) -> None:
     for row in selected:
         buckets[int(row["run_id"].split("_")[-1])].append(row)
 
-    fig, axes = plt.subplots(1, 3, figsize=(9.5, 3.0))
+    fig, axes = plt.subplots(
+        1,
+        2,
+        figsize=(6.45, 2.75),
+        constrained_layout=True,
+    )
     panels = (
-        ("align_improve_real_deg", "alignment improvement [deg]"),
-        ("force_steady_N", "model-estimated normal load [N]"),
-        ("tau_norm_max_Nm", "peak commanded torque norm [Nm]"),
+        (
+            "align_improve_real_deg",
+            r"Physical-plane improvement, $\Delta\theta_{\mathrm{align,phys}}$ ($^\circ$)",
+        ),
+        ("force_steady_N", r"Estimated normal load (N)"),
     )
     for ax, (key, ylabel) in zip(axes, panels):
         x_values = sorted(buckets)
@@ -70,16 +135,65 @@ def stiffness_figure(rows: list[dict[str, str]], output_dir: Path) -> None:
             means,
             yerr=errors,
             marker="o",
-            capsize=3,
-            color="#2a78d6",
-            linewidth=1.5,
+            capsize=3.5,
+            color=BLUE,
+            markerfacecolor="white",
+            markeredgewidth=1.2,
         )
-        ax.set_xlabel(r"$K_{R,\mathrm{tangent}}$ [Nm/rad]")
+        ax.set_xlabel(r"$K_{R,t_1}=K_{R,t_2}$ ($\mathrm{N\,m/rad}$)")
         ax.set_ylabel(ylabel)
-        ax.grid(alpha=0.3)
-    fig.suptitle("Influence of tangential rotational stiffness", fontsize=10)
-    fig.tight_layout(rect=(0, 0, 1, 0.93))
+        ax.set_xticks(x_values)
+        ax.grid(axis="y")
+        remove_top_and_right_spines(ax)
     save(fig, output_dir, "A2_stiffness_sweep.pdf")
+
+
+def settling_figure(rows: list[dict[str, str]], output_dir: Path) -> None:
+    selected = [
+        row
+        for row in rows
+        if row["run_id"].startswith("G2_equilibrium") and admissible(row)
+    ]
+    selected.sort(key=lambda row: number(row, "setup_duration_s"))
+
+    duration = np.rint(
+        np.array([number(row, "setup_duration_s") for row in selected])
+    )
+    tip = np.array([number(row, "tip_final_deg") for row in selected])
+    drift = np.array(
+        [number(row, "tip_drift_last20pct_deg") for row in selected]
+    )
+    load = np.array([number(row, "force_final_N") for row in selected])
+
+    fig, axes = plt.subplots(
+        1,
+        3,
+        figsize=(6.45, 2.55),
+        constrained_layout=True,
+    )
+    panels = (
+        (tip, r"Final tip angle ($^\circ$)", False),
+        (drift, r"Final-fifth tip drift ($^\circ$)", True),
+        (load, r"Final estimated normal load (N)", False),
+    )
+    for ax, (values, ylabel, logarithmic) in zip(axes, panels):
+        ax.plot(
+            duration,
+            values,
+            "-o",
+            color=BLUE,
+            markerfacecolor="white",
+            markeredgewidth=1.2,
+        )
+        ax.set_xlabel("Set-up duration (s)")
+        ax.set_ylabel(ylabel)
+        ax.set_xticks(duration.astype(int))
+        if logarithmic:
+            ax.set_yscale("log")
+        ax.grid(axis="y", which="major")
+        remove_top_and_right_spines(ax)
+
+    save(fig, output_dir, "G2_equilibrium.pdf")
 
 
 def pole_points(
@@ -100,18 +214,45 @@ def pole_points(
 
 def component_figure(rows: list[dict[str, str]], output_dir: Path) -> None:
     series = (
-        ("B2_pole_normal", "configured-normal sweep", "#2a78d6", "o"),
-        ("B3_pole_tangent_", r"$t_1$ sweep", "#eb6834", "^"),
-        ("B4_pole_tangent2", r"$t_2$ sweep", "#1baf7a", "s"),
+        ("B2_pole_normal", "configured-normal sweep", BLUE, "o"),
+        ("B3_pole_tangent_", r"$t_1$ sweep", ORANGE, "^"),
+        ("B4_pole_tangent2", r"$t_2$ sweep", GREEN, "s"),
     )
     coordinates = (
-        ("pole_cmd_x_mm", r"compliance-centre offset along $t_1$ [mm]"),
-        ("pole_cmd_y_mm", r"compliance-centre offset along $t_2$ [mm]"),
-        ("pole_cmd_z_mm", "compliance-centre normal offset [mm]"),
+        ("pole_cmd_x_mm", r"Offset along $t_1$ (mm)"),
+        ("pole_cmd_y_mm", r"Offset along $t_2$ (mm)"),
+        ("pole_cmd_z_mm", r"Normal offset (mm)"),
     )
 
-    fig, axes = plt.subplots(1, 3, figsize=(11.0, 3.4), sharey=True)
-    for ax, (coordinate, xlabel) in zip(axes, coordinates):
+    fig = plt.figure(figsize=(6.45, 5.0), constrained_layout=True)
+    grid_spec = fig.add_gridspec(2, 2)
+    axes = (
+        fig.add_subplot(grid_spec[0, 0]),
+        fig.add_subplot(grid_spec[0, 1]),
+        fig.add_subplot(grid_spec[1, :]),
+    )
+    panel_labels = (r"\textbf{(a)}", r"\textbf{(b)}", r"\textbf{(c)}")
+
+    all_response = np.array(
+        [
+            number(row, "align_improve_real_deg")
+            for row in rows
+            if row["run_id"].startswith(("B1_", "B2_", "B3_", "B4_"))
+            and admissible(row)
+        ]
+    )
+    all_response = all_response[np.isfinite(all_response)]
+    response_padding = 0.08 * np.ptp(all_response)
+    response_limits = (
+        np.min(all_response) - response_padding,
+        np.max(all_response) + response_padding,
+    )
+
+    legend_handles = []
+    legend_labels = []
+    for panel_index, (ax, (coordinate, xlabel)) in enumerate(
+        zip(axes, coordinates)
+    ):
         all_x: list[np.ndarray] = []
         all_y: list[np.ndarray] = []
         for prefix, label, colour, marker in series:
@@ -123,12 +264,26 @@ def component_figure(rows: list[dict[str, str]], output_dir: Path) -> None:
                 y,
                 marker,
                 color=colour,
-                ms=7,
-                mew=0.8,
-                mec="white",
+                ms=3.2,
+                alpha=0.24,
+                linestyle="none",
+            )
+            x_group, mean, error = grouped_mean_sd(x, y)
+            handle = ax.errorbar(
+                x_group,
+                mean,
+                yerr=error,
+                marker=marker,
+                color=colour,
+                markerfacecolor="white",
+                markeredgewidth=1.0,
+                capsize=2.5,
                 linestyle="none",
                 label=label,
             )
+            if panel_index == 0:
+                legend_handles.append(handle)
+                legend_labels.append(label)
             all_x.append(x)
             all_y.append(y)
 
@@ -141,38 +296,56 @@ def component_figure(rows: list[dict[str, str]], output_dir: Path) -> None:
             (y - np.mean(y)) ** 2
         )
         grid = np.linspace(np.min(x), np.max(x), 200)
-        ax.plot(grid, np.polyval(coefficients, grid), color="#52514e", linewidth=1.5)
+        ax.plot(grid, np.polyval(coefficients, grid), color=INK)
         if degree == 2:
             stationary = -coefficients[1] / (2.0 * coefficients[0])
             note = (
-                f"$R^2$ = {r_squared:.3f}\n"
-                f"fitted maximum {stationary:+.0f} mm"
+                f"$R^2={r_squared:.3f}$\n"
+                f"stationary: ${stationary:+.0f}\\,\\mathrm{{mm}}$"
             )
         else:
             note = (
-                f"$R^2$ = {r_squared:.3f}\n"
-                f"{coefficients[0]:+.3f} deg/mm"
+                f"$R^2={r_squared:.3f}$\n"
+                f"slope: ${coefficients[0]:+.3f}^\\circ/\\mathrm{{mm}}$"
             )
         ax.annotate(
             note,
-            xy=(0.04, 0.94),
+            xy=(0.97, 0.96),
             xycoords="axes fraction",
+            ha="right",
             va="top",
-            fontsize=8,
+            bbox={"facecolor": "white", "edgecolor": "0.8", "pad": 2.5},
         )
-        ax.axhline(0.0, color="0.55", linewidth=1)
+        ax.text(
+            0.02,
+            0.96,
+            panel_labels[panel_index],
+            transform=ax.transAxes,
+            va="top",
+        )
+        ax.axhline(0.0, color=LIGHT_INK, linewidth=0.9)
         ax.set_xlabel(xlabel)
-        ax.grid(alpha=0.3)
+        ax.set_ylim(response_limits)
+        ax.grid(axis="y")
+        remove_top_and_right_spines(ax)
 
-    axes[0].set_ylabel("alignment improvement relative to physical plane [deg]")
-    axes[0].legend(fontsize=8, loc="lower right", frameon=False)
-    fig.suptitle("Alignment response by compliance-centre coordinate", fontsize=10)
-    fig.tight_layout(rect=(0, 0, 1, 0.93))
+    axes[0].set_ylabel(r"Physical-plane improvement ($^\circ$)")
+    axes[2].set_ylabel(r"Physical-plane improvement ($^\circ$)")
+    axes[1].tick_params(labelleft=False)
+    fig.legend(
+        legend_handles,
+        legend_labels,
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.02),
+        ncol=3,
+        frameon=False,
+    )
     save(fig, output_dir, "B_pole_component.pdf")
 
 
 def surface_figure(rows: list[dict[str, str]], output_dir: Path) -> None:
-    points = []
+    fit_points = []
+    held_out_points = []
     for row in rows:
         if not row["run_id"].startswith(("B1_", "B2_", "B3_", "B4_")):
             continue
@@ -184,9 +357,13 @@ def surface_figure(rows: list[dict[str, str]], output_dir: Path) -> None:
             number(row, "align_improve_real_deg"),
         )
         if all(np.isfinite(value) for value in point):
-            points.append(point)
+            if row["run_id"].startswith("B1_"):
+                held_out_points.append(point)
+            else:
+                fit_points.append(point)
 
-    measured = np.asarray(points)
+    measured = np.asarray(fit_points)
+    held_out = np.asarray(held_out_points)
     x, y, response = measured[:, 0], measured[:, 1], measured[:, 2]
     design = np.column_stack([x, x**2, y, y**2, np.ones(len(measured))])
     coefficients, residuals, *_ = np.linalg.lstsq(design, response, rcond=None)
@@ -212,50 +389,69 @@ def surface_figure(rows: list[dict[str, str]], output_dir: Path) -> None:
     )
     zz = np.ma.masked_where(distance_squared > 45.0**2, zz)
 
-    fig, ax = plt.subplots(figsize=(6.4, 4.6))
+    fig, ax = plt.subplots(
+        figsize=(6.25, 4.35),
+        constrained_layout=True,
+    )
     limit = np.max(np.abs(response))
     contour = ax.contourf(
         xx,
         yy,
         zz,
-        levels=np.linspace(-limit, limit, 15),
+        levels=np.linspace(-limit, limit, 17),
         cmap="RdBu_r",
+        vmin=-limit,
+        vmax=limit,
         extend="both",
     )
-    ax.contour(xx, yy, zz, levels=[0.0], colors="0.25", linewidths=1.2)
+    ax.contour(xx, yy, zz, levels=[0.0], colors=INK, linewidths=1.1)
     ax.plot(
         x,
         y,
         "o",
-        ms=5,
+        ms=4.5,
         mfc="none",
-        mec="#0b0b0b",
-        mew=0.9,
+        mec=INK,
+        mew=0.8,
         linestyle="none",
-        label="measured runs",
+        label="Fitted settings",
+    )
+    ax.plot(
+        held_out[:, 0],
+        held_out[:, 1],
+        "D",
+        ms=5.0,
+        mfc="white",
+        mec=GREEN,
+        mew=1.0,
+        linestyle="none",
+        label="Held-out E1 setting",
     )
     ax.plot(
         [x_stationary],
         [y_stationary],
         "*",
-        ms=15,
-        color="#0b0b0b",
+        ms=12,
+        color=INK,
         linestyle="none",
-        label=(
-            "model-predicted stationary point "
-            f"({x_stationary:+.0f}, {y_stationary:+.0f}) mm"
+        label="Predicted stationary point",
+    )
+    ax.annotate(
+        (
+            f"$R^2={r_squared:.3f}$, $n={len(measured)}$\n"
+            f"stationary: $({x_stationary:+.0f},"
+            f"{y_stationary:+.0f})\\,\\mathrm{{mm}}$"
         ),
+        xy=(0.03, 0.97),
+        xycoords="axes fraction",
+        va="top",
+        bbox={"facecolor": "white", "edgecolor": "0.8", "pad": 3.0},
     )
-    colourbar = fig.colorbar(contour, ax=ax)
-    colourbar.set_label("alignment improvement relative to physical plane [deg]")
-    ax.set_xlabel(r"compliance-centre offset along $t_1$ [mm]")
-    ax.set_ylabel(r"compliance-centre offset along $t_2$ [mm]")
-    ax.set_title(
-        f"Additive quadratic fit, $R^2$ = {r_squared:.3f} over "
-        f"{len(measured)} runs; shaded only near measured runs",
-        fontsize=9,
-    )
-    ax.legend(fontsize=7, loc="lower right", framealpha=0.9)
+    colourbar = fig.colorbar(contour, ax=ax, pad=0.02)
+    colourbar.set_label(r"Physical-plane improvement ($^\circ$)")
+    ax.set_xlabel(r"Offset along $t_1$ (mm)")
+    ax.set_ylabel(r"Offset along $t_2$ (mm)")
+    ax.legend(loc="lower right", framealpha=0.92)
     ax.grid(False)
     save(fig, output_dir, "B_pole_surface.pdf")
 
@@ -269,6 +465,7 @@ def main() -> None:
     with arguments.metrics.open(newline="", encoding="utf-8") as handle:
         rows = list(csv.DictReader(handle))
 
+    settling_figure(rows, arguments.output_dir)
     stiffness_figure(rows, arguments.output_dir)
     component_figure(rows, arguments.output_dir)
     surface_figure(rows, arguments.output_dir)
