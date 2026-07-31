@@ -330,9 +330,9 @@ frame transformation.
 
 The selected centre of compliance is represented by a point \(p_c\), with the
 pole-to-TCP lever \(r_c=p_{\mathrm{TCP}}-p_c\) defined in
-\cref{eq:pole_to_tcp_lever}. Here \(p_{\mathrm{TCP}}\) is the origin associated with
-\texttt{state.O\_T\_EE}; any configured \texttt{F\_T\_EE} transform must
-therefore be included when relating this point to the physical hand and tool.
+\cref{eq:pole_to_tcp_lever}. Here \(p_{\mathrm{TCP}}\) is the origin of the end-effector pose reported by
+the robot; any configured flange-to-end-effector transform must therefore be
+included when relating this point to the physical hand and tool.
 The lower-case subscript \(c\) is reserved for the chosen virtual centre
 \(p_c\). The upper-case subscript \(C\) is used later for the physical contact
 point \(p_C\), for which the distinct contact lever is
@@ -691,8 +691,8 @@ d_{\max},
 \label{eq:directional_damping_heuristic}
 \end{equation}
 
-Here \(d_{\max}=8000\). In the active configuration,
-\texttt{auto\_damping\_min\_from\_manual=0}, hence \(d_{i,\min}=0\); configured
+Here \(d_{\max}=8000\). The active configuration does not take the manual
+coefficients as lower bounds, hence \(d_{i,\min}=0\); configured
 manual coefficients are fallbacks, not lower bounds. For a fitted phase, let
 \(c_i=2\sqrt{\Lambda_{F,ii}k_i}\). The least-squares factor used to approach a
 target vector \(d^\star\) is
@@ -812,8 +812,8 @@ p_c=p_{\Pi,\mathrm{clr}}+\Delta p_c^0,
 The superscript \(0\) emphasizes that the three components are base XYZ, not
 \([t_1,t_2,n_s]\). The reference is frozen for the run. A scalar choice
 \(p_c=p_s+h n_s\) is a useful theoretical special case, but it is not the active
-parameterization. Because \texttt{coupled\_pole\_freeze\_at\_contact=1}, the
-active lever is also frozen,
+parameterization. Because the pole is frozen at first contact, the active
+lever is also frozen,
 \[
 r_c=p_{\mathrm{TCP,clr}}-p_c,
 \]
@@ -1221,8 +1221,8 @@ a_{\mathrm{phys}}&=-n_{\mathrm{phys}},\\
 \end{equation}
 
 The minus signs are required by the current tool-axis convention. The
-controller field \texttt{alignment\_angle\_deg} records
-\(\theta_{\mathrm{align,cfg}}\), the angle to the configured normal. This
+controller logs \(\theta_{\mathrm{align,cfg}}\), the angle to the configured
+normal. This
 online quantity verifies the implemented command geometry, but it is not the
 directly measured physical-tool alignment: \(n_s\) and
 \(n_{\mathrm{phys}}\) differ in the recorded campaign, and \(Q_g(t)\) is not
@@ -1304,9 +1304,8 @@ after masking, where \(R_{\mathrm{clr}}\) is the orientation frozen at the
 clearance hand-off. This control error begins near zero and can
 \emph{increase} as the tool tips during contact. It must not be plotted as
 \(\theta_{\mathrm{align},j}\) without reconstructing the nominal tool axis.
-The general CSV records the angle of the EE-inferred tool axis to the
-configured normal directly as \texttt{alignment\_angle\_deg}. It is used as
-an online geometry check. The reported alignment outcome is rescored offline
+The general log records the angle of the EE-inferred tool axis to the
+configured normal directly. It is used as an online geometry check. The reported alignment outcome is rescored offline
 against the separately estimated \(n_{\mathrm{phys}}\), as described in
 \cref{sec:results_alignment}; the unmeasured \(Q_g(t)\) remains outside that
 rescoring.
@@ -1434,9 +1433,10 @@ must therefore supplement the CSV when diagnosing an aborted sequence.
 These checks are necessary because a stiffness matrix that is geometrically
 meaningful can still be unsuitable for real hardware if it produces aggressive
 torques or poorly damped contact behaviour. In particular, the
-\(150\,\mathrm{Nm}\) set-up threshold is applied to the moment change in
-\texttt{O\_F\_ext\_hat\_K}. This is libfranka's model-based estimate associated
-with stiffness frame \(K\), not a separately measured TCP contact moment. Its
+\(150\,\mathrm{Nm}\) set-up threshold is applied to the moment change in the
+model-estimated external wrench. This is libfranka's model-based estimate
+associated with stiffness frame \(K\), not a separately measured TCP contact
+moment. Its
 large value avoids treating ordinary model fluctuations as a contact event and
 makes the timeout the practical default transition. It is an engineering
 placeholder, not a measured safety boundary or a validated contact threshold.

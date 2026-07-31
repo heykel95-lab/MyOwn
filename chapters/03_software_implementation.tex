@@ -51,7 +51,7 @@ three-SVD law in libfranka's nominal \(1\,\mathrm{kHz}\) torque interface.
 However, the timestamps accumulate the callback period supplied by libfranka;
 they do not measure the callback's local wall-clock execution time and therefore
 do not establish its worst-case execution time. The robot-state field
-\texttt{control\_command\_success\_rate} is the fraction of the last
+The command success rate reported by the robot is the fraction of the last
 100 commands received successfully, not a callback-frequency or execution-time
 measurement, and the current logger does not store that field
 \citep{FrankaFCI2023}.
@@ -97,7 +97,8 @@ counterpart. The Coriolis vector is always included in the controlled phases.
 
 At the beginning of a control cycle, the joint configuration and velocity are
 mapped from \texttt{franka::RobotState}. The transformation
-\texttt{state.O\_T\_EE} supplies the position \(p_{\mathrm{EE}}\) and orientation
+The end-effector pose reported by the robot supplies the position
+\(p_{\mathrm{EE}}\) and orientation
 \(R_{\mathrm{EE}}\) of the configured libfranka end-effector frame in the robot
 base frame. The implementation does not reconstruct this pose from a separate
 DH model.
@@ -598,11 +599,12 @@ surface-frame inertia. During set-up and grind, translation uses the base-frame
 inertia whereas rotation uses the surface-frame inertia. Hold uses the
 base-frame inertia and can fit one damping factor toward the configured manual
 translational damping. At the pre-set-up pause gate, separate scalar factors are
-fitted: translation targets the configured \texttt{pause\_hold\_Dp}, whereas
+fitted: translation targets the configured gate-hold translational damping,
+whereas
 rotation targets the cached approach rotational damping expressed in the
 surface frame. There is no separate manual pause-rotation target. If the gate
 inertia estimate is invalid, translation falls back to
-\texttt{pause\_hold\_Dp} and rotation inherits the cached or manual approach
+that same gate-hold target and rotation inherits the cached or manual approach
 damping.
 
 The implementation checks the factorization, finiteness,
@@ -642,9 +644,9 @@ the coupled set-up command is
 
 In manual-pole mode the pole is the frozen projected-clearance reference or the
 live selected tool feature plus the configured base-frame XYZ offset. The
-frozen source is the variable \texttt{first\_contact\_point}, but it is captured
+frozen source is the first-contact point, but it is captured
 at geometric clearance rather than force contact. In the active configuration,
-\texttt{coupled\_pole\_freeze\_at\_contact=1}, the TCP reference is frozen at
+the pole is frozen at first contact, the TCP reference is frozen at
 the same hand-off and the lever actually passed to the congruence is
 \[
 r_c=p_{\mathrm{TCP,clr}}-p_c .

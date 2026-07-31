@@ -102,10 +102,13 @@ The List of Figures and List of Tables must always contain concise entries.
 
 Never use “tangential stiffness” for a parameter sweep without naming the
 axis. State \(t_1\), \(t_2\), or explicitly state that both entries were
-changed together. In the completed Case-D campaign,
-\(K_{R,t_1}=K_{R,t_2}\) was assigned the common values 5, 15, and
-50 Nm/rad. These data establish the effect of the paired setting and must not
-be described as an isolated \(t_1\)- or \(t_2\)-axis effect.
+changed together. The calibrated-plane campaign varies the rotational
+stiffness of one tangent at a time, holding the orthogonal entry at 5 Nm/rad,
+so its results are axis-specific and are described as such. The earlier
+campaign in the appendix assigned the common values 5, 15, and 50 Nm/rad to
+both entries together; those data establish the effect of the paired setting
+only and must not be described as an isolated \(t_1\)- or \(t_2\)-axis
+effect.
 
 Plots must use the same typeface as the thesis. This document loads
 `lmodern`, so generated plots use LaTeX-rendered Latin Modern Roman and Latin
@@ -120,6 +123,27 @@ open markers that remain legible in print. Remove internal plot titles that
 repeat the caption, unused panels, and diagnostics that are not discussed in
 the text. Visually inspect every plot inside the compiled thesis, not only as a
 standalone file.
+
+## Software identifiers in the text
+
+Do not print long configuration or field names in the running text. A name
+carrying two or more underscores is a file-format detail rather than a
+scientific quantity, and it reads as source code instead of prose. State what
+the setting does:
+
+- `the pole is frozen at first contact`, not the parameter name that sets it;
+- `the model-estimated external wrench`, not the field it is read from;
+- `the end-effector pose reported by the robot`, not the state member;
+- `the gate-hold translational damping`, not the parameter key.
+
+A short parameter name with at most one underscore may be printed where the
+exact key matters, for example where a reader would otherwise be unable to
+locate the setting. Literal identifier lists, such as the set of phase labels a
+log can contain, remain acceptable because the identifiers themselves are the
+subject.
+
+Complete parameter names belong in the parameter appendix and the data-format
+appendix, where the identifier is the point.
 
 ## Repository and software language
 
@@ -253,20 +277,44 @@ scientific purpose statement.
 
 ## Results and conclusion priorities
 
-The principal experimental conclusions are:
+The principal experimental conclusions of the calibrated-plane campaign are:
 
-1. Lowering the paired tangent-axis rotational stiffness
-   \(K_{R,t_1}=K_{R,t_2}\) increased contact-induced alignment over the tested
-   range. Report the corresponding estimated normal-load range without
-   claiming formal equivalence or an isolated effect of either tangent axis.
-2. Both in-plane compliance-centre coordinates strongly influenced alignment.
-3. The in-plane response was non-monotonic, and unsuitable placements reduced
-   alignment or rotated the tool away from the desired orientation.
-4. The normal compliance-centre coordinate added substantially less
-   explanatory information over the investigated range.
+1. Compliance-centre placement dominates the alignment response, and its
+   favourable sign is opposite for the two surface tangents. The unfavourable
+   sign removes the correction rather than reducing it.
+2. Raising the rotational stiffness of the excited axis reduces alignment over
+   the tested range. Because the tangent entries were varied separately, report
+   this per axis and not as a common paired setting.
+3. Reducing the translational stiffness perpendicular to the excited axis
+   improves alignment about \(t_2\) only, and a high rotational stiffness
+   removes that benefit.
+4. Displacing the compliance centre along the surface normal produced no change
+   beyond the interpretation threshold over the investigated range.
+5. Alignment is larger for a mismatch about \(t_2\) than about \(t_1\), and
+   commanding the same mismatch about the tool-face axes places the response
+   near the linear combination of the tangent components, which attributes the
+   asymmetry to the surface frame rather than to the face geometry.
+
+Report the \(t_2\) results as lower bounds. Unmeasured tool motion within the
+gripper can conceal correction that occurred but cannot create it.
 
 Basic settling, formulation-equivalence, and repeatability checks support the
 measurements but should not dominate the conclusion.
+
+The conclusion states what every experimental case showed, one entry per case,
+in the case order used in the results chapter. A case that produced a null or
+bounding result is reported as such rather than omitted.
+
+Items in a bulleted or numbered list begin with a capital letter and are
+written as complete statements. Do not continue a lead-in sentence across the
+list items in lower case.
+
+Report a comparison as a relation as well as an absolute value, so the reader
+sees the size of an effect without dividing the numbers. Prefer `about eleven
+times`, `roughly a quarter lower`, or `by a factor of about seven` alongside
+the measured values. Round the relation to the precision the repeatability
+supports; do not state a ratio to two decimals when the underlying values carry
+a tenth of a degree of uncertainty.
 
 ### Follow-on pilots
 
@@ -299,6 +347,10 @@ robot–controller–environment system.
 Before accepting a revision:
 
 - search for question-driven headings and literal research questions;
+- search the running text for names carrying two or more underscores;
+- check that list items begin with a capital letter;
+- check that the conclusion covers every experimental case;
+- check that each reported comparison also states its relation;
 - search for Git, repository, development-history, and draft-comparison terms;
 - search for proposal language outside Future Work;
 - check configured versus physical plane terminology;
