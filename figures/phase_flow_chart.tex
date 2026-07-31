@@ -48,13 +48,13 @@
 \draw[flow] (d2)     -- (g2);
 \draw[flow] (g2)     -- (grind);
 
-% hand guiding, and the recapture that restarts the sequence
-\draw[flow, blue!45!black] (hold) -- node[lbl, right] {\texttt{g}} (guide);
-% Dropped below the descend box, then around the left, so the return stays
-% orthogonal and crosses no other phase.
-\draw[flow, blue!45!black] (guide.south) -- (6.6,-3.7) -- (-2.5,-3.7)
-      -- node[lbl, left, pos=0.55] {\texttt{p} recaptures}
-      (-2.5,0.0) -- (orient.west);
+% Hand guiding and back. The recapture returns to the phase the run started
+% in, so a hold that was guided resumes holding at the new pose rather than
+% entering the sequence.
+\draw[flow, blue!45!black] (hold) -- node[lbl, left] {\texttt{g}} (guide);
+\draw[flow, blue!45!black] (guide.east) -- (9.6,-2.9)
+      -- node[lbl, right, pos=0.55] {\texttt{p} recaptures}
+      (9.6,0.0) -- (hold.east);
 
 \draw[flow, red!45!black] (grind) -- (stop);
 
