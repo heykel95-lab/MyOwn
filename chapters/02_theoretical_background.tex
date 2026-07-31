@@ -27,11 +27,10 @@ To describe the motion of a robotic manipulator, multiple coordinate
 frames are used simultaneously \cite{Siciliano2009, Craig2005}.
 A coordinate frame is a right-handed orthogonal system of
 three mutually perpendicular unit vectors anchored at a chosen origin.
-For the joint frames, this thesis follows the
-Denavit--Hartenberg (\abbr{DH}) convention, a standard robotics
-method for assigning coordinate frames to consecutive links in a kinematic
-chain \cite{Denavit1955, Craig2005}.
-Three frames are central to this work:
+The joint frames follow the Denavit--Hartenberg convention
+\cite{Denavit1955, Craig2005}. It is named here only to fix the indexing;
+the controller obtains its poses and its Jacobian from the robot model rather
+than from a parameterised chain. Three frames are central to this work:
 
 \begin{itemize}
   \item Base frame $\{0\}$: fixed to the robot mounting
@@ -44,12 +43,10 @@ Three frames are central to this work:
         All positions, orientations, and forces are ultimately expressed in
         this frame unless stated otherwise.
   \item Joint frames $\{1\},\{2\},\ldots,\{n\}$: rigidly
-        attached to the successive links of the kinematic chain. With the
-        standard Denavit--Hartenberg indexing used below, joint \(i\) rotates
-        about \(z_{i-1}\), and \(p_{i-1}\) is a point on that axis. The
-        \(x_i\)-axis is chosen along the common normal from \(z_{i-1}\) to
-        \(z_i\), and \(y_i\) completes the right-handed frame. These frames
-        encode the fixed geometry between consecutive joint axes.
+        attached to the successive links of the kinematic chain. Joint \(i\)
+        rotates about \(z_{i-1}\), and \(p_{i-1}\) is a point on that axis;
+        this indexing is used by the Jacobian below. These frames encode the
+        fixed geometry between consecutive joint axes.
   \item End-effector frame $\{\mathrm{EE}\}$: attached to the tool
         centre point. Its origin is the controlled point at the tool tip
         or flange, depending on the selected tool definition. The axes
@@ -61,14 +58,6 @@ Three frames are central to this work:
         frame selected through the robot model interface.
 \end{itemize}
 
-The coordinate-frame assignment and the corresponding Denavit--Hartenberg convention for assigning consecutive coordinate systems
-are illustrated in \cref{fig:coordinate_frame_robot}.
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.95\textwidth]{figures/coordinate_frames.png}
-    \caption{Coordinate and DH-frame conventions.}
-    \label{fig:coordinate_frame_robot}
-\end{figure}
 This frame assignment forms the basis for describing the robot kinematics using homogeneous transformation matrices.
 
 \subsection{Rigid Transformations}
@@ -216,35 +205,17 @@ For a serial manipulator with
 {}^{n-1}T_n(q_n).
 \label{eq:forward_kinematics_chain}
 \end{equation}
-In the standard Denavit--Hartenberg convention used here, revolute joint \(i\)
-rotates by \(q_i\) about \(z_{i-1}\). Its neighboring-frame transformation is
-\cite{Denavit1955,Craig2005,Siciliano2009}
-\begin{equation}
-{}^{i-1}T_i
-=
-R_z(q_i)T_z(d_i)T_x(a_i)R_x(\alpha_i)
-=
-\begin{bmatrix}
-c_i & -s_i c_{\alpha i} & s_i s_{\alpha i} & a_i c_i\\
-s_i & c_i c_{\alpha i} & -c_i s_{\alpha i} & a_i s_i\\
-0 & s_{\alpha i} & c_{\alpha i} & d_i\\
-0&0&0&1
-\end{bmatrix},
-\label{eq:dh_transformation_matrix}
-\end{equation}
-where \(c_i=\cos q_i\), \(s_i=\sin q_i\),
-\(c_{\alpha i}=\cos\alpha_i\), and \(s_{\alpha i}=\sin\alpha_i\).
-The parameters \(q_i\) and \(d_i\) act about and along \(z_{i-1}\);
-\(a_i\) acts along \(x_i\), and \(\alpha_i\) is the rotation from
-\(z_{i-1}\) to \(z_i\) about \(x_i\). This indexing is used consistently in the
-Jacobian below. The product in \cref{eq:forward_kinematics_chain} yields
+Each factor is the transformation between neighbouring joint frames, built in
+the Denavit--Hartenberg convention from the published link parameters; the
+matrix itself is standard and is not reproduced here
+\cite{Denavit1955,Craig2005,Siciliano2009}. The product in
+\cref{eq:forward_kinematics_chain} yields
 \({}^0T_n=
 \left[\begin{smallmatrix}
 R_{\mathrm{EE}}&p_{\mathrm{EE}}\\0^\top&1
 \end{smallmatrix}\right]\).
 In the implemented controller, libfranka supplies this pose and the model
-Jacobian; the DH form is retained to define the kinematic convention and
-support the numerical example in the appendix.
+Jacobian directly, so no chain is evaluated at run time.
 
 \ifProfessorStopAfterForwardKinematics
 \else
