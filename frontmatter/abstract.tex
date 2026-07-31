@@ -10,12 +10,13 @@ tilt, the rotational and translational stiffness of each surface tangent,
 and the spatial position of a virtual centre of compliance influence
 contact-induced alignment.
 
-The controller uses explicitly defined base and surface frames, phase-dependent
-Cartesian gains, model-based damping, and a Jacobian-transpose joint-torque
-command. During set-up, a compliance-centre \(6\times6\) stiffness and damping matrix
-is shifted to the TCP through an adjoint congruence. The resulting
-translation--rotation coupling allows a translational contact response to
-generate a rotational moment about the selected virtual centre. An SVD-based
+The controller defines base and surface frames explicitly and maps the Cartesian
+wrench to joint torques through \(J^\top\). Its Cartesian gains are
+phase-dependent, and its damping is derived from a Cartesian-inertia estimate.
+During set-up, a compliance-centre \(6\times6\) stiffness and damping matrix
+is shifted to the TCP through an adjoint congruence. In the resulting
+translation--rotation coupling, a translational contact response generates a
+rotational moment about the selected virtual centre. An SVD-based
 null-space controller is implemented for the redundant seventh joint, although
 its effect is not evaluated in a separate experimental campaign.
 

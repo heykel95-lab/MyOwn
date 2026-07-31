@@ -454,8 +454,8 @@ Here, \(K_{p,\mathrm{task}}\) relates translational displacement to force,
 \(K_{R,\mathrm{task}}\) relates rotational displacement to moment, and the
 off-diagonal blocks \(K_{pR,\mathrm{task}}\) and \(K_{Rp,\mathrm{task}}\)
 describe translation--rotation coupling.
-This block form is useful for explaining the physical coupling between sliding
-and rotation during edge contact. The implemented controller constructs the full
+This block form is what exposes the coupling between sliding and rotation
+during edge contact. The implemented controller constructs the full
 matrix analytically from a manually selected centre of compliance during set-up. Its
 location and the source stiffness blocks are the design variables; the 36 matrix entries are
 not tuned independently.
@@ -542,9 +542,9 @@ For an error \(\mathbf e_p=\delta u\), the elastic component along \(u\) is
 \(\delta k_{p,\mathrm{eff}}(u)\). A non-principal direction can also produce
 the transverse component
 \(\delta(I-uu^\top)K_{p,0}u\). The same construction applies to
-\(K_{R,0}\) and a rotational direction. This calculation is essential for the
-active set-up translation, which is diagonal in base XYZ while the push follows
-the tilted surface normal.
+\(K_{R,0}\) and a rotational direction. The active set-up translation requires
+it, being diagonal in base XYZ while the push follows the tilted surface
+normal.
 
 \paragraph{Set-up/grind calculation.}
 The active \(t_2\) direction equals base \(y\). Taking the completely blocked
@@ -838,7 +838,7 @@ p_c=p_{\Pi,\mathrm{clr}}+\Delta p_c^0,
 
 The superscript \(0\) emphasizes that the three components are base XYZ, not
 \([t_1,t_2,n_s]\). The reference is held constant for the run. A scalar choice
-\(p_c=p_s+h n_s\) is a useful theoretical special case, but it is not the active
+\(p_c=p_s+h n_s\) is a theoretical special case, but it is not the active
 parameterization. Because the centre of compliance is held constant from first contact, the
 lever is constant too,
 \[
@@ -1204,7 +1204,7 @@ offset---may change between repetitions. Pool only runs with the same controller
 configuration, tool geometry, phase duration, and fixed gains; otherwise report them as
 separate configurations. The comparison is not meant to
 prove a universal optimal stiffness matrix; it identifies which tested
-centre-of-compliance setting gives the most useful behaviour for this tool,
+centre-of-compliance setting produced the largest alignment for this tool,
 plane, and contact sequence.
 
 \section{Evaluation Metrics}

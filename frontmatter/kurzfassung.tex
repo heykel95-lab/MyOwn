@@ -6,25 +6,26 @@ einem Werkst\"uck k\"onnen unerw\"unschte Kontaktlasten erzeugen und die
 Ausrichtung des Werkzeugs an der Oberfl\"ache verhindern. Diese Arbeit
 entwickelt einen kartesischen Echtzeit-Impedanzregler f\"ur einen
 7-achsigen Franka Emika Panda und untersucht den Einfluss der vorgegebenen
-Winkelabweichung, der Rotations- und Translationssteifigkeit je
+Verkippung, der Rotations- und Translationssteifigkeit je
 Oberfl\"achentangente sowie der r\"aumlichen Lage eines virtuellen
 Nachgiebigkeitszentrums auf die kontaktinduzierte Ausrichtung.
 
-Der Regler verwendet eindeutig definierte Basis- und
-Oberfl\"achenkoordinatensysteme, phasenabh\"angige kartesische Verst\"arkungen,
-modellbasiert berechnete D\"ampfung und eine Gelenkmomentvorgabe \"uber die
-transponierte Jacobi-Matrix. W\"ahrend der Einrichtphase wird eine am
-virtuellen Pol definierte \(6\times6\)-Steifigkeits- und D\"ampfungsmatrix
-durch eine Adjungiertenkongruenz zum TCP verschoben. Die entstehende
-translatorisch-rotatorische Kopplung erm\"oglicht es, aus der translatorischen
-Kontaktreaktion ein Rotationsmoment um das gew\"ahlte virtuelle Zentrum zu
-erzeugen. F\"ur das redundante siebte Gelenk ist ein SVD-basierter
+Der Regler definiert Basis- und Oberfl\"achenkoordinatensysteme explizit und
+bildet den kartesischen Kraftwinder \"uber \(J^\top\) auf Gelenkmomente ab.
+Seine kartesischen Verst\"arkungen sind phasenabh\"angig, seine D\"ampfung wird
+aus einer Sch\"atzung der kartesischen Massenmatrix berechnet. W\"ahrend der
+Einrichtphase wird eine am Nachgiebigkeitszentrum definierte
+\(6\times6\)-Steifigkeits- und D\"ampfungsmatrix durch eine
+Adjungiertenkongruenz zum TCP verschoben. In der entstehenden
+translatorisch-rotatorischen Kopplung erzeugt die translatorische
+Kontaktreaktion ein Rotationsmoment um das gew\"ahlte
+Nachgiebigkeitszentrum. F\"ur das redundante siebte Gelenk ist ein SVD-basierter
 Nullraumregler implementiert; dessen Wirkung wurde jedoch nicht in einer
 separaten Versuchskampagne untersucht.
 
 Die experimentelle Untersuchung umfasst \(75\) Kontaktversuche. Die
 Werkst\"uckebene und die Achse der Schleiffl\"ache wurden unabh\"angig
-voneinander kalibriert, sodass die vorgegebene Orientierungsabweichung auf ein
+voneinander kalibriert, sodass die vorgegebene Verkippung auf ein
 gemessenes physikalisches Oberfl\"achenkoordinatensystem bezogen ist. Je
 Einstellung wurden drei Wiederholungen durchgef\"uhrt; die mittlere
 Standardabweichung der Ausrichtungsverbesserung innerhalb einer Einstellung
@@ -32,10 +33,10 @@ betr\"agt \(0{,}02\) bis \(0{,}03^\circ\).
 
 Die Lage des virtuellen Nachgiebigkeitszentrums bestimmte die Reaktion
 ma\ss{}geblich. Eine Verschiebung des Hebels um \(60\,\mathrm{mm}\) entlang der
-zur angeregten Achse senkrechten Tangente erh\"ohte die
+zur verkippten Achse senkrechten Tangente erh\"ohte die
 Ausrichtungsverbesserung von \(0{,}56^\circ\) auf \(6{,}05^\circ\) bei einer
-Abweichung um \(t_1\) und von \(1{,}38^\circ\) auf \(6{,}36^\circ\) bei einer
-Abweichung um \(t_2\); die verbleibende Fehlausrichtung sank dabei auf
+Verkippung um \(t_1\) und von \(1{,}38^\circ\) auf \(6{,}36^\circ\) bei einer
+Verkippung um \(t_2\); die verbleibende Fehlausrichtung sank dabei auf
 \(0{,}93^\circ\) beziehungsweise \(2{,}14^\circ\). Die Wirkung ist
 vorzeichenabh\"angig, und das g\"unstige Vorzeichen ist f\"ur die beiden
 Tangenten entgegengesetzt; das ung\"unstige Vorzeichen hob die Korrektur auf,
@@ -44,27 +45,27 @@ statt sie nur zu verringern. Eine Verschiebung des Nachgiebigkeitszentrums um
 Ver\"anderung oberhalb der Interpretationsschwelle.
 
 Die Steifigkeitswerte hatten einen deutlich geringeren Einfluss. Eine
-Erh\"ohung der Rotationssteifigkeit der angeregten Achse von \(5\) auf
+Erh\"ohung der Rotationssteifigkeit der verkippten Achse von \(5\) auf
 \(50\,\mathrm{Nm/rad}\) verringerte die Ausrichtung monoton, und keine
 getestete Einstellung \"ubertraf den Ausgangswert von \(5\,\mathrm{Nm/rad}\).
-Eine Verringerung der zur angeregten Achse senkrechten Translationssteifigkeit
-verbesserte die Ausrichtung nur bei einer Abweichung um \(t_2\); in Verbindung
+Eine Verringerung der zur verkippten Achse senkrechten Translationssteifigkeit
+verbesserte die Ausrichtung nur bei einer Verkippung um \(t_2\); in Verbindung
 mit einer hohen Rotationssteifigkeit entfiel dieser Vorteil. Die Ausrichtung
-war durchg\"angig bei einer Abweichung um \(t_2\) gr\"o\ss{}er als um \(t_1\).
-Wurde dieselbe Abweichung um die Achsen der Schleiffl\"ache statt um die
+war durchg\"angig bei einer Verkippung um \(t_2\) gr\"o\ss{}er als um \(t_1\).
+Wurde dieselbe Verkippung um die Achsen der Schleiffl\"ache statt um die
 Oberfl\"achentangenten vorgegeben, ergaben sich Werte nahe der
 Linearkombination der beiden Tangentenreaktionen, was die Asymmetrie dem
 Oberfl\"achenkoordinatensystem und nicht der Geometrie der Fl\"ache zuordnet.
 
 Die Ergebnisse weisen f\"ur die untersuchte Konfiguration die Lage des
 Nachgiebigkeitszentrums in der Ebene, insbesondere ihr Vorzeichen relativ zur
-angeregten Achse, als ma\ss{}geblichen Parameter der kontaktinduzierten
+verkippten Achse, als ma\ss{}geblichen Parameter der kontaktinduzierten
 Ausrichtung aus. Die \"Ubertragbarkeit ist begrenzt durch die Verwendung eines
 Roboters, eines Werkzeugs, eines Werkst\"ucks und einer Einspannung; durch etwa
 \(2^\circ\) nicht gemessener Werkzeugbewegung im Greifer, die Ausrichtung
 verdecken, aber nicht erzeugen kann, weshalb die \(t_2\)-Ergebnisse untere
 Schranken darstellen; durch drei Hebelstufen je Achse anstelle einer
 zweidimensionalen Abtastung; durch ausschlie\ss{}lich positiv vorgegebene
-Abweichungen; sowie durch die modellgesch\"atzte externe
+Verkippungen; sowie durch die modellgesch\"atzte externe
 Kraft-/Momentengr\"o\ss{}e anstelle eines unabh\"angigen
 Kraft-/Momentensensors.

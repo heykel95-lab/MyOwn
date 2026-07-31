@@ -23,14 +23,11 @@ to Cartesian forces.
 
 \subsection{Reference Frames}
 
-To describe the motion of a robotic manipulator, multiple coordinate
-frames are used simultaneously \cite{Siciliano2009, Craig2005}.
-A coordinate frame is a right-handed orthogonal system of
-three mutually perpendicular unit vectors anchored at a chosen origin.
-The joint frames follow the Denavit--Hartenberg convention
-\cite{Denavit1955, Craig2005}. It is named here only to fix the indexing;
-the controller obtains its poses and its Jacobian from the robot model rather
-than from a parameterised chain. Three frames are central to this work:
+Three right-handed frames carry the controller \cite{Siciliano2009, Craig2005}.
+The joint indexing follows the Denavit--Hartenberg convention
+\cite{Denavit1955, Craig2005}, named here only to fix that indexing: the
+controller obtains its poses and its Jacobian from the robot model rather than
+from a parameterised chain.
 
 \begin{itemize}
   \item Base frame $\{0\}$: fixed to the robot mounting
@@ -182,9 +179,9 @@ e_R=R_{\mathrm{EE}}e_{R,\mathrm{EE}} .
 This sign convention is implementation-critical: a small positive
 current-to-desired rotation produces a positive spring moment about the same
 base-frame axis. Eigen performs the principal axis--angle extraction, including
-the numerically delicate neighborhood of \(\phi=\pi\). The multiplication by
-\(R_{\mathrm{EE}}\) puts \(e_R\), the angular velocity, and the commanded
-rotational gains in the same base frame.
+the numerically delicate neighborhood of \(\phi=\pi\). Left-multiplying by
+\(R_{\mathrm{EE}}\) expresses \(e_R\) in \(\{0\}\), where the angular velocity
+and the commanded rotational gains are already defined.
 
 The six-dimensional controller error is therefore
 \begin{equation}
@@ -257,15 +254,12 @@ joint torques \cite{Khatib1987}.
 Before this mapping is introduced, the desired Cartesian interaction behaviour
 is defined using impedance control.
 
-Impedance control imposes a desired dynamic behaviour between the end-effector
-motion and the forces acting on it \cite{Hogan1985,Ott2008,Mayr2024CartesianImpedance}.
-Instead of commanding only a desired position, the robot is made to behave like
-a virtual spring-damper system in Cartesian space.
-In this way, deviations from the desired pose generate restoring forces and
-moments, while the damping terms reduce oscillations.
-The numerical choice of the stiffness and damping gains is therefore part of
-the controller design, because the same impedance law can produce very
-different contact behaviour depending on the selected values
+Impedance control prescribes a dynamic relation between end-effector motion and
+the wrench acting on it \cite{Hogan1985,Ott2008,Mayr2024CartesianImpedance}.
+Here that relation is a Cartesian spring-damper: a pose deviation produces a
+restoring wrench through \(K\), and a velocity produces an opposing one
+through \(D\). Those two matrices carry the design freedom, since the same law
+produces very different contact behaviour depending on their entries
 \cite{Pollayil2023ImpedancePlanning}.
 
 The Cartesian error vector was defined as
@@ -551,7 +545,7 @@ t_1 & t_2 & n_s
 \label{eq:surface_task_frame_matrix}
 \end{equation}
 
-The column order is important: every surface-frame three-vector in the
+The column order is fixed: every surface-frame three-vector in the
 implementation uses
 \([\,\text{tangent 1},\text{tangent 2},\text{normal}\,]^\top\).
 In the gain representation below, the contact task uses this frame by setting
@@ -630,9 +624,9 @@ D_0=T_R D_{\mathrm{task}}T_R^\top .
 \label{eq:full_task_frame_gain_transform}
 \end{equation}
 
-This is the important point for surface-dependent control: the controller does
+This is what makes the control surface-dependent: the controller does
 not command the diagonal local matrices directly. It commands the base-frame
-matrices after this transformation. Therefore, changing the surface orientation
+matrices after this transformation. Changing the surface orientation
 changes \(R_{\mathrm{task}}\), which changes \(K_{p,0}\), \(D_{p,0}\),
 \(K_{R,0}\), and \(D_{R,0}\), and consequently changes the Cartesian wrench and
 the final joint torque command.

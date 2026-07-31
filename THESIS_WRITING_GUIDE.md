@@ -53,6 +53,11 @@ null-space projection, or energy/passivity arguments across chapters.
 
 ## Style
 
+Sentence-level voice is in [THESIS_VOICE.md](THESIS_VOICE.md): the machine-prose
+patterns to avoid, the weak-verb replacement table, the paragraph rewrite
+procedure, and the originality rules. Read it before writing or rewriting any
+prose. The rules below cover tone and framing.
+
 Use clear technical English rather than rhetorical or promotional language.
 Avoid expressions such as:
 
@@ -342,10 +347,10 @@ The principal experimental conclusions of the calibrated-plane campaign are:
 1. Compliance-centre placement dominates the alignment response, and its
    favourable sign is opposite for the two surface tangents. The unfavourable
    sign removes the correction rather than reducing it.
-2. Raising the rotational stiffness of the excited axis reduces alignment over
+2. Raising the rotational stiffness of the tilted axis reduces alignment over
    the tested range. Because the tangent entries were varied separately, report
    this per axis and not as a common paired setting.
-3. Reducing the translational stiffness perpendicular to the excited axis
+3. Reducing the translational stiffness perpendicular to the tilted axis
    improves alignment about \(t_2\) only, and a high rotational stiffness
    removes that benefit.
 4. Displacing the compliance centre along the surface normal produced no change
@@ -428,6 +433,7 @@ strands depends on where the page happens to break.
 
 Before accepting a revision:
 
+- run the quick scan in [THESIS_VOICE.md](THESIS_VOICE.md) over changed prose;
 - search for question-driven headings and literal research questions;
 - search the running text for names carrying two or more underscores;
 - search for `frozen`, and for any name built from a quantity's state;
