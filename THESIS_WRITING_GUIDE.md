@@ -149,6 +149,24 @@ it the lever.
 Symbols follow the same rule. One point, one subscript: \(p_c\), \(r_c\),
 \(K_c\), \(D_c\).
 
+## Units in the list of symbols
+
+Every symbol carries its unit. Do not write `mixed`, which tells the reader
+nothing about a quantity they came to the list to look up.
+
+A matrix whose blocks carry different units lists those units. A full
+\(6\times6\) Cartesian stiffness is `[N/m], [N m/rad]`, its damping is
+`[N s/m], [N m s/rad]`, and its coupling sub-blocks are `[N/rad], [N m/m]`. The
+operational-space inertia is `[kg], [kg m], [kg m^2]`. Where one row lists a
+stiffness and a damping together, label which units belong to which.
+
+Write a product of units as a product: `N m` and not `Nm`, `N s/m` and not
+`Ns/m`, `kg m^2` and not `kgm^2`. Use a thin space, `\,`, so the factors stay
+separable in print.
+
+Dimensionless entries are `[-]`. A quantity whose rows differ, such as a
+Jacobian, says which is which: `[m/rad] linear, [-] angular`.
+
 ## Software identifiers in the text
 
 Do not print long configuration or field names in the running text. A name
@@ -375,6 +393,8 @@ Before accepting a revision:
 - search the running text for names carrying two or more underscores;
 - search for `frozen`, and for any name built from a quantity's state;
 - check that one quantity carries one name and one symbol throughout;
+- search the symbol list for `mixed` and for units written without a space;
+- check that the contents lists the figures, tables and symbols;
 - check that list items begin with a capital letter;
 - check that the conclusion covers every experimental case;
 - check that each reported comparison also states its relation;

@@ -9,7 +9,7 @@
   \begingroup
   \setlength{\LTpre}{2pt}%
   \setlength{\LTpost}{0.9em}%
-  \begin{longtable}{@{}p{4.2cm}p{7.4cm}p{3.0cm}@{}}%
+  \begin{longtable}{@{}p{3.9cm}p{6.5cm}p{4.2cm}@{}}%
   #2
   \end{longtable}%
   \endgroup}
@@ -29,7 +29,7 @@
 \symrow{$R_x,\ R_y,\ R_z$}{Elementary rotations about $x,y,z$}{[-]}
 \symrow{$\alpha,\ \beta,\ \gamma$}{Generic rotations about the \(x,y,z\) axes}{[rad]}
 \symrow{$T$}{Homogeneous transformation matrix}{[-]}
-\symrow{$J(q)$}{Geometric Jacobian (stacked linear and angular rows)}{[mixed]}
+\symrow{$J(q)$}{Geometric Jacobian (stacked linear and angular rows)}{[m/rad] linear, [-] angular}
 \symrow{$z_{i-1}$}{Rotation axis of joint \(i\), expressed in the base frame}{[-]}
 \symrow{$p_{i-1}$}{Point on the axis of joint \(i\), expressed in the base frame}{[m]}
 \symrow{$x_{\mathrm{EE}},y_{\mathrm{EE}},z_{\mathrm{EE}}$}{End-effector frame axes (base frame)}{[-]}
@@ -60,14 +60,14 @@
 \symrow{$K_{R,\mathrm{task}},\ D_{R,\mathrm{task}}$}{Local rotational stiffness / damping in the chosen task frame}{[Nm/rad], [Nm\,s/rad]}
 \symrow{$K_{p,0},\ D_{p,0}$}{Translational stiffness / damping used in the base-frame command}{[N/m], [N\,s/m]}
 \symrow{$K_{R,0},\ D_{R,0}$}{Rotational stiffness / damping used in the base-frame command}{[Nm/rad], [Nm\,s/rad]}
-\symrow{$K_0,\ D_0$}{Full $6\times6$ stiffness / damping used in the base-frame command}{[mixed]}
+\symrow{$K_0,\ D_0$}{Full $6\times6$ stiffness / damping used in the base-frame command}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
 }
 
 \symgroup{Dynamics and Torques}{
 \symrow{$\mathbf{F}$}{Cartesian wrench}{[N], [Nm]}
 \symrow{$\mathbf{f},\ \mathbf{m}$}{Cartesian force / moment}{[N], [Nm]}
-\symrow{$K,\ D$}{Full Cartesian stiffness / damping matrices}{[mixed]}
-\symrow{$\Lambda$}{Operational-space (Cartesian) inertia matrix}{[mixed]}
+\symrow{$K,\ D$}{Full Cartesian stiffness / damping matrices}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
+\symrow{$\Lambda$}{Operational-space (Cartesian) inertia matrix}{[kg], [kg\,m], [kg\,m$^2$]}
 \symrow{$M(q)$}{Joint-space mass matrix}{[kg\,m$^2$]}
 \symrow{$M_i$}{Directional translational or rotational inertia}{[kg] or [kg\,m$^2$]}
 \symrow{$\zeta$}{Directional automatic-damping factor used as a tuning heuristic}{[-]}
@@ -99,12 +99,12 @@
 }
 
 \symgroup{Compliance and Alignment}{
-\symrow{$K_{\mathrm{task}},\ D_{\mathrm{task}}$}{Full local Cartesian stiffness / damping in the chosen task frame}{[mixed]}
-\symrow{$\begin{array}{@{}c@{}}K_{pR,\mathrm{task}},\\ K_{Rp,\mathrm{task}}\end{array}$}{Task-frame translation--rotation coupling sub-blocks}{[mixed]}
+\symrow{$K_{\mathrm{task}},\ D_{\mathrm{task}}$}{Full local Cartesian stiffness / damping in the chosen task frame}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
+\symrow{$\begin{array}{@{}c@{}}K_{pR,\mathrm{task}},\\ K_{Rp,\mathrm{task}}\end{array}$}{Task-frame translation--rotation coupling sub-blocks}{[N/rad], [N\,m/m]}
 \symrow{$\mathrm{Ad}(r_c),\ \mathrm{Ad}_g$}{Pole-to-TCP point-shift adjoint / alternative notation for that offset}{[-]}
-\symrow{$K_c,D_c$}{Block-diagonal stiffness / damping at the centre of compliance}{[mixed]}
-\symrow{$K_{\mathrm{TCP}},D_{\mathrm{TCP}}$}{Pole gains mapped by congruence to the TCP}{[mixed]}
-\symrow{$K_{\mathrm{coupled}}$}{Coupled full stiffness about the selected centre}{[mixed]}
+\symrow{$K_c,D_c$}{Block-diagonal stiffness / damping at the centre of compliance}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
+\symrow{$K_{\mathrm{TCP}},D_{\mathrm{TCP}}$}{Centre-of-compliance gains mapped by congruence to the TCP}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
+\symrow{$K_{\mathrm{coupled}}$}{Coupled full stiffness about the selected centre}{[N/m], [N/rad], [N\,m/m], [N\,m/rad]}
 \symrow{$\begin{array}{@{}c@{}}\mathbf{e}_{p,\mathrm{task}},\ \mathbf{e}_{R,\mathrm{task}},\\ \mathbf{e}_{\mathrm{task}},\ \dot{\mathbf e}_{\mathrm{task}}\end{array}$}{Task-frame translational / rotational / stacked error and error velocity}{[m], [rad], [m/s], [rad/s]}
 \symrow{$\theta_{\mathrm{align}},\ \Delta\theta_{\mathrm{align}}$}{EE-inferred tool-axis alignment angle / before--after improvement}{[rad]}
 \symrow{$\Delta\boldsymbol{\theta}_C$}{Finite before--after rotation vector during contact}{[rad]}
@@ -116,11 +116,11 @@
 \symrow{$k_{p,i},\ k_{R,i}$}{Principal translational / rotational stiffness}{[N/m], [Nm/rad]}
 \symrow{$k_{p,\mathrm{eff}}(u)$}{Effective translational stiffness along unit direction $u$}{[N/m]}
 \symrow{$d_i$}{Directional damping coefficient}{[N\,s/m] or [Nm\,s/rad]}
-\symrow{$\beta^\star,\ d^\star$}{Fitted automatic-damping factor / target coefficient vector}{[-], [mixed]}
+\symrow{$\beta^\star,\ d^\star$}{Fitted automatic-damping factor / target coefficient vector}{[-]; [N\,s/m] or [N\,m\,s/rad]}
 }
 
 \symgroup{Null-Space and Singular Value Decomposition}{
-\symrow{$J_\rho^+$}{Truncated-SVD Moore--Penrose pseudoinverse}{[mixed]}
+\symrow{$J_\rho^+$}{Truncated-SVD Moore--Penrose pseudoinverse}{[rad/m] linear, [-] angular}
 \symrow{$N_q,\ N_\tau$}{Joint-velocity / torque null-space projector}{[-]}
 \symrow{$\rho,\ \varepsilon_\rho$}{Relative SVD tolerance / resulting singular-value cutoff}{[-], [scale dependent]}
 \symrow{$\sigma_i,\ \sigma_{\min}$}{Jacobian singular value / $\sigma_6$ conditioning indicator}{[scale dependent]}
@@ -138,7 +138,7 @@
 }
 
 \symgroup{Alternative Virtual-Pole Notation}{
-\symrow{$K_{p_c},\ D_{p_c}$}{Full stiffness / damping matrix defined about the centre of compliance \(p_c\)}{[mixed]}
+\symrow{$K_{p_c},\ D_{p_c}$}{Full stiffness / damping matrix defined about the centre of compliance \(p_c\)}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
 \symrow{$K_{p,c},\ K_{R,c}$}{Translational / rotational stiffness blocks defined about the centre of compliance}{[N/m], [Nm/rad]}
 \symrow{$D_{p,c},\ D_{R,c}$}{Translational / rotational damping blocks defined about the centre of compliance}{[N\,s/m], [Nm\,s/rad]}
 }
