@@ -671,7 +671,7 @@ with the live end-effector orientation \(R_{\mathrm{EE}}\).
 %% ─────────────────────────────────────────────────────────────
 
 %% ─────────────────────────────────────────────────────────────
-\section{Center of Compliance and Virtual Pole}
+\section{Centre of Compliance}
 \label{sec:coupled_pole_stiffness}
 
 The task-frame construction of \cref{eq:full_task_frame_gain_transform} rotates
@@ -818,7 +818,7 @@ stiffness, the lever, the environment constraint and friction, and the
 active sigma term introduced below all influence the observed motion.
 
 %% ─────────────────────────────────────────────────────────────
-\section{Complete Joint-Torque Command}
+\section{Null-Space Torque}
 \label{sec:nullspace_svd}
 
 The Franka Emika Panda has seven joints, while the Cartesian motion of the
@@ -967,6 +967,20 @@ to the retained task subspace. Claims of exact dynamic task decoupling would
 require an inertia-weighted projector
 \cite{Khatib1987,Dietrich2015NullspaceSurvey}.
 
+\subsection{Projected Damping}
+
+The first available contribution dissipates joint motion inside the null space,
+\begin{equation}
+\tau_d=-d_{\mathrm{null}}N_\tau\dot q,
+\label{eq:nullspace_damping_torque}
+\end{equation}
+where \(d_{\mathrm{null}}\geq0\) is the projected damping coefficient. The term
+opposes projected joint motion and nothing else: the implemented law carries no
+restoring spring towards \(q_{\mathrm{start}}\), so the redundant axis settles
+wherever it stops rather than returning to a preferred posture.
+
+\subsection{Smallest-Singular-Value Bias}
+
 The optional smallest-singular-value conditioning bias probes the unit
 structural null direction
 \(\hat v_7=v_7/\lVert v_7\rVert\). It is a two-point sign-selection heuristic,
@@ -1006,17 +1020,18 @@ against joint limits. It uses only which sample is larger, not a gradient
 magnitude, so the resulting constant-magnitude torque has no guarantee of
 monotonic improvement in \(\sigma_{\min}\).
 
-The two available torque contributions are
+The second contribution is the resulting bias itself,
 \begin{equation}
-\tau_d=-d_{\mathrm{null}}N_\tau\dot q,
-\qquad
 \tau_\sigma=k_\sigma N_\tau(s\hat v_7),
-\label{eq:nullspace_torque_components}
+\label{eq:nullspace_sigma_torque}
 \end{equation}
-where \(d_{\mathrm{null}}\) is the projected damping coefficient and
-\(k_\sigma\) is the commanded torque magnitude. The implemented law has no
-restoring spring to \(q_{\mathrm{start}}\). Its four selectable modes
-are therefore
+where \(k_\sigma\) is the commanded torque magnitude. Unlike
+\cref{eq:nullspace_damping_torque} it is an active, switched,
+constant-magnitude term rather than a dissipative one.
+
+\subsection{Selectable Modes}
+
+The two contributions are selected independently, giving four modes,
 \begin{equation}
 \tau_{\mathrm{null}}
 =
@@ -1033,13 +1048,13 @@ The result is a seven-dimensional joint torque,
 \tau_{\mathrm{null}}\in\mathbb{R}^{7}.
 \label{eq:nullspace_torque_dimension}
 \end{equation}
-For \(d_{\mathrm{null}}\geq0\), the first term opposes projected joint motion.
-The sign-selected \(\tau_\sigma\), by contrast, is an active, switched,
-constant-magnitude bias, and sigma-only mode contains no null-space damping.
-If the Jacobian loses row rank, the true null space has
+Sigma-only mode contains no null-space damping, so nothing brakes the bias it
+applies. If the Jacobian loses row rank, the true null space has
 dimension greater than one; the implementation still probes only the single
 full-SVD vector \(v_7\), so it does not search over every newly available null
 direction.
+
+\section{Complete Joint-Torque Command}
 
 The complete torque command of the controller is therefore
 \begin{equation}
