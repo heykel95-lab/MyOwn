@@ -1,0 +1,69 @@
+% Block diagram of the torque command assembled once per control cycle.
+% Uses only tikz + arrows.meta/calc/positioning, which config/packages.tex loads.
+% Routing keeps four horizontal runs at distinct heights so no signal crosses
+% another: J above the chain, the gains and the state feed just below it, the
+% null-space and Coriolis contributions below that, and the loop closure last.
+\begin{tikzpicture}[
+    font=\small,
+    blk/.style={draw=gray!70!black, fill=gray!8, rounded corners=2pt,
+                minimum height=9mm, inner xsep=2.5mm, align=center},
+    src/.style={draw=gray!60, fill=blue!6, rounded corners=2pt,
+                minimum height=9mm, inner xsep=2.5mm, align=center},
+    sel/.style={draw=gray!70!black, fill=orange!12, rounded corners=2pt,
+                minimum height=9mm, inner xsep=2.5mm, align=center},
+    sum/.style={draw=gray!70!black, fill=white, circle, minimum size=6mm,
+                inner sep=0pt},
+    sig/.style={-{Latex[length=2mm]}, thick, gray!55!black},
+    lbl/.style={font=\footnotesize, inner sep=1.6pt},
+  ]
+
+% ------------------------------------------------------------ forward chain
+\node[src] (state)  at ( 0.0,  0.0) {robot state\\[-2pt]\footnotesize $q,\ \dot q,\ T_{EE}$};
+\node[sel] (phase)  at ( 3.5,  0.0) {phase machine\\[-2pt]\footnotesize $p_d,\ R_d$};
+\node[blk] (err)    at ( 7.0,  0.0) {Cartesian error\\[-2pt]\footnotesize $e_p,\ e_R$};
+\node[blk] (wrench) at (10.5,  0.0) {spring wrench\\[-2pt]\footnotesize $w=K\Delta x+D\Delta v$};
+\node[blk] (jt)     at (13.8,  0.0) {\footnotesize $\tau_{\text{task}}=J^{\!\top}w$};
+
+% ------------------------------------------------------------- lower inputs
+\node[src] (model)  at ( 0.0, -2.1) {model\\[-2pt]\footnotesize $J,\ M,\ c(q,\dot q)$};
+\node[sel] (null)   at ( 3.5, -2.1) {null-space term\\[-2pt]\footnotesize $N_\tau$: damping, $\sigma_{\min}$};
+\node[sel] (imp)    at (10.5, -2.1) {impedance form\\[-2pt]\footnotesize decoupled \emph{or} point-shifted};
+
+% -------------------------------------------------------------- summation
+\node[sum] (plus)   at (13.8, -3.6) {\large$+$};
+\node[blk] (out)    at (16.6, -3.6) {joint torque\\[-2pt]\footnotesize $\tau_{\mathrm{cmd}}$};
+
+% ------------------------------------------------------- chain, left to right
+\draw[sig] (state)  -- (phase);
+\draw[sig] (phase)  -- (err);
+\draw[sig] (err)    -- (wrench);
+\draw[sig] (wrench) -- (jt);
+\draw[sig] (imp.north) -- (wrench.south);
+\draw[sig] (plus) -- (out);
+\draw[sig] (jt.south) -- (plus.north);
+\draw[sig] (model) -- (null);
+
+% run 1: J, above the chain
+\draw[sig] (model.west) -- (-3.0,-2.1) -- (-3.0,1.45)
+      -- node[lbl, above, pos=0.06] {$J$} (13.8,1.45) -- (jt.north);
+
+% run 2: measured pose into the error, just under the chain
+\draw[sig] (state.south) -- (0.0,-0.95) -- (7.0,-0.95) -- (err.south);
+
+% run 3: the active gains select the impedance form
+\draw[sig] (phase.south) -- (3.5,-1.35) -- node[lbl, above, pos=0.55]
+      {active gains} (10.5,-1.35) -- (imp.north);
+
+% run 4: null-space torque into the sum from the left
+\draw[sig] (null.south) -- (3.5,-3.6) -- node[lbl, above, pos=0.55]
+      {$\tau_{\text{null}}$} (13.5,-3.6);
+
+% run 5: Coriolis compensation into the sum from below
+\draw[sig] (model.south) -- (0.0,-4.8) -- node[lbl, below, pos=0.55]
+      {$c(q,\dot q)$} (13.8,-4.8) -- (plus.south);
+
+% run 6: the loop closes through the robot, around the left
+\draw[sig] (out.south) -- (16.6,-5.6) -- node[lbl, below, pos=0.55]
+      {robot, \SI{1}{\kilo\hertz}} (-1.9,-5.6) -- (-1.9,0.0) -- (state.west);
+
+\end{tikzpicture}

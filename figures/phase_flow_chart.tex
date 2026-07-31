@@ -1,0 +1,61 @@
+% Flow chart of the run phase machine: the phases, the condition that ends
+% each one, and the two gates that wait for the operator.
+% Uses only tikz + arrows.meta/calc/positioning.
+\begin{tikzpicture}[
+    font=\small,
+    ph/.style={draw=gray!70!black, fill=gray!8, rounded corners=2pt,
+               minimum width=34mm, minimum height=8.5mm, align=center},
+    dec/.style={draw=gray!70!black, fill=orange!12, align=center,
+                minimum width=34mm, inner ysep=1.8mm, rounded corners=1pt},
+    gate/.style={draw=gray!70!black, fill=blue!8, align=center,
+                 minimum width=34mm, inner ysep=1.8mm, rounded corners=1pt},
+    side/.style={draw=gray!55, fill=white, align=center, rounded corners=2pt,
+                 minimum width=32mm, minimum height=8mm},
+    flow/.style={-{Latex[length=2mm]}, thick, gray!55!black},
+    lbl/.style={font=\footnotesize, inner sep=1.6pt},
+  ]
+
+% --------------------------------------------------------------- entry keys
+\node[lbl] (ins) at (0,1.0) {menu \texttt{s}};
+\node[lbl] (inh) at (6.6,1.0) {menu \texttt{h}};
+
+% ------------------------------------------------------------- main sequence
+\node[ph]   (orient) at (0, 0.0)  {\texttt{approach\_orient}};
+\node[dec]  (d1)     at (0,-1.45) {\footnotesize axis and spin inside the gate,\\[-2pt]
+                                   \footnotesize or the orient timeout};
+\node[ph]   (desc)   at (0,-2.9)  {\texttt{approach\_descend}};
+\node[gate] (g1)     at (0,-4.35) {\footnotesize clearance reached, then Enter};
+\node[ph]   (setup)  at (0,-5.8)  {\texttt{set\_up}};
+\node[dec]  (d2)     at (0,-7.25) {\footnotesize contact-moment jump,\\[-2pt]
+                                   \footnotesize or the set-up timeout};
+\node[gate] (g2)     at (0,-8.7)  {\footnotesize set-up result printed, then Enter};
+\node[ph]   (grind)  at (0,-10.15){\texttt{grind}};
+
+% ------------------------------------------------------------- side branches
+\node[ph, fill=blue!6] (hold)  at (6.6, 0.0)  {\texttt{hold}};
+\node[ph, fill=blue!6] (guide) at (6.6,-2.9)  {\texttt{manual\_guide}};
+\node[side, fill=red!5, draw=red!45] (stop) at (6.6,-10.15)
+      {\footnotesize \texttt{e} stops any phase};
+
+% --------------------------------------------------------------------- flow
+\draw[flow] (ins) -- (orient);
+\draw[flow] (inh) -- (hold);
+\draw[flow] (orient) -- (d1);
+\draw[flow] (d1)     -- (desc);
+\draw[flow] (desc)   -- (g1);
+\draw[flow] (g1)     -- (setup);
+\draw[flow] (setup)  -- (d2);
+\draw[flow] (d2)     -- (g2);
+\draw[flow] (g2)     -- (grind);
+
+% hand guiding, and the recapture that restarts the sequence
+\draw[flow, blue!45!black] (hold) -- node[lbl, right] {\texttt{g}} (guide);
+% Dropped below the descend box, then around the left, so the return stays
+% orthogonal and crosses no other phase.
+\draw[flow, blue!45!black] (guide.south) -- (6.6,-3.7) -- (-2.5,-3.7)
+      -- node[lbl, left, pos=0.55] {\texttt{p} recaptures}
+      (-2.5,0.0) -- (orient.west);
+
+\draw[flow, red!45!black] (grind) -- (stop);
+
+\end{tikzpicture}

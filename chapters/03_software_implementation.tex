@@ -67,29 +67,23 @@ manager uses the configured plane and tool geometry to generate \(p_d\),
 Cartesian gains or, during set-up only, their pole-shifted \(6\times6\)
 counterpart. The Coriolis vector is always included in the controlled phases.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
-    \begin{tikzpicture}[
-        block/.style={draw, rounded corners, minimum width=5.0cm,
-                      minimum height=1.0cm, align=center},
-        arrow/.style={->, thick}
-    ]
-        \node[block] (state) {Robot state and model\\
-        \(q,\dot q,T_{\mathrm{EE}},J,M,\tau_c,\widehat{\mathbf F}_{\mathrm{ext}}\)};
-        \node[block, below=0.7cm of state] (phase) {Geometry and phase manager\\
-        \(p_d,\dot p_d,R_d,\text{ phase gains}\)};
-        \node[block, below=0.7cm of phase] (control) {Cartesian impedance and null space\\
-        \(\mathbf F_{\mathrm{cmd}},\tau_{\mathrm{null}}\)};
-        \node[block, below=0.7cm of control] (torque) {Torque command\\
-        \(\tau_{\mathrm{cmd}}
-        =J^\top\mathbf F_{\mathrm{cmd}}+\tau_{\mathrm{null}}+\tau_c\)};
-
-        \draw[arrow] (state) -- (phase);
-        \draw[arrow] (phase) -- (control);
-        \draw[arrow] (control) -- (torque);
-    \end{tikzpicture}
-    \caption{Real-time controller data flow.}
+    \resizebox{\textwidth}{!}{\input{figures/controller_block_diagram.tex}}
+    \caption{Torque command assembled once per control cycle.}
     \label{fig:software_data_flow}
+\end{figure}
+
+The phase machine also decides when one phase ends and the next begins.
+\Cref{fig:phase_flow_chart} shows those transitions, the two gates that wait
+for the operator, and the hold and hand-guiding branches that the startup menu
+selects instead of the sequence.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.82\textwidth}{!}{\input{figures/phase_flow_chart.tex}}
+    \caption{Run phases and the conditions that end each one.}
+    \label{fig:phase_flow_chart}
 \end{figure}
 
 \section{Implemented Cartesian Impedance Controller}
