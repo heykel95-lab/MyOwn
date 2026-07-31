@@ -4,34 +4,50 @@
 \section{Experimental Investigation}
 \label{sec:experimental_question}
 
-The experimental study evaluates the influence of the common rotational
-stiffness about the two surface tangents,
-\(K_{R,t_1}=K_{R,t_2}\), and virtual centre-of-compliance placement on the
-contact-induced alignment of the tool with the workpiece surface. The
-point-shifted Cartesian impedance described in the preceding chapters
-introduces coupling between
-translational contact forces and rotational motion, making both the rotational
-compliance and the spatial position of the compliance centre relevant to the
-resulting alignment behaviour.
+The experimental study evaluates the influence of the commanded angular
+mismatch, the rotational stiffness about each surface tangent, the
+translational stiffness perpendicular to the excited tangent, and the virtual
+centre-of-compliance placement on the contact-induced alignment of the tool
+with the workpiece surface. The point-shifted Cartesian impedance described in
+the preceding chapters couples translational contact forces to rotational
+motion, so the rotational compliance, the in-plane translational compliance and
+the spatial position of the compliance centre are all relevant to the resulting
+alignment behaviour.
 
-The investigation consists of two principal parameter studies. First, both
-tangent-axis rotational stiffnesses are assigned the same test value and
-varied together while the remaining controller parameters are kept constant.
-Thus, this study evaluates the paired setting
-\(K_{R,t_1}=K_{R,t_2}\); it is not a separate \(t_1\)- and \(t_2\)-axis
-sweep. Subsequently, the virtual centre of compliance is varied along
-\(t_1\), \(t_2\), and the surface normal \(n_s\) of the local surface frame.
-Repeated trials quantify the resulting angular alignment and model-estimated
-normal contact load under otherwise comparable conditions.
+Two properties distinguish these measurements from the earlier campaign
+preserved in \cref{app:previous_campaign}. The workpiece plane and the
+grinding-face axis are calibrated independently of one another, so the
+commanded orientation offset is defined relative to a measured physical surface
+frame rather than to a configured plane that differed from it. The rotational
+stiffness is also varied on one tangent at a time rather than on both together,
+which separates the \(t_1\) and \(t_2\) contributions that the paired sweep
+could not distinguish.
 
-The completed measurements are organised as five experimental cases:
+The plane is fitted from three probed points, with a fourth held-out point
+lying \(0.82\,\mathrm{mm}\) from the fitted surface. The grinding-face normal is
+calibrated from a separate set of seatings, with a held-out angular residual of
+\(0.50^\circ\). The projected direction from the first to the second probed
+point defines \(+t_1\), and \(t_2=n_s\times t_1\).
 
-\begin{itemize}
-    \item Cases A--C validate settling, formulation equivalence, and
-    repeatability before interpreting parameter effects.
-    \item Cases D--E evaluate rotational stiffness and compliance-centre
-    position, respectively.
-\end{itemize}
+All conditions share one baseline impedance in the surface frame,
+\[
+  K_p=\operatorname{diag}(2000,2000,800)\,\mathrm{N/m},
+  \qquad
+  K_R=\operatorname{diag}(5,5,50)\,\mathrm{Nm/rad},
+\]
+a \(60\,\mathrm{mm}\) virtual press at \(50\,\mathrm{mm/s}\), and a
+\(5\,\mathrm{s}\) set-up interval. Null-space damping is enabled without the
+active singular-value bias. The commanded spin of the grinding face about its
+own axis is fixed at \(115.05^\circ\) from \(t_1\), so the leading contact
+feature is determined by the calibrated surface frame rather than by the
+initial joint configuration.
+
+The measurements are organised as five experimental cases. Case A establishes
+the response to the commanded mismatch itself and provides the baseline against
+which the remaining cases are read. Cases B and C vary one stiffness entry at a
+time, Case D varies only the compliance-centre lever, and Case E repeats the
+Case-A excitation about the axes of the tool face instead of the surface
+tangents.
 
 \begin{table}[H]
 \centering
@@ -40,99 +56,58 @@ The completed measurements are organised as five experimental cases:
 \label{tab:experimental_test_cases}
 \begin{tabular}{@{}
 >{\centering\arraybackslash}p{0.07\textwidth}
->{\raggedright\arraybackslash}p{0.24\textwidth}
->{\raggedright\arraybackslash}p{0.32\textwidth}
+>{\raggedright\arraybackslash}p{0.22\textwidth}
+>{\raggedright\arraybackslash}p{0.34\textwidth}
 >{\raggedright\arraybackslash}p{0.27\textwidth}@{}}
 \toprule
 Case & Test & Design & Purpose \\
 \midrule
 A &
-Set-up settling &
-\(4\), \(8\), and \(12\,\mathrm{s}\); one run per duration
-(\(n=3\)) &
-Determine when the set-up response is sufficiently settled for evaluation. \\
+Commanded angular mismatch &
+\(0^\circ\), and \(+5^\circ\) and \(+10^\circ\) about \(t_1\) and about
+\(t_2\); three runs per setting (\(n=15\)) &
+Establish the alignment response to the commanded mismatch on each surface
+tangent. \\
 B &
-Formulation equivalence &
-Decoupled command (\(n=5\)) versus zero-shift coupled command (\(n=3\)) &
-Check that mathematically equivalent impedance forms agree within
-repeatability. \\
+Axis-specific rotational stiffness &
+\(K_R\) on the excited tangent set to \(15\) and
+\(50\,\mathrm{Nm/rad}\) at a \(10^\circ\) mismatch; three runs per setting
+(\(n=12\)) &
+Separate the \(t_1\) and \(t_2\) rotational-stiffness contributions. \\
 C &
-Nominal repeatability &
-Five nominal runs with the workpiece reset between runs (\(n=5\)) &
-Establish the run-to-run interpretation threshold. \\
+Cross-axis translational stiffness &
+\(K_p\) perpendicular to the excited tangent set to \(300\) and
+\(800\,\mathrm{N/m}\), and one
+\(K_R=50\,\mathrm{Nm/rad}\), \(K_p=300\,\mathrm{N/m}\) corner; three runs per
+setting (\(n=18\)) &
+Measure the translational contribution and its interaction with rotational
+stiffness. \\
 D &
-Paired tipping stiffness &
-\(K_{R,t_1}=K_{R,t_2}=5,\ 15,\ 50\,\mathrm{Nm/rad}\);
-five runs per setting (\(n=15\)) &
-Measure the influence of tipping stiffness on contact-induced alignment. \\
+Virtual centre of compliance &
+Perpendicular lever \(r_c=-60\), \(0\) and \(+60\,\mathrm{mm}\), and a lever
+placed at the grinding-face centre; three runs per setting (\(n=24\)) &
+Measure the alignment response to lever placement and to its sign. \\
 E &
-Compliance-centre position &
-Edge check E1 (\(n=3\)); configured-normal sweep E2 (\(n=24\));
-\(t_1\) sweep E3 (\(n=18\)); \(t_2\) sweep E4 (\(n=12\));
-total \(n=57\) &
-Measure the alignment response to the three compliance-centre coordinates. \\
+Excitation about the tool axes &
+\(10^\circ\) about \(y_{EE}\) and about \(x_{EE}\); three runs per setting
+(\(n=6\)) &
+Test whether the tangent-axis asymmetry follows the surface frame or the tool
+face. \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Cases A--E contain \(88\) contact runs. The null-space records are not included
-as a sixth experimental case because no matched conditioning-torque sweep was
-completed.
-
-\subsection{Axis-Specific Compliance-Centre Pilot}
-\label{subsec:axis_specific_coc_pilot}
-
-A subsequent pilot was performed on the separately calibrated horizontal plane
-to select the sign and an initial magnitude of the compliance-centre lever for
-an imposed rotation about \(t_1\). These records are analysed separately from
-Cases A--E and are not included in their run count. The plane calibration,
-tool-axis calibration, gains, press trajectory and initial orientation command
-were held fixed. The nominal command was \(5^\circ\) about \(t_1\); because
-approach descent begins when the tool axis is within \(2^\circ\) of that
-command, the measured EE-inferred angle at the clearance hand-off was
-approximately \(2.81^\circ\).
-
-The pilot first recorded two decoupled reference runs. It then enabled the
-point-shifted law with
-\[
-  K_{\mathrm{TCP}}
-  =
-  A(r_c)^\top
-  \operatorname{blkdiag}(K_p,K_R)
-  A(r_c),
-  \qquad
-  r_c=p_{\mathrm{TCP}}-p_c ,
-\]
-and tested \(r_{c,t_2}=+60\,\mathrm{mm}\),
-\(-60\,\mathrm{mm}\), and \(-40\,\mathrm{mm}\). The final
-\(-40\,\mathrm{mm}\) condition was repeated three times. The common settings
-were
-\[
-  K_p=\operatorname{diag}(2000,2000,800)\,\mathrm{N/m},
-  \qquad
-  K_R=\operatorname{diag}(5,5,50)\,\mathrm{Nm/rad},
-\]
-a \(60\,\mathrm{mm}\) virtual press, a \(50\,\mathrm{mm/s}\) press rate and a
-\(5\,\mathrm{s}\) set-up interval. Null-space damping was enabled without the
-active singular-value bias.
-
-In addition to the EE-inferred angular quantities and model-estimated load, the
-operator recorded whether contact remained on one edge or developed into
-full-face contact. This observation is qualitative. The stored
-\texttt{play2} mount profile records up to approximately \(2^\circ\) of
-unmeasured tool motion relative to the EE, so the visual contact state and the
-EE-inferred residual are retained as distinct quantities.
+Cases A--E contain \(75\) contact runs. Every run completed its set-up phase
+and is included in the analysis. The null-space records are not reported as a
+further case because no matched conditioning-torque comparison was performed.
 
 The robot first orients the grinding-face axis, descends to a geometrically
 defined clearance, presses the selected leading tool feature into the plane
 during set-up, and then executes the grinding motion. Set-up holds the
 clearance orientation as a soft reference and commands no time-varying
-task-space tipping trajectory. The response is evaluated from the
-EE-inferred tool-axis angle, the rotation during contact, and the feature and TCP
-displacements. This procedure separates the effects of rotational compliance
-and compliance-centre placement before their implications for the
-point-shifted impedance formulation are discussed.
-
+task-space tipping trajectory. The response is evaluated from the EE-inferred
+tool-axis angle, the rotation during contact, and the feature and TCP
+displacements.
 \section{Robot and Software Setup}
 \label{sec:robot_software_setup_contact}
 
@@ -984,8 +959,8 @@ two set-up tipping stiffnesses are
 \(K_{R,t_1}=K_{R,t_2}=5\,\mathrm{Nm/rad}\). If their equality is retained,
 the common local candidates are \(2.5\), \(3.75\), \(5.0\), \(6.25\), and
 \(7.5\,\mathrm{Nm/rad}\) for both entries. This example defines a possible
-paired fine-tuning study; it is not the \(5/15/50\,\mathrm{Nm/rad}\)
-comparison reported in \cref{sec:results_summary_table}.
+paired fine-tuning study; it is not the axis-specific comparison reported in
+\cref{sec:results_summary_table}.
 
 All other source gains, the pole offset, phase timing, and null-space
 parameters are held constant during such a study. Consequently, any systematic
@@ -1011,11 +986,11 @@ coefficient by approximately \(\sqrt{2}\), not by a factor of two. The
 coefficient is cached at phase-group entry and is not recomputed continuously
 within that phase.
 
-For broad contact-alignment tuning, the common value
-\(K_{R,t_1}=K_{R,t_2}\) is varied first because the pair controls the tool's
-resistance to tipping. A subsequent axis-specific study must vary
-\(K_{R,t_1}\) while holding \(K_{R,t_2}\) fixed, and then reverse these roles;
-the paired sweep cannot identify their individual effects. The normal
+For broad contact-alignment tuning, the tangent-axis rotational stiffness
+controls the tool's resistance to tipping and is varied first. The reported
+Case-B study varies \(K_{R,t_1}\) while holding \(K_{R,t_2}\) fixed and then
+reverses these roles, because a sweep that moves both entries together cannot
+identify their individual effects. The normal
 rotational stiffness \(K_{R,n}\) is treated separately because it resists
 twist about the surface normal. Translational stiffness can then be studied in
 the base \(x\) and \(y\) directions and in the effective surface-normal
@@ -1339,10 +1314,9 @@ rescoring.
 \subsection{Metric Use by Experimental Case}
 \label{sec:evaluation_criteria_contact}
 
-The completed cases do not all use the same outcome. Cases D--E use
-physical-plane alignment improvement as the primary response, whereas Cases
-A--C establish settling, formulation consistency, and repeatability using the
-signals appropriate to those checks.
+All five cases use physical-plane alignment improvement as the primary
+response. They differ in the independent variable stored with each run and in
+the supporting quantities reported alongside the primary outcome.
 
 \noindent\textbf{Primary---physical-plane alignment improvement.}
 \(\Delta\theta_{\mathrm{align,phys}}\), with a positive value denoting
@@ -1380,31 +1354,32 @@ after the selected evaluation time.
 Case & Quantities used & Role in the evaluation \\
 \midrule
 A &
-Tip drift, configured-normal-angle change, and estimated-load change &
-Determine whether the response has settled after ramp completion. \\
+Physical-plane alignment before and after set-up, its signed \(t_1\) and
+\(t_2\) components, and the steady model-estimated normal load &
+Establish the response to the commanded mismatch and the baseline for the
+remaining cases. \\
 B &
-Final tip angle, configured-normal change, edge travel, and steady
-model-estimated load &
-Check agreement between the decoupled and zero-shift coupled formulations. \\
+The Case-A quantities against the rotational stiffness of the excited tangent &
+Quantify the separate \(K_{R,t_1}\) and \(K_{R,t_2}\) contributions. \\
 C &
-The Case-B quantities, reported as mean, standard deviation, and
-approximately \(2\sigma\) &
-Define the repeatability-based interpretation scale for later comparisons. \\
+The Case-A quantities against the translational stiffness perpendicular to the
+excited tangent &
+Quantify the translational contribution and the stiffness interaction. \\
 D &
-Contact-induced rotation, physical-plane alignment improvement, and steady
-model-estimated normal load &
-Quantify the response to the paired setting
-\(K_{R,t_1}=K_{R,t_2}\). \\
+The Case-A quantities against the surface-frame compliance-centre coordinates,
+with contact-induced rotation and feature displacement &
+Quantify the response to lever placement, including its sign. \\
 E &
-Physical-plane alignment improvement and the surface-frame
-compliance-centre coordinates &
-Fit and check the coordinate-dependent alignment response. \\
+Alignment improvement for excitation about \(y_{EE}\) and \(x_{EE}\), compared
+with the Case-A tangent-axis excitations &
+Attribute the tangent-axis asymmetry to the surface frame or to the tool
+face. \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The stiffness or compliance-centre setting is the independent variable stored
-with each run, not an evaluation metric. The reported studies compare the
+The commanded mismatch, stiffness entry and compliance-centre lever are the
+independent variables stored with each run, not evaluation metrics. The reported studies compare the
 primary alignment outcome together with displacement and estimated load; they
 do not use commanded torque or an oscillation/stability score as experimental
 outcomes.

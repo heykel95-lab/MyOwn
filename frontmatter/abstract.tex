@@ -4,9 +4,10 @@
 Small geometric errors between a rigidly controlled tool and a workpiece can
 produce undesirable contact loads and prevent the tool from aligning with the
 surface. This thesis develops a real-time Cartesian impedance controller for a
-7-\abbr{DOF} Franka Emika Panda and investigates how the paired surface-tangent
-rotational stiffness \(K_{R,t_1}=K_{R,t_2}\) and the spatial position of a
-virtual centre of compliance influence contact-induced alignment.
+7-\abbr{DOF} Franka Emika Panda and investigates how the commanded angular
+mismatch, the rotational and translational stiffness of each surface tangent,
+and the spatial position of a virtual centre of compliance influence
+contact-induced alignment.
 
 The controller uses explicitly defined base and surface frames, phase-dependent
 Cartesian gains, model-based damping, and a Jacobian-transpose joint-torque
@@ -17,30 +18,43 @@ generate a rotational moment about the selected virtual centre. An SVD-based
 null-space controller is implemented for the redundant seventh joint, although
 its effect is not evaluated in a separate experimental campaign.
 
-The experimental study comprises \(92\) recorded runs, of which \(89\) are
-admissible for their recorded quantities. Five repetitions were performed for
-each common setting of \(K_{R,t_1}=K_{R,t_2}\). Reducing both stiffnesses from
-\(50\) to \(5\,\mathrm{Nm/rad}\) increased the mean alignment improvement
-from approximately \(0.79^\circ\) to \(2.38^\circ\), while the mean
-model-estimated normal load remained within
-\(60.27\)--\(60.77\,\mathrm{N}\).
+The experimental study comprises \(75\) contact runs on a workpiece plane and
+a grinding-face axis that are calibrated independently of one another, so the
+commanded orientation offset is defined relative to a measured physical surface
+frame. Three repetitions were performed for each of \(25\) settings, giving a
+median within-setting standard deviation of \(0.02\)--\(0.03^\circ\) in the
+alignment improvement.
 
-The position of the virtual compliance centre was evaluated along the two
-surface tangents and the physical surface normal. An additive quadratic model
-in the two in-plane coordinates accounts for \(R^2=0.962\) of the alignment
-response over \(54\) fitted sweep runs and predicts a local maximum near
-\(t_1=+62\,\mathrm{mm}\) and \(t_2=+30\,\mathrm{mm}\). This coordinate pair
-was not tested directly; three additional edge-setting runs were held out as a
-consistency check. Unsuitable in-plane placements produced negative
-alignment improvements as low as \(-10.31^\circ\). Adding the physical normal
-coordinate increased \(R^2\) only from \(0.962\) to \(0.966\) over the
-investigated range, indicating substantially weaker additional explanatory
-power than the in-plane coordinates.
+Placement of the virtual compliance centre dominated the response. Moving the
+lever \(60\,\mathrm{mm}\) along the tangent perpendicular to the excited axis
+raised the alignment improvement from \(0.56^\circ\) to \(6.05^\circ\) for a
+mismatch about \(t_1\) and from \(1.38^\circ\) to \(6.36^\circ\) for a mismatch
+about \(t_2\), reducing the residual misalignment to \(0.93^\circ\) and
+\(2.14^\circ\). The effect is sign-dependent and the favourable sign is
+opposite for the two tangents; the unfavourable sign removed the correction
+rather than reducing it. Displacing the compliance centre \(20\,\mathrm{mm}\)
+along the surface normal produced no change beyond the interpretation
+threshold.
 
-The results establish a strong and non-monotonic relationship between
-in-plane compliance-centre placement and contact-induced alignment for the
-investigated configuration. Their generality is limited by the use of one
-robot, tool, workpiece, and fixture; uncertainty in the hand-estimated physical
-plane; cross-shaped rather than full two-dimensional sampling; and the use of
-a model-estimated external wrench instead of an independent force/torque
-sensor.
+The stiffness entries had a substantially weaker influence. Raising the
+rotational stiffness of the excited axis from \(5\) to \(50\,\mathrm{Nm/rad}\)
+reduced alignment monotonically, and no tested setting improved on the
+\(5\,\mathrm{Nm/rad}\) baseline. Reducing the translational stiffness
+perpendicular to the excited axis improved alignment for a \(t_2\) mismatch
+only, and combining it with a high rotational stiffness removed that benefit.
+Alignment was consistently larger for a mismatch about \(t_2\) than about
+\(t_1\); commanding the same mismatch about the axes of the grinding face
+instead produced values close to the linear combination of the two tangent
+responses, which associates the asymmetry with the surface frame rather than
+with the geometry of the face.
+
+The results establish in-plane compliance-centre placement, and in particular
+its sign relative to the excited axis, as the dominant parameter for
+contact-induced alignment in the investigated configuration. Their generality
+is limited by the use of one robot, tool, workpiece, and fixture; by
+approximately \(2^\circ\) of unmeasured tool motion within the gripper, which
+can conceal but not create alignment and therefore makes the \(t_2\) results
+lower bounds; by three tangential levels on one axis at a time rather than a
+two-dimensional sample; by the use of positive commanded mismatch only; and by
+the use of a model-estimated external wrench instead of an independent
+force/torque sensor.
