@@ -137,6 +137,11 @@ circulation, the settled choices are:
   never used for one another.
 - **pole** is implementation vocabulary from the parameter names. Keep it in
   equation labels and parameter keys, not in the running text.
+- **tilt** for the commanded angular offset and for the axis it acts about: a
+  `tilt about t1`, the `tilted axis`, the `tilted-axis stiffness`. Not
+  `excitation`, which is borrowed from system identification and describes an
+  input signal rather than a commanded orientation, and not `mismatch`, which
+  implies an unwanted discrepancy where the angle is deliberate.
 
 Do not build a name out of the state a quantity happens to be in. The centre of
 compliance is held constant from first contact, so it was being called the
@@ -392,6 +397,7 @@ Before accepting a revision:
 - search for question-driven headings and literal research questions;
 - search the running text for names carrying two or more underscores;
 - search for `frozen`, and for any name built from a quantity's state;
+- search for `excitation` and `mismatch` where a commanded tilt is meant;
 - check that one quantity carries one name and one symbol throughout;
 - search the symbol list for `mixed` and for units written without a space;
 - check that the contents lists the figures, tables and symbols;
