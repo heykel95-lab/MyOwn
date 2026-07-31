@@ -169,8 +169,15 @@ Write a product of units as a product: `N m` and not `Nm`, `N s/m` and not
 `Ns/m`, `kg m^2` and not `kgm^2`. Use a thin space, `\,`, so the factors stay
 separable in print.
 
-Dimensionless entries are `[-]`. A quantity whose rows differ, such as a
-Jacobian, says which is which: `[m/rad] linear, [-] angular`.
+Dimensionless entries are `[-]`. A quantity whose rows carry different units,
+such as a Jacobian, lists them in the order the rows appear: `[m/rad], [-]`.
+
+The units column holds units and nothing else. Words such as `linear`,
+`angular`, `scale dependent` or `mixed` are not units, and a reader scanning
+the column for a unit has to stop and parse them. Where a unit needs
+qualifying, the description column carries the qualification: the Jacobian's
+description says which rows come first, and the singular values say that their
+value follows the length unit of the linear rows.
 
 ## Software identifiers in the text
 
