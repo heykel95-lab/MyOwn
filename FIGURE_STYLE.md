@@ -69,9 +69,12 @@ node the run passes, not just its centre.
 ### Clearance
 
 Leave a visible gap between a label and any box: aim for at least half a line
-of text, and never let a label sit inside a node's bounding box. Labels carry
-`fill=white` so that one crossing a line stays legible, but that masks the
-line rather than fixing the layout, and it does not help against a box.
+of text, and never let a label sit inside a node's bounding box.
+
+**A label is never filled.** A white fill behind the text erases whatever it
+sits on, and on a label placed `above` a run it erases the top of that run, so
+the connection reads as broken exactly where the reader is looking for its
+name. Give the label room instead.
 
 If a label crowds something, move the run rather than nudging the label. The
 spacing between runs is what creates room for their labels.
