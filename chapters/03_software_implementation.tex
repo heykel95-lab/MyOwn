@@ -6,7 +6,7 @@ controller used for the surface-grinding experiments. The implementation is
 written in C++ with libfranka and Eigen and is evaluated in the \(1\,\mathrm{ms}\)
 Franka Control Interface cycle. In addition to the Cartesian impedance law, the
 software contains the surface and tool geometry, the approach--set-up--grind
-state machine, the pole-shifted coupled stiffness used during set-up, and the
+state machine, the point-shifted coupled stiffness used during set-up, and the
 SVD-based null-space controller.
 
 \section{Real-Time Control Architecture}
@@ -64,14 +64,43 @@ does not establish a worst-case callback execution bound.
 Figure~\ref{fig:software_data_flow} shows the implemented data flow. The phase
 manager uses the configured plane and tool geometry to generate \(p_d\),
 \(\dot p_d\), and \(R_d\). The gain selector supplies either the decoupled
-Cartesian gains or, during set-up only, their pole-shifted \(6\times6\)
+Cartesian gains or, during set-up only, their point-shifted \(6\times6\)
 counterpart. The Coriolis vector is always included in the controlled phases.
 
 \begin{figure}[H]
     \centering
-    \resizebox{\textwidth}{!}{\input{figures/controller_block_diagram.tex}}
-    \caption{Torque command assembled once per control cycle.}
+    \begin{tikzpicture}[
+        block/.style={draw, rounded corners, minimum width=5.0cm,
+                      minimum height=1.0cm, align=center},
+        arrow/.style={->, thick}
+    ]
+        \node[block] (state) {Robot state and model\\
+        \(q,\dot q,T_{\mathrm{EE}},J,M,\tau_c,\widehat{\mathbf F}_{\mathrm{ext}}\)};
+        \node[block, below=0.7cm of state] (phase) {Geometry and phase manager\\
+        \(p_d,\dot p_d,R_d,\text{ phase gains}\)};
+        \node[block, below=0.7cm of phase] (control) {Cartesian impedance and null space\\
+        \(\mathbf F_{\mathrm{cmd}},\tau_{\mathrm{null}}\)};
+        \node[block, below=0.7cm of control] (torque) {Torque command\\
+        \(\tau_{\mathrm{cmd}}
+        =J^\top\mathbf F_{\mathrm{cmd}}+\tau_{\mathrm{null}}+\tau_c\)};
+
+        \draw[arrow] (state) -- (phase);
+        \draw[arrow] (phase) -- (control);
+        \draw[arrow] (control) -- (torque);
+    \end{tikzpicture}
+    \caption{Real-time controller data flow.}
     \label{fig:software_data_flow}
+\end{figure}
+
+\Cref{fig:controller_block_diagram} expands the same four stages into the
+individual signals, showing where each one enters and how the three torque
+contributions are summed.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{\textwidth}{!}{\input{figures/controller_block_diagram.tex}}
+    \caption{Signal routing of the torque command.}
+    \label{fig:controller_block_diagram}
 \end{figure}
 
 The phase machine also decides when one phase ends and the next begins.
@@ -616,11 +645,11 @@ null-space projection.
 
 The normal controller path uses the decoupled wrench of
 \cref{eq:software_decoupled_wrench}. During the \texttt{set\_up} phase only, the
-software can instead use a pole-shifted \(6\times6\) stiffness and damping
+software can instead use a point-shifted \(6\times6\) stiffness and damping
 matrix. The callback instantiates the point-shift law derived once in
 \cref{sec:coupled_pole_stiffness}, using
-\(K_{\mathrm{pole}}=\operatorname{diag}(K_p,K_R)\) and
-\(D_{\mathrm{pole}}=\operatorname{diag}(D_p,D_R)\). With
+\(K_c=\operatorname{diag}(K_p,K_R)\) and
+\(D_c=\operatorname{diag}(D_p,D_R)\). With
 \[
 \Delta x=
 \begin{bmatrix}e_p\\e_R\end{bmatrix},
@@ -636,11 +665,12 @@ the coupled set-up command is
 \label{eq:software_coupled_wrench}
 \end{equation}
 
-In manual-pole mode the pole is the frozen projected-clearance reference or the
+In the commanded-centre mode the centre of compliance is the frozen projected-clearance reference or the
 live selected tool feature plus the configured base-frame XYZ offset. The
 frozen source is the first-contact point, but it is captured
 at geometric clearance rather than force contact. In the active configuration,
-the pole is frozen at first contact, the TCP reference is frozen at
+the centre of compliance is held constant from first contact, the TCP
+reference is captured at
 the same hand-off and the lever actually passed to the congruence is
 \[
 r_c=p_{\mathrm{TCP,clr}}-p_c .
@@ -703,7 +733,7 @@ to place the robot before either choice.
     phase ends when the bias-subtracted external-moment norm exceeds its
     threshold after the minimum set-up time, or when the independent set-up
     timeout is reached. Force is logged but is not an exit condition. The
-    pole-shifted coupled law, when enabled, is applied only in this phase.
+    point-shifted coupled law, when enabled, is applied only in this phase.
 
     \item \textbf{Optional pre-grind gate.} When enabled, the controller remains
     in set-up and continues evaluating its pressed reference until the user
@@ -804,8 +834,8 @@ orientation; and a rectangular face determines the actual controlled edge,
 corner, or face centre. The approach-to-set-up transition is geometric, while
 the set-up exit uses a moment threshold with minimum-time and timeout guards.
 
-The pole-shifted coupled impedance is available during set-up. In the active
-frozen-pole configuration its constant lever is
+The point-shifted coupled impedance is available during set-up. In the active
+this configuration its constant lever is
 \(r_c=p_{\mathrm{TCP,clr}}-p_c\); the general live-point relation is
 \(p_{\mathrm{TCP}}-p_c\). The null-space law uses a tolerance-truncated SVD
 projector and selectable off, damping, singular-value, or combined modes in

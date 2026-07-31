@@ -708,13 +708,13 @@ the principal stiffness directions but keeps the centre of compliance at the
 end-effector origin, here identified with the tool centre point (TCP). A second
 and independent design choice is \emph{where} the virtual spring is centred.
 Shifting the centre of compliance from the TCP to another point, called here
-the \emph{virtual pole} \(p_c\), turns a block-diagonal impedance at that pole
+the \emph{centre of compliance} \(p_c\), turns a block-diagonal impedance at that centre
 into a coupled impedance at the TCP
 \cite{Murray1994,Fasse1997SpatialImpedance,Stramigioli2000IPC,LynchPark2017}.
 This is the construction used by the controller during set-up: the
-pole-coupled impedance biases alignment while contact constrains the motion.
+point-shifted impedance biases alignment while contact constrains the motion.
 
-The implemented pole-to-TCP lever, expressed in the base frame, is
+The implemented lever, expressed in the base frame, is
 \begin{equation}
 r_c = p_{\mathrm{TCP}}-p_c \in \R{3},
 \qquad p_{\mathrm{TCP}}=p_{\mathrm{EE}} .
@@ -723,15 +723,15 @@ r_c = p_{\mathrm{TCP}}-p_c \in \R{3},
 
 Let \([r_c]_\times\) denote the skew-symmetric matrix satisfying
 \([r_c]_\times a=r_c\times a\). Under the small-angle approximation, the
-position error at the virtual pole is
+position error at the centre of compliance is
 \begin{equation}
 \mathbf e_{p,c}
 =
 \mathbf e_p+[r_c]_\times\mathbf e_R .
 \label{eq:pole_small_motion_error}
 \end{equation}
-The positive sign follows from the chosen pole-to-TCP lever: the vector from
-the TCP to the pole is \(-r_c\), and
+The positive sign follows from the chosen lever: the vector from
+the TCP to the centre of compliance is \(-r_c\), and
 \(\mathbf e_R\times(-r_c)=[r_c]_\times\mathbf e_R\). Stacking the translational
 and rotational errors therefore gives
 
@@ -757,27 +757,27 @@ translational counterpart of the block-diagonal rotation
 \(T_R=\operatorname{diag}(R_{\mathrm{task}},R_{\mathrm{task}})\) of
 \cref{eq:full_task_frame_gain_transform}: \(T_R\) rotates the principal axes,
 whereas \(\mathrm{Ad}(r_c)\) moves the reference point. Let the decoupled gains
-defined at the pole be
+defined at the centre of compliance be
 \begin{equation}
-K_{\mathrm{pole}}
+K_c
 =
 \begin{bmatrix}K_p&0\\0&K_R\end{bmatrix},
 \qquad
-D_{\mathrm{pole}}
+D_c
 =
 \begin{bmatrix}D_p&0\\0&D_R\end{bmatrix}.
 \label{eq:pole_block_gains}
 \end{equation}
-The pole-frame wrench is
-\(w_{\mathrm{pole}}=K_{\mathrm{pole}}\mathbf e_c\). Transforming this
+The compliance-centre wrench is
+\(w_c=K_c\mathbf e_c\). Transforming this
 power-conjugate wrench to the TCP gives
-\(w_{\mathrm{TCP}}=\mathrm{Ad}(r_c)^\top w_{\mathrm{pole}}\), and therefore
+\(w_{\mathrm{TCP}}=\mathrm{Ad}(r_c)^\top w_c\), and therefore
 the stiffness expressed at the TCP is
 
 \begin{equation}
 K_{\mathrm{TCP}}
 =
-\mathrm{Ad}(r_c)^\top K_{\mathrm{pole}}\,\mathrm{Ad}(r_c)
+\mathrm{Ad}(r_c)^\top K_c\,\mathrm{Ad}(r_c)
 =
 \begin{bmatrix}
 K_p & K_p[r_c]_\times\\[4pt]
@@ -790,7 +790,7 @@ The same point shift must be applied to damping:
 \begin{equation}
 D_{\mathrm{TCP}}
 =
-\mathrm{Ad}(r_c)^\top D_{\mathrm{pole}}\,\mathrm{Ad}(r_c)
+\mathrm{Ad}(r_c)^\top D_c\,\mathrm{Ad}(r_c)
 =
 \begin{bmatrix}
 D_p & D_p[r_c]_\times\\[4pt]
@@ -803,8 +803,8 @@ The off-diagonal blocks \(K_p[r_c]_\times\) and \([r_c]_\times^\top K_p\) couple
 translational error into a restoring moment and a rotational error into a
 restoring force. They are exactly the structured translation--rotation coupling
 that the decoupled command of \cref{eq:cartesian_force_moment_vector} does not
-contain. Physically, a pure infinitesimal rotation about the virtual pole has
-zero translational error at that pole but produces the corresponding
+contain. Physically, a pure infinitesimal rotation about the centre of compliance has
+zero translational error at that centre but produces the corresponding
 lever-induced translation at the TCP. The coupled TCP wrench is the wrench
 representation of that same virtual spring.
 
@@ -816,34 +816,34 @@ m_c=[r_c]_\times^\top f=-\,r_c\times f .
 \label{eq:pole_translation_moment_sign_check}
 \end{equation}
 Changing the direction of \(r_c\) therefore reverses this coupling moment. This
-relation is also the direct sign test for a proposed pole and press direction.
+relation is also the direct sign test for a proposed centre of compliance and press direction.
 
 Two properties follow directly from \cref{eq:coupled_tcp_stiffness}. First, the
 coupling vanishes when \(r_c=0\). Conversely, if \(K_p\) is nonsingular, zero
 coupling implies \(r_c=0\). Second, because \(\mathrm{Ad}(r_c)\) is invertible,
 the congruence transformation preserves definiteness:
 \begin{equation}
-K_{\mathrm{pole}}\succeq0
+K_c\succeq0
 \ \Longrightarrow\
 K_{\mathrm{TCP}}\succeq0,
 \qquad
-K_{\mathrm{pole}}\succ0
+K_c\succ0
 \ \Longrightarrow\
 K_{\mathrm{TCP}}\succ0,
 \label{eq:pole_gain_definiteness}
 \end{equation}
-and the same statements hold for \(D_{\mathrm{pole}}\) and
+and the same statements hold for \(D_c\) and
 \(D_{\mathrm{TCP}}\). Individual negative off-diagonal entries are therefore
 coupling terms, not negative stiffness directions.
 
 This construction is a local, small-motion model with \(r_c\) held fixed while
-the wrench is evaluated. In the implemented frozen-pole mode, the selected
+the wrench is evaluated. In the implemented this mode, the selected
 lever is kept constant, so the mapped gain matrices remain constant during the
-motion segment. If the pole or lever is updated continuously, the gain matrices
+motion segment. If the centre of compliance or lever is updated continuously, the gain matrices
 become configuration dependent. Accordingly, \(p_c\) is a
 \emph{local linearized centre of compliance}, not a guaranteed measured pivot.
 It need not coincide with the physical contact point \(p_C\); finite rotational
-stiffness, the frozen lever, the environment constraint and friction, and the
+stiffness, the lever, the environment constraint and friction, and the
 active sigma term introduced below all influence the observed motion.
 
 %% ─────────────────────────────────────────────────────────────

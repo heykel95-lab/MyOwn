@@ -124,6 +124,31 @@ repeat the caption, unused panels, and diagnostics that are not discussed in
 the text. Visually inspect every plot inside the compiled thesis, not only as a
 standalone file.
 
+## Naming a technical quantity
+
+Give each quantity one name and use it everywhere. Where several names are in
+circulation, the settled choices are:
+
+- **centre of compliance** for the point the \(6\times6\) stiffness is
+  defined about, \(p_c\), with \(r_c=p_{\mathrm{TCP}}-p_c\) as its lever.
+  Attributively, `compliance-centre lever`, `compliance-centre coordinate`.
+- **contact point** for the physical point the tool touches, \(p_C\), with
+  \(r_C=p_C-p_{\mathrm{TCP}}\). It is a different point and the two are
+  never used for one another.
+- **pole** is implementation vocabulary from the parameter names. Keep it in
+  equation labels and parameter keys, not in the running text.
+
+Do not build a name out of the state a quantity happens to be in. The centre of
+compliance is held constant from first contact, so it was being called the
+`frozen pole` throughout, which names a behaviour and an implementation detail
+instead of the thing. State the behaviour once, where the quantity is
+introduced, and use the plain name thereafter. The same applies to a
+`frozen lever` or a `frozen reference`: say that it is held constant, then call
+it the lever.
+
+Symbols follow the same rule. One point, one subscript: \(p_c\), \(r_c\),
+\(K_c\), \(D_c\).
+
 ## Software identifiers in the text
 
 Do not print long configuration or field names in the running text. A name
@@ -348,6 +373,8 @@ Before accepting a revision:
 
 - search for question-driven headings and literal research questions;
 - search the running text for names carrying two or more underscores;
+- search for `frozen`, and for any name built from a quantity's state;
+- check that one quantity carries one name and one symbol throughout;
 - check that list items begin with a capital letter;
 - check that the conclusion covers every experimental case;
 - check that each reported comparison also states its relation;

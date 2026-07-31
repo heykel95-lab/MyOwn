@@ -356,7 +356,7 @@ orientation, so the two axes must not be identified without an explicit
 frame transformation.
 
 The selected centre of compliance is represented by a point \(p_c\), with the
-pole-to-TCP lever \(r_c=p_{\mathrm{TCP}}-p_c\) defined in
+lever \(r_c=p_{\mathrm{TCP}}-p_c\) defined in
 \cref{eq:pole_to_tcp_lever}. Here \(p_{\mathrm{TCP}}\) is the origin of the end-effector pose reported by
 the robot; any configured flange-to-end-effector transform must therefore be
 included when relating this point to the physical hand and tool.
@@ -390,7 +390,7 @@ does not, however, use one common frame for every phase and every gain block:
     gate overrides only translation with an isotropic base-frame gain and
     retains the isotropic approach rotational gain; and
     \item during set-up only, the selected base-frame translational and
-    rotational blocks can be shifted from a commanded pole to the TCP, producing
+    rotational blocks can be shifted from a commanded centre of compliance to the TCP, producing
     a coupled \(6\times6\) gain.
 \end{itemize}
 
@@ -456,8 +456,8 @@ off-diagonal blocks \(K_{pR,\mathrm{task}}\) and \(K_{Rp,\mathrm{task}}\)
 describe translation--rotation coupling.
 This block form is useful for explaining the physical coupling between sliding
 and rotation during edge contact. The implemented controller constructs the full
-matrix analytically from a manually selected pole during set-up. The pole and
-the source stiffness blocks are the design variables; the 36 matrix entries are
+matrix analytically from a manually selected centre of compliance during set-up. Its
+location and the source stiffness blocks are the design variables; the 36 matrix entries are
 not tuned independently.
 
 The gain construction uses a symmetric positive-definite stiffness and a
@@ -470,7 +470,7 @@ K_{\mathrm{task}} \succ 0.
 \label{eq:contact_stiffness_spd}
 \end{equation}
 
-The pole-to-TCP congruence preserves these properties. They provide direct
+The congruence preserves these properties. They provide direct
 checks on the assembled \(6\times6\) matrices without introducing additional
 experiment-specific tuning variables.
 
@@ -633,9 +633,9 @@ k_{R,n}
 
 The ten-to-one ratio makes tipping about the tangents compliant while retaining
 stronger twist restraint. During set-up these are source gains at the selected
-pole; after the congruence shift they are not, in general, the diagonal
+centre of compliance; after the congruence shift they are not, in general, the diagonal
 rotational slopes seen for a pure rotation at the TCP. Grind uses the same
-source blocks without the pole shift.
+source blocks without the centre of compliance shift.
 
 \begin{table}[H]
 \centering
@@ -670,7 +670,7 @@ Set-up &
 \(k_R=[5,5,50]\,\mathrm{Nm/rad}\), surface \([t_1,t_2,n_s]\) &
 \(60\,\mathrm{N}\) per blocked \(30\,\mathrm{mm}\) \(t_2\) stroke and
 approximately \(65\,\mathrm{N}\) per blocked \(180\,\mathrm{mm}\) normal
-reference; source blocks are shifted through the frozen pole. \\
+reference; source blocks are shifted through the centre of compliance. \\
 Grind &
 same \(K_p\) and \(K_R\) source blocks as set-up &
 Same design scales; the command is decoupled and the active sweep is along
@@ -782,15 +782,15 @@ Equation~\eqref{eq:directional_damping_heuristic} is a directional damping
 heuristic based on the diagonal entries of the TCP task-inertia estimate; it
 omits off-diagonal inertia coupling. Here \(\zeta\) is a dimensionless tuning
 factor, not an identified modal damping ratio. During set-up, the source
-damping blocks are calculated at the TCP and are then shifted through the pole
+damping blocks are calculated at the TCP and are then shifted through the centre of compliance
 with the same congruence as stiffness. The shifted matrix remains symmetric
 positive semidefinite, but \(\zeta=1\) does not prove exact modal critical
-damping of the coupled pole/contact system.
+damping of the centre of compliance/contact system.
 
 \subsection{Pole-Based Gain Design}
 \label{subsec:impedance_around_pole}
 
-The pole-based design is the construction used during \texttt{set\_up}. A
+The compliance-centre design is the construction used during \texttt{set\_up}. A
 surface-frame rotation changes the principal directions of the translational
 and rotational blocks but leaves the translation--rotation blocks zero. It
 therefore does not move the centre of compliance away from the TCP. The
@@ -803,7 +803,7 @@ block-matrix derivation is kept in
 The active source stiffness, written wholly in base-frame coordinates, is
 
 \begin{equation}
-K_{\mathrm{pole},0}
+K_{c,0}
 =
 \operatorname{blkdiag}\!\left(
 \operatorname{diag}(2000,2000,350),
@@ -824,7 +824,7 @@ moment, or time-varying task-space rotation command. Its experimental effect is
 judged from the EE-inferred tool-axis alignment, selected-feature and TCP
 displacements, and commanded joint torques.
 
-\paragraph{Choosing the pole.}
+\paragraph{Choosing the centre of compliance.}
 The implementation accepts an arbitrary base-frame offset from the projected
 leading-feature reference captured at clearance:
 
@@ -837,10 +837,10 @@ p_c=p_{\Pi,\mathrm{clr}}+\Delta p_c^0,
 \end{equation}
 
 The superscript \(0\) emphasizes that the three components are base XYZ, not
-\([t_1,t_2,n_s]\). The reference is frozen for the run. A scalar choice
+\([t_1,t_2,n_s]\). The reference is held constant for the run. A scalar choice
 \(p_c=p_s+h n_s\) is a useful theoretical special case, but it is not the active
-parameterization. Because the pole is frozen at first contact, the active
-lever is also frozen,
+parameterization. Because the centre of compliance is held constant from first contact, the
+lever is constant too,
 \[
 r_c=p_{\mathrm{TCP,clr}}-p_c,
 \]
@@ -861,7 +861,7 @@ R_{\mathrm{surface}}^\top\Delta p_c^0
 \label{eq:active_pole_offset_surface_components}
 \end{equation}
 
-The pole is therefore placed mainly in the \(-t_1,+t_2\) quadrant relative to
+The centre of compliance is therefore placed mainly in the \(-t_1,+t_2\) quadrant relative to
 the projected selected feature. The offset is not itself the lever used by the
 adjoint: the exact lever also contains the captured TCP-to-feature geometry.
 For a purely translational error, define \(f=K_{p,0}e_p\). The moment produced
@@ -911,12 +911,12 @@ physical alignment signal is added to the run record.
       node[right=4pt,yshift=5pt] {selected feature at clearance};
     \filldraw (T) circle (1.6pt) node[above right] {$p_{\mathrm{TCP}}$};
   \end{tikzpicture}
-  \caption{Frozen pole-to-TCP geometry during set-up.}
+  \caption{Compliance-centre geometry during set-up.}
   \label{fig:active_pole_geometry}
 \end{figure}
 
 The selected point \(p_c\) is a local linearized centre of compliance. Finite
-rotational stiffness, the frozen lever, environment friction and constraints,
+rotational stiffness, the lever, environment friction and constraints,
 and the active null-space sigma torque mean that it is not necessarily the
 physical pivot observed during contact.
 
@@ -938,12 +938,12 @@ controller:
     current TCP task inertia using
     \cref{eq:implemented_cartesian_inertia,eq:directional_damping_heuristic}.
     \item During set-up only, shift the selected source stiffness and damping
-    through the frozen pole using
+    through the centre of compliance using
     \cref{eq:coupled_tcp_stiffness,eq:coupled_tcp_damping}. Grind immediately
     returns to the decoupled source blocks.
     \item Check the resulting elastic load and joint-torque scales, then change
     one declared gain family at a time while retaining the frame labels,
-    computed damping, pole offset, and remaining parameters with the run
+    computed damping, compliance-centre offset, and remaining parameters with the run
     record.
 \end{enumerate}
 
@@ -954,8 +954,8 @@ The resulting workflow is
 \text{phase design envelope}
 &\rightarrow \text{frame-labelled source }K
 \rightarrow \text{task-inertia }D\\
-&\rightarrow \text{set-up-only pole shift}
-\rightarrow \text{load/torque check}
+&\rightarrow \text{set-up-only compliance-centre shift}\\
+&\rightarrow \text{load/torque check}
 \rightarrow \text{controlled trial}.
 \end{aligned}
 \label{eq:gain_selection_workflow}
@@ -989,7 +989,7 @@ the common local candidates are \(2.5\), \(3.75\), \(5.0\), \(6.25\), and
 paired fine-tuning study; it is not the axis-specific comparison reported in
 \cref{sec:results_summary_table}.
 
-All other source gains, the pole offset, phase timing, and null-space
+All other source gains, the centre of compliance offset, phase timing, and null-space
 parameters are held constant during such a study. Consequently, any systematic
 change in the measured response can be associated with the selected stiffness
 coordinate. For the same displacement or angular error, the corresponding
@@ -1154,7 +1154,7 @@ The experimental sequence is executed as follows:
     non-rigid mounting condition with the run metadata.
     \item Construct the known plane and
     \(R_{\mathrm{surface}}=[t_1,t_2,n_s]\), construct the \(40\times120\) mm tool
-    face, and set the active base-XYZ pole offset. Configure the Franka collision
+    face, and set the active base-XYZ compliance-centre offset. Configure the Franka collision
     behaviour before starting torque control.
     \item In \texttt{approach\_orient}, hold the TCP position and rotate the
     physical \(+Z_{\mathrm{EE}}\) axis toward \(-n_s\). Continue only after at
@@ -1176,7 +1176,7 @@ The experimental sequence is executed as follows:
     \item In \texttt{set\_up}, ramp the signed push coordinate continuously from
     its captured value, approximately \(-0.020\,\mathrm{m}\), toward
     \(+0.180\,\mathrm{m}\) at
-    \(0.050\,\mathrm{m/s}\) along \(-n_s\). Apply the current coupled pole-based
+    \(0.050\,\mathrm{m/s}\) along \(-n_s\). Apply the current coupled compliance-centre
     \(6\times6\) stiffness and damping. The approximately \(0.200\,\mathrm{m}\)
     coordinate span takes \(4\,\mathrm{s}\), matching the timeout; the final
     \(+0.180\,\mathrm{m}\) coordinate is a virtual post-plane spring reference,
@@ -1190,7 +1190,7 @@ The experimental sequence is executed as follows:
     quintic smooth ping-pong sweep of \(0.03\,\mathrm{m}\) amplitude at
     \(0.2\,\mathrm{Hz}\) along \(t_2\). In the callback that satisfies the
     set-up exit condition, the controller switches immediately, without gain
-    interpolation, to the decoupled set-up gain blocks; the pole-coupled branch
+    interpolation, to the decoupled set-up gain blocks; the point-shifted branch
     is no longer active. A wrench and \(J^\top w_{\mathrm{cmd}}\) step is
     therefore possible at this hand-off.
     \item Stop with \texttt{e+Enter}, persist the buffered log, and evaluate the
@@ -1199,7 +1199,7 @@ The experimental sequence is executed as follows:
 \end{enumerate}
 
 For a controlled comparison, only the declared independent variable---for
-example block-diagonal versus pole-coupled impedance or the base-XYZ pole
+example block-diagonal versus point-shifted impedance or the base-XYZ compliance-centre
 offset---may change between repetitions. Pool only runs with the same controller
 configuration, tool geometry, phase duration, and fixed gains; otherwise report them as
 separate configurations. The comparison is not meant to
