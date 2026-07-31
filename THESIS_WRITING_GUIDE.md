@@ -397,6 +397,28 @@ and positive-(semi)definiteness may be stated where needed, but they do not
 prove closed-loop stability or passivity of the sampled
 robot–controller–environment system.
 
+## Headings must not be stranded
+
+A heading carries no information on its own. If it falls at the foot of a page
+while what it introduces starts on the next, the reader meets a label with
+nothing under it and has to turn the page to learn what it labels.
+
+The document class already holds ordinary chapter and section headings with the
+text beneath them. Hand-built headings do not inherit that. A heading placed
+before a `longtable`, a `tabular`, a figure or a listing needs the space
+reserved explicitly, because `\nobreak` does not hold across an environment
+that begins its own breakable structure:
+
+```tex
+\needspace{5\baselineskip}%
+\par\noindent\textbf{Group heading}\par\nobreak
+\begin{longtable}{...}
+```
+
+Reserve enough for the heading and the first few rows, not for the heading
+alone. Check the compiled document rather than the source: whether a heading
+strands depends on where the page happens to break.
+
 ## Final editorial checklist
 
 Before accepting a revision:
@@ -408,6 +430,7 @@ Before accepting a revision:
 - check that one quantity carries one name and one symbol throughout;
 - search the symbol list for `mixed` and for units written without a space;
 - check that the contents lists the figures, tables and symbols;
+- check that no heading sits at the foot of a page without what it introduces;
 - check that list items begin with a capital letter;
 - check that the conclusion covers every experimental case;
 - check that each reported comparison also states its relation;

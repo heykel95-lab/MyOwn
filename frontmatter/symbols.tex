@@ -4,7 +4,11 @@
 
 \renewcommand{\arraystretch}{1.2}
 \newcommand{\symrow}[3]{#1 & #2 & #3\\}
+% A group heading is useless without rows under it, so reserve room for the
+% heading and the first few rows before placing it. \nobreak alone does not
+% hold across a longtable, which begins its own breakable structure.
 \newcommand{\symgroup}[2]{%
+  \needspace{5\baselineskip}%
   \par\noindent\textbf{#1}\par\nobreak
   \begingroup
   \setlength{\LTpre}{2pt}%
@@ -137,7 +141,7 @@
 \symrow{$\tau_d,\ \tau_\sigma,\ \tau_{\mathrm{null}}$}{Projected damping / sigma / total null-space torque}{[Nm]}
 }
 
-\symgroup{Alternative Virtual-Pole Notation}{
+\symgroup{Centre-of-Compliance Notation}{
 \symrow{$K_{p_c},\ D_{p_c}$}{Full stiffness / damping matrix defined about the centre of compliance \(p_c\)}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
 \symrow{$K_{p,c},\ K_{R,c}$}{Translational / rotational stiffness blocks defined about the centre of compliance}{[N/m], [Nm/rad]}
 \symrow{$D_{p,c},\ D_{R,c}$}{Translational / rotational damping blocks defined about the centre of compliance}{[N\,s/m], [Nm\,s/rad]}
