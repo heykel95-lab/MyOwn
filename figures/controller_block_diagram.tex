@@ -14,7 +14,7 @@
     sum/.style={draw=gray!70!black, fill=white, circle, minimum size=6mm,
                 inner sep=0pt},
     sig/.style={-{Latex[length=2mm]}, thick, gray!55!black},
-    lbl/.style={font=\footnotesize, inner sep=1.6pt},
+    lbl/.style={font=\footnotesize, inner sep=2pt, fill=white},
   ]
 
 % ------------------------------------------------------------ forward chain
@@ -30,8 +30,8 @@
 \node[sel] (imp)    at (10.5, -2.1) {impedance form\\[-2pt]\footnotesize decoupled \emph{or} point-shifted, $D$ fitted};
 
 % -------------------------------------------------------------- summation
-\node[sum] (plus)   at (13.8, -3.6) {\large$+$};
-\node[blk] (out)    at (16.6, -3.6) {joint torque\\[-2pt]\footnotesize $\tau_{\mathrm{cmd}}$};
+\node[sum] (plus)   at (13.8, -3.95) {\large$+$};
+\node[blk] (out)    at (16.6, -3.95) {joint torque\\[-2pt]\footnotesize $\tau_{\mathrm{cmd}}$};
 
 % ------------------------------------------------------- chain, left to right
 \draw[sig] (state)  -- (phase);
@@ -55,19 +55,19 @@
       {active gains} (10.5,-1.35) -- (imp.north);
 
 % run 4: null-space torque into the sum from the left
-\draw[sig] (null.south) -- (3.5,-3.6) -- node[lbl, above, pos=0.55]
-      {$\tau_{\text{null}}$} (13.5,-3.6);
+\draw[sig] (null.south) -- (3.5,-3.95) -- node[lbl, above, pos=0.55]
+      {$\tau_{\text{null}}$} (13.5,-3.95);
 
 % M(q) has exactly one consumer: it sizes the damping, not the control law
-\draw[sig] (model.south) -- (0.0,-3.05) -- node[lbl, above, pos=0.62]
-      {$M(q)$ sizes $D$} (10.5,-3.05) -- (imp.south);
+\draw[sig] (model.south) -- (0.0,-3.25) -- node[lbl, above, pos=0.62]
+      {$M(q)$ sizes $D$} (10.5,-3.25) -- (imp.south);
 
 % run 5: Coriolis compensation into the sum from below
-\draw[sig] (model.south) -- (0.0,-4.8) -- node[lbl, below, pos=0.55]
-      {$c(q,\dot q)$} (13.8,-4.8) -- (plus.south);
+\draw[sig] (model.south) -- (0.0,-5.15) -- node[lbl, below, pos=0.55]
+      {$c(q,\dot q)$} (13.8,-5.15) -- (plus.south);
 
 % run 6: the loop closes through the robot, around the left
-\draw[sig] (out.south) -- (16.6,-5.6) -- node[lbl, below, pos=0.55]
-      {robot, \SI{1}{\kilo\hertz}} (-1.9,-5.6) -- (-1.9,0.0) -- (state.west);
+\draw[sig] (out.south) -- (16.6,-5.95) -- node[lbl, below, pos=0.55]
+      {robot, \SI{1}{\kilo\hertz}} (-1.9,-5.95) -- (-1.9,0.0) -- (state.west);
 
 \end{tikzpicture}

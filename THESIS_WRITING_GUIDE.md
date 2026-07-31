@@ -75,6 +75,11 @@ Use British spelling consistently, including `centre`, `behaviour`, and
 
 ## Figures and tables
 
+How a figure is drawn or generated is in
+[FIGURE_STYLE.md](FIGURE_STYLE.md): TikZ conventions, routing and clearance
+rules, plot settings, and how to check a figure in the compiled document. The
+rules below cover captions and what the text around a figure must carry.
+
 Keep figure and table captions short, preferably one line and normally below
 about 12 words. Use a descriptive noun phrase that identifies the plotted
 quantity, comparison, geometry, or parameter set.
@@ -431,6 +436,7 @@ Before accepting a revision:
 - search the symbol list for `mixed` and for units written without a space;
 - check that the contents lists the figures, tables and symbols;
 - check that no heading sits at the foot of a page without what it introduces;
+- inspect every changed figure in the compiled document, per FIGURE_STYLE.md;
 - check that list items begin with a capital letter;
 - check that the conclusion covers every experimental case;
 - check that each reported comparison also states its relation;

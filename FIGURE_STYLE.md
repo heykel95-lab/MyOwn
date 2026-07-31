@@ -1,0 +1,123 @@
+# Figure Style
+
+How figures are drawn for this thesis. Companion to
+[THESIS_WRITING_GUIDE.md](THESIS_WRITING_GUIDE.md), which owns captions,
+wording and evidence rules. Update this file when a new convention is agreed.
+
+**The principle: a figure is typeset, not pasted.** Diagrams are TikZ source in
+`figures/`, so they carry the document's fonts, scale with the text, and stay
+editable. Data plots are generated to vector PDF with the same faces. A raster
+screenshot is a last resort and never carries text the reader must read.
+
+## Drawn diagrams (TikZ)
+
+Write the diagram as `figures/<name>.tex` containing one `tikzpicture`, with no
+preamble of its own, and include it with
+
+```tex
+\begin{figure}[H]
+  \centering
+  \resizebox{\textwidth}{!}{\input{figures/<name>.tex}}
+  \caption{Short noun phrase.}
+  \label{fig:<name>}
+\end{figure}
+```
+
+`config/packages.tex` already loads `tikz` with `arrows.meta`, `calc` and
+`positioning`, plus `siunitx` and `needspace`. Do not load packages from inside
+a figure file and do not set a font: the figure inherits the document's Latin
+Modern, which is the point of drawing it this way.
+
+### Styles first, then nodes, then routing
+
+Define every style at the top of the `tikzpicture` so the file reads as a
+description of the drawing rather than a list of coordinates. The established
+set:
+
+```tex
+blk/.style={draw=gray!70!black, fill=gray!8,    rounded corners=2pt, ...}  % computed
+src/.style={draw=gray!60,       fill=blue!6,    rounded corners=2pt, ...}  % input
+sel/.style={draw=gray!70!black, fill=orange!12, rounded corners=2pt, ...}  % selected
+sig/.style={-{Latex[length=2mm]}, thick, gray!55!black}                    % signal
+lbl/.style={font=\footnotesize, inner sep=2pt, fill=white}                 % label
+```
+
+Colour carries meaning and only meaning: blue for what enters from outside,
+orange for what a parameter selects, grey for what is computed, red reserved
+for a stop or an abort path. A figure that uses colour decoratively is harder
+to read in print, where the fills are close in tone.
+
+### Routing
+
+**Orthogonal only.** A diagonal line in a block diagram reads as a different
+kind of connection and is almost always an accident.
+
+**Use absolute coordinates for the corners.** `++(0,1.35)` is relative to the
+node anchor, not to the origin, so a run written that way silently becomes a
+diagonal when the anchor is not where it was assumed to be. Write
+`(model.north) -- (0.0,1.45) -- (13.8,1.45) -- (jt.north)`.
+
+**One horizontal run per height.** Give each long connection its own `y` and
+keep a list of them in a comment, so a new run cannot be added on top of an
+existing one. The control-loop diagram uses, top to bottom: the Jacobian above
+the chain, the measured pose and the active gains just below it, the mass
+matrix, the null-space torque, the Coriolis term, and the loop closure last.
+
+**Route around boxes, not through them.** Check the vertical extent of every
+node the run passes, not just its centre.
+
+### Clearance
+
+Leave a visible gap between a label and any box: aim for at least half a line
+of text, and never let a label sit inside a node's bounding box. Labels carry
+`fill=white` so that one crossing a line stays legible, but that masks the
+line rather than fixing the layout, and it does not help against a box.
+
+If a label crowds something, move the run rather than nudging the label. The
+spacing between runs is what creates room for their labels.
+
+### What does not belong in the drawing
+
+- An internal title. The caption identifies the figure; a title repeats it.
+- A legend inside a narrow panel, where it lands on the data or an axis label.
+- Anything not discussed in the text.
+
+## Generated plots (matplotlib)
+
+Plots come from `experiments/analysis/make_figures.py` in the controller
+repository and are copied into `figures/` as vector PDF.
+
+- **Fonts match the document.** `FONT_STYLE = "latex"` selects Latin Modern
+  with Computer Modern maths. Verify in the output, not the configuration:
+  `pdffonts` on the result should show `LMRoman*` and `Cmr/Cmmi/Cmsy`.
+  `usetex` is deliberately not used; it needs `dvipng`, which is not installed,
+  and it would tie every plot to a preamble kept elsewhere.
+- **Ticks sit at the settings that were tested.** A sweep of three values does
+  not justify a log scale, and a log decade fills itself with minor labels that
+  collide at printed width. Linear spacing ticked at the tested values shows
+  the sample as it is.
+- **Grid is horizontal only.** It exists to compare values across panels.
+- **Legend goes below a multi-panel figure**, never inside the first panel.
+- **A reference line belongs only where it means something.** A zero line on a
+  load axis forces the axis down to zero and squashes the data.
+- **Excluded runs are drawn and labelled**, so the legend says what a hollow
+  marker is instead of leaving it to a caption.
+- **No internal title**, for the same reason as a drawn diagram.
+
+## Checking a figure
+
+Inspect the compiled document, not the standalone file. Whether a label
+collides depends on the final scale, and `\resizebox` changes it.
+
+```bash
+pdflatex Thesis.tex
+pdftoppm -png -r 130 -f <page> -l <page> Thesis.pdf out
+```
+
+Then look at the rendered page and check:
+
+- no line crosses a box, and no two lines run at the same height;
+- no label touches a box, a line, or another label;
+- every arrowhead lands on the node it belongs to;
+- the smallest text is still legible at final printed size;
+- the figure has no internal title and its caption is a short noun phrase.
