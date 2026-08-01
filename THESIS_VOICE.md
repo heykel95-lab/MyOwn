@@ -246,6 +246,157 @@ The unflagged passages share concrete traits. Write toward these.
 - **Numbers with units.** A sentence carrying `5 Nm/rad` or `1 kHz` is almost
   never flagged.
 
+## Scientific register
+
+The rules in this section were abstracted from a completed engineering thesis
+read as a model of the register. What transfers is **convention**: how evidence
+is hedged, how prior work is credited, how a limitation is placed. Conventions
+are not ownable and cannot be plagiarised. Wording is, so none was taken —
+every example below is written in this thesis's own domain.
+
+What separates that text from the flagged prose here is not vocabulary. It is
+that an author is visibly present: making judgements, conceding weaknesses,
+and declining to claim more than the data carries.
+
+### Credit prior work with the verb that names the contribution
+
+`discuss`, `describe`, `present`, `provide`, and `show the importance of` are
+placeholders. They tell the reader a paper exists, not what it changed. A
+strong literature section reads as a dated chain of moves, each attributed.
+
+Weak, and still present at
+[01_introduction.tex](chapters/01_introduction.tex):
+
+> Ott et al. discuss Cartesian impedance control for flexible joint robots and
+> the importance of stable interaction behaviour. Albu-Schäffer et al. describe
+> Cartesian impedance control for torque-controlled lightweight robots.
+
+Better — each verb states the move, and the second sentence says why it matters
+here:
+
+> Ott et al. extended Cartesian impedance control to flexible-joint robots,
+> where joint elasticity limits the stiffness the controller can actually
+> realise. Albu-Schäffer et al. built the same law on joint-torque sensing,
+> which is the interface this thesis uses.
+
+| Placeholder | Verbs that name a move |
+|---|---|
+| discusses, describes | extended, generalised, restricted, reformulated |
+| presents, provides | derived, measured, identified, established |
+| shows the importance of | required, ruled out, reduced X to Y |
+| improves on | replaced X with Y, corrected, relaxed the assumption that |
+
+**Rule.** Name the author, date the move where the chronology matters, and use
+a verb that could be wrong. A verb that cannot be wrong is not carrying
+information.
+
+### Say what the prior work left undone
+
+The gap belongs in one sentence, immediately before the contribution, and it
+should name what was skipped rather than gesture at a "need for further study".
+Chapter 1 now does this — the RCC literature fixes the compliance centre
+mechanically for insertion, and this thesis places it in software and measures
+it. Keep that shape when the section moves.
+
+### Hedge to the evidence, and name the hedge
+
+Precision of language should track precision of evidence, visibly:
+
+- `measured` — came off the log.
+- `estimated` — inferred through a model, with the model named.
+- `suggests` / `is consistent with` — a pattern that another experiment could
+  overturn.
+- `about`, `approximately`, `of the order of` — the value is real but the
+  digits are not all meaningful.
+
+Write `the response is approximately linear in the lever over the tested
+range`, not `the response is linear`. Write `an estimated equivalent contact
+location`, not `the contact point`. The hedge is not weakness; an unhedged
+claim that outruns its evidence is the thing an examiner will find.
+
+### Put the weakness where the number is
+
+When a figure rests on few samples or a fragile inference, say so at the point
+of use — a footnote or a trailing clause — not only in a limitations section
+pages later. A reader meeting `a factor of about seven` deserves to learn in
+the same breath that it came from three repetitions.
+
+> The alignment improved by roughly a factor of seven.\footnote{Three
+> repetitions per setting; the factor is quoted to one significant figure
+> because the repeatability does not support more.}
+
+This is the single most human move in the register, and the hardest to fake:
+volunteering the thing that weakens your own number.
+
+### Report exclusions and carry the denominator
+
+Runs that failed, were aborted, or were discarded are data about the method.
+State how many, why, and what the surviving denominator is — then make every
+later percentage use it.
+
+> Of the \(N\) attempted runs, \(M\) were discarded after a reflex stop during
+> the ramp phase. The remaining \(75\) runs are the basis of every value
+> reported below.
+
+Fill in the real counts or drop the sentence; do not invent a number to make
+the shape work. If nothing was discarded, say that instead — it is also
+information.
+
+### Label an arbitrary choice as arbitrary
+
+Some settings exist to make the experiment run. Saying so costs nothing and
+protects the reader from reading a design intent that was never there.
+
+> The \(12\,\mathrm{s}\) phase duration was chosen to let the contact settle
+> and is not a limit of the controller.
+
+Prefer this to silence, and to inventing a justification after the fact.
+
+### State assumptions explicitly, each with its consequence
+
+**This thesis currently has no Assumptions and Limitations section.** A short
+subsection in Chapter~\ref{ch:theory}, one bullet per assumption, each naming
+what it costs, would carry real weight. The pattern is `assumption → what it
+limits`:
+
+> - The tool is treated as rigidly held. Motion within the gripper is therefore
+>   unmeasured, which makes the \(t_2\) results lower bounds.
+> - Contact is treated as quasi-static. Impact transients are outside the range
+>   over which the reported stiffness applies.
+
+Confirm which assumptions the implementation actually makes before writing
+them; the two above are candidates, not established facts.
+
+### Say what was not analysed, then route it to Future Work
+
+An honest scope boundary is stronger than silence, and it is where a limitation
+turns into a contribution to the next study.
+
+> Whether a shorter ramp shortens the whole sequence was not measured here,
+> because the phases were not timed independently. It is left to future work.
+
+### Justify what you leave out
+
+If a figure or a case is omitted, give the reason in one clause — `not shown,
+as it repeats Figure~5.4 without adding a distinction`. Silent omission reads
+as an oversight; a stated one reads as judgement.
+
+### Report null results as results
+
+A parameter that did nothing is a finding, and stating it plainly is more
+convincing than passing over it. `Displacing the compliance centre along the
+normal produced no change beyond the interpretation threshold` is a result, and
+the conclusion should carry it alongside the positive ones.
+
+### Decline the recommendation the data cannot support
+
+Where the answer is conditional, say it is conditional and name the condition,
+rather than manufacturing a rule:
+
+> No single stiffness setting was best across both tangents; the favourable
+> sign of the lever reverses between them, so the choice follows the axis being
+> corrected.
+
 ## Rewrite procedure
 
 Applied to any flagged or weak paragraph, in order.
@@ -264,6 +415,9 @@ Applied to any flagged or weak paragraph, in order.
 8. **Confirm nothing new was claimed.** Compression must not upgrade a
    model-based interpretation into a measurement; the evidence rules in
    THESIS_WRITING_GUIDE.md still bind.
+9. **Check the register.** Does every attribution verb name a move? Does every
+   number carry a hedge matched to its evidence? Is the weakest thing about the
+   paragraph stated inside it?
 
 Expect a rewritten paragraph to be shorter. If it grew, step 1 was skipped.
 
@@ -343,6 +497,15 @@ Search the changed `.tex` files for each of these:
 - `is a right-handed orthogonal system`, and any other sentence that defines a
   standard term
 - `, and ` appearing three or more times in one sentence
+
+Attribution and evidence, per the register section:
+
+- `discuss`, `describes`, `presents`, `provides`, `shows the importance of`
+  attached to a cited author
+- a factor, ratio, or percentage with no sample size anywhere near it
+- `optimum`, `best`, `dominant` without `model-predicted`, `within the tested
+  range`, or an equivalent bound
+- a parameter value with no reason given, where the reason is "it worked"
 
 Then check the paragraph as a whole:
 
