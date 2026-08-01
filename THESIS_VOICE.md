@@ -240,6 +240,98 @@ real number in:
 **Rule.** A structure section does not need one sentence per chapter, and no
 chapter needs its contents listed. Two or three sentences is enough.
 
+## Four more patterns, from the Chapters 4 and 5 pass
+
+A later detector pass flagged Chapters 4 and 5 on nearly every page. The seven
+patterns above were not the cause — by the counts that matter, Chapter 5 used
+fewer connectives and fewer weak verbs than Chapter 2. Four *structural*
+patterns were, and they are invisible to a sentence-level read. Measure them
+before rewriting; the numbers below are the before/after of the pass that fixed
+them.
+
+### 9. The determiner opener
+
+Chapter 5 opened 46 % of its sentences with the bare word `The`, and 59 % with
+`The`, `This`, `These`, `It` or `A`. Chapter 1, which the detector left alone,
+sits at 22 % and 39 %. A results chapter drifts this way naturally, because
+every sentence wants a metric noun phrase as its subject — `The improvement`,
+`The response`, `The effect`, `The face-centre condition`.
+
+**Rule.** Keep determiner openers under about a third. Start from the
+condition (`With the lever on the favourable side, …`), the participle
+(`Stiffening the axis being corrected …`), the quantity (`Sixty millimetres of
+lever …`), or the subordinate clause. After the rewrite both chapters sit at
+29–30 %.
+
+### 10. The `X, not Y` disclaimer as a paragraph terminator
+
+Chapter 4 carried 26 of these, roughly one per paragraph, always in final
+position: `It is an engineering placeholder, not a measured safety boundary`,
+`These are Franka reflex thresholds, not commanded-torque saturations`, `not a
+gradient magnitude and not an exact finite motion`. Pattern 5 above calls three
+a tic; this was the tic industrialised into a template.
+
+The disclaimers are individually correct and several are required by
+THESIS_WRITING_GUIDE.md — model-estimated versus measured wrench, virtual
+spring scale versus contact force. **Do not delete them.** Vary the syntax and
+place them where the misreading would happen:
+
+> Every starred quantity is an engineering design scale --- a load the virtual
+> spring is sized around, and nothing that was ever measured, certified, or
+> enforced in software.
+
+> No tool travels \(180\,\mathrm{mm}\) into wood, and no such displacement was
+> expected of the robot.
+
+The negation rate fell from 12.6 to 6.2 per thousand words without one
+scientific commitment being dropped.
+
+### 11. Timeless present in a chapter about completed work
+
+Chapter 4 was written as a specification — `The experiment is performed on`,
+`The plane is fitted from three probed points`, `The controller computer uses`
+— for work that finished months ago. THESIS_WRITING_GUIDE.md already requires
+Chapter 4 to describe completed experiments; the present tense quietly broke
+that, and it also removes the author from the page entirely.
+
+**Rule.** Past tense for what was done to the hardware: `Three probed points
+fitted the plane`, `The controller computer ran Ubuntu 20.04.3`, `The optional
+pre-grind gate stayed disabled for every reported run`. Present tense stays for
+the controller's standing behaviour, for equations, and for what a table shows.
+
+### 12. The templated section
+
+Chapter 5's five case sections were structurally identical: one-sentence
+`Case X varies Y`, table, figure, `For a tilt about t1 …`, `For a tilt about
+t2 …`, closing `therefore` generalisation. Once the reader has met Case A, no
+token in Cases B–E is a surprise, and next-token predictability is exactly what
+these tools score.
+
+**Rule.** Vary what each section leads with. One case can open on the anomaly
+(`One setting misbehaves.`), one on the outcome (`Nothing else tested came
+close to the lever.`), one on the question it settles (`If the asymmetry
+belonged to the tool rather than to the surface, …`). The case identifiers and
+the table/figure order stay fixed; the prose around them does not have to.
+
+### Vary the frame, keep the term
+
+`tilt` is the settled name (THESIS_WRITING_GUIDE.md, *Naming a technical
+quantity*) and does not change. What repeated was the four-word frame `a tilt
+about \(t_1\)`, sixteen times in Chapter 5, in identical syntactic position. A
+mechanical substitution into that frame is also what left `a a tilt about` and
+`an tilt about` in the source.
+
+One name, many constructions:
+
+| Instead of, every time | Also |
+|---|---|
+| a tilt about \(t_1\) | the \(t_1\) tilt; tilting the tool about \(t_1\) |
+| for a tilt about \(t_2\) | with the tool tilted about \(t_2\); about \(t_2\) |
+| the tilt about \(t_1\) was | correcting a \(t_1\) tilt calls for |
+| Excited axis *(table header)* | Tilted axis |
+
+`excitation` and `mismatch` remain banned for a commanded tilt.
+
 ## What already reads as your own voice
 
 The unflagged passages share concrete traits. Write toward these.
@@ -528,3 +620,14 @@ Then check the paragraph as a whole:
 - Did anything get longer instead of shorter?
 - Does any compressed sentence now claim more certainty than the measurement
   supports?
+
+And count, over the whole chapter — these are the four from the Chapters 4 and
+5 pass, and none of them is visible one sentence at a time:
+
+- What fraction of sentences open with `The`, `This`, `These`, `It` or `A`?
+  Over about a third, rewrite the openers.
+- How many `X, not Y` disclaimers, and do they all sit at the end of a
+  paragraph? Vary the syntax; keep the content.
+- Is a chapter about completed work written in the present tense?
+- Do consecutive sections share one shape — same opener, same order, same
+  closing move?
