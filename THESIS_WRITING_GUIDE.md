@@ -190,7 +190,10 @@ circulation, the settled choices are:
   the frame, normal, and tangents. The tool and the surface happen to be the
   same material in this rig, which makes `workpiece` read as if it might be the
   tool. It is not — the robot holds the tool; the surface is fixtured and
-  stationary.
+  stationary. Because both are flat and wooden, the two must never be allowed
+  to blur: **`surface` always means the contacted plane.** The tool's own flat
+  sides are the **tool face** or the **grinding face**, never a bare `surface`,
+  and their measurements are `tool-face dimensions`.
 - **contact point** for the physical point the tool touches, \(p_C\), with
   \(r_C=p_C-p_{\mathrm{TCP}}\). It is a different point and the two are
   never used for one another.
