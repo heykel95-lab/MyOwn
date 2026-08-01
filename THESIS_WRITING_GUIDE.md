@@ -32,6 +32,48 @@ Use “aim”, “objective”, and “investigation” sparingly. Avoid proposa
 for completed work (`will investigate`, `is planned`, `will be evaluated`).
 Future work is the only place for proposed experiments.
 
+## Abstract and Kurzfassung
+
+The Abstract carries the general shape of the work and nothing more:
+
+1. the problem, stated generally;
+2. the idea used to attack it;
+3. what was found, in general terms;
+4. what limits the generality.
+
+**Do not put measured values in the Abstract.** No degrees, no stiffness
+values, no run counts, no distances. A reader who wants a number goes to
+Chapter 5. State the direction, the ordering, and the sign of an effect
+instead: `reduced alignment monotonically`, `no tested setting improved on the
+most compliant baseline`, `opposite for the two surface tangents`.
+
+Symbol names that identify a thing rather than measure it — the tangents
+\(t_1\) and \(t_2\), the robot's degrees of freedom — are not values and may
+stay where dropping them would make a finding vague.
+
+This rule costs the Abstract its specificity, which is the trait that
+otherwise marks prose as the author's own (see [THESIS_VOICE.md](THESIS_VOICE.md)).
+Accept that for the Abstract and the Kurzfassung only; every other chapter
+keeps its numbers.
+
+**Each must fit on a single page.** The Abstract and the Kurzfassung are one
+page each, not one page combined, and neither may spill onto a second. This is
+a hard constraint: if new material has to go in, something else comes out.
+
+The two are translations of one another and must stay matched in content,
+certainty, and structure. A cut on one side is a cut on the other.
+
+Where the two rules collide, content parity wins. German needs roughly a fifth
+more space than English for the same statements, so a Kurzfassung that mirrors
+a full-page Abstract can run a few lines over. That is accepted here rather
+than weakening the German. Do not close such a gap by compounding German nouns
+to shorten the word count: long compounds break lines badly and fit *fewer*
+words on the page, not more.
+
+Check the constraint in the compiled PDF, not by word count — the count is only
+an early warning. At the current settings roughly 520 words fills the page, so
+treat anything beyond about 500 as needing a look at the built document.
+
 ## Roles of the chapters
 
 - Introduction: define the contact-alignment problem, relevant literature gap,
@@ -142,6 +184,13 @@ circulation, the settled choices are:
 - **centre of compliance** for the point the \(6\times6\) stiffness is
   defined about, \(p_c\), with \(r_c=p_{\mathrm{TCP}}-p_c\) as its lever.
   Attributively, `compliance-centre lever`, `compliance-centre coordinate`.
+- **surface** for the flat object the tool is pressed against, and **surface
+  plane** where the plane itself is meant. Not `workpiece`: the only property
+  that matters is the plane the tool contacts, and `surface` already carries
+  the frame, normal, and tangents. The tool and the surface happen to be the
+  same material in this rig, which makes `workpiece` read as if it might be the
+  tool. It is not — the robot holds the tool; the surface is fixtured and
+  stationary.
 - **contact point** for the physical point the tool touches, \(p_C\), with
   \(r_C=p_C-p_{\mathrm{TCP}}\). It is a different point and the two are
   never used for one another.
@@ -452,6 +501,7 @@ Before accepting a revision:
 - check `estimated` versus `measured` force/wrench terminology;
 - check experiment counts, repetitions, units, and parameter values;
 - check predicted versus experimentally confirmed results;
+- check Abstract and Kurzfassung each still fit one page in the compiled PDF;
 - check Abstract, Kurzfassung, Results, and Conclusion for identical certainty;
 - remove duplicated theory and unsupported causal claims;
 - compile both `Thesis.tex` and `Professor_Draft.tex`;

@@ -34,6 +34,20 @@ If a passage was drafted with a tool, the correct fix is the same one applied
 below: rewrite it from your own equations, code, and measurements until it says
 something only you could say.
 
+## Two limits on this work
+
+**Do not aim for zero.** Past a point, editing for a detector score becomes its
+own tell: prose scrubbed of every connective and levelled to a uniform
+specificity reads as processed, not as written. Stop at clearly better. A
+paragraph that still has an ordinary sentence in it is fine.
+
+**Do not assume.** If a fact about the controller, the campaign, or the
+hardware cannot be verified from the code, the logs, or the author, it does not
+go in the thesis at all — not as a hedge, not as a plausible-sounding filler,
+not as a placeholder to firm up later. Leave the gap and say it is a gap.
+Inventing a limitation, an assumption, or a run count to complete a sentence
+pattern is a worse fault than the missing sentence.
+
 ## The seven flagged patterns
 
 ### 1. Textbook restatement
