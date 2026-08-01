@@ -241,6 +241,37 @@ qualifying, the description column carries the qualification: the Jacobian's
 description says which rows come first, and the singular values say that their
 value follows the length unit of the linear rows.
 
+## Abbreviations
+
+Every abbreviation is spelled out once, at its first appearance in the running
+text, with the short form in brackets. After that the short form alone is used:
+
+```tex
+seven-degree-of-freedom (\abbr{DOF}) Franka Emika Panda
+the singular value decomposition (\abbr{SVD})
+```
+
+Declare it in `config/acronyms.tex` so it reaches the abbreviation list:
+
+```tex
+\DeclareThesisAcronym{SVD}{SVD}{Singular Value Decomposition}
+```
+
+`\abbr` does not expand anything by itself. It prints the short form and marks
+the entry as used so the list can include it, which means a first use that is
+not spelled out by hand stays unexplained everywhere.
+
+A symbol list entry does not count as introducing an abbreviation. `SVD`
+appeared in a symbol description and a group heading while the running text
+never once expanded it.
+
+Axis-label strings such as `base XYZ` are not abbreviations and are not
+declared; they name the axes rather than standing in for words.
+
+Check with a scan for two-to-six-letter capital tokens in the chapters, not by
+memory — the ones that slip through are the ones that feel too familiar to
+notice.
+
 ## Software identifiers in the text
 
 Do not print long configuration or field names in the running text. A name
