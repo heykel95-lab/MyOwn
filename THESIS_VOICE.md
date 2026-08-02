@@ -480,6 +480,7 @@ Flagged, [02_theoretical_background.tex:185](chapters/02_theoretical_background.
 
 | Weak | Use |
 |---|---|
+| a zero flag / the flag is enabled | setting \(\mu_i=0\); the entry was set to one |
 | puts X in frame Y | expresses X in Y, maps X into Y |
 | uses | applies, evaluates, forms, drives |
 | reads / gets | obtains, retrieves, takes |
@@ -492,6 +493,13 @@ Flagged, [02_theoretical_background.tex:185](chapters/02_theoretical_background.
 
 **Rule.** A vague verb usually hides an unfinished thought. Replacing it forces
 the missing specific into the sentence, which is the actual gain.
+
+**Software vocabulary for a mathematical quantity.** `flag`, `enabled`,
+`toggled`, `switched on` name a boolean in the source, not the quantity the
+equation defines. Where the text has just written \(\mu_i\in\{0,1\}\), the
+sentence after it says `setting \(\mu_i=0\)`, not `a zero flag` — otherwise the
+same object carries two names one line apart. `contact flags` became `contact
+indications` for the same reason.
 
 ### 4. Evaluative filler
 
@@ -660,6 +668,17 @@ that, and it also removes the author from the page entirely.
 fitted the plane`, `The controller computer ran Ubuntu 20.04.3`, `The optional
 pre-grind gate stayed disabled for every reported run`. Present tense stays for
 the controller's standing behaviour, for equations, and for what a table shows.
+
+**The run procedure is the exception.** §4.5 describes the standing sequence
+every run followed, which is closer to an algorithm than to an observation, and
+the author's preference is the present indicative there: `The active parameter
+set is recorded, and the Panda moves to the configured initial joint pose`. What
+must not appear is the **imperative** — `Record the parameter set`, `Move the
+Panda`, `Seat the tool` — which reads as an operator manual and leaves a reader
+unable to tell a description of what happened from an instruction about what
+should happen. Use the present indicative, passive where the actor is the
+experimenter and active where the actor is the controller or the robot.
+Statements about what was *measured* or *observed* stay in the past regardless.
 
 ### 12. The templated section
 

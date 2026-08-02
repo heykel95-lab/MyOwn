@@ -485,13 +485,50 @@ visible from inside any single chapter:
   parameter table gives a \(4.0\,\mathrm{s}\) timeout and every run ended on
   that timeout.
 - **Which procedure.** The physical plane was described both as fitted from
-  three probed points and as estimated by seating the tool face. These are
-  different measurements of the same quantity.
+  three probed points and as estimated by seating the tool face. Resolved: the
+  physical plane comes from **four probed points**, three fitted and one held
+  out at \(0.82\,\mathrm{mm}\), repeated three times; the **seatings** measured
+  the grinding-face normal, not the surface. The controller holds only the
+  configured plane, set from the tilt angles \(a\) and \(b\), and contains no
+  calibration routine at all — so any sentence implying the controller measured
+  the surface is wrong by construction.
 
 **Rule.** A number or configuration fact has one home — the methodology chapter
 or the parameter appendix — and every other mention cross-references it rather
 than restating it from memory. Before submitting, grep each key value across all
 chapters and confirm a single answer.
+
+## What belongs in the thesis at all
+
+**State the levels actually tested, never an illustrative sweep.** Section 4.4.4
+carried a generic five-level scaling \(\alpha\in\{0.5,0.75,1,1.25,1.5\}\) and
+then spent a paragraph explaining that this was *not* what was run. A
+hypothetical set up only to be dismissed wastes the reader and invites the
+question of which numbers are real. Give the tested values: \(5\), \(15\) and
+\(50\,\mathrm{Nm/rad}\); \(300\), \(800\) and \(2000\,\mathrm{N/m}\).
+
+**Separate theory from configuration.** Chapter 2 carries the law and its
+assumptions; Chapter 3 carries what was built and which options were selected.
+An enumeration of selectable software modes is a control-design decision, not
+theory — the four null-space modes moved out of Chapter 2 for that reason, and
+the theory chapter now gives one complete null-space torque instead. The same
+split applies to limitations: mathematical properties of a method stay with the
+method, implementation shortcomings go to Chapter 3 or the limitations.
+
+**Tooling built only for your own analysis is not thesis content.** A second
+diagnostic log existed to support offline inspection and appeared in three
+chapters and two appendices before being removed. If a facility did not
+contribute to a reported result, it does not need documenting. The same applies
+to exception handling, persistence ordering, and any other detail that matters
+only when debugging a run.
+
+**Do not trim a derivation the reader needs.** An earlier pass reduced the
+orientation-error and forward-kinematics sections to a few lines each, on the
+grounds that the material is standard. Both were restored from
+`a8f8337^`, because a thesis that states a convention without deriving it leaves
+the examiner unable to check the sign work that the whole controller depends on.
+Length targets for Chapter 2 are suspended: cut repetition and dimension
+restatements, not derivations.
 
 ## Evidence and claims
 

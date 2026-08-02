@@ -256,16 +256,21 @@ in \cref{eq:implemented_surface_normal_angles}. Approach, clearance, feature
 projection, surface frame and commanded tool orientation all follow from it.
 
 The physical orientation of the surface was estimated afterwards and only for
-the offline alignment metric, by seating the tool face against the surface and
-reading back the robot pose. Three repetitions gave
-\(a_{\mathrm{phys}}=-0.72\pm0.31^\circ\) and
-\(b_{\mathrm{phys}}=14.99\pm1.91^\circ\), from which \(n_{\mathrm{phys}}\)
-follows. Between \(n_{\mathrm{cfg}}\) and \(n_{\mathrm{phys}}\) lies
-\(10.01^\circ\), and that separation is the initial geometric misalignment the
-alignment study works on. How repeatable the hand-seating procedure is limits
-how far an absolute residual angle can be trusted. A change measured within one
-run is less exposed to the offset, which is why the reported outcome is a
-change.
+the offline alignment metric. Four points on the surface were probed with the
+robot; three of them fitted the plane and the fourth was held out of the fit,
+lying \(0.82\,\mathrm{mm}\) from it. The procedure was repeated three times,
+giving \(a_{\mathrm{phys}}=-0.72\pm0.31^\circ\) and
+\(b_{\mathrm{phys}}=14.99\pm1.91^\circ\) in the tilt parametrisation of
+\cref{eq:implemented_surface_normal_angles}, from which \(n_{\mathrm{phys}}\)
+follows. The controller itself plays no part in this estimate: it is configured
+with \(a\) and \(b\) directly and has no calibration routine.
+
+Between \(n_{\mathrm{cfg}}\) and \(n_{\mathrm{phys}}\) lies \(10.01^\circ\), and
+that separation is the initial geometric misalignment the alignment study works
+on. The repeatability of the probing limits how far an absolute residual angle
+can be trusted, the spread on \(b_{\mathrm{phys}}\) being the larger of the two.
+A change measured within one run is less exposed to that offset, which is why
+the reported outcome is a change rather than a final absolute angle.
 
 \section{Contact Geometry}
 \label{sec:contact_geometry}
@@ -1146,59 +1151,58 @@ They are configuration values rather than an experimental case, and no result in
 Every run followed the sequence below, in this order:
 
 \begin{enumerate}
-    \item Record the active parameter set. Move the Panda to the configured
-    initial joint pose, or use the optional damped manual guidance and recapture
-    the selected start pose.
-    \item Execute the configured gripper action. In the current configuration
-    this is a grasp at \(70\,\mathrm{mm}\) width and \(60\,\mathrm{N}\), rather
-    than an
-    open command. Seat the tool consistently within its approximately
-    \(\pm2^\circ\) rotational play about \(y_{\mathrm{EE}}\), and record this
-    non-rigid mounting condition with the run metadata.
-    \item Construct the known plane and
-    \(R_{\mathrm{surface}}=[t_1,t_2,n_s]\), construct the \(40\times120\) mm tool
-    face, and set the active base-XYZ compliance-centre offset. Configure the Franka collision
-    behaviour before starting torque control.
-    \item In \texttt{approach\_orient}, hold the TCP position and rotate the
-    physical \(+Z_{\mathrm{EE}}\) axis toward \(-n_s\). Continue only after at
-    least \(0.5\,\mathrm{s}\) and a tool-axis error no greater than
-    \(0.035\,\mathrm{rad}\).
-    \item In \texttt{approach\_descend}, move along \(-n_s\) at
+    \item The active parameter set is recorded, and the Panda moves to the
+    configured initial joint pose. Optionally it is repositioned under damped
+    manual guidance, and the selected start pose is recaptured.
+    \item The configured gripper action is executed: in the current
+    configuration a grasp at \(70\,\mathrm{mm}\) width and \(60\,\mathrm{N}\)
+    rather than an open command. The tool is seated as consistently as its
+    approximately \(\pm2^\circ\) rotational play about \(y_{\mathrm{EE}}\)
+    allows, and that non-rigid mounting condition is recorded with the run
+    metadata.
+    \item The known plane and \(R_{\mathrm{surface}}=[t_1,t_2,n_s]\) are
+    constructed, together with the \(40\times120\) mm tool face and the active
+    base-XYZ compliance-centre offset. The Franka collision behaviour is
+    configured before torque control starts.
+    \item In \texttt{approach\_orient} the TCP position is held while the
+    physical \(+Z_{\mathrm{EE}}\) axis rotates toward \(-n_s\). The phase
+    continues only after at least \(0.5\,\mathrm{s}\) and a tool-axis error no
+    greater than \(0.035\,\mathrm{rad}\).
+    \item In \texttt{approach\_descend} the reference moves along \(-n_s\) at
     \(0.1\,\mathrm{m/s}\), with a maximum commanded travel of
-    \(0.640\,\mathrm{m}\). Select the leading face/edge/corner continuously.
-    Transition when the exact most-leading corner height is at most
-    \(20\,\mathrm{mm}\) above the plane; the averaged tied feature is used for
-    the projected reference and can differ by at most the
+    \(0.640\,\mathrm{m}\), and the leading face, edge or corner is selected
+    continuously. The transition occurs when the exact most-leading corner
+    height is at most \(20\,\mathrm{mm}\) above the plane; the averaged tied
+    feature supplies the projected reference and can differ by at most the
     \(0.1\,\mathrm{mm}\) tie tolerance. Estimated force is logged and printed
-    but does not trigger this transition. The enabled pre-set-up gate holds
-    the reached pose until the operator presses Enter.
-    \item At this clearance hand-off, freeze the selected tool feature, TCP pose,
-    orientation reference, external-wrench baseline, and projected
-    leading-feature surface reference. The source variable names contain
-    \texttt{first\_contact}, but no force contact has yet been declared.
-    \item In \texttt{set\_up}, ramp the signed push coordinate continuously from
+    but does not trigger this transition. The enabled pre-set-up gate holds the
+    reached pose until the operator presses Enter.
+    \item At this clearance hand-off the selected tool feature, TCP pose,
+    orientation reference, external-wrench baseline and projected
+    leading-feature surface reference are frozen. The source variable names
+    contain \texttt{first\_contact}, but no force contact has yet been declared.
+    \item In \texttt{set\_up} the signed push coordinate ramps continuously from
     its captured value, approximately \(-0.020\,\mathrm{m}\), toward
-    \(+0.180\,\mathrm{m}\) at
-    \(0.050\,\mathrm{m/s}\) along \(-n_s\). Apply the current coupled compliance-centre
-    \(6\times6\) stiffness and damping. The approximately \(0.200\,\mathrm{m}\)
-    coordinate span takes \(4\,\mathrm{s}\), matching the timeout; the final
-    \(+0.180\,\mathrm{m}\) coordinate is a virtual post-plane spring reference,
-    not a claim of \(180\,\mathrm{mm}\) physical penetration. After
-    \(2\,\mathrm{s}\), a \(150\,\mathrm{Nm}\) change in the model-estimated
-    external-moment norm may end the phase. Operationally, this is a permissive
-    placeholder rather than a calibrated contact criterion; unless such a
-    large change occurs, the
-    independent \(4\,\mathrm{s}\) timeout governs the transition.
-    \item In \texttt{grind}, retain the final set-up preload and command a
-    quintic smooth ping-pong sweep of \(0.03\,\mathrm{m}\) amplitude at
-    \(0.2\,\mathrm{Hz}\) along \(t_2\). In the callback that satisfies the
-    set-up exit condition, the controller switches immediately, without gain
-    interpolation, to the decoupled set-up gain blocks; the point-shifted branch
-    is no longer active. A wrench and \(J^\top w_{\mathrm{cmd}}\) step is
-    therefore possible at this hand-off.
-    \item Stop with \texttt{e+Enter}, persist the buffered log, and evaluate the
-    EE-inferred tool-axis error, edge/TCP displacement, commanded joint-torque
-    trace, and phase timing.
+    \(+0.180\,\mathrm{m}\) at \(0.050\,\mathrm{m/s}\) along \(-n_s\), under the
+    coupled compliance-centre \(6\times6\) stiffness and damping. The
+    approximately \(0.200\,\mathrm{m}\) coordinate span takes \(4\,\mathrm{s}\),
+    matching the timeout; the final \(+0.180\,\mathrm{m}\) coordinate is a
+    virtual post-plane spring reference and not a claim of
+    \(180\,\mathrm{mm}\) physical penetration. After \(2\,\mathrm{s}\), a
+    \(150\,\mathrm{Nm}\) change in the model-estimated external-moment norm may
+    end the phase. This is a permissive placeholder rather than a calibrated
+    contact criterion, so unless such a large change occurs the independent
+    \(4\,\mathrm{s}\) timeout governs the transition.
+    \item In \texttt{grind} the final set-up preload is retained and a quintic
+    smooth ping-pong sweep of \(0.03\,\mathrm{m}\) amplitude at
+    \(0.2\,\mathrm{Hz}\) is commanded along \(t_2\). In the callback that
+    satisfies the set-up exit condition, the controller switches immediately,
+    without gain interpolation, to the decoupled set-up gain blocks; the
+    point-shifted branch is no longer active. A wrench and
+    \(J^\top w_{\mathrm{cmd}}\) step is therefore possible at this hand-off.
+    \item The run stops with \texttt{e+Enter}, the buffered log is persisted,
+    and the EE-inferred tool-axis error, edge and TCP displacement, commanded
+    joint-torque trace and phase timing are evaluated.
 \end{enumerate}
 
 Between repetitions of a controlled comparison, only the declared independent
