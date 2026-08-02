@@ -14,10 +14,15 @@ Load the rules for the kind of file being touched, not all of them at once.
 ## Thesis prose
 
 Read [THESIS_VOICE.md](THESIS_VOICE.md) before writing or rewriting any prose —
-every time, not from memory of an earlier session. It carries the sentence-level
-voice rules written from a detector pass over Chapters 1 and 2: the flagged
-patterns, the weak-verb replacement table, the paragraph rewrite procedure, and
-the originality rules.
+every time, not from memory of an earlier session. Open the file even for a
+one-sentence edit. It carries the flagged patterns, the weak-verb replacement
+table, the paragraph rewrite procedure, and the originality rules.
+
+Its **Register** section, at the top, governs everything else in it. Plain
+technical statements, never compressed slogans; interpretations cross-referenced
+to the table or figure they rest on; certainty bounded to one configuration and
+three repetitions; varied paragraph architecture rather than varied openers.
+Where an older rule in that file conflicts with Register, Register wins.
 
 This applies to new text, rewrites, and edits alike. If the user asks to
 "rewrite this" or "make this less AI", the answer is the rewrite procedure in

@@ -8,6 +8,362 @@ flagged specific, repeatable prose patterns.
 **Read this before writing or rewriting any thesis prose.** Every example below
 is real text from this thesis, not invented illustration.
 
+**Start with the next section.** *Register* was added after a supervisor read
+the draft and found the opposite failure from the one the rest of this file was
+written to fix: not machine flatness but literary compression. Where the two
+disagree, Register wins.
+
+## Register: plain technical statement, not slogan
+
+An earlier pass over this thesis chased variety — short sentences, unexpected
+openers, a different lead for every section. It overshot. The result was a
+results chapter whose paragraphs opened on crafted one-liners:
+
+> Nothing tested came close to the lever.
+> The floor came first.
+> One setting misbehaves.
+> The whole of the null-space evidence.
+> The limitation bites.
+> Four contributions carry the work.
+> Which side the lever sits on decides the outcome.
+
+Each is grammatical and each is short, which is what the rhythm rules asked
+for. None of them is how an engineer states a result. They read as slogans
+written to be quotable, and a reader who meets six of them stops trusting the
+prose around them.
+
+**Rule.** Open a paragraph with the technical statement itself. If a sentence
+would work as a pull quote, it is wrong for this thesis.
+
+| Slogan | Technical statement |
+|---|---|
+| Nothing tested came close to the lever. | The compliance-centre lever produced the largest effect among the parameters investigated. |
+| The floor came first. | The zero-tilt condition was used as the experimental baseline. |
+| One setting misbehaves. | The \(10^\circ\) \(t_2\) condition showed substantially greater variability than the other settings. |
+| The limitation bites. | This limitation affects the interpretation of the measured improvement. |
+| Four contributions carry the work. | The main contributions of this thesis are the following. |
+| Which side the lever sits on decides the outcome. | The sign of the lever strongly affects the resulting alignment response. |
+| That is the whole of the null-space evidence. | No further null-space evidence was recorded. |
+
+### Impersonal voice: no first person, and the author never acts in the sentence
+
+**Never write `I`, `we`, `our`, `us`, `my`, or `the author`.** Not in the
+running text, not in a caption, not in an appendix. The thesis currently has
+none; keep it that way.
+
+The rule goes further than the pronoun. Anything **the author did to the
+apparatus, the campaign, or the data** is written in the passive:
+
+| Author as agent | Passive |
+|---|---|
+| Case B raised the rotational stiffness and held the orthogonal entry at 5 Nm/rad. | In Case B the rotational stiffness was raised alone, and the orthogonal entry was held at 5 Nm/rad. |
+| Case D held every gain at baseline and moved only the lever. | In Case D every gain was held at its baseline value and only the lever was moved. |
+| A fourth column placed the compliance centre on the face. | In a fourth column the compliance centre was placed on the face. |
+| The compliance-centre study sampled three tangential levels. | In the compliance-centre study three tangential levels were sampled. |
+| Three probed points fitted the surface plane. | The surface plane was fitted from three probed points. |
+| This thesis built a controller for the Panda. | In this thesis a controller was implemented for the Panda. |
+| The probing used the same robot and tool. | The probing was carried out with the same robot and tool. |
+
+Naming a case, a chapter, or "this thesis" as the grammatical subject of an
+action is the same first-person sentence with the pronoun swapped out. `Case D
+held` is `I held`. Rewrite it as `In Case D … was held`.
+
+**Where active voice stays.** The passive rule applies to author actions, not to
+every sentence — an all-passive chapter is unreadable and would break the rhythm
+rules below. Keep the active voice where the grammatical subject is a physical
+quantity, an effect, or an artefact behaving on its own:
+
+> The improvement fell monotonically as \(K_{R,t_1}\) rose.
+> Stiffening the axis being corrected returned less angle on both tangents.
+> The sign of the lever determines the direction of the induced moment.
+> The controller realises a frame-consistent Cartesian impedance in real time.
+> \Cref{tab:results_case_d} shows …
+
+Those are not the author acting; they are the measured system behaving, and the
+passive would obscure what moved what. The test: **could the sentence begin with
+"I"?** If yes, passivise. If the subject is a stiffness, an angle, a load, a
+lever, a table, or the controller, leave it active.
+
+Tense follows §11 below — past for what was done, present for standing
+behaviour, equations, and what a table shows.
+
+**Reserve the passive for actions, not for everything.** The verbs that take it
+are `was calculated`, `was selected`, `was measured`, `was implemented`, `was
+stored`, `was evaluated`, `was constructed`, `was used`. Mathematical and
+factual statements stay active, because the passive would only add weight:
+
+> The Jacobian maps joint velocity to Cartesian velocity.
+> \Cref{fig:software_data_flow} shows the signal flow.
+> The probe distance determines the evaluation points.
+> At full row rank, the null space is one-dimensional.
+
+Making every sentence passive is its own tell: a uniformly passive chapter is
+heavier to read and sounds *more* machine-made, not less. The target is
+impersonal academic prose that mixes passive experimental description with
+direct mathematical statement.
+
+**A passive sentence still has to carry content.** The failure mode is a short,
+generic passive clause that names an action and stops:
+
+| Too short and generic | Carries the substance |
+|---|---|
+| Four selectable laws are implemented. | Four null-space control configurations were implemented. These comprised an inactive mode, projected joint damping, a singular-value-based torque, and a combination of the latter two terms. |
+| The implementation constructs the torque projector from the full \(6\times7\) geometric Jacobian. | The torque projector was constructed from the full \(6\times7\) geometric Jacobian. At full row rank, the resulting null space is one-dimensional. |
+
+Note the second pair: the action goes passive, and the mathematical consequence
+that follows it stays active. That alternation is what keeps the register from
+going flat. Where a set of options exists, name them and say which one was used
+— `The combined configuration was used in the experiments reported in the
+following chapters` is worth more than the count of the options alone.
+
+### One main claim per sentence
+
+The commonest remaining fault is the algorithmically compressed sentence — one
+clause carrying six facts. It is grammatical, and it is the clearest signal
+left:
+
+> In this thesis a real-time Cartesian impedance controller was implemented for
+> the 7-\abbr{DOF} Panda, closing the remaining angle through the impedance
+> itself by shifting the \(6\times6\) stiffness and damping to the TCP from a
+> chosen centre of compliance during set-up.
+
+That is *what* was implemented, *on which robot*, *what it achieves*, *how*,
+*where the matrices go*, and *when* — in one sentence. Unpack it into steps so
+the reasoning is presented in order:
+
+> A real-time Cartesian impedance controller was implemented on the
+> 7-\abbr{DOF} Panda. During set-up, the \(6\times6\) Cartesian stiffness and
+> damping were spatially shifted from a selected centre of compliance to the
+> TCP. This coupling allows the normal contact force to generate a corrective
+> moment, which reduces the angular misalignment.
+
+Same register, same formality, same passive voice. The difference is that each
+sentence advances one step.
+
+**Rule.** If a sentence answers more than about two of *what / where / how /
+when / why*, split it.
+
+### Give the observation before the conclusion
+
+A polished headline followed by its evidence reads as announced. The same
+content ordered measurement-first reads as derived:
+
+| Announced | Derived |
+|---|---|
+| Lever placement had the largest measured influence of the parameters examined. Sixty millimetres … multiplied the improvement by about eleven. | The alignment response changed by several degrees when the compliance-centre lever was displaced by 60 mm. The changes produced by the tested stiffness values were substantially smaller. Within the investigated range, the compliance-centre position therefore had the largest measured influence. |
+
+Not every paragraph — a section that has already given its numbers may state the
+conclusion first. But where a claim is the section's main finding, put the
+measurement in front of it.
+
+### Let the cases differ in length
+
+Cases A–E were given the same shape *and* the same length: bold name, headline,
+numeric comparison, interpretation, limitation. Visually clean, and completely
+predictable.
+
+Some findings need more explanation than others. **Case D is the main result
+and should be the longest entry; Case C's effect was limited and its entry
+should be short.** Do not pad a weak case to match a strong one, and do not
+compress the main finding to fit the pattern.
+
+### Ordinary technical language, not crafted phrasing
+
+A second list of flagged expressions, from the pass over the conclusion. These
+are subtler than the slogans — several are almost conversational, which is what
+makes them stand out against the formal text around them.
+
+| Crafted | Ordinary |
+|---|---|
+| taken the wrong way | applied with the opposite sign |
+| landed between the two values | produced values between the two measured responses |
+| Both sit close to | Both results are close to |
+| works that argument through | provides the corresponding geometric explanation |
+| governs how the results should be read | affects the interpretation of the results |
+| survives a change | remains valid under changes |
+| three things stand between X and Y | the inference is affected by three sources of uncertainty |
+| two further caveats sit on that implementation | two additional limitations apply |
+| the probe configurations want checking | the probe configurations should be checked |
+| set-up duration deserves confirmation | set-up duration should be verified |
+| which bounds what the present arrangement can resolve | improvements of approximately this magnitude were therefore not interpreted as effects of the commanded tilt |
+| carry the controller / carry the contribution | are used in the controller / present the corresponding results |
+| the experiments probe that coupling | the effects of … were investigated in 75 contact runs |
+| breaks that assumption | the actual surface pose may differ from the programmed pose |
+| that angle has nowhere to go | that angular deviation cannot be absorbed by the commanded motion |
+| Direction is what a contact task needs. | A contact task requires this compliance to be direction dependent. |
+| Three frames carry the controller | Three right-handed coordinate frames are used in the controller |
+| what each case showed | the conclusions and the work that remains |
+| whether the trade was struck well | the reported experiments do not evaluate that trade-off |
+| a bounded engineering seed | an initial engineering setting rather than an optimised parameter |
+| quietly averaged | the record was inspected and the discrepancy resolved before analysis |
+| Nothing was discarded. | All 75 runs were retained for analysis. |
+| proves nothing about / settles nothing about | does not isolate / is not evaluated for |
+| would invert the story | is therefore not plotted as … unless … is first reconstructed |
+| deserves particular care | requires particular care |
+| Geometric sense in a stiffness matrix does not make it fit for real hardware | A geometrically valid stiffness matrix does not by itself ensure acceptable hardware behaviour |
+
+Note the last row. `bounds what the arrangement can resolve` is abstract; the
+replacement says what was actually *done* with the baseline. Prefer the concrete
+statement of use over the abstract statement of property.
+
+### Separate an algorithm from its limitations
+
+Chapter 3's null-space section attached a disclaimer to almost every sentence of
+the algorithm — the probes are tangent approximations, they are not checked
+against joint limits, the magnitude is fixed, the projector is kinematic, the
+Jacobian is unscaled. Each is true and each must stay. Interleaved, they make
+the algorithm hard to follow and make every sentence read as generated together
+with its own caveat.
+
+**Rule.** State the implemented algorithm first, without qualification. Collect
+the limits into their own subsection afterwards. Chapter 3 now does this at
+*Limits of the Implemented Null-Space Law*; Chapter 4 cross-references that
+subsection instead of repeating the list.
+
+The same applies to theory: assumptions belong in Chapter 2, but
+implementation-specific shortcomings belong in Chapters 3, 4, or 6.
+
+### Do not explain the same structure three times
+
+Three sections were describing one control loop: the bullet list opening
+Chapter 3, the numbered callback order at the end, and an implementation summary
+after that. The summary added nothing and has been removed; the opening list was
+reduced to prose that points forward to the authoritative one.
+
+**Rule.** One authoritative statement of any sequence. A chapter does not need a
+summary section when the next chapter follows immediately from it — a
+transition sentence is enough.
+
+### Avoid the repeated contrast pattern
+
+`not X, but Y`; `not only X, but also Y`; `can conceal but not create`;
+`identifies X but does not establish Y`. Individually precise, and §5 and §10
+below already cover the disclaimer form. What was not covered is the *rate*: as
+a habitual construction it produces a recognisable rhythm. Use ordinary
+declarative sentences unless the contrast is the point.
+
+### Anchor the interpretation to the table or the figure
+
+The draft announced conclusions and left the reader to find the evidence.
+A researcher points at the evidence first, or at least names it in the same
+sentence:
+
+> As shown in \cref{tab:results_case_d}, moving the compliance centre had a much
+> larger effect than changing either stiffness parameter.
+
+> The large standard deviation in the \(10^\circ\) \(t_2\) condition is caused
+> primarily by one repetition.
+
+This makes the interpretation traceable and shows that it came from the data
+rather than from the argument. At least one explicit `\cref` to the table or
+figure per results subsection, placed where the claim is made.
+
+### Vary the architecture, not the vocabulary
+
+Nearly every paragraph in the draft ran: strong opening claim, two numerical
+comparisons, definitive interpretation, limitation or contrast. The repetition
+is at paragraph level, so no amount of sentence-level editing reaches it.
+
+Vary what a paragraph *does*. Some state the observation and stop. Some state
+the purpose of the comparison before its result. Some carry only the anomaly.
+Some are two sentences long. This replaces §12 below, which told you to vary the
+*opener* — that produced the slogan table above.
+
+### Calibrate the certainty to the evidence
+
+The draft stated conclusions from one configuration and three repetitions in
+language fit for a settled result. Weaken the verb, not the finding:
+
+| Overclaimed | Matched to the evidence |
+|---|---|
+| proves | indicates, supports, is consistent with |
+| decides the outcome | strongly influences the outcome |
+| belongs to the surface frame | is more consistent with an effect associated with the surface frame |
+| did nothing | produced no detectable change |
+| dominates everything else examined | had the largest measured influence within the tested range |
+| The three parameters are not of comparable weight. | In the investigated configuration, the compliance centre had a considerably stronger effect than either stiffness. |
+
+`within the tested range`, `in the investigated configuration`, `over this
+range` cost four words and are the difference between a defensible claim and
+one an examiner can knock down. The existing hedging rules under *Hedge to the
+evidence* still apply on top of this.
+
+Including a limitations section does not license certainty elsewhere. These
+survived a first pass because each is locally true, and each still reads as
+final:
+
+| Final | Tied to the scope |
+|---|---|
+| the tangent-axis asymmetry stands | the measured asymmetry between the tangent axes remained after this limitation was accounted for |
+| the two entries did not act independently | within the tested range, the results indicate that the two entries were not independent |
+| the favourable sign is opposite on the two tangents | for the investigated configuration, opposite favourable lever signs were observed for the two tangent directions |
+
+One robot, one tool, one surface, one parameter range. This is not hedging
+for its own sake — it connects each claim to the scope that was actually tested.
+
+### Describe what was measured, not a narrative of what happened
+
+`the unfavourable sign removed the correction rather than reducing it` survived
+several passes because it is vivid and sounds precise. It describes an event
+that did not occur: nothing was removed. A correction that never happened cannot
+be taken away. What the log shows is that with the opposite lever sign, the
+improvement was \(0.02\pm0.06^\circ\) — that is, **almost no alignment
+improvement was measured**.
+
+| Narrative | Measured |
+|---|---|
+| the unfavourable sign removed the correction rather than reducing it | with the opposite sign, almost no alignment improvement was measured |
+| no tested setting improved on the most compliant baseline | the largest improvement was obtained with the lowest tested rotational stiffness |
+| displacement along the normal produced no change | moving the centre along the surface normal produced no measurable change above the interpretation threshold |
+| the favourable sign is opposite on the two tangents | opposite favourable lever directions were observed for tilts about \(t_1\) and \(t_2\) |
+
+The pattern: a verb implying an action on a quantity (`removed`, `cancelled`,
+`destroyed`, `beat`) where the log holds only a number near zero. Replace it
+with what the measurement says. `observed` and `measured` are the right verbs
+when reporting a campaign, and the negative form is `no measurable change above
+the interpretation threshold`, never a bare `no change`.
+
+### What must never be done to sound less generated
+
+Authenticity comes from the work, not from damage to the prose. Never:
+
+- introduce spelling or grammatical errors on purpose;
+- insert casual or conversational expressions to sound human;
+- replace a precise technical term with a vaguer synonym;
+- use the first person where the thesis requires impersonal writing;
+- passivise every sentence;
+- vary sentence length at random, without improving the explanation;
+- add laboratory observations that were not recorded;
+- invent a reason for a design decision after the fact;
+- paraphrase the same passage repeatedly through a tool.
+
+A detector may still score technical writing highly: equations, fixed
+terminology, passive constructions, and predictable structure all push the score
+up regardless of authorship. **The score is not the objective.** The objective is
+that every statement can be defended from the implementation, the experimental
+records, the figures, and the measurements.
+
+### Do not reproduce the results chapter in the conclusion
+
+The conclusion restated almost every value and standard deviation from
+Chapter 5. It needs the finding of each case, not its measurements. Keep a
+number there only where the conclusion is unintelligible without it — a
+resolution floor, a bound. Relations (`about eleven times`, `roughly a
+quarter`) survive where the absolute pair does not, which also satisfies the
+relation rule in THESIS_WRITING_GUIDE.md.
+
+The per-case entry required by that guide stays. It shrinks; it does not go.
+
+### One thing this section does not license
+
+The supervisor also asked for real experimental reasoning — why a parameter
+range was chosen, what was observed during the anomalous repetition, how
+tool-mount motion was distinguished from a logging error, whether a finding matched
+expectation. Those sentences would be the most valuable additions to the
+chapter, and **not one of them may be written without the author supplying the
+fact.** Inventing a plausible reason is a worse fault than the missing sentence.
+Ask, or leave the gap.
+
 ## What the detector is actually reacting to
 
 Two honest statements first.
@@ -207,7 +563,13 @@ blocks above are almost perfectly even; the unflagged block at
 forty.
 
 **Rule.** If five consecutive sentences all sit in the 15–25 word band, rewrite.
-A four-word sentence is allowed and lands hard. Use it after a long one.
+A short sentence is allowed after a long one.
+
+**Amended.** This rule previously read "A four-word sentence is allowed and
+lands hard", and that is where the slogans came from. Length variety must fall
+out of the content — a short sentence because the statement is short, not a
+statement compressed to reach a target length. If a four-word sentence is not
+a plain technical statement, it is a slogan; see *Register* above.
 
 ### 8. The chapter-roadmap paragraph
 
@@ -280,7 +642,7 @@ place them where the misreading would happen:
 > spring is sized around, and nothing that was ever measured, certified, or
 > enforced in software.
 
-> No tool travels \(180\,\mathrm{mm}\) into wood, and no such displacement was
+> No tool travels \(180\,\mathrm{mm}\) into the surface, and no such displacement was
 > expected of the robot.
 
 The negation rate fell from 12.6 to 6.2 per thousand words without one
@@ -307,11 +669,24 @@ t2 …`, closing `therefore` generalisation. Once the reader has met Case A, no
 token in Cases B–E is a surprise, and next-token predictability is exactly what
 these tools score.
 
-**Rule.** Vary what each section leads with. One case can open on the anomaly
-(`One setting misbehaves.`), one on the outcome (`Nothing else tested came
-close to the lever.`), one on the question it settles (`If the asymmetry
-belonged to the tool rather than to the surface, …`). The case identifiers and
-the table/figure order stay fixed; the prose around them does not have to.
+**Rule, as originally written and now superseded.** "Vary what each section
+leads with. One case can open on the anomaly (`One setting misbehaves.`), one on
+the outcome (`Nothing else tested came close to the lever.`)…"
+
+Both of those examples are in the slogan table under *Register*. Chasing a
+distinctive opener for each section is what produced them, and it treats a
+paragraph-level problem as a first-sentence problem.
+
+**Replacement rule.** The templating is real and still needs fixing, but at the
+level of what each section *does*, not how it starts. A section whose result is
+a null result is shorter and has no interpretation paragraph. A section
+answering a question states the question first. A section with an anomaly gives
+the anomaly its own paragraph. A section reusing another case's settings as its
+reference says so before the table. Every one of those leads with an ordinary
+technical sentence. The case identifiers and the table/figure order stay fixed.
+
+Read *Vary the architecture, not the vocabulary* under *Register* for what
+replaced this.
 
 ### Vary the frame, keep the term
 
@@ -613,6 +988,36 @@ Attribution and evidence, per the register section:
   range`, or an equivalent bound
 - a parameter value with no reason given, where the reason is "it worked"
 
+Register, per the section at the top of this file:
+
+- Any sentence answering more than two of *what / where / how / when / why* —
+  split it.
+- `taken the wrong way`, `landed between`, `sit close to`, `works that argument
+  through`, `governs how`, `survives a change`, `things stand between`,
+  `caveats sit on`, `wants checking`, `wants instrumenting`, `deserves
+  confirmation`, `bounds what`
+- Are the five case entries all the same length? Case D should be longest,
+  Case C shortest.
+- Does the main finding of a section announce its conclusion before its
+  measurement?
+
+- `\bI\b`, `we`, `our`, `us`, `my`, `the author` — there must be no hits.
+  (Search case-sensitively and expect the index variable \(i\) and the identity
+  matrix \(I\) as false positives.)
+- A case, a chapter, a study, a sweep, a column, or `this thesis` as the subject
+  of an action verb: `Case D held`, `Case C varied`, `the study sampled`,
+  `this thesis built`. Passivise each one.
+- Read every paragraph's first sentence on its own. Would any of them work as a
+  pull quote? Rewrite it as a plain technical statement.
+- Does each results subsection carry at least one `\cref` to the table or figure
+  its claim rests on?
+- `decides`, `dominates`, `proves`, `did nothing`, `is the whole of`, `carry the
+  work`, `came first`, `came close to`, `bites`
+- A conclusion sentence stating a definitive result with no `within the tested
+  range`, `in the investigated configuration`, or equivalent bound
+- Numbers in the conclusion that already appear in the results chapter and are
+  not a bound the conclusion needs
+
 Then check the paragraph as a whole:
 
 - Does every paragraph contain at least one symbol, value, frame, or phase name?
@@ -629,5 +1034,7 @@ And count, over the whole chapter — these are the four from the Chapters 4 and
 - How many `X, not Y` disclaimers, and do they all sit at the end of a
   paragraph? Vary the syntax; keep the content.
 - Is a chapter about completed work written in the present tense?
-- Do consecutive sections share one shape — same opener, same order, same
-  closing move?
+- Do consecutive paragraphs share one architecture — claim, two numbers,
+  interpretation, limitation? That is the pattern to break, and it is invisible
+  one sentence at a time.
+- Does the conclusion reproduce the results chapter rather than summarise it?

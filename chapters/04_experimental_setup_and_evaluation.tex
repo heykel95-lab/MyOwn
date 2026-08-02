@@ -1,16 +1,18 @@
-\chapter{Experimental Methodology}
+﻿\chapter{Experimental Methodology}
 \label{ch:methodology}
 
 \section{Experimental Investigation}
 \label{sec:experimental_question}
 
-Four quantities were varied to find what governs the contact-induced alignment
-of the tool with the surface: the commanded tilt, the rotational stiffness
+Four parameters were investigated: the commanded tilt, the rotational stiffness
 about each surface tangent, the translational stiffness perpendicular to the
-tilted tangent, and the placement of the virtual centre of compliance. All four
-reach the result through one mechanism. The point-shifted Cartesian impedance
-of the preceding chapters turns a translational contact force into a moment, so
-whatever changes the force also changes the rotation that closes the gap.
+tilted tangent, and the position of the virtual centre of compliance. Each can
+change the rotation observed during contact. The commanded tilt sets the initial
+angular error. The two stiffness entries determine how strongly the controller
+resists the resulting translational and rotational motion. The compliance-centre
+position determines how much of the translational contact response is converted
+into a moment, through the point-shifted impedance developed in the preceding
+chapters.
 
 Two things separate these measurements from the earlier campaign preserved in
 \cref{app:previous_campaign}. The surface plane and the grinding-face axis were
@@ -26,17 +28,22 @@ grinding-face normal, leaving a held-out angular residual of \(0.50^\circ\).
 Projecting the direction from the first probed point to the second gives
 \(+t_1\), with \(t_2=n_s\times t_1\).
 
-Every condition shares one baseline impedance in the surface frame,
+Every condition shares one baseline impedance. Its translational block is
+diagonal in base coordinates and its rotational block in the surface frame,
 \[
-  K_p=\operatorname{diag}(2000,2000,800)\,\mathrm{N/m},
+  K_p=\operatorname{diag}(2000,2000,350)\,\mathrm{N/m}\ \text{(base }xyz),
   \qquad
-  K_R=\operatorname{diag}(5,5,50)\,\mathrm{Nm/rad},
+  K_R=\operatorname{diag}(5,5,50)\,\mathrm{Nm/rad}\ \text{(surface)},
 \]
+the values derived in \cref{eq:setup_base_z_stiffness_design} and
+\cref{eq:setup_rotational_stiffness_design},
 together with a \(60\,\mathrm{mm}\) virtual press at \(50\,\mathrm{mm/s}\) and a
-\(5\,\mathrm{s}\) set-up interval. Null-space damping was enabled throughout;
-the active singular-value bias was not. Fixing the commanded spin of the
-grinding face at \(115.05^\circ\) from \(t_1\) hands the choice of leading
-contact feature to the calibrated surface frame instead of to the initial joint
+\(4\,\mathrm{s}\) set-up timeout. Projected null-space damping and the
+singular-value-based torque were both active during all reported runs, in the
+combined mode of \cref{tab:nullspace_safety_parameters}. Fixing the commanded
+spin of the
+grinding face at \(115.05^\circ\) from \(t_1\) makes the leading contact feature
+follow from the calibrated surface frame rather than from the initial joint
 configuration.
 
 The runs fall into five cases. Case A measures the response to the commanded
@@ -113,10 +120,11 @@ Attribute the tangent-axis asymmetry to the surface frame or the tool face. \\
 Three runs per setting. Cases A, B, C and E command the decoupled impedance;
 Case D commands the point-shifted impedance with the levers listed, expressed
 in the surface frame as \(r_c=p_{\mathrm{TCP}}-p_c\). Every case holds the
-baseline \(K_p=\operatorname{diag}(2000,2000,800)\,\mathrm{N/m}\) and
-\(K_R=\operatorname{diag}(5,5,50)\,\mathrm{Nm/rad}\) except where the table
+baseline \(K_p=\operatorname{diag}(2000,2000,350)\,\mathrm{N/m}\) in base
+\(xyz\) and \(K_R=\operatorname{diag}(5,5,50)\,\mathrm{Nm/rad}\) in the surface
+frame, except where the table
 states otherwise, together with a \(60\,\mathrm{mm}\) virtual press at
-\(50\,\mathrm{mm/s}\) and a \(5\,\mathrm{s}\) set-up interval.
+\(50\,\mathrm{mm/s}\) and a \(4\,\mathrm{s}\) set-up timeout.
 \end{minipage}
 \end{table}
 
@@ -132,7 +140,7 @@ as a soft reference and commanding no time-varying task-space tipping
 trajectory, and the grinding motion followed. Evaluation drew on the
 EE-inferred tool-axis angle, the rotation during contact, and the displacements
 of the feature and the TCP.
-\section{Robot and Software Setup}
+\section{Robot and Software Configuration}
 \label{sec:robot_software_setup_contact}
 
 The experiments ran on the Franka Emika Panda through the libfranka
@@ -154,7 +162,7 @@ form
 \begin{equation}
 \tau_{\mathrm{cmd}}
 =
-J^\top(q)\mathbf{F}_{\mathrm{cmd}}
+J^\top(q)F_{\mathrm{cmd}}
 +
 \tau_{\mathrm{null}}
 +
@@ -162,7 +170,7 @@ J^\top(q)\mathbf{F}_{\mathrm{cmd}}
 \label{eq:chapter4_contact_commanded_torque}
 \end{equation}
 
-where \(\mathbf{F}_{\mathrm{cmd}}\) is the commanded Cartesian impedance
+where \(F_{\mathrm{cmd}}\) is the commanded Cartesian impedance
 wrench and \(\tau_{\mathrm{null}}\) is the projected null-space torque. No
 gravity term appears in the user callback. The Franka Control Interface already
 applies robot-side gravity and motor-friction compensation to any external
@@ -213,8 +221,8 @@ Compiler and libraries &
 \texttt{g++~9.3}, C++14, \texttt{-O2}; Eigen~3.3.7;
 libfranka~0.7.1. \\
 Tool and surface &
-Rectangular wooden tool held in the Franka Hand by custom aluminium fingers;
-wooden surface mounted on a raised base board. The configured tool-face
+Rectangular tool held in the Franka Hand by custom fingers; plane
+surface mounted on a raised base board. The configured tool-face
 dimensions and tool offset are reported in
 \cref{tab:active_surface_tool_parameters}. \\
 Contact condition &
@@ -226,9 +234,9 @@ commanded joint torque, and robot-model estimate of the external wrench. \\
 \end{longtable}
 }
 
-Several things went unrecorded: the exact material grades, the surface finish,
-the payload parameters, the robot transforms, and the hardware of the real-time
-computer. \Cref{sec:limitations} treats their influence as a limitation.
+Several things went unrecorded: the payload parameters, the robot transforms,
+and the hardware of the real-time computer. \Cref{ch:conclusion} treats their
+influence as a limitation.
 
 \begin{figure}[H]
   \centering
@@ -240,8 +248,8 @@ computer. \Cref{sec:limitations} treats their influence as a limitation.
 \subsection{Configured and Physical Plane}
 \label{subsec:plane_calibration_protocol}
 
-Two planes enter the work, and keeping them apart matters. The controller knows
-only the configured one: the plane point
+Two plane definitions were used, and they are not interchangeable. The
+controller operated with the configured plane alone: the plane point
 \(p_s=[\,0.55,\,-0.06,\,0.025\,]^\top\,\mathrm{m}\) and the configured normal
 \(n_{\mathrm{cfg}}\equiv n_s\), obtained from \(a=0^\circ\) and \(b=5^\circ\)
 in \cref{eq:implemented_surface_normal_angles}. Approach, clearance, feature
@@ -263,7 +271,7 @@ change.
 \label{sec:contact_geometry}
 
 The task geometry is defined by a surface plane, a tool edge, and a selected
-local linearized centre of compliance. Let
+local linearised centre of compliance. Let
 
 \begin{equation}
 n_s \in \mathbb{R}^3,
@@ -362,7 +370,7 @@ centre \(p_c\); upper-case \(C\) appears later for the physical contact point
 \(p_C\), whose lever \(r_C=p_C-p_{\mathrm{TCP}}\) points the other way. The two
 are never interchangeable.
 
-A force \(\mathbf{f}\) at the contact produces a moment about the TCP through
+A force \(f\) at the contact produces a moment about the TCP through
 \(r_C\), which is why the selected stiffness matrix will not read as three
 independent translational springs beside three independent rotational ones.
 Virtual-centre behaviour requires translation and rotation to be selected
@@ -393,33 +401,32 @@ block, however:
 \Cref{tab:active_stiffness_design_points} maps the stiffness across every phase
 --- hold, both approach states, the pre-set-up gate, set-up, grind and manual
 guidance --- and \cref{tab:active_automatic_damping_policy} gives the matching
-automatic-damping policy. A frame label is part of a gain value, not an
-annotation on it, and travels with the value whenever it is calculated or
-changed.
+automatic-damping policy. The coordinate frame is part of the gain definition
+and must be retained whenever the gain is calculated or transformed.
 
 Base-frame errors and base-frame gains drive the control law of
 \cref{eq:cartesian_impedance_control_law}. Interpreting an experiment is easier
 in the surface task frame, where the same quantities read as
 
 \begin{equation}
-\mathbf{e}_{\mathrm{task}}
+e_{\mathrm{task}}
 =
 \begin{bmatrix}
-\mathbf{e}_{p,\mathrm{task}}\\
-\mathbf{e}_{R,\mathrm{task}}
+e_{p,\mathrm{task}}\\
+e_{R,\mathrm{task}}
 \end{bmatrix}
 =
 T_R^\top
 \begin{bmatrix}
-\mathbf{e}_p\\
-\mathbf{e}_R
+e_p\\
+e_R
 \end{bmatrix},
 \qquad
 \dot{x}_{\mathrm{task}}
 =
 T_R^\top
 \begin{bmatrix}
-\dot{\mathbf{p}}_{\mathrm{EE}}\\
+\dot{p}_{\mathrm{EE}}\\
 \omega_{\mathrm{EE}}
 \end{bmatrix},
 \label{eq:experiment_task_frame_errors}
@@ -451,8 +458,8 @@ carry the translation--rotation coupling. Written this way, the coupling
 between sliding and rotation during edge contact becomes visible instead of
 being buried in a \(6\times6\) array. During set-up the controller builds the
 full matrix analytically from a manually selected centre of compliance. Two
-things are designed: where that centre goes, and what the source stiffness
-blocks contain. The 36 entries follow.
+things are designed: the position of that centre, and the contents of the source
+stiffness blocks. The resulting 36 entries are given below.
 
 The construction rests on a symmetric positive-definite stiffness and a
 symmetric positive-semidefinite damping matrix,
@@ -477,9 +484,9 @@ control loop. At low velocity the elastic parts of the implemented command
 separate from damping and inertia,
 
 \begin{equation}
-\mathbf f_K=K_p\mathbf e_p,
+f_K=K_pe_p,
 \qquad
-\mathbf m_K=K_R\mathbf e_R .
+m_K=K_Re_R .
 \label{eq:quasi_static_translational_stiffness}
 \end{equation}
 
@@ -498,12 +505,10 @@ k_{R,i}
 \label{eq:initial_rotational_stiffness}
 \end{align}
 
-Every starred quantity is an engineering design scale --- a load the virtual
-spring is sized around, and nothing that was ever measured, certified, or
-enforced in software. Keeping the star visible is what stops such a number
-being read back later as an observed environment force. Where a moment scale
-comes from an offset force, its component about the selected unit axis \(a_i\)
-is
+The starred quantities denote design values used to calculate the initial
+stiffness entries; \cref{subsec:design_value_interpretation} states how they are
+to be read. Where a moment scale comes from an offset force, its component about
+the selected unit axis \(a_i\) is
 \[
 M_i^\star
 =
@@ -533,7 +538,7 @@ u^\top K_{p,0}u
 \label{eq:directional_effective_stiffness}
 \end{equation}
 
-An error \(\mathbf e_p=\delta u\) gives the elastic component
+An error \(e_p=\delta u\) gives the elastic component
 \(\delta k_{p,\mathrm{eff}}(u)\) along \(u\), and along a non-principal
 direction it also raises the transverse component \(\delta(I-uu^\top)K_{p,0}u\).
 The same construction covers \(K_{R,0}\) and a rotational direction. Set-up
@@ -559,10 +564,8 @@ starts near \(-0.020\,\mathrm{m}\) at the clearance hand-off and is scheduled
 to \(+0.180\,\mathrm{m}\), roughly \(0.200\,\mathrm{m}\) of reference travel,
 which at \(0.050\,\mathrm{m/s}\) takes \(4\,\mathrm{s}\) --- deliberately the
 same as the set-up timeout. Of that travel the first \(20\,\mathrm{mm}\) closes
-the geometric clearance. The remaining \(180\,\mathrm{mm}\) is where the virtual
-spring is imagined to end, and it exists only to fix the blocked-load design
-scale: no tool travels \(180\,\mathrm{mm}\) into wood, and no such displacement
-was expected of the robot.
+the geometric clearance, and the remaining \(180\,\mathrm{mm}\) is the endpoint
+against which the blocked-load design scale is defined.
 With \(a=0^\circ\), \(b=5^\circ\), and
 \(K_{p,0}=\operatorname{diag}(k_x,k_y,k_z)\), solving
 \[
@@ -603,10 +606,9 @@ R_{\mathrm{surface}}^\top K_{p,0}R_{\mathrm{surface}}
 A completely blocked \(0.180\,\mathrm{m}\) normal reference change then works
 out at roughly \(65.3\,\mathrm{N}\) along the normal, \(25.8\,\mathrm{N}\)
 along \(t_1\), and \(70.2\,\mathrm{N}\) of total elastic-force magnitude. All
-three assume the tracking error never closes, which it does --- the robot
-follows part of the reference --- so they bound the virtual spring
-conservatively and predict nothing about a measured force or a penetration
-depth.
+three assume the tracking error never closes, whereas the robot follows part of
+the reference, so they are upper bounds on the virtual spring rather than
+predicted loads.
 
 The rotational block starts from a \(15\,\mathrm{N}\) design force acting
 through the \(60\,\mathrm{mm}\) tool half-length, a moment scale of about
@@ -626,8 +628,8 @@ k_{R,n}
 \label{eq:setup_rotational_stiffness_design}
 \end{equation}
 
-The ten-to-one ratio leaves tipping about the tangents compliant while holding
-twist about the normal in check. During set-up these are source gains at the
+The selected ratio provides lower rotational stiffness about the surface
+tangents than about the surface normal. During set-up these are source gains at the
 selected centre of compliance. Once the congruence shift has been applied they
 are, in general, no longer the diagonal rotational slopes a pure rotation at
 the TCP would meet. Grind takes the same source blocks with no shift at all.
@@ -771,9 +773,9 @@ no Cartesian automatic damping &
 An invalid inertia calculation is retried on a later callback in approach and
 set-up; hold and the pre-set-up gate latch their fallback for that entry
 instead. Whichever path is taken, the resulting damping depends on the pose,
-which is why the controller prints it at phase entry. The stiffness table alone
-will not reproduce it, and the general sequence CSV does not yet carry it as a
-field.
+which is why the controller prints it at phase entry. It cannot be reproduced
+from the stiffness table alone, and the general sequence CSV does not yet carry
+it as a field.
 
 Two things limit \cref{eq:directional_damping_heuristic}. It reads only the
 diagonal of the TCP task-inertia estimate and drops the off-diagonal coupling,
@@ -910,15 +912,15 @@ record.
 \end{figure}
 
 What \(p_c\) names is a local linearised centre of compliance, not a hinge. The
-tool need not pivot about it during contact, and four things stand between the
-two: the finite rotational stiffness, the lever itself, friction and
-constraints at the surface, and the active null-space sigma torque.
+tool need not pivot about it during contact, and the relation between the two is
+affected by four factors: the finite rotational stiffness, the lever itself,
+friction and constraints at the surface, and the active null-space sigma torque.
 
-\subsection{Code-Aligned Selection Order}
+\subsection{Gain Construction and Implementation Sequence}
 \label{sec:role_of_gain_methods}
 
-Calculation and implementation follow the controller's own order, which is why
-the five steps below cannot be reordered:
+Calculation and implementation follow the controller's own order, so the five
+steps below are applied in the sequence given:
 
 \begin{enumerate}
     \item State a phase-specific force--error or moment--angle design pair and
@@ -955,102 +957,84 @@ The resulting workflow is
 \label{eq:gain_selection_workflow}
 \end{equation}
 
-\subsection{One-at-a-Time Gain Adjustment}
+\subsection{Experimental Gain Variation Strategy}
 \label{sec:direct_stiffness_comparison}
 
-Once the initial stiffness values are in place, a parameter study tells how
-sensitive the response is to each of them. One stiffness coordinate moves per
-study. Anything more and the effect of one value is mixed with the effect of
-another, which is what the earlier paired sweep ran into.
+The effect of each stiffness entry was investigated by varying one parameter
+while the remaining controller settings were held fixed. This
+one-factor-at-a-time procedure separates the response associated with the
+selected gain from changes caused by other controller parameters, which the
+paired sweep of the earlier campaign could not do.
 
-Write \(k_{i,\mathrm{base}}\) for the value the controller currently uses in
-coordinate \(i\), as listed in \cref{tab:active_stiffness_design_points}. A
-local study takes candidates
+In Case B the rotational stiffness of the tilted surface tangent was tested at
+\(5\), \(15\) and \(50\,\mathrm{Nm/rad}\). When \(K_{R,t_1}\) was varied,
+\(K_{R,t_2}\) was held at its baseline value, and the roles were reversed for
+the \(t_2\) study; moving both at once would leave their individual effects
+unidentifiable. The normal rotational stiffness \(K_{R,n}\) was excluded from
+the comparison, because it resists twist about the surface normal rather than
+tipping about a tangent.
 
-\begin{equation}
-k_{i,\mathrm{test}}=\alpha k_{i,\mathrm{base}},
-\qquad
-\alpha\in\{0.5,\ 0.75,\ 1.0,\ 1.25,\ 1.5\},
-\label{eq:active_gain_scale_sweep}
-\end{equation}
+In Case C the translational stiffness perpendicular to the tilted tangent was
+tested at \(300\), \(800\) and \(2000\,\mathrm{N/m}\), and one further condition
+combined the lowest translational stiffness with the highest tested rotational
+stiffness to examine their interaction. Everything else stayed as it was: the
+other source gains, the compliance-centre offset, the phase timing and the
+null-space parameters. A systematic change in the measured response can then be
+associated with the one stiffness coordinate that was varied.
 
-with \(\alpha=1\) reproducing the current controller value. Take the two set-up
-tipping stiffnesses, \(K_{R,t_1}=K_{R,t_2}=5\,\mathrm{Nm/rad}\): held equal,
-they would sweep together through \(2.5\), \(3.75\), \(5.0\), \(6.25\), and
-\(7.5\,\mathrm{Nm/rad}\). That is a paired fine-tuning study, and it is not
-what \cref{sec:results_summary_table} reports --- the axis-specific comparison
-moves the entries separately for the reason given above.
-
-Everything else stays where it was: the other source gains, the
-compliance-centre offset, the phase timing, the null-space parameters. A
-systematic change in the measured response can then be laid at the door of the
-one stiffness coordinate that moved. At a given displacement or angular error
-the elastic force or moment scales with \(\alpha\).
-
-Damping needs no separate tuning. At the next entry to the relevant phase group
-the controller recalculates it from the changed stiffness and the task inertia,
-and for an unchanged entry pose and automatic-damping factor
-\cref{eq:directional_damping_heuristic} gives approximately
+Damping needed no separate tuning. At the next entry to the relevant phase group
+the controller recalculated it from the changed stiffness and the task inertia.
+Because \cref{eq:directional_damping_heuristic} takes the square root of the
+stiffness, scaling an entry by \(\alpha\) scales its damping coefficient by
+\(\sqrt{\alpha}\),
 
 \begin{equation}
 d_{i,\mathrm{test}}
-\approx
-\sqrt{\alpha}\,d_{i,\mathrm{base}} .
+=
+\sqrt{\alpha}\,d_{i,\mathrm{base}} ,
 \label{eq:damping_change_with_stiffness}
 \end{equation}
 
-Doubling a stiffness therefore raises the damping coefficient by about
-\(\sqrt{2}\) and not by two. The coefficient is cached at phase-group entry and
-stays put for the rest of that phase.
-
-Tuning starts with the tangent-axis rotational stiffness, since that is what
-sets the tool's resistance to tipping. Case B moves \(K_{R,t_1}\) with
-\(K_{R,t_2}\) held, then swaps the roles; moving both at once would leave their
-individual effects unidentifiable. The normal rotational stiffness
-\(K_{R,n}\) is a separate matter, resisting twist about the surface normal
-rather than tipping. Translational stiffness comes after, in base \(x\) and
-\(y\) and along the effective surface normal.
-
-One asymmetry complicates the last of those. The set-up translational stiffness
-is diagonal in the base frame while the surface is tilted, so a desired
-effective normal stiffness \(k_{n,\mathrm{eff}}^\star\) will not generally
-transfer straight to the base-\(z\) entry. Holding \(k_x\) and the surface tilt
-\(b\), the base-\(z\) stiffness required is
-\[
-k_z
-=
-\frac{k_{n,\mathrm{eff}}^\star-k_x\sin^2 b}{\cos^2 b},
-\]
-which carries the surface orientation into the assignment.
-
-Approach, gate and hold gains follow the same one-at-a-time rule against the
-design pairs of \cref{tab:active_stiffness_design_points}. Every run records
-the damping values the controller prints, because the stiffness alone will not
-reconstruct them without the phase-entry pose, the Jacobian \(J\), and the
+so doubling a stiffness raises the damping by about \(41\,\%\) rather than by
+\(100\,\%\). This is an algebraic consequence of the damping law and not a
+measured result. It holds while the Cartesian inertia \(\Lambda_{F,ii}\) and the
+factor \(\zeta\) are unchanged and the coefficient stays between the configured
+floor and ceiling; since the inertia depends on the pose at phase-group entry,
+the realised coefficients were recorded for every run. The value is cached at
+phase-group entry and held for the rest of that phase, and the stiffness alone
+does not reconstruct it without the phase-entry pose, the Jacobian \(J\) and the
 joint-space mass matrix \(M(q)\).
 
+Approach, gate and hold gains follow the same one-at-a-time rule against the
+design pairs of \cref{tab:active_stiffness_design_points}. Where a translational
+entry is assigned from a desired effective normal stiffness, the base-\(z\)
+value follows \cref{eq:setup_base_z_stiffness_design}, which carries the surface
+orientation into the assignment.
+
 \paragraph{Evaluation of candidate gains.}
-Candidate stiffnesses are compared through the quantities of
+Candidate stiffnesses were compared through the quantities of
 \cref{sec:alignment_evaluation}, with the physical-plane alignment improvement
-\(\Delta\theta_{\mathrm{align,phys}}\) as the primary outcome. Behind it sit
-the contact-induced rotation, the physical-plane residual angle, the
-selected-feature and TCP displacements, and the model-estimated normal load.
-The \(5/15/50\,\mathrm{Nm/rad}\) study of \cref{sec:results_summary_table}
-draws on the first, the third and the last of these; the displacement signals
-stay available as run diagnostics. Repeated settings are summarised by mean and
-standard deviation. Before a change counts as a parameter effect it has to
-clear the Case-C repeatability scale and survive a check that no incompatible
-change in loading or displacement explains it.
+\(\Delta\theta_{\mathrm{align,phys}}\) as the primary outcome. The
+rotational-stiffness study of \cref{sec:results_case_b} was evaluated using the
+alignment improvement, the physical-plane residual angle and the
+model-estimated normal load; the contact-induced rotation and the
+selected-feature and TCP displacements remained available as run diagnostics.
+Each setting was repeated three times and summarised by its mean and standard
+deviation. A change was interpreted as a parameter effect only when it exceeded
+the interpretation threshold of \cref{sec:results_provenance} and was not
+accompanied by an incompatible change in contact load or displacement.
 
 \subsection{Null-Space Conditioning Parameter Rationale}
 \label{subsec:nullspace_parameter_rationale}
 
 Projected joint damping and the two-point smallest-singular-value conditioning
-bias of \cref{sec:nullspace_svd} run together in the active mode. Every value
-in Table~\ref{tab:nullspace_parameter_rationale} is a bounded engineering seed,
-picked to keep the secondary action small beside the Cartesian task and to
-suppress sign changes the numerics cannot resolve. None was derived as an
-optimum, and no parameter sweep has yet tested any of them.
+bias of \cref{sec:nullspace_svd} run together in the active mode. The values in
+Table~\ref{tab:nullspace_parameter_rationale} were treated as initial
+engineering settings rather than optimised parameters. They were selected to
+keep the null-space torque small relative to the Cartesian task torque and to
+suppress sign changes that the numerics cannot resolve. None was derived as an
+optimum, and no parameter sweep was performed to determine whether these values
+were optimal.
 
 \begingroup
 \small
@@ -1116,12 +1100,45 @@ null space instead of being amplified. \\
 \end{longtable}
 \endgroup
 
-Between them \(\alpha_{\mathrm{probe}}\), \(\delta_\sigma\) and \(\rho\) trade
-local validity against numerical resolution, and the reported experiments say
-nothing about whether the trade was struck well. Two known gaps remain: the
-probe configurations are never checked against the joint limits, and the sigma
-torque holds a constant magnitude regardless of how much the singular value
-would improve.
+Together, \(\alpha_{\mathrm{probe}}\), \(\delta_\sigma\) and \(\rho\) trade
+local validity against numerical resolution. The reported experiments do not
+evaluate that trade-off, since the null-space terms were never varied. Two
+further limits apply to the implementation: the probe configurations are not
+checked against the joint limits, and the sigma torque holds a constant
+magnitude regardless of the size of the improvement available.
+
+\subsection{Interpretation of Design Values}
+\label{subsec:design_value_interpretation}
+
+The quantities used above to size the gains are design values, and several of
+them invite a reading they will not support. They are collected here rather than
+qualified individually at each equation.
+
+Starred quantities such as \(F_i^\star\), \(M_i^\star\), \(\Delta x_i^\star\)
+and \(\Delta\theta_i^\star\) denote design values used to calculate the initial
+stiffness entries. They were not obtained from the measured contact response and
+were not imposed as force or moment limits during the experiments.
+
+The virtual displacements that appear in those pairs are reference offsets, not
+distances the tool travels. The \(180\,\mathrm{mm}\) endpoint of the set-up ramp
+fixes the blocked-load scale of the virtual spring; the tool remains in contact
+with the surface throughout, and the reference continues past it while the
+actual motion does not.
+
+Blocked-load figures calculated from these scales assume a tracking error that
+never closes. They therefore bound the elastic force the virtual spring can
+command, and are not predictions of the load that was measured.
+
+The coordinate frame is part of each gain definition. A translational block
+diagonal in base coordinates is not diagonal in the surface frame, and the
+transformed matrix in
+\cref{eq:active_setup_translation_surface_representation} shows the off-diagonal
+entries this produces.
+
+The null-space parameters of
+\cref{tab:nullspace_parameter_rationale} were held fixed for every reported run.
+They are configuration values rather than an experimental case, and no result in
+\cref{ch:results_discussion} is attributed to them.
 
 \section{Experimental Procedure}
 \label{sec:experimental_procedure_contact}
@@ -1227,7 +1244,7 @@ a_{\mathrm{phys}}&=-n_{\mathrm{phys}},\\
 \cos^{-1}\!\left(
 \operatorname{clip}(\widehat a_T^\top a_j,-1,1)
 \right),&
-\mathbf{e}_{\mathrm{align},j}&=\widehat a_T\times a_j,
+e_{\mathrm{align},j}&=\widehat a_T\times a_j,
 \quad j\in\{\mathrm{cfg},\mathrm{phys}\}.
 \end{aligned}
 \label{eq:contact_alignment_error_cross}
@@ -1236,9 +1253,9 @@ a_{\mathrm{phys}}&=-n_{\mathrm{phys}},\\
 The minus signs come from the current tool-axis convention. Online, the
 controller logs \(\theta_{\mathrm{align,cfg}}\), the angle to the configured
 normal, which verifies the implemented command geometry and does no more than
-that. Two things stand between it and a physical-tool alignment: \(n_s\) and
-\(n_{\mathrm{phys}}\) differ across the recorded campaign, and \(Q_g(t)\) was
-never measured.
+that. Its relation to a physical-tool alignment is affected by two sources of
+uncertainty: \(n_s\) and \(n_{\mathrm{phys}}\) differ across the recorded
+campaign, and \(Q_g(t)\) was never measured.
 
 The primary metric is instead computed offline as the EE-inferred angle
 \(\theta_{\mathrm{align,phys}}\). Set-up improves alignment when
@@ -1262,10 +1279,10 @@ The corresponding physical-plane improvement is
 \end{equation}
 
 A positive \(\Delta\theta_{\mathrm{align,phys}}\) means alignment with the
-measured plane improved, on the assumption that the mount is rigid. It is not,
-by roughly \(2^\circ\), so the quantity reports a combined
-robot--gripper--tool response and proves nothing about the rotation of the face
-on its own. The rotation during contact itself is the base-frame rotation
+measured plane improved, on the assumption that the mount is rigid. The mount
+carries roughly \(2^\circ\) of play, so this metric describes the combined
+robot--gripper--tool response and does not isolate rotation of the grinding face
+within the gripper. The rotation during contact itself is the base-frame rotation
 vector of the finite before--after relative rotation,
 
 \begin{equation}
@@ -1278,20 +1295,20 @@ R_{\mathrm{after}}R_{\mathrm{before}}^\top
 \end{equation}
 
 The physical-plane corrective vector
-\(\mathbf{e}_{\mathrm{align,phys}}=\widehat a_T\times(-n_{\mathrm{phys}})\) points
+\(e_{\mathrm{align,phys}}=\widehat a_T\times(-n_{\mathrm{phys}})\) points
 locally along the rotation that carries the EE-inferred tool axis toward the
 measured plane normal. The rotation during contact is favorable when it has a
 positive component along this corrective axis,
 
 \begin{equation}
-\mathbf{e}_{\mathrm{align,phys,before}}^\top
+e_{\mathrm{align,phys,before}}^\top
 \Delta\boldsymbol{\theta}_C
 >
 0,
 \label{eq:contact_rotation_condition}
 \end{equation}
 
-which checks a sign locally and settles nothing about large rotations.
+which checks the sign locally and is not evaluated for large rotations.
 
 Displacement of the selected physical feature is
 
@@ -1308,19 +1325,19 @@ TCP displacement is reported the same way. Both catch the translation and
 sliding that an orientation-only metric would let through.
 
 During set-up the controller logs something else again:
-\(\mathbf{e}_R
+\(e_R
 =R_{\mathrm{EE}}\operatorname{Log}
 (R_{\mathrm{EE}}^\top R_{\mathrm{clr}})^\vee\), expressed in the base frame
 after masking, with \(R_{\mathrm{clr}}\) the orientation held from the
 clearance hand-off. This control error starts near zero and can
-\emph{increase} as the tool tips into contact, which is the opposite of what a
-reader expects from an alignment trace. Plotting it as
-\(\theta_{\mathrm{align},j}\) without first reconstructing the nominal tool
-axis would invert the story. The general log also records the angle of the
-EE-inferred tool axis to the configured normal, and that serves as the online
-geometry check. Rescoring against the separately estimated
-\(n_{\mathrm{phys}}\) happens offline, as \cref{sec:results_alignment}
-describes, and leaves the unmeasured \(Q_g(t)\) untouched.
+\emph{increase} as the tool tips into contact, which is the opposite of the
+trend expected from an alignment trace. It is therefore not plotted as
+\(\theta_{\mathrm{align},j}\) unless the nominal tool axis is first
+reconstructed. The general log also records the angle of the EE-inferred tool
+axis to the configured normal, which serves as the online geometry check.
+Because the physical-plane normal was estimated separately, the corresponding
+alignment value was calculated offline, as \cref{sec:results_alignment}
+describes; the unmeasured \(Q_g(t)\) remains outside that calculation.
 
 \subsection{Metric Use by Experimental Case}
 \label{sec:evaluation_criteria_contact}
@@ -1437,18 +1454,14 @@ Procedure and geometry supply the remaining guards:
     for phase transitions, commanded torque, displacement, and oscillation.
 \end{itemize}
 
-None of the 112 columns of the general sequence log holds a Franka reflex or
-contact flag; those reach the record only through the compact sigma diagnostic,
-and only during eligible hold tests. The gap widens on the exception path,
-where a sequence-ending reflex leaves only the compact diagnostic buffer
-explicitly persisted and the general CSV possibly unwritten. Diagnosing an
-aborted sequence accordingly needs the hardware and controller event records
-beside the CSV.
+None of the 112 columns of the sequence log records a Franka reflex or contact
+indication, so a run terminated by a robot-side reflex is identified from the
+hardware and controller event records rather than from the logged data.
 
-Geometric sense in a stiffness matrix does not make it fit for real hardware,
-which is what these checks are for: the same matrix can still command
-aggressive torques or leave contact poorly damped. The \(150\,\mathrm{Nm}\)
-set-up threshold deserves particular care. It watches the moment change in the
+A geometrically valid stiffness matrix does not by itself ensure acceptable
+hardware behaviour, which is what these checks are for: the same matrix can
+still command aggressive torques or leave contact poorly damped. The
+\(150\,\mathrm{Nm}\) set-up threshold requires particular care. It watches the moment change in the
 model-estimated external wrench --- libfranka's model-based estimate at
 stiffness frame \(K\), never a separately measured TCP contact moment --- and
 it sits high enough that ordinary model fluctuation cannot pass for a contact

@@ -1,4 +1,4 @@
-\chapter{Worked Example: Franka Emika Panda (7-DOF)}
+﻿\chapter{Worked Example: Franka Emika Panda (7-DOF)}
 \UseThesisAcronym{DOF}
 \label{app:panda}
 
@@ -11,13 +11,13 @@ a concrete Panda configuration.
 (virtual wall constraint) with simulation results.
 
 The numerical worked example in Part~A covers every quantity required for
-one 1\,ms cycle — position vector, Jacobian, position-and-orientation error, impedance force,
+one 1\,ms cycle â€” position vector, Jacobian, position-and-orientation error, impedance force,
 and joint torques.
 
-% ─────────────────────────────────────────────────────────────────
+% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 \section{Robot Parameters and Configuration}
 \label{app:panda_params}
-% ─────────────────────────────────────────────────────────────────
+% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 \subsection{Denavit--Hartenberg Parameters}
 
@@ -67,10 +67,10 @@ the base with the gripper pointing downward.
 It avoids the zero-angle singularity (joints 1, 3, 5 collinear) and provides
 good Jacobian conditioning across the workspace.
 
-% ─────────────────────────────────────────────────────────────────
+% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 \section{Step 1 --- Forward Kinematics: End-Effector Position}
 \label{app:panda_fk}
-% ─────────────────────────────────────────────────────────────────
+% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 Applying the DH transformation chain of \cref{eq:forward_kinematics_chain} with $\vq = \vq_0$:
 
@@ -88,7 +88,7 @@ $\mT_0^7$:
 
 \begin{equation}
 \label{eq:pe_panda}
-\mathbf{p}_{EE}(\vq_0) =
+p_{EE}(\vq_0) =
 \begin{bmatrix}
 0.1164 \\ 0.5452 \\ 0.3952
 \end{bmatrix}
@@ -106,15 +106,15 @@ Here:
 \subsection{Joint-Axis Points and Directions}
 
 \cref{tab:panda_fk} lists, for each joint \(i\), a point
-\(\mathbf p_{i-1}\) on its axis and its rotation axis
-\(\mathbf z_{i-1}\), expressed in the base frame. They are extracted from
+\(p_{i-1}\) on its axis and its rotation axis
+\(z_{i-1}\), expressed in the base frame. They are extracted from
 \(\mT_0^{i-1}(\vq_0)\) for \(i=1,\ldots,7\), including
 \(\mT_0^0=I\) for joint~1, and are used to construct the Jacobian columns.
 
 \begin{table}[htb]
 \centering
-\caption{Axis points \(\mathbf p_{i-1}\) and directions
-         \(\mathbf z_{i-1}\) for joints \(i=1,\ldots,7\) at
+\caption{Axis points \(p_{i-1}\) and directions
+         \(z_{i-1}\) for joints \(i=1,\ldots,7\) at
          \(\vq_0\), using the standard-DH indexing.}
 \label{tab:panda_fk}
 \renewcommand{\arraystretch}{1.3}
@@ -143,10 +143,10 @@ Joint \(i\) & $z_{i-1,x}$ & $z_{i-1,y}$ & $z_{i-1,z}$ \\
 \end{tabular}
 \end{table}
 
-% ─────────────────────────────────────────────────────────────────
-\section{Step 2 --- Jacobian Matrix \texorpdfstring{$\mathbf{J} \in \mathbb{R}^{6\times7}$}{J in R(6x7)}}
+% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+\section{Step 2 --- Jacobian Matrix \texorpdfstring{$J \in \mathbb{R}^{6\times7}$}{J in R(6x7)}}
 \label{app:panda_jacobian}
-% ─────────────────────────────────────────────────────────────────
+% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 Applying \cref{eq:jacobian_column} for each joint using the values from
 \cref{tab:panda_fk} and the end-effector position \cref{eq:pe_panda}:
@@ -154,9 +154,9 @@ Applying \cref{eq:jacobian_column} for each joint using the values from
 \begin{equation}
 \mJ_i =
 \begin{bmatrix}
-\mathbf{z}_{i-1} \times
-(\mathbf{p}_{\mathrm{EE}} - \mathbf{p}_{i-1}) \\[3pt]
-\mathbf{z}_{i-1}
+z_{i-1} \times
+(p_{\mathrm{EE}} - p_{i-1}) \\[3pt]
+z_{i-1}
 \end{bmatrix}
 \end{equation}
 
@@ -187,21 +187,21 @@ This is characteristic of the Panda's geometry at $\vq_0$; it changes with the
 robot's configuration.
 \end{remark}
 
-% ─────────────────────────────────────────────────────────────────
+% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 \section{Step 3 --- Pseudo-Inverse and Null-Space Projector}
 \label{app:panda_pinv}
-% ─────────────────────────────────────────────────────────────────
+% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 The pseudo-inverse $\mJ^+$ is \emph{not} required for the primary torque
 computation.
 It is computed here only to form the null-space projector in this appendix.
 
-\subsection{\texorpdfstring{Computing $\mathbf{J}^+$}{Computing J+}}
+\subsection{\texorpdfstring{Computing $J^+$}{Computing J+}}
 
 For the full-row-rank Jacobian used in this numerical example:
 
 \begin{equation}
-\mathbf{J}^+ = \mJ^\top\bigl(\mJ\mJ^\top\bigr)^{-1} \in \R{7\times6}
+J^+ = \mJ^\top\bigl(\mJ\mJ^\top\bigr)^{-1} \in \R{7\times6}
 \end{equation}
 
 The product $\mJ\mJ^\top \in \R{6\times6}$ is formed first, then inverted.
@@ -209,7 +209,7 @@ At the home configuration the result is:
 
 \begin{equation}
 \label{eq:Jp_panda}
-\mathbf{J}^+(\vq_0) \approx
+J^+(\vq_0) \approx
 \begin{bmatrix}
  0.0000 &  2.2377 &  0.0000 &  0.1392 &  0.0000 &  0.2394 \\[2pt]
  0.0000 &  2.2377 &  0.0000 &  0.1392 &  0.0000 &  0.2394 \\[2pt]
@@ -222,10 +222,10 @@ At the home configuration the result is:
 \end{equation}
 
 \paragraph{Verification.}
-The defining property $\mJ\,\mathbf{J}^+ = \mI_6$ can be confirmed:
+The defining property $\mJ\,J^+ = \mI_6$ can be confirmed:
 
 \begin{equation}
-\mJ\,\mathbf{J}^+ = \mI_6 \quad \checkmark
+\mJ\,J^+ = \mI_6 \quad \checkmark
 \end{equation}
 
 \subsection{Null-Space Projector}
@@ -234,13 +234,13 @@ The null-space projector is defined as:
 
 \begin{equation}
 \label{eq:nullspace}
-\mathbf{N} = \mI_7 - \mathbf{J}^+\mJ \in \R{7\times7}
+N = \mI_7 - J^+\mJ \in \R{7\times7}
 \end{equation}
 
-The diagonal entries of $\mathbf{N}$ at $\vq_0$ are:
+The diagonal entries of $N$ at $\vq_0$ are:
 
 \begin{equation}
-\mathrm{diag}(\mathbf{N}) =
+\mathrm{diag}(N) =
 [0.5,\;\; 0.5,\;\; 0.0,\;\; 0.0,\;\; 0.0,\;\; 0.0,\;\; 0.0]
 \end{equation}
 
@@ -251,7 +251,7 @@ Here:
         This makes sense: at $\vq_0$ their columns in $\mJ$ are nearly
         identical (see the remark above), so a motion along their
         \emph{difference} direction produces no end-effector velocity.
-  \item Joints\,3–7 have zero diagonal entries in $\mathbf{N}$ at this
+  \item Joints\,3â€“7 have zero diagonal entries in $N$ at this
         configuration, meaning their individual motions are fully
         task-relevant and cannot be independently redirected without
         affecting the end-effector.
@@ -259,30 +259,30 @@ Here:
 
 The implemented controller uses a projected null-space torque as described in
 \cref{sec:nullspace_conditioning_implementation}. In this numerical example,
-the projector $\mathbf{N}$ is computed only to illustrate the structure of the
+the projector $N$ is computed only to illustrate the structure of the
 redundancy.
-Physically, the non-zero entries in $\mathrm{diag}(\mathbf{N})$ at joints
+Physically, the non-zero entries in $\mathrm{diag}(N)$ at joints
 1 and 2 mean that a motion along the \emph{difference} of those two joint
 angles moves no Cartesian end-effector coordinate --- it is the one degree
 of freedom that is ``invisible'' to the task.
 
-% ─────────────────────────────────────────────────────────────────
+% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 \section{Step 4 --- Impedance Parameter Matrices}
 \label{app:panda_matrices}
-% ─────────────────────────────────────────────────────────────────
+% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 For the Panda, the controlled variable is the full end-effector position and orientation
-$\mathbf{T}_{EE}\in SE(3)$ with translational error
-$\mathbf{e}_p\in\mathbb{R}^3$ and rotational error
-$\mathbf{e}_R\in\mathbb{R}^3$ (see \cref{subsec:position_orientation_error}).
+$T_{EE}\in SE(3)$ with translational error
+$e_p\in\mathbb{R}^3$ and rotational error
+$e_R\in\mathbb{R}^3$ (see \cref{subsec:position_orientation_error}).
 The impedance matrices are $3\times3$ SPD matrices as defined in
 \cref{subsec:KD_matrices}.
 
-\subsection{\texorpdfstring{Virtual Inertia Matrix $\mathbf{M}$}{Virtual Inertia Matrix M}}
+\subsection{\texorpdfstring{Virtual Inertia Matrix $M$}{Virtual Inertia Matrix M}}
 
 \begin{equation}
 \label{eq:M_panda}
-\mathbf{M} = \mI_6 =
+M = \mI_6 =
 \mathrm{diag}(1,\,1,\,1,\,1,\,1,\,1)
 \end{equation}
 
@@ -294,7 +294,7 @@ The impedance matrices are $3\times3$ SPD matrices as defined in
         $\bm{\tau}_g$ and $\bm{\tau}_c$ (see \cref{eq:commanded_torque}).
 \end{itemize}
 
-\subsection{\texorpdfstring{Stiffness Matrices $\mathbf{K}_p$ and $\mathbf{K}_R$}{Stiffness Matrices Kp and KR}}
+\subsection{\texorpdfstring{Stiffness Matrices $K_p$ and $K_R$}{Stiffness Matrices Kp and KR}}
 
 For the axis-aligned virtual wall example, the stiffness values in the wall
 frame are chosen as:
@@ -310,7 +310,7 @@ base-frame translational stiffness is diagonal:
 
 \begin{equation}
 \label{eq:K_panda}
-\mathbf{K}_p =
+K_p =
 \begin{bmatrix}
 50   & 0  & 0    \\
 0    & 50 & 0    \\
@@ -318,7 +318,7 @@ base-frame translational stiffness is diagonal:
 \end{bmatrix}
 \mathrm{N/m},
 \qquad
-\mathbf{K}_R =
+K_R =
 \begin{bmatrix}
 5 & 0 & 0 \\
 0 & 5 & 0 \\
@@ -335,13 +335,13 @@ would produce a \textbf{full} $3\times3$ SPD matrix with non-zero
 off-diagonal entries by the same congruence transformation used in
 \cref{eq:positional_stiffness_base}.
 
-\subsection{\texorpdfstring{Damping Matrices $\mathbf{D}_p$ and $\mathbf{D}_R$}{Damping Matrices Dp and DR}}
+\subsection{\texorpdfstring{Damping Matrices $D_p$ and $D_R$}{Damping Matrices Dp and DR}}
 
 For the numerical example, the damping matrices are selected as:
 
 \begin{equation}
 \label{eq:D_panda}
-\mathbf{D}_p =
+D_p =
 \begin{bmatrix}
 14.14 & 0     & 0     \\
 0     & 14.14 & 0     \\
@@ -352,7 +352,7 @@ For the numerical example, the damping matrices are selected as:
 
 \begin{equation}
 \label{eq:DR_panda}
-\mathbf{D}_R =
+D_R =
 \begin{bmatrix}
 4.47 & 0    & 0     \\
 0    & 4.47 & 0     \\
@@ -363,22 +363,22 @@ For the numerical example, the damping matrices are selected as:
 
 Again, diagonal here only because the surface frame axes coincide with the
 base-frame coordinate axes after the normal-first ordering is transformed.
-For a general wall orientation all four matrices $\mathbf{K}_p$,
-$\mathbf{K}_R$, $\mathbf{D}_p$, $\mathbf{D}_R$ would be full SPD
+For a general wall orientation all four matrices $K_p$,
+$K_R$, $D_p$, $D_R$ would be full SPD
 $3\times3$ matrices in the base frame.
 
-% ─────────────────────────────────────────────────────────────────
+% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 \section{Step 5 --- Pose Error and Impedance Wrench}
 \label{app:panda_force}
-% ─────────────────────────────────────────────────────────────────
+% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 \subsection{Position and Orientation Error}
 
 Suppose the desired position and orientation are \(T_d\) with \(R_d=I_3\)
-and $\mathbf{p}_d=[0.136,\;0.545,\;0.395]^\top\,\mathrm{m}$
+and $p_d=[0.136,\;0.545,\;0.395]^\top\,\mathrm{m}$
 (the home position shifted $20\,\mathrm{mm}$ in $x$).
 The current position and orientation at $\vq_0$ are \(T_{\mathrm{EE}}\) with \(R_{\mathrm{EE}}\) (from \abbr{FK})
-and $\mathbf{p}_{\mathrm{EE}}=[0.116,\;0.545,\;0.395]^\top\,\mathrm{m}$.
+and $p_{\mathrm{EE}}=[0.116,\;0.545,\;0.395]^\top\,\mathrm{m}$.
 
 Following \cref{eq:expanded_transformation_error}, the position-and-orientation error matrix is:
 
@@ -386,7 +386,7 @@ Following \cref{eq:expanded_transformation_error}, the position-and-orientation 
 T_{\mathrm{err}} = T_d^{-1}T_{\mathrm{EE}} =
 \begin{bmatrix}
 R_d^\top R_{\mathrm{EE}} &
-R_d^\top(\mathbf{p}_{\mathrm{EE}} - \mathbf{p}_d) \\
+R_d^\top(p_{\mathrm{EE}} - p_d) \\
 \mathbf{0}^\top & 1
 \end{bmatrix}
 =
@@ -403,7 +403,7 @@ Reading off the sub-errors from the two blocks:
 \paragraph{Relative translational displacement (upper-right column):}
 \begin{equation}
 \label{eq:panda_relative_displacement}
-\Delta\mathbf{p}_d = R_d^\top(\mathbf{p}_{\mathrm{EE}} - \mathbf{p}_d) =
+\Delta p_d = R_d^\top(p_{\mathrm{EE}} - p_d) =
 \begin{bmatrix}
 0.116 - 0.136 \\ 0 \\ 0
 \end{bmatrix}
@@ -417,7 +417,7 @@ Reading off the sub-errors from the two blocks:
 \paragraph{Positional control error:}
 \begin{equation}
 \label{eq:panda_error}
-\mathbf{e}_p = \mathbf{p}_d-\mathbf{p}_{\mathrm{EE}} =
+e_p = p_d-p_{\mathrm{EE}} =
 \begin{bmatrix}
 0.020 \\ 0 \\ 0
 \end{bmatrix}
@@ -429,18 +429,18 @@ Reading off the sub-errors from the two blocks:
 Since the robot is at the desired orientation (\(R_{\mathrm{EE}}\approx R_d\)),
 \(\Delta R\approx I\), giving
 \(\phi = \arccos\!\bigl(\tfrac{\mathrm{tr}(I)-1}{2}\bigr) = 0\)
-and $\mathbf{e}_R = \mathbf{0}$.
+and $e_R = \mathbf{0}$.
 
 \subsection{Impedance Wrench}
 
 Assuming the robot is momentarily at rest
-($\dot{p}_d=\mathbf{0}$, $\dot{\mathbf{p}}_{\mathrm{EE}}=\mathbf{0}$, $\boldsymbol{\omega}_{\mathrm{EE}}=\mathbf{0}$),
+($\dot{p}_d=\mathbf{0}$, $\dot{p}_{\mathrm{EE}}=\mathbf{0}$, $\boldsymbol{\omega}_{\mathrm{EE}}=\mathbf{0}$),
 the positional force and rotational moment from
 \cref{eq:positional_impedance_force,eq:rotational_impedance_moment} are:
 
 \begin{equation}
 \label{eq:F_panda}
-\mathbf{f} = \mathbf{K}_p\,\mathbf{e}_p + \mathbf{D}_p\left(\dot{p}_d-\dot{\mathbf{p}}_{\mathrm{EE}}\right)
+f = K_p\,e_p + D_p\left(\dot{p}_d-\dot{p}_{\mathrm{EE}}\right)
 =
 \begin{bmatrix}
 50   & 0  & 0    \\
@@ -457,15 +457,15 @@ the positional force and rotational moment from
 \end{equation}
 
 \begin{equation}
-\mathbf{m} = \mathbf{K}_R\,\mathbf{e}_R = \mathbf{0}
+m = K_R\,e_R = \mathbf{0}
 \end{equation}
 
 The combined forces and moments are:
 
 \begin{equation}
-\mathbf{F} =
+F =
 \begin{bmatrix}
-\mathbf{f} \\ \mathbf{m}
+f \\ m
 \end{bmatrix}
 =
 \begin{bmatrix}
@@ -479,10 +479,10 @@ end-effector $20\,\mathrm{mm}$ back to the desired position.
 The low in-plane stiffness $k_{\mathrm{free}}=50\,\mathrm{N/m}$ means this
 restoring force is gentle: the wall yields compliantly under applied loads.
 
-% ─────────────────────────────────────────────────────────────────
-\section{Step 6 --- Joint Torques via \texorpdfstring{$\bm{\tau} = \mathbf{J}^\top\mathbf{F}$}{tau = J\^{}T F}}
+% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+\section{Step 6 --- Joint Torques via \texorpdfstring{$\bm{\tau} = J^\top F$}{tau = J\^{}T F}}
 \label{app:panda_torques}
-% ─────────────────────────────────────────────────────────────────
+% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 Applying the control law \cref{eq:joint_torque_mapping} with $\mJ^\top \in \R{7\times6}$
 from \cref{eq:J_panda}:
@@ -492,7 +492,7 @@ from \cref{eq:J_panda}:
 \bm{\tau} = \mJ^\top\,\vF
 \end{equation}
 
-Since $\mathbf{F} = [1,\;0,\;0,\;0,\;0,\;0]^\top\,\mathrm{N}$,
+Since $F = [1,\;0,\;0,\;0,\;0,\;0]^\top\,\mathrm{N}$,
 only the first row of $\mJ$ (the $v_x$ row) contributes to $\vtau$:
 
 \begin{equation}
@@ -535,7 +535,7 @@ J_{71}\cdot 1
         nearly identical Jacobian columns).
   \item $\tau_3 = +0.044\,\mathrm{Nm}$:
         joint 3 contributes a small opposing torque because its rotation
-        axis ($\mathbf{z}_3 \approx [0.707,\;0.707,\;0]^\top$) is
+        axis ($z_3 \approx [0.707,\;0.707,\;0]^\top$) is
         at $45^\circ$ to the $x$-direction.
   \item $\tau_4 = -0.322\,\mathrm{Nm}$:
         the elbow joint has the largest
@@ -548,10 +548,10 @@ J_{71}\cdot 1
         Cartesian force.
 \end{itemize}
 
-% ─────────────────────────────────────────────────────────────────
+% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 \section{Step 7 --- Complete Control Loop Summary}
 \label{app:panda_loop}
-% ─────────────────────────────────────────────────────────────────
+% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 \begin{table}[htb]
 \centering
@@ -564,15 +564,15 @@ J_{71}\cdot 1
 Step & Quantity & Symbol & Value \\
 \midrule
 1  & Joint configuration   & $\vq$          & $[0, -45, 0, -135, 0, 90, 45]^\top$ deg \\
-2  & EE position           & $\mathbf{p}_{\mathrm{EE}}$ & $[0.116,\;0.545,\;0.395]^\top\,\mathrm{m}$ \\
-3  & Jacobian ($6\times7$) & $\mathbf{J}$   & See \cref{eq:J_panda} \\
-4  & Error quantities & $\Delta\mathbf{p}_d,\mathbf{e}_p,\mathbf{e}_R$ & $[-0.020,0,0]^\top$ m, $[0.020,0,0]^\top$ m, $\mathbf{0}$ \\
-5  & Virtual inertia       & $\mathbf{M}$   & $\mI_6$ \\
-6  & Stiffness matrices    & $\mathbf{K}_p, \mathbf{K}_R$ & See \cref{eq:K_panda} \\
-7  & Damping matrices      & $\mathbf{D}_p, \mathbf{D}_R$ & See \cref{eq:D_panda} \\
-8  & Impedance forces and moments & $\mathbf{f},\mathbf{m}$ & $[+1.0,0,0]^\top$ N, $\mathbf{0}$ \\
-9  & Pseudo-inverse        & $\mathbf{J}^+$ & See Eq.~(\ref{eq:Jp_panda}) \\
-10 & Null-space projector  & $\mathbf{N}$   & $\mI_7 - \mathbf{J}^+\mJ$ \\
+2  & EE position           & $p_{\mathrm{EE}}$ & $[0.116,\;0.545,\;0.395]^\top\,\mathrm{m}$ \\
+3  & Jacobian ($6\times7$) & $J$   & See \cref{eq:J_panda} \\
+4  & Error quantities & $\Delta p_d,e_p,e_R$ & $[-0.020,0,0]^\top$ m, $[0.020,0,0]^\top$ m, $\mathbf{0}$ \\
+5  & Virtual inertia       & $M$   & $\mI_6$ \\
+6  & Stiffness matrices    & $K_p, K_R$ & See \cref{eq:K_panda} \\
+7  & Damping matrices      & $D_p, D_R$ & See \cref{eq:D_panda} \\
+8  & Impedance forces and moments & $f,m$ & $[+1.0,0,0]^\top$ N, $\mathbf{0}$ \\
+9  & Pseudo-inverse        & $J^+$ & See Eq.~(\ref{eq:Jp_panda}) \\
+10 & Null-space projector  & $N$   & $\mI_7 - J^+\mJ$ \\
 11 & Primary joint torques & $\bm{\tau}_{\mathrm{task}}$ & $[-0.55, -0.55, +0.04, -0.32,$\newline$+0.06, +0.06, 0.00]^\top$ Nm \\
 12 & Null-space torque    & $\bm{\tau}_{\mathrm{null}}$ & projected secondary torque; zero for this numerical example \\
 \bottomrule
@@ -683,12 +683,12 @@ for (size_t i=0; i<7; ++i)
 return franka::Torques(tau_out);
 \end{lstlisting}
 
-% ─────────────────────────────────────────────────────────────────
+% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 \section{Step 8 --- Effect of Stiffness on Torque Distribution}
 \label{app:panda_stiffness}
-% ─────────────────────────────────────────────────────────────────
+% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-To illustrate how $\mathbf{K}_p$ scales the torque command, the
+To illustrate how $K_p$ scales the torque command, the
 normal stiffness $k_{\mathrm{stiff}}$ is varied while keeping the
 same $x$-direction error of $20\,\mathrm{mm}$
 (this scalar example varies the stiffness in the displayed force direction):
@@ -728,12 +728,12 @@ $1000$
 \bigskip
 \noindent
 This completes the 7-DOF Panda worked example.
-Every quantity computed here—from the DH chain to the final torque vector—
+Every quantity computed hereâ€”from the DH chain to the final torque vectorâ€”
 corresponds directly to one iteration of the C++ callback in
 Listing~\ref{lst:panda} and is executed 1000 times per second during
 operation.
 
 
 %% =============================================================
-%%  APPENDIX B – DATA LOGGING AND ANALYSIS WORKFLOW
+%%  APPENDIX B â€“ DATA LOGGING AND ANALYSIS WORKFLOW
 %% =============================================================

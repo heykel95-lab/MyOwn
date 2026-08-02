@@ -41,11 +41,33 @@ The Abstract carries the general shape of the work and nothing more:
 3. what was found, in general terms;
 4. what limits the generality.
 
-**Do not put measured values in the Abstract.** No degrees, no stiffness
-values, no run counts, no distances. A reader who wants a number goes to
-Chapter 5. State the direction, the ordering, and the sign of an effect
-instead: `reduced alignment monotonically`, `no tested setting improved on the
-most compliant baseline`, `opposite for the two surface tangents`.
+**Keep measured values out of the Abstract, with one exception.** No degrees, no
+stiffness values, no distances. State the direction, the ordering, and the sign
+of an effect instead: `reduced the measured alignment response`, `no tested
+setting improved on the most compliant baseline`, `differed between the two
+surface tangent directions`.
+
+The one exception is the **magnitude of the strongest measured effect**:
+`approximately 6 degrees of improvement` gives the reader the scale of the
+headline result. Everything else — stiffness values, per-condition means,
+standard deviations — stays out.
+
+**The run count does not go in the Abstract.** A supervisor pass briefly asked
+for it, and it was added; the author then removed it as repetitive, which it
+was — the same figure was appearing in the Abstract, the Kurzfassung, the
+Introduction, twice in the results chapter, and the Conclusion. **State the
+total number of runs once, in the methodology chapter, and nowhere else.**
+Elsewhere write `were evaluated experimentally`, `all reported contact runs`,
+`the worst run`. A count that appears six times reads as padding, not as
+evidence.
+
+Write the Abstract in four parts, in order: the engineering problem; the
+implemented approach; the experiment and its main findings; the principal
+limitation. Prefer one claim per sentence — an Abstract in which every sentence
+carries a full conclusion reads as machine-polished however accurate it is.
+
+**Revise the Abstract last**, after the body text is settled, and derive the
+Kurzfassung from the finished English rather than paraphrasing it independently.
 
 Symbol names that identify a thing rather than measure it — the tangents
 \(t_1\) and \(t_2\), the robot's degrees of freedom — are not values and may
@@ -77,7 +99,17 @@ treat anything beyond about 500 as needing a look at the built document.
 ## Roles of the chapters
 
 - Introduction: define the contact-alignment problem, relevant literature gap,
-  scope, and substantial contributions.
+  scope, and substantial contributions. Keep the problem statement at the
+  problem level — frame consistency, collision thresholds, and the absence of a
+  torque-rate saturation stage are implementation details and belong to the
+  controller or safety sections. Group the related work by topic (Cartesian
+  impedance control; real-time implementations on torque-controlled robots;
+  compliance-centre placement and contact alignment), say for each source what
+  it established and which part is adopted here, then state the gap. A single
+  compressed paragraph of citations reads as synthesised rather than reviewed.
+  The contribution list lives here, split into implemented, experimentally
+  established, and implemented-but-not-validated; Chapter 6 refers back to it
+  rather than repeating it.
 - Theoretical Background: explain only the mathematics required to understand
   the controller and experiments.
 - Controller Design and Implementation: explain how the verified controller
@@ -108,17 +140,75 @@ Avoid expressions such as:
 - “costs alignment and buys nothing”;
 - “this is the substantive question”;
 - “surprisingly”, “remarkably”, “clearly”, or “as can easily be seen”;
-- repeated “This demonstrates that…” constructions.
+- repeated “This demonstrates that…” constructions;
+- compressed one-line openers written to be quotable — “The floor came first”,
+  “Nothing tested came close to the lever”, “The limitation bites”. The
+  *Register* section of [THESIS_VOICE.md](THESIS_VOICE.md) governs these and
+  carries the replacement table.
 
 Prefer the sequence:
 
 measured value → comparison → interpretation → limitation.
+
+Use it as the default, not as a template for every paragraph. Four consecutive
+paragraphs built to that shape is itself a fault; vary what each paragraph does,
+per *Vary the architecture, not the vocabulary* in
+[THESIS_VOICE.md](THESIS_VOICE.md).
+
+Tie each interpretation to the evidence it rests on. A claim in a results
+subsection carries a `\cref` to the table or figure that supports it, in the
+sentence that makes the claim.
+
+Match the certainty of the wording to one configuration and three repetitions.
+Prefer `indicates`, `supports`, `is consistent with`, and `strongly influences`
+to `proves` and `decides`; bound a general-sounding claim with `within the
+tested range` or `in the investigated configuration`. Having a limitations
+section does not license certainty elsewhere.
+
+Carry one main claim per sentence. A clause answering more than about two of
+*what / where / how / when / why* is algorithmically compressed however correct
+it is; split it so the reasoning is presented step by step.
+
+Where a claim is the main finding of its section, give the measurement before
+the conclusion. `The response changed by several degrees when the lever was
+displaced by 60 mm. The changes produced by the tested stiffness values were
+substantially smaller. Within the investigated range, the compliance-centre
+position therefore had the largest measured influence.` reads as derived from
+the data; the same content with the conclusion first reads as announced.
+
+The target style for this thesis is: impersonal academic English, passive voice
+for performed actions, direct language for mathematical and physical relations,
+one main claim per sentence, explicit links between measurements and
+interpretations, and conclusions limited to the tested configuration. Literary
+expressions, slogan-like conclusions, and overly compressed sentences are
+avoided. The list of things never to do in pursuit of this — deliberate errors,
+casual filler, vague synonyms, invented observations — is in
+[THESIS_VOICE.md](THESIS_VOICE.md).
 
 Do not over-academize simple statements. Prefer “The measured alignment
 increased as rotational stiffness decreased” over inflated wording.
 
 Use British spelling consistently, including `centre`, `behaviour`, and
 `optimisation`, except in literal software identifiers.
+
+Write impersonally. Never use `I`, `we`, `our`, `us`, `my`, or `the author`, and
+put anything the author did to the apparatus, the campaign, or the data into the
+passive: `the rotational stiffness was raised`, `the plane was fitted from three
+probed points`, `the controller was implemented`. Naming a case or the thesis as
+the agent — `Case D held every gain at baseline`, `this thesis built` — is the
+same sentence with the pronoun hidden, and is rewritten the same way. The active
+voice stays where the subject is a physical quantity, an effect, or an artefact:
+`the improvement fell as \(K_R\) rose`, `the sign of the lever determines the
+direction of the induced moment`, `\cref{tab:results_case_d} shows`. The rule and its examples are in the
+*Impersonal voice* subsection of [THESIS_VOICE.md](THESIS_VOICE.md).
+
+Do not passivise everything. A uniformly passive chapter is heavier and reads as
+more artificial, not less; mathematical and factual statements stay active
+(`the Jacobian maps joint velocity to Cartesian velocity`). And a passive
+sentence must still carry content — `Four selectable laws are implemented.` is
+too generic, where `Four null-space control configurations were implemented.
+These comprised an inactive mode, projected joint damping, a singular-value-based
+torque, and a combination of the latter two terms.` states what they were.
 
 ## Figures and tables
 
@@ -187,13 +277,29 @@ circulation, the settled choices are:
 - **surface** for the flat object the tool is pressed against, and **surface
   plane** where the plane itself is meant. Not `workpiece`: the only property
   that matters is the plane the tool contacts, and `surface` already carries
-  the frame, normal, and tangents. The tool and the surface happen to be the
-  same material in this rig, which makes `workpiece` read as if it might be the
-  tool. It is not — the robot holds the tool; the surface is fixtured and
-  stationary. Because both are flat and wooden, the two must never be allowed
-  to blur: **`surface` always means the contacted plane.** The tool's own flat
-  sides are the **tool face** or the **grinding face**, never a bare `surface`,
-  and their measurements are `tool-face dimensions`.
+  the frame, normal, and tangents. `workpiece` also reads as if it might be the
+  tool. It is not — the robot holds the tool; the surface is stationary. Since
+  both are flat, the two must never be allowed to blur: **`surface` always
+  means the contacted plane.** The tool's own flat sides are the **tool face**
+  or the **grinding face**, never a bare `surface`, and their measurements are
+  `tool-face dimensions`.
+
+  **Keep the surface generic.** Describe it as `a plane surface`, `a given
+  surface`, or simply `the surface`. Do not name its material: the results are
+  reported as a response of the impedance law to a plane, and naming a material
+  invites a reader to attribute the response to that material's stiffness or
+  friction, none of which was measured or varied. The same applies to the tool
+  and to the gripper fingers.
+
+  **This is a robotics thesis, not a materials one.** Do not carry material
+  properties at all — no grades, no surface finish, no hardness, no tribology.
+  They are not variables of the study, they were not measured, and listing them
+  even as *unrecorded* invites a materials reading of a control result. Limits
+  on replication are stated in robotics terms: payload parameters, robot
+  transforms, the real-time computer. Statements about what the *controller*
+  does or does not model stay — `no environment friction model or friction
+  coefficient is used in the control command` is a control-design fact, not a
+  materials claim.
 - **contact point** for the physical point the tool touches, \(p_C\), with
   \(r_C=p_C-p_{\mathrm{TCP}}\). It is a different point and the two are
   never used for one another.
@@ -205,6 +311,22 @@ circulation, the settled choices are:
   input signal rather than a commanded orientation, and not `mismatch`, which
   implies an unwanted discrepancy where the angle is deliberate.
 
+**There is no fixture in this work, and the word must not appear.** No fixture,
+jig, clamp, or workholding device was used: the surface is simply positioned,
+and the tool is held in the gripper. Earlier drafts used `fixture` loosely for
+three different things, and each needs its own correct name:
+
+- where the *surface* is meant — `the surface`, or `the surface placement`
+  where the tolerance of that placement is the point;
+- where the *gripper's hold on the tool* is meant — `the tool mount`. This is
+  the one that carries the \(\pm2^\circ\) of play and the \(t_2\) limitation;
+- where the *whole rig* is meant — `the setup`.
+
+Getting this wrong is not only a wording fault. The anomalous \(10^\circ\)
+\(t_2\) repetition was attributed to "the fixture" in two places while
+Section 5.10 explained it through the tool mount, so the thesis named two
+different causes for one observation.
+
 Do not build a name out of the state a quantity happens to be in. The centre of
 compliance is held constant from first contact, so it was being called the
 `frozen pole` throughout, which names a behaviour and an implementation detail
@@ -215,6 +337,37 @@ it the lever.
 
 Symbols follow the same rule. One point, one subscript: \(p_c\), \(r_c\),
 \(K_c\), \(D_c\).
+
+## Mathematical notation
+
+**One typeface: plain italic.** Every symbol — scalars, vectors, and matrices
+alike — is set plain: \(F\), \(f\), \(m\), \(e_p\), \(e_R\), \(p\), \(q\),
+\(K\), \(D\), \(J\), \(R\), \(T\), \(N\). Do not use `\mathbf`.
+
+The thesis previously mixed the two, with \(e_p\) bold in Chapter 2 and plain in
+Chapter 3, and with the appendices bolding matrices the chapters set plain. The
+majority form was already plain, and plain is what the symbol list now shows.
+
+The **one exception** is the zero vector \(\mathbf{0}\), where the bold
+distinguishes it from the scalar zero. Keep that.
+
+**The wrench is \(F\), everywhere.** It is never \(W\). \(W\) previously
+appeared in Appendix C for the local-to-base rotation of a stiffness frame,
+which is a rotation and therefore takes \(R\) — there written
+\(R_{\mathrm{local}}\), matching \(R_{\mathrm{task}}\) in the main text. Rotation
+matrices are \(R\) without exception.
+
+Macros defined in `config/commands.tex` (`\vF`, `\mK`, `\R{3}`, …) predate this
+convention. `\R{n}` for \(\mathbb{R}^n\) is in active use and stays; the
+bold-producing ones are not used in the chapters and should not be reintroduced.
+
+**Never normalise notation with a bulk regex.** A backslash-stripping
+substitution across the `.tex` files silently produced 190 undefined macros and
+four merged control sequences (`\times\e_R` collapsing into `\timese_R`), none
+of which is visible without a compile. If a notation change has to be made in
+bulk, compile both `Thesis.tex` and `Professor_Draft.tex` immediately
+afterwards, and diff the set of `\macro` tokens against the previous commit —
+any token that is new is a merge.
 
 ## Units in the list of symbols
 
@@ -310,6 +463,36 @@ information such as:
 Different configurations may be distinguished only when the difference
 materially affects the scientific interpretation.
 
+## Cross-chapter factual consistency
+
+Every configuration fact — which terms were active, which gain values, which
+durations, which calibration procedure — must read identically in every chapter
+that states it. A supervisor pass found four contradictions of this kind, none
+visible from inside any single chapter:
+
+- **What was active.** Chapter 3 said the combined null-space mode was used,
+  Chapter 4 said the singular-value bias was *not* active, Chapter 6 said both
+  terms ran together. Resolve against
+  `backmatter/appendix_controller_parameters.tex`, which transcribes the
+  parameter files, then state it once and cross-reference that table.
+- **Which gain.** The baseline translational stiffness appears as
+  \(\operatorname{diag}(2000,2000,800)\) in the surface frame and
+  \(\operatorname{diag}(2000,2000,350)\) in base coordinates. Two diagonal
+  matrices in frames \(10^\circ\) apart cannot both be the same gain: a
+  congruence transform of a diagonal matrix is not diagonal. Naming the frame
+  is not enough — the numbers must reconcile.
+- **Which duration.** A \(5\,\mathrm{s}\) set-up interval was stated where the
+  parameter table gives a \(4.0\,\mathrm{s}\) timeout and every run ended on
+  that timeout.
+- **Which procedure.** The physical plane was described both as fitted from
+  three probed points and as estimated by seating the tool face. These are
+  different measurements of the same quantity.
+
+**Rule.** A number or configuration fact has one home — the methodology chapter
+or the parameter appendix — and every other mention cross-references it rather
+than restating it from memory. Before submitting, grep each key value across all
+chapters and confirm a single answer.
+
 ## Evidence and claims
 
 Never invent measurements, repetitions, fitted values, confidence intervals,
@@ -389,7 +572,7 @@ methodology and results chapters use it without re-deriving it.
 Chapter 4 describes completed experiments, not an ideal or future protocol.
 It should state:
 
-- robot, tool, surface, fixture, and relevant software stack;
+- robot, tool, surface, and relevant software stack;
 - configured and physical plane definitions;
 - initial angular mismatch;
 - fixed gains and swept variables;
@@ -427,9 +610,20 @@ scientific purpose statement.
 
 The principal experimental conclusions of the calibrated-plane campaign are:
 
-1. Compliance-centre placement dominates the alignment response, and its
-   favourable sign is opposite for the two surface tangents. The unfavourable
-   sign removes the correction rather than reducing it.
+1. Within the tested range, compliance-centre placement produced the largest
+   variation in the alignment response. For each tilted axis one lever
+   direction improves alignment and the opposite direction does not, and the
+   improving direction is opposite for the two surface tangents. With the lever
+   in the other direction, almost no alignment improvement was measured.
+
+   **Do not compress this into `the favourable sign is opposite`.** That phrase
+   asks the reader to hold three things at once — that a lever has a sign, that
+   one sign is favourable, and that which one is favourable depends on the
+   tilted axis — none of which the phrase itself states. Say what improves
+   alignment, then say that it reverses. `favourable` is usable as shorthand
+   only after it has been defined at its first appearance, which is Case D in
+   Chapter 5; the Abstract, Introduction, and Conclusion cannot rely on that
+   definition and must spell the relation out.
 2. Raising the rotational stiffness of the tilted axis reduces alignment over
    the tested range. Because the tangent entries were varied separately, report
    this per axis and not as a common paired setting.
@@ -449,9 +643,69 @@ gripper can conceal correction that occurred but cannot create it.
 Basic settling, formulation-equivalence, and repeatability checks support the
 measurements but should not dominate the conclusion.
 
-The conclusion states what every experimental case showed, one entry per case,
-in the case order used in the results chapter. A case that produced a null or
-bounding result is reported as such rather than omitted.
+**The conclusion summarises the results chapter; it does not reproduce it.** An
+earlier version of this guide required one entry per experimental case, in the
+results-chapter order. A supervisor pass overturned that: the case-by-case list
+repeated Chapter 5 in full and was the single largest source of duplication in
+the thesis. **Do not restore it.**
+
+The conclusion instead states the main findings as continuous prose — the
+controller was implemented and ran in every reported run; compliance-centre
+position had the largest measured influence; its favourable sign reversed
+between the tangents; stiffness effects were smaller and axis dependent; the
+normal displacement produced no detectable change. A null or bounding result is
+still reported as such: the zero-tilt baseline and the unvalidated null-space
+term both stay.
+
+A value appears in the conclusion only where the finding is unintelligible
+without it — the baseline response, a bound on the generality of a claim.
+Standard deviations stay in Chapter 5 entirely. Where a value is cut, the
+relation may stay: `about eleven times`, `roughly a quarter`, `by a factor of
+about seven` carry the size of an effect without repeating the numbers behind
+it.
+
+**Target length.** Chapter 6 should sit at roughly half the length of the
+results chapter it summarises. The reduction comes from cutting duplication,
+not from dropping findings.
+
+The central findings the conclusion must carry are: the stiffness parameters had
+a relatively small effect; compliance-centre placement had the largest measured
+effect; its favourable sign depended on the tilted axis; the tool mount
+introduced measurement uncertainty that bounds the \(t_2\) results; and
+null-space conditioning was implemented but not experimentally isolated.
+
+Settling, formulation-equivalence, and repeatability checks belong in Chapter 5.
+Do not restate them in the conclusion.
+
+Do not give every case entry the same length. Case D is the principal finding
+and carries the longest treatment; Case C's effect was limited and its
+treatment is short. Uniform length across five entries is as recognisable as
+uniform structure. This applies to the case sections in Chapter 5; Chapter 6 no
+longer enumerates the cases at all.
+
+**Assign each chapter one role and hold it.** Interpretation was being written
+three times — once in each case section, again in the discussion, and again in
+the conclusion. Sections 5.3–5.7 carry observations and local interpretation;
+Section 5.9 carries comparison across parameters and the mechanism; Chapter 6
+carries final conclusions only. Detailed limitations live in Section 5.10, and
+Chapter 6 summarises them in four short paragraphs without restating the
+mechanisms.
+
+**Group the limitations under named subsections** rather than listing them as
+consecutive paragraphs of identical shape (state limitation, explain mechanism,
+state consequence, delimit interpretation). The settled grouping is:
+experimental generalisability; calibration and measurement uncertainty;
+tool-mount compliance; null-space validation and real-time timing. A reader can
+then find the limitation that bears on the result they are checking, instead of
+reading a catalogue.
+
+**Prioritise Future Work; do not mirror the limitations one for one.** Deriving
+exactly one proposed experiment from each limitation produces a complete,
+evenly weighted list that reads as generated. State the three extensions
+considered most important, each with the question it would settle, then cover
+the remainder briefly in a single paragraph. For this thesis the three are
+negative tilt angles, independent measurement of the tool-face angle, and
+matched null-space trials.
 
 Items in a bulleted or numbered list begin with a capital letter and are
 written as complete statements. Do not continue a lead-in sentence across the
@@ -517,6 +771,13 @@ strands depends on where the page happens to break.
 Before accepting a revision:
 
 - run the quick scan in [THESIS_VOICE.md](THESIS_VOICE.md) over changed prose;
+- read every paragraph's first sentence alone and rewrite any that reads as a
+  slogan rather than a technical statement;
+- check that each results subsection cross-references the table or figure its
+  claim rests on;
+- check that definitive wording is bounded to the tested range;
+- check that the conclusion states findings rather than repeating Chapter 5's
+  values and standard deviations;
 - search for question-driven headings and literal research questions;
 - search the running text for names carrying two or more underscores;
 - search for `frozen`, and for any name built from a quantity's state;

@@ -1,4 +1,4 @@
-\chapter{Theoretical Background}
+﻿\chapter{Theoretical Background}
 \label{ch:theory}
 
 \makeatletter
@@ -13,18 +13,19 @@ rests on. It moves from the frames and transformations that fix the geometry,
 to the end-effector pose and the error signal built from it, and finally to
 the kinematics and dynamics that carry a Cartesian wrench down to joint
 torques.
-%% ─────────────────────────────────────────────────────────────
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 \section{Coordinate Systems and Transformations}
 \label{sec:coord_systems}
-%% ─────────────────────────────────────────────────────────────
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 \subsection{Reference Frames}
 
-Three right-handed frames carry the controller \cite{Siciliano2009, Craig2005}.
-The joint indexing follows the Denavit--Hartenberg convention
-\cite{Denavit1955, Craig2005}, named here only to fix that indexing: the
-controller obtains its poses and its Jacobian from the robot model rather than
-from a parameterised chain.
+Three right-handed coordinate frames are used in the controller
+\cite{Siciliano2009, Craig2005}. Joint indexing is introduced using the
+conventional serial-chain notation of Denavit and Hartenberg
+\cite{Denavit1955, Craig2005}. The implemented controller does not evaluate a
+separate Denavit--Hartenberg model: the end-effector pose and the geometric
+Jacobian are obtained directly from the libfranka model interface.
 
 \begin{itemize}
   \item Base frame $\{0\}$: fixed to the robot mounting
@@ -56,13 +57,10 @@ This frame assignment forms the basis for describing the robot kinematics using 
 
 \subsection{Rigid Transformations}
 
-A position is a vector \(p\in\mathbb{R}^3\). An orientation is represented by a
-proper rotation \(R\in SO(3)\), for which
-\[
-R^\top R=I,\qquad \det R=1,\qquad R^{-1}=R^\top .
-\]
-For \(R={}^bR_a\), let \(e_i^b\) and \(e_j^a\) denote axes of the reference and
-rotated frames. Its direction-cosine entries are
+A position is a vector \(p\in\mathbb{R}^3\), and an orientation is a proper
+rotation \(R\in SO(3)\), for which \(R^\top R=I\), \(\det R=1\) and
+\(R^{-1}=R^\top\). For \(R={}^bR_a\), let \(e_i^b\) and \(e_j^a\) denote axes of
+the reference and rotated frames. Its direction-cosine entries are
 \begin{equation}
 R_{ij}=(e_i^b)^\top e_j^a .
 \label{eq:direction_cosine_entry}
@@ -92,17 +90,10 @@ Rotation and translation are collected in the homogeneous transformation
 \end{bmatrix}.
 \label{eq:homogeneous_transformation}
 \end{equation}
-It maps a point by
-\({}^bp={}^bR_a\,{}^ap+{}^bp_a\), composes as
-\({}^cT_a={}^cT_b{}^bT_a\), and has inverse
-\begin{equation}
-\begin{bmatrix}R&p\\0^\top&1\end{bmatrix}^{-1}
-=
-\begin{bmatrix}R^\top&-R^\top p\\0^\top&1\end{bmatrix}.
-\label{eq:homogeneous_inverse}
-\end{equation}
+It maps a point by \({}^bp={}^bR_a\,{}^ap+{}^bp_a\) and composes as
+\({}^cT_a={}^cT_b{}^bT_a\).
 
-%% ─────────────────────────────────────────────────────────────
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 \subsection{End-Effector Pose}
 \label{sec:position_orientation}
 
@@ -116,29 +107,30 @@ p_{x,\mathrm{EE}} & p_{y,\mathrm{EE}} & p_{z,\mathrm{EE}}
 \in\mathbb{R}^3
 \label{eq:end_effector_position}
 \end{equation}
-and orientation \(R_{\mathrm{EE}}\in SO(3)\), both expressed in the base frame.
-They form
-\begin{equation}
-T_{\mathrm{EE}}
-=
-\begin{bmatrix}
-R_{\mathrm{EE}} & p_{\mathrm{EE}}\\
-0^\top & 1
-\end{bmatrix}.
-\label{eq:end_effector_transformation}
-\end{equation}
-The implementation reads this transformation directly from
-the reported end-effector pose; no Euler-angle conversion is used.
+and orientation \(R_{\mathrm{EE}}\in SO(3)\), both expressed in the base frame
+and collected into \(T_{\mathrm{EE}}\) by
+\cref{eq:homogeneous_transformation}. The implementation reads this
+transformation directly from the reported end-effector pose; no Euler-angle
+conversion is used.
 
 \subsection{Position and Orientation Error}
 \label{subsec:position_orientation_error}
 
-Let the desired pose be
-\[
-T_d=
-\begin{bmatrix}R_d&p_d\\0^\top&1\end{bmatrix}.
-\]
-For reference, the desired-to-current relative transformation is
+To control the motion of the end-effector, the deviation between the desired and
+the current end-effector transformation must be computed. Let the desired pose be
+\begin{equation}
+T_d
+=
+\begin{bmatrix}R_d&p_d\\0^\top&1\end{bmatrix},
+\label{eq:desired_transformation}
+\end{equation}
+with \(T_{\mathrm{EE}}\) the current pose of
+\cref{eq:homogeneous_transformation}.
+
+For scalar or vector quantities an error is usually computed by subtraction.
+That is not suitable for homogeneous transformations: the difference of two
+transformation matrices is not itself a rigid-body transformation. The error is
+therefore computed from the relative transformation between the two frames,
 \begin{equation}
 T_{\mathrm{err}}
 =
@@ -148,37 +140,113 @@ T_d^{-1}T_{\mathrm{EE}}
 R_d^\top R_{\mathrm{EE}} &
 R_d^\top(p_{\mathrm{EE}}-p_d)\\
 0^\top&1
-\end{bmatrix}.
+\end{bmatrix},
 \label{eq:expanded_transformation_error}
 \end{equation}
-The controller does not subtract transformation matrices. Its translational
-spring uses the restoring error directly in the base frame,
+using the inverse of a homogeneous transformation
+\cite{Craig2005,Siciliano2009}. When the two poses coincide,
+\(T_{\mathrm{err}}=T_d^{-1}T_d=I_4\), so the identity matrix represents zero
+position and orientation error.
+
+The translational block of \cref{eq:expanded_transformation_error} is expressed
+in the desired frame. The impedance law instead uses the restoring error in the
+base frame,
 \begin{equation}
-e_p=p_d-p_{\mathrm{EE}}.
+e_p=p_d-p_{\mathrm{EE}}\in\mathbb{R}^3 ,
 \label{eq:position_control_error}
 \end{equation}
+which corresponds to \(-R_d\,\Delta p_d\) for the displacement
+\(\Delta p_d=R_d^\top(p_{\mathrm{EE}}-p_d)\) read from that block.
 
+\paragraph{Axis--angle form of the orientation error.}
 The rotational spring requires the rotation that carries the current
-orientation to the desired orientation,
+orientation to the desired one,
 \begin{equation}
 \Delta R=R_{\mathrm{EE}}^\top R_d .
 \label{eq:relative_rotation_error}
 \end{equation}
-Let \((\phi,u)\) be its principal axis--angle pair, so that
-\(\Delta R=\exp(\phi[u]_\times)\), \(\phi\in[0,\pi]\), and \(\lVert u\rVert=1\)
-when \(\phi\ne0\). The local and base-frame rotation errors are
+If the current orientation already equals the desired one then
+\(\Delta R=I\), so the identity again represents zero error.
+
+For use in the impedance controller this rotation must be represented as a
+three-dimensional vector. A rotation matrix \(\Delta R\) can be described by a
+rotation angle \(\phi\) about a unit rotation axis \(u\in\mathbb{R}^3\)
+\cite{Siciliano2009,Murray1994}. The pair \((\phi,u)\) is the screw axis of the
+relative rotation, and \(u\) carries only its direction.
+
+The angle follows from the trace, the sum of the diagonal elements. For a
+three-dimensional rotation,
+\begin{equation}
+\operatorname{tr}(\Delta R)=1+2\cos\phi ,
+\label{eq:trace_angle_relation}
+\end{equation}
+so that
+\begin{equation}
+\phi
+=
+\arccos\!\left(\frac{\operatorname{tr}(\Delta R)-1}{2}\right),
+\qquad \phi\in[0,\pi].
+\label{eq:angle_from_trace}
+\end{equation}
+
+The axis follows from the skew-symmetric part of \(\Delta R\). Rodrigues'
+rotation formula expresses a rotation as
+\cite{Siciliano2009,Murray1994}
+\begin{equation}
+\Delta R
+=
+I+\sin\phi\,[u]_\times+(1-\cos\phi)[u]_\times^2 ,
+\label{eq:rodrigues_formula}
+\end{equation}
+where \([u]_\times\) is the skew-symmetric matrix of \(u\),
+\begin{equation}
+[u]_\times
+=
+\begin{bmatrix}
+0 & -u_z & u_y\\
+u_z & 0 & -u_x\\
+-u_y & u_x & 0
+\end{bmatrix},
+\qquad
+[u]_\times^\top=-[u]_\times .
+\label{eq:skew_symmetric_axis_matrix}
+\end{equation}
+Only the term \(\sin\phi\,[u]_\times\) carries the axis. Transposing
+\cref{eq:rodrigues_formula} flips the sign of that term while leaving the
+identity and the symmetric term \((1-\cos\phi)[u]_\times^2\) unchanged, so
+subtracting the transpose isolates it:
+\begin{equation}
+\tfrac{1}{2}\left(\Delta R-\Delta R^\top\right)
+=
+\sin\phi\,[u]_\times .
+\label{eq:skew_part_rotation_matrix}
+\end{equation}
+Reading the entries of \cref{eq:skew_part_rotation_matrix} and dividing by
+\(\sin\phi\) gives the axis
+\begin{equation}
+u
+=
+\frac{1}{2\sin\phi}
+\begin{bmatrix}
+\Delta R_{32}-\Delta R_{23}\\
+\Delta R_{13}-\Delta R_{31}\\
+\Delta R_{21}-\Delta R_{12}
+\end{bmatrix}.
+\label{eq:rotation_axis_from_matrix}
+\end{equation}
+
+Scaling the axis by the angle gives the orientation error in the current
+end-effector frame, and rotating it with \(R_{\mathrm{EE}}\) expresses it in
+the base frame:
 \begin{equation}
 e_{R,\mathrm{EE}}=\phi u,
 \qquad
-e_R=R_{\mathrm{EE}}e_{R,\mathrm{EE}} .
+e_R=R_{\mathrm{EE}}\,e_{R,\mathrm{EE}}\in\mathbb{R}^3 .
 \label{eq:rotation_error_base_frame}
 \end{equation}
-This sign convention is implementation-critical: a small positive
-current-to-desired rotation produces a positive spring moment about the same
-base-frame axis. Eigen performs the principal axis--angle extraction, including
-the numerically delicate neighborhood of \(\phi=\pi\). Left-multiplying by
-\(R_{\mathrm{EE}}\) expresses \(e_R\) in \(\{0\}\), where the angular velocity
-and the commanded rotational gains are already defined.
+The direction of \(e_R\) is the axis of the required rotational correction and
+its magnitude is the orientation error in radians. If the orientations agree
+then \(\Delta R=I\), \(\phi=0\), and \(e_R=0\).
 
 The six-dimensional controller error is therefore
 \begin{equation}
@@ -189,65 +257,180 @@ e=
 
 \section{Kinematics of a 7-DOF Manipulator}
 
-For a serial manipulator with
-\(q=[q_1,\ldots,q_n]^\top\), forward kinematics is the ordered product
+Having defined the end-effector pose as the controlled variable, the next step
+is to describe how it is obtained from the joint angles.
+
+\subsection{Forward Kinematics}
+
+Forward kinematics maps the joint configuration to the resulting end-effector
+position and orientation. For a serial manipulator the end-effector
+transformation is the ordered product of the homogeneous transformations
+between neighbouring link frames,
 \begin{equation}
 {}^0T_n(q)
 =
 {}^0T_1(q_1)\,
 {}^1T_2(q_2)\cdots
-{}^{n-1}T_n(q_n).
+{}^{n-1}T_n(q_n),
 \label{eq:forward_kinematics_chain}
 \end{equation}
-Each factor is the transformation between neighbouring joint frames, built in
-the Denavit--Hartenberg convention from the published link parameters; the
-matrix itself is standard and is not reproduced here
-\cite{Denavit1955,Craig2005,Siciliano2009}. The product in
-\cref{eq:forward_kinematics_chain} yields
-\({}^0T_n=
-\left[\begin{smallmatrix}
-R_{\mathrm{EE}}&p_{\mathrm{EE}}\\0^\top&1
-\end{smallmatrix}\right]\).
-In the implemented controller, libfranka supplies this pose and the model
-Jacobian directly, so no chain is evaluated at run time.
+where the joint configuration vector collects the joint angles,
+\begin{equation}
+q =
+\begin{bmatrix}
+q_1 & q_2 & \cdots & q_n
+\end{bmatrix}^\top
+\in \mathbb{R}^n .
+\label{eq:joint_configuration_vector}
+\end{equation}
+In the Denavit--Hartenberg convention each \(q_i\) is the rotation of joint
+\(i\) about its own joint axis, measured in radians.
+
+Each factor \({}^{i-1}T_i(q_i)\) describes the relative pose of two
+neighbouring link frames. In the standard Denavit--Hartenberg convention
+\cite{Denavit1955,Craig2005,Siciliano2009} it is the product of four elementary
+homogeneous transformations,
+\begin{equation}
+{}^{i-1}T_i(q_i)
+=
+R_z(q_i)\,T_z(d_i)\,T_x(a_i)\,R_x(\alpha_i),
+\label{eq:dh_elementary_transformations}
+\end{equation}
+in which \(R_z\) and \(R_x\) are homogeneous rotations and \(T_z\) and \(T_x\)
+homogeneous translations. All four are \(4\times4\), so their product maps
+frame \(\{i\}\) into frame \(\{i-1\}\). With column vectors the factors act
+from right to left: \(R_x(\alpha_i)\) rotates about \(x\) by the link twist,
+\(T_x(a_i)\) translates along \(x\) by the link length, \(T_z(d_i)\) translates
+along \(z\) by the offset, and \(R_z(q_i)\) applies the joint rotation.
+
+Written out, the product is
+\begin{equation}
+{}^{i-1}T_i(q_i)
+=
+\begin{bmatrix}
+\cos q_i & -\sin q_i\cos\alpha_i & \sin q_i\sin\alpha_i & a_i\cos q_i\\
+\sin q_i & \cos q_i\cos\alpha_i & -\cos q_i\sin\alpha_i & a_i\sin q_i\\
+0 & \sin\alpha_i & \cos\alpha_i & d_i\\
+0 & 0 & 0 & 1
+\end{bmatrix}.
+\label{eq:dh_transformation_matrix}
+\end{equation}
+The parameters \(d_i\), \(a_i\) and \(\alpha_i\) describe the fixed geometry
+between neighbouring link frames: \(d_i\) is a translation along \(z\),
+\(a_i\) a translation along \(x\), and the link twist \(\alpha_i\) the angle
+between two neighbouring joint axes, that is, how far \(z_i\) is tilted with
+respect to \(z_{i-1}\).
+
+The complete product gives the end-effector pose in the base frame,
+\begin{equation}
+{}^0T_n(q)
+=
+T_{\mathrm{EE}}(q)
+=
+\begin{bmatrix}
+R_{\mathrm{EE}}(q) & p_{\mathrm{EE}}(q)\\
+0^\top & 1
+\end{bmatrix},
+\label{eq:forward_kinematics_result}
+\end{equation}
+whose upper-left \(3\times3\) block is the end-effector orientation and whose
+upper-right column is the end-effector position. The mapping is nonlinear,
+since the link transformations contain trigonometric functions of the joint
+angles, so a change in one joint angle generally produces a nonlinear change in
+the end-effector pose.
+
+The convention is stated here because it fixes the joint indexing used below.
+The implemented controller does not evaluate this chain at run time: libfranka
+supplies both the end-effector pose and the model Jacobian directly.
 
 \ifProfessorStopAfterForwardKinematics
 \else
 
-\subsection{Differential Kinematics and Geometric Jacobian}
+\subsection{Differential Kinematics}
 
-The geometric Jacobian maps joint velocity to the base-frame end-effector
-twist,
+Forward kinematics gives the pose as a function of \(q\). Control also requires
+the velocity relation. Writing the Cartesian end-effector state as
+\begin{equation}
+x = f(q),
+\label{eq:cartesian_state_forward_kinematics}
+\end{equation}
+and differentiating with respect to time gives
+\begin{equation}
+\dot{x}
+=
+J(q)\dot{q}.
+\label{eq:differential_kinematics}
+\end{equation}
+Here \(\dot{x}\in\mathbb{R}^6\) is the end-effector twist, consisting of the
+linear and angular velocities,
+\begin{equation}
+\dot{x}
+=
+\begin{bmatrix}
+\dot{p}_{\mathrm{EE}}\\
+\omega_{\mathrm{EE}}
+\end{bmatrix},
+\label{eq:cartesian_velocity_vector}
+\end{equation}
+and \(\dot q\in\mathbb{R}^n\) collects the joint velocities,
+\begin{equation}
+\dot{q}
+=
+\begin{bmatrix}
+\dot{q}_1 & \dot{q}_2 & \cdots & \dot{q}_n
+\end{bmatrix}^\top,
+\label{eq:joint_velocity_vector}
+\end{equation}
+each \(\dot q_i\) being the angular velocity of joint \(i\) in radians per
+second. The matrix \(J(q)\in\mathbb{R}^{6\times n}\) is the geometric Jacobian
+\cite{Siciliano2009,Craig2005}. Because it depends on \(q\), the same joint
+velocity produces different end-effector velocities in different
+configurations.
+
+\subsection{Geometric Jacobian}
+
+The Jacobian describes the local relation between joint velocities and the
+end-effector twist. For a robot with \(n\) joints it is written column-wise,
 \begin{equation}
 \begin{bmatrix}\dot p_{\mathrm{EE}}\\\omega_{\mathrm{EE}}\end{bmatrix}
 =
 J(q)\dot q,
 \qquad
-J(q)=\begin{bmatrix}J_1&\cdots&J_n\end{bmatrix}
-\in\mathbb{R}^{6\times n}.
+J(q)=\begin{bmatrix}J_1&J_2&\cdots&J_n\end{bmatrix}
+\in\mathbb{R}^{6\times n},
 \label{eq:jacobian_velocity_relation}
 \end{equation}
-For revolute joint \(i\), let \(z_{i-1}\) be its unit axis and \(p_{i-1}\) a
-point on that axis, both expressed in the base frame. Its column is
+where each column \(J_i\) is the contribution of joint \(i\). The Panda has
+only revolute joints, so with \(z_{i-1}\) the unit vector along the axis of
+joint \(i\) and \(p_{i-1}\) a point on that axis, both expressed in the base
+frame, the column is
 \begin{equation}
 J_i=
 \begin{bmatrix}
 z_{i-1}\times\left(p_{\mathrm{EE}}-p_{i-1}\right)\\
 z_{i-1}
-\end{bmatrix}.
+\end{bmatrix}
+\in\mathbb{R}^6 .
 \label{eq:jacobian_column}
 \end{equation}
-The upper block is the linear velocity generated by the lever from the joint
-axis to the TCP; the lower block is the angular velocity. All three quantities
-depend on the current configuration, so \(J(q)\) is configuration dependent.
+This standard form follows from the instantaneous velocity of a point under a
+revolute motion \cite{Siciliano2009,Craig2005}. The vector
+\(p_{\mathrm{EE}}-p_{i-1}\) is the lever arm from the joint axis to the
+end-effector, so the cross product
+\(z_{i-1}\times(p_{\mathrm{EE}}-p_{i-1})\) is the linear velocity that rotation
+of joint \(i\) produces at the end-effector, while the lower block \(z_{i-1}\)
+is the corresponding angular velocity. Each column therefore stacks a linear
+contribution above an angular one.
+
+Because \(z_{i-1}\), \(p_{i-1}\) and \(p_{\mathrm{EE}}\) all depend on the
+current joint configuration, the Jacobian is configuration dependent, and the
+influence of each joint on the end-effector motion changes as the robot moves.
 
 \section{Cartesian Impedance Control}
-%% ─────────────────────────────────────────────────────────────
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-The previous section introduced the Jacobian matrix, which relates joint
-velocities to Cartesian end-effector velocities.
-In the controller, this relationship is also used to map a Cartesian wrench to
-joint torques \cite{Khatib1987}.
+The Jacobian is used in the reverse direction as well, to map a Cartesian wrench
+to joint torques \cite{Khatib1987}.
 Before this mapping is introduced, the desired Cartesian interaction behaviour
 is defined using impedance control.
 
@@ -262,40 +445,39 @@ produces very different contact behaviour depending on their entries
 The Cartesian error vector was defined as
 
 \begin{equation}
-\mathbf{e}
+e
 =
 \begin{bmatrix}
-\mathbf{e}_p\\
-\mathbf{e}_R
+e_p\\
+e_R
 \end{bmatrix}
 \in \mathbb{R}^6,
 \label{eq:cartesian_error_impedance}
 \end{equation}
 
-where \(\mathbf{e}_p\) is the translational error and \(\mathbf{e}_R\) is the rotational error.
+where \(e_p\) is the translational error and \(e_R\) is the rotational error.
 These two error components are used to compute the Cartesian impedance forces
 and moments.
 
 \subsection{Impedance Wrench}
 
-The impedance command is evaluated in the robot base frame. Therefore the
-matrices that appear in the commanded wrench are the base-frame stiffness and
-damping matrices
-\(K_{p,0}\), \(D_{p,0}\), \(K_{R,0}\), and \(D_{R,0}\). They are not assumed to
-be diagonal in the base frame. If the task frame changes, for example because
-the surface normal changes, these base-frame matrices change as well. As a
-result, the commanded Cartesian force, moment, and joint torque also change
-even if the local diagonal gain values are kept the same.
+The impedance command is evaluated in the robot base frame, so the matrices
+appearing in the commanded wrench are the base-frame stiffness and damping
+matrices \(K_{p,0}\), \(D_{p,0}\), \(K_{R,0}\), and \(D_{R,0}\). They are not
+assumed to be diagonal in the base frame. If the task frame changes, for example
+because the surface normal changes, these base-frame matrices change as well,
+and so do the commanded Cartesian force, moment, and joint torque, even when the
+local diagonal gain values are kept the same.
 
 The positional impedance force is defined as the translational part of a
 Cartesian spring-damper law \cite{Hogan1985,Mayr2024CartesianImpedance},
 
 \begin{equation}
-\mathbf{f}
+f
 =
-K_{p,0} \mathbf{e}_p
+K_{p,0} e_p
 +
-D_{p,0}\left(\dot{p}_d-\dot{\mathbf{p}}_{\mathrm{EE}}\right)
+D_{p,0}\left(\dot{p}_d-\dot{p}_{\mathrm{EE}}\right)
 \in \mathbb{R}^3.
 \label{eq:positional_impedance_force}
 \end{equation}
@@ -303,21 +485,21 @@ D_{p,0}\left(\dot{p}_d-\dot{\mathbf{p}}_{\mathrm{EE}}\right)
 Here, \(K_{p,0} \in \mathbb{R}^{3 \times 3}\) is the positional stiffness
 matrix expressed in the base frame, \(D_{p,0} \in \mathbb{R}^{3 \times 3}\) is
 the positional damping matrix expressed in the base frame, and
-\(\dot{\mathbf{p}}_{\mathrm{EE}}\in\mathbb{R}^3\) and
+\(\dot{p}_{\mathrm{EE}}\in\mathbb{R}^3\) and
 \(\dot{p}_d\in\mathbb{R}^3\) are the measured and desired Cartesian linear
 velocities expressed in the same frame.
-The stiffness term \(K_{p,0} \mathbf{e}_p\) generates a restoring force
+The stiffness term \(K_{p,0} e_p\) generates a restoring force
 proportional to the position error, while the damping term
-\(D_{p,0}(\dot{p}_d-\dot{\mathbf{p}}_{\mathrm{EE}})\) damps the translational
+\(D_{p,0}(\dot{p}_d-\dot{p}_{\mathrm{EE}})\) damps the translational
 velocity error. For a fixed setpoint, \(\dot{p}_d=\mathbf{0}\), so this term
-reduces to \(-D_{p,0}\dot{\mathbf{p}}_{\mathrm{EE}}\).
+reduces to \(-D_{p,0}\dot{p}_{\mathrm{EE}}\).
 
 The rotational impedance moment is defined as
 
 \begin{equation}
-\mathbf{m}
+m
 =
-K_{R,0} \mathbf{e}_R
+K_{R,0} e_R
 -
 D_{R,0} \omega_{\mathrm{EE}}
 \in \mathbb{R}^3.
@@ -329,109 +511,73 @@ matrix expressed in the base frame, \(D_{R,0} \in \mathbb{R}^{3 \times 3}\) is
 the rotational damping matrix expressed in the base frame, and
 \(\omega_{\mathrm{EE}}\in\mathbb{R}^3\) is the angular velocity of the
 end-effector expressed in the base frame. The stiffness term
-\(K_{R,0}\mathbf{e}_R\) generates a restoring moment proportional to the
+\(K_{R,0}e_R\) generates a restoring moment proportional to the
 orientation error, while the damping term \(D_{R,0}\omega_{\mathrm{EE}}\)
-opposes the angular velocity of the end-effector.
+opposes the angular velocity of the end-effector. The rotational damping
+therefore acts on the measured angular velocity itself rather than on an
+angular velocity error, because no angular reference velocity is commanded.
 
 The positional force and rotational moment are combined into the Cartesian
 wrench. In this thesis, a wrench means a six-dimensional vector containing a
 Cartesian force and a Cartesian moment:
 
 \begin{equation}
-\mathbf{F}
+F
 =
 \begin{bmatrix}
-\mathbf{f}\\
-\mathbf{m}
+f\\
+m
 \end{bmatrix}
 =
 \begin{bmatrix}
-K_{p,0} \mathbf{e}_p + D_{p,0}\left(\dot{p}_d-\dot{\mathbf{p}}_{\mathrm{EE}}\right)\\
-K_{R,0} \mathbf{e}_R - D_{R,0} \omega_{\mathrm{EE}}
+K_{p,0} e_p + D_{p,0}\left(\dot{p}_d-\dot{p}_{\mathrm{EE}}\right)\\
+K_{R,0} e_R - D_{R,0} \omega_{\mathrm{EE}}
 \end{bmatrix}
 \in \mathbb{R}^6.
 \label{eq:cartesian_force_moment_vector}
 \end{equation}
 
-The vector \(\mathbf{F}\) is therefore the Cartesian wrench generated by the
-impedance controller in response to position, orientation, linear velocity,
-and angular velocity errors.
-This wrench is later mapped to joint torques using the transpose of the
+The vector \(F\) is therefore the Cartesian wrench generated by the impedance
+controller in response to position, orientation, linear velocity, and angular
+velocity errors. The wrench ordering is force followed by moment, and every
+quantity in \cref{eq:cartesian_force_moment_vector} is expressed in the base
+frame. This wrench is mapped to joint torques below using the transpose of the
 Jacobian.
-
 
 \subsection{Joint-Torque Control Law}
 \label{sec:control_law}
-%% ─────────────────────────────────────────────────────────────
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-After defining the Cartesian impedance wrench, the final step is to convert it
-into joint torques that can be commanded to the robot actuators.
-This mapping is performed using the transpose of the Jacobian
-\cite{Khatib1987}.
-
-The Cartesian wrench is given by
-
-\begin{equation}
-\mathbf{F} =
-\begin{bmatrix}
-\mathbf{f}\\
-\mathbf{m}
-\end{bmatrix}
-\in \mathbb{R}^6,
-\label{eq:cartesian_force_moment_control_law}
-\end{equation}
-
-where \(\mathbf{f} \in \mathbb{R}^3\) is the Cartesian force and
-\(\mathbf{m} \in \mathbb{R}^3\) is the Cartesian moment.
-Using the principle of virtual work, this wrench is mapped to joint torques
-\cite{Khatib1987} by
+By the principle of virtual work, the wrench maps to joint torques
+\cite{Khatib1987} through the transpose of the Jacobian,
 
 \begin{equation}
 \boldsymbol{\tau}
 =
-J^\top(q)\mathbf{F}.
+J^\top(q)F,
 \label{eq:joint_torque_mapping}
 \end{equation}
 
-Here, \(\boldsymbol{\tau} \in \mathbb{R}^n\) is the joint torque vector,
-
-\begin{equation}
-\boldsymbol{\tau} =
-\begin{bmatrix}
-\tau_1 & \tau_2 & \cdots & \tau_n
-\end{bmatrix}^\top,
-\label{eq:joint_torque_vector}
-\end{equation}
-
-where each \(\tau_i\) is measured in \(\mathrm{Nm}\).
-The matrix \(J^\top(q) \in \mathbb{R}^{n \times 6}\) is the transpose of the
-Jacobian and maps the Cartesian wrench into joint torques.
-
-Substituting the Cartesian impedance forces and moments gives the complete
-Cartesian impedance control law:
+with \(\boldsymbol{\tau}\in\mathbb{R}^n\) in \(\mathrm{N\,m}\) and
+\(J^\top(q)\in\mathbb{R}^{n\times6}\). Substituting
+\cref{eq:cartesian_force_moment_vector} gives the complete Cartesian impedance
+control law:
 
 \begin{equation}
 \boldsymbol{\tau}
 =
 J^\top(q)
 \begin{bmatrix}
-K_{p,0} \mathbf{e}_p + D_{p,0}\left(\dot{p}_d-\dot{\mathbf{p}}_{\mathrm{EE}}\right)\\
-K_{R,0} \mathbf{e}_R - D_{R,0} \omega_{\mathrm{EE}}
+K_{p,0} e_p + D_{p,0}\left(\dot{p}_d-\dot{p}_{\mathrm{EE}}\right)\\
+K_{R,0} e_R - D_{R,0} \omega_{\mathrm{EE}}
 \end{bmatrix}.
 \label{eq:cartesian_impedance_control_law}
 \end{equation}
 
-This equation is the computational core of the controller.
-The matrices \(K_{p,0}\), \(D_{p,0}\), \(K_{R,0}\), and \(D_{R,0}\) are the
-already transformed base-frame matrices. Therefore, for a surface task, changing
-the surface frame changes these matrices before the wrench is computed, and the
-joint torque command changes through the same equation.
-At each control cycle, the current end-effector transformation is read from
-the robot state and compared with the desired transformation.
-From this comparison, the positional error \(\mathbf{e}_p\) and rotational error
-\(\mathbf{e}_R\) are computed.
-The corresponding Cartesian forces and moments are then evaluated and mapped
-to joint torques using the Jacobian transpose.
+This equation is the computational core of the controller. Its gain matrices are
+the already transformed base-frame matrices, so for a surface task, changing the
+surface frame changes them before the wrench is evaluated, and the joint-torque
+command changes with them.
 
 \subsection{Coriolis and Gravity Compensation in libfranka}
 
@@ -443,7 +589,7 @@ The commanded joint torque can therefore be written as
 \begin{equation}
 \tau_{\mathrm{cmd}}
 =
-J^\top(q)\mathbf{F}
+J^\top(q)F
 +
 \tau_g(q)
 +
@@ -451,49 +597,31 @@ J^\top(q)\mathbf{F}
 \label{eq:commanded_torque}
 \end{equation}
 
-Here, \(\tau_g(q) \in \mathbb{R}^n\) is the gravity compensation torque, which
-depends on the joint configuration \(q\), and \(\tau_c(q,\dot{q}) \in
-\mathbb{R}^n\) compensates for Coriolis and centrifugal effects, which depend on
-both the joint configuration \(q\) and the joint velocity \(\dot{q}\).
-This equation represents the general model-compensated impedance-control
-structure; the two terms are, however, handled differently in the libfranka
-implementation used in this work.
+This is the general model-compensated structure, in which \(\tau_g(q)\) is the
+gravity torque and \(\tau_c(q,\dot q)\) the Coriolis and centrifugal torque. The
+two are handled differently in the implementation used here.
 
-\paragraph{Coriolis term: computed and added explicitly.}
-The Coriolis and centrifugal vector \(\tau_c(q,\dot{q})\) is not compensated by
-the robot internally, so it is read from the libfranka model interface and added
-explicitly to the commanded torque in the control callback. Including it cancels
-the velocity-dependent coupling of the manipulator dynamics, so that the closed
-loop behaves as the intended Cartesian impedance rather than being distorted by
-the arm's own inertial coupling during motion.
+The Coriolis vector provided by the libfranka model was added explicitly to the
+commanded torque, since the robot does not compensate it internally. A separate
+gravity term was not added: in the external joint-torque mode of the Franka
+Control Interface, the robot runs its own rigid-body model and compensates
+gravity and motor friction on board, so the commanded torque is interpreted as
+the torque excluding gravity \cite{FrankaFCI2023}. Adding \(\tau_g(q)\) again
+would compensate the same effect twice.
 
-\paragraph{Gravity term: already handled inside libfranka.}
-The gravity torque \(\tau_g(q)\) is not added as a user-level term, because it is
-already compensated internally by libfranka. In the external joint-torque
-control mode of the Franka Control Interface, the robot runs its own rigid-body
-model and continuously compensates gravity (and motor friction) on board; the
-torque commanded through libfranka is added on top of this internal gravity
-compensation, so the command is interpreted as the torque excluding gravity
-\cite{FrankaFCI2023}.
-
-Consequently, the implementation returns
+The implemented command therefore follows
 \begin{equation}
 \tau_{\mathrm{cmd,impl}}
 =
-J^\top(q)\mathbf{F}
+J^\top(q)F
 +
 \tau_c(q,\dot{q}),
 \label{eq:commanded_torque_libfranka}
 \end{equation}
-to which the secondary null-space term is added once it has been introduced,
-giving the complete command of
-\cref{eq:nullspace_complete_torque_command}. Thus, of the two compensation terms
-only the Coriolis term \(\tau_c(q,\dot{q})\) appears explicitly in the user
-callback. Gravity is not neglected physically; the gravity torque \(\tau_g(q)\)
-is already taken into account one level below the user equation, so adding it
-again would compensate the same effect twice. This keeps the implementation
-consistent with the official libfranka Cartesian impedance
-example~\cite{libfrankaCartesianExample}.
+which matches the official libfranka Cartesian impedance
+example~\cite{libfrankaCartesianExample}. The secondary null-space term is added
+once it has been introduced, giving the complete command of
+\cref{eq:nullspace_complete_torque_command}.
 
 \section{Surface Task Frame}
 \label{subsec:surface_task_frame}
@@ -621,12 +749,12 @@ D_0=T_R D_{\mathrm{task}}T_R^\top .
 \label{eq:full_task_frame_gain_transform}
 \end{equation}
 
-This is what makes the control surface-dependent: the controller does
-not command the diagonal local matrices directly. It commands the base-frame
-matrices after this transformation. Changing the surface orientation
-changes \(R_{\mathrm{task}}\), which changes \(K_{p,0}\), \(D_{p,0}\),
-\(K_{R,0}\), and \(D_{R,0}\), and consequently changes the Cartesian wrench and
-the final joint torque command.
+Consequently, changing the surface orientation changes the base-frame gain
+matrices even when the local diagonal entries remain unchanged. The controller
+commands \(K_{p,0}\), \(D_{p,0}\), \(K_{R,0}\), and \(D_{R,0}\) after this
+transformation rather than the diagonal local matrices, so a change in
+\(R_{\mathrm{task}}\) propagates through the Cartesian wrench to the joint
+torque command.
 
 For the contact task, the task frame is the surface task frame introduced in
 Section~\ref{subsec:surface_task_frame}. Setting
@@ -658,10 +786,10 @@ remain diagonal in base \([x,y,z]\), as detailed in
 Chapter~\ref{ch:implementation}. The controller does not rotate active gains
 with the live end-effector orientation \(R_{\mathrm{EE}}\).
 
-%% ─────────────────────────────────────────────────────────────
-%% ─────────────────────────────────────────────────────────────
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-%% ─────────────────────────────────────────────────────────────
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 \section{Centre of Compliance}
 \label{sec:coupled_pole_stiffness}
 
@@ -673,8 +801,9 @@ Shifting the centre of compliance from the TCP to another point, called here
 the \emph{centre of compliance} \(p_c\), turns a block-diagonal impedance at that centre
 into a coupled impedance at the TCP
 \cite{Murray1994,Fasse1997SpatialImpedance,Stramigioli2000IPC,LynchPark2017}.
-This is the construction used by the controller during set-up: the
-point-shifted impedance biases alignment while contact constrains the motion.
+The derivation below corresponds to the control law applied during set-up, in
+which the point-shifted impedance biases alignment while contact constrains the
+motion.
 
 The implemented lever, expressed in the base frame, is
 \begin{equation}
@@ -687,23 +816,23 @@ Let \([r_c]_\times\) denote the skew-symmetric matrix satisfying
 \([r_c]_\times a=r_c\times a\). Under the small-angle approximation, the
 position error at the centre of compliance is
 \begin{equation}
-\mathbf e_{p,c}
+e_{p,c}
 =
-\mathbf e_p+[r_c]_\times\mathbf e_R .
+e_p+[r_c]_\times e_R .
 \label{eq:pole_small_motion_error}
 \end{equation}
 The positive sign follows from the chosen lever: the vector from
 the TCP to the centre of compliance is \(-r_c\), and
-\(\mathbf e_R\times(-r_c)=[r_c]_\times\mathbf e_R\). Stacking the translational
+\(e_R\times(-r_c)=[r_c]_\times e_R\). Stacking the translational
 and rotational errors therefore gives
 
 \begin{equation}
-\mathbf e_c
+e_c
 =
-\begin{bmatrix}\mathbf e_{p,c}\\[2pt]\mathbf e_R\end{bmatrix}
+\begin{bmatrix}e_{p,c}\\[2pt]e_R\end{bmatrix}
 =
 \mathrm{Ad}(r_c)
-\begin{bmatrix}\mathbf e_p\\[2pt]\mathbf e_R\end{bmatrix},
+\begin{bmatrix}e_p\\[2pt]e_R\end{bmatrix},
 \qquad
 \mathrm{Ad}(r_c)
 =
@@ -731,7 +860,7 @@ D_c
 \label{eq:pole_block_gains}
 \end{equation}
 The compliance-centre wrench is
-\(w_c=K_c\mathbf e_c\). Transforming this
+\(w_c=K_ce_c\). Transforming this
 power-conjugate wrench to the TCP gives
 \(w_{\mathrm{TCP}}=\mathrm{Ad}(r_c)^\top w_c\), and therefore
 the stiffness expressed at the TCP is
@@ -799,16 +928,16 @@ and the same statements hold for \(D_c\) and
 coupling terms, not negative stiffness directions.
 
 This construction is a local, small-motion model with \(r_c\) held fixed while
-the wrench is evaluated. In the implemented this mode, the selected
+the wrench is evaluated. In the implemented set-up mode, the selected
 lever is kept constant, so the mapped gain matrices remain constant during the
 motion segment. If the centre of compliance or lever is updated continuously, the gain matrices
 become configuration dependent. Accordingly, \(p_c\) is a
-\emph{local linearized centre of compliance}, not a guaranteed measured pivot.
+\emph{local linearised centre of compliance}, not a guaranteed measured pivot.
 It need not coincide with the physical contact point \(p_C\); finite rotational
 stiffness, the lever, the environment constraint and friction, and the
 active sigma term introduced below all influence the observed motion.
 
-%% ─────────────────────────────────────────────────────────────
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 \section{Null-Space Torque}
 \label{sec:nullspace_svd}
 
@@ -928,7 +1057,7 @@ J_\rho^+
 \label{eq:truncated_svd_pseudoinverse}
 \end{equation}
 The reciprocal is \(1/\sigma_i\), and directions at or below the cutoff are
-omitted rather than regularized. The corresponding joint-velocity and torque
+omitted rather than regularised. The corresponding joint-velocity and torque
 projectors are
 \begin{equation}
 N_q=I_7-J_\rho^+J,
@@ -1001,15 +1130,17 @@ The deadband \(\delta_\sigma\geq0\) suppresses the conditioning torque when the
 two probes are indistinguishable. The arbitrary SVD sign of \(v_7\) does not
 change the result: reversing \(v_7\) swaps \(q_+\) and \(q_-\), reverses \(s\),
 and leaves \(s\hat v_7\) unchanged. The angle \(\alpha_{\mathrm{probe}}\)
-specifies only where \(\sigma_{\min}\) is sampled. It affects the sensitivity
-of the comparison against the raw deadband, but it is not multiplied into the
-commanded torque. Moreover, \(\hat v_7\) is only the instantaneous tangent to
-the constant-pose self-motion at \(q\). For finite
-\(\alpha_{\mathrm{probe}}\), neither \(q_+\) nor \(q_-\) is guaranteed to lie on
-that nonlinear self-motion manifold. The controller does not test either probe
-against joint limits. It uses only which sample is larger, not a gradient
-magnitude, so the resulting constant-magnitude torque has no guarantee of
-monotonic improvement in \(\sigma_{\min}\).
+specifies only where \(\sigma_{\min}\) is sampled and is not multiplied into the
+commanded torque.
+
+One approximation is inherent to the construction. The direction \(\hat v_7\) is
+the instantaneous tangent to the constant-pose self-motion at \(q\), so for
+finite \(\alpha_{\mathrm{probe}}\) neither \(q_+\) nor \(q_-\) is guaranteed to
+lie on that nonlinear manifold, so preservation of the end-effector pose is only
+a first-order property of the probe direction. The sign selection also discards
+the sampled slope and applies a fixed torque magnitude, which makes the term a
+two-point conditioning heuristic rather than a gradient method: it does not
+guarantee monotonic improvement of \(\sigma_{\min}\).
 
 The second contribution is the resulting bias itself,
 \begin{equation}
@@ -1020,30 +1151,39 @@ where \(k_\sigma\) is the commanded torque magnitude. Unlike
 \cref{eq:nullspace_damping_torque} it is an active, switched,
 constant-magnitude term rather than a dissipative one.
 
-\subsection{Selectable Modes}
+\subsection{Complete Null-Space Torque}
 
-The two contributions are selected independently, giving four modes,
+Both contributions act through the same projector and therefore add. The
+complete secondary torque is
+
 \begin{equation}
 \tau_{\mathrm{null}}
 =
-\begin{cases}
-0, & \text{off},\\
-\tau_d, & \text{damping only},\\
-\tau_\sigma, & \text{sigma only},\\
-\tau_d+\tau_\sigma, & \text{damping and sigma}.
-\end{cases}
+\tau_d+\tau_\sigma
+=
+-d_{\mathrm{null}}N_\tau\dot q
++
+k_\sigma N_\tau\!\left(s\hat v_7\right)
+\in\mathbb{R}^{7}.
 \label{eq:nullspace_torque}
 \end{equation}
-The result is a seven-dimensional joint torque,
-\begin{equation}
-\tau_{\mathrm{null}}\in\mathbb{R}^{7}.
-\label{eq:nullspace_torque_dimension}
-\end{equation}
-Sigma-only mode contains no null-space damping, so nothing brakes the bias it
-applies. If the Jacobian loses row rank, the true null space has
-dimension greater than one; the implementation still probes only the single
-full-SVD vector \(v_7\), so it does not search over every newly available null
-direction.
+
+The two terms have opposite roles. The damping term is dissipative and removes
+energy from motion inside the projected subspace, whereas the sigma term injects
+a constant-magnitude bias along \(\hat v_7\). The damping is consequently what
+brakes the motion the bias produces; without it, the bias acts on the null space
+unopposed.
+
+The construction assumes full row rank. At full row rank the kinematic null
+space of a seven-joint arm is one-dimensional and \(\hat v_7\) spans it, so a
+single probed direction covers the whole subspace. If the Jacobian loses row
+rank the null space gains a dimension, while \(\hat v_7\) still names only the
+last right-singular vector of the full decomposition; the bias then acts along
+one direction of a larger subspace rather than across it.
+
+Which of the two terms is active is a configuration choice rather than a
+property of the law, and \cref{sec:nullspace_conditioning_implementation}
+gives the selectable combinations and the one used for the reported runs.
 
 \section{Complete Joint-Torque Command}
 
@@ -1051,14 +1191,14 @@ The complete torque command of the controller is therefore
 \begin{equation}
 \tau_{\mathrm{cmd}}
 =
-J^{\top}(q)\,\mathbf{F}_{\mathrm{cmd}}
+J^{\top}(q)\,F_{\mathrm{cmd}}
 +
 \tau_{\mathrm{null}}
 +
 \tau_c,
 \label{eq:nullspace_complete_torque_command}
 \end{equation}
-where \(J^{\top}\mathbf{F}_{\mathrm{cmd}}\) is the Cartesian impedance torque,
+where \(J^{\top}F_{\mathrm{cmd}}\) is the Cartesian impedance torque,
 \(\tau_{\mathrm{null}}\) is the null-space term, and \(\tau_c\) is the Coriolis
 compensation added in the user callback. The gravity compensation is handled by
 the Franka Control Interface for the external torque command, as explained

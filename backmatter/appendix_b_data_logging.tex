@@ -1,13 +1,13 @@
-\chapter{Data Logging and Analysis Workflow}
+﻿\chapter{Data Logging and Analysis Workflow}
 \label{app:data_logging}
 
 This appendix explains the complete pipeline from recording measurements
 on the robot to producing publication-quality plots on any computer.
 The same pattern is used in all four experiments.
 
-%% ─────────────────────────────────────────────────────────────────
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 \section{Overview}
-%% ─────────────────────────────────────────────────────────────────
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 \begin{figure}[htb]
 \centering
@@ -34,9 +34,9 @@ The same pattern is used in all four experiments.
 \label{fig:data_pipeline}
 \end{figure}
 
-%% ─────────────────────────────────────────────────────────────────
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 \section{Step 1 --- Writing CSV in C++ (Robot PC)}
-%% ─────────────────────────────────────────────────────────────────
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 The C++ controller opens a CSV file before the control loop starts,
 writes one row per millisecond inside the callback, and closes the file
@@ -92,8 +92,8 @@ approximately 300\,KB --- small enough to transfer instantly.
 Column & Type & Unit & Description \\
 \midrule
 \texttt{time}     & float & s   & Time since controller start \\
-\texttt{e\_px/y/z} & float & m   & Translational error $\mathbf{e}_p$ \\
-\texttt{p\_x/y/z} & float & m   & End-effector position $\mathbf{p}_{EE}$ \\
+\texttt{e\_px/y/z} & float & m   & Translational error $e_p$ \\
+\texttt{p\_x/y/z} & float & m   & End-effector position $p_{EE}$ \\
 \texttt{phi\_err}  & float & rad & Rotation error magnitude $\phi$ \\
 \texttt{fx/y/z}   & float & N   & Cartesian restoring force \\
 \texttt{mx/y/z}   & float & Nm  & Cartesian restoring moment \\
@@ -107,9 +107,9 @@ Column & Type & Unit & Description \\
 \end{tabular}
 \end{center}
 
-%% ─────────────────────────────────────────────────────────────────
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 \section{Step 2 --- Copying Files to the Analysis Machine}
-%% ─────────────────────────────────────────────────────────────────
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 After the experiment, copy the CSV files from the robot PC to any
 machine (laptop, desktop) using \texttt{scp}:
@@ -131,9 +131,9 @@ The analysis machine does not need libfranka, a real-time kernel,
 or any connection to the robot.
 It only needs Python with pandas and matplotlib.
 
-%% ─────────────────────────────────────────────────────────────────
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 \section{Step 3 --- Reading and Plotting in Python}
-%% ─────────────────────────────────────────────────────────────────
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 \subsection{Installation}
 
@@ -221,9 +221,9 @@ plt.tight_layout()
 plt.savefig("exp1_sim_vs_meas.pdf", bbox_inches="tight")
 \end{lstlisting}
 
-%% ─────────────────────────────────────────────────────────────────
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 \section{Complete Plot Scripts}
-%% ─────────────────────────────────────────────────────────────────
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 The complete plotting scripts for all four experiments are provided
 on the digital medium:
@@ -256,5 +256,5 @@ python3 plot_exp1.py data/exp1_data.csv
 \end{lstlisting}
 
 %% =============================================================
-%%  APPENDIX C (was B) – EXPERIMENT 1: CARTESIAN POSITION AND ORIENTATION TRACKING
+%%  APPENDIX C (was B) â€“ EXPERIMENT 1: CARTESIAN POSITION AND ORIENTATION TRACKING
 %% =============================================================

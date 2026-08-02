@@ -1,36 +1,42 @@
 \chapter*{Kurzfassung}
 \addcontentsline{toc}{chapter}{Kurzfassung}
 
-Kleine geometrische Abweichungen zwischen einem starr geregelten Werkzeug und
-einer Oberfl\"ache erzeugen Kontaktlasten und verhindern die
-Werkzeugausrichtung an dieser Oberfl\"ache. Diese Arbeit entwickelt einen
-kartesischen Echtzeit-Impedanzregler f\"ur einen 7-achsigen Franka Emika Panda
-und untersucht, wie vorgegebene Verkippung, Tangentensteifigkeit und Lage
-eines virtuellen Nachgiebigkeitszentrums die kontaktinduzierte Ausrichtung
-beeinflussen.
+Eine kleine Winkelabweichung f\"uhrt dazu, dass eine Kante des Werkzeugs die
+Oberfl\"ache zuerst ber\"uhrt. Unter reiner Positionsregelung widersetzt sich
+der Roboter der Drehung, die die Fl\"achen parallel stellen w\"urde, sodass
+stattdessen Kontaktkr\"afte und -momente entstehen.
 
-Der Regler bildet den kartesischen Kraftwinder \"uber die transponierte
-Jacobi-Matrix auf Gelenkmomente ab. Die am Nachgiebigkeitszentrum definierte
-Steifigkeits- und D\"ampfungsmatrix wird durch eine Adjungiertenkongruenz zum
-TCP verschoben, sodass die translatorische Kontaktreaktion auch ein
-Rotationsmoment erzeugt. Diese Kopplung untersuchen die Versuche.
+F\"ur einen 7-achsigen Franka Emika Panda wurde ein kartesischer
+Echtzeit-Impedanzregler mit phasenabh\"angiger Steifigkeit und D\"ampfung
+implementiert. W\"ahrend des Kontaktaufbaus wurden die an einem virtuellen
+Nachgiebigkeitszentrum definierten Verst\"arkungen zum Werkzeugmittelpunkt
+transformiert; die entstehenden Nebendiagonalterme koppelten Translation und
+Rotation, sodass der kommandierte Normaldruck ein korrigierendes Moment
+erzeugte.
 
-Die Lage des Nachgiebigkeitszentrums bestimmte die Reaktion ma\ss{}geblich.
-Ihre Wirkung ist vorzeichenabh\"angig: das g\"unstige Vorzeichen ist f\"ur die
-beiden Tangenten entgegengesetzt, das ung\"unstige hob die Korrektur auf,
-statt sie zu verringern. Eine Verschiebung entlang der Oberfl\"achennormalen
-blieb unterhalb der Interpretationsschwelle. Die Steifigkeit war weniger
-bedeutsam: Eine h\"ohere Rotationssteifigkeit der verkippten Achse verringerte
-die Ausrichtung monoton; keine Einstellung \"ubertraf den nachgiebigsten
-Ausgangswert. Die Ausrichtung war durchg\"angig um \(t_2\) gr\"o\ss{}er als um
-\(t_1\); dieselbe Verkippung um die Schleiffl\"achenachsen ergab Werte nahe
-der Linearkombination beider Tangentenreaktionen, was die Asymmetrie dem
-Oberfl\"achensystem zuordnet und nicht der Fl\"achengeometrie.
+Vorgegebene Verkippung, richtungsabh\"angige Steifigkeit und Lage des
+Nachgiebigkeitszentrums wurden experimentell variiert. Im untersuchten Bereich
+bewirkte die Lage des Nachgiebigkeitszentrums in der Ebene die gr\"o\ss{}te
+\"Anderung der Ausrichtung: Ein Hebel von \(60\,\mathrm{mm}\) ergab in beiden
+Tangentenachsen-Versuchen etwa \(6^\circ\) Verbesserung, wenn er in derjenigen
+Richtung angesetzt wurde, die die korrigierende Drehung unterst\"utzt, und diese
+Richtung war f\"ur \(t_1\) und \(t_2\) entgegengesetzt. Eine h\"ohere
+Rotationssteifigkeit verringerte die Reaktion um \(t_1\); um \(t_2\) gewann die
+steifste Einstellung am wenigsten zur\"uck.
 
-Die Lage in der Ebene, vor allem ihr Vorzeichen relativ zur verkippten Achse,
-ist damit der ma\ss{}gebliche Parameter dieser Konfiguration. Die
-\"Ubertragbarkeit begrenzen der einzelne Aufbau aus Roboter, Werkzeug,
-Oberfl\"ache und Einspannung; nicht gemessene Werkzeugbewegung im Greifer, die
-Ausrichtung verdecken, aber nicht erzeugen kann, weshalb die
-\(t_2\)-Ergebnisse untere Schranken darstellen; sowie die modellgesch\"atzte
-Kraft-/Momentengr\"o\ss{}e statt eines unabh\"angigen Sensors.
+Da der Anpressvorgang w\"ahrend des Kontaktaufbaus in die Oberfl\"ache gerichtet
+ist, beh\"alt das vom Hebel erzeugte Moment eine feste Richtung, w\"ahrend die
+Rotationsfeder dem gemessenen Fehler folgt. Ein tangentialer Hebel
+unterst\"utzt daher die eine Verkippungsrichtung und wirkt der anderen
+entgegen; gegen die erforderliche Drehung angesetzt, ergab er nahezu keine
+Verbesserung. Eine Platzierung ohne induziertes Moment ist
+richtungssymmetrisch, gewinnt aber deutlich weniger Winkel zur\"uck. Eine
+Korrektur, die zugleich gro\ss{} und richtungsunabh\"angig ist, erfordert
+folglich, die Hebelrichtung aus dem Vorzeichen der gemessenen Verkippung zu
+w\"ahlen.
+
+Die Ergebnisse gelten f\"ur einen Roboter, eine Werkzeugaufnahme und eine
+Oberfl\"ache. Alle kommandierten Verkippungen waren positiv, sodass das
+Verhalten bei umgekehrter Verkippung nicht gemessen wurde, und die aus der
+Endeffektorpose bestimmte Gr\"o\ss{}e k\"onnte die tats\"achliche Drehung der
+Schleiffl\"ache untersch\"atzen.

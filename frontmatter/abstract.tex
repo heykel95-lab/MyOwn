@@ -1,33 +1,35 @@
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-Small geometric errors between a rigidly controlled tool and a surface produce
-contact loads and prevent the tool from aligning with it.
-This thesis develops a real-time Cartesian impedance controller for a
-seven-degree-of-freedom (\abbr{DOF}) Franka Emika Panda and investigates how
-the commanded tilt, the stiffness of each surface tangent, and the position of
-a virtual centre of compliance influence contact-induced alignment.
+A small angular mismatch causes one edge of a tool to contact a surface first.
+Under rigid position control the robot resists the rotation that would make the
+surfaces parallel, so contact forces and moments develop instead.
 
-The controller maps the Cartesian wrench to joint torques through the
-transposed Jacobian, with phase-dependent gains. A compliance-centre stiffness
-and damping matrix is shifted to the TCP through an adjoint congruence, so
-that a translational contact response also generates a rotational moment. The
-experiments probe that coupling.
+A real-time Cartesian impedance controller with phase-dependent stiffness and
+damping was implemented for a seven-degree-of-freedom (\abbr{DOF}) Franka Emika
+Panda. During contact set-up, gains defined at a virtual centre of compliance
+were transformed to the tool centre point; the resulting off-diagonal terms
+coupled translation and rotation, so the commanded normal press generated a
+corrective moment.
 
-Placement of the virtual compliance centre dominated the response. Its effect
-is sign-dependent, and the favourable sign is opposite for the two surface
-tangents; the unfavourable sign removed the correction rather than reducing
-it. Displacement along the surface normal stayed below the interpretation
-threshold. Stiffness mattered less: a higher rotational stiffness on the
-tilted axis reduced alignment monotonically, and no tested setting improved on
-the most compliant baseline. Alignment was consistently larger about \(t_2\)
-than about \(t_1\); the same tilt commanded about the axes of the grinding
-face produced values near the linear combination of the two tangent responses,
-which places the asymmetry in the surface frame rather than the face geometry.
+Commanded tilt, directional stiffness, and compliance-centre position were
+varied experimentally. Within the investigated
+range, the in-plane position of the compliance centre produced the largest
+change in alignment: a \(60\,\mathrm{mm}\) lever gave approximately
+\(6^\circ\) of improvement in both tangent-axis tests when applied in the
+direction that assists the corrective rotation, and that direction was opposite
+for \(t_1\) and \(t_2\). Increased rotational stiffness reduced the response
+about \(t_1\), and about \(t_2\) the stiffest setting recovered least.
 
-In-plane compliance-centre placement, above all its sign relative to the
-tilted axis, is therefore the dominant parameter here. Its generality is
-limited by the single robot, tool, surface and fixture; by unmeasured tool
-motion in the gripper, which can conceal but not create alignment and so makes
-the \(t_2\) results lower bounds; and by the model-estimated wrench used in
-place of an independent sensor.
+Because the press is directed into the surface throughout set-up, the
+lever-induced moment keeps a fixed direction, whereas the rotational spring
+follows the measured error. A tangential lever therefore assists one tilt
+direction and opposes the other; applied against the required rotation it
+produced almost no improvement. A placement that induces no moment is symmetric
+in tilt direction but recovers far less angle. A correction that is both large
+and direction-independent therefore requires the lever direction to be chosen
+from the sign of the measured tilt.
+
+The results apply to one robot, tool mounting, and surface. Every commanded tilt
+was positive, so behaviour under a reversed tilt was not measured, and the
+end-effector-based metric may underestimate the face's physical rotation.

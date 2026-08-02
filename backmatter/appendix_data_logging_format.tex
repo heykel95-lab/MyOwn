@@ -1,4 +1,4 @@
-\chapter{Data Logging Format}
+﻿\chapter{Data Logging Format}
 \label{app:data_logging_format}
 
 The controller produces two complementary CSV files.  Both are filled from
@@ -126,35 +126,12 @@ frame \(K\), not a direct force-sensor measurement.  The offline evaluation uses
 only its bias-corrected magnitude as a force diagnostic and, when available, to
 narrow the phase-2 analysis window.
 
-\section{Compact Sigma Diagnostic Log}
-
-\texttt{surface\_grinding\_controller\_sigma\_debug.csv} is sampled at
-\(20\,\mathrm{Hz}\) during sigma-enabled hold tests.  It records:
-
-\begin{itemize}
-  \item \texttt{hold\_start}, \texttt{manual\_guide\_start},
-        \texttt{recapture}, \texttt{sample}, \texttt{stop}, and
-        \texttt{exception} events, with a new segment identifier after each
-        recapture;
-  \item raw \(q,\dot q\), \(n_{\mathrm{best}}\), \(N_\tau\dot q\), and
-        \(\tau_\sigma\);
-  \item the sigma samples, finite-difference confidence, sigma power, and motion
-        toward the selected direction;
-  \item Cartesian error/speed, task and null-space torque norms,
-        external-force and joint-torque diagnostics, contact flags, and
-        interval peaks.
-\end{itemize}
-
-The compact buffer retains \(20000\) rows and is written before the larger log.
-It is also persisted when a libfranka reflex or another exception terminates
-the run, which preserves the diagnostic trace that led to the stop.
-
 \section{Offline Interpretation}
 
 The script \texttt{code/python/evaluate\_contact\_alignment.py} starts from
 phase~2 and, when available, narrows the window with the bias-corrected
 external-force norm; otherwise the set-up window is explicitly marked
-contact-unverified. It labels \(\mathbf e_R\) as a clearance-relative
+contact-unverified. It labels \(e_R\) as a clearance-relative
 controller error rather than a physical alignment angle and uses the logged
 tool feature to evaluate its displacement when that signal is available.
 The remaining scalar diagnostics are the commanded Cartesian-force peak, the

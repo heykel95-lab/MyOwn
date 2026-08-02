@@ -1,211 +1,155 @@
 \chapter{Conclusion and Future Work}
 \label{ch:conclusion}
 
-\section{Summary}
+A tool tilted against a plane cannot be brought flat by translational compliance
+alone. A real-time Cartesian impedance controller with a spatially shifted
+centre of compliance was therefore implemented on the 7-\abbr{DOF} Panda. During
+set-up, the \(6\times6\) Cartesian stiffness and damping were transformed from a
+selected centre of compliance to the TCP, so that the normal contact force also
+generated a corrective moment. All reported contact runs completed the set-up
+phase, and none was discarded. In the zero-tilt condition the measured
+misalignment increased by \(0.97^\circ\) during set-up, so the set-up procedure
+itself introduced a systematic orientation change. That response was not
+subtracted from the tilted results, which were interpreted alongside it.
 
-A tool tilted against a plane will not come flat by translational compliance
-alone. This thesis built a real-time Cartesian impedance controller for the
-7-\abbr{DOF} Panda that closes the remaining angle through the impedance
-itself, shifting the \(6\times6\) stiffness and damping to the TCP from a
-chosen centre of compliance during set-up. Where that centre is placed turned
-out to matter more than anything put inside it.
+Within the tested range, the in-plane compliance-centre position had the largest
+influence on contact-induced alignment. For each tilted axis one lever direction
+improved alignment and the opposite direction did not, and the improving
+direction for a tilt about \(t_1\) was the opposite of the improving direction
+for a tilt about \(t_2\). When the lever was applied in the other direction,
+almost no alignment improvement was measured. Placing the compliance centre near
+the grinding-face centre, a predominantly normal displacement, produced results
+within the interpretation threshold of the zero-lever condition. Increased
+rotational stiffness reduced the response about \(t_1\). For \(t_2\), the
+highest stiffness produced less alignment than the softer settings, but the
+relationship between the two softer settings remained uncertain because of one
+unusually low repetition. Reduced perpendicular translational stiffness improved
+the \(t_2\) response, whereas no clear effect was measured for \(t_1\).
+\Cref{ch:results_discussion} reports the corresponding measurements.
 
-Four quantities were varied across the campaign: the commanded tilt, the
-rotational stiffness of each surface tangent, the translational stiffness
-perpendicular to the tilted tangent, and the compliance-centre lever.
-Calibrating the surface plane and the grinding-face axis independently of one
-another defined the commanded tilt against a measured physical surface frame.
-All \(75\) runs completed set-up, and none was discarded.
+Commanding the tilt about the axes of the grinding face rather than about the
+surface tangents produced values between the two measured tangent responses,
+close to those predicted from the corresponding \(t_1\) and \(t_2\) components.
+For the investigated configuration, this is more consistent with an asymmetry
+associated with the surface frame than with the geometry of the face.
 
-\begin{enumerate}
-  \item \textbf{Case A, commanded tilt.} The floor came first. With no
-        commanded tilt at all, the set-up press \emph{increased} misalignment
-        by \(0.97^\circ\), which bounds what the present fixture and
-        calibration can resolve. Every nonzero tilt then improved alignment,
-        and by roughly \(1.6\) times as much about \(t_2\) as about \(t_1\) at
-        both magnitudes. Recovery does not scale with the error, though: the
-        fraction removed fell from \(38\,\%\) at \(5^\circ\) about \(t_1\) to
-        \(9\,\%\) at \(10^\circ\).
+That sign dependence is a property of the mechanism and not of the particular
+placements tested. The rotational spring is driven by the measured orientation
+error and therefore reduces a misalignment of either sign, whereas the moment
+induced by the lever keeps a direction fixed by the lever alone, because the
+press is directed into the surface throughout set-up. A tangential lever is
+consequently a bias rather than a feedback term: it assists one direction of
+tilt and opposes the other. Placements that induce no moment, at the TCP or
+along the tool axis, are symmetric in the tilt direction but recovered an order
+of magnitude less angle. A correction that is both large and independent of the
+tilt direction therefore cannot come from a fixed compliance centre; the lever
+direction has to be selected from the sign of the measured initial tilt. This
+follows from the point-shifted law and from the measured loss of correction at
+the unfavourable placement, and it remains untested against a negative tilt.
 
-  \item \textbf{Case B, axis-specific rotational stiffness.} Every increase in
-        the rotational stiffness of the tilted axis gave back less angle. Ten
-        times the stiffness, \(5\) to \(50\,\mathrm{Nm/rad}\), removed roughly
-        a quarter of the improvement about \(t_1\), \(0.64^\circ\) against
-        \(0.49^\circ\), and nothing tested beat the \(5\,\mathrm{Nm/rad}\)
-        baseline. The tangent entries moved singly, so the result holds per
-        axis and says nothing about a common paired value.
+The measured ordering indicates that the compliance-centre position should be
+selected before the directional stiffness values are refined. The generality of
+that ordering is limited by the single experimental arrangement and by unmeasured
+rotational play between the tool and the gripper, which may cause the reported
+\(t_2\) improvements to underestimate the physical rotation of the grinding
+face. The SVD-based null-space controller was implemented and instrumented,
+including the distinction between the smallest Jacobian singular value
+\(\sigma_{\min}=\sigma_6\) and the structural null direction \(v_7\), but no
+controlled comparison with the singular-value term enabled and disabled was
+recorded, so improved singularity conditioning is not an experimental conclusion
+of this thesis.
 
-  \item \textbf{Case C, cross-axis translational stiffness.} Softening the
-        translation perpendicular to the tilted axis by a factor of about seven
-        added roughly a tenth to the improvement about \(t_2\),
-        \(1.59^\circ\) to \(1.79^\circ\), while \(t_1\) stayed inside the
-        interpretation threshold. Combining that soft translation with
-        \(50\,\mathrm{Nm/rad}\) of rotational stiffness cancelled the gain
-        entirely, so the two entries are not independent.
-
-  \item \textbf{Case D, virtual centre of compliance.} Lever placement
-        dominated everything else examined. Sixty millimetres along the tangent
-        perpendicular to the tilted axis multiplied the improvement by about
-        eleven about \(t_1\), \(0.56^\circ\) to \(6.05^\circ\), and by about
-        five about \(t_2\), \(1.38^\circ\) to \(6.36^\circ\) --- leaving
-        residuals of \(0.93^\circ\) and \(2.14^\circ\) and a steady
-        model-estimated load roughly a fifth lower. Sign decides the outcome,
-        and the favourable sign is opposite on the two tangents: taken the
-        wrong way, the lever removed the correction rather than reducing it,
-        \(0.02\pm0.06^\circ\). Displacing the centre \(20\,\mathrm{mm}\) along
-        the surface normal instead changed nothing beyond the interpretation
-        threshold.
-
-  \item \textbf{Case E, tilt about the tool axes.} Commanding the same tilt
-        about the axes of the grinding face rather than the surface tangents
-        landed between the two tangent values, with the two tool-axis results
-        about half as far apart as the tangent pair. Both sit close to the
-        linear combination of their tangent components, which places the
-        asymmetry with the surface frame and not with the geometry of the face.
-\end{enumerate}
-
-Both the sign reversal and the lighter contact at the favourable placements
-follow from the shifted impedance itself, where the sign of the lever sets the
-direction of the moment the commanded penetration produces.
-\Cref{sec:discussion_contact} works that argument through.
-
-Settling was not an issue. Over the final second of the \(5\,\mathrm{s}\)
-interval the model-estimated load moved by a median of \(0.10\,\mathrm{N}\) and
-the tip angle by a median of \(0.00^\circ\), across all \(75\) runs.
-
-One limitation shapes how the \(t_2\) numbers should be read. The mount leaves
-the tool approximately \(2^\circ\) of play about \(y_{EE}\), a direction the
-commanded spin places only \(25^\circ\) from \(t_2\), and motion there is
-invisible to a metric taken from the robot pose. It can conceal correction that
-happened but cannot manufacture it, which makes the reported \(t_2\)
-improvements lower bounds and leaves the tangent-axis asymmetry standing.
-
-Implementation of the SVD-based null-space controller is complete and
-instrumented, down to the distinction between the smallest Jacobian singular
-value \(\sigma_{\min}=\sigma_6\) and the structural null direction \(v_7\). No
-controlled sigma-enabled campaign isolates its effect, so improved singularity
-conditioning is not an experimental conclusion of this thesis.
-
-\section{Main Contributions}
 \label{sec:main_contributions}
+Against the two kinds of contribution set out in \cref{ch:intro}, the work
+delivers the following. Implemented and verified against the running controller:
+a real-time Cartesian impedance controller for the 7-\abbr{DOF} Panda with
+frame-consistent phase-dependent gains; a spatial compliance-centre formulation
+within that controller, in which the \(6\times6\) stiffness and damping are
+shifted from a selected centre to the TCP; and a calibrated contact methodology,
+in which the surface plane and the grinding-face axis are measured independently
+of each other. Established experimentally: an axis-specific measurement campaign,
+which separates the \(t_1\) and \(t_2\) responses that a common paired stiffness
+setting leaves confounded; and identification of the compliance-centre position
+as the parameter with the largest measured influence on contact-induced
+alignment within the tested range. The projected joint damping and the two-point
+singular-value bias were implemented and instrumented but not experimentally
+isolated, and are therefore not claimed as validated contributions.
 
-Four contributions carry the work.
-
-\begin{itemize}
-  \item The controller realises a frame-consistent Cartesian impedance in real
-        time on the 7-\abbr{DOF} Panda, with a \(6\times6\) stiffness and
-        damping spatially shifted from a chosen centre of compliance.
-
-  \item The contact methodology calibrates the surface plane and the
-        grinding-face axis independently of each other. Commanded tilt,
-        stiffness and compliance-centre placement can therefore each be varied
-        alone against a measured physical surface frame.
-
-  \item The rotational and translational stiffness contributions to
-        contact-induced alignment are measured per axis, which separates the
-        \(t_1\) and \(t_2\) responses that a common paired setting leaves
-        confounded.
-
-  \item The compliance-centre lever is identified as the dominant parameter for
-        contact-induced alignment, together with its sign dependence, the
-        reversal of the favourable sign between the two surface tangents, and
-        the absence of a comparable effect along the surface normal.
-\end{itemize}
-
-\section{Limitations}
 \label{sec:limitations}
+Several limitations bound those conclusions.
+\Cref{sec:results_limitations} treats the ones that bear directly on the
+measurements; they are summarised here together with those that concern the
+implementation. The experiments were conducted with a single robot, tool
+geometry, and plane surface. Generalisation to other hardware, surface
+conditions, contact locations, and initial angular errors was not assessed, and
+exact replication is limited further by the unrecorded payload parameters, robot
+transforms, and real-time computer.
 
-Everything reported here comes from one robot, one tool geometry, one wooden
-surface and one fixture. Whether the identified response survives a change in
-any of them is unknown, as is its behaviour at other contact locations,
-friction conditions and initial angular errors. Exact replication is limited
-further by what went unrecorded: material grades, surface finish, payload
-parameters, robot transforms, and the real-time computer.
+Calibration and load estimation carry their own uncertainty. The surface plane
+and the grinding-face normal were calibrated with the same robot and tool whose
+alignment is then measured, so a systematic error in the tool transform would
+largely cancel in the comparison intended to detect it. No dedicated
+force/torque sensor was fitted, and the reported load is a model-estimated
+quantity rather than a measured one. Approximately \(\pm2^\circ\) of rotational
+play about \(y_{\mathrm{EE}}\) also remains in the tool mount and is not
+measured by the controller, so the angular results characterise the combined
+robot--gripper--tool response. The \(t_2\) condition is the most exposed,
+because the commanded spin brings \(y_{\mathrm{EE}}\) within \(25^\circ\) of
+\(t_2\). Finally, the null-space terms ran together in every reported run, so
+their separate influence on the contact response was not established; the
+projector is kinematic rather than dynamically consistent, the geometric
+Jacobian is unscaled, and although the recorded callback spacing supports
+sustained operation near the nominal \(1\,\mathrm{kHz}\) interface rate, the
+worst-case local callback execution time was never measured.
 
-Calibration carries its own uncertainty into every absolute angle. Three probed
-points fitted the surface plane, checked against a fourth held out of the fit
-at \(0.82\,\mathrm{mm}\), and the grinding-face normal was calibrated
-separately to a held-out angular residual of \(0.50^\circ\). Worse, the probing
-used the same robot and tool whose alignment is then measured, so a systematic
-error in the tool transform would move the plane estimate and the alignment
-metric together and largely cancel in the comparison that detects it.
-
-No dedicated force/torque sensor was fitted. Load and equivalent contact
-location are both inferred from libfranka's model-estimated external wrench,
-and three things stand between that inference and a physical point contact:
-distributed surface contact, model error, and uncertainty in which tool feature
-was selected.
-
-Three tangential levels on one axis at a time is what the compliance-centre
-study sampled. That locates the favourable sign and establishes how large the
-effect is. It identifies no optimum, resolves no interaction between the two
-in-plane coordinates, and reaches the surface normal at a single displacement.
-
-Sign was never varied on the command side either: every commanded tilt was
-positive. Any asymmetry between positive and negative tilt is unmeasured, and
-with it the generality of the favourable lever sign.
-
-Approximately \(\pm2^\circ\) of rotational play about \(y_{\mathrm{EE}}\)
-remains in the mount, and the controller never measures it: the tool axis is
-reconstructed from the EE pose through a transform assumed fixed. A tool face
-that stays physically flat can therefore coexist with a changing EE-inferred
-alignment angle, and the angular results characterise the combined
-robot--gripper--tool response without isolating face rotation from gripper
-compliance. Calling the play direction \(t_2\) would compound the problem,
-since \(y_{\mathrm{EE}}\) is EE-fixed while \(t_2\) is fixed in the base frame
-by the calibrated plane. The commanded spin brings them within \(25^\circ\) of
-one another, which is what makes a \(t_2\) tilt the condition most exposed.
-
-Projected joint damping and the two-point singular-value bias ran together in
-every reported run. Separating the null space's influence on the contact
-response would need matched enabled and disabled trials, and there were none.
-Two further caveats sit on that implementation: the geometric Jacobian is
-unscaled, and the projector is kinematic rather than dynamically consistent.
-Recorded callback spacing supports sustained operation near the nominal
-\(1\,\mathrm{kHz}\) interface rate, though the worst-case local callback
-execution time was never measured.
-
-\section{Future Work}
 \label{sec:future}
+Three extensions follow from those limitations and are considered most
+important. First, the lever experiments should be repeated with negative
+commanded tilts, to determine whether the improving lever direction depends on
+the tilted axis or on the direction of the initial error; every case reported
+here used a positive tilt, so the two explanations cannot be separated from the
+present data. The same trials would test the bias character of the lever
+directly, by measuring whether a placement that assists a positive tilt opposes
+a negative one, and would establish whether selecting the lever direction from
+the sign of the measured initial tilt recovers the full correction in both
+directions. Because a reversed tilt also brings a different corner of the
+rectangular face into contact first, the magnitudes need not mirror those
+reported here. Second, the physical tool-face orientation should be measured
+independently, so that motion within the mount can be separated from robot
+motion. Either a rigid mount or an external angular measurement of the face
+would determine whether the present EE-inferred \(t_2\) values underestimate the
+actual alignment of the grinding face. Third, matched trials with the
+singular-value term enabled and disabled should be performed under otherwise
+identical contact conditions, reporting \(\Delta\sigma_{\min}\), projected joint
+velocity, Cartesian task drift, and projector residual, since that term was
+implemented but not experimentally isolated.
 
-Reversing the commanded tilt comes first. Every case used a positive tilt, so
-whether the favourable lever sign follows the tilted axis or the direction of
-the initial error is still open. Repeating the Case-D levels at \(-5^\circ\)
-and \(-10^\circ\) about each tangent would separate the two, and until that is
-done the sign rule is a result about this campaign rather than about the
-mechanism.
+The compliance-centre placement itself was sampled in only one of its three
+coordinates. A signed sweep was run along the tangent perpendicular to the
+tilted axis; the tangent parallel to it was never varied, and the surface normal
+was sampled at a single displacement, in one sense, and only in combination with
+a small tangential component. A two-dimensional sweep in \(t_1\) and \(t_2\)
+would identify an optimum and any interaction between the in-plane coordinates,
+and displacements along the normal in both senses would establish
+experimentally what \cref{sec:results_pole} argues from the point-shifted law:
+that the normal coordinate cannot generate the alignment moment while the press
+remains normal to the surface.
 
-The compliance-centre response should then be sampled in two dimensions instead
-of along one axis at a time. A local grid in \(t_1\) and \(t_2\) around the
-favourable placements would identify an optimum and any interaction between the
-coordinates, neither of which a three-level sweep can resolve. Further normal
-displacements would show whether the absence of a normal effect survives beyond
-the single \(20\,\mathrm{mm}\) offset tested.
+A further trial would test that axial relation directly rather than at a single
+point. Holding the centre at its face-centre displacement and commanding tilts
+of \(5^\circ\), \(10^\circ\) and \(20^\circ\) varies the effective tangential
+lever \(d\sin\theta\) from roughly \(2\) to \(7\,\mathrm{mm}\) while the
+placement itself is unchanged, so a response that grows with \(\sin\theta\)
+would confirm the relation and one that does not would show the account to be
+incomplete. Each tilt requires a zero-lever run at the same angle as its
+control, because the improvement already depends on the commanded angle
+(\cref{tab:results_case_a}); the comparison is between the two placements at
+each tilt, not across tilts. The tilt should be commanded about \(t_1\). That
+puts the induced component along \(t_2\), the tangent that corrects a \(t_1\)
+tilt, and it avoids the \(t_2\) condition, whose within-setting dispersion is
+larger and which is the one exposed to the rotational play about
+\(y_{\mathrm{EE}}\).
 
-Measuring the physical tool-face angle independently would remove the principal
-interpretation limit. Alignment is inferred from the end-effector pose through
-a transform assumed rigid, which leaves the approximately \(2^\circ\) of play
-about \(y_{\mathrm{EE}}\) unobservable. Either a rigid mount or an external
-angular measurement of the face would let the \(t_2\) results be reported as
-values rather than as lower bounds.
-
-A matched null-space comparison remains outstanding, and it is the one piece of
-this work that is implemented but untested. Trials enabling and disabling the
-singular-value bias under otherwise identical contact conditions should report
-\(\Delta\sigma_{\min}\), projected joint velocity, Cartesian task drift,
-projector residual, joint motion, and sigma torque. The probe configurations
-want checking against the joint limits at the same time, and callback
-wall-clock duration wants instrumenting, so that worst-case real-time behaviour
-is established rather than inferred from the recorded spacing.
-
-Set-up duration deserves confirmation at \(4.5\), \(5\), \(6\) and
-\(8\,\mathrm{s}\), with repeated trials at \(5\,\mathrm{s}\). A phase
-transition worth generalising would wait on completion of the commanded press
-ramp followed by a short interval of low alignment and load rates, keeping a
-calculated timeout only as the fallback.
-
-Beyond that, a dedicated force/torque sensor or independent contact
-instrumentation would sharpen the normal-load estimate and support a more
-defensible analysis of distributed contact and equivalent contact location.
-Additional tools, surface materials, fixture conditions and initial orientation
-errors would begin to establish how far any of this generalises.
+Further work should also include a check of the probe configurations against the
+joint limits, direct measurement of the callback execution time, and additional
+tests of set-up duration and contact instrumentation.
