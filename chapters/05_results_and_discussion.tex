@@ -13,6 +13,9 @@ cases.
 
 \section{Repeatability and Settling}
 \label{sec:results_repeatability}
+\ReviewMark{grey}{The repeatability summary is useful, but the approximately
+\(0.1^\circ\) interpretation threshold is informal, based on three repetitions
+per setting, and coexists with one \(0.60^\circ\) late-settling change.}
 
 Repeatability comes from the three repetitions of each of the \(25\) settings.
 Across settings tilted about \(t_1\) the median within-setting standard
@@ -31,6 +34,9 @@ model-estimated normal load stayed between \(44.5\) and \(49.4\,\mathrm{N}\).
 
 \section{EE-Inferred Alignment Against the Physical Plane}
 \label{sec:results_alignment}
+\ReviewMark{grey}{The measurement chain is stated honestly, but tool motion in
+the gripper remains unobserved. The result cannot separate controller rotation
+from tool-mount rotation.}
 
 The primary response is the change, over the set-up interval, in the angle
 between the EE-inferred tool axis and the calibrated physical plane; a positive
@@ -49,6 +55,9 @@ comparison uses the measured first-contact angle.
 
 \section{Case A: Commanded Tilt}
 \label{sec:results_summary_table}
+\ReviewMark{grey}{The baseline is reported transparently, but the systematic
+negative response at zero tilt is not explained or isolated. It remains a
+confounding mechanism for the tilted comparisons.}
 
 The zero-tilt condition was used to quantify the orientation change introduced by
 the set-up procedure in the absence of a commanded angular offset. The
@@ -105,6 +114,9 @@ tool mount is discussed in \cref{sec:results_limitations}.
 
 \section{Case B: Axis-Specific Rotational Stiffness}
 \label{sec:results_case_b}
+\ReviewMark{green}{The reused baseline is identified, the \(t_1\) result is
+bounded to the tested range, and the anomalous \(t_2\) repetition is handled
+without forcing a monotonic conclusion.}
 
 In Case B the rotational stiffness of the tilted tangent was raised alone, and
 the orthogonal entry was held at \(5\,\mathrm{N\,m/rad}\). The
@@ -154,6 +166,9 @@ axis-specific and does not characterise a common paired value.
 
 \section{Case C: Cross-Axis Translational Stiffness}
 \label{sec:results_case_c}
+\ReviewMark{grey}{The main stiffness trend is reported clearly, but the claimed
+interaction is inferred from only one combined low-translation/high-rotation
+corner per axis. A factorial comparison is missing.}
 
 In Case C the translational stiffness perpendicular to the tilted tangent was
 varied, again against the \(10^\circ\) Case-A settings as the
@@ -204,6 +219,9 @@ tested stiffness entries over this range.
 
 \section{Case D: Virtual Centre of Compliance}
 \label{sec:results_pole}
+\ReviewMark{green}{This is the strongest results section. It gives the measured
+effect, relation to zero lever, sign reversal between axes, load comparison,
+axial-offset null result, mechanism, and tested-range limitation.}
 
 In Case D every gain was held at its baseline value and only the lever
 \(r_c=p_{\mathrm{TCP}}-p_c\) was varied. The lever was directed along the surface
@@ -304,6 +322,9 @@ the axial offset did not exceed the interpretation threshold.
 
 \section{Case E: Tilt About the Tool Axes}
 \label{sec:results_case_e}
+\ReviewMark{grey}{The four settings support a consistency check, but the
+additive superposition model is not independently fitted or validated. The
+surface-frame attribution remains model-based.}
 
 Case E assessed whether the asymmetry between the two tangents was associated
 with the tool or the surface frame. An effect associated with the grinding-face
@@ -352,6 +373,9 @@ it.
 
 \section{Automatic Null-Space Response}
 \label{sec:results_nullspace}
+\ReviewMark{green}{The repeated conditions, disturbance magnitude, unclipped
+waveform, degree-based excursion, conditioning response, task-error criterion,
+and free-space scope are reported directly.}
 
 The automatic disturbance reached \(20.00\,\mathrm{N}\) in all twelve main
 trials. Its peak equivalent joint-torque norm lay between \(2.17\) and
@@ -393,9 +417,13 @@ condition; physical link contact remains outside its scope.
 
 \section{Discussion}
 \label{sec:discussion_contact}
+\ReviewMark{green}{The discussion compares effect sizes and then separates the
+lever mechanism, spatial placement, tuning implications, and limitations.}
 
 \subsection{Relative Influence of the Investigated Parameters}
 \label{sec:discussion_pole_height}
+\ReviewMark{green}{The cross-parameter ordering is tied to the three result
+tables and bounded to the investigated configuration and parameter range.}
 
 In the investigated configuration, the compliance-centre position had a
 considerably stronger effect than either the rotational or the translational
@@ -414,6 +442,9 @@ configuration and parameter range the normal coordinate of the centre added
 little once the in-plane placement had been accounted for.
 
 \subsection{Geometric Interpretation of the Lever}
+\ReviewMark{grey}{The cross-product explanation is sound, but the claim about
+opposite tilt signs and part of the lighter-contact explanation remain
+model-based because only one commanded tilt sign was measured.}
 
 The sign dependence follows from the point-shifted law. Shifting the compliance
 centre along the tangent perpendicular to the tilted axis converts part of the
@@ -454,6 +485,10 @@ model in \cref{eq:pole_translation_moment_sign_check}.
 
 \subsection{Placement of the Virtual Centre of Compliance}
 \label{sec:discussion_placement}
+\ReviewMark{yellow}{The tangential conclusion is well supported. The treatment
+of the axial coordinate is less clear because only one \(20\,\mathrm{mm}\)
+offset was sampled and its effect is interpreted through its tangential
+projection.}
 
 The centre of compliance has three spatial coordinates, of which one was varied
 systematically in the primary campaign. The measured effect of this coordinate
@@ -482,6 +517,9 @@ three tangential levels identify the assisting direction and the size of its
 effect, but they do not identify an optimum lever length.
 
 \subsection{Practical Implications for Controller Tuning}
+\ReviewMark{grey}{The proposed tuning order is carefully bounded, but lever
+selection from the sign of the initial tilt has not been validated for negative
+tilts or for a physical tool-angle measurement.}
 
 The measured ordering suggests a tuning sequence. The compliance-centre lever is
 chosen first, on the tangent perpendicular to the expected tilt and with the
@@ -510,8 +548,12 @@ opposite tilt sign, this trade-off remains a model-based design consequence.
 
 \section{Limitations}
 \label{sec:results_limitations}
+\ReviewMark{green}{The limitations are grouped by source and state how each one
+changes the interpretation rather than listing generic caveats.}
 
 \subsection{Experimental Generalisability}
+\ReviewMark{green}{The missing opposite-sign and lever-length experiments are
+stated explicitly and connected to the claims they restrict.}
 
 The experimental scope is defined by the tested matrix. All commanded tilts had
 the same sign, and the compliance-centre sweep used three tangential levels on
@@ -520,6 +562,8 @@ magnitude of its effect within the investigated range, but they do not identify
 an optimum lever length or the response to the opposite tilt sign.
 
 \subsection{Calibration and Measurement Uncertainty}
+\ReviewMark{green}{The plane estimate, nominal tool transform, and model-based
+load are distinguished from direct measurements.}
 
 The primary alignment metric combines the end-effector pose with the
 independently calibrated physical-plane normal. Its absolute value therefore
@@ -528,6 +572,8 @@ calibration. The reported normal load is obtained from the robot's
 model-estimated external wrench and is not an independent force measurement.
 
 \subsection{Tool-Mount Compliance}
+\ReviewMark{green}{The likely direction of the mount uncertainty and the
+anomalous repetition are discussed without assigning an unsupported sole cause.}
 
 The tool could rotate by approximately \(\pm2^\circ\) about \(y_{EE}\) relative
 to the gripper. For the tested mounting orientation, \(y_{EE}\) was
@@ -547,6 +593,8 @@ set both occur at \(t_2\). Dispersion also grows with the size of the correction
 on both axes, however, so the tilt axis does not account for it alone.
 
 \subsection{Null-Space Validation and Timing Scope}
+\ReviewMark{green}{The free-space, internal-disturbance, combined-mode, contact,
+and real-time timing boundaries are stated precisely.}
 
 The contact campaign used the combined null-space mode, so the individual
 null-space contributions cannot be separated from its alignment results. The

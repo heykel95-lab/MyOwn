@@ -11,6 +11,8 @@ during set-up, and the SVD-based null-space controller.
 
 \section{Real-Time Control Architecture}
 \label{sec:implementation_scope}
+\ReviewMark{green}{The real-time boundary, parameter loading, callback work,
+and deferred file output are described at the correct implementation level.}
 
 The controller is divided into parameter handling, real-time control
 mathematics, the phase machine, terminal interaction, and data recording.
@@ -28,6 +30,9 @@ performed after the control loop rather than in the \(1\,\mathrm{ms}\) callback.
 
 \subsection{Control-Loop Data Flow}
 \label{sec:control_loop_structure}
+\ReviewMark{yellow}{The signal routing is useful, but the simple four-block
+diagram, expanded block diagram, phase chart, and later callback list partly
+repeat the same controller structure.}
 
 Figure~\ref{fig:software_data_flow} shows the implemented data flow. The phase
 manager uses the configured plane and tool geometry to generate \(p_d\),
@@ -85,6 +90,8 @@ selects instead of the sequence.
 
 \section{Implemented Cartesian Impedance Controller}
 \label{sec:state_model}
+\ReviewMark{green}{The implementation matches the theory and fixes the error
+sign, orientation frame, wrench order, torque mapping, and compensation policy.}
 
 At the beginning of a control cycle, the joint configuration and velocity are
 mapped from \texttt{franka::RobotState}. The end-effector pose reported by the
@@ -175,6 +182,8 @@ and null-space laws.
 
 \section{SVD-Based Null-Space Control}
 \label{sec:nullspace_conditioning_implementation}
+\ReviewMark{green}{The selectable modes and the configurations used in the two
+campaigns are explicit and consistent with the theoretical construction.}
 
 The implementation follows the truncated-SVD construction in
 \cref{sec:nullspace_svd}. It forms the torque projector \(N_\tau\) from the
@@ -214,6 +223,8 @@ Projected damping does not define a preferred joint posture. Manual guidance
 is the only phase that bypasses the null-space law.
 
 \subsection{Limits of the Implemented Null-Space Law}
+\ReviewMark{green}{The limitations are short, technically relevant, and kept
+separate from the algorithm itself.}
 
 The projector is kinematic and Euclidean rather than dynamically consistent.
 The singular-value term is an active constant-magnitude bias, so it can affect
@@ -225,8 +236,12 @@ implementation.
 
 \section{Surface and Tool Geometry}
 \label{sec:surface_task_plane}
+\ReviewMark{green}{The section connects the configured plane, nominal tool
+axis, and rectangular-face geometry to the actual controller representation.}
 
 \subsection{Surface Task Frame}
+\ReviewMark{green}{The active tilt values and tangent directions make the
+surface-frame convention reproducible rather than merely generic.}
 
 The configured plane is
 
@@ -304,6 +319,8 @@ R_s^\top .
 
 \subsection{Signed Tool-Axis Alignment}
 \label{sec:tool_orientation_given_surface}
+\ReviewMark{green}{The minimum-rotation target and the distinction between the
+nominal EE-inferred axis and unmeasured tool motion are stated clearly.}
 
 The surface frame and the desired tool orientation have different roles.
 \(R_s\) defines gain and mask coordinates; it is not assigned directly as
@@ -384,6 +401,9 @@ expressed through \(p_s\), \(n_s\), and \(R_s\).
 
 \subsection{Rectangular Grinding Face and Clearance}
 \label{sec:tool_contact_geometry}
+\ReviewMark{yellow}{The geometry is technically detailed but difficult to
+follow without a dedicated diagram showing the leading corner, averaged
+feature, projected point, and two different heights.}
 
 The controlled contact geometry is a rectangular face attached to the
 end-effector. If \(c_{\mathrm{EE}}\) is its centre and \(w_{\mathrm{EE}}\) and
@@ -477,6 +497,9 @@ feature reference \(p_{C,d}\).
 
 \section{Phase-Dependent Gains and Automatic Damping}
 \label{sec:surface_frame_gains}
+\ReviewMark{yellow}{The phase/frame policy is complete, but the damping
+construction is dense and the diagonal-inertia heuristic is not validated as
+a modal damping ratio for the coupled contact system.}
 
 The gain frames depend on the active phase:
 
@@ -542,6 +565,9 @@ is distinct from the relative SVD cutoff used for null-space projection.
 
 \section{Compliance-Centre Coupling During Set-Up}
 \label{sec:self_alignment_virtual_center}
+\ReviewMark{grey}{The implemented point shift is documented, but the immediate
+return to decoupled gains can create an unmeasured wrench and torque step at the
+set-up--grind transition. Its magnitude and effect are not evaluated.}
 
 The normal controller path uses the decoupled wrench of
 \cref{eq:software_decoupled_wrench}. During the \texttt{set\_up} phase only, the
@@ -594,6 +620,8 @@ reference while pressing the selected feature.
 
 \section{Control Phases}
 \label{sec:control_phases}
+\ReviewMark{green}{The standing run sequence is specific, internally ordered,
+and distinguishes geometric transitions from force-based events.}
 
 The program can start either a stationary hold or the
 approach--set-up--grind sequence. A separate manual-guidance start can be used
@@ -652,6 +680,9 @@ reached, or when libfranka stops on a robot-side safety event.
 
 \section{Franka Collision Behavior and Startup Handling}
 \label{sec:collision_behavior_safety}
+\ReviewMark{grey}{The configured reflex handling is described accurately, but
+there is no independent application-level wrench, torque, or torque-rate limit
+and no validation of the protection margin.}
 
 Before torque control starts, the program requests automatic error recovery,
 applies the default Franka behaviour, and optionally installs the configured
@@ -673,6 +704,8 @@ sequence or hold operation.
 
 \section{Recorded Experimental Signals}
 \label{sec:recorded_signals}
+\ReviewMark{green}{The section identifies only signals used by the reported
+evaluation and keeps file output outside the real-time callback.}
 
 The signals used in the evaluation are stored in a pre-sized ring buffer. They
 include the phase, Cartesian references and errors, selected tool feature,
@@ -686,6 +719,9 @@ callback.
 
 \section{Complete Real-Time Callback}
 \label{sec:control_impl}
+\ReviewMark{red}{This numbered list repeats the architecture, phase sequence,
+and torque equation already given earlier. Its uniform process-summary form is
+the clearest remaining machine-like structural pattern in this chapter.}
 
 The callback can be summarised as follows:
 

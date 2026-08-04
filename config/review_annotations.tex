@@ -1,0 +1,37 @@
+% Optional examiner-style review annotations.
+% Define \ThesisReviewMode before loading this file to show the annotations.
+\newif\ifThesisReview
+\ifdefined\ThesisReviewMode
+  \ThesisReviewtrue
+\else
+  \ThesisReviewfalse
+\fi
+
+\definecolor{reviewgreen}{RGB}{210,238,210}
+\definecolor{reviewyellow}{RGB}{255,239,153}
+\definecolor{reviewred}{RGB}{248,194,194}
+\definecolor{reviewgrey}{RGB}{220,220,220}
+
+\newcommand{\ReviewLabelgreen}{GREEN --- sufficient}
+\newcommand{\ReviewLabelyellow}{YELLOW --- weak or unclear}
+\newcommand{\ReviewLabelred}{RED --- machine-like prose pattern}
+\newcommand{\ReviewLabelgrey}{GREY --- logical or evidential gap}
+
+\newcommand{\ReviewMark}[2]{%
+  \ifThesisReview
+    \par\smallskip
+    \begingroup
+      \setlength{\fboxsep}{5pt}%
+      \noindent\colorbox{review#1}{%
+        \parbox{\dimexpr\linewidth-2\fboxsep\relax}{%
+          \small\textbf{\csname ReviewLabel#1\endcsname.} #2%
+        }%
+      }%
+    \endgroup
+    \par\smallskip
+  \fi
+}
+
+\newcommand{\ReviewLegendItem}[3]{%
+  \noindent\colorbox{review#1}{\strut\textbf{#2}}\quad #3\par\smallskip
+}

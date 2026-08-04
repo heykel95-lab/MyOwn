@@ -3,6 +3,9 @@
 
 \section{Experimental Investigation}
 \label{sec:experimental_question}
+\ReviewMark{green}{The completed campaign, fixed baseline, five cases, run
+count, repetitions, and separation from the automatic hold study are all
+introduced before the detailed procedure.}
 
 Four parameters were investigated: the commanded tilt, the rotational stiffness
 about each surface tangent, the translational stiffness perpendicular to the
@@ -144,6 +147,9 @@ EE-inferred tool-axis angle, the rotation during contact, and the displacements
 of the feature and the TCP.
 \section{Robot and Software Configuration}
 \label{sec:robot_software_setup_contact}
+\ReviewMark{green}{The robot interface, control period, state/model inputs,
+command structure, and active phase set are reproducible and consistent with
+the implementation chapter.}
 
 The experiments ran on the Franka Emika Panda through the libfranka
 torque-control interface, with the controller executing inside the Franka
@@ -186,6 +192,9 @@ whole automatic sequence.
 
 \subsection{Experimental System and Reproducibility}
 \label{subsec:reproducibility_record}
+\ReviewMark{grey}{The software stack is well recorded, but payload parameters,
+robot transforms, and real-time-computer hardware were not recorded. These
+omissions prevent exact replication of dynamics and timing.}
 
 The controller computer ran Ubuntu~20.04.3 on the \texttt{5.9.1-rt20}
 \texttt{PREEMPT\_RT} kernel, with \texttt{g++~9.3} at C++14 and \texttt{-O2},
@@ -249,6 +258,9 @@ influence as a limitation.
 
 \subsection{Configured and Physical Plane}
 \label{subsec:plane_calibration_protocol}
+\ReviewMark{grey}{The two plane definitions are separated correctly, but the
+physical-plane estimate has substantial angular spread and only one held-out
+point. Absolute residual-angle claims therefore remain weak.}
 
 Two plane definitions were used, and they are not interchangeable. The
 controller operated with the configured plane alone: the plane point
@@ -275,6 +287,9 @@ the reported outcome is a change rather than a final absolute angle.
 
 \section{Contact Geometry}
 \label{sec:contact_geometry}
+\ReviewMark{yellow}{The geometry is necessary, but much of the surface frame,
+tool-axis target, rectangular face, and lever notation repeats Chapter 3. A
+shorter experiment-specific statement with cross-references would be clearer.}
 
 The task geometry is defined by a surface plane, a tool edge, and a selected
 local linearised centre of compliance. Let
@@ -382,6 +397,10 @@ together.
 
 \section{Gain Selection Methodology}
 \label{sec:cartesian_stiffness_selection}
+\ReviewMark{yellow}{The section is technically complete but very long. It
+mixes frame bookkeeping, sizing assumptions, damping policy, compliance-centre
+construction, and experimental variation before the reader reaches the actual
+tested levels.}
 
 Notation follows Chapter~\ref{ch:theory}. A subscript \(\mathrm{task}\) marks a
 gain written in a local task frame, and a surface-frame quantity takes the axis
@@ -480,6 +499,10 @@ errors without introducing an additional tuning parameter.
 
 \subsection{Quasi-Static Stiffness Sizing and Automatic Damping}
 \label{subsec:initial_stiffness_damping_values}
+\ReviewMark{grey}{The selected force, moment, displacement, and angle scales
+are engineering choices rather than measured contact requirements. The blocked
+spring calculations are useful bounds, but they do not validate the chosen
+gains or the coupled damping.}
 
 The stiffness values were sized offline and the calculation was not evaluated
 on the robot. It defines a virtual-spring command scale rather than an estimated
@@ -746,6 +769,9 @@ follow from \(\zeta=1\).
 
 \subsection{Compliance-Centre Gain Design}
 \label{subsec:impedance_around_pole}
+\ReviewMark{green}{The active mixed-frame source gains, constant reference,
+stored lever convention, surface-frame resolution, and moment sign check are
+all explicit.}
 
 Only \texttt{set\_up} applies the compliance-centre construction. A rotation
 into the surface frame changes the principal directions of the translational
@@ -876,6 +902,9 @@ friction and constraints at the surface, and the active null-space sigma torque.
 
 \subsection{Gain Construction and Implementation Sequence}
 \label{sec:role_of_gain_methods}
+\ReviewMark{red}{The numbered workflow and arrow-chain equation restate the
+preceding gain construction in a generic process template. They add little
+technical evidence and can be removed without breaking the methodology.}
 
 Calculation and implementation follow the controller's own order, so the five
 steps below are applied in the sequence given:
@@ -917,6 +946,9 @@ The resulting workflow is
 
 \subsection{Experimental Gain Variation Strategy}
 \label{sec:direct_stiffness_comparison}
+\ReviewMark{green}{The one-factor comparisons, held quantities, tested levels,
+interaction corner, repetition count, and interpretation rule are stated
+clearly.}
 
 The effect of each stiffness entry was investigated by varying one parameter
 while the remaining controller settings were held fixed. This
@@ -984,6 +1016,8 @@ accompanied by an incompatible change in contact load or displacement.
 
 \subsection{Null-Space Settings}
 \label{subsec:nullspace_parameter_rationale}
+\ReviewMark{green}{The contact and hold configurations are reconciled in one
+table and routed to the common theoretical definitions.}
 
 The primary contact campaign used the combined null-space mode. The automatic
 hold study used the same projector and probe settings while separating the two
@@ -1018,6 +1052,9 @@ the automatic hold results provide the separated comparison.
 
 \subsection{Automatic Null-Space Disturbance Study}
 \label{subsec:nullspace_automatic_method}
+\ReviewMark{grey}{The internal point-force equivalent is repeatable and the
+acceptance rule is explicit, but it does not validate a physical external
+disturbance, link contact, or the combined null-space mode.}
 
 Projected damping and the singular-value bias were isolated in the Cartesian
 hold mode without surface contact. A repeatable internal disturbance represented
@@ -1078,6 +1115,9 @@ position-error norm over the hold.
 
 \section{Experimental Procedure}
 \label{sec:experimental_procedure_contact}
+\ReviewMark{green}{The procedure states what occurred in each run, distinguishes
+geometric hand-offs from contact detection, and carries the active values and
+stopping conditions needed for replication.}
 
 Every run followed the sequence below, in this order:
 
@@ -1147,6 +1187,9 @@ stiffness matrix.
 
 \section{Evaluation Metrics}
 \label{sec:alignment_evaluation}
+\ReviewMark{grey}{The equations are clear, but the primary angle depends on a
+nominal tool-to-EE transform while the tool can rotate in the gripper. The
+physical grinding-face angle is therefore not independently observed.}
 
 The primary angle and the controller rotation error describe different
 quantities. The nominal grinding-face axis inferred from the end-effector pose
@@ -1218,6 +1261,9 @@ alignment angle and is not used as the primary outcome.
 
 \subsection{Metric Use by Experimental Case}
 \label{sec:evaluation_criteria_contact}
+\ReviewMark{red}{The bold metric catalogue and following case table repeat the
+same information in two uniform forms. This templated duplication reads as
+machine-organised rather than as necessary experimental reasoning.}
 
 Physical-plane alignment improvement is the primary response in all five cases.
 What separates them is the independent variable stored with each run, and the
@@ -1291,6 +1337,9 @@ from the reported outcomes.
 
 \section{Safety Limits}
 \label{sec:damping_safety_limits_contact}
+\ReviewMark{grey}{The reflex thresholds and procedural guards are documented,
+but they are not command saturations and do not establish a measured safety
+margin. The large moment threshold is acknowledged as a permissive placeholder.}
 
 Phase-specific damping comes from the task inertia through
 \cref{eq:software_cartesian_inertia,eq:software_auto_damping}.

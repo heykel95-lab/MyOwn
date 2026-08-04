@@ -15,9 +15,15 @@ wrench, the compliance-centre transformation, and the null-space torque.
 %% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 \section{Coordinate Systems and Transformations}
 \label{sec:coord_systems}
+\ReviewMark{yellow}{The conventions are necessary, but the surrounding frame
+definitions and standard transformation material are longer than required for
+the later sign and frame arguments.}
 %% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 \subsection{Reference Frames}
+\ReviewMark{yellow}{The controller-specific frame choices are useful, although
+the three long bullet entries mix essential implementation conventions with
+textbook description.}
 
 Three right-handed coordinate frames are used in the controller
 \cite{Siciliano2009, Craig2005}. Joint indexing is introduced using the
@@ -53,6 +59,9 @@ Jacobian are obtained directly from the libfranka model interface.
 \end{itemize}
 
 \subsection{Rigid Transformations}
+\ReviewMark{yellow}{The direction-cosine and composition conventions support
+the later derivations, but much of this subsection restates standard material
+that could be shortened around the equations.}
 
 A position is a vector \(p\in\mathbb{R}^3\), and an orientation is a proper
 rotation \(R\in SO(3)\), for which \(R^\top R=I\), \(\det R=1\) and
@@ -93,6 +102,8 @@ It maps a point by \({}^bp={}^bR_a\,{}^ap+{}^bp_a\) and composes as
 %% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 \subsection{End-Effector Pose}
 \label{sec:position_orientation}
+\ReviewMark{green}{This subsection is concise and states exactly which pose is
+controlled, which frame it uses, and how the implementation obtains it.}
 
 The controlled pose consists of the end-effector position
 \begin{equation}
@@ -112,6 +123,8 @@ conversion is used.
 
 \subsection{Position and Orientation Error}
 \label{subsec:position_orientation_error}
+\ReviewMark{green}{The sign and frame of both error components are derived in
+enough detail to make the implementation checkable.}
 
 Let the desired end-effector pose be
 \begin{equation}
@@ -251,11 +264,17 @@ e=
 \end{equation}
 
 \section{Kinematics of a 7-DOF Manipulator}
+\ReviewMark{red}{This section retains the strongest textbook-restatement
+pattern in the thesis. The kinematic conventions are needed, but the generic
+explanation around them is repetitive and weakly tied to the implemented Panda.}
 
 Having defined the end-effector pose as the controlled variable, the next step
 is to describe how it is obtained from the joint angles.
 
 \subsection{Forward Kinematics}
+\ReviewMark{red}{The subsection follows a canonical textbook sequence and
+repeats definitions that an examiner already knows. Retain the convention and
+indexing needed later, but reduce the generic exposition.}
 
 Forward kinematics maps the joint configuration to the resulting end-effector
 position and orientation. For a serial manipulator the end-effector
@@ -342,6 +361,9 @@ supplies both the end-effector pose and the model Jacobian directly.
 \else
 
 \subsection{Differential Kinematics}
+\ReviewMark{red}{The pose-to-velocity transition is presented as a generic
+definition rather than a thesis-specific requirement; most of the prose can be
+condensed around \(\dot x=J\dot q\).}
 
 Forward kinematics gives the pose as a function of \(q\). Control also requires
 the velocity relation. Writing the Cartesian end-effector state as
@@ -383,6 +405,9 @@ velocity produces different end-effector velocities in different
 configurations.
 
 \subsection{Geometric Jacobian}
+\ReviewMark{yellow}{The column formula is relevant to later point-force and
+null-space arguments, but its physical explanation repeats standard robotics
+material at greater length than the thesis needs.}
 
 The Jacobian describes the local relation between joint velocities and the
 end-effector twist. For a robot with \(n\) joints it is written column-wise,
@@ -422,6 +447,9 @@ current joint configuration, the Jacobian is configuration dependent, and the
 influence of each joint on the end-effector motion changes as the robot moves.
 
 \section{Cartesian Impedance Control}
+\ReviewMark{yellow}{The control law is essential, but the section repeats the
+error and spring--damper interpretation before reaching the implementation-
+specific wrench and compensation conventions.}
 %% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 The Jacobian is used in the reverse direction as well, to map a Cartesian wrench
@@ -454,6 +482,9 @@ where \(e_p\) and \(e_R\) are the translational and rotational errors used in
 the Cartesian impedance law.
 
 \subsection{Impedance Wrench}
+\ReviewMark{yellow}{The equations and frame commitments are correct and useful;
+the term-by-term explanation after each equation is repetitive and can be made
+more direct.}
 
 The impedance command is evaluated in the robot base frame, so the matrices
 appearing in the commanded wrench are the base-frame stiffness and damping
@@ -537,6 +568,8 @@ resulting wrench is mapped to joint torques through \(J^\top\).
 
 \subsection{Joint-Torque Control Law}
 \label{sec:control_law}
+\ReviewMark{green}{The virtual-work mapping is concise, cited, and connected
+directly to the complete torque command used later.}
 %% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 By the principle of virtual work, the wrench maps to joint torques
@@ -571,6 +604,9 @@ surface frame changes them before the wrench is evaluated, and the joint-torque
 command changes with them.
 
 \subsection{Coriolis and Gravity Compensation in libfranka}
+\ReviewMark{green}{The distinction between user-added Coriolis compensation and
+robot-side gravity compensation is explicit and supported by the interface
+documentation.}
 
 In a general robot-dynamics formulation, the impedance torques are combined with
 two model-based compensation terms: a gravity term and a Coriolis/centrifugal
@@ -616,6 +652,8 @@ once it has been introduced, giving the complete command of
 
 \section{Surface Task Frame}
 \label{subsec:surface_task_frame}
+\ReviewMark{green}{The construction defines the surface-frame order,
+normalisation condition, and relationship to the gain coordinates unambiguously.}
 
 The contact experiment uses a task frame tied to the surface geometry. This
 frame is defined before the stiffness and damping matrices are introduced, so
@@ -671,6 +709,9 @@ same order.
 
 \section{Stiffness and Damping Representation}
 \label{subsec:KD_matrices}
+\ReviewMark{yellow}{The frame transformation is sound, but the section repeats
+the same consequence several times and only near the end states that active
+set-up translation remains diagonal in base coordinates.}
 
 The positional stiffness matrix \(K_p\) and damping matrix \(D_p\) do not have
 to be diagonal in the robot base frame \(\{0\}\).
@@ -783,6 +824,9 @@ with the live end-effector orientation \(R_{\mathrm{EE}}\).
 %% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 \section{Centre of Compliance}
 \label{sec:coupled_pole_stiffness}
+\ReviewMark{green}{This is a strong derivation: the lever convention, adjoint,
+congruence, coupling sign, definiteness, and local-model limitation are all
+made checkable.}
 
 The task-frame construction of \cref{eq:full_task_frame_gain_transform} rotates
 the principal stiffness directions but keeps the centre of compliance at the
@@ -931,6 +975,8 @@ active sigma term introduced below all influence the observed motion.
 %% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 \section{Null-Space Torque}
 \label{sec:nullspace_svd}
+\ReviewMark{green}{The SVD roles, cutoff, projector convention, unit-scaling
+limitation, and lack of dynamic consistency are distinguished rigorously.}
 
 The Franka Emika Panda has seven joints, while the Cartesian motion of the
 end-effector is described by six degrees of freedom: three translational and
@@ -1079,6 +1125,8 @@ require an inertia-weighted projector
 \cite{Khatib1987,Dietrich2015NullspaceSurvey}.
 
 \subsection{Projected Damping}
+\ReviewMark{green}{The damping term is defined concisely and its absence of a
+preferred posture is stated without overclaiming.}
 
 Projected damping dissipates joint motion inside the null space,
 \begin{equation}
@@ -1091,6 +1139,8 @@ implemented law contains no restoring spring towards
 defining a preferred redundant posture.
 
 \subsection{Smallest-Singular-Value Bias}
+\ReviewMark{green}{The two-point selector, sign invariance, deadband, fixed
+torque magnitude, and first-order limitation are explained clearly.}
 
 The columns of \(V_J\) are unit vectors, so \(v_7\) is already the unit
 structural null direction. The conditioning term compares
@@ -1141,6 +1191,8 @@ where \(k_\sigma\) is the commanded torque magnitude. Unlike
 constant-magnitude term rather than a dissipative one.
 
 \subsection{Complete Null-Space Torque}
+\ReviewMark{green}{The two terms are combined without obscuring their distinct
+dissipative and active roles.}
 
 Both contributions act through the same projector and therefore add. The
 complete secondary torque is
@@ -1174,6 +1226,8 @@ property of the law, and \cref{sec:nullspace_conditioning_implementation}
 gives the selectable combinations and the one used for the reported runs.
 
 \section{Complete Joint-Torque Command}
+\ReviewMark{green}{The final equation closes the theory chapter cleanly and
+routes each torque contribution to its earlier definition.}
 
 The complete torque command of the controller is therefore
 \begin{equation}
