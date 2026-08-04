@@ -99,8 +99,22 @@ repository and are copied into `figures/` as vector PDF.
   not justify a log scale, and a log decade fills itself with minor labels that
   collide at printed width. Linear spacing ticked at the tested values shows
   the sample as it is.
+- **Categorical colours begin in one fixed order:** black, red, blue, then
+  yellow. A plot with one series uses black; a second series adds red; a third
+  adds blue; and a fourth adds yellow. When more than four curves are genuinely
+  required, add green, purple, cyan, and orange in that order. Grey is reserved
+  for reference lines and excluded data. Continuous fields may use a continuous
+  colour map where a categorical palette would misrepresent the quantity.
+- **Measured points use open markers with restrained connecting lines.** Use a
+  white marker face, a coloured edge of approximately \(1.1\) points, and a
+  line width of approximately \(1.25\) points. Marker shape repeats the series
+  distinction so the plot remains legible in monochrome.
 - **Grid is horizontal only.** It exists to compare values across panels.
-- **Legend goes below a multi-panel figure**, never inside the first panel.
+- **Every plot has a legend.** A multi-panel figure has one shared legend below
+  the panels, assembled from every panel so that no series is omitted. A
+  single-panel legend may remain inside the axes only where it does not cover
+  data. Reserve layout space for a legend below the axes; do not rely on a
+  tight bounding box to prevent overlap with axis labels or the caption.
 - **A reference line belongs only where it means something.** A zero line on a
   load axis forces the axis down to zero and squashes the data.
 - **Excluded runs are drawn and labelled**, so the legend says what a hollow

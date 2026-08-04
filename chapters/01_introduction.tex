@@ -1,16 +1,19 @@
 \chapter{Introduction}
 \label{ch:intro}
 
-Industrial manipulators are built to follow a commanded trajectory precisely,
-and inside a structured cell that is sufficient. In surface-finishing
-applications, however, the actual surface pose may differ from the programmed
-pose because of placement tolerances: the surface is positioned by hand, the
-tool is held in a gripper, and the residual angle between the two is not known
-before contact. Under rigid position control, that initial angular deviation
-cannot be absorbed by the motion and therefore generates high contact forces.
+\section{Motivation}
 
-Collaborative robots make another option available, and they account for a
-growing share of industrial deployments
+Industrial manipulators commonly apply position control to track commanded
+trajectories. In surface-finishing applications, the actual surface pose may
+differ from the programmed pose because of placement tolerances. The surface is
+positioned manually, the tool is held in a gripper, and the residual angle
+between them is unknown before contact. Under rigid position control, this
+angular deviation cannot be absorbed by the commanded motion and generates high
+contact forces.
+
+Torque-controlled collaborative robots permit contact compliance to be
+specified directly, and they account for a growing share of industrial
+deployments
 \citep{IFR2023WorldRobotics,Villani2018HRC}. Joint torque sensing and a
 torque-level command interface let the controller specify how the robot yields
 under contact, not only where it goes. Three properties of the present
@@ -30,12 +33,14 @@ that surface, yet a small lateral misalignment should not build a large force.
 Orientation behaves the same way: when a tilted tool edge meets the surface, the
 contact wrench carries a moment as well as a force, and a stiffness matrix
 chosen for the contact geometry admits a small rotation instead of resisting it.
-The rotation that actually occurs during contact is the quantity this thesis
-measures, which makes the stiffness and damping matrices a choice about contact
-geometry and not only about free-space tracking.
+The rotation that occurs during contact was measured directly. The stiffness and
+damping matrices therefore define the contact response as well as the free-space
+tracking behaviour.
 
-That choice rests on three bodies of work. The first is Cartesian impedance
-control itself. The controller rests on standard serial-manipulator kinematics
+\section{Related Work}
+
+The relevant literature comprises three areas. The first is Cartesian impedance
+control itself. The controller uses standard serial-manipulator kinematics
 \citep{Siciliano2009,Craig2005,Murray1994}: homogeneous transformations for
 pose, and the Jacobian for the velocity map. Khatib established the
 operational-space formulation, in which a Cartesian wrench is mapped to joint
@@ -45,14 +50,13 @@ and interaction force \citep{Hogan1985}. Ott et al.\ extended Cartesian
 impedance control to flexible-joint robots, where joint elasticity limits the
 stiffness the controller can actually realise \citep{Ott2008}, and
 Albu-Sch\"affer et al.\ built the same law on joint-torque sensing
-\citep{Albu2003}. The torque-sensing interface is the one this thesis uses; the
-flexible-joint extension is not adopted, since joint elasticity is not modelled
-here.
+\citep{Albu2003}. This torque-sensing interface was adopted. The flexible-joint
+extension was not included because joint elasticity is not modelled here.
 
-The second is the practice of running such a law in real time. Previous
-Cartesian impedance implementations on the Franka Emika Panda discuss
-requirements such as real-time model access, null-space control, signal
-treatment, and command limiting \citep{Mayr2024CartesianImpedance}. The present
+The second area is real-time implementation. Mayr et al.\ implemented a modular
+Cartesian impedance controller for the Franka Emika Panda with real-time model
+access, null-space control, signal treatment, and command limiting
+\citep{Mayr2024CartesianImpedance}. The present
 controller uses the libfranka model interface and includes a selectable
 null-space torque. No separate application-level saturation of the Cartesian
 wrench, joint torque, or torque rate was implemented, so the configured
@@ -73,12 +77,14 @@ mainly consider insertion, and they fix the compliance centre either through
 mechanical design or through a strategy tuned for a hole. The effect of
 independently varying the virtual compliance-centre position and the
 axis-specific stiffness during planar tool alignment has received less
-attention. This thesis investigates that effect using a software-defined
-compliance centre on a torque-controlled robot, and measures what its placement
-does to tool alignment against a surface.
+attention. That effect was investigated with a software-defined compliance
+centre on a torque-controlled robot. Its influence on tool alignment against a
+plane surface was measured directly.
 
-The problem it addresses can be stated directly. The angular relation between
-the tool and the surface plane is uncertain before contact, because both the
+\section{Problem Statement}
+
+The angular relation between the tool and the surface plane is uncertain before
+contact because both the
 surface placement and the tool mounting carry tolerances, and under rigid
 position control that residual angle produces an undesirable contact moment
 rather than a corrective motion. A tool tilted with respect to the surface
@@ -87,9 +93,8 @@ the gap must also carry a moment. Translational compliance therefore does not by
 itself define the corrective rotation. Placing the centre of compliance away
 from the TCP couples translation and rotation, so that pressing the tool into
 the plane also rotates it toward the plane. The placement is a
-task-to-impedance mapping, not a claim that the tool pivots about that point
-physically, and the response it produces is therefore read from the motion
-measured during contact.
+task-to-impedance mapping rather than a physical pivot. Its response was
+evaluated from the motion measured during contact.
 
 The alignment response cannot be predicted from the gain values alone, because
 it also depends on the contact geometry, the lever direction, the robot
@@ -99,16 +104,17 @@ compliance-centre placement under otherwise matched conditions.
 \Cref{ch:theory,ch:implementation} set out the frame conventions those
 comparisons rely on.
 
+\section{Scope and Contributions}
 \label{sec:objectives}
-Within that scope, this work investigates how the commanded tilt, the rotational
+Within this scope, the experiments evaluate how commanded tilt, the rotational
 and translational stiffness of each surface tangent, and the spatial position of
 a virtual centre of compliance influence contact-induced alignment. The
 controller is a phase-scheduled Cartesian impedance law, written in C++ with
 libfranka and Eigen and running in the \(1\,\mathrm{kHz}\) torque loop of the
 Franka Emika Panda. Torques are mapped with \(J^\top\), and Coriolis terms are
-compensated from the model. Each phase carries its own Cartesian gains; damping
+compensated from the model. Each phase uses its own Cartesian gains; damping
 follows from a Cartesian-inertia estimate rather than being set by hand. A
-surface frame carries the normal and the two tangents \(t_1\) and \(t_2\)
+surface frame defines the normal and the two tangents \(t_1\) and \(t_2\)
 explicitly.
 
 One run proceeds through fixed phases: the tool axis is aligned, the plane is
@@ -138,20 +144,22 @@ The following were established experimentally:
         contributions to contact-induced alignment.
   \item Identification of the compliance-centre position as the parameter with
         the largest measured influence on alignment within the tested range,
-        including the direction dependence of that influence: the lever
-        direction that improves alignment is opposite for the two surface
-        tangents.
+        including the direction dependence of that influence: a lever directed
+        to assist alignment about \(t_1\) must be reversed to assist alignment
+        about \(t_2\).
 \end{itemize}
 
-One part of the implementation is deliberately excluded from both lists. The
-projected joint damping and the two-point smallest-singular-value bias for the
-redundant seventh joint complete the controller architecture, but no matched
-comparison isolates their effect, so they are not claimed as experimentally
-established. Full operational-space inverse dynamics, adaptive impedance,
-online surface estimation, and claims concerning human safety are outside the
-scope.
+The projected joint damping and the two-point smallest-singular-value bias for
+the redundant seventh joint complete the controller architecture. A separate
+automatic hold study isolated their response under an internally commanded
+point-force equivalent. Those results establish the response in free-space
+hold, but not under a physical external link disturbance or during contact.
+Full operational-space inverse dynamics, adaptive impedance, online surface
+estimation, and claims concerning human safety are outside the scope.
 
-The remainder of the thesis follows the order of that investigation.
+\section{Thesis Structure}
+
+The remainder of the thesis follows the order of the investigation.
 Chapter~\ref{ch:theory} sets out the impedance law, the frame conventions, and
 the compliance-centre shift; Chapter~\ref{ch:implementation} gives their
 real-time realisation on the Panda. Chapters~\ref{ch:methodology}

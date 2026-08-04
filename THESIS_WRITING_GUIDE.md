@@ -327,13 +327,11 @@ Getting this wrong is not only a wording fault. The anomalous \(10^\circ\)
 Section 5.10 explained it through the tool mount, so the thesis named two
 different causes for one observation.
 
-Do not build a name out of the state a quantity happens to be in. The centre of
-compliance is held constant from first contact, so it was being called the
-`frozen pole` throughout, which names a behaviour and an implementation detail
-instead of the thing. State the behaviour once, where the quantity is
-introduced, and use the plain name thereafter. The same applies to a
-`frozen lever` or a `frozen reference`: say that it is held constant, then call
-it the lever.
+Do not build a name out of the state a quantity happens to be in. The term
+`frozen` is not used in thesis prose. State when a quantity is selected and
+that it is held constant, then use its ordinary technical name. For example,
+the centre of compliance is selected at the clearance transition and held
+constant during set-up; subsequent references call it the centre of compliance.
 
 Symbols follow the same rule. One point, one subscript: \(p_c\), \(r_c\),
 \(K_c\), \(D_c\).
@@ -350,6 +348,12 @@ majority form was already plain, and plain is what the symbol list now shows.
 
 The **one exception** is the zero vector \(\mathbf{0}\), where the bold
 distinguishes it from the scalar zero. Keep that.
+
+**Do not mark design values with a star.** Reuse the symbol already defined for
+the physical quantity and state in prose that the value is used for sizing. If
+a genuinely different quantity is needed, use a descriptive subscript and
+define it once. Do not create a second family of starred force, displacement,
+moment, damping, or fit symbols.
 
 **The wrench is \(F\), everywhere.** It is never \(W\). \(W\) previously
 appeared in Appendix C for the local-to-base rotation of a stiffness frame,
@@ -432,7 +436,8 @@ carrying two or more underscores is a file-format detail rather than a
 scientific quantity, and it reads as source code instead of prose. State what
 the setting does:
 
-- `the pole is frozen at first contact`, not the parameter name that sets it;
+- `the centre of compliance is selected at clearance and held constant during
+  set-up`, not the parameter name that sets it;
 - `the model-estimated external wrench`, not the field it is read from;
 - `the end-effector pose reported by the robot`, not the state member;
 - `the gate-hold translational damping`, not the parameter key.
@@ -505,7 +510,7 @@ carried a generic five-level scaling \(\alpha\in\{0.5,0.75,1,1.25,1.5\}\) and
 then spent a paragraph explaining that this was *not* what was run. A
 hypothetical set up only to be dismissed wastes the reader and invites the
 question of which numbers are real. Give the tested values: \(5\), \(15\) and
-\(50\,\mathrm{Nm/rad}\); \(300\), \(800\) and \(2000\,\mathrm{N/m}\).
+\(50\,\mathrm{N\,m/rad}\); \(300\), \(800\) and \(2000\,\mathrm{N/m}\).
 
 **Separate theory from configuration.** Chapter 2 carries the law and its
 assumptions; Chapter 3 carries what was built and which options were selected.
@@ -577,8 +582,10 @@ Avoid absolute normal-coordinate claims. Use:
 If damping was not varied, report only that no sustained oscillation was
 observed with the selected damping. Do not claim a measured damping effect.
 
-Keep the null-space theory and implementation, but do not claim experimentally
-improved singularity conditioning until matched controlled trials exist.
+Matched free-space null-space trials now isolate the projected damping and
+singular-value terms under an internally commanded point-force equivalent.
+Claims from those trials remain limited to that hold condition and must not be
+extended to physical disturbances or contact response.
 
 ## Technical conventions that must remain explicit
 
@@ -691,8 +698,9 @@ controller was implemented and ran in every reported run; compliance-centre
 position had the largest measured influence; its favourable sign reversed
 between the tangents; stiffness effects were smaller and axis dependent; the
 normal displacement produced no detectable change. A null or bounding result is
-still reported as such: the zero-tilt baseline and the unvalidated null-space
-term both stay.
+still reported as such: the zero-tilt baseline stays, and the isolated
+null-space result remains bounded to free-space hold under the commanded
+force-equivalent.
 
 A value appears in the conclusion only where the finding is unintelligible
 without it — the baseline response, a bound on the generality of a claim.
@@ -709,7 +717,8 @@ The central findings the conclusion must carry are: the stiffness parameters had
 a relatively small effect; compliance-centre placement had the largest measured
 effect; its favourable sign depended on the tilted axis; the tool mount
 introduced measurement uncertainty that bounds the \(t_2\) results; and
-null-space conditioning was implemented but not experimentally isolated.
+null-space conditioning was isolated in automatic free-space hold, while the
+combined mode and a physical disturbance remain untested.
 
 Settling, formulation-equivalence, and repeatability checks belong in Chapter 5.
 Do not restate them in the conclusion.
@@ -741,8 +750,8 @@ exactly one proposed experiment from each limitation produces a complete,
 evenly weighted list that reads as generated. State the three extensions
 considered most important, each with the question it would settle, then cover
 the remainder briefly in a single paragraph. For this thesis the three are
-negative tilt angles, independent measurement of the tool-face angle, and
-matched null-space trials.
+negative tilt angles, independent measurement of the tool-face angle, and a
+combined-mode null-space study with a physical disturbance.
 
 Items in a bulleted or numbered list begin with a capital letter and are
 written as complete statements. Do not continue a lead-in sentence across the

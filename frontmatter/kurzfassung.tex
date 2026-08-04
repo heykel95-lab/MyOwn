@@ -1,42 +1,36 @@
 \chapter*{Kurzfassung}
 \addcontentsline{toc}{chapter}{Kurzfassung}
 
-Eine kleine Winkelabweichung f\"uhrt dazu, dass eine Kante des Werkzeugs die
-Oberfl\"ache zuerst ber\"uhrt. Unter reiner Positionsregelung widersetzt sich
-der Roboter der Drehung, die die Fl\"achen parallel stellen w\"urde, sodass
-stattdessen Kontaktkr\"afte und -momente entstehen.
+Eine kleine Winkelabweichung f\"uhrt dazu, dass eine Werkzeugkante die
+Oberfl\"ache zuerst ber\"uhrt. Bei starrer Positionsregelung behindert der
+Roboter die ausrichtende Drehung, sodass Kontaktkr\"afte und -momente entstehen.
 
-F\"ur einen 7-achsigen Franka Emika Panda wurde ein kartesischer
-Echtzeit-Impedanzregler mit phasenabh\"angiger Steifigkeit und D\"ampfung
-implementiert. W\"ahrend des Kontaktaufbaus wurden die an einem virtuellen
-Nachgiebigkeitszentrum definierten Verst\"arkungen zum Werkzeugmittelpunkt
-transformiert; die entstehenden Nebendiagonalterme koppelten Translation und
-Rotation, sodass der kommandierte Normaldruck ein korrigierendes Moment
-erzeugte.
+F\"ur einen 7-achsigen Franka Emika Panda wurde ein phasenabh\"angiger
+kartesischer Echtzeit-Impedanzregler implementiert. Beim Kontaktaufbau wurden
+Steifigkeit und D\"ampfung vom virtuellen Nachgiebigkeitszentrum zum
+Werkzeugmittelpunkt transformiert. Die resultierende Kopplung wandelte den
+kommandierten Normaldruck in ein korrigierendes Moment um.
 
 Vorgegebene Verkippung, richtungsabh\"angige Steifigkeit und Lage des
 Nachgiebigkeitszentrums wurden experimentell variiert. Im untersuchten Bereich
-bewirkte die Lage des Nachgiebigkeitszentrums in der Ebene die gr\"o\ss{}te
-\"Anderung der Ausrichtung: Ein Hebel von \(60\,\mathrm{mm}\) ergab in beiden
-Tangentenachsen-Versuchen etwa \(6^\circ\) Verbesserung, wenn er in derjenigen
-Richtung angesetzt wurde, die die korrigierende Drehung unterst\"utzt, und diese
-Richtung war f\"ur \(t_1\) und \(t_2\) entgegengesetzt. Eine h\"ohere
-Rotationssteifigkeit verringerte die Reaktion um \(t_1\); um \(t_2\) gewann die
-steifste Einstellung am wenigsten zur\"uck.
+hatte dessen Lage in der Ebene den gr\"o\ss{}ten Einfluss. Ein unterst\"utzender
+Hebel verbesserte die Ausrichtung in beiden Tangentenachsen-Versuchen um etwa
+\(6^\circ\); die erforderliche Richtung war f\"ur \(t_1\) und \(t_2\)
+entgegengesetzt. Eine h\"ohere Rotationssteifigkeit verringerte die
+Ausrichtungsreaktion; Unterschiede zwischen den weichen Einstellungen waren
+achsenabh\"angig.
 
-Da der Anpressvorgang w\"ahrend des Kontaktaufbaus in die Oberfl\"ache gerichtet
-ist, beh\"alt das vom Hebel erzeugte Moment eine feste Richtung, w\"ahrend die
-Rotationsfeder dem gemessenen Fehler folgt. Ein tangentialer Hebel
-unterst\"utzt daher die eine Verkippungsrichtung und wirkt der anderen
-entgegen; gegen die erforderliche Drehung angesetzt, ergab er nahezu keine
-Verbesserung. Eine Platzierung ohne induziertes Moment ist
-richtungssymmetrisch, gewinnt aber deutlich weniger Winkel zur\"uck. Eine
-Korrektur, die zugleich gro\ss{} und richtungsunabh\"angig ist, erfordert
-folglich, die Hebelrichtung aus dem Vorzeichen der gemessenen Verkippung zu
-w\"ahlen.
+Das Hebelmoment beh\"alt eine feste Richtung, w\"ahrend die Rotationsfeder dem
+gemessenen Fehler folgt. Ein tangentialer Hebel unterst\"utzt daher ein
+Vorzeichen der Verkippung und wirkt dem anderen entgegen. In der
+entgegenwirkenden Lage blieb nahezu keine Verbesserung, weshalb die
+Hebelrichtung aus der gemessenen Verkippung gew\"ahlt werden muss.
 
-Die Ergebnisse gelten f\"ur einen Roboter, eine Werkzeugaufnahme und eine
-Oberfl\"ache. Alle kommandierten Verkippungen waren positiv, sodass das
-Verhalten bei umgekehrter Verkippung nicht gemessen wurde, und die aus der
-Endeffektorpose bestimmte Gr\"o\ss{}e k\"onnte die tats\"achliche Drehung der
-Schleiffl\"ache untersch\"atzen.
+In getrennten Halteversuchen im freien Raum verringerte projizierte
+Nullraumd\"ampfung die redundante Gelenkbewegung. Ein st\"arkeres
+Konditionierungsdrehmoment erh\"ohte die Bewegung ohne weitere
+Konditionierungsverbesserung.
+
+Die Aussagen gelten nur f\"ur die untersuchte Anordnung und ein
+Verkippungsvorzeichen; die EE-Kennzahl kann die Drehung der Schleiffl\"ache
+untersch\"atzen.

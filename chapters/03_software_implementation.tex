@@ -5,17 +5,17 @@ This chapter describes the implementation of the Cartesian impedance
 controller used for the surface-grinding experiments. The implementation is
 written in C++ with libfranka and Eigen and is evaluated in the \(1\,\mathrm{ms}\)
 Franka Control Interface cycle. In addition to the Cartesian impedance law, the
-software contains the surface and tool geometry, the approach--set-up--grind
-state machine, the point-shifted coupled stiffness used during set-up, and the
-SVD-based null-space controller.
+implementation comprises the surface and tool geometry, the
+approach--set-up--grind state machine, the point-shifted coupled stiffness used
+during set-up, and the SVD-based null-space controller.
 
 \section{Real-Time Control Architecture}
 \label{sec:implementation_scope}
 
 The controller is divided into parameter handling, real-time control
-mathematics, the phase machine, terminal interaction, and post-run reporting.
+mathematics, the phase machine, terminal interaction, and data recording.
 Five parameter files are merged at start-up. The first holds the common robot,
-logging, surface, tool, gripper and null-space settings; the other four hold
+recording, surface, tool, gripper and null-space settings; the other four hold
 collision thresholds, sequence settings, hold settings and manual-guidance
 settings. No parameter file is read inside the real-time callback.
 
@@ -23,24 +23,8 @@ On every cycle the callback reads the measured robot state, updates the active
 motion phase and its Cartesian reference, selects the phase-dependent gains,
 and returns the task torque, null-space torque, and Coriolis term to libfranka.
 \Cref{sec:control_impl} gives the order in which those operations are evaluated.
-The experiment log is stored in a preallocated buffer, and file output is
+The experimental data are stored in a preallocated buffer, and file output is
 performed after the control loop rather than in the \(1\,\mathrm{ms}\) callback.
-
-With the active null-space mode, each callback evaluates one SVD of the current
-Jacobian and two further SVDs at the two probe configurations. The probes also
-require two additional calls to \texttt{model.zeroJacobian}. A full-rate
-implementation trace contains \(11624\) rows over \(11.704\,\mathrm{s}\). Of the
-adjacent callback timestamps, \(99.51\,\%\) are separated by exactly
-\(1\,\mathrm{ms}\), and the effective delivered-callback rate is
-\(993.1\,\mathrm{Hz}\). The active three-SVD law therefore ran sustainedly
-within libfranka's nominal \(1\,\mathrm{kHz}\) torque interface.
-
-Those timestamps do not establish a worst-case execution bound. They accumulate
-the callback period supplied by libfranka and do not measure the callback's
-local wall-clock execution time. The command success rate reported by the robot
-is the fraction of the last 100 commands received successfully, which is neither
-a callback-frequency nor an execution-time measurement, and it is not stored by
-the current logger \citep{FrankaFCI2023}.
 
 \subsection{Control-Loop Data Flow}
 \label{sec:control_loop_structure}
@@ -87,7 +71,7 @@ contributions are summed.
     \label{fig:controller_block_diagram}
 \end{figure}
 
-The phase machine also decides when one phase ends and the next begins.
+The phase machine also determines when one phase ends and the next begins.
 \Cref{fig:phase_flow_chart} shows those transitions, the two gates that wait
 for the operator, and the hold and hand-guiding branches that the startup menu
 selects instead of the sequence.
@@ -192,61 +176,21 @@ and null-space laws.
 \section{SVD-Based Null-Space Control}
 \label{sec:nullspace_conditioning_implementation}
 
-The torque projector was constructed from the full \(6\times7\) geometric
-Jacobian. For
-\[
-J=U\Sigma V^\top ,
-\]
-let \(\sigma_{\max}\) be the largest singular value and let
-\(\rho\) be the configured relative tolerance. The cutoff is
-\(\varepsilon_\rho=\rho\sigma_{\max}\), and the
-truncated Moore--Penrose inverse used by the software is
+The implementation follows the truncated-SVD construction in
+\cref{sec:nullspace_svd}. It forms the torque projector \(N_\tau\) from the
+full \(6\times7\) geometric Jacobian and uses the seventh right-singular vector
+\(v_7\) as the structural null direction. Singular values below the relative
+cutoff \(\rho\sigma_{\max}\) are omitted from the inverse.
 
-\begin{equation}
-J_\rho^+
-=
-\sum_{\sigma_i>\varepsilon_\rho}
-\frac{1}{\sigma_i}v_i u_i^\top,
-\qquad
-N_\tau
-=
-\left(I-J_\rho^+J\right)^\top .
-\label{eq:implementation_full_projector}
-\end{equation}
+The controller evaluates the Jacobian at
+\(q+\alpha_{\mathrm{probe}}v_7\) and
+\(q-\alpha_{\mathrm{probe}}v_7\). The selector
+\(s\in\{-1,0,+1\}\) points towards the configuration with the larger smallest
+singular value. It is set to zero when the difference lies within the
+configured deadband \(\delta_\sigma\). The probe distance determines where the
+comparison is made; it does not scale the commanded torque.
 
-Singular directions at or below the cutoff are omitted rather than inverted,
-and the resulting \(N_\tau\) was symmetrised numerically to remove round-off
-asymmetry. At full row rank, the seven-joint arm has a one-dimensional
-kinematic null space; its unit direction was taken as the seventh column
-\(\hat v_7=V(:,7)\).
-
-A two-point probe method was used to determine the direction in which the
-smallest singular value increased. The Jacobian was recomputed at two probe
-configurations,
-
-\begin{equation}
-q_+=q+\alpha_{\mathrm{probe}}\hat v_7,
-\qquad
-q_-=q-\alpha_{\mathrm{probe}}\hat v_7.
-\label{eq:implementation_sigma_probes}
-\end{equation}
-
-These two probes are the source of the two additional decompositions per cycle
-reported in \cref{sec:implementation_scope}.
-
-The selector \(s\in\{-1,0,+1\}\) points toward the probe with the larger
-\(\sigma_{\min}\). The singular-value torque was suppressed when the sampled
-difference remained within the configured deadband: if
-\(\left|\sigma_{\min}(J(q_+))-\sigma_{\min}(J(q_-))\right|\) is not greater than
-that deadband, \(s=0\). The probe distance \(\alpha_{\mathrm{probe}}\)
-determines only where the two Jacobians are evaluated; it does not multiply the
-commanded torque.
-
-Four null-space control configurations were implemented. These comprised an
-inactive mode, projected joint damping, a singular-value-based torque, and a
-combination of the latter two terms. The four were provided so that the effects
-of damping and of singular-value conditioning could be examined separately. The
-selected mode determines the null-space torque as
+The selected mode determines the null-space torque:
 
 \begin{equation}
 \tau_{\mathrm{null}}
@@ -256,42 +200,28 @@ selected mode determines the null-space torque as
 & \text{off},\\[2pt]
 -d_{\mathrm{null}}N_\tau\dot q,
 & \text{null-space damping},\\[2pt]
-k_\sigma N_\tau(s\hat v_7),
+k_\sigma N_\tau(s v_7),
 & \text{singular-value push},\\[2pt]
--d_{\mathrm{null}}N_\tau\dot q+k_\sigma N_\tau(s\hat v_7),
+-d_{\mathrm{null}}N_\tau\dot q+k_\sigma N_\tau(s v_7),
 & \text{damping and singular-value push}.
 \end{cases}
 \label{eq:implementation_nullspace_torque}
 \end{equation}
 
-There is no return-to-start spring in the current implementation. Null-space
-control is evaluated in hold, approach-orient, approach-descend, set-up, and
-grind whenever the selected mode enables it. It is not switched off during the
-approach and it is bypassed only in manual guidance. The combined configuration
-(\texttt{nullspace\_mode=3}) was used in the experiments reported in the
-following chapters, so projected joint damping and the switched sigma torque
-remained active during set-up. The projector is Euclidean and kinematic rather
-than dynamically consistent, and the sigma term is an active bias rather than a
-dissipative one, so the secondary torque can influence the observed contact
-motion.
+The combined mode was used throughout the contact campaign. The automatic hold
+study compared the inactive, damping-only and singular-value-only modes.
+Projected damping does not define a preferred joint posture. Manual guidance
+is the only phase that bypasses the null-space law.
 
-The complete controlled torque remains
+\subsection{Limits of the Implemented Null-Space Law}
 
-\begin{equation}
-\tau_{\mathrm{cmd}}
-=
-J^\top(q)F_{\mathrm{cmd}}
-+
-\tau_{\mathrm{null}}
-+
-\tau_c .
-\label{eq:implementation_final_torque_with_nullspace}
-\end{equation}
-
-The singular values were computed from the unscaled geometric Jacobian. Because
-its translational and rotational rows have different physical units, the
-reported \(\sigma_{\min}\) is an implementation-specific conditioning metric,
-not a unit-invariant scalar.
+The projector is kinematic and Euclidean rather than dynamically consistent.
+The singular-value term is an active constant-magnitude bias, so it can affect
+the Cartesian motion when the numerical projector is imperfect. The singular
+values also come from an unscaled geometric Jacobian whose
+translational and rotational rows have different units. Consequently,
+\(\sigma_{\min}\) is used only as a relative conditioning measure within this
+implementation.
 
 \section{Surface and Tool Geometry}
 \label{sec:surface_task_plane}
@@ -509,11 +439,11 @@ During approach-descend the state transition is triggered when
 \(p_C\) is used for control continuity and projection, but not for this exact
 comparison. The two heights can differ by at most the configured
 \(0.1\,\mathrm{mm}\) tie tolerance. This is a geometric transition. The
-external-force estimate is available for diagnostics, but it is not used to
-decide the transition.
+external-force estimate does not enter the decision.
 
-At the transition the active feature, TCP pose, clearance orientation, and
-external-wrench bias are frozen. With the signed set-up push coordinate
+At the transition the active feature is selected. The TCP pose, clearance
+orientation, and external-wrench bias are recorded and held constant during
+set-up. With the signed set-up push coordinate
 \(\delta_{\mathrm{push},0}=-h_C\), the desired feature position is continuous:
 
 \begin{equation}
@@ -527,8 +457,8 @@ p_{C,d}(\delta_{\mathrm{push},0})=p_C .
 Increasing \(\delta_{\mathrm{push}}\) moves the selected feature into the surface along
 \(-n_s\).
 
-Let \(c_{C,\mathrm{EE}}\) denote the selected feature offset frozen in the
-end-effector frame at clearance, and let
+The feature offset \(c_{C,\mathrm{EE}}\) is selected in the end-effector frame
+at clearance and held constant during set-up. Let
 \(R_{\mathrm{clr}}=R_{\mathrm{contact,start}}\). The Cartesian position
 reference supplied to the end-effector impedance is
 
@@ -539,21 +469,11 @@ p_{C,d}-R_{\mathrm{clr}}c_{C,\mathrm{EE}} .
 \label{eq:software_ee_target_from_feature}
 \end{equation}
 
-This conversion uses the frozen clearance orientation, not the live
-\(R_{\mathrm{EE}}\). The current physical feature remains
+This conversion uses the clearance orientation selected at the transition and
+held constant during set-up. The physical feature remains
 \(p_C=p_{\mathrm{EE}}+R_{\mathrm{EE}}c_{C,\mathrm{EE}}\); therefore, if the
 tool rotates during set-up, it need not coincide exactly with the constructed
 feature reference \(p_{C,d}\).
-
-There is one implementation-level hand-off caveat. In the callback that first
-satisfies the clearance test, the phase variable is changed to
-\texttt{set\_up} before gain selection, while the desired position and velocity
-still contain that callback's approach values. The set-up gains and coupled
-branch can therefore act on the old approach target for one sample; the
-continuous target in \cref{eq:plane_projected_position_error} is generated on
-the following callback. The first logged phase-2 row must not be treated as an
-already settled set-up sample, and eliminating this one-cycle mismatch is a
-recommended implementation correction.
 
 \section{Phase-Dependent Gains and Automatic Damping}
 \label{sec:surface_frame_gains}
@@ -614,16 +534,11 @@ configured gate-hold translational damping, and rotation targets the cached
 approach rotational damping in the surface frame, there being no separate manual
 pause-rotation target.
 
-The estimate is accepted only after the factorisation, finiteness and positivity
-of the required diagonal entries have been checked. An invalid estimate during
-approach or set-up is recalculated on a later callback while that phase group
-remains active. An invalid hold or pause-gate estimate instead latches the
-manual fallback for that entry, and at the gate a failed estimate sends
-translation to the gate-hold target and rotation to the cached or manual
-approach damping. Disabling automatic damping selects the manual matrix
-directly. The \(10^{-9}\) regularisation applies only to this mixed
-translational--rotational task-inertia estimate and is distinct from the
-relative SVD cutoff used for null-space projection.
+Only finite, positive directional inertia values are used. When these values
+are unavailable, the fixed damping matrix for the phase is applied. Disabling
+automatic damping selects the same fixed matrix directly. The
+\(10^{-9}\) regularisation belongs only to the Cartesian-inertia estimate and
+is distinct from the relative SVD cutoff used for null-space projection.
 
 \section{Compliance-Centre Coupling During Set-Up}
 \label{sec:self_alignment_virtual_center}
@@ -650,20 +565,18 @@ F_{\mathrm{cmd}}
 \label{eq:software_coupled_wrench}
 \end{equation}
 
-In the commanded-centre mode the centre of compliance is the frozen projected-clearance reference or the
-live selected tool feature plus the configured base-frame XYZ offset. The
-frozen source is the first-contact point, but it is captured
-at geometric clearance rather than force contact. In the active configuration,
-the centre of compliance is held constant from first contact, the TCP
-reference is captured at
-the same hand-off and the lever actually passed to the congruence is
+Two reference sources are available for the centre of compliance: the
+projected-clearance point selected at the transition and the current tool
+feature. The configured base-frame XYZ offset is added to the selected source.
+In the active configuration, the projected-clearance point is chosen as the
+reference and \(p_c\) is held constant throughout set-up. The TCP reference is
+selected at the same transition, so the lever passed to the congruence is
 \[
 r_c=p_{\mathrm{TCP,clr}}-p_c .
 \]
-Consequently both \(p_c\) and \(r_c\) are constant throughout set-up; the live
-option instead recomputes both references. The implementation can
-alternatively use the unshifted block-diagonal matrix as a consistency check or
-load previously saved full matrices. The coupled path is not active in grind:
+Consequently both \(p_c\) and \(r_c\) remain constant throughout set-up. The
+alternative option recomputes both references from the current tool feature.
+The coupled path is not active in grind:
 grind shares the set-up gain values but returns to the decoupled wrench law.
 This change is immediate. In the set-up callback that satisfies the exit
 condition, the phase is assigned to \texttt{grind} before the wrench branch is
@@ -709,22 +622,23 @@ to place the robot before either choice.
 
     \item \textbf{Optional pre-set-up gate.} When enabled, reaching the
     clearance arms an Enter gate. A stiff position lock holds the actual pose,
-    and the descend clock is frozen until the user continues.
+    and the descend clock is paused until the user continues.
 
-    \item \textbf{Set-up.} The selected feature and clearance references are
-    frozen. Its signed coordinate is ramped continuously from the captured
-    value toward the configured set-up endpoint at the configured push speed.
+    \item \textbf{Set-up.} The feature and clearance references selected at the
+    transition are held constant. The signed feature coordinate is ramped
+    continuously from the captured value toward the configured set-up endpoint
+    at the configured push speed.
     The orientation target remains the captured clearance orientation. The
     phase ends when the bias-subtracted external-moment norm exceeds its
     threshold after the minimum set-up time, or when the independent set-up
-    timeout is reached. Force is logged but is not an exit condition. The
+    timeout is reached. Force is recorded but is not an exit condition. The
     point-shifted coupled law, when enabled, is applied only in this phase.
 
     \item \textbf{Optional pre-grind gate.} When enabled, the controller remains
     in set-up and continues evaluating its pressed reference until the user
     proceeds.
 
-    \item \textbf{Grind.} The final set-up push is frozen as the grinding
+    \item \textbf{Grind.} The final set-up push is retained as the grinding
     preload. The reference either executes a smooth back-and-forth sweep along
     \(t_1\) or \(t_2\), or holds only the normal penetration while allowing
     free tangential sliding. Grind uses the set-up gain values with the
@@ -757,18 +671,17 @@ is \(\tau_c-d_{\mathrm{guide}}\dot q\). The user may open or close the hand
 during start-up guidance and then capture the current pose as the start of
 sequence or hold operation.
 
-\section{Logging and Post-Run Diagnostics}
-\label{sec:software_logging}
+\section{Recorded Experimental Signals}
+\label{sec:recorded_signals}
 
-The experiment log is a pre-sized ring buffer sampled every configured number of
-control cycles. It records phase, null-space mode, measured and desired
-positions, controlled feature and edge references, Cartesian errors and
-velocities, commanded and estimated external wrenches, wrench biases, set-up
-push, singular-value diagnostics, null-space torque magnitude, and commanded
-joint torques.
+The signals used in the evaluation are stored in a pre-sized ring buffer. They
+include the phase, Cartesian references and errors, selected tool feature,
+commanded and model-estimated wrenches, null-space mode, smallest singular
+value, projected joint velocity, and commanded joint torque. Automatic hold
+trials also store the commanded point force and its equivalent joint torque.
 
 The buffer is written to a comma-separated-values (\abbr{CSV}) file after the
-control loop has exited, so the logger performs no file I/O in the real-time
+control loop has exited. No file input or output occurs in the real-time
 callback.
 
 \section{Complete Real-Time Callback}
@@ -789,14 +702,14 @@ The callback can be summarised as follows:
     \item Compute the truncated-SVD null-space torque for the selected mode.
     \item Return
     \(J^\top F_{\mathrm{cmd}}+\tau_{\mathrm{null}}+\tau_c\).
-    \item Copy the selected signals into the bounded in-memory log buffers.
+    \item Copy the selected signals into the bounded in-memory data buffer.
 \end{enumerate}
 
 The core callback and supporting mathematical routines are reproduced in
 Appendix~\ref{app:code}. The parameter values used for a particular run remain
 separate from this control structure.
 
-The controller described in this chapter is the one used for every run reported
-below. \Cref{ch:methodology} documents the experimental campaign built on it:
-the calibrated surface and tool geometry, the parameters held fixed, the four
-quantities varied, and the metrics calculated from the logged signals.
+The controller described in this chapter was used for every reported run.
+\Cref{ch:methodology} documents the calibrated surface and tool geometry, the
+parameters held constant, the four varied quantities, and the metrics calculated
+from the recorded signals.

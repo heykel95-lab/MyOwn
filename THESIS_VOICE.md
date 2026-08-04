@@ -646,9 +646,8 @@ THESIS_WRITING_GUIDE.md — model-estimated versus measured wrench, virtual
 spring scale versus contact force. **Do not delete them.** Vary the syntax and
 place them where the misreading would happen:
 
-> Every starred quantity is an engineering design scale --- a load the virtual
-> spring is sized around, and nothing that was ever measured, certified, or
-> enforced in software.
+> The value in the stiffness calculation is an engineering design scale. It
+> sets the virtual-spring command scale and is not a measured contact load.
 
 > No tool travels \(180\,\mathrm{mm}\) into the surface, and no such displacement was
 > expected of the robot.

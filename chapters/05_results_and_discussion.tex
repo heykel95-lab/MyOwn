@@ -1,33 +1,28 @@
 \chapter{Results and Discussion}
 \label{ch:results_discussion}
 
-Every contact run reached and completed set-up, and all runs were retained for
-analysis. Each mean reported below therefore rests on the full three repetitions
-of its setting. One repetition
-departed from its two companions; it is kept in the mean and taken up in
-\cref{sec:results_limitations}, where it is read as evidence about the tool
-mount rather than as a recording fault.
+All contact runs completed set-up and were retained for analysis. Each reported
+mean is based on three repetitions of the corresponding setting. One repetition
+differed substantially from the other two and was retained so that the reported
+dispersion represents the complete measured response. It is discussed in
+\cref{sec:results_limitations}.
 
-The case labels of \cref{tab:experimental_test_cases} carry through the
-chapter, and Case A supplies the baseline the other four are read against.
+The case identifiers introduced in \cref{tab:experimental_test_cases} are used
+throughout this chapter. Case A provides the baseline for the remaining four
+cases.
 
-\section{Measurement Campaign and Data Integrity}
-\label{sec:results_provenance}
-
-The raw signals of every run are stored next to the one parameter set that
-produced them. Each metric was then calculated twice over, once from the
-general data log and once from the controller's own set-up summary. When the
-two calculations differed, the corresponding record was inspected and the
-discrepancy was resolved before analysis.
+\section{Repeatability and Settling}
+\label{sec:results_repeatability}
 
 Repeatability comes from the three repetitions of each of the \(25\) settings.
 Across settings tilted about \(t_1\) the median within-setting standard
 deviation of the alignment improvement is \(0.02^\circ\); about \(t_2\) it is
-\(0.03^\circ\). Anything below roughly \(0.1^\circ\) is read as scatter and not
-as a parameter effect, and that threshold governs every comparison in the
-chapter without being restated at each one.
+\(0.03^\circ\). Changes below approximately \(0.1^\circ\) were interpreted as
+scatter rather than as parameter effects. This threshold is applied to every
+comparison in the chapter.
 
-The reported values are settled ones. Over the last second of set-up the
+The reported values were calculated from settled intervals. Over the last
+second of set-up the
 model-estimated load moved by a median of \(0.10\,\mathrm{N}\) and the tip
 angle by a median of \(0.00^\circ\); the worst run gave
 \(1.10\,\mathrm{N}\) and \(0.60^\circ\). Preload does not confound the
@@ -39,17 +34,18 @@ model-estimated normal load stayed between \(44.5\) and \(49.4\,\mathrm{N}\).
 
 The primary response is the change, over the set-up interval, in the angle
 between the EE-inferred tool axis and the calibrated physical plane; a positive
-value means the angle closed. Roughly \(2^\circ\) of the tool's freedom about
-\(y_{EE}\) sits in the gripper rather than in the robot, so the quantity is a
+value means the angle closed. Approximately \(2^\circ\) of rotational freedom
+about \(y_{EE}\) occurs at the gripper--tool interface, so the quantity is a
 combined robot--gripper--tool response and leaves controller compliance and
 gripper compliance unseparated.
 
-Commanded and measured tilts do not agree, and the gap widens with the
-command. Approach hands over to the descent once the EE-inferred tool axis is
-within \(2^\circ\) of the commanded direction, which leaves a residual that
-grows with the commanded angle: \(5^\circ\) about \(t_1\) arrived at contact as
-\(2.45^\circ\), and \(10^\circ\) about \(t_2\) as \(8.45^\circ\). Every
-comparison below is made against the measured first-contact angle.
+Commanded and measured tilts differed, and the discrepancy increased with the
+command. The transition from orientation to descent occurred once the
+EE-inferred tool axis was within \(2^\circ\) of the commanded direction. The
+remaining deviation increased with the commanded angle: a \(5^\circ\) tilt
+about \(t_1\) produced a first-contact angle of \(2.45^\circ\), whereas a
+\(10^\circ\) tilt about \(t_2\) produced \(8.45^\circ\). Every subsequent
+comparison uses the measured first-contact angle.
 
 \section{Case A: Commanded Tilt}
 \label{sec:results_summary_table}
@@ -102,17 +98,17 @@ provokes it.
 The \(10^\circ\) \(t_2\) condition showed substantially greater variability than
 the other settings. Its standard deviation of \(0.92^\circ\) is an order of
 magnitude above every other entry in \cref{tab:results_case_a}, and one
-repetition accounts for it: that run removed \(0.00^\circ\), where its two
-companions under an identical configuration removed \(1.56^\circ\) and
-\(1.62^\circ\). The run is retained in the mean, and
-\cref{sec:results_limitations} reads it as an effect of the tool mount.
+repetition accounts for it: that run produced \(0.00^\circ\), whereas the other
+two repetitions under the same configuration produced \(1.56^\circ\) and
+\(1.62^\circ\). The run is retained in the mean. Its possible relation to the
+tool mount is discussed in \cref{sec:results_limitations}.
 
 \section{Case B: Axis-Specific Rotational Stiffness}
 \label{sec:results_case_b}
 
 In Case B the rotational stiffness of the tilted tangent was raised alone, and
-the orthogonal entry was held at \(5\,\mathrm{Nm/rad}\). The
-\(5\,\mathrm{Nm/rad}\) column of \cref{tab:results_case_b} is not a separate
+the orthogonal entry was held at \(5\,\mathrm{N\,m/rad}\). The
+\(5\,\mathrm{N\,m/rad}\) column of \cref{tab:results_case_b} is not a separate
 experiment: those entries are the \(10^\circ\) Case-A settings, reused as the
 reference.
 
@@ -123,8 +119,8 @@ reference.
 \label{tab:results_case_b}
 \begin{tabular}{@{}lrrr@{}}
 \toprule
-Tilted axis & \(5\,\mathrm{Nm/rad}\) & \(15\,\mathrm{Nm/rad}\)
-& \(50\,\mathrm{Nm/rad}\) \\
+Tilted axis & \(5\,\mathrm{N\,m/rad}\) & \(15\,\mathrm{N\,m/rad}\)
+& \(50\,\mathrm{N\,m/rad}\) \\
 \midrule
 \(t_1\) & \(+0.64\pm0.08\) & \(+0.57\pm0.03\) & \(+0.49\pm0.02\) \\
 \(t_2\) & \(+1.06\pm0.92\) & \(+1.58\pm0.04\) & \(+1.14\pm0.03\) \\
@@ -140,21 +136,21 @@ Tilted axis & \(5\,\mathrm{Nm/rad}\) & \(15\,\mathrm{Nm/rad}\)
 \end{figure}
 
 For the \(t_1\) tests, the alignment improvement decreased monotonically from
-\(0.64^\circ\) at \(5\,\mathrm{Nm/rad}\) to \(0.57^\circ\) at
-\(15\,\mathrm{Nm/rad}\) and \(0.49^\circ\) at \(50\,\mathrm{Nm/rad}\), as
+\(0.64^\circ\) at \(5\,\mathrm{N\,m/rad}\) to \(0.57^\circ\) at
+\(15\,\mathrm{N\,m/rad}\) and \(0.49^\circ\) at \(50\,\mathrm{N\,m/rad}\), as
 \cref{tab:results_case_b} shows. Increased rotational stiffness therefore
 reduced the measured correction about \(t_1\) within the tested range.
 
 The \(t_2\) result requires a more cautious interpretation. The mean at
-\(5\,\mathrm{Nm/rad}\) was reduced by the repetition that produced no measured
+\(5\,\mathrm{N\,m/rad}\) was reduced by the repetition that produced no measured
 improvement. The other two repetitions averaged approximately \(1.59^\circ\),
-which is nearly equal to the \(1.58^\circ\) measured at \(15\,\mathrm{Nm/rad}\).
-The \(50\,\mathrm{Nm/rad}\) setting produced \(1.14^\circ\). The data therefore
+which is nearly equal to the \(1.58^\circ\) measured at \(15\,\mathrm{N\,m/rad}\).
+The \(50\,\mathrm{N\,m/rad}\) setting produced \(1.14^\circ\). The data therefore
 support a reduction at the highest tested stiffness, but they do not establish a
 monotonic ordering between the two softer \(t_2\) settings.
 
 Because the two tangent entries were varied one at a time, this finding is
-axis-specific and says nothing about a common paired value.
+axis-specific and does not characterise a common paired value.
 
 \section{Case C: Cross-Axis Translational Stiffness}
 \label{sec:results_case_c}
@@ -163,7 +159,7 @@ In Case C the translational stiffness perpendicular to the tilted tangent was
 varied, again against the \(10^\circ\) Case-A settings as the
 \(2000\,\mathrm{N/m}\) reference. One further corner per axis was measured, in
 which the softest translation, \(K_p=300\,\mathrm{N/m}\), was paired with the
-stiffest rotation, \(K_R=50\,\mathrm{Nm/rad}\); it is shown as the interaction
+stiffest rotation, \(K_R=50\,\mathrm{N\,m/rad}\); it is shown as the interaction
 column of \cref{tab:results_case_c}.
 
 \begin{table}[H]
@@ -191,8 +187,9 @@ Tilted axis & \(300\,\mathrm{N/m}\) & \(800\,\mathrm{N/m}\)
 \label{fig:results_case_c}
 \end{figure}
 
-Softening the perpendicular direction helped on one tangent only. With the tool
-tilted about \(t_2\) the improvement rose as \(K_p\) fell, reaching
+Reducing the perpendicular translational stiffness increased the response about
+\(t_2\) only. With the tool tilted about \(t_2\), the improvement rose as
+\(K_p\) fell, reaching
 \(1.79^\circ\) at \(300\,\mathrm{N/m}\), the largest value recorded anywhere
 with the compliance centre at its baseline placement. About \(t_1\) the entire
 range moved the response by less than \(0.15^\circ\), close enough to the
@@ -201,7 +198,7 @@ interpretation threshold to be treated as no effect.
 The combined setting did not reproduce the improvement obtained with low
 translational stiffness alone. It returned \(1.20^\circ\) about \(t_2\), well
 short of the \(1.79^\circ\) reached at the same \(K_p\) with
-\(K_R=5\,\mathrm{Nm/rad}\), as the interaction column of
+\(K_R=5\,\mathrm{N\,m/rad}\), as the interaction column of
 \cref{tab:results_case_c} shows. This indicates an interaction between the two
 tested stiffness entries over this range.
 
@@ -209,7 +206,7 @@ tested stiffness entries over this range.
 \label{sec:results_pole}
 
 In Case D every gain was held at its baseline value and only the lever
-\(r_c=p_{\mathrm{TCP}}-p_c\) was moved. The lever was directed along the surface
+\(r_c=p_{\mathrm{TCP}}-p_c\) was varied. The lever was directed along the surface
 tangent perpendicular to the tilted one, which pairs a \(t_1\) tilt with
 \(r_{c,t_2}\) and a \(t_2\) tilt with \(r_{c,t_1}\). In a fourth column the
 compliance centre was placed on the centre of the grinding face,
@@ -241,10 +238,10 @@ Tilted axis & \(-60\,\mathrm{mm}\) & \(0\,\mathrm{mm}\)
 \label{fig:results_pole_component}
 \end{figure}
 
-Each tilted axis has one lever direction that improves alignment and one that
-does not. The improving direction is called the \emph{favourable} direction
-here, and it is the one for which the moment generated by the commanded
-penetration rotates the face towards the surface.
+For each tilted axis, one lever direction improved alignment and the opposite
+direction produced no comparable improvement. The improving direction is termed
+the \emph{favourable} direction below. In this direction, the moment generated
+by the commanded penetration rotates the tool face towards the surface.
 
 With the lever in that direction, the residual misalignment fell from
 \(6.99^\circ\) to \(0.93^\circ\) with the tool tilted about \(t_1\), and from
@@ -281,8 +278,8 @@ produced \(0.59^\circ\) and \(1.35^\circ\), compared with \(0.56^\circ\) and
 \(1.38^\circ\) at zero lever, and these differences remained below the
 interpretation threshold.
 
-That outcome is what the point-shifted law predicts, and it is worth separating
-from the tangential result rather than reading as a second null finding. With
+This result is consistent with the point-shifted law and requires separate
+interpretation from the tangential sweep. With
 the press directed along the surface normal, \(f\approx-Fn_s\), the component of
 \(r_c\) along \(n_s\) is parallel to \(f\) and contributes nothing to
 \(m_c=-r_c\times f\) of \cref{eq:pole_translation_moment_sign_check}. Only the
@@ -293,27 +290,25 @@ sweep, and its null result is consistent with that magnitude rather than with a
 property of the normal coordinate itself.
 
 An axial displacement contributes an effective tangential lever of
-\(d\sin\theta\) for a displacement \(d\) and a commanded tilt \(\theta\), so at
-\(10^\circ\) it takes \(345\,\mathrm{mm}\) along the tool axis to match the
-\(60\,\mathrm{mm}\) reached directly in the tangent plane. The axial coordinate
-is therefore an inefficient way to generate the alignment moment, whichever
-sense it is moved in.
+\(d\sin\theta\) for a displacement \(d\) and a commanded tilt \(\theta\). At
+\(10^\circ\), an axial displacement of \(345\,\mathrm{mm}\) would be required to
+produce the same tangential component as the \(60\,\mathrm{mm}\) in-plane
+lever. Axial displacement therefore produces substantially less alignment
+moment for the investigated geometry.
 
-Only the displacement towards the surface was tested. Moving the centre the
-other way, from the TCP back towards the flange, reverses the sign of that small
-tangential component and would be expected to bias the rotation in the opposite
-sense; this was not measured. Within this campaign, then, the axial coordinate
-was sampled at one displacement in one sense, and the measurements support only
-the statement that the alignment moment is generated by the tangential lever, of
-which \(60\,\mathrm{mm}\) moved the response by several degrees.
+Within the tested geometry, the measurements therefore support the simpler
+conclusion that the alignment moment is governed by the tangential component of
+the lever. A direct \(60\,\mathrm{mm}\) tangential offset changed the response
+by several degrees, whereas the \(3.5\,\mathrm{mm}\) tangential component of
+the axial offset did not exceed the interpretation threshold.
 
 \section{Case E: Tilt About the Tool Axes}
 \label{sec:results_case_e}
 
-Case E was set up to establish whether the asymmetry between the two tangents
-belonged to the tool or to the surface. If it belonged to the geometry of the
-grinding face, commanding the tilt about the tool's own axes should reproduce
-it. The commanded spin leaves the long axis of the grinding face \(25^\circ\)
+Case E assessed whether the asymmetry between the two tangents was associated
+with the tool or the surface frame. An effect associated with the grinding-face
+geometry should remain when the tilt is commanded about the tool axes. The
+commanded spin places the long axis of the grinding face \(25^\circ\)
 from \(t_2\), so a tangent-axis tilt tips the long and the short axis of the
 face together; in Case E the same \(10^\circ\) was instead commanded about
 \(y_{EE}\) and \(x_{EE}\).
@@ -355,14 +350,46 @@ geometry of the grinding face. It is a model-based interpretation drawn from
 four settings, and superposition outside the tested range does not follow from
 it.
 
-\section{Null-Space Validation Status}
+\section{Automatic Null-Space Response}
 \label{sec:results_nullspace}
 
-Null-space damping was active in all reported runs, and no sustained oscillation
-was observed with the selected damping. However, no matched trials were
-performed with the singular-value term enabled and disabled. Its effect on
-conditioning or on contact alignment therefore cannot be concluded from the
-present campaign.
+The automatic disturbance reached \(20.00\,\mathrm{N}\) in all twelve main
+trials. Its peak equivalent joint-torque norm lay between \(2.17\) and
+\(2.45\,\mathrm{N\,m}\). The torque-limit scale remained one throughout, so
+every comparison received the requested waveform without clipping. All twelve
+trials completed and were retained.
+
+Projected damping reduced the cumulative redundant excursion from
+\((7.596\pm0.916)^\circ\) without null-space torque to
+\((5.687\pm0.228)^\circ\) at
+\(2\,\mathrm{N\,m\,s/rad}\). This corresponds to a reduction of approximately
+\(25\,\%\) from the matched zero-torque condition
+(\cref{fig:results_nullspace_automatic}a). The final conditioning loss was
+also smaller, changing from
+\(\Delta\sigma_{\min}=(-2.13\pm0.47)\times10^{-3}\) to
+\((-1.26\pm0.10)\times10^{-3}\).
+
+Both sigma-only settings produced a small positive final conditioning change.
+At \(k_\sigma=1.5\,\mathrm{N\,m}\), the measured value was
+\((1.95\pm0.07)\times10^{-5}\); at \(2\,\mathrm{N\,m}\), it was
+\((1.93\pm0.03)\times10^{-5}\). Raising the command therefore increased the
+cumulative excursion from \((0.283\pm0.007)^\circ\) to
+\((1.619\pm0.130)^\circ\) without increasing the retained conditioning
+change. Mean peak Cartesian position error rose from
+\(0.889\pm0.024\,\mathrm{mm}\) to \(0.983\pm0.053\,\mathrm{mm}\). The largest
+value across the complete study was \(1.304\,\mathrm{mm}\), below the registered
+\(2\,\mathrm{mm}\) criterion (\cref{fig:results_nullspace_automatic}b).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{figures/MAIN_F_nullspace_automatic.pdf}
+\caption{Automatic null-space response under the point-force equivalent.}
+\label{fig:results_nullspace_automatic}
+\end{figure}
+
+The comparison isolates the two null-space terms in free-space hold under an
+internally commanded point-force equivalent. It characterises this hold
+condition; physical link contact remains outside its scope.
 
 \section{Discussion}
 \label{sec:discussion_contact}
@@ -377,7 +404,7 @@ tenfold range altered the alignment improvement by no more than \(0.44^\circ\)
 (\cref{tab:results_case_b}). The largest change caused by the perpendicular
 translational stiffness, over a roughly sevenfold range, was \(0.73^\circ\)
 (\cref{tab:results_case_c}). By comparison, shifting the compliance centre by
-\(60\,\mathrm{mm}\) changed the improvement by as much as \(5.5^\circ\), and on
+\(60\,\mathrm{mm}\) changed the improvement by as much as \(5.5^\circ\), and
 with the lever in the unfavourable direction almost no alignment improvement was
 measured (\cref{tab:results_case_d}).
 
@@ -416,65 +443,50 @@ The measurements are consistent with that reading. Displacing the compliance
 centre along the tool axis, a lever nearly parallel to the press and so one that
 induces little moment, changed the response by less than the interpretation
 threshold on both tangents. A tangential lever applied against the required
-rotation instead removed the correction that the rotational spring alone had
-produced, \(0.02^\circ\) against \(1.38^\circ\) at zero lever. A placement that
+rotation instead reduced the measured improvement to \(0.02^\circ\), compared
+with \(1.38^\circ\) at zero lever. A placement that
 induces no moment leaves the response symmetric in the tilt direction; a
 tangential lever selects one direction of correction and opposes the other.
 
-Every commanded tilt in this campaign was positive, so the behaviour of a fixed
-lever under a reversed tilt was not measured. The asymmetry stated here is a
-model-based interpretation of
-\cref{eq:pole_translation_moment_sign_check} together with the wrong-sign
-measurement, and it is taken up in \cref{ch:conclusion}.
+All commanded tilts had the same sign. The measured asymmetry therefore applies
+to that sign, while the response to the opposite sign follows only from the
+model in \cref{eq:pole_translation_moment_sign_check}.
 
 \subsection{Placement of the Virtual Centre of Compliance}
 \label{sec:discussion_placement}
 
-The centre of compliance has three spatial coordinates, and the campaign swept
-only one of them. What the measurements settle, and what they leave open, is
-therefore worth separating.
+The centre of compliance has three spatial coordinates, of which one was varied
+systematically in the primary campaign. The measured effect of this coordinate
+is distinguished below from the remaining untested coordinates.
 
 The coordinate that was swept is the surface tangent perpendicular to the tilted
 axis, and it determines the size of the correction. Sixty millimetres in the
 assisting direction raised the improvement from \(0.56^\circ\) to
 \(6.05^\circ\) about \(t_1\) and from \(1.38^\circ\) to \(6.36^\circ\) about
 \(t_2\), while the same distance in the other direction left \(0.41^\circ\) and
-\(0.02^\circ\). Placement in this coordinate is the design decision that matters.
+\(0.02^\circ\). This coordinate therefore had the largest measured influence on
+the alignment response.
 
-The coordinate along the tool axis was sampled at one displacement,
-\(20\,\mathrm{mm}\) towards the surface, and produced no change above the
+The coordinate along the tool axis was sampled at a \(20\,\mathrm{mm}\)
+displacement towards the surface and produced no change above the
 interpretation threshold. The point-shifted law accounts for that: while the
 press stays normal to the surface, the axial part of the lever is parallel to
 the applied force and generates no moment, so an axial displacement acts only
 through its projection \(d\sin\theta\) onto the tangent plane. Raising the
 centre above the TCP rather than lowering it towards the face reverses the sign
-of that projection but not its magnitude. The axial coordinate is consequently
-not a useful design freedom for this task, and the height at which the centre
-sits may be chosen on other grounds.
+of that projection but not its magnitude. The axial coordinate therefore had
+little effect at the tested value.
 
-The third coordinate, the surface tangent parallel to the tilted axis, was never
-varied. A lever there would generate a moment about the perpendicular tangent,
-that is about the axis that is not being corrected, so it would be expected to
-introduce a misalignment rather than remove one. Nothing in this campaign tests
-that expectation.
-
-Four questions therefore remain open. The tangential sweep used three levels, so
-it locates the assisting direction without identifying an optimum magnitude;
-\(60\,\mathrm{mm}\) is the largest value tested, not a value shown to be best.
-The axial relation rests on a single point at an effective lever of
-\(3.5\,\mathrm{mm}\), which cannot separate ``the axial coordinate does not
-matter'' from ``\(3.5\,\mathrm{mm}\) does not matter''. The two in-plane
-coordinates were never varied together, so no interaction between them is
-resolved. And every commanded tilt was positive, which leaves the assisting
-direction tied to the tilted axis and the sign of the initial error at once.
-\Cref{sec:future} sets out the trials that would close each of them.
+The conclusions are limited to the investigated coordinate and range. The
+three tangential levels identify the assisting direction and the size of its
+effect, but they do not identify an optimum lever length.
 
 \subsection{Practical Implications for Controller Tuning}
 
 The measured ordering suggests a tuning sequence. The compliance-centre lever is
 chosen first, on the tangent perpendicular to the expected tilt and with the
-sign appropriate to that axis, since it determines how much correction is
-available at all. The rotational stiffness of the tilted axis is then kept as
+sign appropriate to that axis, since it determines the available correction.
+The rotational stiffness of the tilted axis is then kept as
 low as the required angular compliance and the allowable displacement permit,
 because every increase tested returned less angle. The perpendicular
 translational stiffness is adjusted last, and only where the tool is tilted
@@ -490,48 +502,56 @@ induces no moment, at the TCP or on the tool axis, and the alignment then comes
 from the rotational spring alone: \(0.56^\circ\) about \(t_1\) and
 \(1.38^\circ\) about \(t_2\) in this configuration, symmetric in the tilt
 direction but an order of magnitude below what the favourable lever recovered.
-If the larger correction is required, the lever cannot be fixed at all; its
-direction has to be selected for each run from the sign of the measured initial
-tilt. The controller can do this, because the centre of compliance is defined in
-software and is held constant only from the clearance hand-off onwards. Neither
-option was tested against a negative tilt, and the trade-off between them is
-stated here as a design consequence of the mechanism rather than as a measured
-comparison.
+If the larger correction is required, one lever direction cannot be retained
+for every approach. Its direction has to be selected for each run from the sign
+of the measured initial tilt. The controller can do this because the centre of compliance is defined in
+software and is held constant only from the clearance hand-off onwards. For the
+opposite tilt sign, this trade-off remains a model-based design consequence.
 
 \section{Limitations}
 \label{sec:results_limitations}
+
+\subsection{Experimental Generalisability}
+
+The experimental scope is defined by the tested matrix. All commanded tilts had
+the same sign, and the compliance-centre sweep used three tangential levels on
+one axis at a time. These levels identify the favourable direction and the
+magnitude of its effect within the investigated range, but they do not identify
+an optimum lever length or the response to the opposite tilt sign.
+
+\subsection{Calibration and Measurement Uncertainty}
+
+The primary alignment metric combines the end-effector pose with the
+independently calibrated physical-plane normal. Its absolute value therefore
+inherits uncertainty from both the nominal tool transform and the plane
+calibration. The reported normal load is obtained from the robot's
+model-estimated external wrench and is not an independent force measurement.
+
+\subsection{Tool-Mount Compliance}
 
 The tool could rotate by approximately \(\pm2^\circ\) about \(y_{EE}\) relative
 to the gripper. For the tested mounting orientation, \(y_{EE}\) was
 approximately \(25^\circ\) from \(t_2\). Contact-induced rotation at the
 gripper--tool interface may therefore have been more influential in the \(t_2\)
-conditions than in the \(t_1\) conditions. Because the alignment metric was
-calculated from the end-effector pose, this relative tool motion was not
-observed directly.
+conditions than in the \(t_1\) conditions. The end-effector-based metric
+therefore describes the combined robot--gripper--tool response and may
+underestimate the physical rotation of the grinding face.
 
 The \(10^\circ\) \(t_2\) repetition that produced \(0.00^\circ\) of EE-inferred
-improvement is consistent with this explanation, but it cannot be attributed
-conclusively to the tool mount. The run was retained because no logging or
-configuration error was identified, and because excluding it would understate
-the observed variability.
-
-Unmeasured motion of the tool within the gripper may cause the EE-inferred
-\(t_2\) values to underestimate the physical rotation of the grinding face. The
-direction and magnitude of that effect were not measured, so the \(t_2\) results
-are described as potentially underestimated rather than as established lower
-bounds.
-
-The dispersion statistics are consistent with that account. The median
+improvement is consistent with this explanation, although the tool mount cannot
+be identified as its sole cause. Retaining the run ensures that the mean and
+dispersion include the observed variability. The median
 within-setting standard deviation is \(0.02^\circ\) on \(t_1\) and
 \(0.03^\circ\) on \(t_2\), and the two largest dispersions in the measurement
 set both occur at \(t_2\). Dispersion also grows with the size of the correction
 on both axes, however, so the tilt axis does not account for it alone.
 
-Three further limitations apply. The alignment metric describes the combined
-robot--gripper--tool response and cannot separate controller compliance from
-gripper compliance, so a physically flat tool may coexist with a nonzero
-inferred residual. Every commanded tilt was positive, which leaves any asymmetry
-between positive and negative tilt unmeasured. And in the compliance-centre
-sweep three tangential levels were used on one axis at a time, which locates the
-favourable direction and establishes the size of the effect but identifies
-neither an optimum nor any interaction between the two in-plane coordinates.
+\subsection{Null-Space Validation and Timing Scope}
+
+The contact campaign used the combined null-space mode, so the individual
+null-space contributions cannot be separated from its alignment results. The
+automatic comparison isolates them only in free-space hold under an internally
+commanded point-force equivalent. It does not establish their response to
+physical link contact. The controller operated through the nominal
+\(1\,\mathrm{kHz}\) interface, but the experiments addressed motion response
+rather than worst-case callback execution time.

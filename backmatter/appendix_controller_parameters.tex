@@ -84,10 +84,10 @@ Pre-set-up gate translation &
 Pre-set-up gate rotation &
   \(90\,\mathrm{N\,m/rad}\), inherited approach rotation &
   inherited cached approach \(D_R\) \\
-Set-up translation (pole source) &
+Set-up translation (compliance-centre source) &
   \([2000,2000,350]\,\mathrm{N/m}\), base \([x,y,z]\) &
   \([10,10,175]\,\mathrm{N\,s/m}\) \\
-Set-up rotation (pole source) &
+Set-up rotation (compliance-centre source) &
   \([5,5,50]\,\mathrm{N\,m/rad}\), surface \([t_1,t_2,n_s]\) &
   \([10.01,10.01,10]\,\mathrm{N\,m\,s/rad}\) \\
 Grind translation (decoupled) &
@@ -148,64 +148,42 @@ enabled, disabled \\
 }
 \end{table}
 
-\section{Automatic Damping and Center of Compliance}
+\section{Automatic Damping and Centre of Compliance}
 
-Automatic damping uses
-\[
-\mathcal H=JM_q^{-1}J^\top,\qquad
-\Lambda=
-\left(
-\tfrac12(\mathcal H+\mathcal H^\top)
-+10^{-9}I
-\right)^{-1},
-\qquad d_i=2\zeta\sqrt{\Lambda_{ii}k_i}.
-\]
-It is enabled for hold, approach, set-up/grind, and the pause gate. The
-approach factor is \(\zeta=1.9\); set-up/grind use \(\zeta=1.0\). Hold fits one
-common factor so that its three translational values are close to
-\(50\,\mathrm{N\,s/m}\). At the pre-set-up pause gate, the translational fit
-targets the configured \texttt{pause\_hold\_Dp}, while the rotational fit
-targets the cached approach rotational damping expressed in the surface frame.
-For a unit-factor vector \(c_i=2\sqrt{\Lambda_{ii}k_i}\) and target \(d^\star\),
-each fitted factor is
-\[
-\beta^\star=\frac{c^\top d^\star}{c^\top c}.
-\]
-Hold uses one factor fitted from translation and applies it to translation and
-rotation. The gate fits separate translational and rotational factors.
-There is no separate manual pause-rotation target. If the inertia estimate is
-invalid, translation falls back to \texttt{pause\_hold\_Dp} while rotation
-inherits the cached or manual approach damping. The configured maximum
+Automatic damping follows \cref{eq:software_cartesian_inertia,eq:software_auto_damping}.
+It is enabled for hold, approach, set-up, grind, and the pause gate. The
+approach factor is \(\zeta=1.9\), while set-up and grind use
+\(\zeta=1.0\). Hold uses one fitted factor for translation and rotation. The
+pause gate uses separate translational and rotational factors because the two
+gain blocks are expressed in different frames. The configured maximum
 coefficient is \(8000\), and the manual values in
-Table~\ref{tab:active_phase_gains} are fallbacks rather than per-axis floors.
-The numerical automatic coefficients depend on the phase-entry pose and are
-printed to the terminal; they are not columns of the general sequence CSV.
+\cref{tab:active_phase_gains} provide the fixed damping when an automatic value
+is unavailable.
 
 For set-up, the source damping blocks are calculated from TCP task inertia and
-then shifted through the pole. This preserves symmetry and positive
+then shifted to the selected centre of compliance. This preserves symmetry and positive
 semidefiniteness, but the factor \(\zeta=1\) remains a directional tuning
 heuristic; it does not establish a pole-level modal damping ratio for the
 coupled robot--contact system.
 
-The coupled \(6\times6\) law is enabled only during set-up.  Its active source
-is the manual frozen pole
+The coupled \(6\times6\) law is enabled only during set-up. The active centre
+of compliance is selected manually and held constant:
 \[
 p_c=p_{\Pi,\mathrm{clr}}+
 [-0.04,\ 0.08,\ 0]^\top\ \mathrm{m},
 \qquad r_c=p_{\mathrm{TCP,clr}}-p_c .
 \]
 Here \(p_{\Pi,\mathrm{clr}}\) is the selected tool feature projected onto the
-surface at the \(20\,\mathrm{mm}\) geometric clearance hand-off. In the source,
-this geometric reference is stored as \texttt{first\_contact\_point}; it is not
-a force-detected contact edge. The TCP position is captured at the same
+surface at the \(20\,\mathrm{mm}\) geometric clearance hand-off. The
+configuration key \texttt{first\_contact\_point} denotes this geometric
+reference rather than a force-detected contact edge. The TCP position is captured at the same
 hand-off, so this active \(r_c\) is constant throughout set-up. With
-\texttt{coupled\_pole\_manual=1}, the matrices constructed from this frozen pole
-are the active set-up gains.
+\texttt{coupled\_pole\_manual=1}, the matrices constructed from this selected
+centre of compliance are the active set-up gains.
 
-\section{Null-Space and Run-Support Parameters}
+\section{Null-Space and Operating Parameters}
 
-The quantitative interpretation and validation limits of the five null-space
-parameters are given once in
+The null-space settings are explained in
 \cref{subsec:nullspace_parameter_rationale}. The final two rows of
 Table~\ref{tab:nullspace_safety_parameters} are Franka collision/reflex
 thresholds configured through the libfranka collision-behaviour interface; they
@@ -213,7 +191,7 @@ are neither commanded-torque saturation nor a software wrench limiter.
 
 \begin{table}[H]
 \centering
-\caption{Null-space and run-support parameters.}
+\caption{Null-space and operating parameters.}
 \label{tab:nullspace_safety_parameters}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{@{}lll@{}}
@@ -226,16 +204,14 @@ Sigma torque magnitude & \(k_\sigma\) & \(1.0\,\mathrm{N\,m}\) \\
 Probe distance & \(\alpha_{\mathrm{probe}}\) & \(0.08\,\mathrm{rad}\) \\
 Sigma difference deadband & \(\delta_\sigma\) & \(10^{-6}\) \\
 Relative SVD cutoff & \(\rho\) & \(10^{-4}\) \\
-Full-log sampling / capacity & \texttt{log\_every\_n\_cycles}, rows &
+Recorded-data sampling / capacity & \texttt{log\_every\_n\_cycles}, rows &
   every callback (\(1\)), \(120000\) \\
 Run duration / stop & \texttt{experiment\_duration} &
   \(0\,\mathrm{s}\): indefinite until \texttt{e+Enter} \\
 Gripper grasp & width, speed, force &
   \(0.070\,\mathrm{m}\), \(0.050\,\mathrm{m/s}\), \(60\,\mathrm{N}\) \\
 Tool-mount rotational play & physical observation &
-  approximately \(\pm2^\circ\) about \(y_{\mathrm{EE}}\), uninstrumented \\
-Gripper failure policy & \texttt{require\_gripper\_open} &
-  \(0\): failed grasp is reported but nonfatal \\
+  approximately \(\pm2^\circ\) about \(y_{\mathrm{EE}}\) \\
 Manual-guidance damping & \texttt{manual\_guidance\_damping} &
   \(0.5\,\mathrm{N\,m\,s/rad}\) \\
 Joint-side collision threshold & acceleration/nominal &
