@@ -4,8 +4,8 @@
 \section{Experimental Investigation}
 \label{sec:experimental_question}
 \ReviewMark{green}{The completed campaign, fixed baseline, five cases, run
-count, repetitions, and separation from the automatic hold study are all
-introduced before the detailed procedure.}
+count, repetitions, and separation from the internally commanded hold study are
+all introduced before the detailed procedure.}
 
 Four parameters were investigated: the commanded tilt, the rotational stiffness
 about each surface tangent, the translational stiffness perpendicular to the
@@ -135,8 +135,9 @@ states otherwise, together with a \(60\,\mathrm{mm}\) virtual press at
 
 Cases A--E comprise \(75\) contact runs. All completed set-up and were included
 in the analysis. The null-space terms were held constant in this campaign and
-therefore did not define an additional contact case. A separate automatic hold
-study is described in \cref{subsec:nullspace_automatic_method}.
+therefore did not define an additional contact case. A separate internally
+commanded hold study is described in
+\cref{subsec:nullspace_automatic_method}.
 
 Each run followed the same sequence. The robot oriented the grinding-face axis,
 then descended to a geometrically defined clearance. Set-up pressed the
@@ -188,7 +189,7 @@ Four states make up the active sequence: \texttt{approach\_orient},
 \texttt{approach\_descend}, \texttt{set\_up}, and \texttt{grind}. Hold and
 manual guidance are available at start-up, but neither is a contact phase.
 Null-space mode is selected on its own and, once enabled, stays active for the
-whole automatic sequence.
+whole commanded sequence.
 
 \subsection{Experimental System and Reproducibility}
 \label{subsec:reproducibility_record}
@@ -424,7 +425,7 @@ block, however:
 \Cref{tab:active_stiffness_design_points} maps the stiffness across every phase
 --- hold, both approach states, the pre-set-up gate, set-up, grind and manual
 guidance --- and \cref{tab:active_automatic_damping_policy} gives the matching
-automatic-damping policy. The coordinate frame is part of the gain definition
+inertia-scaled-damping policy. The coordinate frame is part of the gain definition
 and must be retained whenever the gain is calculated or transformed.
 
 Base-frame errors and base-frame gains determine the control law of
@@ -497,7 +498,7 @@ Both properties are preserved by the congruence and were verified for the
 assembled \(6\times6\) matrices. This verification detects sign and transpose
 errors without introducing an additional tuning parameter.
 
-\subsection{Quasi-Static Stiffness Sizing and Automatic Damping}
+\subsection{Quasi-Static Stiffness Sizing and Inertia-Scaled Damping}
 \label{subsec:initial_stiffness_damping_values}
 \ReviewMark{grey}{The selected force, moment, displacement, and angle scales
 are engineering choices rather than measured contact requirements. The blocked
@@ -705,7 +706,7 @@ holds the sequence in set-up and continues the coupled pressed command; the
 Null-space mode~3 adds a projected joint torque on top of all of this,
 independently of the Cartesian stiffness map.
 
-\paragraph{Automatic damping.}
+\paragraph{Inertia-scaled damping.}
 Cartesian damping was calculated at entry to each phase group using
 \cref{eq:software_cartesian_inertia,eq:software_auto_damping}. The Cartesian
 inertia was first expressed in the coordinate frame of the corresponding gain
@@ -716,7 +717,7 @@ listed in \cref{tab:active_automatic_damping_policy}.
 \begin{table}[H]
 \centering
 \small
-\caption{Phase-specific automatic-damping policy.}
+\caption{Phase-specific inertia-scaled-damping policy.}
 \label{tab:active_automatic_damping_policy}
 \begin{tabular}{@{}
 >{\raggedright\arraybackslash}p{0.17\textwidth}
@@ -747,7 +748,7 @@ one factor fitted toward \(D_p=50I_3\), then also applied to rotation &
 \(D_R=8I_3\) \\
 Manual guidance &
 not applicable &
-no Cartesian automatic damping &
+no Cartesian inertia-scaled damping &
 \(0.5\,\mathrm{N\,m\,s/rad}\) joint damping \\
 \bottomrule
 \end{tabular}
@@ -1019,9 +1020,9 @@ accompanied by an incompatible change in contact load or displacement.
 \ReviewMark{green}{The contact and hold configurations are reconciled in one
 table and routed to the common theoretical definitions.}
 
-The primary contact campaign used the combined null-space mode. The automatic
-hold study used the same projector and probe settings while separating the two
-torque terms. The corresponding values are listed in
+The primary contact campaign used the combined null-space mode. The internally
+commanded hold study used the same projector and probe settings while
+separating the two torque terms. The corresponding values are listed in
 \cref{tab:nullspace_parameter_rationale}.
 
 \begin{table}[H]
@@ -1031,7 +1032,7 @@ torque terms. The corresponding values are listed in
 \label{tab:nullspace_parameter_rationale}
 \begin{tabular}{@{}lll@{}}
 \toprule
-Quantity & Primary contact campaign & Automatic hold study \\
+Quantity & Primary contact campaign & Internally commanded hold study \\
 \midrule
 Control mode & damping and sigma & off, damping only, or sigma only \\
 \(d_{\mathrm{null}}\) & \(2\,\mathrm{N\,m\,s/rad}\) &
@@ -1048,9 +1049,9 @@ Control mode & damping and sigma & off, damping only, or sigma only \\
 Projected damping opposes \(N_\tau\dot q\), while the conditioning torque acts
 along the selected \(v_7\) direction. Their definitions are given in
 \cref{sec:nullspace_svd}. The contact results describe the combined controller;
-the automatic hold results provide the separated comparison.
+the internally commanded hold results provide the separated comparison.
 
-\subsection{Automatic Null-Space Disturbance Study}
+\subsection{Internally Commanded Null-Space Disturbance Study}
 \label{subsec:nullspace_automatic_method}
 \ReviewMark{grey}{The internal point-force equivalent is repeatable and the
 acceptance rule is explicit, but it does not validate a physical external
@@ -1202,13 +1203,13 @@ Its angle to the independently calibrated physical plane is
 \begin{equation}
 \theta_{\mathrm{align,phys}}
 =
-\cos^{-1}\!\left(
-\operatorname{clip}(-a_T^\top n_{\mathrm{phys}},-1,1)
-\right).
+\cos^{-1}\!\left(-a_T^\top n_{\mathrm{phys}}\right).
 \label{eq:contact_alignment_error_cross}
 \end{equation}
 
-The minus sign follows from the tool-axis convention in
+Both \(a_T\) and \(n_{\mathrm{phys}}\) are unit vectors, so the argument lies in
+\([-1,1]\) and the inverse cosine is defined for every attainable pose. The
+minus sign follows from the tool-axis convention in
 \cref{eq:implemented_tool_axis_target}. The value is inferred from the
 end-effector pose. Rotation of the tool within the gripper is therefore part of
 the measurement uncertainty rather than a separate state in the calculation.
@@ -1363,7 +1364,7 @@ Procedure and geometry supply the remaining guards:
     \item a \(0.640\,\mathrm{m}\) maximum approach travel and a geometric
     \(20\,\mathrm{mm}\) clearance hand-off;
     \item an operator gate before set-up, using a
-    \(5000\,\mathrm{N/m}\) isotropic position hold with automatically fitted
+    \(5000\,\mathrm{N/m}\) isotropic position hold with inertia-scaled fitted
     damping;
     \item a \(4\,\mathrm{s}\) set-up timeout independent of the permissive
     \(150\,\mathrm{N\,m}\) external-moment-change stopping threshold; the timeout

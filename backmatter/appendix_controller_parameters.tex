@@ -155,20 +155,20 @@ enabled, disabled \\
 }
 \end{table}
 
-\section{Automatic Damping and Centre of Compliance}
+\section{Inertia-Scaled Damping and Centre of Compliance}
 \ReviewMark{yellow}{The active policy is complete, but the fitted damping
 factors are not listed per run and the \(\zeta=1\) heuristic is not a validated
 modal damping ratio.}
 
-Automatic damping follows \cref{eq:software_cartesian_inertia,eq:software_auto_damping}.
+Inertia-scaled damping follows \cref{eq:software_cartesian_inertia,eq:software_auto_damping}.
 It is enabled for hold, approach, set-up, grind, and the pause gate. The
 approach factor is \(\zeta=1.9\), while set-up and grind use
 \(\zeta=1.0\). Hold uses one fitted factor for translation and rotation. The
 pause gate uses separate translational and rotational factors because the two
 gain blocks are expressed in different frames. The configured maximum
 coefficient is \(8000\), and the manual values in
-\cref{tab:active_phase_gains} provide the fixed damping when an automatic value
-is unavailable.
+\cref{tab:active_phase_gains} provide the fixed damping when an inertia-scaled
+value is unavailable.
 
 For set-up, the source damping blocks are calculated from TCP task inertia and
 then shifted to the selected centre of compliance. This preserves symmetry and positive

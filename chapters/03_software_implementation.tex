@@ -217,8 +217,9 @@ k_\sigma N_\tau(s v_7),
 \label{eq:implementation_nullspace_torque}
 \end{equation}
 
-The combined mode was used throughout the contact campaign. The automatic hold
-study compared the inactive, damping-only and singular-value-only modes.
+The combined mode was used throughout the contact campaign. The internally
+commanded hold study compared the inactive, damping-only and
+singular-value-only modes.
 Projected damping does not define a preferred joint posture. Manual guidance
 is the only phase that bypasses the null-space law.
 
@@ -495,7 +496,7 @@ held constant during set-up. The physical feature remains
 tool rotates during set-up, it need not coincide exactly with the constructed
 feature reference \(p_{C,d}\).
 
-\section{Phase-Dependent Gains and Automatic Damping}
+\section{Phase-Dependent Gains and Inertia-Scaled Damping}
 \label{sec:surface_frame_gains}
 \ReviewMark{yellow}{The phase/frame policy is complete, but the damping
 construction is dense and the diagonal-inertia heuristic is not validated as
@@ -515,7 +516,7 @@ The gain frames depend on the active phase:
     isotropic base-frame position lock while the run is paused.
 \end{itemize}
 
-When automatic damping is enabled, the controller obtains the joint-space mass
+When inertia-scaled damping is enabled, the controller obtains the joint-space mass
 matrix \(M(q)\) on entry to a phase group, estimates the Cartesian inertia, and
 caches the resulting damping for that group:
 
@@ -559,7 +560,7 @@ pause-rotation target.
 
 Only finite, positive directional inertia values are used. When these values
 are unavailable, the fixed damping matrix for the phase is applied. Disabling
-automatic damping selects the same fixed matrix directly. The
+the inertia-scaled damping selects the same fixed matrix directly. The
 \(10^{-9}\) regularisation belongs only to the Cartesian-inertia estimate and
 is distinct from the relative SVD cutoff used for null-space projection.
 
@@ -684,15 +685,15 @@ reached, or when libfranka stops on a robot-side safety event.
 there is no independent application-level wrench, torque, or torque-rate limit
 and no validation of the protection margin.}
 
-Before torque control starts, the program requests automatic error recovery,
-applies the default Franka behaviour, and optionally installs the configured
+Before torque control starts, the program requests error recovery from the
+robot, applies the default Franka behaviour, and optionally installs the configured
 joint-torque and Cartesian force/moment collision thresholds. The implementation
 does not add separate clipping of the Cartesian wrench, null-space torque, or
 torque rate; robot-side monitoring remains active.
 
 The start-up menu can move the arm to the configured \(q_{\mathrm{init}}\), open
 or grasp the tool with the Franka hand, enter manual guidance, and choose
-between sequence and hold operation. The automatic gripper action is also
+between sequence and hold operation. The gripper action taken at start-up is
 configurable: it may open the hand or grasp the tool, and it can retain an
 already valid grasp rather than reopening the fingers. If the gripper action is
 configured as mandatory, failure stops the run before the torque callback.
@@ -710,8 +711,9 @@ evaluation and keeps file output outside the real-time callback.}
 The signals used in the evaluation are stored in a pre-sized ring buffer. They
 include the phase, Cartesian references and errors, selected tool feature,
 commanded and model-estimated wrenches, null-space mode, smallest singular
-value, projected joint velocity, and commanded joint torque. Automatic hold
-trials also store the commanded point force and its equivalent joint torque.
+value, projected joint velocity, and commanded joint torque. The internally
+commanded hold trials also store the commanded point force and its equivalent
+joint torque.
 
 The buffer is written to a comma-separated-values (\abbr{CSV}) file after the
 control loop has exited. No file input or output occurs in the real-time
@@ -733,7 +735,7 @@ The callback can be summarised as follows:
     \item Select the active rectangular-face feature and evaluate the phase
     transition and desired motion.
     \item Compute \(e_p\), the corrective base-frame \(e_R\), and the
-    phase-specific automatic or fallback damping.
+    phase-specific inertia-scaled or fallback damping.
     \item Form either the decoupled wrench or the set-up-only coupled wrench.
     \item Compute the truncated-SVD null-space torque for the selected mode.
     \item Return
