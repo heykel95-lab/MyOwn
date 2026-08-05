@@ -7,15 +7,22 @@
   \ThesisReviewfalse
 \fi
 
+% Assessment colours: applied to the section that follows a heading.
 \definecolor{reviewgreen}{RGB}{210,238,210}
 \definecolor{reviewyellow}{RGB}{255,239,153}
 \definecolor{reviewred}{RGB}{248,194,194}
 \definecolor{reviewgrey}{RGB}{220,220,220}
+% Status colours: applied to the text itself, not to an assessment of it.
+\definecolor{reviewpurple}{RGB}{223,205,240}
+\definecolor{reviewblue}{RGB}{170,214,247}
+\definecolor{reviewbluemark}{RGB}{18,84,150}
 
 \newcommand{\ReviewLabelgreen}{GREEN --- sufficient}
 \newcommand{\ReviewLabelyellow}{YELLOW --- weak or unclear}
 \newcommand{\ReviewLabelred}{RED --- machine-like prose pattern}
 \newcommand{\ReviewLabelgrey}{GREY --- logical or evidential gap}
+\newcommand{\ReviewLabelpurple}{PURPLE --- revised and confirmed}
+\newcommand{\ReviewLabelblue}{BLUE --- addition}
 
 \newcommand{\ReviewMark}[2]{%
   \ifThesisReview
@@ -35,3 +42,48 @@
 \newcommand{\ReviewLegendItem}[3]{%
   \noindent\colorbox{review#1}{\strut\textbf{#2}}\quad #3\par\smallskip
 }
+
+% ------------------------------------------------------------------
+% Inline span markers.
+%
+% \Revised{...} marks text that has been read, checked and settled. The wording
+% inside it is final. It is not edited again, not reworded, and not extended:
+% whatever the passage says is what it is to say.
+%
+% \Comment{...} is how a settled passage is questioned instead of changed. It
+% prints as comment: "..." and is the only thing that may appear inside a
+% revised passage. It is a remark about the text, not part of it, so it is
+% suppressed entirely outside review mode.
+%
+% \Added{...} marks genuinely new thesis text, in a passage that has not been
+% revised yet. It prints its argument unchanged outside review mode. It is not
+% used inside a revised passage; a comment is used there instead.
+%
+% Two restrictions follow from how the highlight is typeset. It is laid out
+% character by character, so anything it must not take apart has to be handed
+% to it as a single box:
+%   1. Inline maths, citations, cross-references and control spaces inside a
+%      marked span are written inside \mbox{}: \mbox{\(J^\top\)},
+%      \mbox{\citep{Key}}, \mbox{\Cref{fig:x}}, \mbox{et al.\ }. A macro that
+%      hides the \mbox does not help, since the span is scanned before the
+%      macro is expanded.
+%   2. A span may not cross a paragraph break. Mark each paragraph separately.
+% ------------------------------------------------------------------
+\ifThesisReview
+  \usepackage{soul}
+  % Distinguishes an addition from a revised passage where the two tints meet
+  % in one sentence, and survives greyscale printing. Redefine to \relax to
+  % suppress it.
+  \newcommand{\ReviewAddedTag}{\textsuperscript{\textcolor{reviewbluemark}{+}}}
+  \newcommand{\Revised}[1]{{\sethlcolor{reviewpurple}\hl{#1}}}
+  \newcommand{\Added}[1]{{\sethlcolor{reviewblue}\hl{#1}}\ReviewAddedTag}
+  \newcommand{\Comment}[1]{%
+    {\sethlcolor{reviewblue}\hl{\mbox{\textbf{comment:}} ``#1''}}%
+  }
+\else
+  \newcommand{\ReviewAddedTag}{}
+  \newcommand{\Revised}[1]{#1}
+  \newcommand{\Added}[1]{#1}
+  % A comment is a remark about the thesis, never part of it.
+  \newcommand{\Comment}[1]{}
+\fi
