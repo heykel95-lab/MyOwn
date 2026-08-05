@@ -14,6 +14,10 @@ Claude, Codex, Cursor, Copilot, or any other.**
 file gets the same rules. **Edit this file, never `CLAUDE.md`** — changes made
 there are overwritten on the next commit.
 
+The hook lives in `.githooks/` and is enabled per clone, so in a fresh clone
+run `git config core.hooksPath .githooks` once. Until that is done the copies
+are kept in step only by running `./sync_agent_docs.ps1` by hand.
+
 A robotics master's thesis: LaTeX document plus the Franka Emika Panda
 Cartesian-impedance controller and analysis scripts it reports on.
 
