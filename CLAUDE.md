@@ -1,53 +1,20 @@
 # Working rules for this repository
 
-A robotics master's thesis: LaTeX document plus the Franka Emika Panda
-Cartesian-impedance controller and analysis scripts it reports on.
+**The rules live in [AGENTS.md](AGENTS.md). Open and read it in full now,
+before doing anything else in this repository.**
 
-Load the rules for the kind of file being touched, not all of them at once.
+This file exists because Claude Code loads `CLAUDE.md` automatically. It is a
+router, not a second set of rules: `AGENTS.md` is canonical and applies to every
+agent equally. Keeping the rules in one file is deliberate — two copies would
+drift apart, and an agent that had read only the stale one would act on rules
+the user had already changed.
 
-| Working on | Read first |
+If a rule needs to change, change it in `AGENTS.md`. Do not copy rules here.
+
+Directory-specific rules, also agent-neutral:
+
+| Working on | Read |
 |---|---|
 | Thesis prose (`chapters/`, `frontmatter/`, `backmatter/`) | [THESIS_VOICE.md](THESIS_VOICE.md), then [THESIS_WRITING_GUIDE.md](THESIS_WRITING_GUIDE.md) |
 | Figures (`figures/`, plot scripts) | [FIGURE_STYLE.md](FIGURE_STYLE.md) |
-| Controller and analysis code (`code/`) | [code/CLAUDE.md](code/CLAUDE.md) |
-
-## Thesis prose
-
-Read [THESIS_VOICE.md](THESIS_VOICE.md) before writing or rewriting any prose —
-every time, not from memory of an earlier session. Open the file even for a
-one-sentence edit. It carries the flagged patterns, the weak-verb replacement
-table, the paragraph rewrite procedure, and the originality rules.
-
-Its **Register** section, at the top, governs everything else in it. Plain
-technical statements, never compressed slogans; interpretations cross-referenced
-to the table or figure they rest on; certainty bounded to one configuration and
-three repetitions; varied paragraph architecture rather than varied openers.
-Where an older rule in that file conflicts with Register, Register wins.
-
-This applies to new text, rewrites, and edits alike. If the user asks to
-"rewrite this" or "make this less AI", the answer is the rewrite procedure in
-that file, never synonym substitution.
-
-[THESIS_WRITING_GUIDE.md](THESIS_WRITING_GUIDE.md) governs what a chapter
-contains, what a claim may assert, and the terminology and unit conventions.
-
-## Building
-
-- `./build_professor.ps1` — builds `Professor_Draft.pdf` (three pdflatex passes
-  plus bibtex) and opens it. `build_professor_commit.ps1` also commits.
-- `./build.ps1` — builds the full `Thesis.tex`.
-- Judge a build by the **final** pass. Passes 1–2 always report undefined
-  citations and references; only warnings surviving the last pass matter.
-
-Known environment issue: the installed siunitx (3.5.3, 2026-04-09) is newer than
-the MiKTeX 24.4 expl3 layer (2024-10-09), so `\SI` and `\qty` fail with an
-undefined `\l_siunitx_quantity_prefix_mode_str`. The thesis uses no siunitx
-macros — write units as `\(1\,\mathrm{kHz}\)`, matching existing text.
-
-## Repository-wide conventions
-
-- British spelling: `centre`, `behaviour`, `optimisation`. Exception: literal
-  software identifiers.
-- Do not mention Git, branches, commits, drafts, or development history in
-  thesis text.
-- Never invent measurements, repetitions, fitted values, or intervals.
+| Controller and analysis code (`code/`) | [code/AGENTS.md](code/AGENTS.md) |

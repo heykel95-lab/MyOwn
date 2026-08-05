@@ -1,5 +1,8 @@
 # Working rules for `code/`
 
+**These instructions apply to every coding agent. This file is canonical;
+`code/CLAUDE.md` only routes Claude Code here.**
+
 Controller and analysis source for the thesis. The prose rules in
 [../THESIS_VOICE.md](../THESIS_VOICE.md) do **not** apply here — that file
 governs thesis sentences, not comments or identifiers. Write code comments
