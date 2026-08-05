@@ -1,7 +1,8 @@
 # Working rules for `code/`
 
-**These instructions apply to every coding agent. This file is canonical;
-`code/CLAUDE.md` only routes Claude Code here.**
+**These instructions apply to every coding agent.** `code/CLAUDE.md` holds the
+same text, regenerated from this file by `sync_agent_docs.ps1` and by the
+pre-commit hook. **Edit this file, never `code/CLAUDE.md`.**
 
 Controller and analysis source for the thesis. The prose rules in
 [../THESIS_VOICE.md](../THESIS_VOICE.md) do **not** apply here — that file

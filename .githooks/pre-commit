@@ -1,0 +1,16 @@
+#!/bin/sh
+# Keeps each CLAUDE.md identical to the AGENTS.md beside it, so a rule added to
+# one applies to every agent without being copied by hand.
+#
+# Enabled with:  git config core.hooksPath .githooks
+
+set -e
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File sync_agent_docs.ps1
+
+# Stage the regenerated copies only if they are actually tracked and changed.
+for f in CLAUDE.md code/CLAUDE.md; do
+    if [ -f "$f" ]; then
+        git add "$f"
+    fi
+done

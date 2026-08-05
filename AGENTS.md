@@ -1,8 +1,12 @@
 # Working rules for this repository
 
 **These instructions apply to every coding agent working in this repository —
-Claude, Codex, Cursor, Copilot, or any other. This file is canonical.
-`CLAUDE.md` exists only to route Claude Code here.**
+Claude, Codex, Cursor, Copilot, or any other.**
+
+`CLAUDE.md` holds the same text, regenerated from this file by
+`sync_agent_docs.ps1` and by the pre-commit hook, so an agent that reads either
+file gets the same rules. **Edit this file, never `CLAUDE.md`** — changes made
+there are overwritten on the next commit.
 
 A robotics master's thesis: LaTeX document plus the Franka Emika Panda
 Cartesian-impedance controller and analysis scripts it reports on.
