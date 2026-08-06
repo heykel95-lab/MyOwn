@@ -1,4 +1,4 @@
-﻿\chapter{Experimental Methodology}
+\chapter{Experimental Methodology}
 \label{ch:methodology}
 
 \section{Experimental Investigation}
@@ -708,11 +708,11 @@ independently of the Cartesian stiffness map.
 
 \paragraph{Inertia-scaled damping.}
 Cartesian damping was calculated at entry to each phase group using
-\cref{eq:software_cartesian_inertia,eq:software_auto_damping}. The Cartesian
+\cref{eq:implementation_cartesian_inertia,eq:implementation_inertia_scaled_damping}. The Cartesian
 inertia was first expressed in the coordinate frame of the corresponding gain
-block. Some phases used the factor \(\zeta\) directly. For the hold and
-pre-set-up gate, a common scalar factor was fitted to the fixed damping matrix
-listed in \cref{tab:active_automatic_damping_policy}.
+block. Some phases used the damping ratio \(\zeta\) directly. For the hold and
+pre-set-up gate, a common damping ratio was derived from the fixed damping
+matrix listed in \cref{tab:active_automatic_damping_policy}.
 
 \begin{table}[H]
 \centering
@@ -725,7 +725,7 @@ listed in \cref{tab:active_automatic_damping_policy}.
 >{\raggedright\arraybackslash}p{0.27\textwidth}
 >{\raggedright\arraybackslash}p{0.24\textwidth}@{}}
 \toprule
-Phase / mode & Inertia/gain frame & Factor or fitted target & Manual fallback \\
+Phase / mode & Inertia/gain frame & Ratio or derived target & Manual fallback \\
 \midrule
 Approach orient and descend &
 surface for translation and rotation &
@@ -734,7 +734,7 @@ surface for translation and rotation &
 \(D_R=[12,12,12]\) \\
 Pre-set-up gate &
 base translation; surface rotation &
-separate fitted factors toward \(D_p=200I_3\) and the cached approach \(D_R\) &
+separate damping ratios derived from \(D_p=200I_3\) and the cached approach \(D_R\) &
 \(D_p=200I_3\); inherited cached or manual approach \(D_R\) \\
 Set-up and grind &
 base translation; surface rotation &
@@ -743,7 +743,7 @@ base translation; surface rotation &
 \(D_R=[10.01,10.01,10]\) \\
 Hold &
 base for translation and rotation &
-one factor fitted toward \(D_p=50I_3\), then also applied to rotation &
+one damping ratio derived from \(D_p=50I_3\), then also applied to rotation &
 \(D_p=50I_3\);
 \(D_R=8I_3\) \\
 Manual guidance &
@@ -759,7 +759,7 @@ phase-specific matrix in the final column of
 \cref{tab:active_automatic_damping_policy} supplied the damping whenever the
 inertia-based value was unavailable.
 
-Two things limit \cref{eq:software_auto_damping}. It reads only the
+Two things limit \cref{eq:implementation_inertia_scaled_damping}. It reads only the
 diagonal of the TCP task-inertia estimate and drops the off-diagonal coupling,
 and its \(\zeta\) is a dimensionless tuning factor rather than an identified
 modal damping ratio. During set-up the source damping blocks are calculated at
@@ -920,7 +920,7 @@ steps below are applied in the sequence given:
     translation and surface-frame rotation blocks remain distinct.
     \item At phase-group entry, calculate and cache the damping from the
     current TCP task inertia using
-    \cref{eq:software_cartesian_inertia,eq:software_auto_damping}.
+    \cref{eq:implementation_cartesian_inertia,eq:implementation_inertia_scaled_damping}.
     \item During set-up only, shift the selected source stiffness and damping
     through the centre of compliance using
     \cref{eq:coupled_tcp_stiffness,eq:coupled_tcp_damping}. Grind immediately
@@ -974,7 +974,7 @@ associated with the stiffness coordinate that was varied.
 
 Damping needed no separate tuning. At the next entry to the relevant phase group
 the controller recalculated it from the changed stiffness and the task inertia.
-Because \cref{eq:software_auto_damping} takes the square root of the
+Because \cref{eq:implementation_inertia_scaled_damping} takes the square root of the
 stiffness, scaling an entry by \(\alpha\) scales its damping coefficient by
 \(\sqrt{\alpha}\),
 
@@ -1343,7 +1343,7 @@ but they are not command saturations and do not establish a measured safety
 margin. The large moment threshold is acknowledged as a permissive placeholder.}
 
 Phase-specific damping comes from the task inertia through
-\cref{eq:software_cartesian_inertia,eq:software_auto_damping}.
+\cref{eq:implementation_cartesian_inertia,eq:implementation_inertia_scaled_damping}.
 This directional calculation does not establish contact safety. The implemented
 controller remains discrete, model dependent, and coupled to a stiff environment
 \citep{Pollayil2023ImpedancePlanning}.
@@ -1364,8 +1364,8 @@ Procedure and geometry supply the remaining guards:
     \item a \(0.640\,\mathrm{m}\) maximum approach travel and a geometric
     \(20\,\mathrm{mm}\) clearance hand-off;
     \item an operator gate before set-up, using a
-    \(5000\,\mathrm{N/m}\) isotropic position hold with inertia-scaled fitted
-    damping;
+    \(5000\,\mathrm{N/m}\) isotropic position hold with calculated
+    inertia-scaled damping coefficients;
     \item a \(4\,\mathrm{s}\) set-up timeout independent of the permissive
     \(150\,\mathrm{N\,m}\) external-moment-change stopping threshold; the timeout
     is expected to govern unless the estimated moment changes exceptionally;
