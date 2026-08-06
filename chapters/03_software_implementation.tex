@@ -1,185 +1,356 @@
 ﻿\chapter{Controller Design and Implementation}
 \label{ch:implementation}
 
-This chapter describes the implementation of the Cartesian impedance
-controller used for the surface-grinding experiments. The implementation is
-written in C++ with libfranka and Eigen and is evaluated in the \(1\,\mathrm{ms}\)
-Franka Control Interface cycle. In addition to the Cartesian impedance law, the
-implementation comprises the surface and tool geometry, the
-approach--set-up--grind state machine, the point-shifted coupled stiffness used
-during set-up, and the SVD-based null-space controller.
+This chapter describes the real-time implementation of the Cartesian
+impedance controller developed in \Cref{ch:theory}. The controller is written
+in C++ using libfranka and Eigen and is executed through the Franka Control
+Interface (\abbr{FCI}) with a nominal control period of
+\(1\,\mathrm{ms}\).
 
-\section{Real-Time Control Architecture}
-\label{sec:implementation_scope}
-\ReviewMark{green}{The real-time boundary, parameter loading, callback work,
-and deferred file output are described at the correct implementation level.}
+The software combines the Cartesian impedance law, the SVD-based null-space
+controller, the configured surface and tool geometry, phase-dependent
+stiffness and damping, and the virtual centre of compliance. These components
+are coordinated by a phase state machine that orients the tool, approaches the
+surface, applies the set-up preload, and executes the grinding motion.
+Additional operating modes provide Cartesian pose holding, set-up-impedance
+holding, and manual guidance.
 
-The controller is divided into parameter handling, real-time control
-mathematics, the phase machine, terminal interaction, and data recording.
-Five parameter files are merged at start-up. The first holds the common robot,
-recording, surface, tool, gripper and null-space settings; the other four hold
-collision thresholds, sequence settings, hold settings and manual-guidance
-settings. No parameter file is read inside the real-time callback.
+The following sections describe the software architecture, the real-time
+control loop, the implemented Cartesian and null-space torque contributions,
+the geometric representation of the surface and tool, the phase-dependent
+impedance parameters, and the execution of the control sequence.
 
-On every cycle the callback reads the measured robot state, updates the active
-motion phase and its Cartesian reference, selects the phase-dependent gains,
-and returns the task torque, null-space torque, and Coriolis term to libfranka.
-\Cref{sec:control_impl} gives the order in which those operations are evaluated.
-The experimental data are stored in a preallocated buffer, and file output is
-performed after the control loop rather than in the \(1\,\mathrm{ms}\) callback.
 
-\subsection{Control-Loop Data Flow}
-\label{sec:control_loop_structure}
-\ReviewMark{yellow}{The signal routing is useful, but the simple four-block
-diagram, expanded block diagram, phase chart, and later callback list partly
-repeat the same controller structure.}
+\section{Software Architecture and Program Execution}
+\label{sec:software_architecture}
 
-Figure~\ref{fig:software_data_flow} shows the implemented data flow. The phase
-manager uses the configured plane and tool geometry to generate \(p_d\),
-\(\dot p_d\), and \(R_d\). The gain selector supplies either the decoupled
-Cartesian gains or, during set-up only, their point-shifted \(6\times6\)
-counterpart. The Coriolis vector is always included in the controlled phases.
+The controller is divided into modules for configuration handling, control
+calculations, real-time execution, operator interaction, and run evaluation.
+The main program coordinates these modules and manages the execution of
+successive controller sessions.
 
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}[
-        block/.style={draw, rounded corners, minimum width=5.0cm,
-                      minimum height=1.0cm, align=center},
-        arrow/.style={->, thick}
-    ]
-        \node[block] (state) {Robot state and model\\
-        \(q,\dot q,T_{\mathrm{EE}},J,M(q),\tau_c\)};
-        \node[block, below=0.7cm of state] (phase) {Geometry and phase manager\\
-        \(p_d,\dot p_d,R_d,K,D\)};
-        \node[block, below=0.7cm of phase] (control) {Cartesian impedance and null space\\
-        \(F_{\mathrm{cmd}},\tau_{\mathrm{null}}\)};
-        \node[block, below=0.7cm of control] (torque) {Torque command\\
-        \(\tau_{\mathrm{cmd}}
-        =J^\top F_{\mathrm{cmd}}+\tau_{\mathrm{null}}+\tau_c\)};
+\begin{table}[H]
+\centering
+\caption{Software modules of the surface-grinding controller.}
+\label{tab:software_modules}
+\begin{tabular}{p{0.29\textwidth}p{0.63\textwidth}}
+\hline
+\textbf{Module} & \textbf{Responsibility} \\
+\hline
+\texttt{main.cpp}
+&
+Connects to the robot, prepares the controller session, starts the selected
+operating mode, and initiates post-run reporting.
+\\[1mm]
 
-        \draw[arrow] (state) -- (phase);
-        \draw[arrow] (phase) -- (control);
-        \draw[arrow] (control) -- (torque);
-    \end{tikzpicture}
-    \caption{Real-time controller data flow.}
-    \label{fig:software_data_flow}
-\end{figure}
+\texttt{include/}
+&
+Defines the controller configuration, mathematical types, run-time data
+structures, and interfaces shared between the software modules.
+\\[1mm]
 
-\Cref{fig:controller_block_diagram} expands the same four stages into the
-individual signals, showing where each one enters and how the three torque
-contributions are summed.
+\texttt{src/config/}
+&
+Reads the parameter files and assigns their values to the typed controller
+configuration.
+\\[1mm]
 
-\begin{figure}[H]
-    \centering
-    \resizebox{\textwidth}{!}{\input{figures/controller_block_diagram.tex}}
-    \caption{Signal routing of the torque command.}
-    \label{fig:controller_block_diagram}
-\end{figure}
+\texttt{src/control/}
+&
+Implements the Cartesian impedance law, null-space torque, phase-dependent
+gain construction, surface and tool geometry, automatic damping, and robot
+support functions.
+\\[1mm]
 
-The phase machine also determines when one phase ends and the next begins.
-\Cref{fig:phase_flow_chart} shows those transitions, the two gates that wait
-for the operator, and the hold and hand-guiding branches that the startup menu
-selects instead of the sequence.
+\texttt{src/runtime/}
+&
+Executes the phase state machine and the \(1\,\mathrm{kHz}\) joint-torque
+control callback.
+\\[1mm]
 
-\begin{figure}[H]
-    \centering
-    \resizebox{0.82\textwidth}{!}{\input{figures/phase_flow_chart.tex}}
-    \caption{Run phases and the conditions that end each one.}
-    \label{fig:phase_flow_chart}
-\end{figure}
+\texttt{src/interface/}
+&
+Provides the start-up menu, gripper and tool-handling actions, manual
+guidance, live parameter commands, and terminal output.
+\\[1mm]
 
-\section{Implemented Cartesian Impedance Controller}
-\label{sec:state_model}
-\ReviewMark{green}{The implementation matches the theory and fixes the error
-sign, orientation frame, wrench order, torque mapping, and compensation policy.}
+\texttt{src/report/}
+&
+Stores and writes the recorded controller signals and evaluates the completed
+run.
+\\[1mm]
 
-At the beginning of a control cycle, the joint configuration and velocity are
-mapped from \texttt{franka::RobotState}. The end-effector pose reported by the
-robot supplies the position
-\(p_{\mathrm{EE}}\) and orientation
-\(R_{\mathrm{EE}}\) of the configured libfranka end-effector frame in the robot
-base frame. The implementation does not reconstruct this pose from a separate
-DH model.
+\texttt{tools/\allowbreak measure\_plane.cpp}
+&
+Provides a separate calibration utility for estimating one point and the
+orientation of the physical surface plane.
+\\
+\hline
+\end{tabular}
+\end{table}
 
-The geometric Jacobian is obtained with
+The parameter directory is resolved relative to the controller executable.
+The complete configuration is distributed over 16 files in the
+\texttt{params/} directory. These files contain the robot connection and
+logging settings, collision thresholds, gripper parameters, initial posture,
+surface and tool geometry, phase settings, Cartesian gains, automatic-damping
+settings, virtual-compliance-centre parameters, null-space parameters,
+disturbance-test settings, and manual-guidance settings.
 
-\begin{lstlisting}[language=C++]
-model.zeroJacobian(franka::Frame::kEndEffector, state)
+At program start, the parameter files are read to obtain the robot address and
+initial controller configuration. The robot connection is then established,
+automatic error recovery is requested, the selected collision behaviour is
+assigned, and the libfranka robot model is loaded. A separate keyboard thread
+is also started to receive operator requests during the controller session.
+These requests are transferred through atomic variables shared with the
+control loop.
+
+Before every new session, all parameter files are read again and the resulting
+values are stored in a new \texttt{ControllerConfig} object. This permits
+controller and experiment parameters to be changed between runs without
+recompiling the program. The loader requires all 16 parameter files and rejects
+duplicate parameter names across them.
+
+The start-up interface provides four controller modes:
+
+\begin{itemize}
+    \item the complete tool-orientation, surface-approach, set-up, and grinding
+          sequence;
+    \item Cartesian pose holding with the dedicated hold impedance;
+    \item Cartesian pose holding with the set-up impedance; and
+    \item manual guidance from the current robot pose.
+\end{itemize}
+
+The same interface provides the robot-preparation and gripper actions required
+before torque control. The robot can be moved to the configured initial joint
+posture, the gripper can be opened or closed, and the tool can be collected
+from or returned to its configured holder posture. When manual guidance is
+selected, the subsequent sequence or hold mode begins from the pose captured
+after hand-guided positioning.
+
+Once the operating mode and initial state have been selected, the
+phase-dependent stiffness and damping matrices are constructed from the active
+configuration. These matrices, together with the robot and model interfaces,
+are passed to the real-time control loop.
+
+Experimental signals are stored during control in a bounded ring buffer whose
+memory is allocated before the torque callback begins. After the controller
+session has ended, the stored samples are arranged in chronological order,
+written to the configured \abbr{CSV} file, and used to generate the terminal
+run summary. A new session can then be started from the start-up menu with a
+freshly loaded configuration.
+
+
+\section{Real-Time Control Loop}
+\label{sec:real_time_control_loop}
+
+The function \texttt{runControlLoop} prepares one controller session and
+executes the libfranka joint-torque callback. It receives the active controller
+configuration, the robot and model interfaces, the phase-dependent impedance
+gains, and the operator-input signals.
+
+Before torque control begins, the current robot state is read once. The
+reported end-effector transformation provides the initial TCP position
+\(p_{\mathrm{start}}\) and orientation \(R_{\mathrm{start}}\), while the
+measured joint configuration provides the initial posture
+\(q_{\mathrm{start}}\). These values initialise the desired pose of the
+selected sequence or hold mode.
+
+The initial state also provides force and moment bias values for the subsequent
+contact evaluation. In addition, the controller initialises the configured
+surface point, the surface frame, the target tool orientation, the descent
+direction, and the four tool-face corners. The initial phase, phase clocks,
+operator gates, set-up references, damping cache, and recording buffer are
+prepared before entering the real-time callback.
+
+The torque callback is registered through the libfranka control interface as
+shown in \cref{lst:libfranka_torque_callback}.
+
+\begin{lstlisting}[style=cppstyle,
+  caption={\texttt{libfranka} torque callback executed once per real-time control cycle.},
+  label={lst:libfranka_torque_callback}]
+robot.control([&](const franka::RobotState& state,
+                  franka::Duration period) -> franka::Torques {
+  // Control-cycle calculations
+});
 \end{lstlisting}
 
-and maps the measured joint velocity to the base-frame Cartesian velocity,
+Each callback begins by advancing the elapsed controller time and reading the
+quantities the control law needs from the robot state and the model. The
+symbols are those of \Cref{ch:theory}; the mapping between them and the
+libfranka fields is given in \Cref{lst:callback_state}.
+
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Quantities read from the robot state at the start of each control cycle.}, label={lst:callback_state}]
+// Integrating elapsed controller time [s].
+time += period.toSec();
+
+// Mapping measured joint velocity [rad/s] and joint position [rad].
+Map<const Vec7> dq(state.dq.data());
+Map<const Vec7> q_current(state.q.data());
+
+// Loading the 6x7 end-effector Jacobian with the configured tool offset.
+std::array<double, 42> jacobian_array =
+    model.zeroJacobian(Frame::kEndEffector, state);
+Map<const Mat6x7> J(jacobian_array.data());
+
+// Calculating Cartesian linear velocity [m/s] and angular velocity [rad/s].
+const Vec6 xdot = J * dq;
+const Vec3 pdot = xdot.head<3>();
+const Vec3 omega = xdot.tail<3>();
+
+// Mapping TCP position [m] and orientation [-] in the robot base frame.
+Map<const Mat4x4> T_EE(state.O_T_EE.data());
+const Vec3 p_EE = T_EE.block<3, 1>(0, 3);
+const Mat3 R_EE = T_EE.block<3, 3>(0, 0);
+
+// Mapping estimated external force [N] and moment [N m].
+Map<const Vec6> external_wrench(state.O_F_ext_hat_K.data());
+const Vec3 external_force = external_wrench.head<3>();
+const Vec3 external_moment = external_wrench.tail<3>();
+\end{lstlisting}
+
+The velocities \(\dot p_{\mathrm{EE}}\) and \(\omega_{\mathrm{EE}}\) are
+expressed in the robot base frame. The wrench read from
+\texttt{O\_F\_ext\_hat\_K} is the estimate produced by the robot model and is
+not a force-sensor measurement, which bounds what the contact quantities
+derived from it can establish.
+
+During surface approach, the transition to set-up is determined from the
+geometric distance between the leading tool feature and the configured surface
+plane. The force change projected onto the descent direction is displayed as a
+diagnostic quantity during this phase.
+
+When the configured clearance is reached, the current force and moment
+estimates are stored as bias values. During set-up, the norm of the
+bias-subtracted external moment is compared with the configured moment
+threshold after the minimum set-up duration. The force and moment changes are
+also used to calculate the equivalent moment at the selected tool feature and
+are stored for terminal reporting and offline evaluation.
+
+Operator requests are exchanged with the callback through atomic variables.
+They support transitions between the phase sequence, Cartesian pose hold,
+set-up-impedance hold, and manual guidance. The same interface receives the
+gate confirmations and stop request. During the dedicated hold modes, selected
+null-space and set-up-impedance parameters can also be adjusted. An accepted
+set-up-impedance change rebuilds the corresponding phase gains and damping
+cache.
+
+The phase state machine updates the desired TCP position \(p_d\), desired
+linear velocity \(\dot p_d\), and desired orientation \(R_d\). Their values
+depend on the active phase:
+
+\begin{itemize}
+    \item tool orientation maintains the initial TCP position while advancing
+          the orientation command toward the configured target;
+    \item surface approach moves the desired position along the descent
+          direction;
+    \item set-up advances the selected tool feature into the surface;
+    \item grinding retains the achieved preload and can add a tangential
+          trajectory; and
+    \item pose hold regulates the captured Cartesian pose.
+\end{itemize}
+
+After the reference has been updated, the callback calculates the Cartesian
+position and orientation errors using the conventions introduced in
+\Cref{subsec:cartesian_pose_error}. The phase-dependent stiffness and damping
+matrices are then selected. When a phase gate is active, the dedicated gate
+holding gains replace the normal phase gains.
+
+The displacement and velocity-error vectors supplied to the impedance
+calculation are
 
 \begin{equation}
+\Delta x
+=
 \begin{bmatrix}
-\dot p_{\mathrm{EE}}\\
-\omega_{\mathrm{EE}}
-\end{bmatrix}
-=J(q)\dot q .
-\label{eq:software_cartesian_velocity}
-\end{equation}
-
-The controller uses the restoring position-error convention
-\(e_p=p_d-p_{\mathrm{EE}}\). Its orientation error is obtained from the
-current-to-desired relative rotation,
-
-\begin{equation}
-R_\Delta=R_{\mathrm{EE}}^\top R_d,
-\qquad
+e_p\\
 e_R
-=
-R_{\mathrm{EE}}\,
-\operatorname{Log}(R_\Delta)^\vee .
-\label{eq:software_orientation_error}
-\end{equation}
-
-Thus \(e_R\) is the corrective axis--angle vector expressed in the base frame.
-The decoupled Cartesian wrench is
-
-\begin{equation}
-F_{\mathrm{cmd}}
-=
-\begin{bmatrix}f\\m\end{bmatrix},
+\end{bmatrix},
 \qquad
-\begin{aligned}
-f&=K_p e_p+D_p(\dot p_d-\dot p_{\mathrm{EE}}),\\
-m&=K_R e_R-D_R\omega_{\mathrm{EE}} .
-\end{aligned}
-\label{eq:software_decoupled_wrench}
+\Delta v
+=
+\begin{bmatrix}
+\dot p_d-\dot p_{\mathrm{EE}}\\
+-\omega_{\mathrm{EE}}
+\end{bmatrix}.
+\label{eq:implementation_callback_error_vectors}
 \end{equation}
 
-The wrench ordering is force followed by moment. Both quantities and the
-end-effector Jacobian are expressed consistently in the base frame. The task
-torque is therefore
+The Cartesian impedance calculation returns the commanded wrench
 
 \begin{equation}
-\tau_{\mathrm{task}}
+F
 =
-J^\top(q)F_{\mathrm{cmd}} .
-\label{eq:software_task_torque}
+\begin{bmatrix}
+f\\
+m
+\end{bmatrix}
+\in\mathbb{R}^6.
+\label{eq:implementation_callback_wrench}
 \end{equation}
 
-For all impedance-controlled phases, the returned command is
+Depending on the active mode, this wrench is obtained from either the
+decoupled impedance law of \cref{eq:cartesian_impedance_control_law} or the
+point-shifted set-up impedance described in
+\Cref{sec:self_alignment_virtual_center}.
+
+The Cartesian torque contribution is
+
+\begin{equation}
+\tau_{\mathrm{cart}}
+=
+J^\top(q)F.
+\label{eq:implementation_callback_cartesian_torque}
+\end{equation}
+
+The SVD-based null-space routine calculates the secondary torque
+\(\tau_{\mathrm{null}}\) according to the selected null-space mode. During
+the automatic disturbance experiment in Cartesian pose hold, an additional
+joint-torque contribution \(\tau_{\mathrm{dist}}\) is generated. Its value is
+zero during the remaining controller operation.
+
+The Coriolis and centrifugal torque is obtained from the libfranka model. The
+complete torque command of an impedance-controlled cycle is therefore
 
 \begin{equation}
 \tau_{\mathrm{cmd}}
 =
-J^\top(q)F_{\mathrm{cmd}}
+\tau_{\mathrm{cart}}
 +
 \tau_{\mathrm{null}}
 +
+\tau_{\mathrm{dist}}
++
 \tau_c(q,\dot q).
-\label{eq:software_commanded_torque}
+\label{eq:implementation_callback_torque_command}
 \end{equation}
 
-The Coriolis vector is obtained from \texttt{model.coriolis(state)} and is
-always added; it is not a run-time option. An explicit gravity vector is not
-added because the Franka Control Interface compensates gravity internally in
-external joint-torque mode \cite{FrankaFCI2023}. This follows the torque
-structure of the official libfranka Cartesian impedance example
-\cite{libfrankaCartesianExample}. Manual guidance is the one separate control
-case: it returns \(\tau_c-d_{\mathrm{guide}}\dot q\) and bypasses the Cartesian
-and null-space laws.
+Manual guidance follows a separate torque command:
 
+\begin{equation}
+\tau_{\mathrm{guide}}
+=
+\tau_c(q,\dot q)
+-
+d_{\mathrm{guide}}\dot q,
+\label{eq:implementation_manual_guidance_torque}
+\end{equation}
+
+where \(d_{\mathrm{guide}}\) is the configured joint-damping coefficient.
+After the guided pose is captured, its position, orientation, joint
+configuration, and wrench biases initialise the resumed sequence or hold mode.
+
+For impedance-controlled cycles, the selected state, reference, error, wrench,
+phase, null-space, disturbance, and joint-torque quantities are sampled at the
+configured interval and copied into a preallocated ring buffer. When the buffer
+capacity is reached, the most recent samples replace the oldest entries.
+
+The callback ends when the configured run duration expires, an operator stop is
+requested, the maximum approach distance is reached, or libfranka terminates
+the motion. After torque control has ended, the ring-buffer entries are placed
+in chronological order and returned together with the final controller state.
+File writing and post-run evaluation are performed outside the real-time
+callback.
 \section{SVD-Based Null-Space Control}
 \label{sec:nullspace_conditioning_implementation}
 \ReviewMark{green}{The selectable modes and the configurations used in the two
@@ -576,7 +747,7 @@ return to decoupled gains can create an unmeasured wrench and torque step at the
 set-up--grind transition. Its magnitude and effect are not evaluated.}
 
 The normal controller path uses the decoupled wrench of
-\cref{eq:software_decoupled_wrench}. During the \texttt{set\_up} phase only, the
+\cref{eq:cartesian_impedance_control_law}. During the \texttt{set\_up} phase only, the
 software can instead use a point-shifted \(6\times6\) stiffness and damping
 matrix. The callback instantiates the point-shift law derived once in
 \cref{sec:coupled_pole_stiffness}, using
