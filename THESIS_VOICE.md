@@ -938,10 +938,9 @@ where the canonical phrasing is nearly fixed. Handling them well fixes both.
   state the result in this thesis's own notation.
 - **Common knowledge still gets one citation, not a reproduced paragraph.**
   Cite a canonical source once and move to what this controller does.
-- **Mark reused own work.** `backmatter/appendix_previous_campaign.tex` holds
-  the earlier campaign. If any of that text appeared in a submitted report or
-  paper, say so where it is introduced. Internal repetition across chapters is
-  separately banned by THESIS_WRITING_GUIDE.md.
+- **Mark reused own work.** If any text in the thesis appeared in a submitted
+  report or paper, say so where it is introduced. Internal repetition across
+  chapters is separately banned by THESIS_WRITING_GUIDE.md.
 - **Attribute derived figures.** A redrawn figure based on a published one
   needs "adapted from \cite{...}" in the caption; a reproduced figure needs
   permission.

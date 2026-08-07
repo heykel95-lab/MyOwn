@@ -1,119 +1,179 @@
 \chapter{Conclusion and Future Work}
 \label{ch:conclusion}
-\ReviewMark{grey}{Most conclusions follow Chapter 5, but the claimed separate
-pilot covering four positive tilt directions is not presented in the current
-methodology or results. That evidence must be added or the claim removed.}
 
-A real-time Cartesian impedance controller was implemented for passive alignment
-of a tilted grinding tool during contact with a plane. During set-up, the
-Cartesian stiffness and damping were shifted from a selected centre of
-compliance to the TCP. The resulting translation--rotation coupling allowed the
-normal contact force to generate a corrective moment.
+\section{Conclusion}
+\label{sec:conclusion_summary}
 
-The zero-tilt condition showed that the set-up procedure introduced a small
-systematic rotation even without a commanded angular offset. The tilted
-conditions were therefore interpreted relative to this baseline, without
-subtracting it from the reported measurements.
+A real-time Cartesian impedance controller was implemented for the
+contact-induced alignment of a grinding tool with a plane surface. During the
+set-up phase, the Cartesian stiffness and damping were spatially shifted from
+a selected centre of compliance to the TCP. This shift introduced
+translation--rotation coupling, so that the normal interaction load could
+generate a moment about the surface tangents. The controller was evaluated in
+\(75\) surface-contact runs covering commanded tilt, rotational stiffness,
+translational stiffness, and compliance-centre placement. A separate
+Cartesian pose-hold study was used to examine the projected null-space damping
+and singular-value-conditioning terms.
 
-Within the investigated range, the in-plane compliance-centre position produced
-the largest measured variation in alignment. A lever directed to assist the
-required rotation increased the response by approximately one order of magnitude
-about \(t_1\) and by a factor of about five about \(t_2\). The required lever
-direction reversed between the two tangent axes. When the lever opposed the
-required rotation, almost no alignment improvement was measured. The centre of
-compliance consequently acts as a directional bias whose sign must be selected
-from the initial tilt.
+The zero-tilt condition showed that the set-up procedure itself introduced an
+orientation change. The alignment angle increased from \(1.07^\circ\) to
+\(2.04^\circ\), corresponding to an alignment change of
+\(-0.97^\circ\). The tilted conditions were therefore interpreted together
+with this baseline response. The zero-tilt value was retained as a separate
+measurement and was not subtracted from the remaining results.
 
-The stiffness effects were smaller and axis dependent. Raising the rotational
-stiffness of the tilted axis reduced the measured correction about \(t_1\), and
-the stiffest setting also produced the smallest response about \(t_2\). Reducing
-the perpendicular translational stiffness improved the response about \(t_2\),
-whereas the corresponding change about \(t_1\) remained below the interpretation
-threshold. Displacement of the compliance centre along the tool axis produced no
-measurable change above that threshold in the tested geometry.
+Among the varied parameters, the position of the virtual centre of compliance
+had the largest measured influence on alignment. With the lever directed so
+that the induced moment assisted the required rotation, the alignment
+improvement reached \(6.05^\circ\) for a tilt about \(t_1\) and
+\(6.36^\circ\) for a tilt about \(t_2\). The corresponding zero-lever
+conditions produced \(0.56^\circ\) and \(1.38^\circ\), respectively. The
+assisting lever direction changed with the tilted surface tangent:
+\(r_{c,t_2}=-60\,\mathrm{mm}\) was required for the \(t_1\) condition,
+whereas \(r_{c,t_1}=+60\,\mathrm{mm}\) was required for the \(t_2\)
+condition. Applying the lever in the opposite direction produced no
+comparable improvement. The compliance-centre lever therefore acts as a
+directional bias whose sign must agree with the required corrective rotation.
 
-Tilts commanded about the tool-face axes produced responses between those of the
-two surface tangents. This agreement is consistent with an asymmetry associated
-mainly with the surface frame. In a separate pilot, selecting the lever
-perpendicular to the complete measured tilt direction improved alignment for the
-four positive tilt directions investigated. These results support selection of
-the lever from the measured tilt direction rather than use of one fixed
-placement for every approach.
+The tested stiffness variations produced smaller changes. Increasing the
+rotational stiffness about the tilted tangent reduced the alignment
+improvement about \(t_1\), and the highest tested rotational stiffness also
+produced less improvement than the softer settings about \(t_2\). Reducing the
+translational stiffness perpendicular to the tilted tangent increased the
+response about \(t_2\), reaching \(1.79^\circ\) at
+\(300\,\mathrm{N/m}\). The corresponding variation about \(t_1\) remained
+of the same order as the experimental scatter. Combining the lowest
+translational stiffness with the highest rotational stiffness produced less
+improvement than the low-translational-stiffness condition alone. This
+non-additive response indicates that the two stiffness entries cannot be
+selected independently over the tested range.
 
-The free-space hold study isolated the two null-space contributions
-under a repeatable internally commanded point-force equivalent. Projected
-damping reduced cumulative redundant joint excursion by approximately one
-quarter. Increasing the singular-value torque increased joint motion without
-increasing the final conditioning improvement. This comparison establishes the
-relative response of the two terms for the investigated hold condition.
+Placing the centre of compliance at the centre of the grinding face produced
+nearly the same response as the zero-lever condition. At the commanded
+\(10^\circ\) tilt, the \(20\,\mathrm{mm}\) axial displacement generated only
+a small tangential lever component. The measurements are therefore consistent
+with the point-shifted impedance formulation: the tangential component of the
+lever determines the moment about the tilted surface tangent, while the
+component parallel to the normal interaction load contributes no moment.
 
-The main contribution is the experimental connection between a spatially
-shifted Cartesian impedance and the contact geometry of a plane-alignment task.
-The axis-specific measurements show that compliance-centre placement had a
-substantially greater influence than the stiffness variations considered here.
-They also show that the sign of the induced moment is an essential part of that
-placement decision.
+Tilts commanded about the grinding-face axes produced alignment improvements
+between those obtained for the two surface-tangent directions. Their agreement
+with a linear combination of the tangent-axis measurements provides a
+consistency check for the surface-frame interpretation. The comparison does
+not establish linear superposition as a general response model, but it
+indicates that the measured directional asymmetry was associated mainly with
+the surface-frame response rather than solely with the rectangular
+grinding-face geometry.
+
+The Cartesian pose-hold study showed that projected null-space damping reduced
+the cumulative redundant joint excursion by approximately \(25\,\%\) relative
+to the matched condition without a null-space torque. The two tested
+singular-value-conditioning commands produced similar final conditioning
+changes, while the larger command caused greater joint excursion and a larger
+Cartesian position error. These measurements characterise the separated
+null-space terms for the investigated free-space hold condition.
+
+Overall, the experiments show that the spatial placement and sign of the
+virtual centre of compliance governed the alignment response more strongly
+than the stiffness variations considered in this work. The point-shifted
+Cartesian impedance provided a direct means of converting the commanded
+normal interaction into an alignment moment without prescribing an explicit
+rotational trajectory during set-up. A fixed tangential lever is effective
+only when its induced moment acts in the required direction. Alignment for an
+unknown tilt direction therefore requires either a lever selected from the
+measured initial error or a configuration that relies primarily on rotational
+compliance.
+
 
 \section{Limitations}
 \label{sec:limitations}
-\ReviewMark{green}{The conclusion carries only the principal limitations and
-does not repeat the detailed mechanisms from Chapter 5.}
 
-\subsection{Experimental Generalisability}
-\ReviewMark{green}{The single-sign and single-configuration scope is stated
-without weakening the measured findings themselves.}
+\subsection{Experimental Range}
+\label{subsec:conclusion_experimental_range}
 
-The contact conclusions are limited to one robot, tool, plane surface, and
-parameter range. All commanded tilts had the same sign. The measured lever
-directions therefore cannot be transferred to an initial error of the opposite
-sign without an additional experiment.
+The contact experiments were performed with one robot, one tool mounting, one
+plane surface, and a finite set of controller parameters. All commanded tilts
+had the same sign. The measured assisting lever directions therefore apply to
+the investigated tilt sign and geometry. Their response for the opposite tilt
+sign follows from the point-shifted model but was not measured directly.
 
-\subsection{Calibration and Measurement Uncertainty}
-\ReviewMark{green}{The EE-based angle and model-estimated load are correctly
-distinguished from independent physical measurements.}
+The tangential compliance-centre study used three lever values along one
+surface tangent at a time. These measurements identify the assisting direction
+and demonstrate the magnitude of the resulting alignment improvement within
+the tested range. They do not identify an optimum lever length or the response
+to simultaneous changes of both in-plane lever components. The stiffness
+comparison likewise covered a limited number of values, and the combined
+low-translational-stiffness and high-rotational-stiffness condition represents
+one selected combination rather than a complete factorial study.
 
-The alignment metric was calculated from the end-effector pose relative to the
-independently calibrated physical plane. The reported normal load was obtained
-from the robot's model-estimated external wrench. It was not measured with an
-independent force/torque sensor.
 
-\subsection{Tool-Mount Compliance}
-\ReviewMark{green}{The likely underestimation of grinding-face rotation is
-carried into the final interpretation with the affected axis identified.}
+\subsection{Measurement and Tool-Mount Uncertainty}
+\label{subsec:conclusion_measurement_uncertainty}
 
-Approximately \(\pm2^\circ\) of rotation was possible between the tool and the
-gripper about \(y_{\mathrm{EE}}\). The reported angle consequently describes the
-combined robot--gripper--tool response and may underestimate the physical
-rotation of the grinding face, particularly in the \(t_2\) conditions.
+The grinding-face direction used in the evaluation was calculated from the
+measured end-effector orientation and the calibrated grinding-face direction
+in the end-effector frame. The tool could rotate by approximately
+\(\pm2^\circ\) relative to the gripper about \(y_{\mathrm{EE}}\). The reported
+alignment angle therefore describes the combined robot--gripper--tool response
+and cannot separate controller-induced rotation from motion within the
+gripper. This uncertainty is particularly relevant to the \(t_2\) conditions,
+for which the largest within-setting variability was observed. The alignment
+changes reported for those conditions are therefore lower bounds on the
+physical response.
 
-\subsection{Null-Space Validation}
-\ReviewMark{green}{The distinction between combined contact operation and the
-separated free-space study remains explicit.}
+The alignment metric also inherits uncertainty from the calibrated surface
+normal and the tool calibration. The reported external force and moment were
+the model-based estimates supplied by libfranka. They were not obtained from
+an independent force/torque sensor and were therefore used as supporting
+quantities rather than as direct measurements of the contact load.
 
-The two null-space terms were active together during the contact campaign and
-cannot be separated from those runs. The hold study isolated them in
-free-space hold under an internally commanded point-force equivalent. Its
-results do not establish their response to a physical link disturbance or
-during surface contact.
+
+\subsection{Null-Space and Timing Scope}
+\label{subsec:conclusion_nullspace_scope}
+
+Only projected damping was active during the surface-contact tests. The
+singular-value-conditioning term was not applied, so the contact results
+describe one null-space contribution rather than both. The pose-hold study
+isolated the two terms only in free space under an internally commanded
+point-force equivalent. It does not establish their response to physical link
+contact, to surface contact, or to the combined null-space mode.
+
+The controller operated through the nominal \(1\,\mathrm{kHz}\) libfranka
+interface. The experiments evaluated motion and alignment behaviour rather
+than worst-case callback execution time. A formal real-time timing analysis
+was therefore outside the scope of the reported measurements.
+
 
 \section{Future Work}
 \label{sec:future}
-\ReviewMark{green}{The three proposed extensions follow directly from the main
-evidential gaps: tilt sign, independent tool-angle measurement, and physical
-combined-mode null-space validation.}
 
-Three extensions have priority. First, the lever study should include positive
-and negative initial tilts. This would determine whether selecting the lever from
-both the axis and sign of the measured error produces comparable improvement in
-both directions. A subsequent lever-length sweep could establish how the
-required magnitude depends on the initial angle.
+The compliance-centre study should first be extended to positive and negative
+initial tilts about both surface tangents. This would test whether reversing
+the lever according to the sign of the measured initial error produces
+comparable alignment in both directions. A subsequent sweep of the lever
+length, followed by a two-dimensional variation of its in-plane components,
+would allow the relation between initial angle, lever direction, and lever
+magnitude to be characterised more completely.
 
-Second, the grinding-face orientation should be measured independently of the
-end-effector. A rigid mount or an external angular measurement would separate
-motion within the gripper from the response of the impedance controller,
-particularly for tilts about \(t_2\).
+The grinding-face orientation should be measured independently of the
+end-effector orientation. A more rigid tool mount would reduce the relative
+motion observed at the gripper, while an external angular measurement would
+allow controller rotation and tool-mount rotation to be separated. An
+independent force/torque sensor would also permit the model-estimated external
+wrench to be compared with a direct contact-load measurement.
 
-Third, the null-space comparison should be repeated with a physical link
-disturbance and should include the combined damping-and-conditioning mode. This
-would determine whether the ordering observed with the internal point-force
-equivalent is retained under physical interaction and during surface contact.
+The null-space study should be repeated with a physical disturbance applied to
+an intermediate robot link and should include the combined damping and
+singular-value-conditioning mode, which the contact tests did not use.
+Repeating this
+comparison during surface interaction would show whether the ordering observed
+in free-space hold is retained in contact. Recording callback execution times
+and deadline overruns during these tests would additionally provide a direct
+assessment of the controller's real-time performance.
+
+Finally, the compliance-centre selection can be incorporated into the
+controller as a geometry-based scheduling step. After the initial tilt is
+estimated at the clearance transition, the lever direction could be selected
+so that the induced moment opposes the measured angular error. Such a strategy
+would replace the fixed directional bias with a run-specific placement while
+retaining the point-shifted Cartesian impedance used in this work.
