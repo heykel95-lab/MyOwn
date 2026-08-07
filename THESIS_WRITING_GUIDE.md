@@ -487,9 +487,15 @@ visible from inside any single chapter:
   matrices in frames \(10^\circ\) apart cannot both be the same gain: a
   congruence transform of a diagonal matrix is not diagonal. Naming the frame
   is not enough — the numbers must reconcile.
-- **Which duration.** A \(5\,\mathrm{s}\) set-up interval was stated where the
-  parameter table gives a \(4.0\,\mathrm{s}\) timeout and every run ended on
-  that timeout.
+- **Which duration.** A \(4.0\,\mathrm{s}\) set-up timeout was stated in three
+  places in the methodology chapter. Every recorded run of every campaign used
+  \(5.0\,\mathrm{s}\); the \(4.0\,\mathrm{s}\) figure matched no parameter file.
+- **Which plane.** The implementation chapter gave the active baseline surface
+  point and tilt angles as \(p_s=(0.526,0.017,0.002)\,\mathrm{m}\),
+  \(a=-0.474^\circ\), \(b=2.270^\circ\), which appear in no parameter file,
+  no calibration overlay, and no run record. The calibrated plane is
+  \(p_s=(0.5153,-0.1072,0.0031)\,\mathrm{m}\), \(a=-1.585^\circ\),
+  \(b=+0.988^\circ\), used by all 193 recorded runs.
 - **Which procedure.** The physical plane was described both as fitted from
   three probed points and as estimated by seating the tool face. Resolved: the
   physical plane comes from **four probed points**, three fitted and one held
