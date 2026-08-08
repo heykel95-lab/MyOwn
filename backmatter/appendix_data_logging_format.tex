@@ -58,6 +58,8 @@ Run time and active control state.\\
 Measured and desired TCP positions [m].\\
 \texttt{tool\_contact}, \texttt{edge\_target} &
 Selected tool feature and its reference [m].\\
+\texttt{tool\_contact\_offset\_ee} &
+Offset of the selected feature from the TCP, in EE coordinates [m].\\
 \texttt{first\_contact\_tcp}, \texttt{first\_contact} &
 TCP position and projected surface reference captured at the geometric
 clearance transition; the transition is not force triggered.\\
@@ -70,6 +72,12 @@ constant during set-up.\\
 Angle between the EE-inferred tool axis and the configured surface target
 [\(^{\circ}\)]. The reported physical-plane angle is recalculated with
 \(n_{\mathrm{phys}}\).\\
+\texttt{alignment\_error\_t1\_deg},\newline
+\texttt{alignment\_error\_t2\_deg},\newline
+\texttt{alignment\_error\_}\newline\texttt{normal\_deg} &
+The same angular error resolved on \(t_1\), \(t_2\), and \(n_s\)
+[\(^{\circ}\)]. These supply the per-tangent decomposition reported for
+Cases~A--E.\\
 \texttt{f}, \texttt{m} &
 Commanded Cartesian force [N] and moment [N\,m].\\
 \texttt{external\_force}, \texttt{external\_moment} &
@@ -78,10 +86,19 @@ orientation and referenced to stiffness frame \(K\).\\
 \texttt{contact\_force\_bias},
 \texttt{contact\_moment\_bias} &
 External-wrench values captured at the clearance transition.\\
+\texttt{force\_after\_contact},\newline
+\texttt{moment\_after\_contact} &
+The model-estimated wrench with those bias values already subtracted. The
+reported normal load is taken from this group.\\
 \texttt{push} &
 Set-up penetration reference or grind preload retained after set-up [m].\\
 \texttt{nullspace\_mode}, \texttt{sigma\_current} &
 Selected null-space law and current smallest singular value.\\
+\texttt{sigma\_plus}, \texttt{sigma\_minus},\newline
+\texttt{sigma\_difference}, \texttt{sigma\_direction} &
+Smallest singular value at the two sampled configurations
+\(q\pm\alpha_{\mathrm{probe}}v_7\), their difference, and the selected sign.
+Recorded in every mode, including when no torque is commanded.\\
 \texttt{nullspace\_dq\_1..7} &
 Projected joint velocity [rad/s].\\
 \texttt{tau\_sigma\_1..7}, \texttt{tau\_sigma\_norm},
@@ -90,8 +107,10 @@ Singular-value torque and total null-space torque [N\,m].\\
 \texttt{nullspace\_damping} &
 Active projected damping gain [N\,m\,s/rad].\\
 \texttt{disturbance\_scale},
-\texttt{disturbance\_force\_}\newline\texttt{base\_x..z} &
-Commanded hold-disturbance waveform and point force [N].\\
+\texttt{disturbance\_force\_}\newline\texttt{base\_x..z},
+\texttt{disturbance\_}\newline\texttt{point\_base\_x..z} &
+Commanded hold-disturbance waveform, point force [N], and the base-frame
+position of the link point it acts at [m].\\
 \texttt{tau\_disturbance\_1..7} &
 Equivalent joint torque \(J_p^\top f_d\) in the internally commanded hold study [N\,m].\\
 \texttt{tau\_cmd\_1..7} &
