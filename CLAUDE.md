@@ -43,7 +43,15 @@ Before writing, rewriting, extending, or editing any prose in `chapters/`,
    recover the thesis's required voice, evidence rules, and writing style.
 
 The **Register** section at the top of `THESIS_VOICE.md` takes precedence over
-older style advice wherever the two conflict. Plain technical statements, never
+older style advice wherever the two conflict, and the **Measured from the
+settled chapter** section at its end takes precedence over both. Chapter 5 is
+revised and purple, so it, not the guidance written against earlier drafts, is
+the authority on the register: a mean of about sixteen words per sentence, a
+quarter of them under twelve, almost none over twenty-eight, and determiner
+openers at about half. New prose is measured against those figures before it is
+offered. Results sections report what was set and what was measured; sampling
+strategy, predictions, held-out checks, extrapolations and unresolved questions
+do not appear there. Plain technical statements, never
 compressed slogans; interpretations cross-referenced to the table or figure they
 rest on; certainty bounded to one configuration and three repetitions; varied
 paragraph architecture rather than varied openers. Follow its rewrite procedure

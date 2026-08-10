@@ -1,8 +1,8 @@
 \chapter{Recorded Experimental Data}
 \label{app:recorded_data}
 \ReviewMark{green}{The appendix records the signals actually used in the
-evaluation and distinguishes controller fields from recalculated physical-plane
-quantities.}
+evaluation and identifies the common calibrated plane used by the controller
+and analysis.}
 
 The controller stores experimental signals in a preallocated ring buffer. This
 avoids file access and dynamic buffer growth inside the
@@ -69,15 +69,15 @@ Cartesian errors and velocities. During set-up, \texttt{e\_R} is measured
 relative to the clearance orientation selected at the transition and held
 constant during set-up.\\
 \texttt{alignment\_angle\_deg} &
-Angle between the EE-inferred tool axis and the configured surface target
-[\(^{\circ}\)]. The reported physical-plane angle is recalculated with
-\(n_{\mathrm{phys}}\).\\
+Angle between the EE-inferred tool axis and the calibrated physical-plane
+normal \(n_s\) stored in the controller configuration [\(^{\circ}\)]. This
+recorded quantity produced the alignment values reported in the result tables.\\
 \texttt{alignment\_error\_t1\_deg},\newline
 \texttt{alignment\_error\_t2\_deg},\newline
 \texttt{alignment\_error\_}\newline\texttt{normal\_deg} &
 The same angular error resolved on \(t_1\), \(t_2\), and \(n_s\)
 [\(^{\circ}\)]. These supply the per-tangent decomposition reported for
-Cases~A--E.\\
+Cases~A--H.\\
 \texttt{f}, \texttt{m} &
 Commanded Cartesian force [N] and moment [N\,m].\\
 \texttt{external\_force}, \texttt{external\_moment} &
@@ -121,11 +121,13 @@ Final commanded joint torque [N\,m].\\
 \ReviewMark{green}{The short summary routes each reported metric to its recorded
 source without reintroducing unused fields.}
 
-Contact alignment is calculated from the measured end-effector orientation and
-the independently calibrated physical-plane normal. The before value is taken
-at the start of set-up and the after value from the settled set-up interval.
-Selected-feature displacement is calculated from \texttt{tool\_contact}, while
-the reported normal load is the bias-corrected model estimate.
+\Added{Contact alignment was calculated from the measured end-effector
+orientation and \mbox{\(n_s\)}, the three-point physical-plane normal copied into
+the controller configuration. The before value was taken at the start of
+set-up and the after value from the settled set-up interval. The analysis did
+not substitute another plane normal. Selected-feature displacement was
+calculated from \mbox{\texttt{tool\_contact}}, while the reported normal load was
+the bias-corrected model estimate.}
 
 For the internally commanded hold study, redundant motion is calculated by integrating the
 norm of the recorded projected joint velocity over the disturbance interval.

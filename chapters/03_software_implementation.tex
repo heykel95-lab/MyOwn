@@ -93,7 +93,7 @@ orientation of the physical surface plane.
 \end{table}
 
 \Revised{The parameter directory is resolved relative to the controller executable.
-The complete configuration is distributed over 16 files in the
+The complete configuration is distributed over 15 files in the
 \mbox{\texttt{params/}} directory. These files contain the robot connection and
 logging settings, collision thresholds, gripper parameters, initial posture,
 surface and tool geometry, phase settings, Cartesian gains,
@@ -112,7 +112,7 @@ control loop.}
 \Revised{Before every new session, all parameter files are read again and the resulting
 values are stored in a new \mbox{\texttt{ControllerConfig}} object. This permits
 controller and experiment parameters to be changed between runs without
-recompiling the program. The loader requires all 16 parameter files and rejects
+recompiling the program. The loader requires all 15 parameter files and rejects
 duplicate parameter names across them.}
 
 \Revised{The start-up interface provides four controller modes:}
@@ -1401,9 +1401,12 @@ gains.DR_setup =
     taskGain(params.setup_DR_diag);
 \end{lstlisting}
 
-\Revised{The baseline configuration selects base-frame translational gains for set-up
-and grinding. The corresponding rotational gains remain aligned with the
-surface tangents and normal.}
+\Added{The configuration used for the reported contact runs selected the
+surface-frame branch for set-up and grinding. Its translational entries were
+\mbox{\([2000,2000,800]\,\mathrm{N/m}\)} along
+\mbox{\([t_1,t_2,n_s]\)}. The inactive base-frame keys therefore did not enter the
+reported commands. The rotational gains were also aligned with the surface
+tangents and normal.}
 
 \Revised{Cartesian pose-hold gains are assembled as diagonal base-frame matrices:}
 

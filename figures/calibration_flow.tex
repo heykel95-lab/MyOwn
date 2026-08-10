@@ -1,0 +1,33 @@
+\begin{tikzpicture}[
+  src/.style={draw=gray!60, fill=blue!6, rounded corners=2pt,
+    minimum width=3.6cm, minimum height=1.05cm, align=center},
+  blk/.style={draw=gray!70!black, fill=gray!8, rounded corners=2pt,
+    minimum width=3.6cm, minimum height=1.05cm, align=center},
+  sel/.style={draw=gray!70!black, fill=orange!12, rounded corners=2pt,
+    minimum width=3.6cm, minimum height=1.05cm, align=center},
+  sig/.style={-{Latex[length=2mm]}, thick, gray!55!black}
+]
+  \node[src] (plane-data) at (0,2.0)
+    {$P_1$--$P_3$\\same marked face corner};
+  \node[blk] (plane-fit) at (5.0,2.0)
+    {three-point plane fit\\$p_s,\ R_{\mathrm{surface}}$};
+  \node[sel] (plane-check) at (10.0,2.0)
+    {$P_4$ held-out check\\$0.82\,\mathrm{mm}$};
+
+  \node[src] (tool-data) at (0,0.0)
+    {$T_1$--$T_3$\\flat-face yaw poses};
+  \node[blk] (tool-fit) at (5.0,0.0)
+    {invariant-axis fit\\$a_{\mathrm{EE}}$};
+  \node[sel] (tool-check) at (10.0,0.0)
+    {$T_4$ held-out check\\$0.50^\circ$};
+
+  \node[blk, minimum width=5.2cm] (runtime) at (7.5,-2.0)
+    {run-time geometry\\$a_T=R_{\mathrm{EE}}a_{\mathrm{EE}}$ relative to $n_s$};
+
+  \draw[sig] (plane-data) -- (plane-fit);
+  \draw[sig] (plane-fit) -- (plane-check);
+  \draw[sig] (tool-data) -- (tool-fit);
+  \draw[sig] (tool-fit) -- (tool-check);
+  \draw[sig] (plane-check.east) -- (12.0,2.0) -- (12.0,-2.0) -- (runtime.east);
+  \draw[sig] (tool-check.south) -- (10.0,-1.45) -- (7.5,-1.45) -- (runtime.north);
+\end{tikzpicture}

@@ -4,36 +4,34 @@
 principal measured ordering, null-space result, and scope limits without
 overloading the reader with the full parameter matrix.}
 
-A small angular deviation causes one edge of a tool to contact a surface first.
-Under rigid position control the robot resists the rotation that would make the
-surfaces parallel, so contact forces and moments develop instead.
+Angular tool--surface mismatch causes edge-first contact. Under rigid position
+control, the robot resists the aligning rotation and develops contact forces
+and moments.
 
-A real-time Cartesian impedance controller with phase-dependent stiffness and
-damping was implemented for a seven-degree-of-freedom (\abbr{DOF}) Franka Emika
-Panda. During contact set-up, gains defined at a virtual centre of compliance
-were transformed to the tool centre point; the resulting off-diagonal terms
-coupled translation and rotation, so the commanded normal press generated a
-corrective moment.
+A real-time, phase-dependent Cartesian impedance controller was implemented
+for a seven-degree-of-freedom (\abbr{DOF}) Franka Emika Panda. During set-up,
+impedance gains defined at a virtual centre of compliance were transformed to
+the tool centre point, coupling the commanded normal press to a corrective
+moment.
 
-Commanded tilt, directional stiffness, and compliance-centre position were
-varied experimentally. Within the investigated range, the in-plane position of
-the compliance centre produced the largest change in alignment. A lever applied
-in the direction that assisted the corrective rotation gave approximately
-\(6^\circ\) of improvement in both tangent-axis tests, and the required direction
-was opposite for \(t_1\) and \(t_2\). Increased rotational stiffness reduced the
-alignment response, with axis-dependent differences between the softer
-settings.
+The systematic investigation asked how directional stiffness and
+compliance-centre direction, sign, and magnitude affect alignment, and whether
+tilt determines lever selection. Within the tested range, the in-plane
+compliance-centre position produced the largest change. The assisting lever lay
+perpendicular to the tilt axis and reversed sign with the tilt, giving about
+\(6^\circ\) improvement in both tangent-axis tests. Its best tested magnitude
+depended on axis and tilt angle. Higher rotational stiffness reduced alignment,
+with axis-dependent behaviour.
 
-The lever-induced moment keeps a fixed direction, whereas the rotational spring
-follows the measured error. A tangential lever therefore assists one tilt sign
-and opposes the other. Almost no improvement remained when it opposed the
-required rotation, so its direction must be selected from the measured tilt.
+\Added{Across four tangent-plane directions, a tilt-selected
+\mbox{\(60\,\mathrm{mm}\)} lever assisted every condition, whereas one fixed lever
+reduced the matched improvement by \mbox{\(32\)--\(48\,\%\)}. A single fixed
+tangential lever did not retain the same alignment response across the tested
+tilt directions.}
 
-Separate free-space hold trials showed that projected null-space damping reduced
-redundant joint motion. A stronger singular-value conditioning torque increased
-joint motion without producing a larger final conditioning improvement.
+In separate free-space trials, projected null-space damping reduced redundant
+motion; stronger conditioning torque increased motion without improving final
+conditioning.
 
-The results apply to one robot, tool mounting, and surface. Every commanded tilt
-had the same sign, so the lever conclusions are limited to that sign. The
-end-effector-based metric may also underestimate the physical rotation of the
-grinding face.
+\Added{The results apply to one robot, mounting, and surface. The physical
+grinding-face rotation may differ from the end-effector-derived metric.}

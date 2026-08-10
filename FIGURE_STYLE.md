@@ -117,8 +117,10 @@ repository and are copied into `figures/` as vector PDF.
   tight bounding box to prevent overlap with axis labels or the caption.
 - **A reference line belongs only where it means something.** A zero line on a
   load axis forces the axis down to zero and squashes the data.
-- **Excluded runs are drawn and labelled**, so the legend says what a hollow
-  marker is instead of leaving it to a caption.
+- **Excluded runs are omitted from the plots.** They remain in the source data
+  and are excluded from every plotted mean and uncertainty interval. A
+  scientifically material exclusion is documented in the accompanying text or
+  table rather than added as a diagnostic series to each figure.
 - **No internal title**, for the same reason as a drawn diagram.
 
 ## Checking a figure

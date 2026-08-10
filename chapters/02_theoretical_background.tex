@@ -977,14 +977,13 @@ K_{r,n}
 configured surface orientation therefore changes the corresponding base-frame
 gain matrices even when the local gain values remain unchanged.}
 
-\Revised{During the approach phase, this surface-frame construction is applied to both
-the translational and rotational gain blocks. During contact set-up and
-grinding, only the rotational stiffness and damping are constructed in the
-surface frame; the translational matrices remain diagonal in the base-frame
-directions \mbox{\([x,y,z]\)}, as described in
-Chapter~\mbox{\ref{ch:implementation}}. The active gain matrices are based on the
-configured surface frame and are not rotated with the current end-effector
-orientation \mbox{\(R_{\mathrm{EE}}\)}.}
+\Added{During approach, contact set-up, and grinding, the reported contact runs
+used this surface-frame construction for both translational and rotational gain
+blocks. For set-up and grinding, the translational entries
+\mbox{\([2000,2000,800]\,\mathrm{N/m}\)} were assigned to
+\mbox{\([t_1,t_2,n_s]\)} before transformation to the base frame. The active gain
+matrices were based on the configured surface frame and were not rotated with
+the current end-effector orientation \mbox{\(R_{\mathrm{EE}}\)}.}
 
 
 \section{Centre of Compliance}
@@ -1188,6 +1187,12 @@ K_{\mathrm{TCP}}\succ0.
 \Revised{The same statements apply to \mbox{\(D_c\)} and \mbox{\(D_{\mathrm{TCP}}\)}. Negative
 off-diagonal entries therefore represent coupling terms rather than negative
 stiffness directions.}
+
+\Added{This congruence result establishes only that the point shift preserves
+the symmetry and definiteness of the source gain matrices. It is not a formal
+stability proof for the complete robot--controller--contact system with phase
+switching. Closed-loop contact behaviour was instead assessed experimentally
+within the operating conditions reported in \mbox{\Cref{ch:methodology}}.}
 
 \Revised{This formulation is a local small-motion model in which \mbox{\(r_c\)} is held fixed
 while the wrench is evaluated. In the implemented set-up mode, the selected

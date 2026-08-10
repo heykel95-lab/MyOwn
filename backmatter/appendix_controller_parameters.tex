@@ -89,7 +89,7 @@ reconcile the values stated across Chapters 3 and 4.}
 >{\raggedright\arraybackslash}p{0.40\textwidth}
 >{\raggedright\arraybackslash}p{0.28\textwidth}@{}}
 \toprule
-Phase / quantity & Active stiffness and frame & Damping fallback \\
+Phase / quantity & Active stiffness and frame & Configured damping \\
 \midrule
 Approach translation &
   \([150,150,150]\,\mathrm{N/m}\), surface \([t_1,t_2,n_s]\) &
@@ -179,17 +179,23 @@ factors are not listed per run and the \(\zeta=1\) heuristic is not a validated
 modal damping ratio.}
 
 Inertia-scaled damping follows \cref{eq:implementation_cartesian_inertia,eq:implementation_inertia_scaled_damping}.
-It is enabled for hold, approach, set-up, grind, and the pause gate. The
+It is enabled for approach, set-up, grind, and the pause gate. The
 approach factor is \(\zeta=1.9\), while set-up and grind use
-\(\zeta=1.0\). Hold uses one derived damping ratio for translation and
-rotation. The
-pause gate uses separate translational and rotational factors because the two
+\(\zeta=1.0\). The pause gate uses separate translational and rotational factors because the two
 gain blocks are expressed in different frames. The configured maximum
-coefficient \texttt{auto\_damping\_max} is \(400\), and the manual values in
-\cref{tab:active_phase_gains} provide the fixed damping when an inertia-scaled
-value is unavailable. With
+coefficient \texttt{auto\_damping\_max} is \(400\). The configured values in
+\cref{tab:active_phase_gains} provide fallback damping for these automatically
+damped phases. With
 \texttt{auto\_damping\_min\_from\_manual} left at zero, those manual values act
 only as that fallback and impose no lower bound on a calculated coefficient.
+
+Standard Cartesian pose hold instead used its configured matrices directly.
+All twelve reported null-space runs recorded
+\texttt{hold\_auto\_damping=0}, with
+\(D_p=50I_3\,\mathrm{N\,s/m}\) and
+\(D_R=8I_3\,\mathrm{N\,m\,s/rad}\). The hold-damping values in
+\cref{tab:active_phase_gains} are therefore active values rather than
+fallbacks.
 
 For set-up, the source damping blocks are calculated from TCP task inertia and
 then shifted to the selected centre of compliance. This preserves symmetry and positive
@@ -197,8 +203,8 @@ semidefiniteness, but the factor \(\zeta=1\) remains a directional tuning
 heuristic; it does not establish a pole-level modal damping ratio for the
 coupled robot--contact system.
 
-The coupled \(6\times6\) law is enabled only during set-up, and only in
-Case~D. The lever was entered directly in surface coordinates through
+The coupled \(6\times6\) law is enabled only during set-up, and in Cases~D,
+F, G and H. The lever was entered directly in surface coordinates through
 \texttt{coupled\_use\_direct\_rc\_surface}, so
 \[
 r_c=R_{\mathrm{surface}}\,r_c^{S},

@@ -1055,3 +1055,73 @@ And count, over the whole chapter — these are the four from the Chapters 4 and
   interpretation, limitation? That is the pattern to break, and it is invisible
   one sentence at a time.
 - Does the conclusion reproduce the results chapter rather than summarise it?
+
+## Measured from the settled chapter: what the green revised text actually does
+
+The sections above were written against earlier drafts. Chapter 5 has since been
+revised in full and marked green, so that text — not this file's history — is
+the authority on the register. **Where any earlier rule here disagrees with the
+green revised prose, the green revised prose wins.**
+
+Measured over the 51 revised paragraphs and 179 sentences of Chapter 5:
+
+| | Green revised text | An added draft that was rejected |
+|---|---:|---:|
+| Words per sentence, mean | **16.5** | 22.0 |
+| Median | **16** | 22 |
+| Longest sentence | **34** | 42 |
+| Sentences under 12 words | **23 %** | 13 % |
+| Sentences over 28 words | **1 %** | 19 % |
+| Determiner openers | **56 %** | 33 % |
+| Sentences per paragraph | 3.5 | 3.4 |
+
+Three corrections follow.
+
+**Sentence length is the dominant tell.** The target is a mean near
+\(16\) words and a median of \(16\), with roughly a quarter of sentences under
+\(12\) words and almost none over \(28\). A draft averaging \(22\) reads as
+written by someone else even when every clause is defensible. Long sentences are
+not fixed by splitting one in three; the whole paragraph has to be rebuilt from
+short statements.
+
+**§9, the determiner opener, is superseded.** That section asks for determiner
+openers under about a third. The settled chapter runs at \(56\,\%\), and the
+paragraphs it was written to fix are no longer in the document. Opening with
+`The`, `These`, `With`, `For each`, or a participle is the normal shape here:
+*The opposing lever direction produced only …*, *The steady values were …*,
+*With the assisting lever, the residual alignment angle decreased …*. Do not
+manufacture varied openers to hit a percentage. Doing so is what produced the
+slogans in the Register section.
+
+**Paragraph shape.** Three to four sentences. State the measurement, give the
+comparison, close with one short consequence — *The commanded press remained
+unchanged.*, *This direction is referred to as the assisting lever direction.* A
+cross-reference to another section goes last when the paragraph routes the
+reader onward.
+
+### Do not narrate the experiment design in the results
+
+The rejected draft carried a second fault that no length metric shows. It
+described how the campaign was built rather than what was measured: which
+settings were reused from an earlier case rather than repeated, which value was
+an extrapolation beyond the sampled range, which condition was a held-out check,
+which maximum was not bracketed, which result the model failed to account for,
+and what a further experiment would settle.
+
+None of that is a measurement, and the green revised text contains none of it. Compare:
+
+| Rejected | Green revised register |
+|---|---|
+| The \(10^\circ\) setting at \(60\,\mathrm{mm}\) is the corresponding Case-D measurement and was not repeated. | *(say nothing; the table carries the value)* |
+| The second value lies beyond the range sampled in Case~K and is an extrapolation. | The lever was set to \(90\,\mathrm{mm}\) about \(t_2\). |
+| The condition is a held-out check on the relation rather than a further sample of it. | *(delete)* |
+| Its maximum is not bracketed by the tested settings and no best magnitude is reported for it. | The response continued to increase up to the largest tested magnitude. |
+| The reversed \(t_1\) condition remains unexplained by the coupling model used here. | The reversed \(t_1\) condition produced a smaller improvement than the corresponding positive tilt. |
+| Whether this reflects motion absorbed at the tool mount is not resolved by these three settings. | *(route it to the limitations section, or delete)* |
+
+**Rule.** A results section reports what was set and what was measured. Sampling
+strategy belongs in the methodology chapter, unresolved questions belong in the
+limitations section or in Future Work, and the reasoning that chose a setting
+does not belong in the thesis at all. Reporting a null or bounded result stays
+required; describing it as a prediction, a check, or a failure of a model does
+not.

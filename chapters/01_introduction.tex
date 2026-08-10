@@ -120,13 +120,32 @@ and the compliance-centre placement under otherwise matched conditions.
 \mbox{\Cref{ch:theory,ch:implementation}} introduce the frame conventions and
 controller formulation required for these comparisons.}
 
+\Added{The overall research question is: how can directional Cartesian
+stiffness and a virtual centre of compliance be selected so that surface
+contact aligns a tilted tool with a plane? The experimental investigation is
+organised around three linked subquestions:}
+
+\begin{enumerate}[label=\textbf{RQ\arabic*:},leftmargin=2.2cm]
+\item \Added{How do rotational stiffness about the tilted tangent and
+translational stiffness perpendicular to it affect contact-induced alignment?}
+\item \Added{How do the direction, sign, and magnitude of the tangential
+compliance-centre lever affect alignment for different tilt axes, signs, and
+magnitudes?}
+\item \Added{Can the measured tilt direction be used to derive a geometric,
+tilt-dependent compliance-centre selection rule that extends beyond the two
+principal surface tangents?}
+\end{enumerate}
+
 \section{Scope and Contributions}
 \label{sec:objectives}
 
 \Revised{Within this scope, the experiments evaluate how a commanded tilt representing
 the initial angular mismatch between the tool and the surface, the rotational
 and translational stiffness in the surface directions, and the position of a
-virtual centre of compliance influence contact-induced alignment. The
+virtual centre of compliance influence contact-induced alignment.}\Added{ The
+three research questions treat these variables as one progression from the
+alignment baseline, through stiffness and compliance-centre effects, to a
+tilt-dependent selection rule.}\Revised{ The
 controller is a phase-scheduled Cartesian impedance controller written in C++
 using libfranka and Eigen. It runs in the \mbox{\(1\,\mathrm{kHz}\)} torque-control
 loop of the Franka Emika Panda. The commanded Cartesian wrench is mapped to
@@ -176,6 +195,11 @@ set-up. The effects of this translation--rotation coupling are investigated in
 this thesis. After contact set-up, the controller proceeds to the tangential
 grinding motion.}
 
+\Added{The software implements this subsequent grinding phase, including an
+optional tangential sweep. The reported experiments evaluated contact-induced
+alignment during set-up with that sweep disabled; grinding quality was not an
+experimental outcome of this thesis.}
+
 \Revised{Accordingly, the contributions of this thesis are divided into implemented
 controller components and experimentally established findings. The implemented
 work includes a frame-consistent real-time Cartesian impedance controller for
@@ -187,18 +211,41 @@ which the physical surface orientation and the grinding-face axis are defined
 independently, allowing the alignment of the tool to be evaluated relative to
 the surface.}
 
-\Revised{The experiments provide an axis-specific evaluation of how rotational and
-translational stiffness influence contact-induced alignment. Within the tested
-range, the position of the virtual centre of compliance produced the largest
-measured change in alignment. This effect depends on the lever direction: a
-lever that assists alignment about \mbox{\(t_1\)} must be reversed to assist alignment
-about \mbox{\(t_2\)}.}
+\Added{The experimental findings address the three research questions as one
+progression. First, the measurements quantify how rotational stiffness about
+the tilted tangent and translational stiffness perpendicular to it affect
+contact-induced alignment. The response was axis-dependent, and the tested
+combination of low translational and high rotational stiffness was not
+additive. Within the investigated range, however, these stiffness changes were
+smaller than the effect of moving the virtual centre of compliance.}
 
-\Revised{Projected joint damping and a two-point smallest-singular-value bias were also
-implemented for the redundant seventh joint. Their effects were evaluated in a
-separate free-space hold study using an internally generated joint-torque
-disturbance equivalent to a point force at the end-effector. The results
-describe the null-space response to this commanded disturbance.}
+\Added{Second, the compliance-centre study establishes distinct effects of
+lever direction, sign, and magnitude. The assisting tangential lever was
+perpendicular to the tilt axis. Reversing the commanded tilt reversed the
+assisting lever sign on both principal surface tangents. A systematic magnitude
+sweep and the extended reversed-tilt settings further showed that the best
+tested magnitude depends on the tilt axis, tilt sign, and commanded tilt
+magnitude; no universal
+lever length was identified, and three conditions were still improving at the
+largest magnitude tested.}
+
+\Added{Third, these observations lead to a tilt-dependent geometric selection
+rule: the tangential lever is chosen perpendicular to the signed measured tilt
+axis so that the press-induced moment opposes the angular error. Case~H tested
+this rule at four tangent-plane directions using one common
+\mbox{\(60\,\mathrm{mm}\)} magnitude. The selected lever assisted in every direction,
+whereas holding one lever fixed reduced the matched improvement by
+\mbox{\(32\)--\(48\,\%\)}. This extends the contribution beyond separate
+\mbox{\(t_1\)} and \mbox{\(t_2\)} comparisons and shows that a single fixed tangential
+lever did not retain the same alignment response across the tested tilt
+directions.}
+
+\Added{Projected joint damping and a two-point smallest-singular-value bias were
+also implemented for the redundant seventh joint. Their effects were evaluated
+in a separate free-space hold study using an internally generated joint-torque
+disturbance equivalent to a point force at an offset point on link~3. The point
+was located \mbox{\(0.200\,\mathrm{m}\)} along the link-frame \mbox{\(z\)}-axis. The
+results describe the null-space response to this commanded disturbance.}
 
 \section{Thesis Structure}
 
