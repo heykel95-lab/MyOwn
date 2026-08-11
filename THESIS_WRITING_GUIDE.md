@@ -343,6 +343,21 @@ Symbols follow the same rule. One point, one subscript: \(p_c\), \(r_c\),
 
 ## Mathematical notation
 
+At the first equation in which a new symbol appears, introduce it in the
+surrounding running text by giving the quantity name, the symbol, and its short
+role in that equation. The definition may appear immediately before or after
+the equation, but the reader must not have to infer the symbol from the
+expression alone. Do not repeat a definition that has already been established
+unless the symbol is assigned a different local meaning.
+
+Whenever running text names a defined mathematical quantity, place its symbol
+immediately after that name. For example, write `the alignment angle
+\(\theta_{\mathrm{align}}\)` and `the commanded joint torque
+\(\tau_{\mathrm{cmd}}\)`. This rule applies to repeated uses as well as to the
+first definition. It does not apply to generic physical nouns that do not denote
+a specific defined variable, or to an unambiguous pronoun or shortened reference
+such as `this matrix` or `the value`.
+
 **One typeface: plain italic.** Every symbol — scalars, vectors, and matrices
 alike — is set plain: \(F\), \(f\), \(m\), \(e_p\), \(e_R\), \(p\), \(q\),
 \(K\), \(D\), \(J\), \(R\), \(T\), \(N\). Do not use `\mathbf`.
@@ -841,6 +856,10 @@ Before accepting a revision:
 - search for `tilt`, `excitation`, and `mismatch` where a commanded tool
   orientation offset is meant;
 - check that one quantity carries one name and one symbol throughout;
+- check that every new equation symbol is introduced by quantity name, symbol,
+  and short role at its first use;
+- check that every running-text use of a defined quantity name is followed
+  immediately by its symbol;
 - search the symbol list for `mixed` and for units written without a space;
 - check that the contents lists the figures, tables and symbols;
 - check that no heading sits at the foot of a page without what it introduces;

@@ -17,14 +17,15 @@ Interface (\mbox{\abbr{FCI}}) with a nominal control period of
 
 \Revised{The software combines the Cartesian impedance law, the SVD-based null-space
 controller, the configured surface and tool geometry, phase-dependent
-stiffness and damping, and the virtual centre of compliance. These components
+stiffness and damping, and the virtual centre of compliance \mbox{\(p_c\)}. These components
 are coordinated by a phase state machine that orients the tool, approaches the
 surface, applies the set-up preload, and executes the grinding motion.
 Additional operating modes provide Cartesian pose holding, set-up-impedance
 holding, and manual guidance.}
 
 \Revised{The following sections describe the software architecture, the real-time
-control loop, the implemented Cartesian and null-space torque contributions,
+control loop, the implemented Cartesian torque \mbox{\(\tau_{\mathrm{cart}}\)} and
+null-space torque \mbox{\(\tau_{\mathrm{null}}\)} contributions,
 the geometric representation of the surface and tool, the phase-dependent
 impedance parameters, and the execution of the control sequence.}
 
@@ -172,7 +173,7 @@ measured joint configuration provides the initial posture
 \mbox{\(q_{\mathrm{start}}\)}. These values initialise the desired pose of the
 selected sequence or hold mode.}
 
-\Revised{The initial state also provides force and moment bias values for the subsequent
+\Revised{The initial state also provides an external-wrench reference for subsequent
 contact evaluation. In addition, the controller initialises the configured
 surface point, the surface frame, the target tool orientation, the descent
 direction, and the four tool-face corners. The initial phase, phase clocks,
@@ -182,7 +183,7 @@ prepared before entering the real-time callback.}
 \Revised{The controller is passed to \mbox{\texttt{robot.control}} as a joint-torque callback.
 For every control cycle, the callback receives the current
 \mbox{\texttt{RobotState}} and the elapsed cycle duration and returns the seven
-commanded joint torques, as shown in
+commanded joint torques \mbox{\(\tau_{\mathrm{cmd}}\)}, as shown in
 \mbox{\cref{lst:libfranka_torque_callback}}.}
 
 \begin{lstlisting}[style=cppstyle,
@@ -200,7 +201,7 @@ robot.control(
 \end{lstlisting}
 
 \Revised{\mbox{\Cref{fig:controller_block_diagram}} shows the signals combined into the
-commanded joint torque during one control cycle.}
+commanded joint torque \mbox{\(\tau_{\mathrm{cmd}}\)} during one control cycle.}
 
 \begin{figure}[H]
   \centering
@@ -210,8 +211,8 @@ commanded joint torque during one control cycle.}
 \end{figure}
 
 \Revised{During each callback, the elapsed controller time is updated from the period
-reported by libfranka. The joint state, end-effector Jacobian, Cartesian
-velocity, end-effector pose, and model-estimated external wrench are then
+reported by libfranka. The joint state, end-effector Jacobian \mbox{\(J(q)\)}, Cartesian
+velocity \mbox{\(\dot x\)}, end-effector pose, and model-estimated external wrench are then
 obtained as shown in \mbox{\cref{lst:callback_state_acquisition}}.}
 
 \begin{lstlisting}[style=cppstyle,
@@ -243,9 +244,10 @@ const Vec3 external_moment = external_wrench.tail<3>();
 
 \Revised{The vectors \mbox{\texttt{q\_current}} and \mbox{\texttt{dq}} contain the measured joint
 configuration and velocity. The call to
-\mbox{\texttt{model.zeroJacobian}} returns the \mbox{\(6\times7\)} geometric Jacobian of the
+\mbox{\texttt{model.zeroJacobian}} returns the \mbox{\(6\times7\)} geometric Jacobian
+\mbox{\(J(q)\)} of the
 configured libfranka end-effector frame. Multiplication by the measured joint
-velocity provides the TCP linear velocity \mbox{\texttt{pdot}} and angular velocity
+velocity \mbox{\(\dot q\)} provides the TCP linear velocity \mbox{\texttt{pdot}} and angular velocity
 \mbox{\texttt{omega}}, both expressed in the robot base frame.}
 
 \Revised{The field \mbox{\texttt{state.O\_T\_EE}} provides the current end-effector
@@ -255,10 +257,10 @@ therefore uses the pose reported by libfranka rather than reconstructing it
 from a separate forward-kinematic model.}
 
 \Revised{The field \mbox{\texttt{state.O\_F\_ext\_hat\_K}} provides the model-estimated
-external force and moment. During surface approach, the transition to set-up
+external force \mbox{\(\hat f_{\mathrm{ext}}\)} and moment. During surface approach, the transition to set-up
 is determined geometrically from the tool-face clearance. At this transition,
-the current force and moment estimates are stored as bias values. During
-set-up, the bias-subtracted external moment is used for the moment-based exit
+the current estimates are stored as the external-wrench reference. During
+set-up, the resulting external-moment change is used for the moment-based exit
 condition. The force and moment estimates are also included in the terminal
 output, set-up evaluation, and recorded experimental data.}
 
@@ -286,13 +288,13 @@ depend on the active phase:}
 \end{itemize}
 
 \Revised{After the reference has been updated, the callback calculates the Cartesian
-position and orientation errors using the conventions introduced in
+position error \mbox{\(e_p\)} and orientation error \mbox{\(e_R\)} using the conventions introduced in
 \mbox{\Cref{subsec:cartesian_pose_error}}. The phase-dependent stiffness and damping
 matrices are then selected. When a phase gate is active, the dedicated gate
 holding gains replace the normal phase gains.}
 
-\Revised{The displacement and velocity-error vectors supplied to the impedance
-calculation are}
+\Revised{The displacement error \mbox{\(\Delta x\)} and velocity error
+\mbox{\(\Delta v\)} supplied to the impedance calculation are}
 
 \begin{equation}
 \Delta x
@@ -311,7 +313,7 @@ e_R
 \label{eq:implementation_callback_error_vectors}
 \end{equation}
 
-\Revised{The Cartesian impedance calculation returns the commanded wrench}
+\Revised{The Cartesian impedance calculation returns the commanded wrench \mbox{\(F\)}}
 
 \begin{equation}
 F
@@ -329,7 +331,7 @@ decoupled impedance law of \mbox{\cref{eq:cartesian_impedance_control_law}} or t
 point-shifted set-up impedance described in
 \mbox{\Cref{sec:self_alignment_virtual_center}}.}
 
-\Revised{The Cartesian torque contribution is}
+\Revised{The Cartesian torque contribution \mbox{\(\tau_{\mathrm{cart}}\)} is}
 
 \begin{equation}
 \tau_{\mathrm{cart}}
@@ -344,8 +346,9 @@ the automatic disturbance experiment in Cartesian pose hold, an additional
 joint-torque contribution \mbox{\(\tau_{\mathrm{dist}}\)} is generated. Its value is
 zero during the remaining controller operation.}
 
-\Revised{The Coriolis and centrifugal torque is obtained from the libfranka model. The
-complete torque command of an impedance-controlled cycle is therefore}
+\Revised{The Coriolis and centrifugal torque \mbox{\(\tau_c\)} is obtained from the
+libfranka model. The complete torque command \mbox{\(\tau_{\mathrm{cmd}}\)} of an
+impedance-controlled cycle is therefore}
 
 \begin{equation}
 \tau_{\mathrm{cmd}}
@@ -360,7 +363,8 @@ complete torque command of an impedance-controlled cycle is therefore}
 \label{eq:implementation_callback_torque_command}
 \end{equation}
 
-\Revised{Manual guidance follows a separate torque command:}
+\Revised{Manual guidance follows the separate joint-torque command
+\mbox{\(\tau_{\mathrm{guide}}\)}:}
 
 \begin{equation}
 \tau_{\mathrm{guide}}
@@ -373,7 +377,7 @@ d_{\mathrm{guide}}\dot q,
 
 \Revised{where \mbox{\(d_{\mathrm{guide}}\)} is the configured joint-damping coefficient.
 After the guided pose is captured, its position, orientation, joint
-configuration, and wrench biases initialise the resumed sequence or hold mode.}
+configuration, and the external-wrench reference initialise the resumed sequence or hold mode.}
 
 \Revised{For impedance-controlled cycles, the selected state, reference, error, wrench,
 phase, null-space, disturbance, and joint-torque quantities are sampled at the
@@ -392,7 +396,7 @@ callback.}
 
 \Revised{The mathematical formulation of the Cartesian impedance controller is given in
 \mbox{\Cref{sec:cartesian_impedance_control}}. This section describes how the pose
-errors, phase-dependent gains, and Cartesian wrench are evaluated in the
+errors, phase-dependent gains, and Cartesian wrench \mbox{\(F\)} are evaluated in the
 software.}
 
 \Revised{The callback first selects the desired orientation associated with the active
@@ -402,7 +406,7 @@ orientation. At the transition to set-up, the current orientation is captured
 and held constant throughout set-up and grinding. Cartesian pose hold uses the pose
 stored for the active hold mode.}
 
-\Revised{The position and orientation errors are evaluated as shown in
+\Revised{The position error \mbox{\(e_p\)} and orientation error \mbox{\(e_R\)} are evaluated as shown in
 \mbox{\cref{lst:implementation_pose_error}}.}
 
 \begin{lstlisting}[style=cppstyle,
@@ -490,7 +494,7 @@ current phase. Their construction and phase assignment are described in
 
 \Revised{The function \mbox{\texttt{computeCartesianImpedanceWrench}} selects between the
 decoupled Cartesian impedance and the point-shifted impedance associated with
-the virtual centre of compliance. The decoupled branch is implemented by
+the virtual centre of compliance \mbox{\(p_c\)}. The decoupled branch is implemented by
 applying the translational and rotational gain blocks separately:}
 
 \begin{lstlisting}[style=cppstyle,
@@ -508,9 +512,10 @@ return wrench;
 
 \Revised{This branch is used during tool orientation, surface approach, grinding, and
 the standard Cartesian pose hold. It is also used during set-up when the
-virtual centre of compliance is disabled.}
+virtual centre of compliance \mbox{\(p_c\)} is disabled.}
 
-\Revised{The coupled branch is selected when the virtual centre of compliance is
+\Revised{The coupled branch is selected when the virtual centre of compliance
+\mbox{\(p_c\)} is
 enabled during set-up or during the dedicated set-up-impedance hold mode:}
 
 \begin{lstlisting}[style=cppstyle,
@@ -525,11 +530,12 @@ const bool coupled =
 
 \Revised{In this branch, the translational and rotational gain blocks are assembled into
 spatial \mbox{\(6\times6\)} matrices and shifted from the configured centre of
-compliance to the TCP. The construction of these matrices and the two
-implemented definitions of the compliance-centre lever are described in
+compliance \mbox{\(p_c\)} to the TCP. The construction of these matrices and the two
+implemented definitions of the compliance-centre lever \mbox{\(r_c\)} are described in
 \mbox{\Cref{sec:self_alignment_virtual_center}}.}
 
-\Revised{The wrench returned by either branch is mapped to joint torque by
+\Revised{The wrench \mbox{\(F\)} returned by either branch is mapped to joint torque
+\mbox{\(\tau_{\mathrm{cart}}\)} by
 \mbox{\texttt{J.transpose()}}\allowbreak
 \mbox{\texttt{* wrench}}. The resulting
 \mbox{\texttt{tau\_task}} contribution is subsequently combined with the null-space,
@@ -544,11 +550,13 @@ and singular-value conditioning torque is presented in
 function \mbox{\texttt{computeNullspaceTorque}}, which is evaluated during every
 impedance-controlled callback.}
 
-\Revised{The function receives the current geometric Jacobian, measured joint velocity,
+\Revised{The function receives the current geometric Jacobian \mbox{\(J(q)\)}, measured
+joint velocity \mbox{\(\dot q\)},
 robot state, model interface, and active null-space parameters. The current
 joint configuration is mapped from the robot state, and the full singular value
-decomposition of the \mbox{\(6\times7\)} Jacobian is calculated. The pseudoinverse and
-joint-torque null-space projector are then constructed as shown in
+decomposition of the \mbox{\(6\times7\)} Jacobian \mbox{\(J(q)\)} is calculated. The
+pseudoinverse \mbox{\(J^+\)} and joint-torque null-space projector \mbox{\(N_\tau\)} are
+then constructed as shown in
 \mbox{\cref{lst:implementation_nullspace_projector}}.}
 
 \begin{lstlisting}[style=cppstyle,
@@ -593,7 +601,7 @@ N_tau =
 
 \Revised{The relative tolerance
 \mbox{\texttt{nullspace\_svd\_relative\_tolerance}} is multiplied by the largest
-singular value of the current Jacobian. This produces the singular-value
+singular value of the current Jacobian \mbox{\(J(q)\)}. This produces the singular-value
 threshold used during the current callback. Each singular direction above this
 threshold contributes to the pseudoinverse with the reciprocal
 \mbox{\(1/\sigma_i\)}. The remaining reciprocal entries are set to zero.}
@@ -603,7 +611,7 @@ expression derived in \mbox{\Cref{subsec:nullspace_projectors}}. Averaging the
 projector with its transpose removes small numerical asymmetries caused by
 floating-point calculations.}
 
-\Revised{The measured joint velocity is subsequently projected into the numerical
+\Revised{The measured joint velocity \mbox{\(\dot q\)} is subsequently projected into the numerical
 null space. The active \mbox{\texttt{NullspaceMode}} determines which secondary
 torque contributions are evaluated:}
 
@@ -734,7 +742,7 @@ configuration and the two sampled configurations. The Jacobians are evaluated
 using the current flange-to-end-effector and end-effector-to-stiffness-frame
 transformations provided in the robot state.}
 
-\Revised{The smallest singular values of the sampled Jacobians are compared through
+\Revised{The smallest singular values \mbox{\(\sigma_{\min}(q_\pm)\)} of the sampled Jacobians are compared through
 the configured deadband. The sign of their difference selects the sampled
 direction with the larger value of \mbox{\(\sigma_{\min}\)}.}
 
@@ -849,7 +857,7 @@ quantities.}
 \Revised{The plane configuration contains one surface point expressed in the robot base
 frame, two surface-tilt angles, and an auxiliary direction hint for
 \mbox{\(t_1\)}. The parameter loader converts the tilt angles to a unit surface
-normal. The function \mbox{\texttt{makeSurfaceFrame}} uses the hint to fix the
+normal \mbox{\(n_s\)}. The function \mbox{\texttt{makeSurfaceFrame}} uses the hint to fix the
 in-plane rotation of the surface frame.}
 
 \begin{lstlisting}[style=cppstyle,
@@ -914,7 +922,7 @@ R_base_surface.col(2) = normal;
 projected onto the surface plane and normalised. The remaining axis is then
 constructed as \mbox{\(t_2=n_s\times t_1\)}, which completes the right-handed
 surface frame in robot base coordinates. A fallback direction is selected when
-the hint is approximately parallel to the surface normal.}
+the hint is approximately parallel to the surface normal \mbox{\(n_s\)}.}
 
 \Revised{The active baseline uses the calibrated surface point}
 
@@ -948,7 +956,7 @@ Vec3 surface_point_runtime =
         : params.surface_point;
 \end{lstlisting}
 
-\Revised{The descent direction is defined once from the surface normal:}
+\Revised{The descent direction is defined once from the surface normal \mbox{\(n_s\)}:}
 
 \begin{lstlisting}[style=cppstyle,
   caption={Surface-normal descent direction.},
@@ -1343,7 +1351,9 @@ gains.DR_approach =
     taskGain(params.approach_DR_diag);
 \end{lstlisting}
 
-\Revised{The function \mbox{\texttt{makeSpatialGainMatrix}} evaluates}
+\Revised{The function \mbox{\texttt{makeSpatialGainMatrix}} maps the diagonal
+surface-frame gain \mbox{\(G_{\mathrm{surface}}\)} to the base-frame gain
+\mbox{\(G_0\)}:}
 
 \begin{equation}
 G_0
@@ -1356,7 +1366,7 @@ R_{\mathrm{surface}}^\top,
 
 \Revised{where \mbox{\(G_{\mathrm{surface}}\)} is diagonal in the fixed axis order
 \mbox{\([t_1,t_2,n_s]\)}. The resulting matrix \mbox{\(G_0\)} is expressed in the robot
-base frame and can be applied directly to the base-frame Cartesian error.}
+base frame and can be applied directly to the base-frame Cartesian error \mbox{\(e\)}.}
 
 \Revised{The gain-frame policy implemented for each controller mode is summarised in
 \mbox{\cref{tab:implemented_gain_frames}}.}
@@ -1549,7 +1559,7 @@ current callback.}
 \Revised{Each phase first receives the damping matrices configured in the parameter
 files. When inertia-scaled damping is enabled for a phase group, the controller
 replaces these matrices with values calculated from the current
-operational-space inertia.}
+operational-space inertia \mbox{\(\Lambda\)}.}
 
 \Revised{The joint-space inertia matrix \mbox{\(M\)} is obtained from the libfranka
 model and factorised using a lower--diagonal--lower-transpose
@@ -1566,14 +1576,14 @@ M=LDL^\top,
 MX=J^\top.
 \]
 
-\Revised{The solution is}
+\Revised{The solution matrix \mbox{\(X\)} is}
 
 \[
 X=M^{-1}J^\top,
 \]
 
 \Revised{without explicitly forming \mbox{\(M^{-1}\)}. The inverse operational-space
-inertia is then constructed from}
+inertia \mbox{\(\Lambda^{-1}\)} is then constructed from}
 
 \[
 \Lambda^{-1}=JM^{-1}J^\top.
@@ -1608,7 +1618,8 @@ Mat6x6 Lambda_base =
         Mat6x6::Identity());
 \end{lstlisting}
 
-\Revised{This calculation corresponds to the regularised estimate}
+\Revised{This calculation gives the regularised base-frame operational-space inertia
+estimate \mbox{\(\Lambda_0\)}:}
 
 \begin{equation}
 \Lambda_0
@@ -1647,8 +1658,8 @@ for (int i = 0; i < 3; ++i) {
 
 \Revised{The first three diagonal entries provide the directional translational
 inertias, while the last three provide the directional rotational inertias.
-For each direction \mbox{\(i\)}, the inertia-scaled damping coefficient is calculated
-from}
+For each direction \mbox{\(i\)}, the inertia-scaled damping coefficient
+\mbox{\(d_{\mathrm{dir},i}\)} is calculated from}
 
 \begin{equation}
 d_{\mathrm{dir},i}
@@ -1738,7 +1749,7 @@ an equivalent TCP impedance is derived in
 transformation inside \mbox{\texttt{computeCartesianImpedanceWrench}}. The
 phase-dependent translational and rotational gain blocks are first expressed
 in the robot base frame and are then shifted from the selected virtual centre
-of compliance to the TCP.}
+of compliance \mbox{\(p_c\)} to the TCP.}
 
 \Revised{The coupled branch is activated during set-up and during the dedicated
 set-up-impedance hold mode:}
@@ -1912,7 +1923,7 @@ by a prescribed rotational trajectory.}
 
 \Revised{The set-up and grinding phases share the same \mbox{\(3\times3\)} stiffness and
 damping blocks. At the transition to grinding, the state machine assigns
-\mbox{\texttt{ControlPhase::kGrinding}} before the Cartesian wrench is evaluated
+\mbox{\texttt{ControlPhase::kGrinding}} before the Cartesian wrench \mbox{\(F\)} is evaluated
 later in the same callback. The first grinding sample therefore uses the
 decoupled branch. The implementation applies this change as a direct switch
 from the shifted \mbox{\(6\times6\)} matrices to the decoupled gain blocks, while the
@@ -2044,8 +2055,8 @@ if (phase_time >= params.approach_orient_min_time &&
 \Revised{The configured minimum duration allows the orientation command to begin
 settling before convergence is accepted. The timeout provides a second
 transition path and allows the sequence to continue with the orientation
-reached within the available interval. The force and moment estimates are
-reassigned as diagnostic bias values when surface approach begins.}
+reached within the available interval. The external-wrench reference is
+updated when surface approach begins.}
 
 
 \subsection{Surface Approach}
@@ -2228,12 +2239,13 @@ if (!gate_grind_armed &&
 }
 \end{lstlisting}
 
-\Revised{The force change is recorded and included in the set-up evaluation. The phase
-exit is governed by the bias-subtracted moment norm after the configured
+\Revised{The force change is recorded and included in the set-up evaluation. The
+external-moment change governs the phase exit after the configured
 minimum duration. The set-up timeout provides the alternative exit condition.}
 
 \Revised{Before continuing, the controller evaluates and prints the set-up result once.
-This report includes the achieved pose, feature position, alignment change,
+This report includes the achieved pose, feature position, alignment change
+\mbox{\(\Delta\theta_{\mathrm{align}}\)},
 force and moment changes, moment transferred to the selected feature, active
 impedance matrices, and compliance-centre diagnostics.}
 
@@ -2333,7 +2345,7 @@ Subsequent strokes alternate smoothly between the positive and negative
 amplitudes with zero velocity at each reversal.}
 
 \Revised{When the sweep is disabled, the reference is corrected only along the surface
-normal. Its tangential coordinates follow the current tool-feature position,
+normal \mbox{\(n_s\)}. Its tangential coordinates follow the current tool-feature position,
 which preserves the set-up penetration without imposing a tangential
 trajectory.}
 
@@ -2348,7 +2360,7 @@ impedance routine selects the decoupled branch after the phase has changed to
 
 \Revised{The pose-hold state supports two impedance configurations. Standard pose hold
 uses the dedicated hold gains, while set-up-impedance hold applies the set-up
-gains and can keep the virtual centre of compliance. Both modes regulate a
+gains and can keep the virtual centre of compliance \mbox{\(p_c\)}. Both modes regulate a
 captured Cartesian pose.}
 
 \Revised{When the set-up-impedance hold is selected during a run, the measured pose is
@@ -2382,7 +2394,7 @@ if (signals.proceed_requested.load()) {
 \end{lstlisting}
 
 \Revised{After operator confirmation, the measured position, orientation, joint
-configuration, surface reference when selected, and external-wrench biases are
+configuration, and the selected surface and external-wrench references are
 recaptured. The controller then resumes the phase stored in
 \mbox{\texttt{restart\_phase}}.}
 
@@ -2501,7 +2513,7 @@ seven joints. The two Cartesian parameters are similarly assigned to all six
 force and moment components in the acceleration and nominal phases. The same
 array is passed for the lower and upper threshold of each group.}
 
-\Revised{The controller returns the calculated joint torque directly to libfranka:}
+\Revised{The controller returns the calculated joint torque \mbox{\(\tau_{\mathrm{cmd}}\)} directly to libfranka:}
 
 \begin{lstlisting}[style=cppstyle,
   caption={Transfer of the calculated torque command to libfranka.},
@@ -2512,8 +2524,9 @@ const Array7 tau_array =
 return Torques(tau_array);
 \end{lstlisting}
 
-\Revised{The application transfers the calculated Cartesian wrench, null-space
-torque, and complete joint-torque command directly to libfranka. Robot-side
+\Revised{The application transfers the calculated Cartesian wrench \mbox{\(F\)},
+null-space torque \mbox{\(\tau_{\mathrm{null}}\)}, and complete joint-torque command
+\mbox{\(\tau_{\mathrm{cmd}}\)} directly to libfranka. Robot-side
 monitoring and the configured collision behaviour provide command boundedness
 and motion interruption.}
 
@@ -2631,8 +2644,9 @@ end-effector orientation and at the configured distance along
 \mbox{\(-z_{\mathrm{EE}}\)}.}
 
 \Revised{The stand-off configuration is obtained through damped least-squares inverse
-kinematics. Each iteration calculates the position and orientation error, forms
-the current end-effector Jacobian, and limits the joint-update norm. The
+kinematics. Each iteration calculates the position error \mbox{\(e_p\)} and
+orientation error \mbox{\(e_R\)}, forms the current end-effector Jacobian
+\mbox{\(J(q)\)}, and limits the joint-update norm. The
 resulting posture is accepted only when all joints remain within their
 configured limits with a \mbox{\(0.05\,\mathrm{rad}\)} margin.}
 
@@ -2791,8 +2805,8 @@ Tool-axis alignment-error components along
 
 Cartesian wrench
 &
-Commanded force and moment, model-estimated external force and moment, and the
-force and moment biases captured at the clearance transition.
+Commanded and model-estimated external wrenches, including the
+clearance-transition reference for the latter.
 \\[1mm]
 
 Null-space controller
@@ -2998,15 +3012,15 @@ void writeRunLogs(
 
 \Revised{The CSV writer creates the parent output directory when required and uses a
 fixed column order. Cartesian positions, velocities, forces, moments,
-disturbances, and joint torques are written in their stored SI units.
+disturbances, and joint torques \mbox{\(\tau\)} are written in their stored SI units.
 Alignment errors are converted from radians to degrees for the output file.}
 
-\Revised{The bias-subtracted external-force and external-moment columns are calculated
-during CSV writing from the stored estimates:}
+\Revised{The CSV writer calculates each external-wrench change by subtracting
+the stored reference:}
 
 \begin{lstlisting}[style=cppstyle,
-  caption={Writing the bias-subtracted external wrench to the CSV file.},
-  label={lst:implementation_bias_subtracted_wrench}]
+  caption={Writing the external-wrench change to the CSV file.},
+  label={lst:implementation_external_wrench_change}]
 writeVec3(
     log_file,
     row.external_force
@@ -3018,7 +3032,7 @@ writeVec3(
         - row.contact_moment_bias);
 \end{lstlisting}
 
-\Revised{The commanded Cartesian wrench and the model-estimated external wrench are
+\Revised{The commanded Cartesian wrench \mbox{\(F\)} and the model-estimated external wrench are
 therefore recorded as separate quantities. The former is generated by the
 impedance controller, while the latter is supplied by the robot state and used
 for set-up evaluation.}
@@ -3050,9 +3064,8 @@ set-up timeout is reached. The report captures the final TCP pose, selected
 tool-feature position, external wrench change, clearance-transition
 references, active gain matrices, and set-up termination condition.}
 
-\Revised{The external moment is also transferred from the TCP to the selected tool
-feature. The implementation uses the bias-subtracted external force and
-moment:}
+\Revised{The external moment at the selected tool feature is calculated from
+these wrench changes:}
 
 \begin{lstlisting}[style=cppstyle,
   caption={Calculation of the external moment at the selected tool feature.},

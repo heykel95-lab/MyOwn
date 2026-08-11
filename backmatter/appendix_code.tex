@@ -16,7 +16,7 @@ chapters.
 
 The frame order is \([t_1,t_2,n_s]\).  Because
 \(t_2=n_s\times t_1\), this column order is right-handed. A configured tangent
-that is close to the normal is replaced by a fallback direction, so the frame
+that is close to the surface normal \(n_s\) is replaced by a fallback direction, so the frame
 stays defined for any configured plane.
 
 \begin{lstlisting}[style=cppstyle, language=C++, caption={Surface frame and gain transformation used by the controller.}, label={lst:app_surface_gains}]
@@ -56,7 +56,7 @@ Mat3 makeSpatialGainMatrix(
 \section{Tool Orientation and Rotation Error}
 \label{app:orientation}
 
-The physical tool axis is configured in the EE frame. The desired orientation
+The physical tool axis \(a_{\mathrm{EE}}\) is configured in the EE frame. The desired orientation
 is the minimum rotation of the captured start orientation that maps this axis
 onto the signed normal; it is not obtained by assigning the complete surface
 frame to the EE frame. The commanded angular offsets of a case are applied to
@@ -229,8 +229,8 @@ case ControlPhase::kGrinding: {
 
 The identifiers \texttt{first\_contact\_*} are retained source names. They are
 captured at the configured clearance, not at a force-detected first contact.
-The model-estimated wrench recorded at the same instant becomes the bias
-subtracted from every later sample.
+The model-estimated wrench recorded at the same instant is subtracted from
+every later sample.
 
 Both operator gates latch once armed. The gate compares a held pose against the
 clearance height, and re-testing that comparison every cycle released the gate
@@ -241,8 +241,8 @@ harder press. Latching removes that dependence on waiting time.
 \section{Centre of Compliance and the Offset Adjoint}
 \label{app:center_compliance}
 
-The lever passed to the implementation points from the selected centre of
-compliance to the TCP:
+The lever \(r_c\) passed to the implementation points from the selected centre of
+compliance \(p_c\) to the TCP:
 \[
 r_c=p_{\mathrm{TCP}}-p_c.
 \]
@@ -310,8 +310,9 @@ return K_tcp * dx + D_tcp * dv;
 \section{Task-Inertia Damping}
 \label{app:auto_damping}
 
-The joint-space mass matrix is solved rather than explicitly inverted.
+The joint-space mass matrix \(M\) is solved rather than explicitly inverted.
 A \(10^{-9}\) diagonal regularisation is used only for the task-inertia
+matrix \(\Lambda\)
 calculation; it is not the null-space pseudoinverse cutoff. Every intermediate
 result is checked before use, and a single non-finite or non-positive entry
 marks the estimate invalid.
@@ -361,8 +362,8 @@ Vec3 criticalDampingFromStiffness(const Vec3& inertia,
 }
 \end{lstlisting}
 
-Only finite, positive directional inertia values are used. Otherwise, the
-phase-specific fixed damping matrix is applied. Each inertia-scaled coefficient
+Only finite, positive directional inertia values \(\lambda_i\) are used. Otherwise, the
+phase-specific fixed damping matrix \(D\) is applied. Each inertia-scaled coefficient
 is bounded above by \texttt{auto\_damping\_max}; the value configured for the
 reported experiments is listed in \Cref{app:controller_parameters}. The lower
 bound \texttt{min\_damping} is the configured manual matrix only when
@@ -375,8 +376,8 @@ For \(J\in\mathbb R^{6\times7}\), Eigen returns six singular values and a full
 \(7\times7\) right-singular matrix.  Column six in zero-based C++ indexing is
 therefore \(v_7\), the structural null vector; it is distinct from \(v_6\), the
 right-singular vector paired with \(\sigma_{\min}=\sigma_6\). The two sampled
-configurations are evaluated by re-querying the robot model for the Jacobian at
-\(q\pm\alpha n\), so the comparison uses the same kinematics as the control
+configurations are evaluated by re-querying the robot model for the Jacobian
+\(J(q_\pm)\) at \(q\pm\alpha n\), so the comparison uses the same kinematics as the control
 cycle.
 
 \begin{lstlisting}[style=cppstyle, language=C++, caption={Thresholded-SVD joint-torque projector and null-space law (abridged).}, label={lst:app_nullspace}]
@@ -460,7 +461,7 @@ Here the code variable \texttt{alpha} represents
 It does not multiply the active torque. Singular values at or below the cutoff
 are omitted from the inverse. The routine also fills a diagnostics structure
 that carries the sampled singular values, the selected direction, and the
-projected joint velocity into the recorded data.
+projected joint velocity \(\dot q_{\mathrm{null}}\) into the recorded data.
 
 \section{Core Control Callback}
 \label{app:callback_core}
