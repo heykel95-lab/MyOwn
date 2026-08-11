@@ -27,10 +27,15 @@
 % ------------------------------------------------------------- lower inputs
 \node[src] (model)  at ( 0.0, -2.1) {model\\[-2pt]\footnotesize $J,\ M(q),\ c(q,\dot q)$};
 \node[sel] (null)   at ( 3.5, -2.1) {null-space term\\[-2pt]\footnotesize $N_\tau$: damping, $\sigma_{\min}$};
-% The text width is fixed rather than left to the content. Unconstrained, this
-% box reaches past x = 13.5 and the jt-to-sum descent at x = 13.8 then runs
-% through it.
-\node[sel, text width=3.5cm, align=center] (imp) at (10.5, -2.1)
+% The text width is fixed rather than left to the content, and the value is a
+% compromise between two failures. Unconstrained, this box reaches past
+% x = 13.5 and the jt-to-sum descent at x = 13.8 runs through it. Narrowed to
+% 3.5 cm it instead grows tall, and at 4.6 cm it still wrapped to four lines
+% and stood 2 cm high against 0.9 cm for every other box, leaving the M(q) run
+% 0.16 cm below it. 5.2 cm wraps to three lines and keeps the right edge clear
+% of the descent. Re-measure with \typeout on the node anchors before changing
+% this value; the extents are not obvious from the source.
+\node[sel, text width=5.2cm, align=center] (imp) at (10.5, -2.1)
   {impedance form\\[-2pt]\footnotesize decoupled \emph{or} point-shifted,
    inertia-scaled $D$};
 
@@ -55,19 +60,23 @@
 % run 2: measured pose into the error, just under the chain
 \draw[sig] (state.south) -- (0.0,-0.95) -- (7.0,-0.95) -- (err.south);
 
-% run 3: the active gains select the impedance form. It enters left of centre
-% so that the imp-to-wrench link, which leaves from the centre of the same
-% edge, neither shares this arrowhead nor crosses this run.
-\draw[sig] (phase.south) -- (3.5,-1.35) -- node[lbl, above, pos=0.55]
-      {active gains} (9.2,-1.35) -- ([xshift=-13mm]imp.north);
+% run 3: the active gains select the impedance form. It enters from the west
+% rather than the north, because the north edge already carries the link up to
+% the spring wrench; sharing that edge put two opposed arrowheads on one
+% segment and made the link cross this run. Its descent sits at x = 7.4, right
+% of where run 2 ends at x = 7.0 and left of the box edge at x = 7.95.
+\draw[sig] (phase.south) -- (3.5,-1.35) -- node[lbl, above, pos=0.5]
+      {active gains} (7.4,-1.35) -- (7.4,-2.1) -- (imp.west);
 
 % run 4: null-space torque into the sum from the left
 \draw[sig] (null.south) -- (3.5,-3.95) -- node[lbl, above, pos=0.55]
       {$\tau_{\text{null}}$} (13.5,-3.95);
 
 % M(q) has exactly one consumer: it sizes the damping, not the control law
-\draw[sig] (model.south) -- (0.0,-3.25) -- node[lbl, above, pos=0.62]
-      {$M(q)$ sizes $D$} (10.5,-3.25) -- (imp.south);
+% The measured box bottom is y = -3.09, so this run sits at -3.60 rather than
+% -3.25; at -3.25 its arrowhead met the box after a 0.16 cm rise.
+\draw[sig] (model.south) -- (0.0,-3.60) -- node[lbl, above, pos=0.62]
+      {$M(q)$ sizes $D$} (10.5,-3.60) -- (imp.south);
 
 % run 5: Coriolis compensation into the sum from below
 \draw[sig] (model.south) -- (0.0,-5.15) -- node[lbl, below, pos=0.55]
