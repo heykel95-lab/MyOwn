@@ -553,13 +553,13 @@ The geometric interpretation is given in
 \section{Case H: Generalisation Across Commanded Rotation Directions}
 \label{sec:results_case_h}
 
-\Revised{Cases~D and F tilted the tool about the two calibrated surface tangents.
-In Case~H the tilt was commanded in four directions in the tangent plane,
+\Revised{Cases~D and F applied commanded tool orientation offsets about the two
+calibrated surface tangents. In Case~H the offset was commanded in four
+directions in the tangent plane,
 including two at \mbox{\(45^\circ\)} between the tool-face axes. The lever was
-held at \mbox{\(60\,\mathrm{mm}\)} and the commanded tilt at \mbox{\(10^\circ\)}
-throughout. Here an aligned lever is parallel to the normal-error direction
-\mbox{\(d_{\mathrm{tilt}}\)} and perpendicular to the signed rotation axis
-\mbox{\(u_{\mathrm{tilt}}\)}, as defined in
+held at \mbox{\(60\,\mathrm{mm}\)} and the offset angle at \mbox{\(10^\circ\)}
+throughout. Here an aligned lever is perpendicular to the signed commanded
+rotation axis \mbox{\(u_{\mathrm{rot}}\)}, as defined in
 \mbox{\cref{eq:experimental_general_lever_rule}}. The exact surface-frame
 vectors are listed in \mbox{\cref{tab:experimental_case_h_vectors}}. Case~H
 evaluates this direction rule while holding the magnitude constant across the
@@ -739,13 +739,14 @@ normal, \mbox{\(f\approx-F_n n_s\)}, the coupling moment is}
     m_c=-r_c\times f.
 \end{equation}
 
-\Revised{For an arbitrary signed tilt axis \mbox{\(u_{\mathrm{tilt}}\)} in the
-tangent plane, choose the tangential lever according to}
+\Revised{For an arbitrary signed commanded rotation axis
+\mbox{\(u_{\mathrm{rot}}\)} in the tangent plane, the tangential lever follows
+the rule derived in \mbox{\cref{eq:general_compliance_lever_selection}}:}
 
 \begin{equation}
 r_{c,t}
 =
--\rho_c\,n_s\times u_{\mathrm{tilt}},
+-\rho_c\,n_s\times u_{\mathrm{rot}},
 \qquad \rho_c>0.
 \label{eq:discussion_general_lever_selection}
 \end{equation}
@@ -755,19 +756,19 @@ r_{c,t}
 \begin{equation}
 m_c
 \approx
--F_n\rho_c\,u_{\mathrm{tilt}}.
+-F_n\rho_c\,u_{\mathrm{rot}}.
 \label{eq:discussion_general_lever_moment}
 \end{equation}
 
-\Revised{The induced moment is therefore opposite to the signed angular error.
-The lever lies along the corresponding normal-error direction
-\mbox{\(d_{\mathrm{tilt}}=u_{\mathrm{tilt}}\times n_s\)}, not along the
-rotation axis itself. Reversing the required corrective rotation changes
-\mbox{\(u_{\mathrm{tilt}}\)} to \mbox{\(-u_{\mathrm{tilt}}\)} and reverses the
-selected lever. Cases~D and F tested the tangent-axis instances of this vector
-rule, while Case~H tested four directions in the tangent plane.}
+\Revised{The induced moment is therefore opposite to the signed commanded
+rotation axis. The lever lies along
+\mbox{\(u_{\mathrm{rot}}\times n_s\)}, perpendicular to that axis. Reversing
+the orientation offset changes \mbox{\(u_{\mathrm{rot}}\)} to
+\mbox{\(-u_{\mathrm{rot}}\)} and reverses the selected lever. Cases~D and F
+tested the principal tangent-axis instances of this vector rule. Case~H tested
+four directions in the tangent plane.}
 
-\Revised{A lever component along the tangent perpendicular to the tilted axis therefore
+\Revised{A lever component along the tangent perpendicular to the commanded rotation axis therefore
 creates a moment about that axis. Reversing the lever reverses the moment. One
 sign assists the rotation that brings the grinding face towards the surface,
 whereas the opposite sign opposes it. Exchanging the roles of \mbox{\(t_1\)} and
@@ -815,11 +816,11 @@ characterises the complete coupled contact response rather than an isolated
 moment effect.}
 
 \Revised{The lever is a commanded setting and does not change sign on its own
-during a run. Case~F reversed the commanded tilt and measured the response
+during a run. In Case~F the commanded orientation offset was reversed and the response was measured
 directly. The assisting direction reversed with it on both surface tangents.
-The signed tilt direction therefore defines the corresponding lever direction.
+The signed commanded rotation direction therefore defines the corresponding lever direction.
 For every reported run, the lever direction was selected before set-up from the
-commanded signed tilt.}
+commanded rotation direction.}
 
 \subsection{Implications for Controller Parameter Selection}
 \label{sec:discussion_parameter_selection}
@@ -828,11 +829,11 @@ commanded signed tilt.}
 parameters within a similar contact geometry. The compliance-centre lever is
 considered first because it determines the direction and approximate magnitude
 of the coupling moment. Its tangential direction should be perpendicular to
-the expected tilt axis, and its sign should be selected so that the induced
+the commanded rotation axis, and its sign should be selected so that the induced
 moment assists alignment.}
 
-\Revised{After the lever has been selected, the rotational stiffness about the tilted
-axis can be refined. Within the tested range, increasing this stiffness reduced
+\Revised{After the lever has been selected, the rotational stiffness about the commanded
+rotation axis can be refined. Within the tested range, increasing this stiffness reduced
 the available alignment motion. The perpendicular translational stiffness can
 then be adjusted where the measurements show a directional benefit. In the
 present tests, reducing it increased the response about \mbox{\(t_2\)}, while the
