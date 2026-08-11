@@ -1,8 +1,8 @@
 % Elevation sketch of the moment produced by the compliance-centre lever.
-% The view is taken along the signed tilt axis u_tilt, which therefore points
-% into the page; n_s is up and d_tilt = u_tilt x n_s lies to the right. The
-% geometry is the one behind eq:discussion_general_lever_selection, so the two
-% panels differ only in the sign of the tangential lever.
+% The view is taken in the surface tangent plane, with n_s up, so the two
+% panels differ only in the sign of the tangential lever. The symbols f and
+% m_c are introduced in the text; their relation is
+% eq:pole_translation_moment_sign_check.
 % Uses only tikz + arrows.meta/calc, which config/packages.tex loads.
 %
 % Colour follows the established meaning: orange for what a parameter selects
@@ -11,9 +11,9 @@
 %
 % Layout note. Each panel is kept to about 5.2 cm wide and 2.7 cm tall so the
 % pair sits near \textwidth without being scaled down; an earlier wider version
-% was shrunk by \resizebox until its labels collided. Four heights are used and
+% was shrunk by \resizebox until its labels collided. Three heights are used and
 % nothing else may be placed on them: the lever at the TCP height, the force
-% tail above it, the moment arc above that, and the axis row at the top.
+% tail above it, and the moment arc above that.
 \begin{tikzpicture}[
     font=\small,
     surf/.style={draw=gray!70!black, fill=gray!12},
@@ -33,13 +33,6 @@
   % ---- surface plane ----------------------------------------------------
   \fill[surf] (-2.6,-0.34) rectangle (2.6,0);
   \draw[gray!70!black] (-2.6,0) -- (2.6,0);
-
-  % ---- axis row, top of the panel ---------------------------------------
-  \draw[gray!60!black] (-2.35,1.55) circle (0.13);
-  \draw[gray!60!black] (-2.44,1.64) -- (-2.26,1.46);
-  \draw[gray!60!black] (-2.44,1.46) -- (-2.26,1.64);
-  \node[lbl, right, gray!60!black] at (-2.18,1.55) {$u_{\mathrm{tilt}}$};
-  \draw[ax] (1.55,0.95) -- (2.30,0.95) node[lbl, right] {$d_{\mathrm{tilt}}$};
 
   % ---- surface normal ----------------------------------------------------
   \draw[ax] (-2.45,0) -- (-2.45,0.80) node[lbl, above] {$n_s$};
@@ -61,11 +54,12 @@
 
   % ---- contact force, pressed along the inward normal --------------------
   \draw[frc] ($(T)+(0,1.05)$) -- ($(T)+(0,0.14)$);
-  \node[lbl, right, blue!50!black] at ($(T)+(0.12,1.05)$) {$f\approx-F_n n_s$};
+  \node[lbl, right, blue!50!black] at ($(T)+(0.12,1.05)$) {$f$};
 
   % ---- induced moment, opposite to the signed tilt -----------------------
-  \draw[mom] ([shift=(30:0.95)]T) arc (30:150:0.95);
-  \node[lbl, gray!50!black] at ($(T)+(0,1.80)$) {$m_c=-r_c\times f$};
+  \coordinate (M) at ($(T)+(0,0.30)$);
+  \draw[mom] ([shift=(30:0.95)]M) arc (30:150:0.95);
+  \node[lbl, gray!50!black] at ($(T)+(0,1.80)$) {$m_c$};
 
   \node at (0,-0.92) {(a) lever selected from the tilt};
 \end{scope}
@@ -93,10 +87,11 @@
   \node[lbl, anchor=south east] at ($(T2)+(-0.07,0.05)$) {TCP};
 
   \draw[frc] ($(T2)+(0,1.05)$) -- ($(T2)+(0,0.14)$);
-  \node[lbl, left, blue!50!black] at ($(T2)+(-0.12,1.05)$) {$f\approx-F_n n_s$};
+  \node[lbl, right, blue!50!black] at ($(T2)+(0.12,1.05)$) {$f$};
 
-  \draw[mom] ([shift=(150:0.95)]T2) arc (150:30:0.95);
-  \node[lbl, gray!50!black] at ($(T2)+(0,1.80)$) {$m_c=-r_c\times f$};
+  \coordinate (M2) at ($(T2)+(0,0.30)$);
+  \draw[mom] ([shift=(150:0.95)]M2) arc (150:30:0.95);
+  \node[lbl, gray!50!black] at ($(T2)+(0,1.80)$) {$m_c$};
 
   \node at (0,-0.92) {(b) lever with the opposite sign};
 \end{scope}

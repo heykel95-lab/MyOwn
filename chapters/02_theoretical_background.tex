@@ -4,6 +4,11 @@
 settled. No further editing is to be applied to it, and any remaining concern
 is raised as a comment rather than as a change.}
 
+\Comment{In the settled prose, use ``commanded tool orientation offset'' for
+the deliberate angular command and ``commanded rotation axis'' or ``commanded
+rotation direction'' for its components. Retain ``tilt'' only for a physical
+inclination or a calibrated surface angle.}
+
 \makeatletter
 \@ifundefined{ifProfessorStopAfterForwardKinematics}{%
   \newif\ifProfessorStopAfterForwardKinematics
@@ -804,6 +809,10 @@ product. With \mbox{\(\tilde{t}_1\)} denoting the unnormalised projected tangent
 construction is a Gram--Schmidt orthonormalization step applied to the surface
 normal and the auxiliary direction \mbox{\cite{Siciliano2009,Craig2005}}:}
 
+\Comment{Replace ``auxiliary direction'' with ``surface-frame reference
+direction''. Define \mbox{\(a_s\)} as the selected vector used only to fix the
+orientation of \mbox{\(t_1\)} within the surface plane.}
+
 \begin{equation}
 \begin{aligned}
 \tilde{t}_1
@@ -995,6 +1004,9 @@ blocks. For set-up and grinding, the translational entries
 matrices were based on the configured surface frame and were not rotated with
 the current end-effector orientation \mbox{\(R_{\mathrm{EE}}\)}.}
 
+\Comment{Remove the numerical \mbox{\(K_p\)} entries from the theory chapter.
+Introduce their values later with the controller configuration.}
+
 
 \section{Centre of Compliance}
 \label{sec:coupled_pole_stiffness}
@@ -1013,6 +1025,12 @@ translation--rotation coupling that supports tool alignment.}
 
 \Revised{\mbox{\Cref{fig:compliance_lever_moment}} shows this geometry for the two signs
 of the tangential lever.}
+
+\Revised{Here \mbox{\(f\)} is the force acting at the TCP, and \mbox{\(m_c\)} the
+moment it produces through the lever \mbox{\(r_c\)}. Their relation is derived in
+\mbox{\cref{eq:pole_translation_moment_sign_check}}. The form taken by
+\mbox{\(f\)} during the contact experiment is described in
+\mbox{\cref{sec:discussion_compliance_lever}}.}
 
 \begin{figure}[H]
   \centering
@@ -1115,15 +1133,15 @@ D_p & 0\\
 orientation. The wrench at the centre of compliance is}
 
 \[
-w_c=K_ce_c.
+F_c=K_ce_c.
 \]
 
 \Revised{Transforming this power-conjugate wrench to the TCP gives}
 
 \[
-w_{\mathrm{TCP}}
+F_{\mathrm{TCP}}
 =
-\mathrm{Ad}(r_c)^\top w_c.
+\mathrm{Ad}(r_c)^\top F_c.
 \]
 
 \Revised{The resulting TCP stiffness is therefore}

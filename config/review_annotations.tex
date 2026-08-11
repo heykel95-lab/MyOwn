@@ -1,10 +1,16 @@
 % Optional examiner-style review annotations.
 % Define \ThesisReviewMode before loading this file to show the annotations.
+% \ThesisCleanMode takes precedence and prevents review colouring from leaking
+% into submission or professor copies.
 \newif\ifThesisReview
-\ifdefined\ThesisReviewMode
-  \ThesisReviewtrue
-\else
+\ifdefined\ThesisCleanMode
   \ThesisReviewfalse
+\else
+  \ifdefined\ThesisReviewMode
+    \ThesisReviewtrue
+  \else
+    \ThesisReviewfalse
+  \fi
 \fi
 
 % Assessment colours: applied to the section that follows a heading. The
@@ -43,7 +49,9 @@
 }
 
 \newcommand{\ReviewLegendItem}[3]{%
-  \noindent\colorbox{review#1}{\strut\textbf{#2}}\quad #3\par\smallskip
+  \ifThesisReview
+    \noindent\colorbox{review#1}{\strut\textbf{#2}}\quad #3\par\smallskip
+  \fi
 }
 
 % ------------------------------------------------------------------

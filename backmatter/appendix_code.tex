@@ -60,10 +60,11 @@ The physical tool axis is configured in the EE frame. The desired orientation
 is the minimum rotation of the captured start orientation that maps this axis
 onto the signed normal; it is not obtained by assigning the complete surface
 frame to the EE frame. The commanded angular offsets of a case are applied to
-that axis before the rotation is formed, so a tilt about \(t_1\) or \(t_2\)
-enters as a rotation of the orientation target rather than as a trajectory.
+that axis before the rotation is formed. A commanded tool orientation offset
+about \(t_1\) or \(t_2\) therefore enters as a rotation of the orientation target
+rather than as a trajectory.
 
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Signed tool-axis target, commanded tilt offsets, and restoring rotation-vector error.}, label={lst:app_orientation}]
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Tool-axis target, commanded tool orientation offsets, and rotation-vector error.}, label={lst:app_orientation}]
 Vec3 surfaceToolAxisInBase(
     const ControllerConfig& params, const Mat3& R_base_surface) {
   const double sign =
@@ -378,7 +379,7 @@ configurations are evaluated by re-querying the robot model for the Jacobian at
 \(q\pm\alpha n\), so the comparison uses the same kinematics as the control
 cycle.
 
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Truncated-SVD torque projector and the null-space law (abridged).}, label={lst:app_nullspace}]
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Thresholded-SVD joint-torque projector and null-space law (abridged).}, label={lst:app_nullspace}]
 Eigen::JacobiSVD<Mat6x7> svd_current(
     J, Eigen::ComputeFullU | Eigen::ComputeFullV);
 const auto singular_values = svd_current.singularValues();

@@ -708,22 +708,23 @@ replaced this.
 
 ### Vary the frame, keep the term
 
-`tilt` is the settled name (THESIS_WRITING_GUIDE.md, *Naming a technical
-quantity*) and does not change. What repeated was the four-word frame `a tilt
-about \(t_1\)`, sixteen times in Chapter 5, in identical syntactic position. A
-mechanical substitution into that frame is also what left `a a tilt about` and
-`an tilt about` in the source.
+`commanded tool orientation offset` is the settled name
+(THESIS_WRITING_GUIDE.md, *Naming a technical quantity*) and does not change.
+Its components are the `commanded rotation axis`, the `commanded rotation
+direction`, and the `offset angle`. Repeating the full name in every sentence
+is unnecessary once the quantity has been introduced.
 
 One name, many constructions:
 
 | Instead of, every time | Also |
 |---|---|
-| a tilt about \(t_1\) | the \(t_1\) tilt; tilting the tool about \(t_1\) |
-| for a tilt about \(t_2\) | with the tool tilted about \(t_2\); about \(t_2\) |
-| the tilt about \(t_1\) was | correcting a \(t_1\) tilt calls for |
-| Excited axis *(table header)* | Tilted axis |
+| a commanded tool orientation offset about \(t_1\) | the offset about \(t_1\); the commanded rotation about \(t_1\) |
+| for a commanded tool orientation offset about \(t_2\) | with the offset about \(t_2\); about \(t_2\) |
+| the sign of the tool tilt | the commanded rotation direction; the offset direction |
+| Excited axis *(table header)* | Commanded rotation axis |
 
-`excitation` and `mismatch` remain banned for a commanded tilt.
+`tool tilt`, `excitation`, and `mismatch` are not used for the commanded tool
+orientation offset.
 
 ## What already reads as your own voice
 

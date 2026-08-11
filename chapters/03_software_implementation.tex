@@ -4,6 +4,11 @@
 settled. No further editing is to be applied to it, and any remaining concern
 is raised as a comment rather than as a change.}
 
+\Comment{In the settled prose, use ``commanded tool orientation offset'' for
+the deliberate angular command and ``commanded rotation axis'' or ``commanded
+rotation direction'' for its components. Retain ``tilt'' only for a physical
+inclination or a calibrated surface angle.}
+
 \Revised{This chapter describes the real-time implementation of the Cartesian
 impedance controller developed in \mbox{\Cref{ch:theory}}. The controller is written
 in C++ using libfranka and Eigen and is executed through the Franka Control
@@ -87,6 +92,13 @@ run.
 &
 Provides a separate calibration utility for estimating one point and the
 orientation of the physical surface plane.
+\\[1mm]
+
+\texttt{tools/}\newline
+{\footnotesize\texttt{measure\_tools\_axis.cpp}}
+&
+Estimates the grinding-face normal in the end-effector frame from seated tool
+orientations.
 \\
 \hline
 \end{tabular}
@@ -787,6 +799,7 @@ d_{\mathrm{null}}
 k_\sigma
 =
 1.0\,\mathrm{N\,m},
+\label{eq:implementation_baseline_nullspace_torque_parameters}
 \end{equation}
 
 \begin{equation}
@@ -801,7 +814,16 @@ k_\sigma
 \rho
 =
 10^{-4}.
+\label{eq:implementation_baseline_nullspace_sampling_parameters}
 \end{equation}
+
+\Revised{In \mbox{\cref{eq:implementation_baseline_nullspace_torque_parameters}},
+\mbox{\(d_{\mathrm{null}}\)} is the null-space damping coefficient and
+\mbox{\(k_\sigma\)} is the sigma-conditioning torque magnitude. In
+\mbox{\cref{eq:implementation_baseline_nullspace_sampling_parameters}},
+\mbox{\(\alpha_{\mathrm{probe}}\)} is the null-direction sampling angle and
+\mbox{\(\delta_\sigma\)} is the sigma-comparison deadband. The relative
+\mbox{\abbr{SVD}} tolerance is denoted by \mbox{\(\rho\)}.}
 
 \Revised{During Cartesian pose hold, the operator can adjust the active null-space mode,
 damping coefficient, conditioning-torque magnitude, and probe step. The
@@ -825,9 +847,10 @@ quantities.}
 \label{subsec:implemented_surface_task_frame}
 
 \Revised{The plane configuration contains one surface point expressed in the robot base
-frame, two surface-tilt angles, and a tangent-direction hint. The parameter
-loader converts the tilt angles to a unit surface normal, after which
-\mbox{\texttt{makeSurfaceFrame}} constructs the orthonormal surface frame.}
+frame, two surface-tilt angles, and an auxiliary direction hint for
+\mbox{\(t_1\)}. The parameter loader converts the tilt angles to a unit surface
+normal. The function \mbox{\texttt{makeSurfaceFrame}} uses the hint to fix the
+in-plane rotation of the surface frame.}
 
 \begin{lstlisting}[style=cppstyle,
   caption={Construction of the configured surface point, normal, and task
@@ -887,10 +910,11 @@ R_base_surface.col(2) = normal;
 [\,t_1,\ t_2,\ n_s\,].
 \]
 
-\Revised{Projecting the configured tangent hint onto the plane defines \mbox{\(t_1\)}, while
-the cross product \mbox{\(n_s\times t_1\)} defines \mbox{\(t_2\)}. A fallback direction is
-selected when the tangent hint is approximately parallel to the surface
-normal.}
+\Revised{Only \mbox{\(t_1\)} is constructed from the configured hint. The hint is first
+projected onto the surface plane and normalised. The remaining axis is then
+constructed as \mbox{\(t_2=n_s\times t_1\)}, which completes the right-handed
+surface frame in robot base coordinates. A fallback direction is selected when
+the hint is approximately parallel to the surface normal.}
 
 \Revised{The active baseline uses the calibrated surface point}
 
@@ -943,6 +967,7 @@ toward the configured plane.}
 \Revised{The controlled physical tool axis is configured in the end-effector frame.
 During each callback, its current base-frame direction is obtained from}
 
+\begin{minipage}[t]{\linewidth}
 \begin{lstlisting}[style=cppstyle,
   caption={Transformation of the configured tool axis to the robot base
            frame.},
@@ -957,6 +982,7 @@ Vec3 currentToolAxisInBase(
                Vec3(0.0, 0.0, 1.0));
 }
 \end{lstlisting}
+\end{minipage}
 
 \Revised{The flat alignment direction is selected as either \mbox{\(+n_s\)} or \mbox{\(-n_s\)}
 through \mbox{\texttt{tool\_}}\allowbreak \mbox{\texttt{axis\_}}\allowbreak \mbox{\texttt{target\_}}\allowbreak \mbox{\texttt{sign}}.
@@ -994,10 +1020,11 @@ const Vec3 tool_axis_target =
 \end{lstlisting}
 
 \Revised{This construction permits the tool axis to be aligned with the plane or
-commanded with a defined initial tilt about \mbox{\(t_1\)} and \mbox{\(t_2\)}. The shortest
+assigned a commanded tool orientation offset about \mbox{\(t_1\)} and \mbox{\(t_2\)}. The shortest
 rotation from the tool axis at the captured start orientation to the selected
 target axis is then applied to the complete start orientation:}
 
+\begin{minipage}[t]{\linewidth}
 \begin{lstlisting}[style=cppstyle,
   caption={Initial tool-axis alignment with the captured
            orientation about the tool axis.},
@@ -1012,6 +1039,7 @@ const Mat3 R_axis =
         tool_axis_target)
     * R_start;
 \end{lstlisting}
+\end{minipage}
 
 \Revised{When \mbox{\texttt{command\_tool\_twist}} is enabled, the rectangular-face long axis
 provides an additional in-plane orientation reference. Its current direction
@@ -1161,14 +1189,11 @@ const Vec3 tool_contact_offset_ee =
     / static_cast<double>(selected_count);
 \end{lstlisting}
 
-\Revised{Vertices whose projections differ from the leading value by at most the
-configured tolerance are averaged. Depending on the current orientation, the
-selected feature is therefore a corner, the centre of a leading edge, or the
-centre of the complete face. The baseline tie tolerance is}
-
-\[
-0.0001\,\mathrm{m}=0.1\,\mathrm{mm}.
-\]
+\Revised{The configured tie tolerance groups vertices whose projections differ from the
+leading value by no more than this tolerance. The grouped vertices are
+averaged, which permits nearly equal leading projections to represent an edge
+or the complete face instead of a single corner. The baseline tie tolerance is
+\mbox{\(0.1\,\mathrm{mm}\)}.}
 
 \Revised{The baseline enables both contact-point control and automatic leading-feature
 selection. The selected offset is transformed to the base frame to obtain the
@@ -1526,9 +1551,33 @@ files. When inertia-scaled damping is enabled for a phase group, the controller
 replaces these matrices with values calculated from the current
 operational-space inertia.}
 
-\Revised{The joint-space inertia matrix is obtained from the libfranka model. The
-implementation uses an \mbox{\abbr{LDLT}} factorisation to solve for
-\mbox{\(M^{-1}J^\top\)} and constructs the inverse operational-space inertia:}
+\Revised{The joint-space inertia matrix \mbox{\(M\)} is obtained from the libfranka
+model and factorised using a lower--diagonal--lower-transpose
+(\mbox{\abbr{LDLT}}) decomposition,}
+
+\[
+M=LDL^\top,
+\]
+
+\Revised{where \mbox{\(L\)} is lower triangular and \mbox{\(D\)} is diagonal. Eigen's
+\mbox{\texttt{LDLT}} implementation stores this factorisation and uses it to solve}
+
+\[
+MX=J^\top.
+\]
+
+\Revised{The solution is}
+
+\[
+X=M^{-1}J^\top,
+\]
+
+\Revised{without explicitly forming \mbox{\(M^{-1}\)}. The inverse operational-space
+inertia is then constructed from}
+
+\[
+\Lambda^{-1}=JM^{-1}J^\top.
+\]
 
 \begin{lstlisting}[style=cppstyle,
   caption={Calculation of the operational-space inertia estimate.},

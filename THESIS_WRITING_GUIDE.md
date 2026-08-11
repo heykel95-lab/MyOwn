@@ -306,8 +306,12 @@ circulation, the settled choices are:
   never used for one another.
 - **pole** is implementation vocabulary from the parameter names. Keep it in
   equation labels and parameter keys, not in the running text.
-- **tilt** for the commanded angular offset and for the axis it acts about: a
-  `tilt about t1`, the `tilted axis`, the `tilted-axis stiffness`. Not
+- **commanded tool orientation offset** for the deliberate angular command: a
+  `commanded tool orientation offset about t1`. Its components are the
+  **commanded rotation axis**, **commanded rotation direction**, and **offset
+  angle**. Use `zero orientation offset` and `reversed orientation offset` for
+  the corresponding conditions. Do not use `tilt`, `tool tilt`, or `signed
+  tilt` where this commanded quantity is meant. Not
   `excitation`, which is borrowed from system identification and describes an
   input signal rather than a commanded orientation, and not `mismatch`, which
   implies an unwanted discrepancy where the angle is deliberate.
@@ -662,7 +666,7 @@ scientific purpose statement.
 The principal experimental conclusions of the calibrated-plane campaign are:
 
 1. Within the tested range, compliance-centre placement produced the largest
-   variation in the alignment response. For each tilted axis one lever
+   variation in the alignment response. For each commanded rotation axis one lever
    direction improves alignment and the opposite direction does not, and the
    improving direction is opposite for the two surface tangents. With the lever
    in the other direction, almost no alignment improvement was measured.
@@ -670,15 +674,15 @@ The principal experimental conclusions of the calibrated-plane campaign are:
    **Do not compress this into `the favourable sign is opposite`.** That phrase
    asks the reader to hold three things at once — that a lever has a sign, that
    one sign is favourable, and that which one is favourable depends on the
-   tilted axis — none of which the phrase itself states. Say what improves
+   commanded rotation axis — none of which the phrase itself states. Say what improves
    alignment, then say that it reverses. `favourable` is usable as shorthand
    only after it has been defined at its first appearance, which is Case D in
    Chapter 5; the Abstract, Introduction, and Conclusion cannot rely on that
    definition and must spell the relation out.
-2. Raising the rotational stiffness of the tilted axis reduces alignment over
+2. Raising the rotational stiffness about the commanded rotation axis reduces alignment over
    the tested range. Because the tangent entries were varied separately, report
    this per axis and not as a common paired setting.
-3. Reducing the translational stiffness perpendicular to the tilted axis
+3. Reducing the translational stiffness perpendicular to the commanded rotation axis
    improves alignment about \(t_2\) only, and a high rotational stiffness
    removes that benefit.
 4. Displacing the compliance centre along the surface normal produced no change
@@ -705,7 +709,7 @@ controller was implemented and ran in every reported run; compliance-centre
 position had the largest measured influence; its favourable sign reversed
 between the tangents; stiffness effects were smaller and axis dependent; the
 normal displacement produced no detectable change. A null or bounding result is
-still reported as such: the zero-tilt baseline stays, and the isolated
+still reported as such: the zero-orientation-offset baseline stays, and the isolated
 null-space result remains bounded to free-space hold under the commanded
 force-equivalent.
 
@@ -722,7 +726,7 @@ not from dropping findings.
 
 The central findings the conclusion must carry are: the stiffness parameters had
 a relatively small effect; compliance-centre placement had the largest measured
-effect; its favourable sign depended on the tilted axis; the tool mount
+effect; its favourable direction depended on the commanded rotation axis; the tool mount
 introduced measurement uncertainty that bounds the \(t_2\) results; and
 null-space conditioning was isolated in automatic free-space hold, while the
 combined mode and a physical disturbance remain untested.
@@ -757,7 +761,7 @@ exactly one proposed experiment from each limitation produces a complete,
 evenly weighted list that reads as generated. State the three extensions
 considered most important, each with the question it would settle, then cover
 the remainder briefly in a single paragraph. For this thesis the three are
-negative tilt angles, independent measurement of the tool-face angle, and a
+negative orientation offsets, independent measurement of the tool-face angle, and a
 combined-mode null-space study with a physical disturbance.
 
 Items in a bulleted or numbered list begin with a capital letter and are
@@ -834,7 +838,8 @@ Before accepting a revision:
 - search for question-driven headings and literal research questions;
 - search the running text for names carrying two or more underscores;
 - search for `frozen`, and for any name built from a quantity's state;
-- search for `excitation` and `mismatch` where a commanded tilt is meant;
+- search for `tilt`, `excitation`, and `mismatch` where a commanded tool
+  orientation offset is meant;
 - check that one quantity carries one name and one symbol throughout;
 - search the symbol list for `mixed` and for units written without a space;
 - check that the contents lists the figures, tables and symbols;
