@@ -62,7 +62,7 @@ Keep that distinction in variable names and comments.
   computed invalidates the numbers already written into Chapters 4 and 5 — say
   so rather than quietly re-running.
 - Numbers produced here end up in the thesis, so keep the reported precision
-  within what five repetitions support.
+  within what three repetitions support.
 
 ## Plot scripts
 
