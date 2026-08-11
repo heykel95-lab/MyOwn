@@ -187,6 +187,16 @@ robot.control(
     });
 \end{lstlisting}
 
+\Revised{\mbox{\Cref{fig:controller_block_diagram}} shows the signals combined into the
+commanded joint torque during one control cycle.}
+
+\begin{figure}[H]
+  \centering
+  \resizebox{\textwidth}{!}{\input{figures/controller_block_diagram.tex}}
+  \caption{Torque contributions combined in one control cycle.}
+  \label{fig:controller_block_diagram}
+\end{figure}
+
 \Revised{During each callback, the elapsed controller time is updated from the period
 reported by libfranka. The joint state, end-effector Jacobian, Cartesian
 velocity, end-effector pose, and model-estimated external wrench are then
@@ -258,7 +268,7 @@ depend on the active phase:}
     \item \Revised{surface approach moves the desired position along the descent
           direction;}
     \item \Revised{set-up advances the selected tool feature into the surface;}
-    \item \Revised{grinding retains the achieved preload and can add a tangential
+    \item \Revised{grinding maintains the achieved preload and can add a tangential
           trajectory; and}
     \item \Revised{pose hold regulates the captured Cartesian pose.}
 \end{itemize}
@@ -377,7 +387,7 @@ software.}
 phase. During tool orientation, the desired orientation follows the
 interpolated orientation command. Surface approach uses the final tool-target
 orientation. At the transition to set-up, the current orientation is captured
-and retained throughout set-up and grinding. Cartesian pose hold uses the pose
+and held constant throughout set-up and grinding. Cartesian pose hold uses the pose
 stored for the active hold mode.}
 
 \Revised{The position and orientation errors are evaluated as shown in
@@ -758,11 +768,11 @@ return sigma_only
 
 \Revised{The parameter \mbox{\texttt{nullspace\_sigma\_deadband}} specifies the minimum
 difference required for selecting one sampled direction. Within the deadband,
-the sigma-only mode returns zero torque and the combined mode retains the
+the sigma-only mode returns zero torque and the combined mode preserves the
 damping contribution.}
 
 \Revised{The vector \mbox{\texttt{best\_direction}} corresponds to \mbox{\(sv_7\)}. Multiplication
-by the projector retains its numerical null-space component, while
+by the projector preserves its numerical null-space component, while
 \mbox{\texttt{nullspace\_sigma\_gain}} specifies the conditioning-torque magnitude.
 The function returns the torque associated with the selected mode.}
 
@@ -989,7 +999,7 @@ rotation from the tool axis at the captured start orientation to the selected
 target axis is then applied to the complete start orientation:}
 
 \begin{lstlisting}[style=cppstyle,
-  caption={Initial tool-axis alignment while retaining the captured
+  caption={Initial tool-axis alignment with the captured
            orientation about the tool axis.},
   label={lst:implementation_tool_axis_alignment}]
 const Vec3 tool_axis_start =
@@ -1173,7 +1183,7 @@ const Vec3 tool_contact_point =
 
 \Revised{The leading feature is reevaluated while the tool is being oriented and
 approached. On entry to set-up, its end-effector-frame offset is stored in
-\mbox{\texttt{active\_tool\_contact\_offset\_ee}} and subsequently retained during
+\mbox{\texttt{active\_tool\_contact\_offset\_ee}} and subsequently held constant during
 set-up and grinding.}
 
 \Revised{During surface approach, the clearance calculation distinguishes the exact
@@ -1401,7 +1411,7 @@ gains.DR_setup =
     taskGain(params.setup_DR_diag);
 \end{lstlisting}
 
-\Added{The configuration used for the reported contact runs selected the
+\Revised{The configuration used for the reported contact runs selected the
 surface-frame branch for set-up and grinding. Its translational entries were
 \mbox{\([2000,2000,800]\,\mathrm{N/m}\)} along
 \mbox{\([t_1,t_2,n_s]\)}. The inactive base-frame keys therefore did not enter the
@@ -1592,7 +1602,7 @@ For each direction \mbox{\(i\)}, the inertia-scaled damping coefficient is calcu
 from}
 
 \begin{equation}
-d_i
+d_{\mathrm{dir},i}
 =
 2\zeta\sqrt{\lambda_i k_i},
 \label{eq:implementation_inertia_scaled_damping}
@@ -1709,7 +1719,7 @@ if (!coupled) {
 
 \Revised{Tool orientation, surface approach, grinding, and standard Cartesian pose hold
 therefore use the decoupled impedance branch. A pre-grinding confirmation gate
-retains \mbox{\texttt{ControlPhase::kSetup}}; the coupled set-up impedance consequently
+keeps \mbox{\texttt{ControlPhase::kSetup}}; the coupled set-up impedance consequently
 remains active while the controller waits at the achieved preload.}
 
 \Revised{The controller supports two definitions of the virtual centre. Both follow the
@@ -1931,6 +1941,16 @@ ControlPhase restart_phase = initial_phase;
 guidance. The complete sequence, standard pose hold, and set-up-impedance hold
 can also be selected during an active controller session. The requested mode
 is received through an atomic variable and applied inside the callback.}
+
+\Revised{\mbox{\Cref{fig:phase_flow_chart}} shows the phases, the condition that ends
+each one, and the two operator gates.}
+
+\begin{figure}[H]
+  \centering
+  \resizebox{0.62\textwidth}{!}{\input{figures/phase_flow_chart.tex}}
+  \caption{Run phase sequence with transition conditions and operator gates.}
+  \label{fig:phase_flow_chart}
+\end{figure}
 
 
 \subsection{Tool Orientation}
@@ -2206,7 +2226,7 @@ grinding phase.}
 \subsection{Grinding}
 \label{subsec:implementation_grinding_phase}
 
-\Revised{Grinding retains the final set-up penetration. The controller can either add a
+\Revised{Grinding maintains the final set-up penetration. The controller can either add a
 tangential sweep or maintain only the normal penetration.}
 
 \Revised{For an active sweep, the selected tangent is obtained from the surface frame.
@@ -2268,7 +2288,7 @@ normal. Its tangential coordinates follow the current tool-feature position,
 which preserves the set-up penetration without imposing a tangential
 trajectory.}
 
-\Revised{Grinding retains the set-up stiffness and damping values. The Cartesian
+\Revised{Grinding uses the set-up stiffness and damping values. The Cartesian
 impedance routine selects the decoupled branch after the phase has changed to
 \mbox{\texttt{kGrinding}}, as described in
 \mbox{\Cref{sec:self_alignment_virtual_center}}.}
@@ -2279,7 +2299,7 @@ impedance routine selects the decoupled branch after the phase has changed to
 
 \Revised{The pose-hold state supports two impedance configurations. Standard pose hold
 uses the dedicated hold gains, while set-up-impedance hold applies the set-up
-gains and can retain the virtual centre of compliance. Both modes regulate a
+gains and can keep the virtual centre of compliance. Both modes regulate a
 captured Cartesian pose.}
 
 \Revised{When the set-up-impedance hold is selected during a run, the measured pose is
@@ -2443,10 +2463,10 @@ const Array7 tau_array =
 return Torques(tau_array);
 \end{lstlisting}
 
-\Revised{Torque boundedness and collision response are therefore handled by the
-robot-side monitoring and the configured collision behaviour. The application
-adds no separate saturation of the Cartesian wrench, null-space torque,
-complete joint-torque command, or joint-torque rate.}
+\Revised{The application transfers the calculated Cartesian wrench, null-space
+torque, and complete joint-torque command directly to libfranka. Robot-side
+monitoring and the configured collision behaviour provide command boundedness
+and motion interruption.}
 
 
 \subsection{Initial Joint Posture}
@@ -2508,9 +2528,9 @@ that gripper homing was performed while an object restricted the finger
 motion. The start-up interface then requests recalibration with empty fingers.}
 
 \Revised{A configured gripper action can also be executed automatically immediately
-before torque control. A previously verified manual action is retained and is
+before torque control. A previously verified manual action is kept and is
 therefore not repeated. When the requested action is grasping, an already
-verified tool grasp is also retained:}
+verified tool grasp is also kept:}
 
 \begin{lstlisting}[style=cppstyle,
   caption={Selection of the automatic gripper action before torque control.},
@@ -2680,7 +2700,7 @@ bool log_buffer_wrapped = false;
 defines the sampling interval in
 control cycles, while \mbox{\texttt{max\_}}\allowbreak \mbox{\texttt{log\_}}\allowbreak \mbox{\texttt{rows}} defines
 the maximum number of
-samples retained in memory. The current baseline records every control cycle
+samples stored in memory. The current baseline records every control cycle
 and allocates space for \mbox{\(120\,000\)} rows.}
 
 \Revised{The structure \mbox{\texttt{LogData}} stores one sample of the measured state,
@@ -2845,7 +2865,7 @@ if (log_rows_written < max_log_rows) {
 \end{lstlisting}
 
 \Revised{Once the allocated capacity is reached, new samples replace the oldest rows.
-The buffer therefore retains the most recent
+The buffer therefore stores the most recent
 \mbox{\texttt{max\_}}\allowbreak \mbox{\texttt{log\_}}\allowbreak \mbox{\texttt{rows}} samples instead of increasing
 its memory requirement
 during control.}
@@ -2855,7 +2875,7 @@ during control.}
 \label{subsec:chronological_log_output}
 
 \Revised{After the torque callback has finished, the ring-buffer contents are converted
-to chronological order. When the buffer has wrapped, the oldest retained
+to chronological order. When the buffer has wrapped, the oldest stored
 sample begins at \mbox{\texttt{log\_}}\allowbreak \mbox{\texttt{write\_}}\allowbreak \mbox{\texttt{index}}:}
 
 \begin{lstlisting}[style=cppstyle,
@@ -2950,7 +2970,7 @@ writeVec3(
 \end{lstlisting}
 
 \Revised{The commanded Cartesian wrench and the model-estimated external wrench are
-therefore retained as separate quantities. The former is generated by the
+therefore recorded as separate quantities. The former is generated by the
 impedance controller, while the latter is supplied by the robot state and used
 for set-up evaluation.}
 

@@ -234,13 +234,13 @@ The null-space projector is defined as:
 
 \begin{equation}
 \label{eq:nullspace}
-N = \mI_7 - J^+\mJ \in \R{7\times7}
+N_q = \mI_7 - J^+\mJ \in \R{7\times7}
 \end{equation}
 
-The diagonal entries of $N$ at $\vq_0$ are:
+The diagonal entries of $N_q$ at $\vq_0$ are:
 
 \begin{equation}
-\mathrm{diag}(N) =
+\mathrm{diag}(N_q) =
 [0.5,\;\; 0.5,\;\; 0.0,\;\; 0.0,\;\; 0.0,\;\; 0.0,\;\; 0.0]
 \end{equation}
 
@@ -251,7 +251,7 @@ Here:
         This makes sense: at $\vq_0$ their columns in $\mJ$ are nearly
         identical (see the remark above), so a motion along their
         \emph{difference} direction produces no end-effector velocity.
-  \item Joints\,3â€“7 have zero diagonal entries in $N$ at this
+  \item Joints\,3â€“7 have zero diagonal entries in $N_q$ at this
         configuration, meaning their individual motions are fully
         task-relevant and cannot be independently redirected without
         affecting the end-effector.
@@ -259,9 +259,9 @@ Here:
 
 The implemented controller uses a projected null-space torque as described in
 \cref{sec:nullspace_conditioning_implementation}. In this numerical example,
-the projector $N$ is computed only to illustrate the structure of the
+the projector $N_q$ is computed only to illustrate the structure of the
 redundancy.
-Physically, the non-zero entries in $\mathrm{diag}(N)$ at joints
+Physically, the non-zero entries in $\mathrm{diag}(N_q)$ at joints
 1 and 2 mean that a motion along the \emph{difference} of those two joint
 angles moves no Cartesian end-effector coordinate --- it is the one degree
 of freedom that is ``invisible'' to the task.
@@ -304,8 +304,8 @@ $k_{R,\mathrm{free}}=5\,\mathrm{Nm/rad}$,
 $k_{R,\mathrm{stiff}}=200\,\mathrm{Nm/rad}$.
 For this example the surface normal is \(n_s=[0,0,1]^\top\), with
 \(t_1=[1,0,0]^\top\) and \(t_2=[0,1,0]^\top\). The surface-frame order follows
-\cref{eq:surface_task_frame_matrix}, \(R_{\mathrm{surface}}=[\,n_s\;t_1\;t_2\,]\).
-After transforming the normal-first local gains to the base frame, the
+\cref{eq:surface_task_frame_matrix}, \(R_{\mathrm{surface}}=[\,t_1\;t_2\;n_s\,]\).
+After transforming the tangent-first local gains to the base frame, the
 base-frame translational stiffness is diagonal:
 
 \begin{equation}
@@ -572,9 +572,9 @@ Step & Quantity & Symbol & Value \\
 7  & Damping matrices      & $D_p, D_R$ & See \cref{eq:D_panda} \\
 8  & Impedance forces and moments & $f,m$ & $[+1.0,0,0]^\top$ N, $\mathbf{0}$ \\
 9  & Pseudo-inverse        & $J^+$ & See Eq.~(\ref{eq:Jp_panda}) \\
-10 & Null-space projector  & $N$   & $\mI_7 - J^+\mJ$ \\
-11 & Primary joint torques & $\bm{\tau}_{\mathrm{task}}$ & $[-0.55, -0.55, +0.04, -0.32,$\newline$+0.06, +0.06, 0.00]^\top$ Nm \\
-12 & Null-space torque    & $\bm{\tau}_{\mathrm{null}}$ & projected secondary torque; zero for this numerical example \\
+10 & Null-space projector  & $N_q$   & $\mI_7 - J^+\mJ$ \\
+11 & Cartesian impedance torque & $\tau_{\mathrm{cart}}$ & $[-0.55, -0.55, +0.04, -0.32,$\newline$+0.06, +0.06, 0.00]^\top$ N\,m \\
+12 & Null-space torque    & $\tau_{\mathrm{null}}$ & projected secondary torque; zero for this numerical example \\
 \bottomrule
 \end{tabular}
 \end{table}

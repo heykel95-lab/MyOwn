@@ -8,13 +8,12 @@ The wall is defined by \(n_s=[0,0,1]^\top\), so the normal direction
 coincides with the base-frame \(z\)-axis. To match the surface-frame
 definition of \cref{eq:surface_task_frame_matrix}, choose
 \(t_1=[1,0,0]^\top\) and \(t_2=[0,1,0]^\top\), giving
-\(R_{\mathrm{surface}}=[\,n_s\;t_1\;t_2\,]\).
+\(R_{\mathrm{surface}}=[\,t_1\;t_2\;n_s\,]\).
 
 \textbf{Why the base-frame matrices are diagonal for this specific case:}
 Because \(n_s\), \(t_1\), and \(t_2\) coincide with base-frame axes, the
-transformed matrix remains diagonal even though the surface-frame order is
-normal first. The base-frame stiffness is
-\(K_{p,0}=R_{\mathrm{surface}}\operatorname{diag}(K_n,K_{t_1},K_{t_2})
+transformed matrix remains diagonal. The base-frame stiffness is
+\(K_{p,0}=R_{\mathrm{surface}}\operatorname{diag}(K_{t_1},K_{t_2},K_n)
 R_{\mathrm{surface}}^\top=\operatorname{diag}(K_{t_1},K_{t_2},K_n)\).
 For any tilted wall (\(R_{\mathrm{surface}}\neq I_3\)), the same procedure
 produces a full $3\times3$ \abbr{SPD} matrix with non-zero off-diagonals.
@@ -39,27 +38,27 @@ produces a full $3\times3$ \abbr{SPD} matrix with non-zero off-diagonals.
   caption={Experiment 2: Virtual wall controller with CSV logging},
   label={lst:exp2}]
 // Experiment 2: Virtual Wall (n_s = [0,0,1])
-// Surface-frame order: [normal, tangent_1, tangent_2]
+// Surface-frame order: [tangent_1, tangent_2, normal]
 // In-plane: k_free=50 N/m;  Normal: k_stiff=1000 N/m
 // Tilt free (t1,t2): k_R_free=5 Nm/rad;  Spin stiff (n_s): k_R_stiff=200 Nm/rad
 
-// Surface frame R_surface = [n_s, t1, t2].
+// Surface frame R_surface = [t1, t2, n_s].
 Eigen::Vector3d n_s(0.0, 0.0, 1.0);
 Eigen::Vector3d t1(1.0, 0.0, 0.0);
 Eigen::Vector3d t2(0.0, 1.0, 0.0);
 Eigen::Matrix3d R_surface;
-R_surface.col(0) = n_s;
-R_surface.col(1) = t1;
-R_surface.col(2) = t2;
+R_surface.col(0) = t1;
+R_surface.col(1) = t2;
+R_surface.col(2) = n_s;
 
-// Stiffness in surface frame (normal first, then tangents).
+// Stiffness in surface frame (tangents first, then normal).
 Eigen::Matrix3d Kp_task, KR_task;
-Kp_task << 1000, 0,  0,
-              0, 50, 0,
-              0, 0, 50;   // [N/m]
-KR_task << 200, 0, 0,
-              0, 5, 0,
-              0, 0, 5;   // [Nm/rad]
+Kp_task << 50, 0,  0,
+             0, 50, 0,
+             0, 0, 1000;   // [N/m]
+KR_task << 5, 0, 0,
+             0, 5, 0,
+             0, 0, 200;   // [Nm/rad]
 
 // Rotate to base frame: Kp = R_surface * Kp_task * R_surface^T.
 // For this axis-aligned wall the result is diagonal in the base frame;
@@ -69,10 +68,10 @@ Eigen::Matrix3d KR = R_surface * KR_task * R_surface.transpose();
 
 // Damping values selected per principal direction
 Eigen::Matrix3d Dp = R_surface *
-    Eigen::Vector3d(63.25, 14.14, 14.14)
+    Eigen::Vector3d(14.14, 14.14, 63.25)
     .asDiagonal() * R_surface.transpose();
 Eigen::Matrix3d DR = R_surface *
-    Eigen::Vector3d(28.28, 4.47, 4.47)
+    Eigen::Vector3d(4.47, 4.47, 28.28)
     .asDiagonal() * R_surface.transpose();
 
 // Control law (same as Experiment 1):

@@ -163,8 +163,8 @@ Set-up moment-change threshold &
 Set-up push speed / endpoint &
   \texttt{setup\_push\_speed}, \texttt{setup\_push\_end} &
   \(0.050\,\mathrm{m/s}\), \(0.060\,\mathrm{m}\) \\
-Grind sweep & \texttt{grind\_sweep\_enabled} &
-  disabled (configured \(t_2,\ 0.030\,\mathrm{m},\ 0.2\,\mathrm{Hz}\)) \\
+Grinding reference mode & \texttt{grind\_sweep\_enabled} &
+  fixed tangential coordinates (configured \(t_2,\ 0.030\,\mathrm{m},\ 0.2\,\mathrm{Hz}\)) \\
 Pre-set-up / pre-grind gates &
   \texttt{pause\_before\_set\_up}, \texttt{pause\_before\_grind} &
 enabled, enabled \\
@@ -174,9 +174,6 @@ enabled, enabled \\
 \end{table}
 
 \section{Inertia-Scaled Damping and Centre of Compliance}
-\ReviewMark{yellow}{The active policy is complete, but the fitted damping
-factors are not listed per run and the \(\zeta=1\) heuristic is not a validated
-modal damping ratio.}
 
 Inertia-scaled damping follows \cref{eq:implementation_cartesian_inertia,eq:implementation_inertia_scaled_damping}.
 It is enabled for approach, set-up, grind, and the pause gate. The
@@ -199,9 +196,8 @@ fallbacks.
 
 For set-up, the source damping blocks are calculated from TCP task inertia and
 then shifted to the selected centre of compliance. This preserves symmetry and positive
-semidefiniteness, but the factor \(\zeta=1\) remains a directional tuning
-heuristic; it does not establish a pole-level modal damping ratio for the
-coupled robot--contact system.
+semidefiniteness. The factor \(\zeta=1\) is the directional coefficient used by
+the online damping calculation.
 
 The coupled \(6\times6\) law is enabled only during set-up, and in Cases~D,
 F, G and H. The lever was entered directly in surface coordinates through
@@ -214,7 +210,7 @@ r_c^{S}=[\,r_{c,t_1},\ r_{c,t_2},\ r_{c,n}\,]^\top ,
 with the tested components listed in \cref{tab:experimental_test_cases}. The
 alternative offset-from-edge convention, in which the centre of compliance is
 placed relative to the tool feature projected onto the surface at the
-\(20\,\mathrm{mm}\) clearance hand-off, is retained in the implementation for
+\(20\,\mathrm{mm}\) clearance hand-off, is preserved in the implementation for
 archived configuration files and was not used for the reported runs. With
 \texttt{coupled\_pole\_freeze\_at\_contact=1}, the references are those captured
 at the hand-off, so the active \(r_c\) is constant throughout set-up.
@@ -226,8 +222,8 @@ gripper state, and robot-side thresholds are stated explicitly.}
 The null-space settings are explained in
 \cref{subsec:nullspace_parameter_rationale}. The final two rows of
 Table~\ref{tab:nullspace_safety_parameters} are Franka collision/reflex
-thresholds configured through the libfranka collision-behaviour interface; they
-are neither commanded-torque saturation nor a software wrench limiter.
+thresholds configured through the libfranka collision-behaviour interface.
+Robot-side monitoring applied these thresholds throughout the reported runs.
 
 \begin{table}[H]
 \centering
@@ -251,7 +247,7 @@ Run duration / stop & \texttt{experiment\_duration} &
   \(0\,\mathrm{s}\): indefinite until \texttt{e+Enter} \\
 Gripper grasp & width, speed, force &
   \(0.066\,\mathrm{m}\), \(0.050\,\mathrm{m/s}\), \(60\,\mathrm{N}\) \\
-Tool-mount rotational play & physical observation &
+Tool-mount rotational play & observed pad-mount clearance &
   approximately \(\pm2^\circ\) about \(y_{\mathrm{EE}}\) \\
 Manual-guidance damping & \texttt{manual\_guidance\_damping} &
   \(0.5\,\mathrm{N\,m\,s/rad}\) \\

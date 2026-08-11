@@ -45,7 +45,7 @@ Before writing, rewriting, extending, or editing any prose in `chapters/`,
 The **Register** section at the top of `THESIS_VOICE.md` takes precedence over
 older style advice wherever the two conflict, and the **Measured from the
 settled chapter** section at its end takes precedence over both. Chapter 5 is
-revised and purple, so it, not the guidance written against earlier drafts, is
+revised and green, so it, not the guidance written against earlier drafts, is
 the authority on the register: a mean of about sixteen words per sentence, a
 quarter of them under twelve, almost none over twenty-eight, and determiner
 openers at about half. New prose is measured against those figures before it is
@@ -76,13 +76,14 @@ one-main-claim-per-sentence preference.
 `config/review_annotations.tex` defines two kinds of mark, both invisible in
 `Thesis.pdf` and `Professor_Draft.pdf` and visible only in `Review_Draft.pdf`.
 
-`\ReviewMark{green|yellow|red|grey}{...}` is an assessment box placed after a
-heading. It judges the section that follows and does not change the text.
+`\ReviewMark{...}{...}` is an assessment box placed after a heading. It judges
+the section that follows and does not change the text. A sufficient assessment
+is rendered orange.
 
-`\Revised{...}` (purple), `\Comment{...}` and `\Added{...}` (blue) mark the
+`\Revised{...}` (green), `\Comment{...}` and `\Added{...}` (blue) mark the
 text itself:
 
-- **Purple is frozen. Never change a word inside `\Revised{}`.** Not a
+- **Green revised text is frozen. Never change a word inside `\Revised{}`.** Not a
   reword, not a tightened clause, not an added qualifier, not a restructure.
   The passage has been controlled and found correct and already satisfies what
   the thesis requires. A revised chapter that comes back unchanged is the
@@ -103,19 +104,21 @@ text itself:
   incomplete without it, a crucial fact is missing, a logical step is broken.
   Never for polish, flow, or style. When in doubt, leave it and say nothing.
 - **`\Added{}` is for text in sections not yet revised**, marking new writing
-  as a whole sentence or whole word. It is never used inside a purple passage;
+  as a whole sentence or whole word. It is never used inside a green revised passage;
   a comment goes there instead.
 
 ### Marking a chapter as revised
 
 When the user says a chapter is revised, do all three without asking again:
 
-1. **Delete every `\ReviewMark` assessment box in that chapter** — green,
+1. **Delete every `\ReviewMark` assessment box in that chapter** — orange,
    yellow, red and grey alike. A settled chapter is no longer being judged, so
    the assessments retire with it. Say afterwards which concerns those boxes
    were carrying, so a real objection is not lost silently.
-2. **Add one purple box directly under `\chapter{...}`**, before the first
-   `\section`, framing the whole chapter. Not one per section.
+2. **Add one green revised-status box directly under `\chapter{...}`**, before
+   the first `\section`, framing the whole chapter. The legacy
+   `\ReviewMark{purple}{...}` source key renders this green box. Not one per
+   section.
 3. **Wrap every prose paragraph in `\Revised{...}`** — one wrapper per
    paragraph, since a span cannot cross a paragraph break. Do not wrap headings,
    labels, the `\ReviewMark` box, or float contents.

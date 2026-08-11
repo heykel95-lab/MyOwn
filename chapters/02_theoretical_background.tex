@@ -87,6 +87,16 @@ formulation and the controller
         \end{equation}
 \end{itemize}
 
+\Revised{\mbox{\Cref{fig:reference_frames}} shows these frames together with the pose
+error between the current and the desired end-effector frame.}
+
+\begin{figure}[H]
+  \centering
+  \input{figures/reference_frames.tex}
+  \caption{Frames used in the controller and the end-effector pose error.}
+  \label{fig:reference_frames}
+\end{figure}
+
 \section{Rigid-Body Transformations}
 \label{sec:rigid_transformations}
 
@@ -977,7 +987,7 @@ K_{r,n}
 configured surface orientation therefore changes the corresponding base-frame
 gain matrices even when the local gain values remain unchanged.}
 
-\Added{During approach, contact set-up, and grinding, the reported contact runs
+\Revised{During approach, contact set-up, and grinding, the reported contact runs
 used this surface-frame construction for both translational and rotational gain
 blocks. For set-up and grinding, the translational entries
 \mbox{\([2000,2000,800]\,\mathrm{N/m}\)} were assigned to
@@ -1000,6 +1010,22 @@ impedance at the TCP
 \mbox{\cite{Murray1994,Fasse1997SpatialImpedance,Stramigioli2000IPC,LynchPark2017}}.
 This construction is applied during contact set-up to generate
 translation--rotation coupling that supports tool alignment.}
+
+\Revised{\mbox{\Cref{fig:compliance_lever_moment}} shows this geometry for the two signs
+of the tangential lever.}
+
+\begin{figure}[H]
+  \centering
+  \input{figures/compliance_lever_moment.tex}
+  \caption{Moment produced by the compliance-centre lever at both lever signs.}
+  \label{fig:compliance_lever_moment}
+\end{figure}
+
+\Revised{For a dual-arm assembly task, Suomalainen \mbox{et al.\ }experimentally
+showed that compliance-centre placement and compliant-axis selection affect the
+alignment response \mbox{\citep{Suomalainen2019DualArmCompliance}}. This task-level
+result motivates the placement study in this thesis. The point-shift adjoint
+below remains derived from the spatial-transformation formulation.}
 
 \Revised{The lever from the centre of compliance to the TCP, expressed in the base
 frame, is}
@@ -1188,11 +1214,10 @@ K_{\mathrm{TCP}}\succ0.
 off-diagonal entries therefore represent coupling terms rather than negative
 stiffness directions.}
 
-\Added{This congruence result establishes only that the point shift preserves
-the symmetry and definiteness of the source gain matrices. It is not a formal
-stability proof for the complete robot--controller--contact system with phase
-switching. Closed-loop contact behaviour was instead assessed experimentally
-within the operating conditions reported in \mbox{\Cref{ch:methodology}}.}
+\Revised{The congruence transformation preserves the symmetry and definiteness of
+the source gain matrices. Closed-loop robot--controller--contact behaviour with
+phase switching was assessed experimentally under the operating conditions
+reported in \mbox{\Cref{ch:methodology}}.}
 
 \Revised{This formulation is a local small-motion model in which \mbox{\(r_c\)} is held fixed
 while the wrench is evaluated. In the implemented set-up mode, the selected
@@ -1298,26 +1323,26 @@ therefore be expressed as}
 \begin{equation}
 \dot q
 =
-V_Ja
+V_Jc
 =
-\sum_{i=1}^{7}a_i v_i,
+\sum_{i=1}^{7}c_i v_i,
 \label{eq:joint_velocity_svd_basis}
 \end{equation}
 
 \Revised{where \mbox{\(v_i\)} is the \mbox{\(i\)}-th column of \mbox{\(V_J\)}, and
-\mbox{\(a\in\mathbb{R}^7\)} contains the components of \mbox{\(\dot q\)} along these basis
+\mbox{\(c\in\mathbb{R}^7\)} contains the components of \mbox{\(\dot q\)} along these basis
 directions.}
 
 \Revised{Similarly, the columns of \mbox{\(U_J\)} form an orthonormal basis of the
 six-dimensional end-effector-velocity space. Substituting
-\mbox{\(\dot q=V_Ja\)} into \mbox{\cref{eq:nullspace_jacobian_relation}} gives}
+\mbox{\(\dot q=V_Jc\)} into \mbox{\cref{eq:nullspace_jacobian_relation}} gives}
 
 \begin{equation}
 \dot x
 =
-J(q)V_Ja
+J(q)V_Jc
 =
-U_J\Sigma_Ja.
+U_J\Sigma_Jc.
 \label{eq:end_effector_velocity_svd_basis}
 \end{equation}
 
@@ -1374,7 +1399,7 @@ direction \mbox{\(v_i\)},}
 \begin{equation}
 \dot q
 =
-a_i v_i,
+c_i v_i,
 \end{equation}
 
 \Revised{therefore produces the end-effector velocity}
@@ -1382,7 +1407,7 @@ a_i v_i,
 \begin{equation}
 \dot x
 =
-a_i\sigma_i u_i.
+c_i\sigma_i u_i.
 \end{equation}
 
 \Revised{The singular value \mbox{\(\sigma_i\)} scales the mapping from the joint-velocity
@@ -1755,12 +1780,10 @@ k_\sigma N_\tau\left(sv_7\right)
 
 \Revised{When the Jacobian has full row rank, its null space is one-dimensional and is
 spanned by \mbox{\(v_7\)}. If the Jacobian loses row rank, the null space becomes
-multidimensional. In that case, the implemented conditioning term continues to
-probe the directions \mbox{\(+v_7\)} and \mbox{\(-v_7\)}. A more general treatment would
-require consideration of the additional right singular vectors associated with
-the enlarged null space. This extension is outside the scope of the present
-work. The damping contribution, by contrast, acts on the joint-motion
-directions contained in the numerical null space through \mbox{\(N_\tau\dot q\)}.}
+multidimensional and the projector includes the additional numerical-null-space
+directions. The damping contribution acts on motion in all these directions
+through \mbox{\(N_\tau\dot q\)}. The implemented conditioning term retains its two
+probes along \mbox{\(+v_7\)} and \mbox{\(-v_7\)}.}
 
 \Revised{The activation of the damping and conditioning contributions is a controller
 configuration choice. The available combinations and the configuration used
