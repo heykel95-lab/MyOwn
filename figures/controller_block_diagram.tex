@@ -27,7 +27,12 @@
 % ------------------------------------------------------------- lower inputs
 \node[src] (model)  at ( 0.0, -2.1) {model\\[-2pt]\footnotesize $J,\ M(q),\ c(q,\dot q)$};
 \node[sel] (null)   at ( 3.5, -2.1) {null-space term\\[-2pt]\footnotesize $N_\tau$: damping, $\sigma_{\min}$};
-\node[sel] (imp)    at (10.5, -2.1) {impedance form\\[-2pt]\footnotesize decoupled \emph{or} point-shifted, inertia-scaled $D$};
+% The text width is fixed rather than left to the content. Unconstrained, this
+% box reaches past x = 13.5 and the jt-to-sum descent at x = 13.8 then runs
+% through it.
+\node[sel, text width=3.5cm, align=center] (imp) at (10.5, -2.1)
+  {impedance form\\[-2pt]\footnotesize decoupled \emph{or} point-shifted,
+   inertia-scaled $D$};
 
 % -------------------------------------------------------------- summation
 \node[sum] (plus)   at (13.8, -3.95) {\large$+$};
@@ -50,9 +55,11 @@
 % run 2: measured pose into the error, just under the chain
 \draw[sig] (state.south) -- (0.0,-0.95) -- (7.0,-0.95) -- (err.south);
 
-% run 3: the active gains select the impedance form
+% run 3: the active gains select the impedance form. It enters left of centre
+% so that the imp-to-wrench link, which leaves from the centre of the same
+% edge, neither shares this arrowhead nor crosses this run.
 \draw[sig] (phase.south) -- (3.5,-1.35) -- node[lbl, above, pos=0.55]
-      {active gains} (10.5,-1.35) -- (imp.north);
+      {active gains} (9.2,-1.35) -- ([xshift=-13mm]imp.north);
 
 % run 4: null-space torque into the sum from the left
 \draw[sig] (null.south) -- (3.5,-3.95) -- node[lbl, above, pos=0.55]
