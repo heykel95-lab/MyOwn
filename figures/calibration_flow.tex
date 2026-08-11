@@ -24,10 +24,17 @@
   \node[blk, minimum width=5.2cm] (runtime) at (7.5,-2.0)
     {run-time geometry\\$a_T=R_{\mathrm{EE}}a_{\mathrm{EE}}$ relative to $n_s$};
 
+  % Routing. The run-time box spans x = 4.9 to 10.1 and y = -2.525 to -1.475,
+  % so the two feed-in runs are kept on separate heights and separate columns:
+  %   y = -1.00  the tool chain, entering the box from the north;
+  %   y = -2.00  the plane chain, entering the box from the east;
+  %   x =  12.6  the plane chain's descent, clear of the T_4 box at x = 11.8.
+  % An earlier version dropped the tool chain to y = -1.45, which laid that run
+  % along the top edge of the run-time box.
   \draw[sig] (plane-data) -- (plane-fit);
   \draw[sig] (plane-fit) -- (plane-check);
   \draw[sig] (tool-data) -- (tool-fit);
   \draw[sig] (tool-fit) -- (tool-check);
-  \draw[sig] (plane-check.east) -- (12.0,2.0) -- (12.0,-2.0) -- (runtime.east);
-  \draw[sig] (tool-check.south) -- (10.0,-1.45) -- (7.5,-1.45) -- (runtime.north);
+  \draw[sig] (plane-check.east) -- (12.6,2.0) -- (12.6,-2.0) -- (runtime.east);
+  \draw[sig] (tool-check.south) -- (10.0,-1.0) -- (7.5,-1.0) -- (runtime.north);
 \end{tikzpicture}
