@@ -50,11 +50,20 @@
 
 % Hand guiding and back. The recapture returns to the phase the run started
 % in, so a hold that was guided resumes holding at the new pose rather than
-% entering the sequence.
+% entering the sequence, and a guided run resumes at its first phase.
 \draw[flow] (hold) -- node[lbl, left] {\texttt{g}} (guide);
 \draw[flow] (guide.east) -- (9.6,-2.9)
       -- node[lbl, right, pos=0.55] {\texttt{p} recaptures}
       (9.6,0.0) -- (hold.east);
+
+% The same pair for the run sequence, drawn from one phase in the way the
+% stop box is, since guidance is entered from whichever phase is active.
+\draw[flow] (setup.east)
+      -- node[lbl, above, pos=0.45] {\texttt{g} from any phase}
+      (6.6,-5.8) -- (guide.south);
+\draw[flow] (guide.west) -- (3.3,-2.9) -- (3.3,1.65)
+      -- node[lbl, above, pos=0.45] {\texttt{p} recaptures}
+      (-2.5,1.65) -- (-2.5,0.0) -- (orient.west);
 
 \draw[flow, red!45!black] (grind) -- (stop);
 

@@ -275,7 +275,8 @@ For the Panda, the controlled variable is the full end-effector position and ori
 $T_{EE}\in SE(3)$ with translational error
 $e_p\in\mathbb{R}^3$ and rotational error
 $e_R\in\mathbb{R}^3$ (see \cref{subsec:cartesian_pose_error}).
-The impedance matrices are $3\times3$ SPD matrices as defined in
+The impedance matrices are $3\times3$ symmetric positive definite matrices as
+defined in
 \cref{sec:stiffness_damping_representation}.
 
 \subsection{\texorpdfstring{Virtual Inertia Matrix $M$}{Virtual Inertia Matrix M}}
@@ -331,7 +332,8 @@ These are diagonal here \emph{only} because the surface normal and tangents
 coincide with base-frame axes.
 For a tilted wall with \(R_{\mathrm{surface}}\neq I\), applying
 \(K_{p,0}=R_{\mathrm{surface}}K_{p,\mathrm{task}}R_{\mathrm{surface}}^\top\)
-would produce a \textbf{full} $3\times3$ SPD matrix with non-zero
+would produce a \textbf{full} $3\times3$ symmetric positive definite matrix
+with non-zero
 off-diagonal entries by the same congruence transformation used in
 \cref{eq:general_task_frame_gain_transform}.
 
@@ -364,7 +366,7 @@ D_R =
 Again, diagonal here only because the surface frame axes coincide with the
 base-frame coordinate axes after the normal-first ordering is transformed.
 For a general wall orientation all four matrices $K_p$,
-$K_R$, $D_p$, $D_R$ would be full SPD
+$K_R$, $D_p$, $D_R$ would be full symmetric positive definite
 $3\times3$ matrices in the base frame.
 
 % â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -377,7 +379,7 @@ $3\times3$ matrices in the base frame.
 Suppose the desired position and orientation are \(T_d\) with \(R_d=I_3\)
 and $p_d=[0.136,\;0.545,\;0.395]^\top\,\mathrm{m}$
 (the home position shifted $20\,\mathrm{mm}$ in $x$).
-The current position and orientation at $\vq_0$ are \(T_{\mathrm{EE}}\) with \(R_{\mathrm{EE}}\) (from \abbr{FK})
+The current position and orientation at $\vq_0$ are \(T_{\mathrm{EE}}\) with \(R_{\mathrm{EE}}\) (from forward kinematics)
 and $p_{\mathrm{EE}}=[0.116,\;0.545,\;0.395]^\top\,\mathrm{m}$.
 
 Following \cref{eq:expanded_transformation_error}, the position-and-orientation error matrix is:
