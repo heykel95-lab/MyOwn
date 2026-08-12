@@ -227,7 +227,7 @@ Good examples:
 - `Set-up settling at 4, 8, and 12 s.`
 - `Paired tangent-axis stiffness results (n=5 per setting).`
 - `Alignment response by compliance-centre coordinate.`
-- `Phase-specific automatic-damping policy.`
+- `Phase-specific inertia-scaled damping policy.`
 
 Do not place the interpretation, complete procedure, limitations, or a second
 discussion paragraph inside the caption. Put that information in the body text
@@ -331,6 +331,28 @@ Getting this wrong is not only a wording fault. The anomalous \(10^\circ\)
 \(t_2\) repetition was attributed to "the fixture" in two places while
 Section 5.10 explained it through the tool mount, so the thesis named two
 different causes for one observation.
+
+**The word `automatic` is not used in thesis prose, in any form.** Not
+`automatic`, `automatically`, or `automatic-`. It contrasts what the controller
+does with an unstated manual alternative that this thesis never ran, and in
+every place it appeared the specific name was already available and carried more
+information:
+
+| Was | Now |
+|---|---|
+| the automatic sequence | the run sequence |
+| the automatic disturbance experiment | the internally commanded disturbance experiment |
+| automatic error recovery | error recovery |
+| automatic leading-feature selection | leading-feature selection |
+| the automatic gripper action / a failed automatic action | the gripper action / a failed gripper action |
+| these automatically damped phases | the phases using inertia-scaled damping |
+| executed automatically immediately before torque control | executed immediately before torque control |
+
+The ban covers running text, captions, and headings. It does **not** cover
+literal source: `robot.automaticErrorRecovery()` is the libfranka call and the
+`AutomaticDisturbance` type is the implementation's own name, so both stay
+verbatim inside listings. Existing `\label{}` keys and generated figure
+filenames also keep their spelling, since neither reaches the reader.
 
 Do not build a name out of the state a quantity happens to be in. The term
 `frozen` is not used in thesis prose. State when a quantity is selected and
@@ -743,7 +765,7 @@ The central findings the conclusion must carry are: the stiffness parameters had
 a relatively small effect; compliance-centre placement had the largest measured
 effect; its favourable direction depended on the commanded rotation axis; the tool mount
 introduced measurement uncertainty that bounds the \(t_2\) results; and
-null-space conditioning was isolated in automatic free-space hold, while the
+null-space conditioning was isolated in free-space Cartesian pose hold, while the
 combined mode and a physical disturbance remain untested.
 
 Settling, formulation-equivalence, and repeatability checks belong in Chapter 5.
@@ -853,6 +875,8 @@ Before accepting a revision:
 - search for question-driven headings and literal research questions;
 - search the running text for names carrying two or more underscores;
 - search for `frozen`, and for any name built from a quantity's state;
+- search for `automatic` and `automatically`; only literal source identifiers,
+  `\label{}` keys, and figure filenames may keep them;
 - search for `tilt`, `excitation`, and `mismatch` where a commanded tool
   orientation offset is meant;
 - check that one quantity carries one name and one symbol throughout;

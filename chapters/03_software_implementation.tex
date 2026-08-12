@@ -116,7 +116,7 @@ disturbance-test settings, and manual-guidance settings.}
 
 \Revised{At program start, the parameter files are read to obtain the robot address and
 initial controller configuration. The robot connection is then established,
-automatic error recovery is requested, the selected collision behaviour is
+error recovery is requested, the selected collision behaviour is
 assigned, and the libfranka robot model is loaded. A separate keyboard thread
 is also started to receive operator requests during the controller session.
 These requests are transferred through atomic variables shared with the
@@ -342,9 +342,10 @@ J^\top(q)F.
 
 \Revised{The SVD-based null-space routine calculates the secondary torque
 \mbox{\(\tau_{\mathrm{null}}\)} according to the selected null-space mode. During
-the automatic disturbance experiment in Cartesian pose hold, an additional
-joint-torque contribution \mbox{\(\tau_{\mathrm{dist}}\)} is generated. Its value is
-zero during the remaining controller operation.}
+the Cartesian pose-hold disturbance experiment described in
+\mbox{\Cref{sec:nullspace_hold_study}}, an additional joint-torque contribution
+\mbox{\(\tau_{\mathrm{dist}}\)} is applied. For all other controller operation,
+the disturbance torque is set to zero, \mbox{\(\tau_{\mathrm{dist}}=0\)}.}
 
 \Revised{The Coriolis and centrifugal torque \mbox{\(\tau_c\)} is obtained from the
 libfranka model. The complete torque command \mbox{\(\tau_{\mathrm{cmd}}\)} of an
@@ -452,7 +453,7 @@ base-frame error \mbox{\(e_R\)} defined in
 \Revised{The rotational mask is applied after the error has been transformed to the
 base frame. The function first expresses \mbox{\(e_R\)} in the surface frame, selects
 the enabled components about \mbox{\(t_1\)}, \mbox{\(t_2\)}, and \mbox{\(n_s\)}, and transforms the
-result back to the base frame. The baseline configuration enables all three
+result back to the base frame. The active configuration enables all three
 components. The mask acts on the rotational spring error, while rotational
 damping continues to use the measured angular velocity and the selected
 damping matrix.}
@@ -796,7 +797,7 @@ by the projector preserves its numerical null-space component, while
 \mbox{\texttt{nullspace\_sigma\_gain}} specifies the conditioning-torque magnitude.
 The function returns the torque associated with the selected mode.}
 
-\Revised{The baseline configuration is loaded from \mbox{\texttt{nullspace.conf}}. It uses
+\Revised{The active configuration is loaded from \mbox{\texttt{nullspace.conf}}. It uses
 the combined damping and singular-value conditioning mode with the parameters}
 
 \begin{equation}
@@ -845,7 +846,8 @@ configuration loaded before the controller session.}
 
 \Revised{The mathematical definition of the surface task frame is given in
 \mbox{\Cref{subsec:surface_task_frame}}. In the implementation, this frame is
-constructed from the calibrated plane orientation and a tangent-direction hint.
+constructed from the calibrated plane orientation and a reference direction for
+\mbox{\(t_1\)}.
 The resulting frame is then used for the tool-orientation target, the approach
 direction, the phase-dependent gains, and the surface-relative evaluation
 quantities.}
@@ -855,10 +857,11 @@ quantities.}
 \label{subsec:implemented_surface_task_frame}
 
 \Revised{The plane configuration contains one surface point expressed in the robot base
-frame, two surface-tilt angles, and an auxiliary direction hint for
-\mbox{\(t_1\)}. The parameter loader converts the tilt angles to a unit surface
-normal \mbox{\(n_s\)}. The function \mbox{\texttt{makeSurfaceFrame}} uses the hint to fix the
-in-plane rotation of the surface frame.}
+frame, two surface-tilt angles, and a surface-frame reference direction
+\mbox{\(a_s\)} used to define \mbox{\(t_1\)}. The parameter loader converts the
+tilt angles to a unit surface normal \mbox{\(n_s\)}. The function
+\mbox{\texttt{makeSurfaceFrame}} uses \mbox{\(a_s\)} to fix the in-plane
+rotation of the surface frame.}
 
 \begin{lstlisting}[style=cppstyle,
   caption={Construction of the configured surface point, normal, and task
@@ -918,13 +921,14 @@ R_base_surface.col(2) = normal;
 [\,t_1,\ t_2,\ n_s\,].
 \]
 
-\Revised{Only \mbox{\(t_1\)} is constructed from the configured hint. The hint is first
-projected onto the surface plane and normalised. The remaining axis is then
-constructed as \mbox{\(t_2=n_s\times t_1\)}, which completes the right-handed
-surface frame in robot base coordinates. A fallback direction is selected when
-the hint is approximately parallel to the surface normal \mbox{\(n_s\)}.}
+\Revised{The configured surface-frame reference direction \mbox{\(a_s\)} is projected
+onto the surface plane and normalised to obtain \mbox{\(t_1\)}. The second
+tangent is then constructed as \mbox{\(t_2=n_s\times t_1\)}, completing the
+right-handed surface frame in robot base coordinates. A fallback direction is
+selected when \mbox{\(a_s\)} is approximately parallel to the surface normal
+\mbox{\(n_s\)}.}
 
-\Revised{The active baseline uses the calibrated surface point}
+\Revised{The active configuration uses the calibrated surface point}
 
 \[
 p_s
@@ -942,9 +946,10 @@ p_s
 \beta_s=+0.988^\circ.
 \]
 
-\Revised{The tangent hint is the positive base-frame \mbox{\(x\)}-direction. The configuration
+\Revised{The positive base-frame \mbox{\(x\)}-direction is used as the reference
+direction for constructing \mbox{\(t_1\)}. The configuration
 selector \mbox{\texttt{use\_start\_as\_surface\_point}} can alternatively assign the
-captured controller start position to the runtime surface point. The baseline
+captured controller start position to the runtime surface point. The active
 configuration selects the calibrated point from \mbox{\texttt{surface.conf}}:}
 
 \begin{lstlisting}[style=cppstyle,
@@ -1102,7 +1107,7 @@ an equivalent face orientation. The implementation selects the equivalent
 half-turn nearest to the captured start orientation, thereby reducing the
 required orientation motion.}
 
-\Revised{The active baseline defines the controlled axis as
+\Revised{The active configuration defines the controlled axis as
 \mbox{\(+z_{\mathrm{EE}}\)} and selects alignment toward the surface through}
 
 \[
@@ -1144,7 +1149,7 @@ const std::array<Vec3, 4>
     }};
 \end{lstlisting}
 
-\Revised{The baseline face centre is located \mbox{\(20\,\mathrm{mm}\)} along
+\Revised{The configured face centre is located \mbox{\(20\,\mathrm{mm}\)} along
 \mbox{\(+z_{\mathrm{EE}}\)}. Its half-width and half-length are \mbox{\(20\,\mathrm{mm}\)}
 along \mbox{\(x_{\mathrm{EE}}\)} and \mbox{\(60\,\mathrm{mm}\)} along
 \mbox{\(y_{\mathrm{EE}}\)}, respectively. The represented contact face therefore
@@ -1200,11 +1205,11 @@ const Vec3 tool_contact_offset_ee =
 \Revised{The configured tie tolerance groups vertices whose projections differ from the
 leading value by no more than this tolerance. The grouped vertices are
 averaged, which permits nearly equal leading projections to represent an edge
-or the complete face instead of a single corner. The baseline tie tolerance is
+or the complete face instead of a single corner. The configured tie tolerance is
 \mbox{\(0.1\,\mathrm{mm}\)}.}
 
-\Revised{The baseline enables both contact-point control and automatic leading-feature
-selection. The selected offset is transformed to the base frame to obtain the
+\Revised{The active configuration enables both contact-point control and
+leading-feature selection. The selected offset is transformed to the base frame to obtain the
 current controlled feature:}
 
 \begin{lstlisting}[style=cppstyle,
@@ -1730,7 +1735,7 @@ configured translational and rotational gate-hold damping values. Cartesian pose
 translational damping and apply it to the translational and rotational
 inertia-scaled damping calculations.}
 
-\Revised{The baseline configuration enables inertia-scaled damping for approach, set-up, and
+\Revised{The active configuration enables inertia-scaled damping for approach, set-up, and
 the phase gates. Standard Cartesian pose hold uses its configured damping
 matrices. The exact stiffness, damping-factor, and limiting values used during
 the experiments are listed in \mbox{\Cref{ch:methodology}}.}
@@ -1949,7 +1954,7 @@ coupled impedance.}
 \label{sec:control_phases}
 
 \Revised{The controller state is represented by the enumeration
-\mbox{\texttt{ControlPhase}}. It contains the four phases of the automatic sequence
+\mbox{\texttt{ControlPhase}}. It contains the four phases of the run sequence
 together with Cartesian pose hold and manual guidance:}
 
 \begin{lstlisting}[style=cppstyle,
@@ -1965,7 +1970,7 @@ enum class ControlPhase {
 };
 \end{lstlisting}
 
-\Revised{The automatic sequence follows}
+\Revised{The run sequence follows}
 
 \[
 \texttt{kToolOrientation}
@@ -2008,7 +2013,7 @@ each one, and the two operator gates.}
 \begin{figure}[H]
   \centering
   \resizebox{0.62\textwidth}{!}{\input{figures/phase_flow_chart.tex}}
-  \caption{Run phase sequence with transition conditions and operator gates.}
+  \caption{Run phase sequence and Cartesian pose hold.}
   \label{fig:phase_flow_chart}
 \end{figure}
 
@@ -2427,7 +2432,7 @@ configuration are described in
 \label{sec:collision_behavior_safety}
 
 \Revised{Robot preparation is performed before the real-time impedance callback begins.
-It includes the initial FCI connection, automatic error recovery, collision
+It includes the initial FCI connection, error recovery, collision
 configuration, motion to the selected initial posture, and the optional
 gripper and tool-transfer actions.}
 
@@ -2435,7 +2440,7 @@ gripper and tool-transfer actions.}
 \label{subsec:robot_collision_configuration}
 
 \Revised{At program start, the robot address is read from the controller configuration
-and used to establish the FCI connection. Automatic error recovery is requested
+and used to establish the FCI connection. Error recovery is requested
 before the collision behaviour and robot model are loaded:}
 
 \begin{lstlisting}[style=cppstyle,
@@ -2589,13 +2594,13 @@ largest width used by the controller. A smaller calibrated stroke indicates
 that gripper homing was performed while an object restricted the finger
 motion. The start-up interface then requests recalibration with empty fingers.}
 
-\Revised{A configured gripper action can also be executed automatically immediately
+\Revised{A configured gripper action can also be executed immediately
 before torque control. A previously verified manual action is kept and is
 therefore not repeated. When the requested action is grasping, an already
 verified tool grasp is also kept:}
 
 \begin{lstlisting}[style=cppstyle,
-  caption={Selection of the automatic gripper action before torque control.},
+  caption={Selection of the gripper action before torque control.},
   label={lst:implementation_startup_gripper_action}]
 if (params.perform_gripper_action_before_run &&
     !params.start_with_manual_guidance &&
@@ -2630,7 +2635,7 @@ if (params.perform_gripper_action_before_run &&
 \Revised{The parameter
 \mbox{\texttt{abort\_}}\allowbreak \mbox{\texttt{on\_}}\allowbreak \mbox{\texttt{gripper\_}}\allowbreak \mbox{\texttt{action\_}}\allowbreak \mbox{\texttt{failure}}
 determines whether
-a failed automatic action terminates the program or allows the selected
+a failed gripper action terminates the program or allows the selected
 controller session to continue.}
 
 
@@ -2763,7 +2768,7 @@ bool log_buffer_wrapped = false;
 defines the sampling interval in
 control cycles, while \mbox{\texttt{max\_}}\allowbreak \mbox{\texttt{log\_}}\allowbreak \mbox{\texttt{rows}} defines
 the maximum number of
-samples stored in memory. The current baseline records every control cycle
+samples stored in memory. The active configuration records every control cycle
 and allocates space for \mbox{\(120\,000\)} rows.}
 
 \Revised{The structure \mbox{\texttt{LogData}} stores one sample of the measured state,

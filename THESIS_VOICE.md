@@ -993,6 +993,11 @@ Search the changed `.tex` files for each of these:
 - `puts`, `uses`, `provides a`, `helps to`, `plays a role`, `deals with`
 - `useful`, `important`, `powerful`, `interesting`, `straightforward`,
   `another difficulty`
+- `automatic`, `automatically` — banned in prose by
+  THESIS_WRITING_GUIDE.md, *Naming a technical quantity*. Name the thing
+  instead: `the run sequence`, `error recovery`, `the gripper action`,
+  `the internally commanded disturbance experiment`. Hits inside a listing,
+  a `\label{}`, or a figure filename are the permitted exceptions.
 - `is a right-handed orthogonal system`, and any other sentence that defines a
   standard term
 - `, and ` appearing three or more times in one sentence
