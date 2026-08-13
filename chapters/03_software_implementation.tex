@@ -1785,7 +1785,8 @@ if (!coupled) {
 \Revised{Tool orientation, surface approach, grinding, and standard Cartesian pose hold
 therefore use the decoupled impedance branch. A pre-grinding confirmation gate
 keeps \mbox{\texttt{ControlPhase::kSetup}}; the coupled set-up impedance consequently
-remains active while the controller waits at the achieved preload.}
+remains active while the controller waits, and the penetration ramp continues
+to advance.}
 
 \Revised{The controller supports two definitions of the virtual centre. Both follow the
 lever convention}
@@ -2188,7 +2189,7 @@ double setup_push_velocity = 0.0;
 const double push =
     setupPush(
         params,
-        phase_time - gate_grind_paused_time,
+        phase_time,
         setup_push_start,
         setup_push_velocity);
 
@@ -2206,11 +2207,11 @@ desired.pdot_d =
     * descend_direction;
 \end{lstlisting}
 
-\Revised{The function \mbox{\texttt{setupPush}} integrates a constant signed speed and clamps
-the result at the configured final penetration. Subtracting
-\mbox{\texttt{gate\_}}\allowbreak \mbox{\texttt{grind\_}}\allowbreak \mbox{\texttt{paused\_}}\allowbreak \mbox{\texttt{time}} freezes
-this trajectory while the controller
-waits at the pre-grinding gate.}
+\Revised{The function \mbox{\texttt{setupPush}} integrates a constant signed
+speed and clamps the result at the configured final penetration. It is
+evaluated on the elapsed phase time, so the ramp runs whenever the set-up phase
+is active. Reaching the clamp is what ends the advance, not leaving the
+phase.}
 
 \Revised{The desired orientation remains
 \mbox{\texttt{R\_contact\_start}}, which is the orientation captured at the clearance
@@ -2268,9 +2269,6 @@ if (params.pause_before_grind &&
   }
 
   if (!signals.gate_continue.load()) {
-    gate_grind_paused_time
-        += period.toSec();
-
     break;
   }
 
@@ -2283,10 +2281,12 @@ phase = ControlPhase::kGrinding;
 phase_start_time = time;
 \end{lstlisting}
 
-\Revised{The coupled set-up impedance and the achieved pressed contact-point reference remain
-active while the controller waits. After confirmation, the current penetration
-is stored in \mbox{\texttt{grind\_push}} and becomes the normal preload of the
-grinding phase.}
+\Revised{The coupled set-up impedance stays active while the controller waits,
+and so does the penetration ramp. The commanded depth therefore keeps advancing
+until it reaches the configured final penetration, and the preload the tool
+holds at the gate depends on how long the wait lasts. After confirmation, the
+current penetration is stored in \mbox{\texttt{grind\_push}} and becomes the
+normal preload of the grinding phase.}
 
 
 \subsection{Grinding}
