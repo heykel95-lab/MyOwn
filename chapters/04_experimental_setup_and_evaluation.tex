@@ -2082,7 +2082,12 @@ therefore a command-scale bound rather than a measured contact load.}
 
 \Revised{The set-up moment threshold was applied to the change in libfranka's
 model-estimated external moment after subtraction of the value stored at the
-clearance transition. It served as a controller termination condition rather
-than a calibrated contact-force or contact-moment boundary. The timeout,
+clearance transition. That estimate is referenced to the base frame origin, so
+its magnitude is dominated by the reach of the arm rather than by the load at
+the tool: at a press near \mbox{\(80\,\mathrm{N}\)} it reaches
+\mbox{\(42\,\mathrm{N\,m}\)}, where the moment referenced to the TCP is about
+\mbox{\(1\,\mathrm{N\,m}\)}. The threshold therefore terminated no run, and
+set-up ended on its timeout throughout. It served as a controller termination
+condition rather than a calibrated contact-force or contact-moment boundary. The timeout,
 collision configuration, operator gates, logged torque command, displacement,
 and model-estimated wrench were considered together when assessing each run.}
