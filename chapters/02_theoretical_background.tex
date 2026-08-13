@@ -1264,13 +1264,10 @@ m_c
 \label{eq:pole_translation_moment_sign_check}
 \end{equation}
 
-\Revised{A nonzero commanded tool orientation offset is described by a positive
-offset angle and a signed unit rotation axis
-\mbox{\(u_{\mathrm{rot}}\in\operatorname{span}\{t_1,t_2\}\)}, with
-\mbox{\(\lVert u_{\mathrm{rot}}\rVert=1\)}. The vector carries the commanded
-rotation direction \mbox{\(u_{\mathrm{rot}}\)}, while the offset angle carries its magnitude. Reversing
-the commanded orientation offset replaces \mbox{\(u_{\mathrm{rot}}\)} by
-\mbox{\(-u_{\mathrm{rot}}\)}.}
+\Revised{A commanded tool orientation offset turns the tool about one of the
+surface tangents. The lever is chosen perpendicular to that tangent within the
+tangent plane, so that the moment the press generates opposes the commanded
+rotation. Reversing the commanded offset reverses the lever with it.}
 
 \Revised{The right-handed surface frame satisfies}
 
@@ -1284,29 +1281,15 @@ n_s\times t_2=-t_1.
 \end{equation}
 
 \Revised{For a selected tangential lever magnitude \mbox{\(\rho_c>0\)}, the
-tangential compliance-centre lever \mbox{\(r_{c,t}\)} is chosen as}
+tangential compliance-centre lever \mbox{\(r_{c,t}\)} is therefore}
 
 \begin{equation}
-r_{c,t}
-=
--\rho_c n_s\times u_{\mathrm{rot}}.
-\label{eq:general_compliance_lever_selection}
-\end{equation}
-
-\Revised{The cross product maps the signed commanded rotation axis
-\mbox{\(u_{\mathrm{rot}}\)} to its
-perpendicular direction within the surface tangent plane. The two
-principal-axis instances are}
-
-\begin{equation}
-u_{\mathrm{rot}}=+t_1
-\ \Longrightarrow\
-r_{c,t}=-\rho_c t_2,
+r_{c,t}=-\rho_c t_2
+\quad\text{about } t_1,
 \qquad
-u_{\mathrm{rot}}=+t_2
-\ \Longrightarrow\
-r_{c,t}=+\rho_c t_1.
-\label{eq:general_compliance_lever_principal_axes}
+r_{c,t}=+\rho_c t_1
+\quad\text{about } t_2.
+\label{eq:general_compliance_lever_selection}
 \end{equation}
 
 \Revised{Because the set-up motion is commanded primarily along the surface
@@ -1326,15 +1309,17 @@ contact friction, are treated as comparatively small. Substitution into
 \mbox{\cref{eq:pole_translation_moment_sign_check}} gives}
 
 \begin{equation}
-m_c
-\approx
--F_n\rho_c u_{\mathrm{rot}}.
+m_c\approx-F_n\rho_c t_1
+\quad\text{about } t_1,
+\qquad
+m_c\approx-F_n\rho_c t_2
+\quad\text{about } t_2.
 \label{eq:general_compliance_lever_moment}
 \end{equation}
 
-\Revised{The generated moment therefore acts opposite to the signed commanded
-rotation axis \mbox{\(u_{\mathrm{rot}}\)}. Reversing the orientation offset reverses both the selected
-lever and the generated moment.}
+\Revised{The generated moment therefore acts opposite to the commanded rotation
+in both cases. Reversing the orientation offset reverses both the selected lever
+and the generated moment.}
 
 \Revised{The coupling vanishes for \mbox{\(r_c=0\)}. Conversely, if \mbox{\(K_p\)} is nonsingular,
 zero coupling implies \mbox{\(r_c=0\)}. Since \mbox{\(\mathrm{Ad}(r_c)\)} is invertible, the
