@@ -301,9 +301,18 @@ circulation, the settled choices are:
   does or does not model stay — `no environment friction model or friction
   coefficient is used in the control command` is a control-design fact, not a
   materials claim.
-- **contact point** for the physical point the tool touches, \(p_C\), with
-  \(r_C=p_C-p_{\mathrm{TCP}}\). It is a different point and the two are
-  never used for one another.
+- **contact point** for the physical point the tool touches,
+  \(p_{\mathrm{contact}}\), with
+  \(r_{\mathrm{contact}}=p_{\mathrm{TCP}}-p_{\mathrm{contact}}\) as its lever.
+  It is a different point from the centre of compliance and the two are never
+  used for one another.
+
+  The subscript is spelled out on purpose. The two levers were previously
+  \(r_c\) and \(r_C\), distinguished only by the case of one letter, which no
+  reader can hold across a page and which a printed subscript does not reliably
+  show. `contact` also settles the wording: the point is the **contact point**
+  in every chapter, never a `tool feature` and never an `edge`. `edge` presumes
+  edge contact, and the set-up phase is designed to seat the tool face flat.
 - **pole** is implementation vocabulary from the parameter names. Keep it in
   equation labels and parameter keys, not in the running text.
 - **commanded tool orientation offset** for the deliberate angular command: a
@@ -621,11 +630,37 @@ cross-shaped sampling does not identify that interaction. The location near
 A single unused point is a **held-out consistency check**, not broad external
 validation.
 
-Avoid absolute normal-coordinate claims. Use:
+Avoid absolute normal-coordinate claims. The earlier statement that the normal
+coordinate carried little explanatory power rested on a single setting at
+\(+20\,\mathrm{mm}\), which the coupling model itself predicts to be too small
+to resolve. It is superseded and must not be reinstated.
 
-> Within the investigated configuration and parameter range, the normal
-> compliance-centre coordinate provided little additional explanatory power
-> after accounting for the two in-plane coordinates.
+The normal coordinate was afterwards sampled at \(-60\), \(0\), \(+40\),
+\(+60\) and \(+120\,\mathrm{mm}\). The alignment response rose across the whole
+of that range, from \(3.73\) to \(6.80^\circ\), and the residual angle fell from
+\(4.81\) to \(1.91^\circ\). It is not symmetric about zero, and it does not turn
+over. Report both, bounded to the sampled range, and do not name a best
+position:
+
+> The alignment response increased with the normal compliance-centre
+> coordinate, and continued to increase up to the largest tested magnitude.
+
+Note the second clause. Writing that the maximum is not bracketed, or that no
+best magnitude can be reported, describes the sampling rather than the
+measurement and belongs to neither the results nor the discussion.
+
+A purely normal press cannot produce that dependence at all. A normal lever
+drops out of \(f\times r_c\) and enters only as \(K_{p,t}r_n^2\) of added
+rotational stiffness, which is even in the sign of \(r_n\) and resists the
+correction rather than adding to it. The measurement therefore indicates a
+tangential component in the press. That inference is a model-based
+interpretation and is written as one.
+
+**There is no residual floor.** An earlier reading treated a residual near
+\(3^\circ\) as a limit of the arrangement, and attributed it to motion within
+the tool mount. The \(120\,\mathrm{mm}\) setting reached \(1.91^\circ\), so the
+value was a property of the settings then tested. Do not describe any residual
+as a floor unless a setting has been shown not to pass it.
 
 If damping was not varied, report only that no sustained oscillation was
 observed with the selected damping. Do not claim a measured damping effect.
@@ -647,9 +682,20 @@ extended to physical disturbances or contact response.
   \(\sigma_{\min}=\sigma_6\), while \(v_7\) is the structural null direction at
   full row rank.
 - A retained singular value is inverted as \(1/\sigma_i\).
-- Distinguish the virtual-centre lever
-  \(r_c=p_{\mathrm{TCP}}-p_c\) from the physical-contact lever
-  \(r_C=p_C-p_{\mathrm{TCP}}\).
+- Distinguish the virtual-centre lever \(r_c=p_{\mathrm{TCP}}-p_c\) from the
+  physical-contact lever
+  \(r_{\mathrm{contact}}=p_{\mathrm{TCP}}-p_{\mathrm{contact}}\). The two never
+  appear in the same expression. \(r_c\) shapes the **commanded** wrench through
+  \(\mathrm{Ad}(r_c)\); \(r_{\mathrm{contact}}\) only transfers a **measured**
+  moment between two reference points.
+- The moment transfer is
+  \(M_{\mathrm{contact}}=M_{\mathrm{TCP}}+r_{\mathrm{contact}}\times\Delta\hat
+  f_{\mathrm{ext}}\), with \(M_{\mathrm{TCP}}\) the model-estimated external
+  moment about the TCP. Force is independent of the reference point and
+  therefore carries no point subscript; the moments carry one because they do
+  not. Both moments are referred to the value stored at the clearance
+  transition, which is stated once and not repeated as a \(\Delta\) on every
+  symbol.
 - Keep frame labels, signs, units, control frequency, and actual parameter
   values.
 - Distinguish the controller’s lack of an additional application-level
@@ -708,6 +754,20 @@ The principal experimental conclusions of the calibrated-plane campaign are:
    improving direction is opposite for the two surface tangents. With the lever
    in the other direction, almost no alignment improvement was measured.
 
+   The magnitude that improves alignment also differs between the tangents, and
+   this is separate from the direction. About \(t_2\) a \(60\,\mathrm{mm}\)
+   lever turned the tool through zero to the opposite side, \(30\,\mathrm{mm}\)
+   left it near zero, and \(10\,\mathrm{mm}\) produced no improvement; about
+   \(t_1\) the same \(60\,\mathrm{mm}\) improved alignment. Report the two
+   tangents separately and do not quote one lever for both.
+
+   The consequence of the wrong direction is also axis dependent. About \(t_2\)
+   the opposing lever moved the alignment component from \(-5.2\) to
+   \(-21.1^\circ\) where the contact alone reached \(-6.9^\circ\); about
+   \(t_1\) it removed the correction without reversing it. The contact face is
+   \(20\,\mathrm{mm}\) half-width across \(t_2\) against \(60\,\mathrm{mm}\)
+   across \(t_1\).
+
    **Do not compress this into `the favourable sign is opposite`.** That phrase
    asks the reader to hold three things at once — that a lever has a sign, that
    one sign is favourable, and that which one is favourable depends on the
@@ -722,8 +782,12 @@ The principal experimental conclusions of the calibrated-plane campaign are:
 3. Reducing the translational stiffness perpendicular to the commanded rotation axis
    improves alignment about \(t_2\) only, and a high rotational stiffness
    removes that benefit.
-4. Displacing the compliance centre along the surface normal produced no change
-   beyond the interpretation threshold over the investigated range.
+4. The alignment response increased with the normal compliance-centre
+   coordinate across the whole sampled range, and continued to increase up to
+   the largest tested magnitude. The coupling model predicts no first-order
+   dependence at all, so the measurement indicates a tangential component in
+   the press. This was the largest single effect measured, which the earlier
+   campaign had reported as no effect.
 5. Alignment is larger for a mismatch about \(t_2\) than about \(t_1\), and
    commanding the same mismatch about the tool-face axes places the response
    near the linear combination of the tangent components, which attributes the
@@ -743,9 +807,11 @@ the thesis. **Do not restore it.**
 
 The conclusion instead states the main findings as continuous prose — the
 controller was implemented and ran in every reported run; compliance-centre
-position had the largest measured influence; its favourable sign reversed
-between the tangents; stiffness effects were smaller and axis dependent; the
-normal displacement produced no detectable change. A null or bounding result is
+position had the largest measured influence; the direction that improves
+alignment reversed between the tangents, and so did the magnitude that suits
+them; stiffness effects were smaller and axis dependent; and the response
+increased with the normal coordinate up to the largest tested magnitude. A null
+or bounding result is
 still reported as such: the zero-orientation-offset baseline stays, and the isolated
 null-space result remains bounded to free-space hold under the commanded
 force-equivalent.
