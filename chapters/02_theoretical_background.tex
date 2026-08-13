@@ -810,6 +810,33 @@ J^\top(q)F
 \mbox{\(\tau_{\mathrm{null}}\)} introduced later is
 added to this expression to obtain the complete commanded torque in
 \mbox{\cref{eq:nullspace_complete_torque_command}}.}
+
+\subsection{Commanded and Estimated Wrench}
+\label{sec:commanded_versus_estimated_wrench}
+
+\Revised{Two wrenches appear in this work, and they are obtained in opposite
+directions. The commanded wrench \mbox{\(F\)} is formed from
+\mbox{\cref{eq:cartesian_force_moment_vector}} and reaches the joints through
+\mbox{\(J^\top\)}. The robot reports a second one. Its translational part is the
+model-estimated external force \mbox{\(\hat f_{\mathrm{ext}}\)}, inferred from
+the measured joint torques after the dynamic model has been subtracted.}
+
+\Revised{The commanded wrench needs no such inference. The stiffness and the
+pose error are both held by the controller. \mbox{\(K_{p,0}e_p\)} is therefore
+known while the motion is commanded. Against a rigid plane the tool barely
+moves, and the reference sets the error.}
+
+\Revised{At rest the two are related by the contact. The torques from
+\mbox{\(J^\top F\)} are balanced by the contact reaction through the same
+Jacobian. \mbox{\(\hat f_{\mathrm{ext}}\)} then follows \mbox{\(-F\)}, up to
+model error, friction, and motion absorbed by the tool. While the reference
+still moves, the damping term \mbox{\(D_{p,0}\dot{p}_d\)} adds to the commanded
+force. It leaves when the reference stops.}
+
+\Revised{The estimate is an independent measurement of a load the controller
+already knows. It is not the only route to that load. Agreement between the two
+is used in \mbox{\cref{ch:results_discussion}} as a check on the impedance.}
+
 \section{Surface Task Frame}
 \label{subsec:surface_task_frame}
 \Revised{The contact experiment uses a task frame tied to the surface geometry. This
@@ -1341,7 +1368,7 @@ continuously, the gain matrices would become configuration dependent.}
 
 \Revised{The local linearised centre of compliance \mbox{\(p_c\)} is consequently a
 selected point rather than a measured physical pivot. It need not coincide with
-the physical contact point \mbox{\(p_C\)}. The observed motion also depends on the
+the physical contact point \mbox{\(p_{\mathrm{contact}}\)}. The observed motion also depends on the
 finite rotational stiffness, the lever direction, the environmental
 constraint, friction, and the additional active controller terms introduced
 later.}

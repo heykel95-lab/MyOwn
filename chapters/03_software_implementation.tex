@@ -281,7 +281,7 @@ depend on the active phase:}
           the orientation command toward the configured target;}
     \item \Revised{surface approach moves the desired position along the descent
           direction;}
-    \item \Revised{set-up advances the selected tool feature into the surface;}
+    \item \Revised{set-up advances the selected contact point into the surface;}
     \item \Revised{grinding maintains the achieved preload and can add a tangential
           trajectory; and}
     \item \Revised{pose hold regulates the captured Cartesian pose.}
@@ -1160,7 +1160,7 @@ and projects them onto the descent direction. The maximum projection identifies
 the part of the face that leads during the approach.}
 
 \begin{lstlisting}[style=cppstyle,
-  caption={Selection of the leading face feature along the descent
+  caption={Selection of the leading face contact point along the descent
            direction.},
   label={lst:implementation_leading_feature}]
 std::array<double, 4> projection;
@@ -1209,23 +1209,23 @@ or the complete face instead of a single corner. The configured tie tolerance is
 \mbox{\(0.1\,\mathrm{mm}\)}.}
 
 \Revised{The active configuration enables both contact-point control and
-leading-feature selection. The selected offset is transformed to the base frame to obtain the
-current controlled feature:}
+leading contact-point selection. The selected offset is transformed to the base frame to obtain the
+current controlled contact point:}
 
 \begin{lstlisting}[style=cppstyle,
-  caption={Base-frame position of the selected tool feature.},
+  caption={Base-frame position of the selected contact point.},
   label={lst:implementation_tool_contact_point}]
 const Vec3 tool_contact_point =
     p_EE + R_EE * tool_contact_offset_ee;
 \end{lstlisting}
 
-\Revised{The leading feature is reevaluated while the tool is being oriented and
+\Revised{The leading contact point is reevaluated while the tool is being oriented and
 approached. On entry to set-up, its end-effector-frame offset is stored in
 \mbox{\texttt{active\_tool\_contact\_offset\_ee}} and subsequently held constant during
 set-up and grinding.}
 
 \Revised{During surface approach, the clearance calculation distinguishes the exact
-leading projection from the position of the averaged controlled feature:}
+leading projection from the position of the averaged controlled contact point:}
 
 \begin{lstlisting}[style=cppstyle,
   caption={Geometric clearance evaluation during surface approach.},
@@ -1257,10 +1257,10 @@ const bool clearance_reached =
 of the foremost point of the complete rectangular face. It provides the
 geometric transition condition. The quantity
 \mbox{\texttt{controlled\_point\_height}} is the signed height of the averaged
-controlled feature. Its projection onto the configured plane provides the
+controlled contact point. Its projection onto the configured plane provides the
 surface reference used by the subsequent set-up motion.}
 
-\Revised{When the clearance condition is satisfied, the feature geometry and current
+\Revised{When the clearance condition is satisfied, the contact geometry and current
 pose are captured:}
 
 \begin{lstlisting}[style=cppstyle,
@@ -1288,13 +1288,13 @@ clearance point on the configured plane. The live signed height determines
 \mbox{\texttt{setup\_push\_start}}, which produces a continuous desired position when
 the controller changes from approach to set-up.}
 
-\Revised{During set-up, the desired position of the selected feature is advanced from
-this projected point along the descent direction. The feature target is then
+\Revised{During set-up, the desired position of the contact point is advanced from
+this projected point along the descent direction. The contact target is then
 converted to the corresponding TCP reference using the orientation captured at
 the clearance transition:}
 
 \begin{lstlisting}[style=cppstyle,
-  caption={Conversion of the set-up feature target to the desired TCP
+  caption={Conversion of the set-up contact target to the desired TCP
            position.},
   label={lst:implementation_setup_feature_target}]
 const Vec3 edge_target =
@@ -1312,7 +1312,7 @@ desired.pdot_d =
 \end{lstlisting}
 
 \Revised{This construction allows the translational impedance controller to command the
-selected tool feature while the Cartesian control law remains formulated at
+selected contact point while the Cartesian control law remains formulated at
 the TCP.}
 
 \section[Phase-Dependent Gains and Inertia-Scaled Damping]%
@@ -1921,7 +1921,7 @@ block-diagonal form.}
 
 \Revised{During set-up, the desired orientation remains the orientation captured at the
 clearance transition. This orientation acts as a soft rotational reference
-while the selected tool feature is advanced into the surface. The resulting
+while the selected contact point is advanced into the surface. The resulting
 rotation is determined by the coupled impedance, the contact wrench, the
 directional stiffness, and the physical tool--surface interaction rather than
 by a prescribed rotational trajectory.}
@@ -2132,7 +2132,7 @@ if (clearance_reached && !gate_blocking) {
 }
 \end{lstlisting}
 
-\Revised{The selected tool-feature offset is locked at this transition. The controller
+\Revised{The selected contact-point offset is locked at this transition. The controller
 also stores the current TCP pose, the projected point on the surface, the
 signed starting value of the set-up penetration, and the current force and
 moment estimates.}
@@ -2165,7 +2165,7 @@ if (signals.gate_continue.load()) {
 \end{lstlisting}
 
 \Revised{The geometric clearance condition remains satisfied while the gate is active.
-After confirmation, the feature and contact references are captured from the
+After confirmation, the contact-point and wrench references are captured from the
 current measured state and the controller enters set-up.}
 
 \Revised{Reaching the maximum permitted descent distance before the clearance condition
@@ -2175,8 +2175,8 @@ sets the stop request and records the approach as unsuccessful.}
 \subsection{Set-Up}
 \label{subsec:implementation_setup_phase}
 
-\Revised{The set-up phase advances the selected tool feature from the projected surface
-point into the plane. The scalar penetration begins at the signed feature
+\Revised{The set-up phase advances the selected contact point from the projected surface
+point into the plane. The scalar penetration begins at the signed contact-point
 coordinate captured during the approach transition and progresses toward
 \mbox{\texttt{setup\_}}\allowbreak \mbox{\texttt{push\_}}\allowbreak \mbox{\texttt{end}} at the configured speed.}
 
@@ -2249,9 +2249,9 @@ external-moment change governs the phase exit after the configured
 minimum duration. The set-up timeout provides the alternative exit condition.}
 
 \Revised{Before continuing, the controller evaluates and prints the set-up result once.
-This report includes the achieved pose, feature position, alignment change
+This report includes the achieved pose, contact-point position, alignment change
 \mbox{\(\Delta\theta_{\mathrm{align}}\)},
-force and moment changes, moment transferred to the selected feature, active
+force and moment changes, moment transferred to the contact point, active
 impedance matrices, and compliance-centre diagnostics.}
 
 \Revised{When the pre-grinding gate is enabled, the controller remains in the set-up
@@ -2283,7 +2283,7 @@ phase = ControlPhase::kGrinding;
 phase_start_time = time;
 \end{lstlisting}
 
-\Revised{The coupled set-up impedance and the achieved pressed-feature reference remain
+\Revised{The coupled set-up impedance and the achieved pressed contact-point reference remain
 active while the controller waits. After confirmation, the current penetration
 is stored in \mbox{\texttt{grind\_push}} and becomes the normal preload of the
 grinding phase.}
@@ -2296,7 +2296,7 @@ grinding phase.}
 tangential sweep or maintain only the normal penetration.}
 
 \Revised{For an active sweep, the selected tangent is obtained from the surface frame.
-The scalar sweep trajectory is then added to the pressed-feature reference:}
+The scalar sweep trajectory is then added to the pressed contact-point reference:}
 
 \begin{lstlisting}[style=cppstyle,
   caption={Grinding reference with an optional tangential sweep.},
@@ -2350,7 +2350,7 @@ Subsequent strokes alternate smoothly between the positive and negative
 amplitudes with zero velocity at each reversal.}
 
 \Revised{When the sweep is disabled, the reference is corrected only along the surface
-normal \mbox{\(n_s\)}. Its tangential coordinates follow the current tool-feature position,
+normal \mbox{\(n_s\)}. Its tangential coordinates follow the current contact-point position,
 which preserves the set-up penetration without imposing a tangential
 trajectory.}
 
@@ -2797,9 +2797,9 @@ measured linear and angular velocities, and desired linear velocity.
 
 Tool and surface geometry
 &
-Current controlled tool-feature position, feature offset in the end-effector
+Current controlled contact-point position, contact-point offset in the end-effector
 frame, projected clearance point, TCP position at the clearance transition,
-desired feature target, and virtual surface penetration.
+desired contact target, and virtual surface penetration.
 \\[1mm]
 
 Alignment
@@ -2839,7 +2839,7 @@ The seven final commanded joint torques returned to libfranka.
 \mbox{\texttt{first\_}}\allowbreak \mbox{\texttt{contact\_}}\allowbreak \mbox{\texttt{point}} refer to the
 geometric clearance transition described in
 \mbox{\Cref{subsec:implementation_surface_approach_phase}}. They represent the
-captured TCP position and projected tool-feature point at this transition,
+captured TCP position and projected contact point at this transition,
 rather than a force-detected contact event.}
 
 \Revised{The selected values are copied into the current ring-buffer row at the
@@ -3065,24 +3065,49 @@ if (session > 1) {
 \label{subsec:setup_run_evaluation}
 
 \Revised{A dedicated set-up report is generated once when the moment threshold or
-set-up timeout is reached. The report captures the final TCP pose, selected
-tool-feature position, external wrench change, clearance-transition
+set-up timeout is reached. The report captures the final TCP pose, contact-point
+position, external wrench change, clearance-transition
 references, active gain matrices, and set-up termination condition.}
 
-\Revised{The external moment at the selected tool feature is calculated from
-these wrench changes:}
+\Revised{A moment depends on the point it is referred to. The reported one is
+referred to the contact point, not to the TCP. \mbox{\(M_{\mathrm{TCP}}\)} is
+the estimated external moment about the TCP.
+\mbox{\(r_{\mathrm{contact}}=p_{\mathrm{TCP}}-p_{\mathrm{contact}}\)} is the
+lever between the two points. The transfer is}
+
+\begin{equation}
+M_{\mathrm{contact}}
+=
+M_{\mathrm{TCP}}
++
+r_{\mathrm{contact}}\times\Delta\hat f_{\mathrm{ext}}.
+\label{eq:contact_moment_transfer}
+\end{equation}
+
+\Revised{\mbox{\(\Delta\hat f_{\mathrm{ext}}\)} is the model-estimated external
+force, less the clearance-transition reference. \mbox{\(M_{\mathrm{TCP}}\)} is
+the corresponding moment change. Force does not depend on the reference point
+and carries no point subscript. The cross product removes the share the force
+produces through the lever. What remains is the moment the contact itself
+applies.}
+
+\Revised{The lever \mbox{\(r_{\mathrm{contact}}\)} is not the compliance-centre
+lever \mbox{\(r_c\)}. It follows from the tool geometry and enters the
+evaluation only. \mbox{\(r_c\)} shapes the commanded wrench through
+\mbox{\(\mathrm{Ad}(r_c)\)}. It reaches the measurement through the contact,
+so the two never share an expression.}
 
 \begin{lstlisting}[style=cppstyle,
-  caption={Calculation of the external moment at the selected tool feature.},
-  label={lst:implementation_contact_feature_moment}]
-const Vec3 edge_from_tcp =
-    tool_contact_point - p_EE;
+  caption={Calculation of the external moment at the contact point.},
+  label={lst:implementation_contact_moment}]
+const Vec3 r_contact =
+    p_EE - tool_contact_point;
 
-const Vec3 contact_moment_at_edge =
+const Vec3 contact_moment =
     (external_moment
      - contact_moment_bias)
-    -
-    edge_from_tcp.cross(
+    +
+    r_contact.cross(
         external_force
         - contact_force_bias);
 \end{lstlisting}
@@ -3092,7 +3117,7 @@ const Vec3 contact_moment_at_edge =
 \begin{itemize}
     \item \Revised{the set-up termination condition and phase duration;}
     \item \Revised{the external-force and external-moment changes;}
-    \item \Revised{the TCP and tool-feature displacements from the clearance transition;}
+    \item \Revised{the TCP and contact-point displacements from the clearance transition;}
     \item \Revised{the tool-alignment error before and after set-up;}
     \item \Revised{the alignment-error components along \mbox{\(t_1\)}, \mbox{\(t_2\)}, and \mbox{\(n_s\)};}
     \item \Revised{the force, moment, displacement, and rotation resolved in the surface
