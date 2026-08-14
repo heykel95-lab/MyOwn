@@ -87,8 +87,32 @@ spacing between runs is what creates room for their labels.
 
 ## Generated plots (matplotlib)
 
-Plots come from `experiments/analysis/make_figures.py` in the controller
-repository and are copied into `figures/` as vector PDF.
+Plots come from the scripts in `analysis/` in the controller repository, are
+written to its `figures/` directory, and are copied into `figures/` here as
+vector PDF.
+
+### Naming
+
+`MAIN_<INDEX>_<subject>.pdf`, uppercase prefix, uppercase index, lower-case
+subject. The index is the case letter the figure belongs to, so the file name
+sorts next to the section that discusses it and a figure whose case is dropped
+is found by its name alone:
+
+| File | Belongs to |
+| --- | --- |
+| `MAIN_A_angle.pdf` … `MAIN_H_general_pole.pdf` | Cases A to H |
+| `MAIN_JKL_frame.pdf` | Cases J to L, which share one comparison |
+| `MAIN_M_inplane.pdf` | Case M |
+| `MAIN_N_toolaxis.pdf`, `MAIN_N_components.pdf`, `MAIN_N_descent.pdf`, `MAIN_N_diagnostics.pdf` | Case N |
+| `MAIN_DQ_metric_comparison.pdf` | Data quality |
+| `MAIN_NS_nullspace_automatic.pdf` | Null-space results |
+
+A figure spanning several cases carries their letters in order (`JKL`). A
+figure that serves a section rather than a case carries a two-letter tag for
+that section (`DQ`, `NS`). The label follows the file:
+`\label{fig:results_case_<letter>}`, or `\label{fig:results_<subject>}` for a
+section figure. The script that writes the file names it, so regenerating the
+plots cannot reintroduce an old name.
 
 - **Fonts match the document.** `FONT_STYLE = "latex"` selects Latin Modern
   with Computer Modern maths. Verify in the output, not the configuration:
@@ -109,6 +133,14 @@ repository and are copied into `figures/` as vector PDF.
   white marker face, a coloured edge of approximately \(1.1\) points, and a
   line width of approximately \(1.25\) points. Marker shape repeats the series
   distinction so the plot remains legible in monochrome.
+- **Every line is solid.** A dashed or dotted line reads as a different kind of
+  quantity — a model, a bound, a projection — so a broken line drawn merely to
+  separate two measured series misleads. Series are distinguished by colour and
+  by marker shape, never by dash pattern.
+- **A time series is drawn at a bounded number of points.** A set-up log holds
+  about five thousand samples and a panel is a few centimetres wide, so the
+  full rate paints a band rather than a curve. Around nine hundred points keeps
+  a curve legible at printed width.
 - **Grid is horizontal only.** It exists to compare values across panels.
 - **Every plot has a legend.** A multi-panel figure has one shared legend below
   the panels, assembled from every panel so that no series is omitted. A

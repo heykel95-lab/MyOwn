@@ -2230,18 +2230,23 @@ to the values captured at the approach transition:}
 \begin{lstlisting}[style=cppstyle,
   caption={Set-up termination condition.},
   label={lst:implementation_setup_termination}]
-const double force_delta_norm =
-    (external_force
-     - contact_force_bias).norm();
+const Vec3 df_ext =
+    external_force
+    - contact_force_bias;
+const double df_ext_norm =
+    df_ext.norm();
 
-const double moment_delta_norm =
+const Vec3 m_tcp =
     (external_moment
-     - contact_moment_bias).norm();
+     - contact_moment_bias)
+    - p_EE.cross(df_ext);
+const double m_tcp_norm =
+    m_tcp.norm();
 
 const bool stopped_on_moment =
     phase_time >= params.setup_min_time
     &&
-    moment_delta_norm
+    m_tcp_norm
         >= params.setup_moment_threshold;
 
 if (!gate_grind_armed &&
@@ -2251,9 +2256,17 @@ if (!gate_grind_armed &&
 }
 \end{lstlisting}
 
-\Revised{The force change is recorded and included in the set-up evaluation. The
-external-moment change governs the phase exit after the configured
-minimum duration. The set-up timeout provides the alternative exit condition.}
+\Revised{The force change \mbox{\(\Delta\hat f_{\mathrm{ext}}\)} is recorded and
+included in the set-up evaluation. The moment change governs the phase exit
+after the configured minimum duration, and the set-up timeout provides the
+alternative exit condition.}
+
+\Revised{The moment is referenced to the TCP before it is compared with the
+threshold, which is the term \mbox{\texttt{p\_EE.cross(df\_ext)}} above. The
+estimated external moment is reported about the base origin, so the share the
+force produces through the TCP position is removed first; what remains is
+\mbox{\(M_{\mathrm{TCP}}\)}. \mbox{\Cref{subsec:setup_run_evaluation}} carries
+the same moment on to the contact point.}
 
 \Revised{Before continuing, the controller evaluates and prints the set-up result once.
 This report includes the achieved pose, contact-point position, alignment change
@@ -3024,7 +3037,7 @@ void writeRunLogs(
 \Revised{The CSV writer creates the parent output directory when required and uses a
 fixed column order. Cartesian positions, velocities, forces, moments,
 disturbances, and joint torques \mbox{\(\tau\)} are written in their stored SI units.
-Alignment errors are converted from radians to degrees for the output file.}
+Angular deviations are converted from radians to degrees for the output file.}
 
 \Revised{The CSV writer calculates each external-wrench change by subtracting
 the stored reference:}
@@ -3077,9 +3090,9 @@ references, active gain matrices, and set-up termination condition.}
 
 \Revised{A moment depends on the point it is referred to. The reported one is
 referred to the contact point, not to the TCP. \mbox{\(M_{\mathrm{TCP}}\)} is
-the estimated external moment about the TCP.
-\mbox{\(r_{\mathrm{contact}}=p_{\mathrm{TCP}}-p_{\mathrm{contact}}\)} is the
-lever between the two points. The transfer is}
+the estimated external moment about the TCP, and
+\mbox{\(r_{\mathrm{contact}}\)} the lever between the two points defined in
+\mbox{\cref{eq:contact_lever_definition}}. The transfer is}
 
 \begin{equation}
 M_{\mathrm{contact}}
@@ -3109,13 +3122,9 @@ so the two never share an expression.}
 const Vec3 r_contact =
     p_EE - tool_contact_point;
 
-const Vec3 contact_moment =
-    (external_moment
-     - contact_moment_bias)
-    +
-    r_contact.cross(
-        external_force
-        - contact_force_bias);
+const Vec3 m_contact =
+    m_tcp
+    + r_contact.cross(df_ext);
 \end{lstlisting}
 
 \Revised{The terminal set-up report contains:}
