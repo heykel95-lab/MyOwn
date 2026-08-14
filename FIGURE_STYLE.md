@@ -100,14 +100,16 @@ is found by its name alone:
 
 | File | Belongs to |
 | --- | --- |
-| `MAIN_A_angle.pdf` … `MAIN_H_general_pole.pdf` | Cases A to H |
-| `MAIN_JKL_frame.pdf` | Cases J to L, which share one comparison |
-| `MAIN_M_inplane.pdf` | Case M |
-| `MAIN_N_toolaxis.pdf`, `MAIN_N_components.pdf`, `MAIN_N_descent.pdf`, `MAIN_N_diagnostics.pdf` | Case N |
+| `MAIN_A_KR.pdf` | Case A |
+| `MAIN_B_KP.pdf` | Case B |
+| `MAIN_C_general_pole.pdf` | Case C |
+| `MAIN_DEF_frame.pdf` | Cases D to F, which share one comparison |
+| `MAIN_G_inplane.pdf` | Case G |
+| `MAIN_H_toolaxis.pdf`, `MAIN_H_components.pdf`, `MAIN_H_descent.pdf`, `MAIN_H_diagnostics.pdf` | Case H |
 | `MAIN_DQ_metric_comparison.pdf` | Data quality |
 | `MAIN_NS_nullspace_automatic.pdf` | Null-space results |
 
-A figure spanning several cases carries their letters in order (`JKL`). A
+A figure spanning several cases carries their letters in order (`DEF`). A
 figure that serves a section rather than a case carries a two-letter tag for
 that section (`DQ`, `NS`). The label follows the file:
 `\label{fig:results_case_<letter>}`, or `\label{fig:results_<subject>}` for a
