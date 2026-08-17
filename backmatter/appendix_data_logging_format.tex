@@ -77,6 +77,16 @@ recorded quantity produced the deviation values reported in the result tables.\\
 The same angular deviation resolved on \(t_1\), \(t_2\), and \(n_s\)
 [\(^{\circ}\)]. These supply the per-tangent decomposition reported in the
 results.\\
+\texttt{p\_CoC}, \texttt{r\_eff} &
+Centre of compliance \(p_{\mathrm{TCP}}-r_c\) and the lever the contact force
+acts through, \(p_{\mathrm{contact}}-p_{\mathrm{CoC}}\), both in the base
+frame [m]. A zero lever leaves the centre on the TCP, so the pair is written
+for every run and no case has to be separated.\\
+\texttt{t\_align} &
+Time from the start of set-up at which the deviation first fell inside the
+configured tolerance and stayed there [s]; negative until that happens, and
+negative throughout for a run that never does. Observed only: reaching it does
+not end the phase.\\
 \texttt{f}, \texttt{m} &
 Commanded Cartesian force [N] and moment [N\,m].\\
 \texttt{external\_force}, \texttt{external\_moment} &
@@ -129,6 +139,21 @@ not substitute another plane normal. Selected contact-point displacement was
 calculated from \mbox{\texttt{tool\_contact}}, while the reported normal load
 \mbox{\(F_n\)} was
 the model-estimated force change from the clearance transition.
+
+Three markers are written once, into the set-up report rather than into every
+row. \texttt{t\_align\_fraction} is the time at which the deviation first fell
+below a configured fraction of its value at the start of set-up, which unlike
+the absolute tolerance is reached by conditions that end far from flat.
+\texttt{deviation\_min} is the smallest deviation the run reached and the time
+it reached it, and is defined for every run. \texttt{align\_status} records
+\texttt{aligned} or \texttt{not\_aligned}, so the runs that never met the
+tolerance can be sorted out without being discarded.
+
+Whether the tool itself ended flat is not read from any of these. It is
+calculated afterwards as the height of the TCP above the calibrated plane,
+\(n_s^\top(p_{\mathrm{EE}}-p_s)\), compared with the height a flat grinding
+face would give. Only \texttt{p\_EE} and the plane enter it, so unlike the
+deviation it is not affected by the play between the tool and the gripper.
 
 For the internally commanded hold study, redundant motion is calculated by integrating the
 norm of the recorded projected joint velocity \(\dot q_{\mathrm{null}}\) over the disturbance interval.
