@@ -79,23 +79,33 @@ otherwise marks prose as the author's own (see [THESIS_VOICE.md](THESIS_VOICE.md
 Accept that for the Abstract and the Kurzfassung only; every other chapter
 keeps its numbers.
 
-**Each must fit on a single page.** The Abstract and the Kurzfassung are one
-page each, not one page combined, and neither may spill onto a second. This is
-a hard constraint: if new material has to go in, something else comes out.
+**The single-page limit is suspended.** The Abstract and the Kurzfassung
+previously had to fit one page each, and neither was allowed to spill onto a
+second. That constraint was blocking ordinary revision of the Abstract, so it
+does not apply for now: do not cut material from either text, or decline a
+requested edit, on length grounds alone. Do not reinstate it without being
+asked.
+
+The reasoning is kept here so the rule can be restored later. It existed
+because an Abstract a reader cannot take in on one page stops working as a
+summary, and because the Abstract and the Kurzfassung were laid out to occupy
+one page each. When it is restored, the trade it forces is that new material
+displaces old rather than being added to it.
 
 The two are translations of one another and must stay matched in content,
-certainty, and structure. A cut on one side is a cut on the other.
+certainty, and structure. **This rule is not suspended.** A cut on one side is
+a cut on the other, and an Abstract that grows is followed by a Kurzfassung
+that grows with it.
 
-Where the two rules collide, content parity wins. German needs roughly a fifth
-more space than English for the same statements, so a Kurzfassung that mirrors
-a full-page Abstract can run a few lines over. That is accepted here rather
-than weakening the German. Do not close such a gap by compounding German nouns
-to shorten the word count: long compounds break lines badly and fit *fewer*
-words on the page, not more.
+German needs roughly a fifth more space than English for the same statements,
+so the Kurzfassung will run longer than the Abstract it mirrors. That is
+accepted rather than weakening the German. Do not close such a gap by
+compounding German nouns to shorten the word count: long compounds break lines
+badly and fit *fewer* words on the page, not more.
 
-Check the constraint in the compiled PDF, not by word count — the count is only
-an early warning. At the current settings roughly 520 words fills the page, so
-treat anything beyond about 500 as needing a look at the built document.
+Judge length in the compiled PDF rather than by word count. At the current
+settings roughly 520 words fills a page, which is worth knowing when deciding
+how a text will sit even while no limit is enforced.
 
 ## Roles of the chapters
 

@@ -43,14 +43,19 @@ formulation and the controller
 
   \item \mbox{\textbf{End-effector frame
         \mbox{\(\{\mathrm{EE}\}\)}:}}
-        The end-effector frame is attached to the TCP and moves with the tool.
-        Its position \mbox{\(p_{\mathrm{EE}}\)} and orientation
+        The end-effector frame is attached to the controlled TCP and moves with
+        the tool. In the implemented robot model, the end-effector origin and
+        TCP are identified, so \mbox{\(p_{\mathrm{TCP}}=p_{\mathrm{EE}}\)}. The
+        physical grinding face is represented separately by its calibrated
+        geometric offset from this frame. The position
+        \mbox{\(p_{\mathrm{EE}}\)} and orientation
         \mbox{\(R_{\mathrm{EE}}\)}, both expressed relative to the base frame,
         define the current Cartesian pose of the robot. The axes
         \mbox{\(x_{\mathrm{EE}}\)}, \mbox{\(y_{\mathrm{EE}}\)}, and
-        \mbox{\(z_{\mathrm{EE}}\)} describe the current tool orientation. The
-        configured tool approach axis is defined in this frame and is
-        transformed to the base frame using \mbox{\(R_{\mathrm{EE}}\)}.
+        \mbox{\(z_{\mathrm{EE}}\)} describe the current end-effector
+        orientation. The configured tool approach axis is defined in this frame
+        and is transformed to the base frame using
+        \mbox{\(R_{\mathrm{EE}}\)}.
 
   \item \mbox{\textbf{Desired end-effector frame \mbox{\(\{d\}\)}:}}
         The desired frame represents the commanded TCP pose. Its origin is
@@ -404,7 +409,10 @@ R_{\mathrm{EE}}e_{R,\mathrm{EE}}
 
 The direction of \mbox{\(e_R\)} defines the axis of the required correction, while
 its magnitude is the angular error in radians. When the current and desired
-orientations coincide, \mbox{\(\phi=0\)} and \mbox{\(e_R=0\)}.
+orientations coincide, \mbox{\(\phi=0\)} and \mbox{\(e_R=0\)}. Together,
+\mbox{\(e_p=p_d-p_{\mathrm{EE}}\)} and \mbox{\(e_R\)} are expressed in the
+base frame and point in the translational and rotational directions required to
+reduce the pose error.
 
 The complete Cartesian error \mbox{\(e\)} stacks the position error
 \mbox{\(e_p\)} and orientation error \mbox{\(e_R\)} used by the impedance controller:
@@ -483,10 +491,14 @@ R_{\mathrm{EE}}(q) & p_{\mathrm{EE}}(q)\\
 \label{eq:forward_kinematics_result}
 \end{equation}
 
-This convention establishes the joint and frame indexing used in the
-subsequent Jacobian \mbox{\(J(q)\)} formulation. In the implemented controller, the
-forward-kinematic chain is not evaluated separately; the current end-effector
-pose is obtained from the libfranka model interface.
+This convention establishes the standard kinematic relation and the joint and
+frame indexing used in the subsequent Jacobian \mbox{\(J(q)\)} formulation.
+The real-time controller does not reconstruct the Panda pose from these
+Denavit--Hartenberg transformations. Instead, the current end-effector pose is
+read from the libfranka robot state, while the Jacobian is obtained from the
+libfranka model interface. The Denavit--Hartenberg formulation is therefore
+used here as the theoretical kinematic basis rather than as a second
+real-time kinematic implementation.
 
 \ifProfessorStopAfterForwardKinematics
 \else
@@ -589,7 +601,9 @@ restoring wrench through the stiffness matrix \mbox{\(K\)}, while the Cartesian
 velocity \mbox{\(\dot{x}\)} produces an opposing wrench through the damping matrix
 \mbox{\(D\)}. Their
 entries determine the translational and rotational compliance in the selected
-task directions \mbox{\cite{Pollayil2023ImpedancePlanning}}.
+task directions \mbox{\cite{Pollayil2023ImpedancePlanning}}. Physically, the
+stiffness terms determine how strongly a pose error generates a restoring force
+or moment, while the damping terms oppose the corresponding Cartesian motion.
 
 
 
@@ -833,6 +847,10 @@ n_s\times t_1 .
 \end{equation}
 
 Here, \mbox{\(t_1\)} and \mbox{\(t_2\)} are unit tangent vectors lying in the surface plane.
+This frame makes the gain directions physically meaningful: separate
+translational and rotational compliance can be assigned along the two surface
+tangents and along or about the surface normal instead of along arbitrary
+base-frame axes.
 The construction is valid as long as \mbox{\(\|\tilde{t}_1\|\neq0\)}, which means that
 the surface-frame reference direction \mbox{\(a_s\)} must not be parallel to the normal \mbox{\(n_s\)}. To
 match the implemented controller and its parameter order, the surface task
@@ -947,6 +965,11 @@ T_R D_{\mathrm{task}}T_R^\top.
 \label{eq:full_task_frame_gain_transform}
 \end{equation}
 
+The task-frame rotation changes the matrix representation without changing the
+physical directions assigned to the gains. For example, \mbox{\(K_{p,n}\)}
+acts along the calibrated surface normal even when that normal is not aligned
+with a base-frame axis.
+
 For the contact task, the task frame is the surface frame, whose orientation is
 
 \begin{equation}
@@ -1028,6 +1051,14 @@ impedance at the TCP
 \mbox{\cite{Murray1994,Fasse1997SpatialImpedance,Stramigioli2000IPC,LynchPark2017}}.
 This construction is applied during contact set-up to generate
 translation--rotation coupling that supports tool alignment.
+Its physical purpose is to use the normal pressing action not only to produce a
+translational contact load, but also to generate a rotational moment. The
+selected offset between \mbox{\(p_c\)} and the TCP defines the lever through
+which this moment is produced.
+
+Two transformations used by the controller must therefore be distinguished. A
+task-frame rotation changes the directions along which the impedance acts,
+whereas the point shift changes the point about which the impedance is defined.
 
 \mbox{\Cref{fig:compliance_lever_moment}} shows this geometry for the two signs
 of the tangential lever.
@@ -1130,8 +1161,8 @@ e_R
 \mathrm{Ad}(r_c)
 =
 \begin{bmatrix}
-\mI_3 & [r_c]_\times\\[2pt]
-0 & \mI_3
+I_3 & [r_c]_\times\\[2pt]
+0 & I_3
 \end{bmatrix}.
 \label{eq:offset_adjoint}
 \end{equation}
@@ -1258,46 +1289,69 @@ n_s\times t_2=-t_1.
 \label{eq:surface_frame_cross_product_relations}
 \end{equation}
 
-For a selected tangential lever magnitude \mbox{\(\rho_c>0\)}, the
-tangential compliance-centre lever \mbox{\(r_{c,t}\)} is therefore
+Let the commanded orientation offset in the surface plane have components
+\mbox{\(\theta_{t_1}\)} and \mbox{\(\theta_{t_2}\)}. For a non-zero offset and a
+selected tangential lever magnitude \mbox{\(\rho_c>0\)}, the lever direction can
+be written directly from these two components as
 
 \begin{equation}
-r_{c,t}=-\rho_c t_2
-\quad\text{about } t_1,
-\qquad
-r_{c,t}=+\rho_c t_1
-\quad\text{about } t_2.
+r_{c,t}
+=
+\rho_c
+\frac{
+\theta_{t_2}t_1-\theta_{t_1}t_2
+}{
+\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}
+}.
 \label{eq:general_compliance_lever_selection}
 \end{equation}
 
-Because the set-up motion is commanded primarily along the surface
-normal, the normal component dominates the Cartesian force, so the force can be
-approximated as
+The selected lever is therefore perpendicular to the commanded
+orientation-offset direction in the surface plane. Its sign changes when the
+commanded offset is reversed. For the two principal
+surface tangents, \cref{eq:general_compliance_lever_selection} reduces to
+
+\[
+r_{c,t}=-\rho_c t_2
+\quad\text{for a positive }t_1\text{ offset},
+\qquad
+r_{c,t}=+\rho_c t_1
+\quad\text{for a positive }t_2\text{ offset}.
+\]
+
+Because the set-up motion is commanded primarily along the surface normal, the
+elastic press is approximated for this sign analysis as
 
 \begin{equation}
-f
+f_{\mathrm{press}}
 \approx
--F_nn_s,
+-F_n n_s,
 \label{eq:general_compliance_normal_force}
 \end{equation}
 
-where \mbox{\(F_n>0\)} is the normal-force magnitude. The remaining
-tangential components, such as those arising from tangential pose errors or
-contact friction, are treated as comparatively small. Substitution into
-\mbox{\cref{eq:pole_translation_moment_sign_check}} gives
+where \mbox{\(F_n>0\)} denotes the corresponding quasi-static normal-force
+magnitude. Tangential force components caused by pose error, friction, or the
+evolving contact geometry are not represented in this first-order argument.
+Substitution into \mbox{\cref{eq:pole_translation_moment_sign_check}} gives
 
 \begin{equation}
-m_c\approx-F_n\rho_c t_1
-\quad\text{about } t_1,
-\qquad
-m_c\approx-F_n\rho_c t_2
-\quad\text{about } t_2.
+m_c
+\approx
+-F_n\rho_c
+\frac{
+\theta_{t_1}t_1+\theta_{t_2}t_2
+}{
+\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}
+}.
 \label{eq:general_compliance_lever_moment}
 \end{equation}
 
-The generated moment therefore acts opposite to the commanded rotation
-in both cases. Reversing the orientation offset reverses both the selected lever
-and the generated moment.
+Thus, the press-induced moment is directed opposite to the commanded
+orientation offset. For a positive command about \mbox{\(t_1\)} it reduces to
+\mbox{\(m_c\approx-F_n\rho_c t_1\)}, and for a positive command about
+\mbox{\(t_2\)} it reduces to
+\mbox{\(m_c\approx-F_n\rho_c t_2\)}. Reversing the orientation offset
+reverses both the selected lever and the generated moment.
 
 The coupling vanishes for \mbox{\(r_c=0\)}. Conversely, if \mbox{\(K_p\)} is nonsingular,
 zero coupling implies \mbox{\(r_c=0\)}. Since \mbox{\(\mathrm{Ad}(r_c)\)} is invertible, the
@@ -1323,11 +1377,14 @@ the source gain matrices. Closed-loop robot--controller--contact behaviour with
 phase switching was assessed experimentally under the operating conditions
 reported in \mbox{\Cref{ch:methodology}}.
 
-This formulation is a local small-motion model in which \mbox{\(r_c\)} is held fixed
-while the wrench is evaluated. In the implemented set-up mode, the selected
-lever remains constant, and the mapped gain matrices are therefore constant
-during the corresponding motion segment. If \mbox{\(p_c\)} or \mbox{\(r_c\)} were updated
-continuously, the gain matrices would become configuration dependent.
+This formulation is a local small-motion model in which \mbox{\(r_c\)} is treated as
+fixed during one controller evaluation. For a surface-fixed lever, its
+components remain constant in the surface frame and therefore its base-frame
+vector remains constant during set-up. For a tool-fixed lever, its components
+remain constant in the end-effector frame, but its base-frame vector changes as
+the end effector rotates. The controller therefore updates the base-frame lever
+and the corresponding shifted gain matrices during each control cycle for the
+tool-fixed definition.
 
 The local linearised centre of compliance \mbox{\(p_c\)} is consequently a
 selected point rather than a measured physical pivot. It need not coincide with
@@ -1348,6 +1405,13 @@ be used for a secondary objective.
 In this thesis, the secondary joint-space action consists of a null-space
 damping contribution and an active singular-value conditioning contribution.
 Both are projected using the joint-torque null-space projector \mbox{\(N_\tau\)}.
+For the full-row-rank \mbox{\(6\times7\)} Panda Jacobian, one joint-space
+direction remains after the six task-producing directions are accounted for.
+The singular value decomposition (\mbox{\abbr{SVD}}) is used here for two
+distinct purposes: \mbox{\(v_7\)} identifies this redundant direction, while
+\mbox{\(\sigma_6\)} describes the weakest task-producing mapping. The controller
+damps motion in the projected null space and can additionally bias the robot
+toward the sampled null-space direction with the larger \mbox{\(\sigma_6\)}.
 The required null-space direction, pseudoinverse, and projector are introduced
 before the two torque contributions are defined.
 
@@ -1401,7 +1465,7 @@ of second order in its magnitude. When \mbox{\(J(q)\)} has full
 row rank, the null space of the \mbox{\(6\times7\)} Jacobian \mbox{\(J(q)\)} is
 one-dimensional.
 
-The singular value decomposition (\mbox{\abbr{SVD}}) is applied to the Jacobian
+The \mbox{\abbr{SVD}} is applied to the Jacobian
 \mbox{\(J(q)\)} at
 the current joint configuration \mbox{\(q\)}
 \mbox{\cite{Chiaverini1994DampedLeastSquares,Dietrich2015NullspaceSurvey}}:
@@ -1562,7 +1626,13 @@ The quantities \mbox{\(v_7\)} and \mbox{\(\sigma_6\)} have different purposes. T
 \mbox{\(\dot q\)} to
 end-effector velocity. As \mbox{\(\sigma_6\)} approaches zero, one end-effector
 velocity direction becomes increasingly difficult to produce, indicating an
-approach to a loss of Jacobian \mbox{\(J(q)\)} row rank. In this thesis,
+approach to a loss of Jacobian \mbox{\(J(q)\)} row rank.
+Because the geometric Jacobian combines translational and rotational rows with
+different physical units, the numerical value of \mbox{\(\sigma_{\min}\)}
+depends on the chosen Jacobian representation and length unit. It is therefore
+used in this thesis as a relative conditioning indicator for comparisons made
+with the same Jacobian convention, rather than as a unit-invariant
+manipulability measure. Within that fixed convention,
 \mbox{\(\sigma_{\min}\)} is used to compare the conditioning of nearby joint
 configurations and to select the direction of the conditioning torque.
 
@@ -1712,6 +1782,12 @@ The transpose relation follows from the mechanical power
 \mbox{\(\dot q\)}. Thus, \mbox{\(N_q\)} is applied to joint velocities
 \mbox{\(\dot q\)}, while \mbox{\(N_\tau\)} is applied to secondary joint torques
 \mbox{\(\tau_0\)}.
+
+The projector provides an orthogonal kinematic separation with respect to the
+Jacobian and the Moore--Penrose pseudoinverse. It is not the inertia-weighted
+dynamically consistent null-space projector used in some operational-space
+formulations. Cartesian task retention under the implemented secondary torques
+is therefore also evaluated experimentally.
 
 For the \mbox{\abbr{SVD}}-based pseudoinverse, \mbox{\(J^+J\)} is an orthogonal and
 symmetric projector. Hence,
@@ -1898,10 +1974,17 @@ directions. The damping contribution acts on motion in all these directions
 through \mbox{\(N_\tau\dot q\)}. The implemented conditioning term retains its two
 probes along \mbox{\(+v_7\)} and \mbox{\(-v_7\)}.
 
+The two contributions therefore have different roles: \mbox{\(\tau_d\)}
+opposes redundant joint motion that is already present, whereas
+\mbox{\(\tau_\sigma\)} actively biases the robot along the selected redundant
+direction toward the nearby sampled configuration with the larger
+\mbox{\(\sigma_{\min}\)}.
+
 The activation of the damping and conditioning contributions is a controller
 configuration choice. The available combinations and the configuration used
 in the reported experiments are described in
 \mbox{\cref{sec:nullspace_conditioning_implementation}}.
+
 \section{Complete Joint-Torque Command}
 \label{sec:complete_joint_torque_command}
 
@@ -1933,5 +2016,8 @@ from the robot model and added in the control callback. A separate gravity
 term is not added because gravity compensation is handled internally by the
 Franka Control Interface, as described in
 \mbox{\Cref{subsec:coriolis_gravity_compensation}}.
+The next chapter implements these torque contributions in the real-time control
+loop and combines them with the surface-relative geometry, phase-dependent
+references, and contact sequence.
 
 \fi

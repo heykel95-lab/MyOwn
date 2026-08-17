@@ -3,39 +3,43 @@
 \ReviewMark{green}{The German summary remains aligned with the English abstract
 in structure, certainty, findings, and limitations.}
 
-Eine Winkelabweichung verursacht Kantenkontakt; starre Positionsregelung
-behindert dabei die ausrichtende Drehung und erzeugt Kontaktkr\"afte und
--momente.
+Eine Winkelabweichung zwischen einem Schleifwerkzeug und einer Fl\"ache kann zu
+Kantenkontakt f\"uhren. Ein starr geregelter Roboter behindert die daraus
+folgende ausrichtende Drehung und kann dadurch hohe Kontaktkr\"afte und -momente
+erzeugen. Diese Arbeit untersucht, ob ein drehmomentgeregelter kollaborativer
+Roboter stattdessen den Kontakt selbst nutzen kann, um das Werkzeug zu einer
+ebenen Fl\"ache hin zu drehen.
 
-F\"ur einen 7-achsigen Franka Emika Panda wurde ein phasenabh\"angiger
-kartesischer Echtzeit-Impedanzregler implementiert. Beim Kontaktaufbau wurden
-Steifigkeit und D\"ampfung vom virtuellen Nachgiebigkeitszentrum \(p_c\) zum
-Werkzeugmittelpunkt transformiert, sodass die normale Anpressbewegung ein
-korrigierendes Moment erzeugte.
+F\"ur einen 7-achsigen Franka Emika Panda wurde ein kartesischer
+Echtzeit-Impedanzregler implementiert. Der Regler stellt die translatorische und
+rotatorische Nachgiebigkeit relativ zur Fl\"ache ein und erlaubt es, das
+virtuelle Nachgiebigkeitszentrum gegen\"uber dem Werkzeugmittelpunkt zu
+verschieben. Diese Verschiebung f\"uhrt zu einer Kopplung zwischen Translation
+und Rotation: Dr\"uckt der Roboter das Werkzeug gegen die Fl\"ache, so kann die
+resultierende Kraft ein Moment erzeugen, das die ausrichtende Drehung
+unterst\"utzt.
 
-Untersucht wurden richtungsabh\"angige Steifigkeit und der Hebel \(r_c\) am
-Nachgiebigkeitszentrum. Dessen Lage in der Ebene hatte den gr\"o\ss{}ten Einfluss.
-Der unterst\"utzende Hebel stand senkrecht zur vorgegebenen Drehachse und kehrte
-seine Richtung mit dem Orientierungsversatz um. Um \(t_1\) drehte sich der Roboter bereits
-ohne Hebel um \(7{,}57^\circ\); der unterst\"utzende Hebel von
-\(40\,\mathrm{mm}\) erh\"ohte diesen Wert nur auf \(7{,}87^\circ\). Um \(t_2\)
-\"anderte ein ebenfalls \(40\,\mathrm{mm}\) langer, f\"ur die \(t_2\)-Vorgabe
-tangential ausgerichteter Hebel die Drehung beim Kontaktaufbau von
-\(-1{,}63^\circ\) auf \(+4{,}43^\circ\). Er war damit f\"ur eine hilfreiche
-Roboterdrehung notwendig, reichte aber nicht aus, um die anf\"angliche
-Abweichung vollst\"andig zu korrigieren.
+Untersucht wurden richtungsabh\"angige Steifigkeit und verschiedene Lagen des
+virtuellen Nachgiebigkeitszentrums. Die Lage des Nachgiebigkeitszentrums
+bewirkte die gr\"o\ss{}te \"Anderung der gemessenen Ausrichtungsreaktion. Die
+unterst\"utzende Verschiebung lag in der Fl\"achenebene und senkrecht zur
+erforderlichen Drehrichtung. Eine Umkehr der anf\"anglichen Winkelabweichung
+kehrte auch die Richtung der unterst\"utzenden Verschiebung um. Die Reaktion war
+stark richtungsabh\"angig: Um die eine Achse in der Ebene drehte sich der
+Roboter bereits ohne verschobenes Nachgiebigkeitszentrum deutlich zur Fl\"ache
+hin, w\"ahrend um die orthogonale Achse eine gew\"ahlte Verschiebung von
+\(40\,\mathrm{mm}\) die gemessene Drehung beim Kontaktaufbau von
+\(-1{,}63^\circ\) auf \(+4{,}43^\circ\) \"anderte. Versuche in dazwischen
+liegenden Richtungen der Ebene st\"utzten dieselbe geometrische Richtungsregel;
+der genaue beste Betrag der Verschiebung blieb jedoch von der untersuchten
+Geometrie und den Betriebsbedingungen abh\"angig.
 
-Bei vier Richtungen in der Tangentialebene erzeugte der richtungsabh\"angig
-gew\"ahlte Hebel eine numerisch gleiche oder gr\"o\ss{}ere signierte Drehung. Die
-diagonalen Unterschiede von \(0{,}07^\circ\) und \(0{,}05^\circ\) lagen innerhalb
-der deskriptiven experimentellen Streuung; um \(t_2\) \"anderte sich die
-Reaktion dagegen deutlich von \(-1{,}61^\circ\) auf \(+4{,}43^\circ\).
-Werkzeug- und Fl\"achenframe lieferten nach einer Endeffektordrehung
-unterschiedliche Reaktionen.
-
-In erg\"anzenden Halteversuchen verringerte projizierte Nullraumd\"ampfung die
-redundante Gelenkbewegung; beide Konditionierungsdrehmomente stellten
-\(\sigma_{\min}\) ann\"ahernd wieder her. Gemeinsame Kontaktmessgr\"o\ss{}e war
-die signierte Drehung. Die EE-abgeleitete
-Ausrichtungsgr\"o\ss{}e bleibt durch nicht erfasste Bewegungen der
-Werkzeugaufnahme begrenzt.
+Eine erg\"anzende Nullraumuntersuchung zeigte, dass projizierte D\"ampfung
+unn\"otige redundante Gelenkbewegung verringerte, w\"ahrend ein
+Konditionierungsterm die Roboterkonfiguration nach einer wiederholbaren
+St\"orung verbesserte. Die Arbeit zeigt ein Echtzeitverfahren, mit dem sich
+\"uber eine virtuelle Verschiebung des Nachgiebigkeitszentrums eine normale
+Kontaktbelastung in ein ausrichtendes Moment umsetzen l\"asst. Der wesentliche
+experimentelle Beitrag ist eine einfache geometrische Regel, mit der Richtung
+und Vorzeichen dieser Verschiebung aus der erforderlichen Ausrichtungsdrehung
+des Werkzeugs bestimmt werden.
