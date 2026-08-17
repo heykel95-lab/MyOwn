@@ -615,16 +615,85 @@ Distinguish:
 
 Trace every geometric metric through its measurement chain. The controller
 reconstructs the tool axis from the EE pose and a nominal tool-to-EE transform.
-Because the mounted tool can rotate approximately ±2° about \(y_{EE}\), call
-this quantity the **EE-inferred tool axis**, not a directly measured physical
-tool-face axis. Do not rename \(y_{EE}\) as \(t_2\) without transforming it
-into the calibrated surface frame. State that the current angular results
-describe the combined robot–gripper–tool response and cannot separate
-controller compliance from gripper compliance. A visually or physically flat
-tool may coexist with a changing EE-inferred angle.
+Because the mounted tool can rotate approximately ±2° about \(y_{EE}\), this
+quantity is not a directly measured physical tool-face axis. Do not rename
+\(y_{EE}\) as \(t_2\) without transforming it into the calibrated surface
+frame. State that the current angular results describe the combined
+robot–gripper–tool response and cannot separate controller compliance from
+gripper compliance.
+
+**The word `inferred` is not used for it, and neither is `EE-inferred`.** Both
+were removed. Name the chain instead: `alignment angle calculated from the
+end-effector pose`, `end-effector-based alignment angle`, or `pose-based
+alignment angle`.
+
+### Keep the three alignment quantities separate
+
+They are complementary and are never presented as interchangeable measurements
+of one thing:
+
+- **Signed set-up rotation** — answers *how far, and in which direction, did
+  the end effector rotate during contact?* This is the primary metric for
+  comparing controller settings, and it does not depend on the calibrated
+  grinding-face direction.
+- **Alignment angle calculated from the end-effector pose** — answers *given
+  the measured end-effector orientation and the calibrated rigid tool
+  direction, how large is the reconstructed tool–surface angular difference?*
+  Useful, but it carries the tool-mount assumption, so it is a supporting
+  quantity and never independent proof of the physical grinding-face
+  orientation.
+- **TCP-height flatness criterion** — answers *is the final measured TCP
+  position geometrically consistent with the calibrated rectangular face lying
+  flat on the surface?* This is the right quantity for calling a condition
+  flat, as long as the wording stays explicit that it is geometry-based rather
+  than an independent physical orientation measurement. Where it is
+  satisfied, write `classified as flat by the TCP-height criterion` or `the
+  final geometry was consistent with a flatly seated grinding face`. Never
+  claim the physical face angle was measured as zero: the tool orientation was
+  not measured independently under load.
+
+**Do not write that a lever was insufficient to align the tool**, or that it
+`did not remove the full initial deviation`. Both read as claims about the
+physical grinding face, which was not measured. A residual pose-based
+alignment angle is not by itself evidence of residual physical tilt, because
+relative motion between the tool and its mount was not measured. Report what
+was measured — the signed set-up rotation changed from \(-1.63\) to
+\(+4.43^\circ\) about \(t_2\) with the selected \(40\,\mathrm{mm}\) lever, and
+the final configuration satisfied the TCP-height flatness criterion.
+
+### Three distinct points: contact, TCP, compliance centre
+
+\(p_{\mathrm{contact}}\), \(p_{\mathrm{TCP}}\) and \(p_c\) are different points
+and the prose must keep them apart.
+
+- \(p_{\mathrm{contact}}\) is the point or edge of the grinding face that
+  contacts, or is predicted to contact, the surface. The controller determines
+  it from the rectangular face geometry and the current tool orientation.
+- \(p_{\mathrm{TCP}}\) is the Cartesian reference point of the controller.
+- \(p_c\) is the virtual centre of compliance: a software-defined point about
+  which the Cartesian stiffness and damping are formulated before being
+  transformed to the TCP. It is **not** the physical contact point.
+
+So \(r_c=p_{\mathrm{TCP}}-p_c\) is the compliance-centre-to-TCP shift used by
+the impedance transformation. It is not a physical contact-point lever; that is
+a separate vector, \(r_{\mathrm{contact}}=p_{\mathrm{contact}}-p_{\mathrm{TCP}}\),
+and the two combine as
+\(p_{\mathrm{contact}}-p_c=(p_{\mathrm{contact}}-p_{\mathrm{TCP}})+(p_{\mathrm{TCP}}-p_c)\),
+which is worth stating because it separates the physical contact geometry from
+the virtual shift.
+
+**Never write that the compliance centre moves the force application point.**
+The physical surface force still acts at the actual contact point. What changes
+is the point about which the compliance is defined, and therefore the
+translation–rotation coupling: the same normal press produces a different
+rotational response as \(p_c\) moves. Give that explanation before introducing
+\(r_c=p_{\mathrm{TCP}}-p_c\) and \(m_c=-r_c\times f_{\mathrm{press}}\), not
+after. If \(p_c\) lies on the relevant line of action the moment contribution
+becomes small or zero; displacing it to one side produces a moment that assists
+the required alignment, and to the other side one that opposes or reverses it.
 
 Use `model-estimated external wrench` for
-`O_F_ext_hat_K`. Do not call it a directly measured wrench. A location inferred
+`O_F_ext_hat_K`. Do not call it a directly measured wrench. A location derived
 from that signal is an `equivalent contact location`, not necessarily a
 physical point contact.
 
@@ -899,8 +968,8 @@ When a calibrated pilot is recorded after the main campaign:
 - report the controller lever using
   \(r_c=p_{\mathrm{TCP}}-p_c\), rather than calling its sign simply “left” or
   “right”;
-- retain the EE-inferred metric and the operator-observed contact state as
-  separate outcomes when tool-to-gripper motion is unmeasured;
+- retain the pose-based alignment metric and the operator-observed contact
+  state as separate outcomes when tool-to-gripper motion is unmeasured;
 - report mean and sample standard deviation only for repeated conditions; and
 - call a selected lever provisional until the orthogonal axis and an
   independent physical-angle measurement have been checked.
