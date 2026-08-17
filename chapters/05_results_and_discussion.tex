@@ -458,8 +458,8 @@ contact resolves one way or the other from nominally identical starts.}
 
 \Revised{\mbox{\Cref{fig:results_case_e_wrench}} reads one comparison in the
 order the load acts: the deviation first, then the press along the surface
-normal, then the moment about the commanded tangent, each as the controller
-commanded it and as the robot model estimated it. The press is negative
+normal, then \mbox{\(M_{t_1}\)}, the moment about the commanded tangent, each as the
+controller commanded it and as the robot model estimated it. The press is negative
 because \mbox{\(n_s\)} points out of the plate, and it reaches
 \mbox{\(-77\)} to \mbox{\(-82\,\mathrm{N}\)} in all three conditions, so they
 are compared under the same normal load.}
@@ -467,32 +467,40 @@ are compared under the same normal load.}
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{figures/MAIN_E_wrench.pdf}
-\caption{Deviation, normal press and alignment moment for three centre
-positions, each commanded and model-estimated.}
+\caption{Deviation, normal press \(F_n\) and moment \(M_{t_1}\) about the
+commanded tangent for three centre positions, each commanded and
+model-estimated.}
 \label{fig:results_case_e_wrench}
 \end{figure}
 
-\Revised{The estimated moment about the centre grows with the distance, from
-\mbox{\(+1.32\)} through \mbox{\(+4.47\)} to
-\mbox{\(+7.49\,\mathrm{N\,m}\)}, which is what
-\mbox{\(M_{\mathrm{CoC}}=r_{\mathrm{eff}}\times\Delta\hat f_{\mathrm{ext}}\)}
-requires of it. The alignment does not follow: the same three conditions end
-at \mbox{\(9.39\)}, \mbox{\(3.34\)} and \mbox{\(3.07^\circ\)}, so between the
-last two the moment nearly doubles for \mbox{\(0.27^\circ\)}. A larger
-corrective moment is therefore not sufficient for a better correction, and the
-common normal load rules out the press itself as the explanation.}
+\Revised{Both moments are referred to the TCP, which is the only point at
+which the commanded and the estimated one compare without a contact model
+between them. They track each other closely. At \mbox{\(-40\)}, \mbox{\(0\)}
+and \mbox{\(+40\,\mathrm{mm}\)} the commanded moment settles at
+\mbox{\(+3.28\)}, \mbox{\(+0.66\)} and \mbox{\(-2.44\,\mathrm{N\,m}\)}
+and the estimated one at \mbox{\(+2.94\)}, \mbox{\(-0.32\)} and
+\mbox{\(-3.54\,\mathrm{N\,m}\)}, so the environment returns within about
+\mbox{\(1\,\mathrm{N\,m}\)} of what the controller asks for.}
 
-\Revised{The commanded moment runs the other way. It is \mbox{\(+3.3\)},
-\mbox{\(+0.7\)} and \mbox{\(-2.5\,\mathrm{N\,m}\)} at the three
-positions, so it opposes the rotation the contact is producing and opposes it
-hardest where the correction is largest. That is the rotational spring holding
-the attitude it was given at first contact: with
-\mbox{\(5\,\mathrm{N\,m/rad}\)} about the tangents it is weak, and the
-point shift adds to it the moment the commanded translation makes through the
-offset. What turns the tool is the contact reaction, against that spring rather
-than with it. \mbox{\Cref{fig:results_case_e_diagnostics}} resolves both
-referenced moments and the rotation on the surface axes for the two extremes
-of the same comparison.}
+\Revised{What the centre position changes is the sign of that moment, not its
+size. The magnitudes at the two outer positions are alike, and the conditions
+end at \mbox{\(9.39\)} and \mbox{\(3.07^\circ\)}. The larger moment is the
+one that leaves the tool tilted. Under a common press this rules out both the
+load and the size of the moment as what separates the conditions, and leaves
+the direction in which it acts.}
+
+\Revised{Referring the same two wrenches to the centre of compliance instead
+gives a nearly constant pair: \mbox{\(+0.66\)}, \mbox{\(+0.69\)} and
+\mbox{\(+0.01\,\mathrm{N\,m}\)} commanded against \mbox{\(-0.32\)},
+\mbox{\(-0.46\)} and \mbox{\(-0.29\,\mathrm{N\,m}\)} estimated. That is
+the point shift working as constructed: the centre sees a block-diagonal
+impedance, so the moment there is the rotational spring acting on the
+orientation error and little else. The displacement does not change what the
+centre carries; it changes where that point sits relative to the contact, and
+with it the moment at the TCP.
+\mbox{\Cref{fig:results_case_e_diagnostics}} resolves both referenced moments
+and the rotation on the surface axes for the two extremes of the same
+comparison.}
 
 \begin{figure}[H]
 \centering
