@@ -1,27 +1,27 @@
 \chapter{Experimental Methodology}
 \label{ch:methodology}
-\Revised{This chapter presents the experimental configuration, calibration procedure,
+This chapter presents the experimental configuration, calibration procedure,
 controller parameters, test sequence, and evaluation quantities used to
 characterise the contact-induced alignment of the grinding tool. The main test
 series consists of surface-contact measurements in which the commanded tool orientation offset,
 directional Cartesian stiffness, and virtual centre of compliance \mbox{\(p_c\)} were varied
 under otherwise matched conditions. Complementary Cartesian pose-hold trials
 quantified the two null-space torque \mbox{\(\tau_{\mathrm{null}}\)} contributions under a repeatable
-internally commanded disturbance.}
+internally commanded disturbance.
 
 
 \section{Experimental Design}
 \label{sec:experimental_design}
 \label{sec:experimental_question}
 
-\Revised{The surface-contact investigation follows one comparison chain.
+The surface-contact investigation follows one comparison chain.
 Case~D establishes the zero-lever baseline. Cases~E, G, F, and~H then vary the
 lever direction and sign, axial position, definition frame, and commanded
 offset magnitude, respectively. Case~C tests the resulting direction-selection
 rule at four commanded rotation directions. Cases~B and~A finally vary the
 cross-axis translational stiffness and command-axis rotational stiffness.
 \mbox{\Cref{tab:experimental_question_map}} summarises this structure before
-the complete parameter matrix.}
+the complete parameter matrix.
 
 \begin{table}[H]
 \centering
@@ -44,13 +44,13 @@ rotational-stiffness variation in A \\
 \end{tabular}
 \end{table}
 
-\Revised{Case~D places the centre on the TCP, so the press makes no moment
+Case~D places the centre on the TCP, so the press makes no moment
 through an offset and what acts is the contact alone. It is measured on both
 surface tangents and at both signs of the commanded offset, because the
 grinding face is three times longer across one tangent than the other and the
-two need not behave alike.}
+two need not behave alike.
 
-\Revised{Case~E displaces the centre along the tangent perpendicular to the
+Case~E displaces the centre along the tangent perpendicular to the
 commanded rotation axis, seven positions from \mbox{\(-40\)} to
 \mbox{\(+40\,\mathrm{mm}\)}, at every combination of tangent and sign. That
 grid is what settles whether the assisting direction follows the sign of the
@@ -60,72 +60,72 @@ without effect. Case~F then names the same lever in surface coordinates instead
 of end-effector coordinates, so the definition frame is separated from the
 offset itself. Case~H halves the commanded offset at two of the Case-E
 positions. Case~C subsequently commands four rotation directions in the
-tangent plane and compares a direction-selected lever with a fixed lever.}
+tangent plane and compares a direction-selected lever with a fixed lever.
 
-\Revised{The two stiffness cases retain the zero-lever baseline. Case~B varies
+The two stiffness cases retain the zero-lever baseline. Case~B varies
 the translational stiffness along the tangent perpendicular to the commanded
 rotation axis. Case~A then varies the rotational stiffness about the commanded
-rotation axis.}
+rotation axis.
 
-\Revised{The commanded angular offset defines the orientation target before
+The commanded angular offset defines the orientation target before
 set-up; the measured initial EE-inferred angle is retained separately because
 finite tracking error remains. The rotational stiffness determines the resistance to
 rotation about the tilted tangent, whereas the translational stiffness
 perpendicular to that tangent affects the translational response coupled to the
 alignment motion. Shifting the Cartesian impedance from a selected
 centre of compliance \mbox{\(p_c\)} to the TCP introduces translation--rotation coupling and
-therefore changes the moment produced by the commanded press.}
+therefore changes the moment produced by the commanded press.
 
-\Revised{The surface plane and the grinding-face direction were calibrated
+The surface plane and the grinding-face direction were calibrated
 independently and used to define the surface and tool geometry throughout the
 measurements. The rotational stiffness about \mbox{\(t_1\)} and \mbox{\(t_2\)} was varied
 separately, while the orthogonal rotational-stiffness entry remained at
 \mbox{\(5\,\mathrm{N\,m/rad}\)}. This arrangement allowed the response associated with each
-surface tangent \mbox{\(t_1\)} or \mbox{\(t_2\)} to be evaluated independently.}
+surface tangent \mbox{\(t_1\)} or \mbox{\(t_2\)} to be evaluated independently.
 
-\Revised{Unless stated otherwise for a particular case, the reported set-up
+Unless stated otherwise for a particular case, the reported set-up
 phase used the surface-frame matrices \mbox{\(K_{p,\mathrm{set}}\)} and
 \mbox{\(K_{R,\mathrm{set}}\)} defined in
 \mbox{\cref{eq:experimental_setup_translational_stiffness,eq:experimental_setup_rotational_stiffness}}.
 Both matrices use the coordinate order \mbox{\([t_1,t_2,n_s]\)}. The fixed
 phase, damping, null-space, and trajectory parameters are specified in
-\mbox{\Cref{sec:experimental_controller_parameters}}.}
+\mbox{\Cref{sec:experimental_controller_parameters}}.
 
-\Revised{Neither matrix is a neutral starting point. The entries were chosen
+Neither matrix is a neutral starting point. The entries were chosen
 for the roles they play during set-up, and the choice is stated here because it
 bounds what varying them could show. The controller regulates pose and not
 force: the commanded wrench is \mbox{\(K\,\Delta x+D\,\Delta\dot x\)}
 throughout, with no force target and no force feedback anywhere in the loop.
 Whatever load the tool carries is a consequence of a commanded displacement
-acting through a stiffness.}
+acting through a stiffness.
 
-\Revised{The normal translational entry is the compliant one,
+The normal translational entry is the compliant one,
 \mbox{\(350\,\mathrm{N/m}\)} against \mbox{\(2000\,\mathrm{N/m}\)} in the
 plane. The press reference is ramped past the surface and the surface stops the
 tool, so the load that arises is that entry times the penetration the contact
 refuses. A stiff normal entry would turn a small geometric error into a large
 load, which is what makes the compliant choice the workable one. The stiff
 in-plane entries hold the contact point where the geometry places it instead of
-letting it slide.}
+letting it slide.
 
-\Revised{The rotational entries are chosen the other way round. Those about the
+The rotational entries are chosen the other way round. Those about the
 two surface tangents are nearly free at \mbox{\(5\,\mathrm{N\,m/rad}\)},
 because turning onto the surface is the motion the set-up phase exists to
 permit and a stiff entry there would hold the tool at the attitude it arrived
 with. The entry about the surface normal is stiff at
 \mbox{\(50\,\mathrm{N\,m/rad}\)}, because rotation about the tool axis
-contributes nothing to alignment.}
+contributes nothing to alignment.
 
-\Revised{Two consequences follow for the experiments. The stiffness variations
+Two consequences follow for the experiments. The stiffness variations
 of Cases~A and~B ask how much the chosen values matter rather than search for
 better ones, and their outcome supports the choice: raising the rotational
 entry about the commanded tangent reduced the signed set-up rotation. The entry
 about the surface normal was not varied, because the alignment error carries no
 component about that axis by construction and the measured rotation about it
 stayed below \mbox{\(0.71^\circ\)} in every reported run, leaving that entry
-little to act on.}
+little to act on.
 
-\Revised{The normal translational entry was not varied either. Raising it would
+The normal translational entry was not varied either. Raising it would
 raise the press and, through the compliance-centre offset, the moment the press
 makes. Whether that improves the alignment is not established here, and the
 reported measurements give reason for doubt: across Cases~D to~H the
@@ -133,7 +133,7 @@ model-estimated normal load lay between \mbox{\(76\)} and
 \mbox{\(85\,\mathrm{N}\)}, while the signed set-up rotation varied from
 \mbox{\(-11.30\)} to \mbox{\(+7.87^\circ\)}. Normal load alone therefore does
 not explain the response over this range, and a larger value cannot be assumed
-to help.}
+to help.
 
 \needspace{0.55\textheight}%
 \begingroup
@@ -331,27 +331,27 @@ varied value is stated explicitly.
 \end{minipage}
 \vspace{1.2em}
 
-\Revised{The archive contains \mbox{\(171\)} surface-contact run directories
+The archive contains \mbox{\(171\)} surface-contact run directories
 distributed across \mbox{\(57\)} parameter settings. One directory,
 \mbox{\texttt{P2\_t1\_pos\_m040/r02}}, contains neither a CSV log nor a set-up
 report. The quantitative evaluation therefore uses \mbox{\(170\)} contact runs;
 that setting has two repetitions, while every other setting has three. Within
 each controlled comparison, only the stated parameter was changed. The
 remaining gain entries, calibrated geometry, phase sequence, and evaluation
-procedure were held constant.}
-\Revised{The principal controller-response quantity was the signed set-up
+procedure were held constant.
+The principal controller-response quantity was the signed set-up
 rotation \mbox{\(\Delta\theta_{\mathrm{set},t_i}\)} about the commanded surface
 tangent. TCP height above the calibrated plane provided the separate
 geometry-based flatness classification. The EE-inferred alignment angle,
 contact-point and TCP displacements, commanded wrench, and model-estimated
 normal load were retained as supporting quantities. Their definitions and
 treatment across repeated runs are presented in
-\mbox{\Cref{sec:experimental_evaluation}}.}
-\Revised{The surface-contact measurements and Cartesian pose-hold trials formed
+\mbox{\Cref{sec:experimental_evaluation}}.
+The surface-contact measurements and Cartesian pose-hold trials formed
 complementary data sets. Contact trials measured the set-up response with projected
 damping and singular-value conditioning as the active null-space terms. The pose-hold trials in
 \mbox{\Cref{sec:nullspace_hold_study}} quantified projected damping and
-singular-value conditioning under a repeatable internally commanded disturbance.}
+singular-value conditioning under a repeatable internally commanded disturbance.
 
 \section{Experimental System}
 \label{sec:experimental_system}
@@ -360,48 +360,48 @@ singular-value conditioning under a repeatable internally commanded disturbance.
 \subsection{Robot, Tool, and Surface}
 \label{subsec:experimental_robot_tool_surface}
 
-\Revised{The experiments were performed with a seven-degree-of-freedom Franka Emika
+The experiments were performed with a seven-degree-of-freedom Franka Emika
 Panda operated through the Franka Control Interface. Joint-torque commands were
-transmitted through libfranka at the nominal sampling period \mbox{\(T_s\)}:}
+transmitted through libfranka at the nominal sampling period \mbox{\(T_s\)}:
 
 \begin{equation}
 T_s=1\,\mathrm{ms},
 \label{eq:sampling_time_contact}
 \end{equation}
 
-\Revised{corresponding to a nominal control rate of \mbox{\(1\,\mathrm{kHz}\)}. The real-time
+corresponding to a nominal control rate of \mbox{\(1\,\mathrm{kHz}\)}. The real-time
 controller and its phase sequence are described in
-\mbox{\Cref{ch:implementation}}.}
+\mbox{\Cref{ch:implementation}}.
 
-\Revised{The rectangular grinding tool was held by the Franka Hand using custom gripper
+The rectangular grinding tool was held by the Franka Hand using custom gripper
 fingers. Its grinding face measured \mbox{\(40\,\mathrm{mm}\)} along
 \mbox{\(X_{\mathrm{EE}}\)} and \mbox{\(120\,\mathrm{mm}\)} along \mbox{\(Y_{\mathrm{EE}}\)}. The
 centre of the grinding face was located \mbox{\(20\,\mathrm{mm}\)} along
 \mbox{\(+Z_{\mathrm{EE}}\)} from the reported end-effector origin. The complete
 calibrated tool geometry is presented in
-\mbox{\Cref{sec:surface_tool_calibration}}.}
+\mbox{\Cref{sec:surface_tool_calibration}}.
 
-\Revised{The pads holding the tool were screwed to the gripper fingers. Clearance in
+The pads holding the tool were screwed to the gripper fingers. Clearance in
 that screwed joint permitted a small relative rotation of the tool about
-\mbox{\(y_{\mathrm{EE}}\)}.}
+\mbox{\(y_{\mathrm{EE}}\)}.
 
-\Revised{The grinding-face direction was reconstructed from the measured end-effector
+The grinding-face direction was reconstructed from the measured end-effector
 orientation and its calibrated direction in the end-effector frame. This
 frame-consistent metric quantifies the combined robot--gripper--tool response.
 The approximately \mbox{\(\pm2^\circ\)} relative tool rotation about
-\mbox{\(y_{\mathrm{EE}}\)} defines the mount-related contribution to its uncertainty.}
+\mbox{\(y_{\mathrm{EE}}\)} defines the mount-related contribution to its uncertainty.
 
-\Revised{The surface plate was mounted on a raised base board. All experiments used dry
+The surface plate was mounted on a raised base board. All experiments used dry
 contact between the grinding face and the plate. The controller command followed
 the calibrated geometry and Cartesian impedance law. The surface plane and
 grinding-face direction were calibrated separately before the experimental
-campaign, as described in \mbox{\Cref{sec:surface_tool_calibration}}.}
+campaign, as described in \mbox{\Cref{sec:surface_tool_calibration}}.
 
-\Revised{During approach, the controller determines which point or edge of the
+During approach, the controller determines which point or edge of the
 rectangular grinding face lies furthest in the descent direction. This point
 or edge is used for the geometric clearance calculation and the subsequent
 set-up motion. Its position was calculated from the measured end-effector pose
-and the calibrated tool geometry.}
+and the calibrated tool geometry.
 
 \begin{figure}[H]
     \centering
@@ -416,68 +416,68 @@ and the calibrated tool geometry.}
 \subsection{Software and Real-Time Computer}
 \label{subsec:experimental_software_computer}
 
-\Revised{The controller computer ran Ubuntu~20.04.3 with the
+The controller computer ran Ubuntu~20.04.3 with the
 \mbox{\texttt{5.9.1-rt20}} Linux kernel and the \mbox{\texttt{PREEMPT\_RT}} patch. The
 controller was compiled using \mbox{\texttt{g++~9.3}}, the C++14 language standard,
 and the \mbox{\texttt{-O2}} optimisation level. Eigen~3.3.7 and libfranka~0.7.1 were
-used for the matrix calculations and communication with the robot.}
+used for the matrix calculations and communication with the robot.
 
-\Revised{Before the contact measurements, the real-time computer and robot network
+Before the contact measurements, the real-time computer and robot network
 were checked with the \mbox{\texttt{communication\_test}} program supplied with
 libfranka~0.7.1 \mbox{\citep{libfrankaCommunicationTest}}. The program reports the
 fraction of control commands received by the robot and issues its lower
 communication-quality warning below an average success rate of \mbox{\(0.90\)}.
-The experimental setup passed this criterion.}
+The experimental setup passed this criterion.
 
-\Revised{The controller operated through the libfranka joint-torque interface. At each
+The controller operated through the libfranka joint-torque interface. At each
 control cycle, the measured robot state and the quantities provided by the
 robot model were used to calculate the commanded joint torque
 \mbox{\(\tau_{\mathrm{cmd}}\)}. The
 implementation of the real-time callback is documented in
-\mbox{\Cref{sec:real_time_control_loop}}.}
+\mbox{\Cref{sec:real_time_control_loop}}.
 
-\Revised{Each contact run followed the implemented sequence of tool orientation,
+Each contact run followed the implemented sequence of tool orientation,
 surface approach, set-up, and grinding. Manual guidance supported preparation,
 while Cartesian pose hold provided the complementary null-space trials.
 Projected damping supplied the null-space contribution throughout the contact
-sequence.}
+sequence.
 
 
 \subsection{Recorded Experimental Quantities}
 \label{subsec:experimental_recorded_quantities}
 
-\Revised{The quantities required for the subsequent evaluation were written to the
+The quantities required for the subsequent evaluation were written to the
 controller's in-memory logging buffer during each run and exported to a CSV
-file after torque control had ended. The recorded quantities included:}
+file after torque control had ended. The recorded quantities included:
 
 \begin{itemize}
-    \item \Revised{the measured end-effector position and orientation;}
-    \item \Revised{the measured joint position \mbox{\(q\)} and velocity
-          \mbox{\(\dot q\)};}
-    \item \Revised{the commanded Cartesian reference and Cartesian error \mbox{\(e\)};}
-    \item \Revised{the position of the point or edge of the grinding face used for the
-          set-up motion;}
-    \item \Revised{the active controller phase and null-space mode;}
-    \item \Revised{the commanded Cartesian wrench \mbox{\(F\)} and final joint-torque
-          command \mbox{\(\tau_{\mathrm{cmd}}\)}; and}
-    \item \Revised{the model-estimated external force \mbox{\(\hat f_{\mathrm{ext}}\)} and
-          moment reported by libfranka.}
+    \item the measured end-effector position and orientation;
+    \item the measured joint position \mbox{\(q\)} and velocity
+          \mbox{\(\dot q\)};
+    \item the commanded Cartesian reference and Cartesian error \mbox{\(e\)};
+    \item the position of the point or edge of the grinding face used for the
+          set-up motion;
+    \item the active controller phase and null-space mode;
+    \item the commanded Cartesian wrench \mbox{\(F\)} and final joint-torque
+          command \mbox{\(\tau_{\mathrm{cmd}}\)}; and
+    \item the model-estimated external force \mbox{\(\hat f_{\mathrm{ext}}\)} and
+          moment reported by libfranka.
 \end{itemize}
 
-\Revised{The commanded wrench \mbox{\(F\)} and the model-estimated external wrench were recorded as
+The commanded wrench \mbox{\(F\)} and the model-estimated external wrench were recorded as
 separate quantities. After the clearance-transition reference was subtracted,
 the libfranka estimate provided a common supporting load signal across matched runs. The complete
 logging implementation and CSV structure are described in
-\mbox{\Cref{sec:recorded_signals}}.}
+\mbox{\Cref{sec:recorded_signals}}.
 
 
 \subsection{Reproducibility Record}
 \label{subsec:reproducibility_record}
 
-\Revised{The documented experimental system is summarised in
+The documented experimental system is summarised in
 \mbox{Table~\ref{tab:reproducibility_record}}. Controller parameters that differ between
 the individual experimental cases are reported separately in
-\mbox{\Cref{sec:experimental_controller_parameters}}.}
+\mbox{\Cref{sec:experimental_controller_parameters}}.
 
 {\small
 \begin{longtable}{@{}
@@ -577,32 +577,32 @@ Cartesian impedance law.
 \\
 
 \end{longtable}
-\Revised{}}
+}
 
-\Revised{The reproducibility record contains the software versions, nominal control
+The reproducibility record contains the software versions, nominal control
 period, controller parameters, tool dimensions, and surface calibration. These
 quantities define the implemented control configuration and calibrated contact
-geometry used in the experiments.}
+geometry used in the experiments.
 
 \section{Surface and Tool Calibration}
 \label{sec:surface_tool_calibration}
 \label{sec:contact_geometry}
 
-\Revised{The surface plane and the direction normal to the grinding face were
+The surface plane and the direction normal to the grinding face were
 calibrated independently before the contact experiments. The surface
 calibration provided the point, normal direction, and tangent directions used
 by the controller. The tool calibration provided the grinding-face direction
-expressed in the end-effector frame.}
+expressed in the end-effector frame.
 
-\Revised{The calibrated quantities were written to the controller parameter files and
+The calibrated quantities were written to the controller parameter files and
 were subsequently used for approach, clearance calculation, commanded tool
 orientation, gain orientation, compliance-centre placement, and evaluation of
-the experimental results.}
+the experimental results.
 
-\Revised{The two calibration chains were independent during estimation and were
+The two calibration chains were independent during estimation and were
 combined only when the run-time tool direction was evaluated against the
 surface normal \mbox{\(n_s\)}. Their fit and validation stages are summarised in
-\mbox{\cref{fig:calibration_flow}}.}
+\mbox{\cref{fig:calibration_flow}}.
 
 \begin{figure}[H]
   \centering
@@ -615,17 +615,17 @@ surface normal \mbox{\(n_s\)}. Their fit and validation stages are summarised in
 \subsection{Surface-Plane Calibration}
 \label{subsec:plane_calibration_protocol}
 
-\Revised{Four positions distributed over the plate were probed with the same
+Four positions distributed over the plate were probed with the same
 marked \mbox{\(+X_{\mathrm{EE}},+Y_{\mathrm{EE}}\)} corner of the grinding face.
 The first three corner positions, \mbox{\(P_1\)}--\mbox{\(P_3\)}, determined the
 plane. The fourth, \mbox{\(P_4\)}, was excluded from the fit and provided an
-independent geometric check.}
+independent geometric check.
 
-\Revised{At each position \mbox{\(i\)}, the read-only capture utility obtained the
+At each position \mbox{\(i\)}, the read-only capture utility obtained the
 measured end-effector position \mbox{\(p_{\mathrm{EE},i}\)} and orientation
 \mbox{\(R_{\mathrm{EE},i}\)}. The fixed end-effector-frame probe offset
 \mbox{\(r_{\mathrm{probe,EE}}\)} was the grinding-face centre plus the positive
-half-width and half-length vectors:}
+half-width and half-length vectors:
 
 \begin{equation}
 r_{\mathrm{probe,EE}}
@@ -639,8 +639,8 @@ r_{\mathrm{probe,EE}}
 \label{eq:plane_probe_corner_offset}
 \end{equation}
 
-\Revised{The base-frame corner coordinate \mbox{\(p_{\mathrm{cal},i}\)} stored for the plane fit was
-therefore}
+The base-frame corner coordinate \mbox{\(p_{\mathrm{cal},i}\)} stored for the plane fit was
+therefore
 
 \begin{equation}
 p_{\mathrm{cal},i}
@@ -650,18 +650,18 @@ p_{\mathrm{EE},i}
 \label{eq:plane_probe_corner_position}
 \end{equation}
 
-\Revised{The plane used by the controller is represented by}
+The plane used by the controller is represented by
 
 \begin{equation}
 n_s^\top(p-p_s)=0,
 \label{eq:calibrated_surface_plane}
 \end{equation}
 
-\Revised{where \mbox{\(p_s\)} is one point on the plane and \mbox{\(n_s\)} is its unit normal,
-expressed in the robot base frame.}
+where \mbox{\(p_s\)} is one point on the plane and \mbox{\(n_s\)} is its unit normal,
+expressed in the robot base frame.
 
-\Revised{The final calibrated plane point stored in
-the controller parameters was}
+The final calibrated plane point stored in
+the controller parameters was
 
 \begin{equation}
 p_s
@@ -675,14 +675,14 @@ p_s
 \label{eq:calibrated_surface_point}
 \end{equation}
 
-\Revised{This point is the centroid of the three fitted corner coordinates, not a
-captured grinding-face-centre position.}
+This point is the centroid of the three fitted corner coordinates, not a
+captured grinding-face-centre position.
 
-\Revised{The controller stores the surface orientation through rotations
+The controller stores the surface orientation through rotations
 \mbox{\(\alpha_s\)} about the base \mbox{\(x\)}-axis and
 \mbox{\(\beta_s\)} about the base \mbox{\(y\)}-axis. With
 \mbox{\(e_z\)} denoting the base-frame \mbox{\(z\)}-axis unit vector, the corresponding
-normal is calculated from}
+normal is calculated from
 
 \begin{equation}
 n_s
@@ -697,7 +697,7 @@ R_y(\beta_s)R_x(\alpha_s)e_z
 \label{eq:implemented_surface_normal_angles}
 \end{equation}
 
-\Revised{The calibrated angles in the final controller configuration were}
+The calibrated angles in the final controller configuration were
 
 \begin{equation}
 \alpha_s=-1.585^\circ,
@@ -706,7 +706,7 @@ R_y(\beta_s)R_x(\alpha_s)e_z
 \label{eq:calibrated_surface_tilt_angles}
 \end{equation}
 
-\Revised{These values give the base-frame surface normal \mbox{\(n_s\)}}
+These values give the base-frame surface normal \mbox{\(n_s\)}
 
 \begin{equation}
 n_s
@@ -721,15 +721,15 @@ n_s
 \label{eq:surface_normal}
 \end{equation}
 
-\Revised{This three-point physical-plane fit was copied into the controller
+This three-point physical-plane fit was copied into the controller
 configuration. The same normal \mbox{\(n_s\)} therefore defined the surface
 frame, the controller geometry, and the alignment values reported in
-\mbox{\Cref{ch:results_discussion}}. No separate evaluation normal was used.}
+\mbox{\Cref{ch:results_discussion}}. No separate evaluation normal was used.
 
-\Revised{The plane-validation residual \mbox{\(\varepsilon_{\mathrm{plane}}\)} is the
+The plane-validation residual \mbox{\(\varepsilon_{\mathrm{plane}}\)} is the
 perpendicular distance of the independently probed fourth point
 \mbox{\(p_{\mathrm{cal},4}\)}
-from the calibrated plane:}
+from the calibrated plane:
 
 \begin{equation}
 \varepsilon_{\mathrm{plane}}
@@ -740,7 +740,7 @@ n_s^\top(p_{\mathrm{cal},4}-p_s)
 \label{eq:surface_plane_validation_residual}
 \end{equation}
 
-\Revised{The resulting validation residual was}
+The resulting validation residual was
 
 \begin{equation}
 \varepsilon_{\mathrm{plane}}
@@ -749,9 +749,9 @@ n_s^\top(p_{\mathrm{cal},4}-p_s)
 \label{eq:surface_plane_validation_value}
 \end{equation}
 
-\Revised{The plane calibration determines the surface point and normal. Its
+The plane calibration determines the surface point and normal. Its
 in-plane orientation is fixed separately by the configured reference direction
-\mbox{\(a_s=e_x\)}, which is projected into the calibrated plane and normalised:}
+\mbox{\(a_s=e_x\)}, which is projected into the calibrated plane and normalised:
 
 \begin{equation}
 t_1
@@ -766,18 +766,18 @@ t_1
 \label{eq:calibrated_first_surface_tangent}
 \end{equation}
 
-\Revised{The tangent therefore follows the projection of the base-frame
+The tangent therefore follows the projection of the base-frame
 \mbox{\(x\)}-direction, as recorded in every archived effective surface
-configuration.}
+configuration.
 
-\Revised{The second surface tangent \mbox{\(t_2\)} completes the right-handed surface frame:}
+The second surface tangent \mbox{\(t_2\)} completes the right-handed surface frame:
 
 \begin{equation}
 t_2=n_s\times t_1.
 \label{eq:calibrated_second_surface_tangent}
 \end{equation}
 
-\Revised{For the calibrated normal, the resulting tangent directions are approximately}
+For the calibrated normal, the resulting tangent directions are approximately
 
 \begin{equation}
 t_1
@@ -798,7 +798,7 @@ t_2
 \label{eq:calibrated_surface_tangent_values}
 \end{equation}
 
-\Revised{The complete surface frame is therefore}
+The complete surface frame is therefore
 
 \begin{equation}
 R_{\mathrm{surface}}
@@ -815,36 +815,36 @@ t_1 & t_2 & n_s
 \label{eq:surface_task_frame}
 \end{equation}
 
-\Revised{The surface normal \mbox{\(n_s\)} lies approximately
+The surface normal \mbox{\(n_s\)} lies approximately
 \mbox{\(1.9^\circ\)} from the base \mbox{\(z\)}-direction. The two tangents
 remain close to the base \mbox{\(x\)}- and \mbox{\(y\)}-directions after their
-projection into the plane.}
+projection into the plane.
 
-\Revised{All surface-frame quantities in the contact campaign use the coordinate order}
+All surface-frame quantities in the contact campaign use the coordinate order
 
 \begin{equation}
 [\,t_1,t_2,n_s\,].
 \end{equation}
 
-\Revised{This order applies to commanded angular offsets, rotational stiffness,
+This order applies to commanded angular offsets, rotational stiffness,
 surface-resolved displacement and rotation, and the compliance-centre levers
-\mbox{\(r_c\)}.}
+\mbox{\(r_c\)}.
 
 
 \subsection{Grinding-Face Calibration}
 \label{subsec:grinding_face_calibration}
 
-\Revised{Four end-effector orientations,
+Four end-effector orientations,
 \mbox{\(T_{\mathrm{cal},1}\)}--\mbox{\(T_{\mathrm{cal},4}\)}, were captured
 with the complete grinding face seated flat on the validated plane. The face
 remained flat while its yaw about the plane normal was changed by approximately
 \mbox{\(20^\circ\)}--\mbox{\(45^\circ\)} between samples. The first three rotations
-were used for estimation, and the fourth was held out for validation.}
+were used for estimation, and the fourth was held out for validation.
 
-\Revised{With only the yaw changed, the end-effector-frame grinding-face normal
+With only the yaw changed, the end-effector-frame grinding-face normal
 \mbox{\(n_{\mathrm{EE}}\)} should map to one invariant base-frame direction
 \mbox{\(\bar n_B\)}. The matrices \mbox{\(R_{\mathrm{cal},i}\)} are the
-rotational blocks of the captured poses \mbox{\(T_{\mathrm{cal},i}\)}:}
+rotational blocks of the captured poses \mbox{\(T_{\mathrm{cal},i}\)}:
 
 \begin{equation}
 R_{\mathrm{cal},1}n_{\mathrm{EE}}
@@ -857,7 +857,7 @@ R_{\mathrm{cal},3}n_{\mathrm{EE}}
 \label{eq:tool_axis_invariant_direction}
 \end{equation}
 
-\Revised{The estimator formed the mean rotation matrix
+The estimator formed the mean rotation matrix
 \mbox{\(\bar R=(R_{\mathrm{cal},1}+R_{\mathrm{cal},2}+R_{\mathrm{cal},3})/3\)}
 and applied the
 singular-value decomposition \mbox{\(\bar R=U\Sigma V^\top\)}. The matrix
@@ -866,7 +866,7 @@ contains the singular values, and \mbox{\(V\)} contains the right singular
 vectors. The dominant
 right singular vector gave \mbox{\(n_{\mathrm{EE}}\)}, while the corresponding
 left singular vector gave \mbox{\(\bar n_B\)}. The sign was selected toward
-nominal \mbox{\(+Z_{\mathrm{EE}}\)}. The final controller configuration was}
+nominal \mbox{\(+Z_{\mathrm{EE}}\)}. The final controller configuration was
 
 \begin{equation}
 n_{\mathrm{EE}}
@@ -881,14 +881,14 @@ n_{\mathrm{EE}}
 \label{eq:calibrated_grinding_face_direction}
 \end{equation}
 
-\Revised{expressed in the end-effector frame. The calibrated grinding-face normal
+expressed in the end-effector frame. The calibrated grinding-face normal
 differs from nominal \mbox{\(+Z_{\mathrm{EE}}\)} by approximately
 \mbox{\(1.56^\circ\)}. The calibration does not by itself identify the physical
 source of this offset. The effective value above was stored with every
-reported run and is therefore the value used in the evaluation.}
+reported run and is therefore the value used in the evaluation.
 
-\Revised{During each controller cycle, the grinding-face direction in the robot base
-frame is calculated from the measured end-effector orientation:}
+During each controller cycle, the grinding-face direction in the robot base
+frame is calculated from the measured end-effector orientation:
 
 \begin{equation}
 n_T
@@ -897,12 +897,12 @@ R_{\mathrm{EE}}n_{\mathrm{EE}}.
 \label{eq:grinding_face_direction_base}
 \end{equation}
 
-\Revised{The direction \mbox{\(n_T\)} is therefore calculated from the measured end-effector
+The direction \mbox{\(n_T\)} is therefore calculated from the measured end-effector
 orientation and the calibrated grinding-face direction. This reconstruction
-provides the grinding-face direction used throughout the evaluation.}
+provides the grinding-face direction used throughout the evaluation.
 
-\Revised{The commanded flat orientation turns the grinding face toward the calibrated
-surface according to}
+The commanded flat orientation turns the grinding face toward the calibrated
+surface according to
 
 \begin{equation}
 R_d n_{\mathrm{EE}}
@@ -911,26 +911,26 @@ R_d n_{\mathrm{EE}}
 \label{eq:implemented_tool_axis_target}
 \end{equation}
 
-\Revised{The negative sign follows from the axis-direction sign \mbox{\(s_a\)}:}
+The negative sign follows from the axis-direction sign \mbox{\(s_a\)}:
 
 \begin{equation}
 s_a=-1,
 \end{equation}
 
-\Revised{which directs the positive grinding-face axis opposite the outward surface
+which directs the positive grinding-face axis opposite the outward surface
 normal \mbox{\(n_s\)}. The commanded spin about the desired grinding-face axis,
 measured from \mbox{\(t_1\)}, was \mbox{\(90^\circ\)} for all reported runs. For
 the flat orientation, the grinding-face axis is antiparallel to
 \mbox{\(n_s\)}, and the projected long face axis is consequently aligned with
-the \mbox{\(t_2\)} line.}
+the \mbox{\(t_2\)} line.
 
-\Revised{The parallel-jaw mounting permitted approximately
+The parallel-jaw mounting permitted approximately
 \mbox{\(\pm2^\circ\)} of relative tool rotation about \mbox{\(y_{\mathrm{EE}}\)}.
 This relative motion contributes to the uncertainty of the alignment
-calculated from the end-effector orientation.}
+calculated from the end-effector orientation.
 
-\Revised{\mbox{\Cref{fig:tool_face_plan_view}} shows the calibrated face and the
-mounting axes in the surface plane.}
+\mbox{\Cref{fig:tool_face_plan_view}} shows the calibrated face and the
+mounting axes in the surface plane.
 
 \begin{figure}[H]
   \centering
@@ -943,8 +943,8 @@ mounting axes in the surface plane.}
 \subsection{Calibrated Grinding-Face Geometry}
 \label{subsec:calibrated_contact_geometry}
 
-\Revised{The grinding face was represented by a rectangle expressed in the
-end-effector frame. Its centre offset \mbox{\(r_{\mathrm{face,EE}}\)} was configured as}
+The grinding face was represented by a rectangle expressed in the
+end-effector frame. Its centre offset \mbox{\(r_{\mathrm{face,EE}}\)} was configured as
 
 \begin{equation}
 r_{\mathrm{face,EE}}
@@ -958,8 +958,8 @@ r_{\mathrm{face,EE}}
 \label{eq:grinding_face_center_ee}
 \end{equation}
 
-\Revised{The half-width vector \mbox{\(r_{\mathrm{width,EE}}\)} and half-length vector
-\mbox{\(r_{\mathrm{length,EE}}\)} were}
+The half-width vector \mbox{\(r_{\mathrm{width,EE}}\)} and half-length vector
+\mbox{\(r_{\mathrm{length,EE}}\)} were
 
 \begin{equation}
 r_{\mathrm{width,EE}}
@@ -982,7 +982,7 @@ r_{\mathrm{length,EE}}
 \label{eq:grinding_face_half_dimensions}
 \end{equation}
 
-\Revised{The complete grinding face therefore measured}
+The complete grinding face therefore measured
 
 \begin{equation}
 40\,\mathrm{mm}
@@ -990,12 +990,12 @@ r_{\mathrm{length,EE}}
 120\,\mathrm{mm},
 \end{equation}
 
-\Revised{with the width along \mbox{\(X_{\mathrm{EE}}\)}, the length along
+with the width along \mbox{\(X_{\mathrm{EE}}\)}, the length along
 \mbox{\(Y_{\mathrm{EE}}\)}, and its centre \mbox{\(20\,\mathrm{mm}\)} along
-\mbox{\(+Z_{\mathrm{EE}}\)} from the reported end-effector origin.}
+\mbox{\(+Z_{\mathrm{EE}}\)} from the reported end-effector origin.
 
-\Revised{For a point on the grinding face with end-effector-frame offset
-\mbox{\(r_{g,\mathrm{EE}}\)}, its base-frame position \mbox{\(p_g\)} is calculated from}
+For a point on the grinding face with end-effector-frame offset
+\mbox{\(r_{g,\mathrm{EE}}\)}, its base-frame position \mbox{\(p_g\)} is calculated from
 
 \begin{equation}
 p_g
@@ -1006,13 +1006,13 @@ R_{\mathrm{EE}}r_{g,\mathrm{EE}}.
 \label{eq:controlled_grinding_face_position}
 \end{equation}
 
-\Revised{The controller transforms all four corners of the grinding face into the robot
+The controller transforms all four corners of the grinding face into the robot
 base frame and compares their positions along the descent direction. The point
 or edge of the grinding face that approaches the surface first is then used
-for the geometric clearance calculation and the subsequent set-up motion.}
+for the geometric clearance calculation and the subsequent set-up motion.
 
-\Revised{The grinding-face contact-point selection tolerance
-\mbox{\(\varepsilon_g\)} was}
+The grinding-face contact-point selection tolerance
+\mbox{\(\varepsilon_g\)} was
 
 \begin{equation}
 \varepsilon_g
@@ -1021,42 +1021,42 @@ for the geometric clearance calculation and the subsequent set-up motion.}
 \label{eq:grinding_face_selection_tolerance}
 \end{equation}
 
-\Revised{Corners whose heights differ by no more than \mbox{\(\varepsilon_g\)}
+Corners whose heights differ by no more than \mbox{\(\varepsilon_g\)}
 are treated as belonging to the same edge or face. Their positions are
 averaged to form one geometric reference. This prevents a nominal edge
 configuration from switching between its two endpoints because of small
-numerical differences.}
+numerical differences.
 
-\Revised{In the following sections, this geometry-based reference is called the point
+In the following sections, this geometry-based reference is called the point
 or edge of the grinding face used for the set-up motion. Its position is used
 for the clearance calculation, commanded set-up displacement, and reported
-grinding-face displacement.}
+grinding-face displacement.
 
-\Revised{The point or edge is obtained entirely from the measured end-effector pose,
+The point or edge is obtained entirely from the measured end-effector pose,
 the calibrated grinding-face geometry, and the descent direction. The
 controller therefore uses a geometric surface reference rather than a
 separately measured physical contact position. The implementation of the
 corner transformation and geometric selection is described in
-\mbox{\Cref{sec:surface_task_plane}}.}
+\mbox{\Cref{sec:surface_task_plane}}.
 
 \section{Controller Parameters Used in the Experiments}
 \label{sec:experimental_controller_parameters}
 \label{sec:cartesian_stiffness_selection}
 
-\Revised{The controller parameters were assigned according to the role of each
+The controller parameters were assigned according to the role of each
 phase. Approach used a comparatively soft isotropic Cartesian impedance in the
 surface frame. The operator gate applied a stiffer translational hold at the
 clearance pose. Set-up and grinding used lower translational stiffness along
 \mbox{\(n_s\)} than along \mbox{\(t_1\)} and \mbox{\(t_2\)}, together with lower
 rotational stiffness about the surface tangents than about the surface normal
 \mbox{\(n_s\)}.
-The coordinate frame therefore forms part of every gain definition.}
+The coordinate frame therefore forms part of every gain definition.
 
 
 \subsection{Fixed Phase and Motion Parameters}
 \label{subsec:fixed_phase_motion_parameters}
 
-\Revised{The phase-transition and trajectory parameters are listed in
+The phase-transition and trajectory parameters are listed in
 \mbox{\Cref{tab:experimental_phase_parameters}}. The set-up push coordinate
 starts at
 the signed distance captured at the clearance transition, approximately
@@ -1064,7 +1064,7 @@ the signed distance captured at the clearance transition, approximately
 configured speed, the reference reaches this endpoint after approximately
 \mbox{\(3.25\,\mathrm{s}\)} and is then held there until the phase ends. The endpoint
 is a Cartesian spring reference beyond the calibrated plane and is not
-interpreted as physical penetration of the same magnitude.}
+interpreted as physical penetration of the same magnitude.
 
 \begingroup
 \small
@@ -1107,10 +1107,10 @@ Pre-grind gate & enabled & Holds the set-up pose until operator confirmation. \\
 \subsection{Phase-Dependent Cartesian Stiffness}
 \label{subsec:initial_stiffness_damping_values}
 
-\Revised{During tool orientation and surface approach, the translational stiffness
+During tool orientation and surface approach, the translational stiffness
 \mbox{\(K_{p,\mathrm{app}}\)} was isotropic, whereas the rotational stiffness
 \mbox{\(K_{R,\mathrm{app}}\)} was higher about the two surface tangents than
-about the surface normal. Both were expressed in the calibrated surface frame:}
+about the surface normal. Both were expressed in the calibrated surface frame:
 
 \begin{equation}
 K_{p,\mathrm{app}}
@@ -1133,9 +1133,9 @@ K_{R,\mathrm{app}}
 \label{eq:experimental_approach_stiffness}
 \end{equation}
 
-\Revised{The pre-set-up gate was configured with the same surface-frame gains
+The pre-set-up gate was configured with the same surface-frame gains
 as set-up. Because this gate was disabled in all reported runs, these matrices
-did not act during the measurements:}
+did not act during the measurements:
 
 \begin{equation}
 K_{p,\mathrm{gate}}
@@ -1158,8 +1158,8 @@ K_{R,\mathrm{gate}}
 \label{eq:experimental_gate_stiffness}
 \end{equation}
 
-\Revised{The surface-frame translational stiffness matrices used during set-up and
-grinding, \mbox{\(K_{p,\mathrm{set}}\)} and \mbox{\(K_{p,\mathrm{grind}}\)}, were equal:}
+The surface-frame translational stiffness matrices used during set-up and
+grinding, \mbox{\(K_{p,\mathrm{set}}\)} and \mbox{\(K_{p,\mathrm{grind}}\)}, were equal:
 
 \begin{equation}
 K_{p,\mathrm{set}}
@@ -1175,8 +1175,8 @@ K_{p,\mathrm{grind}}
 \label{eq:experimental_setup_translational_stiffness}
 \end{equation}
 
-\Revised{The corresponding rotational stiffness matrices
-\mbox{\(K_{R,\mathrm{set}}\)} and \mbox{\(K_{R,\mathrm{grind}}\)} were also equal:}
+The corresponding rotational stiffness matrices
+\mbox{\(K_{R,\mathrm{set}}\)} and \mbox{\(K_{R,\mathrm{grind}}\)} were also equal:
 
 \begin{equation}
 K_{R,\mathrm{set}}
@@ -1192,10 +1192,10 @@ K_{R,\mathrm{grind}}
 \label{eq:experimental_setup_rotational_stiffness}
 \end{equation}
 
-\Revised{The lower rotational tangent entries allow rotation about \mbox{\(t_1\)} and \mbox{\(t_2\)},
+The lower rotational tangent entries allow rotation about \mbox{\(t_1\)} and \mbox{\(t_2\)},
 while the larger normal entry resists twist about \mbox{\(n_s\)}. The effective
 normal translational stiffness \mbox{\(K_{p,n}\)} is the normal entry because
-both matrices are diagonal in the surface frame:}
+both matrices are diagonal in the surface frame:
 
 \begin{equation}
 K_{p,n}
@@ -1206,11 +1206,11 @@ n_s^\top K_{p,\mathrm{set}}n_s
 \label{eq:experimental_effective_normal_stiffness}
 \end{equation}
 
-\Revised{and the tangential entries act along \mbox{\(t_1\)} and \mbox{\(t_2\)} without
-contributing to the normal direction.}
-\Revised{The Cartesian pose-hold study used the isotropic base-frame translational
+and the tangential entries act along \mbox{\(t_1\)} and \mbox{\(t_2\)} without
+contributing to the normal direction.
+The Cartesian pose-hold study used the isotropic base-frame translational
 stiffness \mbox{\(K_{p,\mathrm{hold}}\)} and rotational stiffness
-\mbox{\(K_{R,\mathrm{hold}}\)}:}
+\mbox{\(K_{R,\mathrm{hold}}\)}:
 
 \begin{equation}
 K_{p,\mathrm{hold}}
@@ -1233,23 +1233,23 @@ K_{R,\mathrm{hold}}
 \label{eq:experimental_hold_stiffness}
 \end{equation}
 
-\Revised{Manual guidance used joint damping of
-\mbox{\(0.5\,\mathrm{N\,m\,s/rad}\)} and no Cartesian stiffness.}
+Manual guidance used joint damping of
+\mbox{\(0.5\,\mathrm{N\,m\,s/rad}\)} and no Cartesian stiffness.
 
 
 \subsection{Inertia-Scaled Damping}
 \label{subsec:experimental_inertia_scaled_damping}
 
-\Revised{The directional damping coefficients were calculated at entry to the
+The directional damping coefficients were calculated at entry to the
 corresponding phase group from the current Cartesian inertia, the active
 stiffness, and the configured damping ratio, as described in
 \mbox{\Cref{subsec:inertia_scaled_damping_calculation}}. Approach used
 \mbox{\(\zeta=1.9\)}, while set-up and grinding used \mbox{\(\zeta=1.0\)}. The calculated
-coefficients were used for the associated phase group.}
+coefficients were used for the associated phase group.
 
-\Revised{The pre-set-up gate fitted separate translational and rotational
+The pre-set-up gate fitted separate translational and rotational
 damping ratios to its configured surface-frame damping targets
-\mbox{\(D_{p,\mathrm{gate}}\)} and \mbox{\(D_{R,\mathrm{gate}}\)}:}
+\mbox{\(D_{p,\mathrm{gate}}\)} and \mbox{\(D_{R,\mathrm{gate}}\)}:
 
 \begin{equation}
 D_{p,\mathrm{gate}}
@@ -1271,10 +1271,10 @@ D_{R,\mathrm{gate}}
 \,\mathrm{N\,m\,s/rad}.
 \end{equation}
 
-\Revised{The gate was disabled in the reported runs, so these configured values
+The gate was disabled in the reported runs, so these configured values
 served neither as active damping nor as a lower bound. For the pose-hold study,
 one damping ratio was derived from the translational damping target
-\mbox{\(D_{p,\mathrm{hold}}\)}:}
+\mbox{\(D_{p,\mathrm{hold}}\)}:
 
 \begin{equation}
 D_{p,\mathrm{hold}}
@@ -1287,12 +1287,12 @@ D_{p,\mathrm{hold}}
 \,\mathrm{N\,s/m}
 \end{equation}
 
-\Revised{and applied to the translational and rotational inertia-scaled damping
-calculations.}
+and applied to the translational and rotational inertia-scaled damping
+calculations.
 
-\Revised{When an inertia estimate could not be used, the configured approach
+When an inertia estimate could not be used, the configured approach
 fallbacks were the translational damping \mbox{\(D_{p,\mathrm{app}}\)}
-and rotational damping \mbox{\(D_{R,\mathrm{app}}\)}:}
+and rotational damping \mbox{\(D_{R,\mathrm{app}}\)}:
 
 \begin{equation}
 D_{p,\mathrm{app}}
@@ -1315,9 +1315,9 @@ D_{R,\mathrm{app}}
 \label{eq:experimental_approach_damping_reference}
 \end{equation}
 
-\Revised{The corresponding set-up fallbacks were the translational damping
+The corresponding set-up fallbacks were the translational damping
 \mbox{\(D_{p,\mathrm{set}}\)} and rotational damping
-\mbox{\(D_{R,\mathrm{set}}\)}:}
+\mbox{\(D_{R,\mathrm{set}}\)}:
 
 \begin{equation}
 D_{p,\mathrm{set}}
@@ -1340,18 +1340,18 @@ D_{R,\mathrm{set}}
 \label{eq:experimental_setup_damping_reference}
 \end{equation}
 
-\Revised{Both set-up matrices are expressed in the surface frame with the coordinate
-order \mbox{\([t_1,t_2,n_s]\)}.}
+Both set-up matrices are expressed in the surface frame with the coordinate
+order \mbox{\([t_1,t_2,n_s]\)}.
 
-\Revised{The factor \mbox{\(\zeta=1\)} defines the coefficient for each decoupled
+The factor \mbox{\(\zeta=1\)} defines the coefficient for each decoupled
 direction in the calculation. The controller uses the resulting matrix as its
-inertia-scaled damping setting after the compliance-centre shift.}
+inertia-scaled damping setting after the compliance-centre shift.
 \subsection{Compliance-Centre Settings}
 \label{subsec:impedance_around_pole}
 
-\Revised{Cases~A, B, and~D used the decoupled Cartesian impedance at the TCP.
+Cases~A, B, and~D used the decoupled Cartesian impedance at the TCP.
 Cases~C and~E to~H used the point-shifted impedance during set-up. The centre
-of compliance \mbox{\(p_c\)} was specified through the lever \mbox{\(r_c\)}}
+of compliance \mbox{\(p_c\)} was specified through the lever \mbox{\(r_c\)}
 
 \begin{equation}
 r_c
@@ -1360,24 +1360,24 @@ p_{\mathrm{TCP}}-p_c,
 \label{eq:experimental_compliance_lever}
 \end{equation}
 
-\Revised{The shifted cases used one of two definitions. A tool-fixed offset was
+The shifted cases used one of two definitions. A tool-fixed offset was
 constant in the end-effector frame and therefore rotated in the base frame as
 the end effector rotated. A surface-fixed lever was constant in the surface
 frame \mbox{\([t_1,t_2,n_s]\)}. In both cases, the active lever was transformed
 to base coordinates during each control cycle before the stiffness and damping
 matrices were shifted to the TCP according to
-\mbox{\Cref{sec:coupled_pole_stiffness}}.}
+\mbox{\Cref{sec:coupled_pole_stiffness}}.
 
-\Revised{For a commanded rotation about \mbox{\(t_1\)}, the tangential lever
+For a commanded rotation about \mbox{\(t_1\)}, the tangential lever
 lies along \mbox{\(t_2\)}. For a rotation about \mbox{\(t_2\)}, it lies along
 \mbox{\(t_1\)}. Reversing the lever reverses the coupling moment generated by
 the translational response. Case~E sampled seven tangential positions from
-\mbox{\(-40\)} to \mbox{\(+40\,\mathrm{mm}\)} to test this sign dependence.}
+\mbox{\(-40\)} to \mbox{\(+40\,\mathrm{mm}\)} to test this sign dependence.
 
-\Revised{For the directional measurements the commanded rotation axis lies in
+For the directional measurements the commanded rotation axis lies in
 the surface tangent plane and is separate from the offset angle. Written from the
 surface-resolved angular components \mbox{\((\theta_{t_1},\theta_{t_2})\)}, the
-selected tangential lever is}
+selected tangential lever is
 
 \begin{equation}
 r_{c,t}
@@ -1387,18 +1387,18 @@ r_{c,t}
 \label{eq:experimental_general_lever_rule}
 \end{equation}
 
-\Revised{Here \mbox{\(\rho_c>0\)} is the selected tangential lever magnitude. The
+Here \mbox{\(\rho_c>0\)} is the selected tangential lever magnitude. The
 lever is perpendicular to the commanded rotation axis within the tangent plane,
 which is what the phrase \emph{direction-selected lever} means in Case~C, and it reverses
 when the commanded orientation offset does. The four commanded directions are
 listed as surface-frame vectors in
-\mbox{\cref{tab:experimental_case_c_vectors}}.}
+\mbox{\cref{tab:experimental_case_c_vectors}}.
 
-\Revised{Case~C used \mbox{\(\rho_c=40\,\mathrm{mm}\)}. The selected lever
+Case~C used \mbox{\(\rho_c=40\,\mathrm{mm}\)}. The selected lever
 rotated with each commanded direction. A fixed lever equal to the
 \mbox{\(t_1\)} selection was retained for the two diagonal directions and the
 \mbox{\(t_2\)} direction. This comparison tests whether one fixed lever can
-serve all commanded rotation directions.}
+serve all commanded rotation directions.
 
 \begin{table}[H]
 \centering
@@ -1426,8 +1426,8 @@ About \(t_2\) & fixed at the \(t_1\) selection & \([0.0,+10.0]\) & \([0,-40.0,0]
 \end{tabular}
 \end{table}
 
-\Revised{\mbox{\Cref{fig:case_c_direction_rule}} shows the four commanded rotation
-directions with the lever selected for each.}
+\mbox{\Cref{fig:case_c_direction_rule}} shows the four commanded rotation
+directions with the lever selected for each.
 
 \begin{figure}[H]
   \centering
@@ -1436,20 +1436,20 @@ directions with the lever selected for each.}
   \label{fig:case_c_direction_rule}
 \end{figure}
 
-\Revised{The selected principal-axis conditions were shared with Case~E and
+The selected principal-axis conditions were shared with Case~E and
 were not counted again. The five newly recorded Case-C settings comprise the
 two diagonal directions with both lever definitions and the \mbox{\(t_2\)}
-direction with the fixed lever. Each was repeated three times.}
+direction with the fixed lever. Each was repeated three times.
 
 
 \subsection{Common Phase Configuration for Cases~A to~H}
 \label{subsec:experimental_case_jn_settings}
 
-\Revised{All eight cases used the phase configuration listed in
+All eight cases used the phase configuration listed in
 \mbox{\Cref{tab:experimental_case_dh_parameters}}. Approach handed over
 directly to set-up because the pre-set-up gate was disabled. The gate-hold
 impedance was therefore defined in the controller but inactive in the reported
-contact campaign.}
+contact campaign.
 
 \begin{table}[H]
 \centering
@@ -1472,7 +1472,7 @@ Translational stiffness frame & surface & \(K_p\) diagonal in \([t_1,t_2,n_s]\).
 \end{tabular}
 \end{table}
 
-\Revised{The reference reaches the endpoint after approximately
+The reference reaches the endpoint after approximately
 \mbox{\(3.3\,\mathrm{s}\)} and is held there for the remainder of the phase.
 The measured press settled near \mbox{\(81\,\mathrm{N}\)} and lay between
 \mbox{\(76\)} and \mbox{\(85\,\mathrm{N}\)} across the reported runs. The
@@ -1480,31 +1480,31 @@ spread is not an independent variable: the press is generated by a spring
 against a commanded penetration, so a condition in which the tool rotates far
 presents a different contact geometry and settles a few newtons lower. The
 alignment comparisons therefore rest on a common commanded press rather than
-on an identical measured one.}
+on an identical measured one.
 
-\Revised{The alignment criterion is evaluated while the phase runs but never
+The alignment criterion is evaluated while the phase runs but never
 ends it. A deviation below \mbox{\(2^\circ\)} held for \mbox{\(0.3\,\mathrm{s}\)}
 marks the run as aligned and records the time; the crossing of half the
 deviation present at set-up entry is recorded separately, together with the
 smallest deviation reached and when. The last two are defined for every run,
 including those that never align, so a condition that fails is kept with its
-own numbers rather than left empty.}
+own numbers rather than left empty.
 
-\Revised{The individual variations are listed in
+The individual variations are listed in
 \mbox{\cref{tab:experimental_test_cases}}. Case~E sampled seven tangential
 positions from \mbox{\(-40\)} to \mbox{\(+40\,\mathrm{mm}\)}. Case~G sampled
 six non-zero tool-axis positions over the same range and used the Case-E
 zero-position run as its reference. Case~H compared \mbox{\(0\)} and
 \mbox{\(+40\,\mathrm{mm}\)} at \mbox{\(+5^\circ\)} with the corresponding
-\mbox{\(+10^\circ\)} Case-E settings.}
+\mbox{\(+10^\circ\)} Case-E settings.
 
 
 \subsection{Null-Space Settings for the Contact Measurements}
 \label{subsec:nullspace_parameter_rationale}
 
-\Revised{Projected damping and singular-value conditioning formed the active
+Projected damping and singular-value conditioning formed the active
 null-space configuration throughout the surface-contact measurements. This
-held the redundant-motion policy constant across Cases~A to~H. The gains were}
+held the redundant-motion policy constant across Cases~A to~H. The gains were
 
 \begin{equation}
 d_{\mathrm{null}}
@@ -1517,48 +1517,48 @@ k_\sigma
 \label{eq:experimental_contact_nullspace_gains}
 \end{equation}
 
-\Revised{Mode~3 adds the projected damping torque to the singular-value
+Mode~3 adds the projected damping torque to the singular-value
 conditioning torque. Their definitions are given in
 \mbox{\Cref{sec:nullspace_svd}}. The contact measurements therefore establish
 alignment performance with both terms active; they do not isolate their
 individual effects. Matched pose-hold trials provide that separate comparison
-under a repeatable disturbance.}
+under a repeatable disturbance.
 
-\Revised{The recorded parameters confirmed one phase configuration throughout
+The recorded parameters confirmed one phase configuration throughout
 all reported contact runs: surface-frame translation,
 \mbox{\(K_{p,n}=350\,\mathrm{N/m}\)} toward \mbox{\(+0.240\,\mathrm{m}\)},
 a \mbox{\(5.0\,\mathrm{s}\)} set-up timeout, a moment threshold the contact
 never reached, a disabled pre-set-up gate, and null-space mode~3. The detailed
 values remain collected in
-\mbox{\cref{tab:experimental_phase_parameters,tab:active_phase_gains,tab:nullspace_safety_parameters}}.}
+\mbox{\cref{tab:experimental_phase_parameters,tab:active_phase_gains,tab:nullspace_safety_parameters}}.
 \section{Contact Experiment Procedure}
 \label{sec:contact_experimental_procedure}
 \label{sec:experimental_procedure_contact}
 
-\Revised{Before each run, the active parameter set was recorded and the robot was moved
+Before each run, the active parameter set was recorded and the robot was moved
 to the configured initial joint posture. Damped manual guidance could be used
 to adjust this posture, after which the selected start pose was captured. The
 tool was held by the Franka Hand using the configured grasp width of
 \mbox{\(66\,\mathrm{mm}\)} and a grasping force of \mbox{\(60\,\mathrm{N}\)}. The seating
 was repeated in the same manner for every measurement, while the approximately
 \mbox{\(\pm2^\circ\)} rotational play about \mbox{\(y_{\mathrm{EE}}\)} remained part of
-the physical mounting condition.}
+the physical mounting condition.
 
-\Revised{The calibrated surface frame and grinding-face geometry were constructed
+The calibrated surface frame and grinding-face geometry were constructed
 before torque control began. The active Cartesian gains, damping settings,
 null-space parameters, and compliance-centre definition were then loaded, and
-the robot-side collision behaviour was configured.}
+the robot-side collision behaviour was configured.
 
-\Revised{During tool orientation, the TCP position was held while the calibrated
+During tool orientation, the TCP position was held while the calibrated
 grinding-face direction was rotated toward \mbox{\(-n_s\)}, including the commanded
 angular offsets of the active case. The controller remained in this phase for
 at least \mbox{\(1.0\,\mathrm{s}\)} and continued to surface approach when the
 remaining tool-axis and normal-axis spin errors were at most
 \mbox{\(0.016\,\mathrm{rad}\)} and \mbox{\(0.009\,\mathrm{rad}\)}, respectively.
 The phase was additionally bounded by an \mbox{\(8.0\,\mathrm{s}\)} timeout and a
-\mbox{\(20^\circ\!/\mathrm{s}\)} orientation-reference rate.}
+\mbox{\(20^\circ\!/\mathrm{s}\)} orientation-reference rate.
 
-\Revised{Surface approach moved the Cartesian reference along the descent direction at
+Surface approach moved the Cartesian reference along the descent direction at
 \mbox{\(0.1\,\mathrm{m/s}\)}, with a maximum commanded travel of
 \mbox{\(0.640\,\mathrm{m}\)}. During this motion, the controller continuously
 calculated the point or edge of the rectangular grinding face that approached
@@ -1566,17 +1566,17 @@ the surface first. The geometric transition was reached when the leading
 corner height was at most \mbox{\(20\,\mathrm{mm}\)} above the calibrated plane.
 Corner heights agreeing within \mbox{\(0.1\,\mathrm{mm}\)} were averaged according
 to the geometric selection described in
-\mbox{\Cref{subsec:calibrated_contact_geometry}}.}
+\mbox{\Cref{subsec:calibrated_contact_geometry}}.
 
-\Revised{At the clearance transition, the controller stored the TCP pose, the
+At the clearance transition, the controller stored the TCP pose, the
 orientation reference, the point or edge of the grinding face used for the
 set-up motion, its projection onto the plane, and the model-estimated external
 force \mbox{\(\hat f_{\mathrm{ext}}\)} and moment as reference values. The
 disabled pre-set-up gate allowed the set-up phase to begin directly. This transition was defined by the
 calibrated geometry; the model-estimated force \mbox{\(\hat f_{\mathrm{ext}}\)} was recorded for evaluation but
-did not determine the transition.}
+did not determine the transition.
 
-\Revised{During set-up, the signed press coordinate moved from its captured
+During set-up, the signed press coordinate moved from its captured
 value, approximately \mbox{\(-0.020\,\mathrm{m}\)}, toward
 \mbox{\(+0.240\,\mathrm{m}\)} at \mbox{\(0.080\,\mathrm{m/s}\)} along
 the descent direction. Cases~A, B and~D
@@ -1585,33 +1585,33 @@ point-shifted
 \mbox{\(6\times6\)} stiffness and damping matrices associated with the selected
 centre of compliance \mbox{\(p_c\)}. The orientation stored at the clearance transition
 remained the rotational reference, so the alignment motion arose from the
-contact response rather than from a time-varying tipping command.}
+contact response rather than from a time-varying tipping command.
 
-\Revised{After the minimum set-up time of \mbox{\(2\,\mathrm{s}\)}, the phase could end when
+After the minimum set-up time of \mbox{\(2\,\mathrm{s}\)}, the phase could end when
 the norm of the model-estimated external-moment change from the clearance transition reached
 \mbox{\(150\,\mathrm{N\,m}\)}. The independent \mbox{\(5\,\mathrm{s}\)} timeout provided
 the second termination condition. The final signed coordinate is a virtual
 Cartesian spring reference and therefore describes the controller command
-rather than a measured penetration depth.}
+rather than a measured penetration depth.
 
-\Revised{Every reported experimental set-up phase ended at the
+Every reported experimental set-up phase ended at the
 \mbox{\(5\,\mathrm{s}\)} timeout; the \mbox{\(150\,\mathrm{N\,m}\)} moment-change threshold
 was not reached. In this campaign, the threshold therefore functioned as an
 exceptional alternative bound rather than the routine set-up termination
-criterion.}
+criterion.
 
-\Revised{The enabled pre-grind gate then held the reached pose while the coupled
+The enabled pre-grind gate then held the reached pose while the coupled
 set-up impedance remained active. The reported runs were ended at this gate;
 operator confirmation of the grinding transition was not given. Consequently,
 the archived contact data contain the orientation, approach, and set-up phases,
-but no grinding phase or tangential sweep.}
+but no grinding phase or tangential sweep.
 
-\Revised{The operator ended the run through the terminal interface. The buffered data
+The operator ended the run through the terminal interface. The buffered data
 were then written to the run-specific CSV file, and the stored parameter set
 was included with the measurement. Between the three repetitions of one
 setting, the calibrated geometry, fixed gain entries, phase timing, and
 procedure remained unchanged. Only the parameter assigned to the corresponding
-case was modified.}
+case was modified.
 
 
 \section{Evaluation Metrics and Repeated-Run Treatment}
@@ -1621,9 +1621,9 @@ case was modified.}
 \subsection{EE-Inferred Alignment Diagnostic}
 \label{subsec:experimental_alignment_change}
 
-\Revised{The grinding-face direction used in the evaluation was calculated from the
+The grinding-face direction used in the evaluation was calculated from the
 measured end-effector orientation and the calibrated direction expressed in
-the end-effector frame:}
+the end-effector frame:
 
 \begin{equation}
 n_T
@@ -1632,8 +1632,8 @@ R_{\mathrm{EE}}n_{\mathrm{EE}}.
 \label{eq:evaluation_grinding_face_direction}
 \end{equation}
 
-\Revised{The alignment angle \mbox{\(\theta_{\mathrm{align}}\)} measures the angular
-difference between this direction and the calibrated surface:}
+The alignment angle \mbox{\(\theta_{\mathrm{align}}\)} measures the angular
+difference between this direction and the calibrated surface:
 
 \begin{equation}
 \theta_{\mathrm{align}}
@@ -1642,14 +1642,14 @@ difference between this direction and the calibrated surface:}
 \label{eq:contact_alignment_error_cross}
 \end{equation}
 
-\Revised{The sign convention follows the orientation target
+The sign convention follows the orientation target
 \mbox{\(R_d n_{\mathrm{EE}}=-n_s\)}. The angle is calculated from the measured
 end-effector orientation and the calibrated tool geometry. Relative rotation
-of the tool in the gripper therefore contributes to its uncertainty.}
+of the tool in the gripper therefore contributes to its uncertainty.
 
-\Revised{The alignment improvement \mbox{\(\Delta\theta_{\mathrm{align}}\)} is the
+The alignment improvement \mbox{\(\Delta\theta_{\mathrm{align}}\)} is the
 initial alignment angle \mbox{\(\theta_{\mathrm{align}}\)} minus the final alignment
-angle \mbox{\(\theta_{\mathrm{align}}\)}:}
+angle \mbox{\(\theta_{\mathrm{align}}\)}:
 
 \begin{equation}
 \Delta\theta_{\mathrm{align}}
@@ -1660,16 +1660,16 @@ angle \mbox{\(\theta_{\mathrm{align}}\)}:}
 \label{eq:alignment_error_improvement}
 \end{equation}
 
-\Revised{where the initial value is taken at the clearance transition and the final
+where the initial value is taken at the clearance transition and the final
 value at the end of set-up. Positive values represent a reduction of the
-angular difference between the grinding face and the calibrated surface.}
+angular difference between the grinding face and the calibrated surface.
 
 
 \subsection{Primary Set-Up Rotation, Displacement, and Load}
 \label{subsec:experimental_supporting_metrics}
 
-\Revised{The finite set-up rotation vector \mbox{\(\Delta\theta_{\mathrm{set}}\)} was
-evaluated from}
+The finite set-up rotation vector \mbox{\(\Delta\theta_{\mathrm{set}}\)} was
+evaluated from
 
 \begin{equation}
 \Delta\theta_{\mathrm{set}}
@@ -1678,16 +1678,16 @@ evaluated from}
 \label{eq:contact_induced_rotation}
 \end{equation}
 
-\Revised{Here \mbox{\(\phi_{\mathrm{set}}\)} and \mbox{\(u_{\mathrm{set}}\)} are the rotation angle
+Here \mbox{\(\phi_{\mathrm{set}}\)} and \mbox{\(u_{\mathrm{set}}\)} are the rotation angle
 and the unit rotation axis of the relative rotation
 \mbox{\(R_{\mathrm{after}}R_{\mathrm{before}}^\top\)}, obtained from its trace and its
 skew-symmetric part exactly as in \mbox{\Cref{eq:angle_from_trace}} and
 \mbox{\Cref{eq:rotation_axis_from_matrix}}. The vector is expressed in the robot base
 frame. Its magnitude is the angle turned during set-up, in radians, and its
-direction is the axis about which that rotation occurred.}
+direction is the axis about which that rotation occurred.
 
-\Revised{The surface-resolved set-up rotation
-\mbox{\(\Delta\theta_{\mathrm{set}}^{S}\)} was obtained from}
+The surface-resolved set-up rotation
+\mbox{\(\Delta\theta_{\mathrm{set}}^{S}\)} was obtained from
 
 \begin{equation}
 \Delta\theta_{\mathrm{set}}^{S}
@@ -1697,12 +1697,12 @@ R_{\mathrm{surface}}^\top
 \label{eq:surface_resolved_setup_rotation}
 \end{equation}
 
-\Revised{This representation separates the rotations about \mbox{\(t_1\)}, \mbox{\(t_2\)}, and
-\mbox{\(n_s\)} and permits direct comparison with the commanded rotation direction.}
+This representation separates the rotations about \mbox{\(t_1\)}, \mbox{\(t_2\)}, and
+\mbox{\(n_s\)} and permits direct comparison with the commanded rotation direction.
 
-\Revised{Let \mbox{\(p_g\)} denote the position of the point or edge of the grinding face used
+Let \mbox{\(p_g\)} denote the position of the point or edge of the grinding face used
 for the set-up motion. Its displacement vector \mbox{\(\Delta p_g\)} and
-displacement magnitude \mbox{\(s_g\)} were}
+displacement magnitude \mbox{\(s_g\)} were
 
 \begin{equation}
 \Delta p_g
@@ -1715,8 +1715,8 @@ s_g
 \label{eq:contact_feature_displacement}
 \end{equation}
 
-\Revised{The TCP displacement vector \mbox{\(\Delta p_{\mathrm{TCP}}\)} and its
-magnitude \mbox{\(s_{\mathrm{TCP}}\)} were evaluated in the same form:}
+The TCP displacement vector \mbox{\(\Delta p_{\mathrm{TCP}}\)} and its
+magnitude \mbox{\(s_{\mathrm{TCP}}\)} were evaluated in the same form:
 
 \begin{equation}
 \Delta p_{\mathrm{TCP}}
@@ -1729,13 +1729,13 @@ s_{\mathrm{TCP}}
 \label{eq:tcp_displacement_metric}
 \end{equation}
 
-\Revised{The surface-frame components of both displacement vectors were recorded to
+The surface-frame components of both displacement vectors were recorded to
 show whether the angular change was accompanied by normal motion or tangential
-sliding.}
+sliding.
 
-\Revised{The model-estimated external force \mbox{\(\hat f_{\mathrm{ext}}\)} was reported
+The model-estimated external force \mbox{\(\hat f_{\mathrm{ext}}\)} was reported
 by libfranka. The clearance-transition reference \mbox{\(\hat f_{\mathrm{ref}}\)}
-was subtracted from it. The normal-force magnitude \mbox{\(F_n\)} was}
+was subtracted from it. The normal-force magnitude \mbox{\(F_n\)} was
 
 \begin{equation}
 F_n
@@ -1749,13 +1749,13 @@ n_s^\top
 \label{eq:model_estimated_normal_load}
 \end{equation}
 
-\Revised{This change in the robot-model force estimate provided the supporting load
+This change in the robot-model force estimate provided the supporting load
 quantity for matched-run comparisons. Its common calculation preserved a
-consistent load basis across all contact settings.}
+consistent load basis across all contact settings.
 
-\Revised{The commanded normal force and commanded TCP moment used in the
+The commanded normal force and commanded TCP moment used in the
 controller-response plots were instead obtained from the commanded wrench
-\mbox{\(F=[f^\top,m^\top]^\top\)}:}
+\mbox{\(F=[f^\top,m^\top]^\top\)}:
 
 \begin{equation}
 F_{n,\mathrm{cmd}}=n_s^\top f,
@@ -1764,16 +1764,16 @@ M_{t_i,\mathrm{cmd}}=t_i^\top m.
 \label{eq:commanded_surface_wrench_components}
 \end{equation}
 
-\Revised{Thus \mbox{\(F_{n,\mathrm{cmd}}\)} is a signed command, whereas
+Thus \mbox{\(F_{n,\mathrm{cmd}}\)} is a signed command, whereas
 \mbox{\(F_n=|n_s^\top\Delta\hat f_{\mathrm{ext}}|\)} is the positive magnitude
 of a model-estimated force change. With \mbox{\(n_s\)} directed out of the
 plate, a steady press gives
 \mbox{\(n_s^\top\Delta\hat f_{\mathrm{ext}}\approx F_{n,\mathrm{cmd}}<0\)}, or
 equivalently \mbox{\(F_n\approx-F_{n,\mathrm{cmd}}\)}. This approximate
 agreement is an equilibrium check; it does not make the measured and commanded
-signals identical.}
+signals identical.
 
-\Revised{The controller orientation error \mbox{\(e_R\)} is referenced to the orientation
+The controller orientation error \mbox{\(e_R\)} is referenced to the orientation
 stored at the clearance transition. It therefore describes deviation from the
 held controller reference, while \mbox{\(\theta_{\mathrm{align}}\)} describes the
 relationship between the grinding face and the calibrated surface. The latter
@@ -1781,17 +1781,17 @@ is an EE-inferred geometric quantity and is reported separately from the
 controller response. Across Cases~A to~H, the principal response metric is the
 signed component of \mbox{\(\Delta\theta_{\mathrm{set}}^S\)} about the
 commanded rotation axis. TCP height provides the separate geometry-based
-classification of whether the grinding face ended flat.}
+classification of whether the grinding face ended flat.
 
 
 \subsection{Treatment of Repeated Runs}
 \label{subsec:experimental_repeated_run_treatment}
 \label{sec:evaluation_criteria_contact}
 
-\Revised{Each complete parameter setting was repeated three times. For a
+Each complete parameter setting was repeated three times. For a
 measured quantity \mbox{\(y\)}, the repetition value \mbox{\(y_j\)} carries
 the index \mbox{\(j\)} and \mbox{\(N_y\)} is the number of usable repetitions.
-The arithmetic mean \mbox{\(\bar y\)} was}
+The arithmetic mean \mbox{\(\bar y\)} was
 
 \begin{equation}
 \bar y
@@ -1801,7 +1801,7 @@ The arithmetic mean \mbox{\(\bar y\)} was}
 \label{eq:experimental_sample_mean}
 \end{equation}
 
-\Revised{The sample standard deviation \mbox{\(s_y\)} was}
+The sample standard deviation \mbox{\(s_y\)} was
 
 \begin{equation}
 s_y
@@ -1814,39 +1814,39 @@ s_y
 \label{eq:experimental_sample_standard_deviation}
 \end{equation}
 
-\Revised{Cases~A and~B compare the signed set-up rotation with the varied
+Cases~A and~B compare the signed set-up rotation with the varied
 rotational or cross-axis translational stiffness. Case~C compares
 direction-selected and fixed levers across four commanded rotation directions.
 The EE-inferred alignment angle, TCP-height flatness, displacements, and
-model-estimated normal load provide supporting quantities.}
+model-estimated normal load provide supporting quantities.
 
-\Revised{Case~D provides the reference response to a commanded orientation offset without a
+Case~D provides the reference response to a commanded orientation offset without a
 lever. Cases~E and~F compare that response with a tangential lever named in the
 end-effector frame and in the surface frame. Cases~G and~H evaluate the
 signed set-up rotation as a function of tool-axis centre position and
-commanded orientation-offset magnitude.}
+commanded orientation-offset magnitude.
 
-\Revised{The comparison was restricted to settings with matching calibrated geometry,
+The comparison was restricted to settings with matching calibrated geometry,
 phase timing, fixed gains, and null-space parameters. Differences were
 interpreted together with the within-setting variation and the zero-tilt
 reference reported in \mbox{\Cref{sec:results_repeatability}}. The largest response
-among the sampled levels is reported as the best tested magnitude.}
+among the sampled levels is reported as the best tested magnitude.
 
 
 \section{Secondary Null-Space Pose-Hold Study}
 \label{sec:nullspace_hold_study}
 \label{subsec:nullspace_automatic_method}
 
-\Revised{Matched Cartesian pose-hold trials quantified the two null-space torque
+Matched Cartesian pose-hold trials quantified the two null-space torque
 \mbox{\(\tau_{\mathrm{null}}\)} contributions. The pose-hold controller maintained the
 initial TCP pose, while an internally commanded joint torque
 \mbox{\(\tau_{\mathrm{dist}}\)} represented the
 effect of a point force applied at a specified robot-link location. This
 repeatable software command provided a common disturbance input for all
-settings.}
+settings.
 
-\Revised{The force point was assigned to link~3 at the link-frame offset
-\mbox{\(r_p\)}:}
+The force point was assigned to link~3 at the link-frame offset
+\mbox{\(r_p\)}:
 
 \begin{equation}
 r_p
@@ -1860,10 +1860,10 @@ r_p
 \label{eq:nullspace_disturbance_point}
 \end{equation}
 
-\Revised{At the initial posture \mbox{\(q_{\mathrm{init}}\)}, the structural null direction
+At the initial posture \mbox{\(q_{\mathrm{init}}\)}, the structural null direction
 \mbox{\(v_7(q_{\mathrm{init}})\)} and the translational point Jacobian
 \mbox{\(J_p(q_{\mathrm{init}})\)} defined the base-frame
-unit force direction \mbox{\(u_f\)}:}
+unit force direction \mbox{\(u_f\)}:
 
 \begin{equation}
 u_f
@@ -1876,10 +1876,10 @@ J_p(q_{\mathrm{init}})v_7(q_{\mathrm{init}})
 \label{eq:nullspace_disturbance_direction}
 \end{equation}
 
-\Revised{The direction was held constant throughout the trial. The commanded
+The direction was held constant throughout the trial. The commanded
 disturbance-force magnitude was \mbox{\(F_d=20\,\mathrm{N}\)}. The disturbance
 force \mbox{\(f_d(t)\)} was mapped by the current point Jacobian to the disturbance
-torque \mbox{\(\tau_{\mathrm{dist}}(t)\)}:}
+torque \mbox{\(\tau_{\mathrm{dist}}(t)\)}:
 
 \begin{equation}
 \tau_{\mathrm{dist}}(t)
@@ -1892,10 +1892,10 @@ F_d s_d(t)u_f.
 \label{eq:nullspace_automatic_disturbance}
 \end{equation}
 
-\Revised{The scale \mbox{\(s_d(t)\)} increased from zero to one through a half-cosine between
+The scale \mbox{\(s_d(t)\)} increased from zero to one through a half-cosine between
 \mbox{\(5\,\mathrm{s}\)} and \mbox{\(7\,\mathrm{s}\)}, remained at one until
 \mbox{\(8\,\mathrm{s}\)}, and returned to zero during the following second. The
-joint-torque-equivalent disturbance was limited to}
+joint-torque-equivalent disturbance was limited to
 
 \begin{equation}
 \lVert\tau_{\mathrm{dist}}\rVert_2
@@ -1903,23 +1903,23 @@ joint-torque-equivalent disturbance was limited to}
 3\,\mathrm{N\,m}.
 \end{equation}
 
-\Revised{Four null-space settings were tested with three repetitions each. The first
+Four null-space settings were tested with three repetitions each. The first
 setting disabled the null-space torque \mbox{\(\tau_{\mathrm{null}}\)}. The second used projected damping with
 \mbox{\(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\)}. The remaining settings used
 singular-value conditioning with \mbox{\(k_\sigma=1.5\,\mathrm{N\,m}\)} and
 \mbox{\(k_\sigma=2\,\mathrm{N\,m}\)}, respectively. The SVD probe step, sign
 deadband, and relative singular-value threshold remained at
-\mbox{\(0.08\,\mathrm{rad}\)}, \mbox{\(10^{-6}\)}, and \mbox{\(10^{-4}\)}.}
+\mbox{\(0.08\,\mathrm{rad}\)}, \mbox{\(10^{-6}\)}, and \mbox{\(10^{-4}\)}.
 
-\Revised{All twelve runs used the fixed pose-hold damping matrices
+All twelve runs used the fixed pose-hold damping matrices
 \mbox{\(D_p=50I_3\,\mathrm{N\,s/m}\)} and
 \mbox{\(D_R=8I_3\,\mathrm{N\,m\,s/rad}\)}. The archived configuration used these
-fixed matrices for pose hold.}
+fixed matrices for pose hold.
 
-\Revised{The predefined task-retention limit was a peak Cartesian position error
+The predefined task-retention limit was a peak Cartesian position error
 \mbox{\(e_p\)} of
 \mbox{\(2\,\mathrm{mm}\)}. The integrated projected joint motion
-\mbox{\(E_N\)} measured the null-space motion during the disturbance:}
+\mbox{\(E_N\)} measured the null-space motion during the disturbance:
 
 \begin{equation}
 E_N
@@ -1930,47 +1930,47 @@ E_N
 \label{eq:nullspace_excursion_metric}
 \end{equation}
 
-\Revised{The integral was converted to degrees for comparison with the angular
+The integral was converted to degrees for comparison with the angular
 quantities reported elsewhere. Singular-value conditioning was evaluated from
 the change in the smallest singular value \mbox{\(\sigma_{\min}\)} between the initial and final
 states. Cartesian task retention was evaluated from the peak position-error
 norm during the pose hold. The acceptance outcome and measured differences
-between the four settings are reported in the results chapter.}
+between the four settings are reported in the results chapter.
 
-\Revised{The disturbance is the torque equivalent of a commanded point force. It
+The disturbance is the torque equivalent of a commanded point force. It
 provides a repeatable controller input for comparing the four null-space
-settings.}
+settings.
 
 
 \section{Robot-Side Monitoring and Procedural Limits}
 \label{sec:experimental_monitoring_limits}
 \label{sec:damping_safety_limits_contact}
 
-\Revised{Before torque control started, the robot-side collision behaviour was
+Before torque control started, the robot-side collision behaviour was
 configured with equal acceleration and nominal joint-torque thresholds of
 \mbox{\(140\,\mathrm{N\,m}\)}. The six Cartesian force and moment components used
 equal thresholds of \mbox{\(240\,\mathrm{N}\)} or
 \mbox{\(240\,\mathrm{N\,m}\)}, according to the component type. These values define
-the conditions for the Franka reflex response.}
+the conditions for the Franka reflex response.
 
-\Revised{The joint-torque callback returned the calculated controller command directly
+The joint-torque callback returned the calculated controller command directly
 to libfranka. Robot-side monitoring supplied the reflex mechanism through the
 configured joint and Cartesian collision thresholds. These values document the
-operating configuration used throughout the measurements.}
+operating configuration used throughout the measurements.
 
-\Revised{The motion sequence added several procedural limits. Surface approach was
+The motion sequence added several procedural limits. Surface approach was
 bounded to \mbox{\(0.640\,\mathrm{m}\)}, and the transition to set-up occurred at a
 geometrically defined clearance of \mbox{\(20\,\mathrm{mm}\)}. The pre-set-up
 gate was disabled, so the controller entered set-up directly at this
 transition. Set-up was bounded by a \mbox{\(5\,\mathrm{s}\)} timeout and by the alternative
 \mbox{\(150\,\mathrm{N\,m}\)} change in the norm of the model-estimated external
-moment after the minimum phase time.}
+moment after the minimum phase time.
 
-\Revised{The set-up stiffness and signed press reference also define a command
+The set-up stiffness and signed press reference also define a command
 scale. For a completely blocked \mbox{\(0.260\,\mathrm{m}\)} reference change along the
 calibrated normal, the blocked-reference normal-force scale
 \mbox{\(F_{n,\mathrm{block}}\)} follows from
-\mbox{\Cref{eq:experimental_setup_translational_stiffness}}:}
+\mbox{\Cref{eq:experimental_setup_translational_stiffness}}:
 
 \begin{equation}
 F_{n,\mathrm{block}}
@@ -1982,11 +1982,11 @@ n_s^\top K_{p,\mathrm{set}}n_s
 \label{eq:experimental_blocked_normal_force_scale}
 \end{equation}
 
-\Revised{This value describes the virtual elastic command under a fully blocked
+This value describes the virtual elastic command under a fully blocked
 reference. The actual robot motion reduces the tracking error, and the value is
-therefore a command-scale bound rather than a measured contact load.}
+therefore a command-scale bound rather than a measured contact load.
 
-\Revised{The set-up moment threshold was applied to the change in libfranka's
+The set-up moment threshold was applied to the change in libfranka's
 model-estimated external moment after subtraction of the value stored at the
 clearance transition. Libfranka reports this wrench as acting on stiffness
 frame~K, with its components expressed in the base frame. The threshold
@@ -1994,4 +1994,4 @@ therefore terminated no run, and
 set-up ended on its timeout throughout. It served as a controller termination
 condition rather than a calibrated contact-force or contact-moment boundary.
 The timeout, collision configuration, logged torque command, displacement, and
-model-estimated wrench were considered together when assessing each run.}
+model-estimated wrench were considered together when assessing each run.
