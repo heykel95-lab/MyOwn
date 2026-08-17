@@ -25,7 +25,8 @@ post-run evaluation complete the implementation description.
 The controller is divided into modules for configuration handling, control
 calculations, real-time execution, operator interaction, and run evaluation.
 The main program coordinates these modules and manages the execution of
-successive controller sessions.
+successive controller sessions. \mbox{\Cref{tab:software_modules}} summarises
+their responsibilities.
 
 \begin{table}[H]
 \centering
@@ -1027,7 +1028,8 @@ inertia-scaled damping calculations.
 
 The active configuration enables inertia-scaled damping for approach, set-up, and
 the phase gates. Standard Cartesian pose hold uses its configured damping
-matrices. The exact stiffness, damping-factor, and limiting values used during
+matrices; the reported pose-hold experiments therefore did not use
+inertia-scaled damping. The exact stiffness, damping-factor, and limiting values used during
 the experiments are listed in \mbox{\Cref{ch:methodology}}.
 
 When the inertia calculation satisfies the numerical validity checks, the
@@ -1072,10 +1074,10 @@ centre position relative to the TCP in end-effector coordinates. The second
 specifies the lever \mbox{\(r_c\)} directly in surface coordinates.
 
 
-For the tool-frame definition, the configured offset represents
+For the tool-frame definition, the configured centre displacement represents
 \mbox{\(p_c-p_{\mathrm{TCP}}\)} in end-effector coordinates. Multiplication by
 \mbox{\(R_{\mathrm{EE}}\)} expresses
-this offset in the robot base frame, while the negative sign converts it to
+this displacement in the robot base frame, while the negative sign converts it to
 the implemented lever convention. Since the measured orientation
 \mbox{\(R_{\mathrm{EE}}\)} is used during every callback, this lever follows the
 current end-effector orientation.
