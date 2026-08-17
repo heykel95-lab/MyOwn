@@ -58,6 +58,31 @@ that file, never synonym substitution.
 `THESIS_WRITING_GUIDE.md` governs what a chapter contains, what a claim may
 assert, and the terminology and unit conventions.
 
+## Record new style rulings as they are given
+
+**When the user states an editorial preference, a terminology decision, a
+naming ban, or a rule about what a claim may assert, write it into
+`THESIS_WRITING_GUIDE.md` in the same turn** — or into `THESIS_VOICE.md` when
+it governs how sentences sound, or `FIGURE_STYLE.md` when it governs how a
+figure is drawn. Do not wait to be asked, and do not apply the ruling only to
+the passage under discussion: an instruction given once has to bind every later
+turn and every other agent, and the guides are the only thing that carries it
+there.
+
+This applies whether the ruling arrives as a rule (`never use "workpiece"`) or
+as a correction to one sentence, where the general rule has to be extracted
+first. Record it in the section it belongs to, in the same voice as the
+surrounding text, with the reason where the reason is what makes it
+followable. Where it overturns something already written, replace that text
+rather than appending a contradiction, and say in the reply which file changed
+and what it now says.
+
+Two things do not go in: anything the user framed as a one-off for a single
+sentence, and anything not yet settled. When a ruling is superseded later,
+remove the old wording rather than leaving both. A rule that is suspended
+rather than dropped keeps its reasoning, marked as suspended, so it can be
+restored.
+
 The objective is natural, defensible engineering prose grounded in this thesis's
 implementation and measurements. Do not imitate generic AI prose, but do not
 game AI detectors either: never add deliberate errors, casual filler, unusual
