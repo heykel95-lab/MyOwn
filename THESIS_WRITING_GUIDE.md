@@ -602,6 +602,77 @@ the examiner unable to check the sign work that the whole controller depends on.
 Length targets for Chapter 2 are suspended: cut repetition and dimension
 restatements, not derivations.
 
+## What may be set as a numbered equation
+
+Sort the material before typesetting it:
+
+- **a trajectory or a physical relation** → a numbered equation;
+- **if/else logic, a transition criterion, a configuration rule** → prose, or
+  an algorithm if it is long enough to need one;
+- **a software sequence** → a diagram or a sentence;
+- **an experimental value** → the methodology chapter or a table.
+
+Chapter 3 previously broke this in both directions at once. It numbered a
+configuration condition (`tool-frame definition ⊕ surface-frame definition =
+true`), a start-up order (`FCI connection → error recovery → collision
+configuration → robot model`), a return statement, a ring-buffer row, and a
+post-run output chain — none of which is a mathematical relation — while
+leaving genuine implementation relations in prose. All five have been rewritten
+as sentences. Do not reintroduce that form.
+
+### Chapter 3 restructure, agreed and not yet carried out
+
+The chapter must answer one question: *what does the controller do, from the
+surface and tool geometry to the torque sent to the robot?* That chain is
+currently fragmented, and the fix is to follow the signal path:
+
+1. **Overall controller concept** — short. The chain in words, one block
+   diagram, and what runs at \(1\,\mathrm{kHz}\) against what stays outside the
+   real-time loop.
+2. **Surface and tool representation** — what is stored, without re-deriving
+   Chapter 2: surface frame; grinding-face orientation; face geometry and
+   contact-point selection, naming \(p_g\) and saying it is neither the TCP nor
+   the centre of compliance.
+3. **Phase-dependent reference generation** — collected in one place instead of
+   scattered after the impedance law. Approach carries
+   \(p_d(t)=p_0+s_{\mathrm{app}}(t)(-n_s)\) with
+   \(s_{\mathrm{app}}(t)=\min(v_{\mathrm{app}}t,s_{\max})\). **Set-up is the
+   most important section in the chapter** and must carry the relation the
+   implementation actually evaluates:
+   \(p_{g,d}(t)=p_{g,0}+s_{\mathrm{set}}(t)(-n_s)\) and
+   \(p_d(t)=p_{g,d}(t)-R_{\mathrm{clr}}r_{g,\mathrm{EE}}\). The controller does
+   not push the TCP down; it prescribes where the selected face point should
+   move and reconstructs the TCP target that realises it. This was the largest
+   thing missing.
+4. **Cartesian impedance and virtual centre of compliance** — error and wrench,
+   directional gains and inertia-scaled damping merged into one subsection, then
+   the compliance-centre shift, closing on the statement that \(p_g\) fixes
+   where the interaction happens geometrically while \(p_c\) fixes the virtual
+   reference of the impedance, and that moving \(p_c\) does not move \(p_g\).
+5. **Real-time torque calculation** — one callback, in order, ending at
+   \(\tau_{\mathrm{cmd}}=J^\top F+\tau_{\mathrm{null}}+\tau_c\), with
+   \(\tau_{\mathrm{dist}}\) mentioned only for the pose-hold experiment.
+6. **Null-space implementation** — short; the theory is in Chapter 2.
+7. **Real-time execution, safety and recording** — 1 to 1.5 pages. Detailed
+   tool handling and the full logged-column list move to the appendices.
+
+**Delete Table 3.1** (functional subsystems — software documentation the
+architecture figure already carries), **Table 3.3** (four null-space modes, one
+sentence suffices) and **Table 3.4** (logged signals, which belongs in the
+data-format appendix). **Simplify Table 3.2** or drop it: the point is only that
+surface-related phases express gains relative to the calibrated surface, pose
+hold uses the base frame, and the set-up translational frame is configurable.
+**Remove the `robot.control` listing**, which shows nothing the prose does not.
+
+The chapter should come out shorter and stronger, not longer.
+
+Figures to add, in priority order: grinding-face geometry and leading-feature
+selection (four vertices, tie tolerance, the corner/edge/face-centre outcomes);
+the three points \(p_g\), \(p_{\mathrm{TCP}}\) and \(p_c\) with the two offsets
+and their sum; and set-up reference generation, showing the press coordinate
+advancing past the surface so the endpoint reads as a spring reference rather
+than a commanded penetration.
+
 ## Evidence and claims
 
 Never invent measurements, repetitions, fitted values, confidence intervals,

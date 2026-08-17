@@ -560,14 +560,9 @@ rotates in the base frame as the end effector rotates.
 For a surface-fixed definition, the lever components are constant in
 \mbox{\([t_1,t_2,n_s]\)}. Because the surface frame is fixed for one controller
 session, the resulting base-frame lever is constant during set-up. The
-configuration loader requires exactly one definition when the virtual centre is
-enabled:
-
-\begin{equation}
-\text{tool-frame definition}\ \oplus\
-\text{surface-frame definition}=\text{true}.
-\label{eq:implementation_compliance_definition_validation}
-\end{equation}
+configuration loader requires exactly one of the two definitions to be active
+when the virtual centre is enabled, and rejects a parameter set that selects
+both or neither.
 
 The active base-frame lever is used to construct the point-shift adjoint. The
 source translational and rotational matrices are assembled into block-diagonal
@@ -858,18 +853,7 @@ preallocated memory during control.
 
 Before a torque-controlled session begins, the software establishes the
 \mbox{\abbr{FCI}} connection, requests error recovery, applies the selected
-collision behaviour, and loads the robot model:
-
-\begin{equation}
-\text{FCI connection}
-\longrightarrow
-\text{error recovery}
-\longrightarrow
-\text{collision configuration}
-\longrightarrow
-\text{robot model}.
-\label{eq:implementation_robot_initialisation_sequence}
-\end{equation}
+collision behaviour, and loads the robot model, in that order.
 
 The robot can then be moved to a configured initial joint posture using a
 libfranka joint-motion generator, or the operator can start from a pose captured
@@ -879,13 +863,7 @@ controller description.
 
 The complete joint-torque command of
 \mbox{\Cref{eq:implementation_callback_torque_command}} is returned directly to
-libfranka:
-
-\begin{equation}
-\texttt{Torques}\!\left(\tau_{\mathrm{cmd}}\right)
-\longrightarrow \text{libfranka}.
-\label{eq:implementation_direct_torque_return}
-\end{equation}
+libfranka.
 
 No additional application-side saturation or torque-rate limiter is applied
 after the Cartesian, null-space, disturbance, and Coriolis terms have been
@@ -962,16 +940,9 @@ Joint-torque command
 
 The values captured at the clearance transition refer to the geometric event
 described in \mbox{\Cref{subsec:implementation_surface_approach_phase}}; they do
-not denote a force-detected first-contact event. A sampled row can be represented
-schematically as
-
-\begin{equation}
-\text{ring-buffer row}
-\leftarrow
-\{\text{state},\text{reference},\text{error},\text{wrench},
-\text{phase},\text{torque}\}.
-\label{eq:implementation_log_sample}
-\end{equation}
+not denote a force-detected first-contact event. Each sampled row holds the measured state, the
+active reference, the Cartesian error, the commanded wrench, the controller
+phase, and the returned joint torque.
 
 When the allocated capacity is reached, the write index wraps and new samples
 replace the oldest rows. This keeps the memory use bounded during real-time
@@ -983,17 +954,9 @@ control.
 \label{subsec:setup_run_evaluation}
 
 After the torque callback ends, the ring-buffer contents are reconstructed in
-chronological order. File output and summary calculations are then performed
-outside the real-time control path:
-
-\begin{equation}
-\text{ordered samples}
-\longrightarrow
-\text{\mbox{\abbr{CSV}} output}
-\longrightarrow
-\text{run summary}.
-\label{eq:implementation_post_run_output}
-\end{equation}
+chronological order. The ordered samples are then written to the
+\mbox{\abbr{CSV}} file and reduced to the run summary, both outside the
+real-time control path.
 
 The output preserves the commanded Cartesian wrench and the model-estimated
 external wrench as separate quantities. It also stores the geometric
