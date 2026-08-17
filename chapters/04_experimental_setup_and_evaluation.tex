@@ -882,18 +882,18 @@ remained flat while its yaw about the plane normal was changed by approximately
 were used for estimation, and the fourth was held out for validation.}
 
 \Revised{With only the yaw changed, the end-effector-frame grinding-face normal
-\mbox{\(a_{\mathrm{EE}}\)} should map to one invariant base-frame direction
-\mbox{\(\bar a_B\)}. The matrices \mbox{\(R_i\)} are the rotational blocks of the
+\mbox{\(n_{\mathrm{EE}}\)} should map to one invariant base-frame direction
+\mbox{\(\bar n_B\)}. The matrices \mbox{\(R_i\)} are the rotational blocks of the
 captured poses \mbox{\(T_i\)}:}
 
 \begin{equation}
-R_1a_{\mathrm{EE}}
+R_1n_{\mathrm{EE}}
 \approx
-R_2a_{\mathrm{EE}}
+R_2n_{\mathrm{EE}}
 \approx
-R_3a_{\mathrm{EE}}
+R_3n_{\mathrm{EE}}
 =
-\bar a_B.
+\bar n_B.
 \label{eq:tool_axis_invariant_direction}
 \end{equation}
 
@@ -903,12 +903,12 @@ singular-value decomposition \mbox{\(\bar R=U\Sigma V^\top\)}. The matrix
 \mbox{\(U\)} contains the left singular vectors. The matrix \mbox{\(\Sigma\)}
 contains the singular values, and \mbox{\(V\)} contains the right singular
 vectors. The dominant
-right singular vector gave \mbox{\(a_{\mathrm{EE}}\)}, while the corresponding
-left singular vector gave \mbox{\(\bar a_B\)}. The sign was selected toward
+right singular vector gave \mbox{\(n_{\mathrm{EE}}\)}, while the corresponding
+left singular vector gave \mbox{\(\bar n_B\)}. The sign was selected toward
 nominal \mbox{\(+Z_{\mathrm{EE}}\)}. The final controller configuration was}
 
 \begin{equation}
-a_{\mathrm{EE}}
+n_{\mathrm{EE}}
 =
 \begin{bmatrix}
 -0.006011\\
@@ -916,7 +916,7 @@ a_{\mathrm{EE}}
 0.999982
 \end{bmatrix},
 \qquad
-\|a_{\mathrm{EE}}\|=1,
+\|n_{\mathrm{EE}}\|=1,
 \label{eq:calibrated_grinding_face_direction}
 \end{equation}
 
@@ -931,7 +931,7 @@ For the held-out orientation, the invariant-axis residual
 \begin{equation}
 \varepsilon_{\mathrm{tool}}
 =
-\angle\!\left(R_4a_{\mathrm{EE}},\bar a_B\right)
+\angle\!\left(R_4n_{\mathrm{EE}},\bar n_B\right)
 =
 0.50^\circ.
 \label{eq:grinding_face_calibration_residual}
@@ -949,13 +949,13 @@ tool-axis estimate.}
 frame is calculated from the measured end-effector orientation:}
 
 \begin{equation}
-a_T
+n_T
 =
-R_{\mathrm{EE}}a_{\mathrm{EE}}.
+R_{\mathrm{EE}}n_{\mathrm{EE}}.
 \label{eq:grinding_face_direction_base}
 \end{equation}
 
-\Revised{The direction \mbox{\(a_T\)} is therefore calculated from the measured end-effector
+\Revised{The direction \mbox{\(n_T\)} is therefore calculated from the measured end-effector
 orientation and the calibrated grinding-face direction. This reconstruction
 provides the grinding-face direction used throughout the evaluation.}
 
@@ -963,7 +963,7 @@ provides the grinding-face direction used throughout the evaluation.}
 surface according to}
 
 \begin{equation}
-R_d a_{\mathrm{EE}}
+R_d n_{\mathrm{EE}}
 =
 -n_s.
 \label{eq:implemented_tool_axis_target}
@@ -1709,9 +1709,9 @@ measured end-effector orientation and the calibrated direction expressed in
 the end-effector frame:}
 
 \begin{equation}
-a_T
+n_T
 =
-R_{\mathrm{EE}}a_{\mathrm{EE}}.
+R_{\mathrm{EE}}n_{\mathrm{EE}}.
 \label{eq:evaluation_grinding_face_direction}
 \end{equation}
 
@@ -1721,12 +1721,12 @@ difference between this direction and the calibrated surface:}
 \begin{equation}
 \theta_{\mathrm{align}}
 =
-\cos^{-1}\!\left(-a_T^\top n_s\right).
+\cos^{-1}\!\left(-n_T^\top n_s\right).
 \label{eq:contact_alignment_error_cross}
 \end{equation}
 
 \Revised{The sign convention follows the orientation target
-\mbox{\(R_d a_{\mathrm{EE}}=-n_s\)}. The angle is calculated from the measured
+\mbox{\(R_d n_{\mathrm{EE}}=-n_s\)}. The angle is calculated from the measured
 end-effector orientation and the calibrated tool geometry. Relative rotation
 of the tool in the gripper therefore contributes to its uncertainty.}
 
