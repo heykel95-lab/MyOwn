@@ -1063,10 +1063,40 @@ whereas the point shift changes the point about which the impedance is defined.
 \mbox{\Cref{fig:compliance_lever_moment}} shows this geometry for the two signs
 of the tangential lever.
 
-The lever \mbox{\(r_c\)} is a controller parameter. It places the
-virtual spring relative to the TCP and is selected before a run. It is distinct
-from the geometric point or edge of the grinding face used to generate the
-set-up trajectory.
+Three points are involved and they must be kept apart. The contact point
+\mbox{\(p_{\mathrm{contact}}\)} is the point or edge of the grinding face that
+reaches the surface; the controller determines it from the rectangular face
+geometry and the current tool orientation. The tool centre point
+\mbox{\(p_{\mathrm{TCP}}\)} is the Cartesian reference point of the controller.
+The centre of compliance \mbox{\(p_c\)} is a software-defined point about which
+the translational and rotational impedance is formulated before being
+transformed to the TCP. It is not the physical contact point.
+
+Moving \mbox{\(p_c\)} therefore moves neither the contact point nor the
+physical contact force. The surface force still acts where the tool touches.
+What changes is the point about which the compliance is defined, and with it
+the translation--rotation coupling of the Cartesian impedance. The same normal
+pressing action can then produce a different rotational response.
+
+The geometric consequence follows from where \mbox{\(p_c\)} sits relative to
+the press. A centre lying on the line of action of the press contributes little
+or no moment. Displacing it sideways gives the compliant response an effective
+lever: to one side the induced moment assists the required alignment, and to
+the other side it opposes or reverses it.
+
+The two offsets are separate quantities and add:
+
+\[
+p_{\mathrm{contact}}-p_c
+=
+\underbrace{\left(p_{\mathrm{contact}}-p_{\mathrm{TCP}}\right)}_{\text{tool and contact geometry}}
++
+\underbrace{\left(p_{\mathrm{TCP}}-p_c\right)}_{r_c}.
+\]
+
+The first term is fixed by the face geometry and the current orientation. The
+second is the controller parameter selected before a run, and it is the one the
+experiments vary.
 
 Three forces occur in this thesis and they carry separate symbols, so
 that the one entering a cross product is never in doubt:
@@ -1106,8 +1136,8 @@ alignment response \mbox{\citep{Suomalainen2019DualArmCompliance}}. This task-le
 result motivates the placement study in this thesis. The point-shift adjoint
 below remains derived from the spatial-transformation formulation.
 
-The lever \mbox{\(r_c\)} from the centre of compliance \mbox{\(p_c\)} to the
-TCP, expressed in the base frame, is
+The compliance-centre shift \mbox{\(r_c\)} from the centre of compliance
+\mbox{\(p_c\)} to the TCP, expressed in the base frame, is
 
 \begin{equation}
 r_c
