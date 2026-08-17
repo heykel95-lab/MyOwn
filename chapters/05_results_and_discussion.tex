@@ -467,9 +467,10 @@ are compared under the same normal load.}
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{figures/MAIN_E_wrench.pdf}
-\caption{Deviation, normal press \(F_n\) and moment \(M_{t_1}\) about the
-commanded tangent for three centre positions, each commanded and
-model-estimated.}
+\caption{Deviation, normal press \(F_n\) and moment \(M_{t_1}\) for three
+centre positions, each commanded and model-estimated. All three carry a
+commanded offset of \(+10^\circ\) about \(t_1\); the deviation each arrived
+with is printed beside the start of its curve.}
 \label{fig:results_case_e_wrench}
 \end{figure}
 
@@ -481,6 +482,19 @@ and \mbox{\(+40\,\mathrm{mm}\)} the commanded moment settles at
 and the estimated one at \mbox{\(+2.94\)}, \mbox{\(-0.32\)} and
 \mbox{\(-3.54\,\mathrm{N\,m}\)}, so the environment returns within about
 \mbox{\(1\,\mathrm{N\,m}\)} of what the controller asks for.}
+
+\Revised{The two agree in sign at the outer positions and disagree only at
+the centred one, where the commanded moment is \mbox{\(+0.66\)} and the
+estimated \mbox{\(-0.32\,\mathrm{N\,m}\)}. Neither is the negative of the
+other, because the estimate reports the external wrench in the same sense as
+the command: a press directed into the plate is negative in both, so
+agreement means the contact is returning what the controller applies. What
+separates them is the moment the estimate does not attribute to the contact,
+\mbox{\(0.34\)} to \mbox{\(1.10\,\mathrm{N\,m}\)} across the three
+conditions, which is where joint friction and the error of the model itself
+appear. At the centred position that gap is larger than either value, so the
+sign of the smaller pair is not resolved by the measurement; at the outer
+positions the moments exceed it several times over and the sign is.}
 
 \Revised{What the centre position changes is the sign of that moment, not its
 size. The magnitudes at the two outer positions are alike, and the conditions
