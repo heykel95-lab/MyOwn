@@ -673,6 +673,57 @@ and their sum; and set-up reference generation, showing the press coordinate
 advancing past the surface so the endpoint reads as a spring reference rather
 than a commanded penetration.
 
+### Chapter 4 restructure, agreed and not yet carried out
+
+The division of labour is: **Chapter 3 is mechanism and implementation,
+Chapter 4 is the physical setup, the settings actually used, the test matrix
+and the evaluation method, and the appendices hold the exhaustive
+configuration.** Chapter 4 currently breaks this by re-explaining the
+controller, repeating settings in both prose and tables, and restating values
+that Appendix C already carries. It should lose roughly a fifth to a third of
+its length without losing any scientific content.
+
+Section by section:
+
+- **Experimental system.** Apparatus only. \(T_s=1\,\mathrm{ms}\) is not a
+  numbered equation; write that the controller ran through the Franka Control
+  Interface at the nominal \(1\,\mathrm{kHz}\) rate.
+- **Calibration.** Keep how the surface plane and the grinding-face direction
+  were obtained, the validation measurement, and the resulting values. Move the
+  runtime relations \(n_T=R_{\mathrm{EE}}n_{\mathrm{EE}}\) and
+  \(R_dn_{\mathrm{EE}}=-n_s\) to Chapter 3: they describe how the controller
+  uses the calibration, not how it was calibrated.
+- **Calibrated geometry.** Replace the vector equations for the face centre,
+  half-width and half-length with one calibrated-geometry table, and
+  cross-reference the contact-point construction in Chapter 3 rather than
+  repeating \(p_g=p_{\mathrm{EE}}+R_{\mathrm{EE}}r_{g,\mathrm{EE}}\).
+- **Common configuration.** This is the largest duplication. Do not retell the
+  phase sequence; state that the runs followed the sequence of Chapter 3, give
+  the settings in the existing phase-parameter table, and add that the
+  orientation reached at clearance was retained through set-up, the pre-set-up
+  gate was disabled and the pre-grinding gate enabled. **A table replaces
+  repetition; it is not followed by paragraphs restating its rows.** Give the
+  common gains as one table of directional entries with the damping rule, and
+  leave the fallback damping matrices to Appendix C. Fold the null-space
+  configuration into that table as three rows plus one sentence saying it was
+  held fixed so it did not become a variable.
+- **Data recording.** Do not list the signals a third time. One sentence
+  pointing at Chapter 3 and the data-format appendix. What stays is the data
+  quality: three repetitions planned, 171 runs over 57 settings, one incomplete,
+  170 analysed.
+- **Case matrix.** The cases are currently explained three times — a grouping
+  table, a prose walk-through, and the master table. **Delete the grouping
+  table.** Keep one paragraph naming the three effects being separated, then the
+  master table, then prose only for the cases that need interpretation: why an
+  axial displacement is nominally weak, and why the lever direction changes with
+  the commanded orientation.
+- **Evaluation quantities.** Equations belong here, unlike in Chapter 3: the
+  signed set-up rotation and its surface-resolved component, the alignment-angle
+  definition with its tool-mount assumption, and the wrench projections all
+  define how results are calculated. **Remove the mean and sample
+  standard-deviation equations** and say instead that repeated settings are
+  reported by their arithmetic mean and sample standard deviation.
+
 ## Evidence and claims
 
 Never invent measurements, repetitions, fitted values, confidence intervals,
