@@ -145,11 +145,15 @@ plots cannot reintroduce an old name.
   full rate paints a band rather than a curve. Around nine hundred points keeps
   a curve legible at printed width.
 - **Grid is horizontal only.** It exists to compare values across panels.
-- **Every plot has a legend.** A multi-panel figure has one shared legend below
-  the panels, assembled from every panel so that no series is omitted. A
-  single-panel legend may remain inside the axes only where it does not cover
-  data. Reserve layout space for a legend below the axes; do not rely on a
-  tight bounding box to prevent overlap with axis labels or the caption.
+- **Every plot has a legend, in its own upper right corner.** Each panel names
+  the series it shows, so a panel can be read without looking away from it.
+  Give the axes about a quarter of headroom (`ax.margins(y=0.3)`) so the legend
+  sits above the data rather than on it, and check the rendered figure: a
+  corner that looks empty at one scale is not empty at another. Where a figure
+  is a single panel the rule is the same.
+- **Commanded and estimated quantities go in separate panels** when their
+  magnitudes differ by an order or their signs disagree. Overlaying them makes
+  the smaller unreadable and invites reading one curve as the other.
 - **A reference line belongs only where it means something.** A zero line on a
   load axis forces the axis down to zero and squashes the data.
 - **Excluded runs are omitted from the plots.** They remain in the source data
