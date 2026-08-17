@@ -1422,6 +1422,23 @@ to the values captured at the approach transition:}
 =\hat f_{\mathrm{ext}}-\hat f_{\mathrm{ref}}.
 \label{eq:implementation_external_force_change}
 \end{equation}
+\Added{This quantity is the complete model-estimated force-change vector in
+base coordinates. Resolving it in the surface frame gives}
+
+\begin{equation}
+R_{\mathrm{surface}}^\top\Delta\hat f_{\mathrm{ext}}
+=
+\begin{bmatrix}
+t_1^\top\Delta\hat f_{\mathrm{ext}} &
+t_2^\top\Delta\hat f_{\mathrm{ext}} &
+n_s^\top\Delta\hat f_{\mathrm{ext}}
+\end{bmatrix}^{\!\top}.
+\label{eq:implementation_external_force_surface_components}
+\end{equation}
+
+\Added{Its last component is a model-estimated normal-force change, not the
+commanded normal force. The two signals and their sign convention are defined
+separately in \mbox{\cref{eq:commanded_surface_wrench_components}}.}
 The moment change is obtained analogously from the current model-estimated
 moment and the moment stored at the clearance transition.
 

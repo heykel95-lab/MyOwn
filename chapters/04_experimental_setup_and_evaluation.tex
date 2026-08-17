@@ -1868,6 +1868,26 @@ n_s^\top
 \Revised{This change in the robot-model force estimate provided the supporting load
 quantity for matched-run comparisons. Its common calculation preserved a
 consistent load basis across all contact settings.}
+
+\Added{The commanded normal force and commanded TCP moment used in the
+controller-response plots were instead obtained from the commanded wrench
+\mbox{\(F=[f^\top,m^\top]^\top\)}:}
+
+\begin{equation}
+F_{n,\mathrm{cmd}}=n_s^\top f,
+\qquad
+M_{t_i,\mathrm{cmd}}=t_i^\top m.
+\label{eq:commanded_surface_wrench_components}
+\end{equation}
+
+\Added{Thus \mbox{\(F_{n,\mathrm{cmd}}\)} is a signed command, whereas
+\mbox{\(F_n=|n_s^\top\Delta\hat f_{\mathrm{ext}}|\)} is the positive magnitude
+of a model-estimated force change. With \mbox{\(n_s\)} directed out of the
+plate, a steady press gives
+\mbox{\(n_s^\top\Delta\hat f_{\mathrm{ext}}\approx F_{n,\mathrm{cmd}}<0\)}, or
+equivalently \mbox{\(F_n\approx-F_{n,\mathrm{cmd}}\)}. This approximate
+agreement is an equilibrium check; it does not make the measured and commanded
+signals identical.}
 \Comment{For the Case-E controller-response figures, define the commanded
 signals on the same basis as the moment:
 \mbox{\(F_{n,\mathrm{cmd}}=n_s^\top f\)} and
