@@ -103,13 +103,14 @@ is found by its name alone:
 | `MAIN_A_KR.pdf` | Case A |
 | `MAIN_B_KP.pdf` | Case B |
 | `MAIN_C_general_pole.pdf` | Case C |
-| `MAIN_DEF_frame.pdf` | Cases D to F, which share one comparison |
-| `MAIN_G_inplane.pdf` | Case G |
-| `MAIN_H_toolaxis.pdf`, `MAIN_H_components.pdf`, `MAIN_H_descent.pdf`, `MAIN_H_diagnostics.pdf` | Case H |
-| `MAIN_DQ_metric_comparison.pdf` | Data quality |
+| `MAIN_D_contact.pdf` | Case D |
+| `MAIN_E_sign.pdf`, `MAIN_E_wrench.pdf`, `MAIN_E_diagnostics.pdf` | Case E |
+| `MAIN_G_toolaxis.pdf` | Case G |
+| `MAIN_H_magnitude.pdf` | Case H |
+| `MAIN_DQ_descent.pdf`, `MAIN_DQ_metric_comparison.pdf` | Data quality |
 | `MAIN_NS_nullspace_automatic.pdf` | Null-space results |
 
-A figure spanning several cases carries their letters in order (`DEF`). A
+A figure spanning several cases carries their letters in order. A
 figure that serves a section rather than a case carries a two-letter tag for
 that section (`DQ`, `NS`). The label follows the file:
 `\label{fig:results_case_<letter>}`, or `\label{fig:results_<subject>}` for a

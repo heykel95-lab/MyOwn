@@ -60,19 +60,26 @@ tangent. Case~C commanded the tilt in four directions in the tangent plane,
 compared a direction-selected lever with a fixed one, and varied the normal
 lever coordinate.}
 
-\Revised{Cases~D to~H examine the compliance centre with the lever held fixed to
-the tool. Case~D carries no lever and gives the response of the contact alone at
-five commanded offsets. Case~E repeats those five with a tangential lever fixed
-in the end-effector frame. Case~F names the same lever in surface coordinates
-instead, at the zero offset and at \mbox{\(10^\circ\)} about \mbox{\(t_1\)}.
-The two definitions describe one physical lever at zero offset and separate as
-the tool turns, so the pair isolates the frame from everything else.}
+\Revised{Cases~D to~H examine the compliance centre with its offset held fixed
+to the tool. Case~D places the centre on the TCP, so the press makes no moment
+through an offset and what acts is the contact alone. It is measured on both
+surface tangents and at both signs of the commanded offset, because the
+grinding face is three times longer across one tangent than the other and the
+two need not behave alike.}
 
-\Revised{Cases~G and~H vary where the centre sits rather than which frame names
-it. Case~G moves it in the contact plane along the face long axis. Case~H moves
-it along the tool axis, the direction a first-order coupling model leaves
-without effect. Both hold the commanded offset at \mbox{\(10^\circ\)} about
-\mbox{\(t_1\)}.}
+\Revised{Case~E displaces the centre along the tangent perpendicular to the
+commanded rotation axis, seven positions from \mbox{\(-40\)} to
+\mbox{\(+40\,\mathrm{mm}\)}, at every combination of tangent and sign. That
+grid is what settles whether the assisting direction follows the sign of the
+commanded offset. Case~F names one of those offsets in surface coordinates
+instead of end-effector coordinates, so the definition frame is separated from
+the offset itself.}
+
+\Revised{Cases~G and~H vary the remaining two quantities. Case~G moves the
+centre along the tool axis, the direction a first-order coupling model leaves
+without effect. Case~H halves the commanded offset at two of the Case-E
+positions, so what the centre does is told apart from what the size of the
+commanded offset does.}
 
 \Revised{The commanded angular offset defines the orientation difference present at the
 beginning of set-up. The rotational stiffness determines the resistance to
@@ -226,41 +233,43 @@ the normal coordinate.
 
 D
 &
-None; the centre of compliance was placed at the TCP
+Contact alone; the centre of compliance was placed at the TCP
 &
-None, \(5^\circ\) and \(10^\circ\) about \(t_1\), \(5^\circ\) and
-\(10^\circ\) about \(t_2\)
+\(\pm10^\circ\) about \(t_1\) or \(t_2\)
 &
-No lever.
+No offset.
 &
-15
+12
 &
-Response of the contact alone, as the reference for Cases~E to~H.
+Response of the contact alone on each tangent, as the reference for Cases~E
+to~H.
 \\
 \addlinespace
 
 E
 &
-Tool-fixed tangential lever
+Direction and sign of the compliance-centre offset
 &
-The five offsets of Case~D
+\(\pm10^\circ\) about \(t_1\) or \(t_2\)
 &
-\(60\,\mathrm{mm}\) for offsets about \(t_1\), \(30\,\mathrm{mm}\) for offsets
-about \(t_2\).
+\(-40\), \(-20\), \(-10\), \(0\), \(+10\), \(+20\) and \(+40\,\mathrm{mm}\)
+along the tangent perpendicular to the commanded rotation axis, positive in
+the direction that assists a positive offset.
 &
-15
+72
 &
-Effect of a lever that follows the tool.
+Whether the assisting direction follows the sign of the commanded offset, and
+what the offset adds on each tangent.
 \\
 \addlinespace
 
 F
 &
-Frame in which the lever is defined
+Frame in which the offset is defined
 &
-None and \(10^\circ\) about \(t_1\)
+None and \(+10^\circ\) about \(t_1\)
 &
-The Case-E lever named in surface coordinates.
+The \(40\,\mathrm{mm}\) offset of Case~E named in surface coordinates.
 &
 6
 &
@@ -270,31 +279,31 @@ Whether the definition frame changes the response once the tool turns.
 
 G
 &
-In-plane compliance-centre position
+Compliance-centre position along the tool axis
 &
-\(10^\circ\) about \(t_1\)
+\(+10^\circ\) about \(t_1\)
 &
-\(-50\), \(-20\), \(0\), \(+20\) and \(+50\,\mathrm{mm}\) along the face long
-axis.
+\(-40\), \(-20\), \(-10\), \(+10\), \(+20\) and \(+40\,\mathrm{mm}\) along the
+tool axis. The \(0\,\mathrm{mm}\) entry is the corresponding trial of Case~E.
 &
-15
+18
 &
-Dependence on where the centre sits in the contact plane.
+Dependence on a direction that produces no first-order moment.
 \\
 \addlinespace
 
 H
 &
-Tool-axis compliance-centre position
+Commanded magnitude
 &
-\(10^\circ\) about \(t_1\)
+\(+5^\circ\) about \(t_1\) or \(t_2\)
 &
-\(-90\), \(-60\), \(-40\), \(0\), \(+40\), \(+60\) and \(+90\,\mathrm{mm}\)
-along the tool axis.
+\(0\) and \(+40\,\mathrm{mm}\) along the assisting tangent, read against the
+same positions at \(+10^\circ\) in Case~E.
 &
-21
+12
 &
-Dependence on a direction that produces no first-order moment.
+Whether the correction scales with the commanded offset.
 \\
 
 \end{longtable}
@@ -312,8 +321,8 @@ varied value is stated explicitly.
 \vspace{1.2em}
 
 \Revised{Cases~A, B and~C contain \mbox{\(69\)} surface-contact runs distributed
-across \mbox{\(23\)} parameter settings, and Cases~D to~H add \mbox{\(72\)}
-runs across \mbox{\(24\)} settings. Within each controlled comparison, only
+across \mbox{\(23\)} parameter settings, and Cases~D to~H add \mbox{\(120\)}
+runs across \mbox{\(40\)} settings. Within each controlled comparison, only
 the stated parameter was changed. The remaining gain entries, calibrated surface
 and tool geometry, phase sequence, and evaluation procedure were held constant.}
 \Revised{The principal evaluation quantity was the change in the angle between the
@@ -1486,9 +1495,21 @@ Translational stiffness frame & surface & \(K_p\) diagonal in \([t_1,t_2,n_s]\).
 
 \Revised{The reference reaches the endpoint after approximately
 \mbox{\(3.3\,\mathrm{s}\)} and is held there for the remainder of the phase.
-The measured press settled near \mbox{\(81\,\mathrm{N}\)} and varied by under
-\mbox{\(2\,\mathrm{N}\)} across all reported runs, so the alignment
-comparisons rest on a common load.}
+The measured press settled near \mbox{\(81\,\mathrm{N}\)} and lay between
+\mbox{\(76\)} and \mbox{\(84\,\mathrm{N}\)} across the reported runs. The
+spread is not an independent variable: the press is generated by a spring
+against a commanded penetration, so a condition in which the tool rotates far
+presents a different contact geometry and settles a few newtons lower. The
+alignment comparisons therefore rest on a common commanded press rather than
+on an identical measured one.}
+
+\Revised{The alignment criterion is evaluated while the phase runs but never
+ends it. A deviation below \mbox{\(2^\circ\)} held for \mbox{\(0.3\,\mathrm{s}\)}
+marks the run as aligned and records the time; the crossing of half the
+deviation present at first contact is recorded separately, together with the
+smallest deviation reached and when. The last two are defined for every run,
+including those that never align, so a condition that fails is kept with its
+own numbers rather than left empty.}
 
 \Revised{The commanded offsets were \mbox{\(0^\circ\)}, \mbox{\(5^\circ\)} and
 \mbox{\(10^\circ\)} about \mbox{\(t_1\)}, and \mbox{\(5^\circ\)} and
