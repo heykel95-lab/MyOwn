@@ -380,7 +380,7 @@ configurations are evaluated by re-querying the robot model for the Jacobian
 \(J(q_\pm)\) at \(q\pm\alpha n\), so the comparison uses the same kinematics as the control
 cycle.
 
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Thresholded-SVD joint-torque projector and null-space law (abridged).}, label={lst:app_nullspace}]
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Thresholded-SVD joint-torque projector and null-space law (abridged).}, label={lst:implementation_nullspace_projector}]
 Eigen::JacobiSVD<Mat6x7> svd_current(
     J, Eigen::ComputeFullU | Eigen::ComputeFullV);
 const auto singular_values = svd_current.singularValues();
@@ -466,7 +466,28 @@ projected joint velocity \(\dot q_{\mathrm{null}}\) into the recorded data.
 \section{Core Control Callback}
 \label{app:callback_core}
 
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Core impedance, coupled set-up, and torque composition.}, label={lst:app_callback_core}]
+\Added{The following excerpt shows the state and model quantities acquired at the
+start of each torque callback. The remaining listing then shows how these
+quantities enter the torque command.}
+
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Robot-state and model quantities acquired by the torque callback.}, label={lst:callback_state_acquisition}]
+Map<const Vec7> q_current(state.q.data());
+Map<const Vec7> dq(state.dq.data());
+
+const auto jacobian_array =
+    model.zeroJacobian(Frame::kEndEffector, state);
+Map<const Mat6x7> J(jacobian_array.data());
+const Vec6 xdot = J * dq;
+
+Map<const Mat4x4> T_EE(state.O_T_EE.data());
+const Vec3 p_EE = T_EE.block<3, 1>(0, 3);
+const Mat3 R_EE = T_EE.block<3, 3>(0, 0);
+
+Map<const Vec6> external_wrench(
+    state.O_F_ext_hat_K.data());
+\end{lstlisting}
+
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Core impedance, coupled set-up, and torque composition.}, label={lst:implementation_pose_error}]
 const Vec3 e_p = desired.p_d - p_EE;
 const Vec3 e_R = applyRotationalAxisMask(
     params, orientationError(R_EE, R_d_used), R_base_surface);
