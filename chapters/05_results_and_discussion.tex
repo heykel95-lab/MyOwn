@@ -232,12 +232,12 @@ nothing, which is the clearest single statement of what it measures.}
 \centering
 \small
 \caption{Case-D response with the centre of compliance on the TCP
-(mean \(\pm\) SD, n=3). The rotation is signed about the commanded tangent;
+(mean \(\pm\) SD over three repetitions). The rotation is signed about the commanded tangent;
 flatness is read from the TCP height above the plane.}
 \label{tab:results_case_d}
 \begin{tabular}{@{}lrrrc@{}}
 \toprule
-Commanded offset & Initial deviation & \(\Delta\theta_{\mathrm{set}}\)
+Commanded offset & \(\theta_{\mathrm{align,before}}\) & \(\Delta\theta_{\mathrm{set}}\)
 & \(\Delta\theta_{\mathrm{align}}\) & Tool flat \\
 \midrule
 None & \(0.74\) & \(-0.97\) & \(-1.56\pm0.01\) & yes \\
@@ -301,7 +301,7 @@ follows the sign of the offset appears as a mirror between the two.}
 \centering
 \small
 \caption{Case-E alignment change by centre position along the assisting
-tangent (mean \(\pm\) SD, n=3).}
+tangent (mean \(\pm\) SD over three repetitions).}
 \label{tab:results_case_e}
 \begin{tabular}{@{}lrrrrrrrr@{}}
 \toprule
@@ -390,6 +390,9 @@ controller commanded it and as the robot model estimated it. The press is negati
 because \mbox{\(n_s\)} points out of the plate, and it reaches
 \mbox{\(-77\)} to \mbox{\(-82\,\mathrm{N}\)} in all three conditions, so they
 are compared under the same normal load.}
+\Comment{The revised figure contains commanded signals only. Refer here to
+\mbox{\(F_{n,\mathrm{cmd}}\)} and \mbox{\(M_{t_1,\mathrm{cmd}}\)}, and remove
+the statement that the same panels also show model-estimated signals.}
 
 \begin{figure}[H]
 \centering
@@ -473,7 +476,7 @@ is not produced by the normal component of the press alone.}
 \centering
 \small
 \caption{Case-G alignment change by centre position along the tool axis
-(mean \(\pm\) SD, n=3).}
+(mean \(\pm\) SD over three repetitions).}
 \label{tab:results_case_g}
 \begin{tabular}{@{}lrrrrrrr@{}}
 \toprule
@@ -524,7 +527,7 @@ point keeps its direction while a tool-fixed one follows the tool.}
 \centering
 \small
 \caption{Case-F alignment change by the frame the offset is named in
-(mean \(\pm\) SD, n=3).}
+(mean \(\pm\) SD over three repetitions).}
 \label{tab:results_case_f}
 \begin{tabular}{@{}lrrr@{}}
 \toprule
@@ -572,7 +575,7 @@ the commanded offset does.}
 \begin{table}[H]
 \centering
 \small
-\caption{Alignment change at both commanded magnitudes (mean \(\pm\) SD, n=3).}
+\caption{Alignment change at both commanded magnitudes (mean \(\pm\) SD over three repetitions).}
 \label{tab:results_case_h}
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
@@ -580,7 +583,7 @@ the commanded offset does.}
 \cmidrule(lr){2-3}\cmidrule(lr){4-5}
 Centre position & \(+5^\circ\) & \(+10^\circ\) & \(+5^\circ\) & \(+10^\circ\) \\
 \midrule
-Initial deviation & \(4.29\) & \(9.34\) & \(5.19\) & \(10.04\) \\
+\(\theta_{\mathrm{align,before}}\) & \(4.29\) & \(9.34\) & \(5.19\) & \(10.04\) \\
 \addlinespace
 \(0\,\mathrm{mm}\)   & \(+1.53\) & \(+5.94\) & \(-1.58\) & \(-1.74\) \\
 \(+40\,\mathrm{mm}\) & \(+1.63\) & \(+6.19\) & \(+3.39\) & \(+4.18\) \\
@@ -630,7 +633,7 @@ The two principal directions are the corresponding trials of Case~E.}
 \centering
 \small
 \caption{Case-C response with the offset selected for the commanded direction
-against one held fixed (mean, n=3).}
+against one held fixed (mean of three repetitions).}
 \label{tab:results_case_c}
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
@@ -679,33 +682,41 @@ the highest rotational one.}
 \centering
 \footnotesize
 \caption{Case-B controller response for the varied cross-axis translational
-entry and the paired rotational entry (mean, n=3). For a command about
+entry and the paired rotational entry (mean of three repetitions). For a command about
 \(t_1\), the listed entries are \(K_{p,t_2}\) and \(K_{R,t_1}\); for a command
-about \(t_2\), they are \(K_{p,t_1}\) and \(K_{R,t_2}\). The combined setting
-means \(K_{p,\perp}=300\,\mathrm{N/m}\) and
-\(K_{R,\parallel}=50\,\mathrm{N\,m/rad}\) in the same row. In every condition,
+about \(t_2\), they are \(K_{p,t_1}\) and \(K_{R,t_2}\). In the rows labelled
+``both varied'', the \(300\,\mathrm{N/m}\) cross-axis translational entry and the
+\(50\,\mathrm{N\,m/rad}\) command-axis rotational entry were used in the same row.
+In every condition,
 \(K_{p,n}=350\,\mathrm{N/m}\) and
 \(K_{R,n}=50\,\mathrm{N\,m/rad}\).}
 \label{tab:results_case_b}
-\begin{tabular}{@{}lllrrrc@{}}
+\begingroup
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}
+>{\raggedright\arraybackslash}p{0.16\textwidth}
+>{\raggedright\arraybackslash}p{0.12\textwidth}
+>{\raggedright\arraybackslash}p{0.11\textwidth}
+rrrc@{}}
 \toprule
-Commanded offset & Varied entries & Setting & \(K_{p,\perp}\) &
-\(K_{R,\parallel}\) & \(\Delta\theta_{\mathrm{set}}\) & Tool flat \\
+Commanded offset & Varied entries & Setting & \shortstack{Cross-axis\\translation} &
+\shortstack{Command-axis\\rotation} & \(\Delta\theta_{\mathrm{set}}\) & Tool flat \\
  & & & \([\mathrm{N/m}]\) & \([\mathrm{N\,m/rad}]\) & \([{}^\circ]\) & \\
 \midrule
-\(+10^\circ\) about \(t_1\) & \(K_{p,t_2}, K_{R,t_1}\) & translational
+\(+10^\circ\) about \(t_1\) & \(K_{p,t_2}, K_{R,t_1}\) & translation only
   & 300 & 5 & \(+7.59\) & yes \\
- & & translational & 800 & 5 & \(+7.56\) & yes \\
+ & & translation only & 800 & 5 & \(+7.56\) & yes \\
  & & reference & 2000 & 5 & \(+7.57\) & yes \\
- & & combined & 300 & 50 & \(+2.80\) & \textbf{no} \\
+ & & both varied & 300 & 50 & \(+2.80\) & \textbf{no} \\
 \addlinespace
-\(+10^\circ\) about \(t_2\) & \(K_{p,t_1}, K_{R,t_2}\) & translational
+\(+10^\circ\) about \(t_2\) & \(K_{p,t_1}, K_{R,t_2}\) & translation only
   & 300 & 5 & \(-2.24\) & yes \\
- & & translational & 800 & 5 & \(-1.78\) & yes \\
+ & & translation only & 800 & 5 & \(-1.78\) & yes \\
  & & reference & 2000 & 5 & \(-1.63\) & yes \\
- & & combined & 300 & 50 & \(-1.03\) & yes \\
+ & & both varied & 300 & 50 & \(-1.03\) & yes \\
 \bottomrule
 \end{tabular}
+\endgroup
 \end{table}
 
 \Revised{The translational entry does almost nothing. Across a factor of
@@ -729,6 +740,9 @@ response, \mbox{\(+2.80^\circ\)} about \mbox{\(t_1\)}, matches the
 the tool ends tilted in both. The rotational entry accounts for the result and
 the translational one adds nothing measurable to it, which is the reading the
 separate variations already support.}
+\Comment{Use ``both-varied condition'' instead of ``combined condition'' here,
+matching the table label and stating that both listed stiffness entries were
+changed in the same setting.}
 
 
 \subsection{Case A: Effect of Rotational Stiffness}
@@ -743,7 +757,7 @@ Case~D and is not a separate measurement.}
 \centering
 \small
 \caption{Case-A controller response by rotational stiffness about the
-commanded tangent (mean, n=3). The varied entry is \(K_{R,t_1}\) for a command
+commanded tangent (mean of three repetitions). The varied entry is \(K_{R,t_1}\) for a command
 about \(t_1\) and \(K_{R,t_2}\) for a command about \(t_2\). The orthogonal
 tangent entry remains \(5\,\mathrm{N\,m/rad}\), while
 \(K_{R,n}=50\,\mathrm{N\,m/rad}\) and

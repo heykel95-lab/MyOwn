@@ -131,6 +131,11 @@ K_R
 \Revised{also in the surface frame. Both matrices use the coordinate order
 \mbox{\([t_1,t_2,n_s]\)}. The fixed phase, damping, null-space, and trajectory
 parameters are specified in \mbox{\Cref{sec:experimental_controller_parameters}}.}
+\Comment{Use \mbox{\(K_{p,\mathrm{set}}\)} and
+\mbox{\(K_{R,\mathrm{set}}\)} for the two baseline set-up matrices here, and
+retain one numerical definition only. The same matrices are currently defined
+again in \mbox{\cref{eq:experimental_setup_translational_stiffness,eq:experimental_setup_rotational_stiffness}}
+with phase-indexed symbols.}
 
 \Revised{Neither matrix is a neutral starting point. The entries were chosen
 for the roles they play during set-up, and the choice is stated here because it
@@ -184,11 +189,11 @@ separates them over this range, and a larger one cannot be assumed to help.}
 >{\centering\arraybackslash}p{0.075\textwidth}
 >{\raggedright\arraybackslash}p{0.145\textwidth}
 >{\raggedright\arraybackslash}p{0.12\textwidth}
->{\raggedright\arraybackslash}p{0.295\textwidth}
->{\centering\arraybackslash}p{0.035\textwidth}
+>{\raggedright\arraybackslash}p{0.27\textwidth}
+>{\centering\arraybackslash}p{0.06\textwidth}
 >{\raggedright\arraybackslash}p{0.17\textwidth}@{}}
 \caption{Parameter variations used in the surface-contact measurements. The
-run count (n) assigns each archived run to one case only; shared reference
+run count assigns each archived run to one case only; shared reference
 settings are identified in the tested-values column and are not counted twice.}
 \label{tab:experimental_test_cases}\\
 \toprule
@@ -200,7 +205,7 @@ settings are identified in the tested-values column and are not counted twice.}
 &
 \textbf{Tested values}
 &
-\(\boldsymbol{n}\)
+\textbf{Runs}
 &
 \textbf{Comparison}
 \\
@@ -217,7 +222,7 @@ settings are identified in the tested-values column and are not counted twice.}
 &
 \textbf{Tested values}
 &
-\(\boldsymbol{n}\)
+\textbf{Runs}
 &
 \textbf{Comparison}
 \\
@@ -255,8 +260,9 @@ Translational stiffness
 For a command about \(t_1\), \(K_{p,t_2}=300\) and
 \(800\,\mathrm{N/m}\); for a command about \(t_2\), \(K_{p,t_1}\) carried
 those values. The shared \(2000\,\mathrm{N/m}\) reference is in Case~D. One
-additional condition per axis combined \(K_{p,\perp}=300\,\mathrm{N/m}\) with
-\(K_{R,\parallel}=50\,\mathrm{N\,m/rad}\).
+additional condition per axis paired the
+\(300\,\mathrm{N/m}\) cross-axis translational entry with the
+\(50\,\mathrm{N\,m/rad}\) command-axis rotational entry.
 &
 18
 &
@@ -761,6 +767,11 @@ n_s
 \label{eq:surface_normal}
 \end{equation}
 
+\Comment{Use \mbox{\(\alpha_s\)} and \mbox{\(\beta_s\)} for the two
+configured surface angles in this subsection, matching Chapter~3 and the
+symbol list. The bare \mbox{\(a,b\)} notation otherwise gives the same
+quantities a second symbol family.}
+
 \Revised{This three-point physical-plane fit was copied into the controller
 configuration. The same normal \mbox{\(n_s\)} therefore defined the surface
 frame, the controller geometry, and the alignment values reported in
@@ -1258,6 +1269,9 @@ n_s^\top K_{p,\mathrm{set}}n_s
 
 \Revised{and the tangential entries act along \mbox{\(t_1\)} and \mbox{\(t_2\)} without
 contributing to the normal direction.}
+\Comment{Use \mbox{\(K_{p,n}\)} for this scalar entry. The present
+\mbox{\(k_{p,n}\)} duplicates the \mbox{\(K_{p,n}\)} notation already used
+later in this chapter and in Chapter~5.}
 
 \Revised{The Cartesian pose-hold study used the isotropic base-frame translational
 stiffness \mbox{\(K_{p,\mathrm{hold}}\)} and rotational stiffness
@@ -1387,6 +1401,13 @@ order \mbox{\([t_1,t_2,n_s]\)}.}
 \Revised{The factor \mbox{\(\zeta=1\)} defines the coefficient for each decoupled
 direction in the calculation. The controller uses the resulting matrix as its
 inertia-scaled damping setting after the compliance-centre shift.}
+\Comment{Remove the superscript \mbox{\(\mathrm{ref}\)} from the damping
+matrices in this subsection. Use the phase-indexed forms
+\mbox{\(D_{p,\mathrm{gate}}\)}, \mbox{\(D_{p,\mathrm{hold}}\)},
+\mbox{\(D_{p,\mathrm{app}}\)}, \mbox{\(D_{R,\mathrm{app}}\)},
+\mbox{\(D_{p,\mathrm{set}}\)}, and \mbox{\(D_{R,\mathrm{set}}\)}. The text
+already identifies each matrix as a damping target, an active hold value, or
+an initial and fallback value, so \mbox{\(\mathrm{ref}\)} adds no distinction.}
 
 
 \subsection{Compliance-Centre Settings}
@@ -1621,6 +1642,8 @@ a \mbox{\(5.0\,\mathrm{s}\)} set-up timeout, a moment threshold the contact
 never reached, a disabled pre-set-up gate, and null-space mode~1. The detailed
 values remain collected in
 \mbox{\cref{tab:experimental_phase_parameters,tab:active_phase_gains,tab:nullspace_safety_parameters}}.}
+\Comment{Replace \mbox{\(K_n\)} by \mbox{\(K_{p,n}\)} here so that the same
+normal translational stiffness has one symbol throughout Chapters~4 and~5.}
 \Comment{Every one of the 171 archived contact-run parameter sets records
 \mbox{\texttt{nullspace\_mode=3}}, namely projected damping plus sigma conditioning,
 not mode~1. The chapter and controller-parameter appendix must be reconciled
@@ -1847,8 +1870,8 @@ quantity for matched-run comparisons. Its common calculation preserved a
 consistent load basis across all contact settings.}
 \Comment{For the Case-E controller-response figures, define the commanded
 signals on the same basis as the moment:
-\mbox{\(F_{n,\mathrm{cmd}}=n_s^\top f_{\mathrm{cmd}}\)} and
-\mbox{\(M_{t_i,\mathrm{cmd}}=t_i^\top m_{\mathrm{cmd}}\)}. The model-estimated force
+\mbox{\(F_{n,\mathrm{cmd}}=n_s^\top f\)} and
+\mbox{\(M_{t_i,\mathrm{cmd}}=t_i^\top m\)}. The model-estimated force
 may remain a separate data-quality check, but it is not mixed with the
 commanded moment in one comparison.}
 
@@ -1954,6 +1977,10 @@ J_p(q_0)v_7(q_0)
 \label{eq:nullspace_disturbance_direction}
 \end{equation}
 
+\Comment{Use \mbox{\(q_{\mathrm{init}}\)} in this definition, matching the
+initial joint configuration in Chapter~3 and the controller-parameter appendix.
+The present \mbox{\(q_0\)} is a second symbol for the same posture.}
+
 \Revised{The direction was held constant throughout the trial. The commanded
 disturbance-force magnitude was \mbox{\(F_d=20\,\mathrm{N}\)}. The disturbance
 force \mbox{\(f_d(t)\)} was mapped by the current point Jacobian to the disturbance
@@ -1974,6 +2001,9 @@ F_d s(t)u_f.
 \mbox{\(5\,\mathrm{s}\)} and \mbox{\(7\,\mathrm{s}\)}, remained at one until
 \mbox{\(8\,\mathrm{s}\)}, and returned to zero during the following second. The
 joint-torque-equivalent disturbance was limited to}
+\Comment{Rename this disturbance time profile \mbox{\(s_d(t)\)}. Reserve
+\mbox{\(s_\sigma\)} for the singular-value-conditioning direction selector, so
+the two unrelated quantities are distinguished by their role.}
 
 \begin{equation}
 \lVert\tau_{\mathrm{dist}}\rVert_2

@@ -26,13 +26,13 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$\{\mathrm{EE}\}$}{End-effector (tool) frame}{[-]}
 \symrow{$n$}{Number of joints ($n=7$)}{[-]}
 \symrow{$q,\ \dot{q}$}{Joint position / velocity vector}{[rad], [rad/s]}
-\symrow{$q_0$}{Home or reference joint configuration}{[rad]}
-\symrow{$x$}{Stacked Cartesian end-effector state}{[m], [rad]}
-\symrow{$x,\ y,\ z$}{Scalar Cartesian coordinate directions or components; not the stacked state $x$}{[m]}
+\symrow{$q_{\mathrm{init}}$}{Initial joint configuration used by the controller and pose-hold study}{[rad]}
 \symrow{$p$}{Position / translation vector}{[m]}
 \symrow{$R$}{Rotation matrix}{[-]}
 \symrow{$R_x,\ R_y,\ R_z$}{Elementary rotations about $x,y,z$}{[-]}
 \symrow{$\alpha,\ \beta,\ \gamma$}{Generic rotations about the \(x,y,z\) axes}{[rad]}
+\symrow{$\alpha_s,\ \beta_s$}{Configured surface rotations about the base-frame $x$- and $y$-axes}{[rad]}
+\symrow{$e_z$}{Base-frame unit vector along the $z$-axis}{[-]}
 \symrow{$T$}{Homogeneous transformation matrix}{[-]}
 \symrow{$J(q)$}{Geometric Jacobian; linear rows above angular rows}{[m/rad], [-]}
 \symrow{$z_{i-1}$}{Rotation axis of joint \(i\), expressed in the base frame}{[-]}
@@ -58,8 +58,10 @@ column makes the mixed translational and rotational quantities traceable.}
 }
 
 \symgroup{Cartesian Impedance Gains}{
-\symrow{$K_p,\ D_p$}{Generic translational stiffness / damping block; a frame subscript is added when needed}{[N/m], [N\,s/m]}
-\symrow{$K_R,\ D_R$}{Generic rotational stiffness / damping block; a frame subscript is added when needed}{[N\,m/rad], [N\,m\,s/rad]}
+\symrow{$K_p,\ D_p$}{Generic translational stiffness / damping block; a frame or phase subscript is added when needed}{[N/m], [N\,s/m]}
+\symrow{$K_R,\ D_R$}{Generic rotational stiffness / damping block; a frame or phase subscript is added when needed}{[N\,m/rad], [N\,m\,s/rad]}
+\symrow{$K_{p,t_1},\ K_{p,t_2},\ K_{p,n}$}{Translational stiffness entries along $t_1$, $t_2$, and $n_s$}{[N/m]}
+\symrow{$K_{R,t_1},\ K_{R,t_2},\ K_{R,n}$}{Rotational stiffness entries about $t_1$, $t_2$, and $n_s$}{[N\,m/rad]}
 \symrow{$R_{\mathrm{task}},\ T_R$}{Generic task-frame orientation and corresponding block rotation; $R_{\mathrm{task}}=R_{\mathrm{surface}}$ for the implemented task}{[-]}
 \symrow{$K_{p,\mathrm{task}},\ D_{p,\mathrm{task}}$}{Local translational stiffness / damping in the chosen task frame}{[N/m], [N\,s/m]}
 \symrow{$K_{R,\mathrm{task}},\ D_{R,\mathrm{task}}$}{Local rotational stiffness / damping in the chosen task frame}{[N\,m/rad], [N\,m\,s/rad]}
@@ -71,7 +73,7 @@ column makes the mixed translational and rotational quantities traceable.}
 \symgroup{Dynamics and Torques}{
 \symrow{$F$}{Cartesian wrench}{[N], [N\,m]}
 \symrow{$f,\ m$}{Commanded Cartesian force / moment}{[N], [N\,m]}
-\symrow{$f_{\mathrm{press}}$}{Elastic press against the surface, $f_{\mathrm{press}}=K_pe_p$; the force entering the compliance-centre moment $m_c$}{[N]}
+\symrow{$f_{\mathrm{press}},\ m_c$}{Elastic press against the surface, $f_{\mathrm{press}}=K_pe_p$ / corresponding compliance-centre coupling moment}{[N], [N\,m]}
 \symrow{$K,\ D$}{Full Cartesian stiffness / damping matrices}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
 \symrow{$\Lambda$}{Operational-space (Cartesian) inertia matrix}{[kg], [kg\,m], [kg\,m$^2$]}
 \symrow{$M(q)$}{Joint-space mass matrix}{[kg\,m$^2$]}
@@ -83,24 +85,25 @@ column makes the mixed translational and rotational quantities traceable.}
 }
 
 \symgroup{Surface and Contact Geometry}{
-\symrow{$n_s$}{Calibrated physical-plane normal used by the controller and evaluation}{[-]}
+\symrow{$n_s$}{Calibrated surface-plane normal copied into the controller and used in the evaluation}{[-]}
 \symrow{$t_1,\ t_2$}{Surface tangent directions (unit)}{[-]}
 \symrow{$a_s,\ \tilde{t}_1$}{Surface-frame reference direction / projected tangent before normalisation}{[-]}
 \symrow{$R_{\mathrm{surface}}$}{Surface task frame $[\,t_1\;\;t_2\;\;n_s\,]$ in the base frame}{[-]}
 \symrow{$p_i,\ r_{\mathrm{probe,EE}}$}{Captured marked-corner point in the base frame / fixed corner offset in the EE frame}{[m], [m]}
 \symrow{$R_i,\ \bar R$}{Captured tool-calibration rotation / mean of the three estimation rotations}{[-]}
 \symrow{$\bar n_B$}{Invariant base-frame direction in the tool-normal calibration}{[-]}
+\symrow{$\varepsilon_{\mathrm{plane}},\ \varepsilon_{\mathrm{tool}},\ \varepsilon_g$}{Surface-plane validation residual / grinding-face direction validation residual / grinding-face feature-selection tolerance}{[m], [rad], [m]}
 \symrow{$U,\ \Sigma,\ V$}{Singular-value decomposition factors of $\bar R$}{[-]}
-\symrow{$n_{\mathrm{EE}},\ n_T,\ n_d$}{Configured EE-frame tool normal / current base-frame tool normal / signed target direction}{[-]}
+\symrow{$n_{\mathrm{EE}},\ n_T,\ n_d$}{Calibrated grinding-face direction in the EE frame / EE-inferred grinding-face direction in the base frame / signed controller target direction}{[-]}
 \symrow{$s_a$}{Tool-axis target sign, with \(n_d=s_a n_s\)}{[-]}
-\symrow{$K_{t_1},K_{t_2},K_n$}{Translational stiffness along \(t_1\), \(t_2\), and \(n_s\)}{[N/m]}
-\symrow{$K_{r,t_1},K_{r,t_2},K_{r,n}$}{Rotational stiffness entries in surface-frame column order}{[N\,m/rad]}
 \symrow{$p_s$}{Point on the configured surface}{[m]}
 \symrow{$p_c$}{Centre of compliance, held constant from the geometric clearance transition}{[m]}
 \symrow{$r_c$}{Compliance-centre-to-TCP lever, $p_{\mathrm{TCP}}-p_c$}{[m]}
 \symrow{$h$}{Selected normal offset of the centre of compliance}{[m]}
 \symrow{$p_{\mathrm{contact}}$}{Physical contact point}{[m]}
 \symrow{$r_{\mathrm{contact}}$}{Contact-to-TCP lever, $p_{\mathrm{TCP}}-p_{\mathrm{contact}}$; transfers a measured moment and is distinct from $r_c$}{[m]}
+\symrow{$r_{\mathrm{face,EE}},\ r_{\mathrm{width,EE}},\ r_{\mathrm{length,EE}}$}{Grinding-face centre offset / half-width vector / half-length vector in the EE frame}{[m]}
+\symrow{$r_{g,\mathrm{EE}},\ p_g$}{Selected grinding-face point or edge in the EE frame / its base-frame position}{[m]}
 \symrow{$M_{\mathrm{TCP}},\ M_{\mathrm{contact}}$}{Estimated external moment change about the TCP / about the contact point}{[N\,m]}
 \symrow{$f_C$}{Environment-on-tool contact force used in the geometric sketch}{[N]}
 }
@@ -111,18 +114,20 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$K_c,D_c$}{Block-diagonal stiffness / damping at the centre of compliance}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
 \symrow{$F_c,\ F_{\mathrm{TCP}}$}{Cartesian wrench at the centre of compliance / corresponding wrench at the TCP}{[N], [N\,m]}
 \symrow{$K_{\mathrm{TCP}},D_{\mathrm{TCP}}$}{Centre-of-compliance gains mapped by congruence to the TCP}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
-\symrow{$\theta_{\mathrm{align}},\ \Delta\theta_{\mathrm{align}}$}{EE-inferred tool-axis alignment angle / before--after improvement}{[rad]}
-\symrow{$\Delta\theta_{\mathrm{set}},\ \Delta\theta_{\mathrm{set}}^S$}{Finite set-up rotation in the base frame / resolved in the surface frame}{[rad]}
+\symrow{$\theta_{\mathrm{align}},\ \Delta\theta_{\mathrm{align}}$}{EE-inferred tool-axis alignment angle / before--after improvement; the indices $\mathrm{before}$ and $\mathrm{after}$ denote the start and end of set-up}{[rad]}
+\symrow{$\theta_{t_1},\ \theta_{t_2}$}{Surface-frame components of the commanded tool orientation offset}{[rad]}
+\symrow{$\Delta\theta_{\mathrm{set}},\ \Delta\theta_{\mathrm{set}}^S$}{Finite set-up rotation in the base frame / resolved in the surface frame; $\Delta\theta_{\mathrm{set},t_i}$ is its component about $t_i$}{[rad]}
 \symrow{$\phi_{\mathrm{set}},\ u_{\mathrm{set}}$}{Set-up rotation angle / unit rotation axis}{[rad], [-]}
 \symrow{$r_{c,t},\ \rho_c$}{Selected tangential compliance-centre lever / its magnitude}{[m]}
 \symrow{$\Delta p_g,\ s_g$}{Grinding contact-point displacement / its magnitude}{[m]}
 \symrow{$\Delta p_{\mathrm{TCP}},\ s_{\mathrm{TCP}}$}{TCP displacement / its magnitude}{[m]}
 \symrow{$F_n$}{Normal magnitude of the model-estimated external-force change from the clearance transition}{[N]}
+\symrow{$F_{n,\mathrm{cmd}},\ M_{t_i,\mathrm{cmd}}$}{Signed commanded normal force / commanded TCP moment about surface tangent $t_i$}{[N], [N\,m]}
+\symrow{$F_{n,\mathrm{block}}$}{Fully blocked normal virtual-spring command scale}{[N]}
 \symrow{$\hat f_{\mathrm{ext}},\ \hat f_{\mathrm{ref}}$}{Model-estimated external force / clearance-transition reference}{[N]}
 }
 
 \symgroup{Quasi-Static Stiffness and Damping Design}{
-\symrow{$k_{p,i},\ k_{R,i}$}{Principal translational / rotational stiffness}{[N/m], [N\,m/rad]}
 \symrow{$k_i$}{Directional translational or rotational stiffness}{[N/m] or [N\,m/rad]}
 \symrow{$\lambda_i$}{Directional Cartesian inertia used for damping selection}{[kg] or [kg\,m$^2$]}
 \symrow{$d_{\mathrm{dir},i}$}{Directional damping coefficient}{[N\,s/m] or [N\,m\,s/rad]}
@@ -139,13 +144,16 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$v_6,\ v_7$}{$\sigma_6$-associated direction / structural null direction}{[-]}
 \symrow{$\dot q_{\mathrm{null}}$}{Projected joint velocity in the numerical null space}{[rad/s]}
 \symrow{$F_d$}{Commanded point-force-equivalent disturbance magnitude}{[N]}
+\symrow{$r_p,\ J_p(q)$}{Point on the robot link used for the commanded disturbance / its translational Jacobian}{[m], [m/rad]}
+\symrow{$u_f,\ f_d(t),\ s_d(t)$}{Fixed disturbance-force direction / commanded disturbance-force vector / dimensionless time profile}{[-], [N], [-]}
 \symrow{$\tau_{\mathrm{dist}}$}{Joint-torque-equivalent commanded disturbance}{[N\,m]}
 \symrow{$d_{\mathrm{null}}$}{Null-space damping}{[N\,m\,s/rad]}
 \symrow{$k_\sigma$}{Sigma-conditioning torque magnitude}{[N\,m]}
 \symrow{$\alpha_{\mathrm{probe}}$}{Null-direction sampling angle}{[rad]}
 \symrow{$\delta_\sigma,\ \Delta_\sigma$}{Sigma-comparison deadband / sampled difference}{[m/rad]}
-\symrow{$s$}{Deadbanded conditioning-direction selector}{[-]}
+\symrow{$s_\sigma$}{Deadbanded singular-value-conditioning direction selector}{[-]}
 \symrow{$\tau_d,\ \tau_\sigma,\ \tau_{\mathrm{null}}$}{Projected damping / sigma / total null-space torque}{[N\,m]}
+\symrow{$E_N$}{Integrated projected joint-velocity magnitude during the disturbance interval}{[rad]}
 }
 
 \symgroup{Miscellaneous}{
