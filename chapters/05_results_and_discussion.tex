@@ -112,213 +112,240 @@ and settles on the residual the condition reaches. Each curve is one trial.}
 \label{fig:results_setup_descent}
 \end{figure}
 
-\section{Case A: Effect of Rotational Stiffness}
-\label{sec:results_case_a}
+\subsection{The Three Reported Quantities}
+\label{sec:results_quantities}
 
-\Revised{In Case~A, only the rotational stiffness about the tilted surface tangent was
-varied. The stiffness about the orthogonal tangent remained at
-\mbox{\(5\,\mathrm{N\,m/rad}\)}. The \mbox{\(5\,\mathrm{N\,m/rad}\)} entries in
-\mbox{\cref{tab:results_case_a}} are the reference setting, measured at a
-commanded offset of \mbox{\(10^\circ\)}.}
+\Revised{Three quantities describe each run, and they answer different
+questions. Reporting only the first, as an earlier evaluation did, mistakes a
+gripper that stayed tilted for a tool that stayed tilted.}
+
+\Revised{The \emph{angular deviation} \mbox{\(\theta_{\mathrm{align}}\)} is the
+angle between the tool normal \mbox{\(n_T\)} and the calibrated surface normal
+\mbox{\(n_s\)}. It has an absolute zero, so a value can be read as how flat the
+tool is, but \mbox{\(n_T\)} is not measured: it is reconstructed from the
+end-effector orientation and a calibrated direction in that frame,
+\mbox{\(n_T=R_{\mathrm{EE}}n_{\mathrm{EE}}\)}. The pads that clamp the tool to
+the gripper carry play, so the tool can turn relative to the frame the
+reconstruction rests on. What this quantity therefore reports is the attitude
+of the gripper.}
+
+\Revised{The \emph{set-up rotation} \mbox{\(\Delta\theta_{\mathrm{set}}\)} is
+the rotation since first contact, resolved on the surface axes. It comes from
+the joint angles and the forward kinematics alone: neither the tool
+calibration nor the plane zero enters it, and the play cannot reach it. It has
+no absolute zero, so it says how far the robot turned and not where the tool
+ended up. This is the quantity that describes what the controller did.}
+
+\Revised{The \emph{TCP height above the plane} settles the physical outcome. A
+tool lying flat puts its grinding face on the surface, so the TCP stands one
+face offset above it; a tool resting on one edge stands higher, by the half
+dimension it is tilted over times the sine of the tilt. The face is
+\mbox{\(60\,\mathrm{mm}\)} half-length across \mbox{\(t_1\)} and
+\mbox{\(20\,\mathrm{mm}\)} half-width across \mbox{\(t_2\)}, so a
+\mbox{\(10^\circ\)} tilt lifts the TCP by \mbox{\(10.4\)} and
+\mbox{\(3.5\,\mathrm{mm}\)} respectively. Only the TCP position and the plane
+enter it, so like the rotation it is beyond the reach of the play, and unlike
+the rotation it carries an absolute zero.}
+
+\Revised{Measured that way, the tool ended flat in \mbox{\(48\)} of the
+\mbox{\(54\)} reported conditions. The height sat within
+\mbox{\(2\,\mathrm{mm}\)} of the flat-tool value in every one of them and
+\mbox{\(3.5\)} to \mbox{\(9.3\,\mathrm{mm}\)} above it in the six that did not,
+with nothing in between, so the classification does not rest on where a
+threshold is placed.}
 
 \begin{table}[H]
 \centering
 \small
-\caption{Case-A alignment improvement for the tested rotational stiffnesses.}
-\label{tab:results_case_a}
+\caption{The conditions whose tool did not end flat. Every one commands its
+offset about \(t_1\).}
+\label{tab:results_not_flat}
 \begin{tabular}{@{}lrrr@{}}
 \toprule
-Commanded rotation axis & \(5\,\mathrm{N\,m/rad}\) & \(15\,\mathrm{N\,m/rad}\)
-& \(50\,\mathrm{N\,m/rad}\) \\
+Condition & Excess height & \(\Delta\theta_{\mathrm{align}}\) &
+\(\Delta\theta_{\mathrm{set}}\) \\
 \midrule
-\(t_1\) & \(+0.64\pm0.08\) & \(+0.57\pm0.03\) & \(+0.49\pm0.02\) \\
-\(t_2\) & \(+1.06\pm0.92\) & \(+1.58\pm0.04\) & \(+1.14\pm0.03\) \\
+Case~A, \(50\,\mathrm{N\,m/rad}\) about \(t_1\) & \(3.6\,\mathrm{mm}\) & \(+2.38\) & \(+2.73\) \\
+Case~B, combined about \(t_1\) & \(3.5\,\mathrm{mm}\) & \(+2.46\) & \(+2.80\) \\
+Case~E, \(-20\,\mathrm{mm}\) at \(+10^\circ\) about \(t_1\) & \(5.3\,\mathrm{mm}\) & \(+0.70\) & \(+0.99\) \\
+Case~E, \(-40\,\mathrm{mm}\) at \(+10^\circ\) about \(t_1\) & \(6.0\,\mathrm{mm}\) & \(-0.12\) & \(+0.14\) \\
+Case~E, \(+20\,\mathrm{mm}\) at \(-10^\circ\) about \(t_1\) & \(5.2\,\mathrm{mm}\) & \(+4.43\) & \(-5.01\) \\
+Case~E, \(+40\,\mathrm{mm}\) at \(-10^\circ\) about \(t_1\) & \(9.3\,\mathrm{mm}\) & \(-0.13\) & \(-0.09\) \\
+Case~F, surface frame at \(+10^\circ\) about \(t_1\) & \(5.9\,\mathrm{mm}\) & \(-0.13\) & \(+0.13\) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\begin{figure}[H]
+\Revised{The pattern is the whole of the difference between the two tangents.
+About \mbox{\(t_1\)} the tool ends tilted whenever the rotational stiffness is
+raised, the compliance centre is placed on the opposing side, or the offset is
+named in the surface frame. About \mbox{\(t_2\)} it never ends tilted, at any
+setting tested, including those whose deviation grew by several degrees.}
+
+\Revised{The reason is the play. A commanded offset about \mbox{\(t_2\)} turns
+the tool about the axis the pads are free in, so the contact can flatten the
+tool while the gripper keeps most of the commanded attitude, and the deviation
+records that attitude. The arithmetic closes: for every condition the deviation
+after set-up equals the deviation at contact plus the set-up rotation, to
+within \mbox{\(0.1^\circ\)}. Nothing in it describes the tool.}
+
+\Revised{Taking the tool as flat, the play follows as the deviation that
+remains. About \mbox{\(t_1\)} it is \mbox{\(1.1\)} to \mbox{\(1.8^\circ\)} in
+the conditions that end flat, which matches the clearance the mount was
+expected to carry. About \mbox{\(t_2\)} it reaches \mbox{\(8.5\)} to
+\mbox{\(11.9^\circ\)} in the conditions where the robot does not turn. A
+clearance alone does not explain that, and the pads were not characterised
+independently, so the figure is reported as what the measurement implies rather
+than as a property of the mount.}
+
+\Revised{What follows therefore reports the set-up rotation as the response of
+the controller, the flatness as the physical outcome, and the deviation as the
+attitude of the gripper. Where the three agree, which is every condition about
+\mbox{\(t_1\)}, any of them carries the result. Where they do not, which is
+every condition about \mbox{\(t_2\)}, only the first two mean anything.}
+
+
+\section{Case A: Effect of Rotational Stiffness}
+\label{sec:results_case_a}
+
+\Revised{Case~A varies the rotational stiffness about the commanded tangent
+and leaves every other entry where the design places it. The
+\mbox{\(5\,\mathrm{N\,m/rad}\)} column is the corresponding condition of
+Case~D and is not a separate measurement.}
+
+\begin{table}[H]
 \centering
-\includegraphics[width=\textwidth]{figures/MAIN_A_KR.pdf}
-\caption{Case-A alignment improvement by rotation-axis stiffness.}
-\label{fig:results_case_a}
-\end{figure}
+\small
+\caption{Case-A response by rotational stiffness about the commanded tangent
+(mean, n=3).}
+\label{tab:results_case_a}
+\begin{tabular}{@{}llrrrc@{}}
+\toprule
+Commanded offset & Quantity & \(5\) & \(15\) & \(50\,\mathrm{N\,m/rad}\) \\
+\midrule
+\(+10^\circ\) about \(t_1\) & \(\Delta\theta_{\mathrm{set}}\)
+  & \(+7.57\) & \(+7.29\) & \(+2.73\) \\
+ & \(\Delta\theta_{\mathrm{align}}\) & \(+5.94\) & \(+6.08\) & \(+2.38\) \\
+ & tool flat & yes & yes & \textbf{no} \\
+\addlinespace
+\(+10^\circ\) about \(t_2\) & \(\Delta\theta_{\mathrm{set}}\)
+  & \(-1.63\) & \(-1.52\) & \(-0.48\) \\
+ & \(\Delta\theta_{\mathrm{align}}\) & \(-1.74\) & \(-1.63\) & \(-0.60\) \\
+ & tool flat & yes & yes & yes \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\Revised{For the \mbox{\(t_1\)} tests, the alignment improvement
-\mbox{\(\Delta\theta_{\mathrm{align}}\)} decreased from
-\mbox{\(0.64^\circ\)} at \mbox{\(5\,\mathrm{N\,m/rad}\)} to \mbox{\(0.57^\circ\)} at
-\mbox{\(15\,\mathrm{N\,m/rad}\)} and \mbox{\(0.49^\circ\)} at
-\mbox{\(50\,\mathrm{N\,m/rad}\)}. Increasing the rotational stiffness therefore
-reduced the measured alignment response about \mbox{\(t_1\)} over the tested range.}
+\Revised{About \mbox{\(t_1\)} the rotational entry decides whether the tool
+ends flat. At \mbox{\(5\)} and \mbox{\(15\,\mathrm{N\,m/rad}\)} the robot turns
+\mbox{\(7.6\)} and \mbox{\(7.3^\circ\)} and the tool lies flat. At
+\mbox{\(50\,\mathrm{N\,m/rad}\)} it turns only \mbox{\(2.7^\circ\)} and the
+tool ends tilted, with the TCP standing \mbox{\(3.6\,\mathrm{mm}\)} above the
+flat-tool height. The spring that holds the attitude captured at first contact
+is then strong enough to keep the tool off the surface.}
 
-\Revised{For \mbox{\(t_2\)}, the highest tested stiffness produced less improvement than the
-\mbox{\(15\,\mathrm{N\,m/rad}\)} setting. The reused
-\mbox{\(5\,\mathrm{N\,m/rad}\)} reference contains the anomalous repetition
-noted in \mbox{\cref{sec:results_data_quality}}; the remaining two repetitions
-at this setting average approximately
-\mbox{\(1.59^\circ\)}, close to the \mbox{\(1.58^\circ\)} measured at
-\mbox{\(15\,\mathrm{N\,m/rad}\)}. The data therefore support a reduction at
-\mbox{\(50\,\mathrm{N\,m/rad}\)}, while the variability of the reference prevents a
-reliable ordering of the two softer settings.}
+\Revised{About \mbox{\(t_2\)} the entry changes little, because the robot
+barely turns at any of the three settings. The tool ends flat throughout, and
+what the deviation records is how much of the commanded attitude the gripper
+kept.}
 
-\Revised{Because the two tangent entries were varied separately, these findings
-characterise the individual tilted-axis stiffness.}
 
 \section{Case B: Effect of Translational Stiffness}
 \label{sec:results_case_b}
 
-\Revised{Case~B varied the translational stiffness perpendicular to the tilted surface
-tangent. The \mbox{\(2000\,\mathrm{N/m}\)} entries in
-\mbox{\cref{tab:results_case_b}} are the reference setting at a commanded
-offset of \mbox{\(10^\circ\)}.
-One additional condition for each tilted axis combined the lowest tested
-translational stiffness, \mbox{\(300\,\mathrm{N/m}\)}, with the highest tested
-rotational stiffness, \mbox{\(50\,\mathrm{N\,m/rad}\)}.}
+\Revised{Case~B varies the translational stiffness across the commanded
+tangent, the entry that resists the translation accompanying the alignment
+motion, and adds one condition combining the lowest translational entry with
+the highest rotational one.}
 
 \begin{table}[H]
 \centering
 \small
-\caption{Case-B alignment improvement for the tested perpendicular
-translational stiffnesses.}
+\caption{Case-B response by translational stiffness across the commanded
+tangent, and the combined condition (mean, n=3).}
 \label{tab:results_case_b}
-\begin{tabular}{@{}lrrrr@{}}
+\begin{tabular}{@{}llrrrr@{}}
 \toprule
-Commanded rotation axis & \(300\,\mathrm{N/m}\) & \(800\,\mathrm{N/m}\)
-& \(2000\,\mathrm{N/m}\) & Combined condition \\
+Commanded offset & Quantity & \(300\) & \(800\) & \(2000\,\mathrm{N/m}\)
+& Combined \\
 \midrule
-\(t_1\) & \(+0.58\pm0.02\) & \(+0.52\pm0.01\) & \(+0.64\pm0.08\)
-& \(+0.50\pm0.02\) \\
-\(t_2\) & \(+1.79\pm0.09\) & \(+1.57\pm0.00\) & \(+1.06\pm0.92\)
-& \(+1.20\pm0.04\) \\
+\(+10^\circ\) about \(t_1\) & \(\Delta\theta_{\mathrm{set}}\)
+  & \(+7.59\) & \(+7.56\) & \(+7.57\) & \(+2.80\) \\
+ & \(\Delta\theta_{\mathrm{align}}\) & \(+6.26\) & \(+6.05\) & \(+5.94\)
+  & \(+2.46\) \\
+ & tool flat & yes & yes & yes & \textbf{no} \\
+\addlinespace
+\(+10^\circ\) about \(t_2\) & \(\Delta\theta_{\mathrm{set}}\)
+  & \(-2.24\) & \(-1.78\) & \(-1.63\) & \(-1.03\) \\
+ & \(\Delta\theta_{\mathrm{align}}\) & \(-2.33\) & \(-1.89\) & \(-1.74\)
+  & \(-1.15\) \\
+ & tool flat & yes & yes & yes & yes \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth]{figures/MAIN_B_KP.pdf}
-\caption{Case-B alignment improvement for the tested perpendicular
-translational stiffnesses.}
-\label{fig:results_case_b}
-\end{figure}
+\Revised{The translational entry does almost nothing. Across a factor of
+nearly seven, from \mbox{\(300\)} to \mbox{\(2000\,\mathrm{N/m}\)}, the set-up
+rotation about \mbox{\(t_1\)} moves by \mbox{\(0.02^\circ\)} and the tool ends
+flat at every setting. About \mbox{\(t_2\)} the rotation moves by
+\mbox{\(0.61^\circ\)}, and in the direction that makes the deviation worse
+rather than better.}
 
-\Revised{For a tilt about \mbox{\(t_2\)}, reducing the perpendicular translational stiffness
-increased the measured alignment improvement \mbox{\(\Delta\theta_{\mathrm{align}}\)}. The largest value,
-\mbox{\(1.79^\circ\)}, occurred at \mbox{\(300\,\mathrm{N/m}\)}. This was the largest
-improvement measured with the compliance-centre lever \mbox{\(r_c\)} kept at zero. For a tilt
-about \mbox{\(t_1\)}, the difference across the tested translational-stiffness range
-was \mbox{\(0.12^\circ\)}, which is close to the descriptive comparison scale. The
-measured translational-stiffness response was therefore axis-dependent within
-the tested range.}
+\Revised{The combined condition is not a combination of two effects. Its
+response, \mbox{\(+2.80^\circ\)} about \mbox{\(t_1\)}, matches the
+\mbox{\(+2.73^\circ\)} of the rotational entry alone at the same value, and
+the tool ends tilted in both. The rotational entry accounts for the result and
+the translational one adds nothing measurable to it, which is the reading the
+separate variations already support.}
 
-\Revised{The combined low-translational-stiffness and high-rotational-stiffness
-condition produced less improvement than the low-translational-stiffness
-condition alone. About \mbox{\(t_2\)}, the improvement decreased from
-\mbox{\(1.79^\circ\)} to \mbox{\(1.20^\circ\)} when the rotational stiffness was raised
-from \mbox{\(5\)} to \mbox{\(50\,\mathrm{N\,m/rad}\)}. The response at this tested
-combination was therefore non-additive. Additional combinations would be
-required to characterise the interaction systematically.}
 
 \section{Case C: Generalisation Across Commanded Rotation Directions}
 \label{sec:results_case_c}
 
-\Revised{The other cases applied commanded tool orientation offsets about the
-two calibrated surface tangents. In Case~C the offset was commanded in four
-directions in the tangent plane,
-including two at \mbox{\(45^\circ\)} between the tool-face axes. The lever was
-held at \mbox{\(60\,\mathrm{mm}\)} and the offset angle at \mbox{\(10^\circ\)}
-throughout. Here an aligned lever is perpendicular to the commanded
-rotation axis within the tangent plane, as defined in
-\mbox{\cref{eq:experimental_general_lever_rule}}. The exact surface-frame
-vectors are listed in \mbox{\cref{tab:experimental_case_c_vectors}}. Case~C
-evaluates this direction rule while holding the magnitude constant across the
-tangent-plane directions.}
+\Revised{Case~C commands the offset in directions between the two surface
+tangents and asks whether the compliance-centre offset has to turn with it.
+Each direction is run twice: once with the offset selected for that direction
+by the rule of \mbox{\cref{eq:general_compliance_lever_selection}}, and once
+with the offset held at the one that assists a command about \mbox{\(t_1\)}.
+The two principal directions are the corresponding trials of Case~E.}
 
 \begin{table}[H]
 \centering
 \small
-\caption{Case-C response with the lever selected for each rotation direction
-(mean \(\pm\) SD, n=3).}
-\label{tab:results_case_c_rotated}
-\begin{tabular}{@{}lrrr@{}}
-\toprule
-Commanded rotation direction & Initial angle & Alignment improvement & Fraction removed \\
-\midrule
-About \(y_{\mathrm{EE}}\)  & \(7.01\) & \(+2.97\pm0.12\) & \(42\,\%\) \\
-\(-45^\circ\) diagonal     & \(9.17\) & \(+7.10\pm0.07\) & \(77\,\%\) \\
-About \(x_{\mathrm{EE}}\)  & \(6.82\) & \(+2.27\pm0.03\) & \(33\,\%\) \\
-\(+45^\circ\) diagonal    & \(7.45\) & \(+3.47\pm0.07\) & \(47\,\%\) \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth]{figures/MAIN_C_general_pole.pdf}
-\caption{Alignment response by rotation direction and normal lever coordinate.}
-\label{fig:results_general_pole}
-\end{figure}
-
-\Revised{The four directions started from different initial angles, so their
-improvements are not directly comparable. The fraction of the initial angle
-removed ranged from \mbox{\(33\,\%\)} to \mbox{\(77\,\%\)}, as
-\mbox{\cref{tab:results_case_c_rotated}} shows. The direction-selected lever
-therefore assisted at every tested direction, while the size of the
-response varied between them.}
-
-\begin{table}[H]
-\centering
-\small
-\caption{Direction-selected against fixed lever at the same rotation direction
-(mean \(\pm\) SD, n=3).}
-\label{tab:results_case_c_fixed}
+\caption{Case-C response with the offset selected for the commanded direction
+against one held fixed (mean, n=3).}
+\label{tab:results_case_c}
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
-Commanded rotation direction & Selected lever & Fixed lever & Absolute loss & Reduction \\
+Commanded direction & \multicolumn{2}{c}{\(\Delta\theta_{\mathrm{set}}\)}
+& \multicolumn{2}{c}{\(\Delta\theta_{\mathrm{align}}\)} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+ & selected & fixed & selected & fixed \\
 \midrule
-\(-45^\circ\) diagonal    & \(+7.10\pm0.07\) & \(+3.70\pm0.29\) & \(3.40^\circ\) & \(48\,\%\) \\
-About \(x_{\mathrm{EE}}\) & \(+2.27\pm0.03\) & \(+1.25\pm0.04\) & \(1.02^\circ\) & \(45\,\%\) \\
-\(+45^\circ\) diagonal   & \(+3.47\pm0.07\) & \(+2.34\pm0.16\) & \(1.13^\circ\) & \(32\,\%\) \\
+\(-45^\circ\) from \(t_1\) & \(+4.46\) & \(+4.39\) & \(+5.30\) & \(+4.18\) \\
+\(+45^\circ\) from \(t_1\) & \(+4.85\) & \(+4.80\) & \(+1.51\) & \(-0.12\) \\
+\(+90^\circ\), about \(t_2\) & \(+4.43\) & \(-1.61\) & \(+4.18\) & \(-1.62\) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\Revised{Holding one lever while the tilt direction turned reduced the improvement
-at every tested direction. The absolute loss was
-\mbox{\(1.02^\circ\)} to \mbox{\(3.40^\circ\)}, corresponding to
-\mbox{\(32\)}--\mbox{\(48\,\%\)}. The paired settings began within
-\mbox{\(0.04^\circ\)} of each other, so these comparisons isolate the lever
-direction more closely than comparisons between unmatched initial angles. The
-matched reductions therefore support selection of the lever from the
-commanded tilt direction, as \mbox{\cref{tab:results_case_c_fixed}} shows.}
+\Revised{The selected offset gives the larger response at every direction. The
+margin is \mbox{\(1.12^\circ\)} at \mbox{\(-45^\circ\)},
+\mbox{\(1.63^\circ\)} at \mbox{\(+45^\circ\)} and \mbox{\(5.80^\circ\)} about
+\mbox{\(t_2\)}, and the tool ends flat in all six conditions.}
 
-\begin{table}[H]
-\centering
-\small
-\caption{Case-C response with the compliance centre moved along the surface
-normal (mean \(\pm\) SD, n=3).}
-\label{tab:results_case_c_normal}
-\begin{tabular}{@{}lr@{}}
-\toprule
-Compliance-centre position & Alignment improvement \\
-\midrule
-\(80\,\mathrm{mm}\) above the surface & \(+2.23\pm0.15\) \\
-In the surface plane                  & \(+3.05\pm0.18\) \\
-At the TCP, \(r_{c,n}=0\)             & \(+2.97\pm0.12\) \\
-\(40\,\mathrm{mm}\) below             & \(+3.15\pm0.03\) \\
-\(100\,\mathrm{mm}\) below            & \(+2.78\pm0.04\) \\
-\bottomrule
-\end{tabular}
-\end{table}
+\Revised{The two diagonals separate the rule from the axis it was derived on.
+At the diagonals the set-up rotation is almost the same whether the offset is
+selected or fixed, \mbox{\(4.46\)} against \mbox{\(4.39^\circ\)} and
+\mbox{\(4.85\)} against \mbox{\(4.80^\circ\)}: the fixed offset still has a
+component along the direction the rule would choose, because the two are
+\mbox{\(45^\circ\)} apart. About \mbox{\(t_2\)} they are perpendicular, the
+fixed offset has no such component, and the response collapses from
+\mbox{\(+4.43\)} to \mbox{\(-1.61^\circ\)}. The cost of not turning the offset
+with the command therefore grows with the angle between them, which is what a
+vector rule predicts and what a rule tied to one axis would not.}
 
-\Revised{Moving the compliance centre \mbox{\(p_c\)} along the surface normal
-\mbox{\(n_s\)} changed the
-improvement by \mbox{\(0.9^\circ\)} across the tested range, with the largest
-values near the surface plane. The normal
-coordinate therefore has a measurable effect at displacements of
-\mbox{\(60\)} to \mbox{\(120\,\mathrm{mm}\)}, and that effect remains small
-against the \mbox{\(2.27\)} to \mbox{\(7.10^\circ\)} the direction-selected
-tangential lever produced across the four directions.}
+
 
 \section{Case D: Response of the Contact Alone}
 \label{sec:results_case_d}
