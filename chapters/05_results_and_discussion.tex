@@ -575,7 +575,9 @@ two compliance-centre positions.}
 
 \Revised{The sweep was not extended past \mbox{\(90\,\mathrm{mm}\)}. The
 response was still rising where it ended, so the largest reported value is a
-boundary of the tested range rather than a maximum of the coordinate.}
+boundary of the tested range rather than a maximum of the coordinate.
+\mbox{\Cref{sec:discussion_parameter_selection}} states what bounded that
+range.}
 
 
 \section{Null-Space Pose-Hold Results}
@@ -806,6 +808,21 @@ side. The magnitude that suits one tangent therefore does not suit the other.}
 
 \subsection{Implications for Controller Parameter Selection}
 \label{sec:discussion_parameter_selection}
+
+\Revised{The selection below is quasi-static. It rests on the balance between
+the moment the press produces through the lever and the restoring stiffness
+that opposes the rotation, both evaluated at the settled end of set-up, and it
+says nothing about the transient between contact and that state. Two things
+justify treating the problem this way here. The reported values were read from
+settled intervals, over which the load and the angle no longer changed. And the
+range over which a setting may be varied is itself bounded statically: at a
+tool-axis displacement of \mbox{\(120\,\mathrm{mm}\)} the commanded torque of
+the sixth joint reached \mbox{\(21.4\,\mathrm{N\,m}\)} against its limit of
+\mbox{\(12\,\mathrm{N\,m}\)} and the run aborted, while across the reported
+sweep that joint stayed near \mbox{\(6\,\mathrm{N\,m}\)} and rose to
+\mbox{\(15.1\,\mathrm{N\,m}\)} only at the last position. A selection method
+for this arrangement therefore has to respect a wrist torque before it
+optimises a response.}
 
 \Revised{The measured ordering suggests a practical sequence for selecting controller
 parameters within a similar contact geometry. The compliance-centre lever
