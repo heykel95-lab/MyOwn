@@ -32,6 +32,10 @@ and standard deviation of the corresponding repetitions. One repetition in the
 was included so that the reported mean and dispersion represent the complete
 measured response. Its possible relation to the tool mounting is discussed in
 \mbox{\cref{sec:results_limitations}}.}
+\Comment{The archive contains one incomplete repetition:
+\mbox{\texttt{P2\_t1\_pos\_m040/r02}} has neither a CSV log nor a set-up report. The
+Case-E value at \mbox{\(-40\,\mathrm{mm}\)} for the positive \mbox{\(t_1\)} command is
+therefore based on two repetitions, not three.}
 
 \Revised{The primary result is the alignment improvement
 \mbox{\(\Delta\theta_{\mathrm{align}}\)}, calculated from the change during set-up in
@@ -151,6 +155,10 @@ the rotation it carries an absolute zero.}
 \mbox{\(3.5\)} to \mbox{\(9.3\,\mathrm{mm}\)} above it in the six that did not,
 with nothing in between, so the classification does not rest on where a
 threshold is placed.}
+\Comment{The reported campaign contains 57 unique settings. The extracted
+height metric classifies 50 as flat and seven as not flat, matching the seven
+rows of \mbox{\cref{tab:results_not_flat}}; the frozen 48-of-54 statement is
+inconsistent with both the archive and the table.}
 
 \begin{table}[H]
 \centering
@@ -245,8 +253,8 @@ None & \(0.74\) & \(-0.97\) & \(-1.56\pm0.01\) & yes \\
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{figures/MAIN_D_contact.pdf}
-\caption{Alignment change with the centre of compliance on the TCP, by
-commanded offset.}
+\caption{Signed set-up rotation about the commanded tangent with the centre of
+compliance on the TCP.}
 \label{fig:results_case_d}
 \end{figure}
 
@@ -315,8 +323,8 @@ Commanded offset & Initial & \(-40\) & \(-20\) & \(-10\) & \(0\) & \(+10\)
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figures/MAIN_E_sign.pdf}
-\caption{Alignment change by centre position along the assisting tangent, for
-both surface tangents and both signs of the commanded offset.}
+\caption{Signed set-up rotation about the commanded tangent by centre position,
+for both surface tangents and both signs of the commanded offset.}
 \label{fig:results_case_e}
 \end{figure}
 
@@ -386,10 +394,11 @@ are compared under the same normal load.}
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{figures/MAIN_E_wrench.pdf}
-\caption{Deviation, normal press \(F_n\) and moment \(M_{t_1}\) for three
-centre positions, each commanded and model-estimated. All three carry a
-commanded offset of \(+10^\circ\) about \(t_1\); the deviation each arrived
-with is printed beside the start of its curve.}
+\caption{Set-up rotation \(\Delta\theta_{\mathrm{set},t_1}\), commanded normal
+force \(F_{n,\mathrm{cmd}}\), and commanded TCP moment
+\(M_{t_1,\mathrm{cmd}}\) for three centre positions. All conditions carry a
+commanded offset of \(+10^\circ\) about \(t_1\). The legends state the measured
+orientation at first contact.}
 \label{fig:results_case_e_wrench}
 \end{figure}
 
@@ -434,11 +443,18 @@ with it the moment at the TCP.
 \mbox{\Cref{fig:results_case_e_diagnostics}} resolves both referenced moments
 and the rotation on the surface axes for the two extremes of the same
 comparison.}
+\Comment{Remove the frozen commanded-versus-estimated discussion in
+lines 378--435. The revised figure deliberately uses the commanded force and
+commanded moment on one consistent controller-response basis. In addition,
+\mbox{\texttt{O\_F\_ext\_hat\_K}} is the estimated wrench acting on stiffness frame K,
+so the earlier subtraction of \mbox{\(p_{\mathrm{EE}}\times f\)} does not establish a
+TCP moment and cannot support the stated sign comparison.}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.96\textwidth]{figures/MAIN_E_diagnostics.pdf}
-\caption{Rotation and model-estimated external force and moments during set-up.}
+\caption{Surface-frame components of the set-up rotation, commanded Cartesian
+force, and commanded TCP moment for the two outer Case-E positions.}
 \label{fig:results_case_e_diagnostics}
 \end{figure}
 
@@ -477,7 +493,8 @@ Residual & \(3.97\) & \(3.55\) & \(3.48\) & \(3.38\) & \(3.36\) & \(3.17\)
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{figures/MAIN_G_toolaxis.pdf}
-\caption{Alignment change by centre position along the tool axis.}
+\caption{Signed set-up rotation about \(t_1\) by centre position along the tool
+axis.}
 \label{fig:results_case_g}
 \end{figure}
 
@@ -574,8 +591,8 @@ Initial deviation & \(4.29\) & \(9.34\) & \(5.19\) & \(10.04\) \\
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figures/MAIN_H_magnitude.pdf}
-\caption{Alignment change at both commanded magnitudes, by centre position
-along the assisting tangent.}
+\caption{Signed set-up rotation about the commanded tangent at both commanded
+magnitudes, by centre position along the assisting tangent.}
 \label{fig:results_case_h}
 \end{figure}
 
@@ -660,26 +677,33 @@ the highest rotational one.}
 
 \begin{table}[H]
 \centering
-\small
-\caption{Case-B response by translational stiffness across the commanded
-tangent, and the combined condition (mean, n=3).}
+\footnotesize
+\caption{Case-B controller response for the varied cross-axis translational
+entry and the paired rotational entry (mean, n=3). For a command about
+\(t_1\), the listed entries are \(K_{p,t_2}\) and \(K_{R,t_1}\); for a command
+about \(t_2\), they are \(K_{p,t_1}\) and \(K_{R,t_2}\). The combined setting
+means \(K_{p,\perp}=300\,\mathrm{N/m}\) and
+\(K_{R,\parallel}=50\,\mathrm{N\,m/rad}\) in the same row. In every condition,
+\(K_{p,n}=350\,\mathrm{N/m}\) and
+\(K_{R,n}=50\,\mathrm{N\,m/rad}\).}
 \label{tab:results_case_b}
-\begin{tabular}{@{}llrrrr@{}}
+\begin{tabular}{@{}lllrrrc@{}}
 \toprule
-Commanded offset & Quantity & \(300\) & \(800\) & \(2000\,\mathrm{N/m}\)
-& Combined \\
+Commanded offset & Varied entries & Setting & \(K_{p,\perp}\) &
+\(K_{R,\parallel}\) & \(\Delta\theta_{\mathrm{set}}\) & Tool flat \\
+ & & & \([\mathrm{N/m}]\) & \([\mathrm{N\,m/rad}]\) & \([{}^\circ]\) & \\
 \midrule
-\(+10^\circ\) about \(t_1\) & \(\Delta\theta_{\mathrm{set}}\)
-  & \(+7.59\) & \(+7.56\) & \(+7.57\) & \(+2.80\) \\
- & \(\Delta\theta_{\mathrm{align}}\) & \(+6.26\) & \(+6.05\) & \(+5.94\)
-  & \(+2.46\) \\
- & tool flat & yes & yes & yes & \textbf{no} \\
+\(+10^\circ\) about \(t_1\) & \(K_{p,t_2}, K_{R,t_1}\) & translational
+  & 300 & 5 & \(+7.59\) & yes \\
+ & & translational & 800 & 5 & \(+7.56\) & yes \\
+ & & reference & 2000 & 5 & \(+7.57\) & yes \\
+ & & combined & 300 & 50 & \(+2.80\) & \textbf{no} \\
 \addlinespace
-\(+10^\circ\) about \(t_2\) & \(\Delta\theta_{\mathrm{set}}\)
-  & \(-2.24\) & \(-1.78\) & \(-1.63\) & \(-1.03\) \\
- & \(\Delta\theta_{\mathrm{align}}\) & \(-2.33\) & \(-1.89\) & \(-1.74\)
-  & \(-1.15\) \\
- & tool flat & yes & yes & yes & yes \\
+\(+10^\circ\) about \(t_2\) & \(K_{p,t_1}, K_{R,t_2}\) & translational
+  & 300 & 5 & \(-2.24\) & yes \\
+ & & translational & 800 & 5 & \(-1.78\) & yes \\
+ & & reference & 2000 & 5 & \(-1.63\) & yes \\
+ & & combined & 300 & 50 & \(-1.03\) & yes \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -718,22 +742,26 @@ Case~D and is not a separate measurement.}
 \begin{table}[H]
 \centering
 \small
-\caption{Case-A response by rotational stiffness about the commanded tangent
-(mean, n=3).}
+\caption{Case-A controller response by rotational stiffness about the
+commanded tangent (mean, n=3). The varied entry is \(K_{R,t_1}\) for a command
+about \(t_1\) and \(K_{R,t_2}\) for a command about \(t_2\). The orthogonal
+tangent entry remains \(5\,\mathrm{N\,m/rad}\), while
+\(K_{R,n}=50\,\mathrm{N\,m/rad}\) and
+\(K_p=\operatorname{diag}(2000,2000,350)\,\mathrm{N/m}\) are fixed.}
 \label{tab:results_case_a}
-\begin{tabular}{@{}llrrrc@{}}
+\begin{tabular}{@{}llrrc@{}}
 \toprule
-Commanded offset & Quantity & \(5\) & \(15\) & \(50\,\mathrm{N\,m/rad}\) \\
+Commanded offset & Varied entry & Value & \(\Delta\theta_{\mathrm{set}}\) &
+Tool flat \\
+ & & \([\mathrm{N\,m/rad}]\) & \([{}^\circ]\) & \\
 \midrule
-\(+10^\circ\) about \(t_1\) & \(\Delta\theta_{\mathrm{set}}\)
-  & \(+7.57\) & \(+7.29\) & \(+2.73\) \\
- & \(\Delta\theta_{\mathrm{align}}\) & \(+5.94\) & \(+6.08\) & \(+2.38\) \\
- & tool flat & yes & yes & \textbf{no} \\
+\(+10^\circ\) about \(t_1\) & \(K_{R,t_1}\) & 5 & \(+7.57\) & yes \\
+ & & 15 & \(+7.29\) & yes \\
+ & & 50 & \(+2.73\) & \textbf{no} \\
 \addlinespace
-\(+10^\circ\) about \(t_2\) & \(\Delta\theta_{\mathrm{set}}\)
-  & \(-1.63\) & \(-1.52\) & \(-0.48\) \\
- & \(\Delta\theta_{\mathrm{align}}\) & \(-1.74\) & \(-1.63\) & \(-0.60\) \\
- & tool flat & yes & yes & yes \\
+\(+10^\circ\) about \(t_2\) & \(K_{R,t_2}\) & 5 & \(-1.63\) & yes \\
+ & & 15 & \(-1.52\) & yes \\
+ & & 50 & \(-0.48\) & yes \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -924,6 +952,13 @@ displacement of approximately \mbox{\(345\,\mathrm{mm}\)} would be required to
 produce a tangential component of \mbox{\(60\,\mathrm{mm}\)}. The tested axial
 placement therefore generated substantially less coupling moment than the
 direct tangential placement.}
+\Comment{The normal-coordinate Case-C study and the \mbox{\(90\,\mathrm{mm}\)}
+tool-axis comparison in the preceding paragraphs are not part of the reported
+57-setting campaign. Case~C varies only the tangential direction at
+\mbox{\(40\,\mathrm{mm}\)}, and Case~G spans \mbox{\(-40\)} to
+\mbox{\(+40\,\mathrm{mm}\)} along the tool axis. The
+\mbox{\(60\,\mathrm{mm}\)} equivalence should therefore be recalculated using
+the reported \mbox{\(40\,\mathrm{mm}\)} tangential reference.}
 
 \Revised{The lower model-estimated normal loads \mbox{\(F_n\)} at the assisting lever positions are
 consistent with the same mechanism. A larger alignment motion allows part of
@@ -1038,18 +1073,22 @@ response was still rising.}
 \begin{table}[H]
 \centering
 \small
-\caption{Case-C evaluation of the direction rule at a common
-\(60\,\mathrm{mm}\) magnitude.}
+\caption{Case-C evaluation of the direction rule at the common
+\(40\,\mathrm{mm}\) tangential-lever magnitude. The \(t_1\) selected setting
+is the shared Case-E reference; at that direction, selected and fixed denote
+the same lever.}
 \label{tab:discussion_general_direction_selection}
-\begin{tabular}{@{}llll@{}}
+\begin{tabular}{@{}lrrr@{}}
 \toprule
-Commanded rotation axis & Selected \([r_{c,t_1},r_{c,t_2}]\) &
-Alignment improvement & Fraction removed \\
+Commanded rotation direction & Selected \([r_{c,t_1},r_{c,t_2}]\) &
+\multicolumn{2}{c}{\(\Delta\theta_{\mathrm{set}}\) \([{}^\circ]\)} \\
+\cmidrule(lr){3-4}
+ & \([\mathrm{mm}]\) & selected & fixed at \(t_1\) \\
 \midrule
-About \(y_{\mathrm{EE}}\)  & \([+54.4,+25.4]\,\mathrm{mm}\) & \(+2.97\pm0.12\) & \(42\,\%\) \\
-\(-45^\circ\) diagonal    & \([+56.4,-20.5]\,\mathrm{mm}\) & \(+7.10\pm0.07\) & \(77\,\%\) \\
-About \(x_{\mathrm{EE}}\) & \([+25.4,-54.4]\,\mathrm{mm}\) & \(+2.27\pm0.03\) & \(33\,\%\) \\
-\(+45^\circ\) diagonal    & \([+20.5,+56.4]\,\mathrm{mm}\) & \(+3.47\pm0.07\) & \(47\,\%\) \\
+About \(t_1\) & \([0,-40.0]\) & \(+7.87\) & \(+7.87\) \\
+\(-45^\circ\) from \(t_1\) & \([-28.3,-28.3]\) & \(+4.46\) & \(+4.39\) \\
+\(+45^\circ\) from \(t_1\) & \([+28.3,-28.3]\) & \(+4.85\) & \(+4.80\) \\
+About \(t_2\) & \([+40.0,0]\) & \(+4.43\) & \(-1.61\) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1058,6 +1097,9 @@ About \(x_{\mathrm{EE}}\) & \([+25.4,-54.4]\,\mathrm{mm}\) & \(+2.27\pm0.03\) & 
 magnitude isolates the vector direction rule in
 \mbox{\cref{eq:discussion_general_lever_selection}}. The measured fractions describe
 the direction-selection response at this shared magnitude.}
+\Comment{The revised table reports the common \mbox{\(40\,\mathrm{mm}\)} campaign and
+set-up rotation. Remove the frozen reference to ``fractions'', which belonged
+to the superseded \mbox{\(60\,\mathrm{mm}\)} Case-C data.}
 
 \Revised{Where the sign of the initial tilt is unknown, a fixed tangential lever
 can assist one direction and oppose the other, and Case~E measured the cost of

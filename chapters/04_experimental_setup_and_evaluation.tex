@@ -31,6 +31,8 @@ a reference condition carrying no lever at all, separating the frame the lever
 is defined in from its direction and its position.
 \mbox{\Cref{tab:experimental_question_map}} gives
 this mapping before the complete parameter matrix.}
+\Comment{The stiffness cases are A and B, not A and C. Case~C alone tests the
+direction-dependent lever-selection rule.}
 
 \begin{table}[H]
 \centering
@@ -42,13 +44,13 @@ this mapping before the complete parameter matrix.}
 RQ & Experimental purpose & Principal evidence \\
 \midrule
 RQ1 & Effect of directional rotational and translational stiffness on
-alignment & Stiffness variations in B and C \\
+alignment & Rotational-stiffness variation in A and translational-stiffness
+variation in B \\
 RQ2 & Effect of compliance-centre lever direction, sign, and magnitude on
-alignment & Reference without a lever in J; tool-fixed tangential lever in K;
-in-plane and tool-axis position in M and N \\
+alignment & Zero-lever reference in D; tangential direction and sign in E;
+definition frame in F; tool-axis position and command magnitude in G and H \\
 RQ3 & Derivation and test of an orientation-dependent geometric selection rule &
-Four-direction generality and fixed-lever comparison in H; definition frame of
-the lever in L \\
+Direction-selected and fixed-lever comparison in C \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -185,7 +187,9 @@ separates them over this range, and a larger one cannot be assumed to help.}
 >{\raggedright\arraybackslash}p{0.295\textwidth}
 >{\centering\arraybackslash}p{0.035\textwidth}
 >{\raggedright\arraybackslash}p{0.17\textwidth}@{}}
-\caption{Parameter variations used in the surface-contact measurements.}
+\caption{Parameter variations used in the surface-contact measurements. The
+run count (n) assigns each archived run to one case only; shared reference
+settings are identified in the tested-values column and are not counted twice.}
 \label{tab:experimental_test_cases}\\
 \toprule
 \textbf{Case}
@@ -203,7 +207,7 @@ separates them over this range, and a larger one cannot be assumed to help.}
 \midrule
 \endfirsthead
 \caption[]{Parameter variations used in the surface-contact measurements
-(continued).}\\
+(continued). Shared reference settings are not counted twice.}\\
 \toprule
 \textbf{Case}
 &
@@ -230,12 +234,13 @@ Rotational stiffness
 &
 \(+10^\circ\) about \(t_1\) or \(t_2\)
 &
-\(15\) and \(50\,\mathrm{N\,m/rad}\) about the commanded rotation axis. The
+\(K_{R,t_1}\) or \(K_{R,t_2}=15\) and
+\(50\,\mathrm{N\,m/rad}\), according to the commanded rotation axis. The
 orthogonal tangent remained at \(5\,\mathrm{N\,m/rad}\). The matched
-\(5\,\mathrm{N\,m/rad}\), \(2000\,\mathrm{N/m}\) reference setting is counted
-here and shared with Case~B.
+\(5\,\mathrm{N\,m/rad}\) reference is shared with Case~D and is not counted
+again here.
 &
-18
+12
 &
 Tangent-specific influence of rotational stiffness on the alignment response.
 \\
@@ -247,10 +252,11 @@ Translational stiffness
 &
 \(+10^\circ\) about \(t_1\) or \(t_2\)
 &
-\(300\) and \(800\,\mathrm{N/m}\) perpendicular to the commanded rotation axis. The
-matched \(2000\,\mathrm{N/m}\) reference is the setting counted in Case~A. One
-additional condition for each commanded rotation direction combined
-\(300\,\mathrm{N/m}\) with \(50\,\mathrm{N\,m/rad}\).
+For a command about \(t_1\), \(K_{p,t_2}=300\) and
+\(800\,\mathrm{N/m}\); for a command about \(t_2\), \(K_{p,t_1}\) carried
+those values. The shared \(2000\,\mathrm{N/m}\) reference is in Case~D. One
+additional condition per axis combined \(K_{p,\perp}=300\,\mathrm{N/m}\) with
+\(K_{R,\parallel}=50\,\mathrm{N\,m/rad}\).
 &
 18
 &
@@ -261,18 +267,17 @@ rotational stiffness.
 
 C
 &
-Commanded rotation direction and normal lever coordinate
+Commanded rotation direction and lever selection
 &
 \(+10^\circ\) in four tangent-plane directions
 &
-Lever of \(60\,\mathrm{mm}\) selected for each commanded rotation direction, the same lever
-held fixed while the direction turned, and normal coordinates of \(-60\),
-\(+20\), \(+60\) and \(+120\,\mathrm{mm}\).
+At \(\pm45^\circ\), a \(40\,\mathrm{mm}\) lever selected for the commanded
+rotation direction and the \(t_1\)-selected lever held fixed. At \(+90^\circ\),
+the fixed lever was compared with the selected Case-E reference.
 &
-33
+15
 &
-Whether one lever serves every commanded rotation direction, and the effect of
-the normal coordinate.
+Whether one fixed lever serves every commanded rotation direction.
 \\
 \addlinespace
 
@@ -357,9 +362,9 @@ Whether the correction scales with the commanded offset.
 
 \vspace{0.6em}
 \begin{minipage}{0.98\textwidth}
-Each parameter setting was repeated three times. Cases~A and C used the
-decoupled Cartesian impedance. Case~C used the point-shifted
-impedance with the listed levers expressed in the surface frame according to
+Each parameter setting was repeated three times. Cases~A, B and D used the
+decoupled Cartesian impedance. Cases~C and E to H used the point-shifted
+impedance with the listed levers expressed in the stated frame according to
 \(r_c=p_{\mathrm{TCP}}-p_c\). The stated gains, calibrated geometry, phase
 sequence, press motion, and null-space settings were held constant except where a
 varied value is stated explicitly.
@@ -378,6 +383,10 @@ displacement \mbox{\(\Delta p_{\mathrm{TCP}}\)}, and the model-estimated externa
 load \mbox{\(F_n\)} were evaluated alongside
 this angle. Their definitions and treatment across repeated runs are presented
 in \mbox{\Cref{sec:experimental_evaluation}}.}
+\Comment{The run archive confirms 57 settings and 171 run directories, but
+\mbox{\texttt{P2\_t1\_pos\_m040/r02}} contains neither a CSV log nor a set-up report.
+Consequently, metrics for that setting use two repetitions, and the statement
+that every reported contact run was included requires qualification.}
 
 \Revised{The surface-contact measurements and Cartesian pose-hold trials formed
 complementary data sets. Contact trials measured alignment with projected
@@ -1112,6 +1121,11 @@ configured speed, the reference reaches this endpoint after approximately
 \mbox{\(1.6\,\mathrm{s}\)} and is then held there until the phase ends. The endpoint
 is a Cartesian spring reference beyond the calibrated plane and is not
 interpreted as physical penetration of the same magnitude.}
+\Comment{The archived runs use a push endpoint of \mbox{\(+0.240\,\mathrm{m}\)}, not
+\mbox{\(+0.060\,\mathrm{m}\)}. Starting near \mbox{\(-0.020\,\mathrm{m}\)} at
+\mbox{\(0.080\,\mathrm{m/s}\)}, the reference reaches the endpoint after about
+\mbox{\(3.25\,\mathrm{s}\)}, consistent with the later paragraph and the parameter
+table.}
 
 \begin{table}[H]
 \centering
@@ -1134,7 +1148,7 @@ Set-up push speed & \(0.080\,\mathrm{m/s}\) & Rate of the signed press coordinat
 Set-up push endpoint & \(+0.240\,\mathrm{m}\) & Final signed Cartesian spring reference. \\
 Normal translational stiffness & \(350\,\mathrm{N/m}\) & Surface-frame entry along \(n_s\). \\
 Grinding reference & fixed tangential coordinates & Set-up press reference maintained. \\
-Pre-set-up gate & enabled & Holds the clearance pose until operator confirmation. \\
+Pre-set-up gate & disabled & Approach hands over directly to set-up. \\
 Pre-grind gate & enabled & Holds the set-up pose until operator confirmation. \\
 \bottomrule
 \end{tabular}
@@ -1381,6 +1395,10 @@ inertia-scaled damping setting after the compliance-centre shift.}
 \Revised{Cases~A and C used the decoupled Cartesian impedance at the TCP.
 Case~C used the point-shifted impedance during set-up. The centre of compliance
 \mbox{\(p_c\)} was specified through the lever \mbox{\(r_c\)}}
+\Comment{This subsection contains the earlier Case-C design. In the reported
+campaign, Cases~A, B and D use the decoupled impedance; Cases~C and E--H use the
+point-shifted impedance. Case~C uses a \mbox{\(40\,\mathrm{mm}\)} tangential lever and
+contains no H3 normal-coordinate sweep.}
 
 \begin{equation}
 r_c
@@ -1465,30 +1483,26 @@ coordinate.}
 
 \begin{table}[H]
 \centering
-\scriptsize
-\setlength{\tabcolsep}{3.5pt}
-\caption{Case-C commanded tool-orientation-offset components and compliance-centre lever vectors
-in the surface frame.}
+\small
+\caption{Case-C commanded orientation components and nominal tangential
+compliance-centre lever vectors in the surface frame. The two principal-axis
+selected settings are shared Case-E references; the other five settings are
+the newly recorded Case-C runs.}
 \label{tab:experimental_case_c_vectors}
-\begin{tabular}{@{}llll@{}}
+\begin{tabular}{@{}llrr@{}}
 \toprule
-Condition & Commanded rotation-axis description &
+Commanded direction & Lever setting &
 \([\theta_{t_1},\theta_{t_2}]\) (deg) &
 \([r_{c,t_1},r_{c,t_2},r_{c,n}]\) (mm) \\
 \midrule
-H1 aligned & About \(y_{\mathrm{EE}}\) & \([-4.23,+9.06]\) & \([+54.4,+25.4,0]\) \\
-H1 aligned & \(-45^\circ\) diagonal & \([+3.41,+9.40]\) & \([+56.4,-20.5,0]\) \\
-H1 aligned & About \(x_{\mathrm{EE}}\) & \([+9.06,+4.23]\) & \([+25.4,-54.4,0]\) \\
-H1 aligned & \(+45^\circ\) diagonal & \([-9.40,+3.41]\) & \([+20.5,+56.4,0]\) \\
+About \(t_1\) & selected & \([+10.0,0.0]\) & \([0,-40.0,0]\) \\
+\(-45^\circ\) from \(t_1\) & selected & \([+7.1,-7.1]\) & \([-28.3,-28.3,0]\) \\
+\(+45^\circ\) from \(t_1\) & selected & \([+7.1,+7.1]\) & \([+28.3,-28.3,0]\) \\
+About \(t_2\) & selected & \([0.0,+10.0]\) & \([+40.0,0,0]\) \\
 \addlinespace
-H2 fixed & \(-45^\circ\) diagonal & \([+3.41,+9.40]\) & \([+54.4,+25.4,0]\) \\
-H2 fixed & About \(x_{\mathrm{EE}}\) & \([+9.06,+4.23]\) & \([+54.4,+25.4,0]\) \\
-H2 fixed & \(+45^\circ\) diagonal & \([-9.40,+3.41]\) & \([+54.4,+25.4,0]\) \\
-\addlinespace
-H3 normal & About \(y_{\mathrm{EE}}\) & \([-4.23,+9.06]\) & \([+54.4,+25.4,-60]\) \\
-H3 normal & About \(y_{\mathrm{EE}}\) & \([-4.23,+9.06]\) & \([+54.4,+25.4,+20]\) \\
-H3 normal & About \(y_{\mathrm{EE}}\) & \([-4.23,+9.06]\) & \([+54.4,+25.4,+60]\) \\
-H3 normal & About \(y_{\mathrm{EE}}\) & \([-4.23,+9.06]\) & \([+54.4,+25.4,+120]\) \\
+\(-45^\circ\) from \(t_1\) & fixed at the \(t_1\) selection & \([+7.1,-7.1]\) & \([0,-40.0,0]\) \\
+\(+45^\circ\) from \(t_1\) & fixed at the \(t_1\) selection & \([+7.1,+7.1]\) & \([0,-40.0,0]\) \\
+About \(t_2\) & fixed at the \(t_1\) selection & \([0.0,+10.0]\) & \([0,-40.0,0]\) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1517,6 +1531,10 @@ the eleven Case-C settings in \mbox{\cref{tab:experimental_test_cases}}.}
 deeper than in the earlier cases, and the pre-set-up gate was disabled so that
 approach handed over to set-up without an intermediate hold. The gate-hold
 impedance was therefore never active in these runs.}
+\Comment{The archived parameter sets show one common phase configuration for
+all Cases~A--H. The stiffness and direction cases were repeated under the same
+\mbox{\(K_{p,n}=350\,\mathrm{N/m}\)}, \mbox{\(+0.240\,\mathrm{m}\)} endpoint,
+\mbox{\(0.080\,\mathrm{m/s}\)} press and disabled pre-set-up gate as Cases~D--H.}
 
 \begin{table}[H]
 \centering
@@ -1567,6 +1585,12 @@ the in-plane position at \mbox{\(-50\)}, \mbox{\(-20\)}, \mbox{\(0\)},
 position at \mbox{\(-90\)}, \mbox{\(-60\)}, \mbox{\(-40\)}, \mbox{\(0\)},
 \mbox{\(+40\)}, \mbox{\(+60\)} and \mbox{\(+90\,\mathrm{mm}\)}. Every setting
 was repeated three times.}
+\Comment{This is an obsolete case mapping. In the reported campaign, Case~E
+uses seven tangential positions from \mbox{\(-40\)} to \mbox{\(+40\,\mathrm{mm}\)}, Case~G
+uses six non-zero tool-axis positions from \mbox{\(-40\)} to \mbox{\(+40\,\mathrm{mm}\)}
+plus the shared zero reference, and Case~H compares \mbox{\(0\)} and
+\mbox{\(+40\,\mathrm{mm}\)} at \mbox{\(+5^\circ\)} against the corresponding
+\mbox{\(+10^\circ\)} Case-E settings.}
 
 
 \subsection{Null-Space Settings for the Contact Measurements}
@@ -1597,6 +1621,10 @@ a \mbox{\(5.0\,\mathrm{s}\)} set-up timeout, a moment threshold the contact
 never reached, a disabled pre-set-up gate, and null-space mode~1. The detailed
 values remain collected in
 \mbox{\cref{tab:experimental_phase_parameters,tab:active_phase_gains,tab:nullspace_safety_parameters}}.}
+\Comment{Every one of the 171 archived contact-run parameter sets records
+\mbox{\texttt{nullspace\_mode=3}}, namely projected damping plus sigma conditioning,
+not mode~1. The chapter and controller-parameter appendix must be reconciled
+with the archived setting before submission.}
 
 
 \section{Contact Experiment Procedure}
@@ -1817,6 +1845,12 @@ n_s^\top
 \Revised{This change in the robot-model force estimate provided the supporting load
 quantity for matched-run comparisons. Its common calculation preserved a
 consistent load basis across all contact settings.}
+\Comment{For the Case-E controller-response figures, define the commanded
+signals on the same basis as the moment:
+\mbox{\(F_{n,\mathrm{cmd}}=n_s^\top f_{\mathrm{cmd}}\)} and
+\mbox{\(M_{t_i,\mathrm{cmd}}=t_i^\top m_{\mathrm{cmd}}\)}. The model-estimated force
+may remain a separate data-quality check, but it is not mixed with the
+commanded moment in one comparison.}
 
 \Revised{The controller orientation error \mbox{\(e_R\)} is referenced to the orientation
 stored at the clearance transition. It therefore describes deviation from the
@@ -1860,6 +1894,9 @@ using the rotation, displacement, and model-estimated load as supporting
 quantities. Case~C compares direction-selected and fixed levers
 across four tilt directions and evaluates the normal compliance-centre
 coordinate.}
+\Comment{The stiffness cases are A and B. Case~C is the direction-selected
+against fixed-lever comparison and does not vary a stiffness coordinate or a
+normal compliance-centre coordinate in the reported campaign.}
 
 \Revised{Case~D provides the reference response to commanded tilt without a
 lever. Cases~E and~F compare that response with a tangential lever named in the
@@ -2007,6 +2044,9 @@ the reached pose with the translational stiffness of
 Set-up was bounded by a \mbox{\(5\,\mathrm{s}\)} timeout and by the alternative
 \mbox{\(150\,\mathrm{N\,m}\)} change in the norm of the model-estimated external
 moment after the minimum phase time.}
+\Comment{The archived runs have the pre-set-up gate disabled, so the statement
+that the operator gate held the clearance pose does not apply to the reported
+contact campaign.}
 
 \Revised{The set-up stiffness and signed press reference also define a command
 scale. For a completely blocked \mbox{\(0.060\,\mathrm{m}\)} displacement along the
@@ -2040,6 +2080,11 @@ K_{p,\mathrm{set}}
 \Revised{This value describes the virtual elastic command under a fully blocked
 reference. The actual robot motion reduces the tracking error, and the value is
 therefore a command-scale bound rather than a measured contact load.}
+\Comment{The \mbox{\(0.060\,\mathrm{m}\)}, \mbox{\(48\,\mathrm{N}\)} blocked-reference
+calculation belongs to the earlier press. The reported campaign moves the
+reference from approximately \mbox{\(-0.020\)} to \mbox{\(+0.240\,\mathrm{m}\)} with
+\mbox{\(K_{p,n}=350\,\mathrm{N/m}\)}, giving a fully blocked command scale of about
+\mbox{\(91\,\mathrm{N}\)}.}
 
 \Revised{The set-up moment threshold was applied to the change in libfranka's
 model-estimated external moment after subtraction of the value stored at the
@@ -2052,3 +2097,8 @@ set-up ended on its timeout throughout. It served as a controller termination
 condition rather than a calibrated contact-force or contact-moment boundary. The timeout,
 collision configuration, operator gates, logged torque command, displacement,
 and model-estimated wrench were considered together when assessing each run.}
+\Comment{The claim that \mbox{\texttt{O\_F\_ext\_hat\_K}} is referenced to the base
+origin is incorrect. libfranka defines it as the estimated external wrench
+acting on stiffness frame K and expressed in the base frame. The
+\mbox{\(p_{\mathrm{EE}}\times f\)} subtraction and the resulting TCP-moment values
+must therefore be removed from the interpretation.}
