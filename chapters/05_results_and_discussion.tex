@@ -1,56 +1,36 @@
 \chapter{Results and Discussion}
 \label{ch:results_discussion}
-\ReviewMark{purple}{The chapter was revised in full and every paragraph is
-settled. No further editing is to be applied to it, and any remaining concern
-is raised as a comment rather than as a change.}
-
-\Comment{In the settled prose, use ``commanded tool orientation offset'' for
-the deliberate angular command and ``commanded rotation axis'' or ``commanded
-rotation direction'' for its components. Retain ``tilt'' only for a physical
-inclination.}
-
 \Revised{This chapter presents the measured response of the surface-contact tests
 and complementary Cartesian pose-hold trials. The eight contact cases introduced in
-\mbox{\cref{tab:experimental_test_cases}} are evaluated using the alignment change
-\mbox{\(\Delta\theta_{\mathrm{align}}\)}
-relative to the calibrated surface, together with the measured rotation,
-displacement, and model-estimated external load. The results
-are interpreted as answers to the three linked research questions rather than
-as separate case-specific findings: Cases~A and~B establish the stiffness
-response; Case~C tests the tilt-dependent selection rule; and Cases~D to~H
-establish the compliance-centre direction, frame, and position behaviour.}
+\mbox{\cref{tab:experimental_test_cases}} are compared using the signed set-up
+rotation about the commanded axis. TCP-height flatness, the EE-inferred
+alignment angle, displacement, and model-estimated external load are reported
+as separate supporting quantities. The presentation follows the experimental
+logic from the zero-lever baseline through lever and stiffness variations to
+the secondary null-space study.}
 
 \section{Data Quality and Evaluation Basis}
 \label{sec:results_data_quality}
 \label{sec:results_repeatability}
 \label{sec:results_alignment}
 
-\Revised{All contact runs completed the set-up phase and were included in the analysis.
-Each parameter setting was repeated three times, and the tables report the mean
-and standard deviation of the corresponding repetitions. One repetition in the
-\mbox{\(10^\circ\)} \mbox{\(t_2\)} condition differed substantially from the other two. It
-was included so that the reported mean and dispersion represent the complete
-measured response. Its possible relation to the tool mounting is discussed in
-\mbox{\cref{sec:results_limitations}}.}
-\Comment{The archive contains one incomplete repetition:
-\mbox{\texttt{P2\_t1\_pos\_m040/r02}} has neither a CSV log nor a set-up report. The
-Case-E value at \mbox{\(-40\,\mathrm{mm}\)} for the positive \mbox{\(t_1\)} command is
-therefore based on two repetitions, not three.}
+\Revised{The archive contains \mbox{\(171\)} contact-run directories, of which
+\mbox{\(170\)} contain analysable measurements. The incomplete directory
+\mbox{\texttt{P2\_t1\_pos\_m040/r02}} contains neither a CSV log nor a set-up
+report. The corresponding Case-E value is therefore based on two repetitions;
+all other settings use three. No completed run was excluded.}
 
-\Revised{The primary result is the alignment improvement
-\mbox{\(\Delta\theta_{\mathrm{align}}\)}, calculated from the change during set-up in
-the angle between the calibrated surface normal \mbox{\(n_s\)} and the grinding-face direction calculated from the
-measured end-effector orientation. A positive value denotes a reduction of this
-angle and therefore an improvement in alignment. Because the tool could rotate
-by approximately \mbox{\(\pm2^\circ\)} relative to the gripper about
-\mbox{\(y_{\mathrm{EE}}\)}, the quantity represents the combined response of the
-robot, gripper, and tool. Measurement uncertainty is treated in
-\mbox{\cref{sec:results_limitations}}.}
+\Revised{The primary controller-response metric is the signed component of
+\mbox{\(\Delta\theta_{\mathrm{set}}^S\)} about the commanded rotation axis.
+It is calculated between the clearance transition and the end of set-up from
+the measured end-effector poses. A positive value follows the intended
+alignment direction. The same interval and definition are used for every
+contact case.}
 
-\Revised{Repeatability was assessed from the three repetitions of each contact
-setting. The median within-setting standard deviation of the alignment change
-\mbox{\(\Delta\theta_{\mathrm{align}}\)} was \mbox{\(0.04^\circ\)}
-about \mbox{\(t_1\)} and \mbox{\(0.14^\circ\)} about \mbox{\(t_2\)}. Differences smaller than approximately
+\Revised{Repeatability was assessed from the usable repetitions of each contact
+setting. The median within-setting standard deviation of the signed set-up
+rotation was approximately \mbox{\(0.04^\circ\)} about \mbox{\(t_1\)} and
+\mbox{\(0.14^\circ\)} about \mbox{\(t_2\)}. Differences smaller than approximately
 \mbox{\(0.1^\circ\)} are therefore treated as being of the same order as the
 observed experimental scatter. This value is used as a descriptive comparison
 scale rather than as a statistical significance limit.}
@@ -76,13 +56,11 @@ position itself altered the contact response.}
 
 \Revised{The alignment angle \mbox{\(\theta_{\mathrm{align}}\)} at the beginning
 of set-up differed from the commanded angular offset. The orientation phase
-leaves a steady-state error, because joint friction acts against a finite
-rotational stiffness and the phase exits once the error falls inside its
-tolerance. Raising the rotational stiffness about the surface tangents from
-\mbox{\(90\)} to \mbox{\(180\,\mathrm{N\,m/rad}\)} reduced that error from
-\mbox{\(1.3\)} to \mbox{\(0.5^\circ\)}, at the cost of doubling the
-high-frequency content of the commanded joint torque during the phase, and the
-larger value was not carried further for that reason.}
+used \mbox{\(180\,\mathrm{N\,m/rad}\)} about each surface tangent and ended
+after the minimum duration once the tool-axis and spin errors satisfied their
+configured tolerances. Finite tracking error and the distinction between the
+commanded rotation and the EE-inferred alignment angle therefore remain in the
+initial values.}
 
 \Revised{The difference is neither uniform nor always a deficit. A commanded
 \mbox{\(+10^\circ\)} about \mbox{\(t_1\)} arrived as
@@ -96,11 +74,10 @@ scatter, at most \mbox{\(0.07^\circ\)} within a group, so every condition of a
 comparison starts from the same attitude even where that attitude is not the
 commanded one.}
 
-\Revised{The tables therefore report the measured angle rather than the
-commanded one. The commanded offset names the condition, because it is the
-setting that was varied and its sign is what the direction rule is read
-against, but every quantity computed from an angle uses what the tool actually
-held when contact began.}
+\Revised{Figure legends therefore identify each series by the measured
+EE-inferred orientation at the beginning of set-up. The commanded offset names
+the condition because it is the controlled setting, but it is not substituted
+for the measured initial value.}
 
 \Revised{\mbox{\Cref{fig:results_setup_descent}} shows the angular deviation over one
 set-up phase for two compliance-centre positions. The deviation holds near its
@@ -118,13 +95,13 @@ and settles on the residual the condition reaches. Each curve is one trial.}
 \label{sec:results_quantities}
 
 \Revised{Three quantities describe each run, and they answer different
-questions. Reporting only the first, as an earlier evaluation did, mistakes a
-gripper that stayed tilted for a tool that stayed tilted.}
+questions. Treating them as interchangeable would confuse gripper attitude,
+robot rotation, and the geometry-based flatness classification.}
 
 \Revised{The \emph{angular deviation} \mbox{\(\theta_{\mathrm{align}}\)} is the
 angle between the tool normal \mbox{\(n_T\)} and the calibrated surface normal
-\mbox{\(n_s\)}. It has an absolute zero, so a value can be read as how flat the
-tool is, but \mbox{\(n_T\)} is not measured: it is reconstructed from the
+\mbox{\(n_s\)}. It has an absolute zero, but \mbox{\(n_T\)} is not measured
+directly: it is reconstructed from the
 end-effector orientation and a calibrated direction in that frame,
 \mbox{\(n_T=R_{\mathrm{EE}}n_{\mathrm{EE}}\)}. The pads that clamp the tool to
 the gripper carry play, so the tool can turn relative to the frame the
@@ -132,13 +109,16 @@ reconstruction rests on. What this quantity therefore reports is the attitude
 of the gripper.}
 
 \Revised{The \emph{set-up rotation} \mbox{\(\Delta\theta_{\mathrm{set}}\)} is
-the rotation since first contact, resolved on the surface axes. It comes from
-the joint angles and the forward kinematics alone: neither the tool
-calibration nor the plane zero enters it, and the play cannot reach it. It has
-no absolute zero, so it says how far the robot turned and not where the tool
+the rotation since the clearance transition at the start of set-up, resolved
+on the surface axes. The finite rotation comes from the joint angles and
+forward kinematics; the calibrated surface frame enters only when its
+components are resolved about \mbox{\(t_1,t_2,n_s\)}. The tool-axis calibration and
+relative tool motion within the gripper do not enter it. It has no absolute
+flat-tool zero, so it says how far the robot turned and not where the tool
 ended up. This is the quantity that describes what the controller did.}
 
-\Revised{The \emph{TCP height above the plane} settles the physical outcome. A
+\Revised{The \emph{TCP height above the plane} provides a geometry-based
+flatness classification. A
 tool lying flat puts its grinding face on the surface, so the TCP stands one
 face offset above it; a tool resting on one edge stands higher, by the half
 dimension it is tilted over times the sine of the tilt. The face is
@@ -146,24 +126,21 @@ dimension it is tilted over times the sine of the tilt. The face is
 \mbox{\(20\,\mathrm{mm}\)} half-width across \mbox{\(t_2\)}, so a
 \mbox{\(10^\circ\)} tilt lifts the TCP by \mbox{\(10.4\)} and
 \mbox{\(3.5\,\mathrm{mm}\)} respectively. Only the TCP position and the plane
-enter it, so like the rotation it is beyond the reach of the play, and unlike
-the rotation it carries an absolute zero.}
+enter it. The classification therefore does not depend on the reconstructed
+tool direction, but it assumes the calibrated face offset and edge-contact
+geometry.}
 
-\Revised{Measured that way, the tool ended flat in \mbox{\(48\)} of the
-\mbox{\(54\)} reported conditions. The height sat within
+\Revised{Measured that way, the tool was classified as flat in \mbox{\(50\)} of the
+\mbox{\(57\)} reported settings. The height sat within
 \mbox{\(2\,\mathrm{mm}\)} of the flat-tool value in every one of them and
-\mbox{\(3.5\)} to \mbox{\(9.3\,\mathrm{mm}\)} above it in the six that did not,
+\mbox{\(3.5\)} to \mbox{\(9.3\,\mathrm{mm}\)} above it in the seven that did not,
 with nothing in between, so the classification does not rest on where a
 threshold is placed.}
-\Comment{The reported campaign contains 57 unique settings. The extracted
-height metric classifies 50 as flat and seven as not flat, matching the seven
-rows of \mbox{\cref{tab:results_not_flat}}; the frozen 48-of-54 statement is
-inconsistent with both the archive and the table.}
 
 \begin{table}[H]
 \centering
 \small
-\caption{The conditions whose tool did not end flat. Every one commands its
+\caption{Conditions classified as tilted by TCP height. Every one commands its
 offset about \(t_1\).}
 \label{tab:results_not_flat}
 \begin{tabular}{@{}lrrr@{}}
@@ -172,7 +149,7 @@ Condition & Excess height & \(\Delta\theta_{\mathrm{align}}\) &
 \(\Delta\theta_{\mathrm{set}}\) \\
 \midrule
 Case~A, \(50\,\mathrm{N\,m/rad}\) about \(t_1\) & \(3.6\,\mathrm{mm}\) & \(+2.38\) & \(+2.73\) \\
-Case~B, combined about \(t_1\) & \(3.5\,\mathrm{mm}\) & \(+2.46\) & \(+2.80\) \\
+Case~B, both stiffness entries varied about \(t_1\) & \(3.5\,\mathrm{mm}\) & \(+2.46\) & \(+2.80\) \\
 Case~E, \(-20\,\mathrm{mm}\) at \(+10^\circ\) about \(t_1\) & \(5.3\,\mathrm{mm}\) & \(+0.70\) & \(+0.99\) \\
 Case~E, \(-40\,\mathrm{mm}\) at \(+10^\circ\) about \(t_1\) & \(6.0\,\mathrm{mm}\) & \(-0.12\) & \(+0.14\) \\
 Case~E, \(+20\,\mathrm{mm}\) at \(-10^\circ\) about \(t_1\) & \(5.2\,\mathrm{mm}\) & \(+4.43\) & \(-5.01\) \\
@@ -183,32 +160,35 @@ Case~F, surface frame at \(+10^\circ\) about \(t_1\) & \(5.9\,\mathrm{mm}\) & \(
 \end{table}
 
 \Revised{The pattern is the whole of the difference between the two tangents.
-About \mbox{\(t_1\)} the tool ends tilted whenever the rotational stiffness is
-raised, the compliance centre is placed on the opposing side, or the offset is
-named in the surface frame. About \mbox{\(t_2\)} it never ends tilted, at any
-setting tested, including those whose deviation grew by several degrees.}
+About \mbox{\(t_1\)} the TCP-height metric classifies the tool as tilted whenever
+the rotational stiffness is raised, the compliance centre is placed on the
+opposing side, or the offset is named in the surface frame. About
+\mbox{\(t_2\)} every tested setting is classified as flat, including those
+whose deviation grew by several degrees.}
 
-\Revised{The reason is the play. A commanded offset about \mbox{\(t_2\)} turns
-the tool about the axis the pads are free in, so the contact can flatten the
-tool while the gripper keeps most of the commanded attitude, and the deviation
-records that attitude. The arithmetic closes: for every condition the deviation
-after set-up equals the deviation at contact plus the set-up rotation, to
-within \mbox{\(0.1^\circ\)}. Nothing in it describes the tool.}
+\Revised{The discrepancy implies relative motion between the tool and gripper
+during contact. A commanded offset about \mbox{\(t_2\)} acts near the axis for
+which unloaded mount clearance was observed, so mount compliance is one
+plausible contributor. The arithmetic closes: for every condition the
+EE-inferred deviation after set-up equals the value at set-up entry plus the
+corresponding set-up rotation, to within \mbox{\(0.1^\circ\)}. This agreement is
+internal to the end-effector-based quantities and is not a direct measurement
+of tool rotation.}
 
-\Revised{Taking the tool as flat, the play follows as the deviation that
-remains. About \mbox{\(t_1\)} it is \mbox{\(1.1\)} to \mbox{\(1.8^\circ\)} in
+\Revised{Under the flatness classification, the implied relative orientation
+is the deviation that remains. About \mbox{\(t_1\)} it is \mbox{\(1.1\)} to \mbox{\(1.8^\circ\)} in
 the conditions that end flat, which matches the clearance the mount was
 expected to carry. About \mbox{\(t_2\)} it reaches \mbox{\(8.5\)} to
 \mbox{\(11.9^\circ\)} in the conditions where the robot does not turn. A
-clearance alone does not explain that, and the pads were not characterised
-independently, so the figure is reported as what the measurement implies rather
-than as a property of the mount.}
+unloaded clearance alone does not explain that range. The mount was not
+characterised under load, so neither the exact relative motion nor its cause is
+established independently.}
 
 \Revised{What follows therefore reports the set-up rotation as the response of
-the controller, the flatness as the physical outcome, and the deviation as the
-attitude of the gripper. Where the three agree, which is every condition about
-\mbox{\(t_1\)}, any of them carries the result. Where they do not, which is
-every condition about \mbox{\(t_2\)}, only the first two mean anything.}
+the controller, the flatness as the geometry-based physical classification,
+and the deviation as the EE-inferred gripper attitude. The first quantity is
+used for every parameter comparison; the other two are kept distinct even
+when they indicate the same trend.}
 
 
 \section{Baseline Contact Response (Case D)}
@@ -223,8 +203,9 @@ at all.}
 
 \Revised{That fifth condition says what the deviation reads when nothing is
 asked of the tool. The gripper arrives at \mbox{\(0.74^\circ\)} and the
-press leaves it at \mbox{\(2.30^\circ\)}, so pressing turns the gripper by
-\mbox{\(1.56\pm0.01^\circ\)} while the tool stays on the surface. The
+press leaves it at \mbox{\(2.30^\circ\)}, so the EE-inferred deviation grows by
+\mbox{\(1.56\pm0.01^\circ\)} while the TCP-height criterion classifies the
+tool as flat. The
 deviation therefore does not fall to zero even in the condition that commands
 nothing, which is the clearest single statement of what it measures.}
 
@@ -232,13 +213,14 @@ nothing, which is the clearest single statement of what it measures.}
 \centering
 \small
 \caption{Case-D response with the centre of compliance on the TCP
-(mean \(\pm\) SD over three repetitions). The rotation is signed about the commanded tangent;
-flatness is read from the TCP height above the plane.}
+(mean \(\pm\) SD over three repetitions). The rotation is signed about the
+commanded tangent; the zero-offset row reports its \(t_1\) component. Flatness
+is read from the TCP height above the plane.}
 \label{tab:results_case_d}
 \begin{tabular}{@{}lrrrc@{}}
 \toprule
 Commanded offset & \(\theta_{\mathrm{align,before}}\) & \(\Delta\theta_{\mathrm{set}}\)
-& \(\Delta\theta_{\mathrm{align}}\) & Tool flat \\
+& \(\Delta\theta_{\mathrm{align}}\) & \shortstack{Flat by\\TCP height} \\
 \midrule
 None & \(0.74\) & \(-0.97\) & \(-1.56\pm0.01\) & yes \\
 \addlinespace
@@ -258,26 +240,26 @@ compliance on the TCP.}
 \label{fig:results_case_d}
 \end{figure}
 
-\Revised{The tool ends flat in all five conditions. The contact by itself
-brings the grinding face onto the surface whatever the commanded offset, which
-is the outcome the set-up phase exists to produce, and no setting of this case
-prevents it.}
+\Revised{The TCP-height metric classifies the tool as flat in all five
+conditions. Contact therefore produces a position consistent with the grinding
+face resting on the surface for every commanded offset in this case. This
+geometric result does not, by itself, measure the physical tool-face
+orientation.}
 
 \Revised{What differs between the tangents is who provides the rotation. About
 \mbox{\(t_1\)} the robot turns \mbox{\(7.57\)} and
 \mbox{\(-10.83^\circ\)} at the two signs, close to the offset it was given,
 so the impedance carries the motion. About \mbox{\(t_2\)} it turns
 \mbox{\(-1.63\)} and \mbox{\(-1.25^\circ\)}, a small fraction of the
-commanded offset, and the remainder is taken up between the tool and the
-gripper. The deviation records the gripper and therefore reads as a failure
+commanded offset. Together with the flatness classification, this implies
+unmeasured relative tool--gripper motion. The deviation records the gripper and therefore reads as a failure
 about \mbox{\(t_2\)}, from \mbox{\(10.07\)} to \mbox{\(11.81^\circ\)},
-where the tool itself lies flat.}
+although the TCP-height metric still classifies the tool as flat.}
 
-\Revised{A commanded offset about \mbox{\(t_2\)} turns the tool about the
-axis the mount is free in, which is what allows the contact to flatten it
-without the robot moving. The asymmetry between the tangents is therefore a
-property of the mount and not of the grinding face, and it sets what the
-compliance centre has to achieve on each axis: about \mbox{\(t_1\)} the
+\Revised{A commanded offset about \mbox{\(t_2\)} acts near the axis for which
+unloaded mount clearance was observed. The measured asymmetry is consistent
+with combined effects of this compliance, the grinding-face geometry, and the
+frame definition. It sets what the compliance centre has to achieve on each axis: about \mbox{\(t_1\)} the
 robot already does the work, whereas about \mbox{\(t_2\)} it has to be made
 to do it.}
 
@@ -300,22 +282,26 @@ follows the sign of the offset appears as a mirror between the two.}
 \begin{table}[H]
 \centering
 \small
-\caption{Case-E alignment change by centre position along the assisting
-tangent (mean \(\pm\) SD over three repetitions).}
+\caption{Case-E signed set-up rotation by centre position along the assisting
+tangent. The initial column gives the signed EE-inferred orientation component
+at the beginning of set-up; the remaining columns give
+\(\Delta\theta_{\mathrm{set}}\). All angular values are means in degrees. All
+use three repetitions except the positive \(t_1\) condition at
+\(-40\,\mathrm{mm}\), which uses two.}
 \label{tab:results_case_e}
 \begin{tabular}{@{}lrrrrrrrr@{}}
 \toprule
 Commanded offset & Initial & \(-40\) & \(-20\) & \(-10\) & \(0\) & \(+10\)
 & \(+20\) & \(+40\,\mathrm{mm}\) \\
 \midrule
-\(+10^\circ\) about \(t_1\) & \(9.34\) & \(-0.12\) & \(+0.70\) & \(+5.69\)
-& \(+5.94\) & \(+5.84\) & \(+6.08\) & \(+6.19\) \\
-\(-10^\circ\) about \(t_1\) & \(9.37\) & \(+6.22\) & \(+6.08\) & \(+6.08\)
-& \(+7.19\) & \(+6.30\) & \(+4.43\) & \(-0.13\) \\
-\(+10^\circ\) about \(t_2\) & \(10.04\) & \(-4.60\) & \(-2.06\) & \(-1.95\)
-& \(-1.74\) & \(-1.43\) & \(-1.24\) & \(+4.18\) \\
-\(-10^\circ\) about \(t_2\) & \(9.59\) & \(+7.65\) & \(+1.46\) & \(+1.25\)
-& \(+1.20\) & \(+1.24\) & \(+1.23\) & \(-4.71\) \\
+\(+10^\circ\) about \(t_1\) & \(-9.32\) & \(+0.14\) & \(+0.99\) & \(+7.45\)
+& \(+7.57\) & \(+7.67\) & \(+7.73\) & \(+7.87\) \\
+\(-10^\circ\) about \(t_1\) & \(+9.36\) & \(-11.30\) & \(-11.18\) & \(-11.14\)
+& \(-10.83\) & \(-10.36\) & \(-5.01\) & \(-0.09\) \\
+\(+10^\circ\) about \(t_2\) & \(-10.03\) & \(-4.51\) & \(-1.95\) & \(-1.85\)
+& \(-1.63\) & \(-1.31\) & \(-1.12\) & \(+4.43\) \\
+\(-10^\circ\) about \(t_2\) & \(+9.55\) & \(-10.51\) & \(-1.51\) & \(-1.29\)
+& \(-1.25\) & \(-1.29\) & \(-1.28\) & \(+4.68\) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -328,16 +314,15 @@ for both surface tangents and both signs of the commanded offset.}
 \label{fig:results_case_e}
 \end{figure}
 
-\Revised{The response reverses with the sign of the commanded offset on both
-tangents. About \mbox{\(t_1\)} the positive offset improves by
-\mbox{\(+6.19^\circ\)} at \mbox{\(+40\,\mathrm{mm}\)} and by
-\mbox{\(-0.12^\circ\)} at \mbox{\(-40\,\mathrm{mm}\)}, while the negative
-offset gives \mbox{\(-0.13\)} and \mbox{\(+6.22^\circ\)} at the same two
-positions. About \mbox{\(t_2\)} the same exchange holds, between
-\mbox{\(+4.18\)} and \mbox{\(-4.60^\circ\)} for the positive offset and
-\mbox{\(-4.71\)} and \mbox{\(+7.65^\circ\)} for the negative one. The
-direction that assists is therefore selected by the signed commanded rotation
-direction.}
+\Revised{The set-up rotation reverses with the sign of the commanded offset.
+About \mbox{\(t_1\)}, the positive command produces \mbox{\(+7.87^\circ\)}
+at \mbox{\(+40\,\mathrm{mm}\)} but only \mbox{\(+0.14^\circ\)} at
+\mbox{\(-40\,\mathrm{mm}\)}. The negative command exchanges these roles,
+producing \mbox{\(-11.30^\circ\)} and \mbox{\(-0.09^\circ\)} at the same
+positions. About \mbox{\(t_2\)}, the assisting end produces
+\mbox{\(+4.43^\circ\)} for the positive command and
+\mbox{\(-10.51^\circ\)} for the negative command. The signed commanded
+rotation direction therefore determines the assisting lever direction.}
 
 \Revised{The two tangents differ in what the wrong direction costs, and the
 flatness separates them. About \mbox{\(t_1\)} the opposing direction leaves
@@ -350,18 +335,15 @@ surface. About \mbox{\(t_2\)} it ends flat at every position, so what the
 opposing direction costs there is not the flatness but the share of the
 rotation the robot performs.}
 
-\Revised{Read as the rotation the robot made, the sweep about \mbox{\(t_2\)}
+\Revised{The sweep about \mbox{\(t_2\)}
 runs from \mbox{\(-4.51\)} at \mbox{\(-40\,\mathrm{mm}\)} through
 \mbox{\(-1.63\)} at the TCP to \mbox{\(+4.43^\circ\)} at
-\mbox{\(+40\,\mathrm{mm}\)}. The offset moves the flattening from the mount
-to the robot, and at the opposing end it drives the robot against the motion
-the contact is producing.}
-\Comment{Clarify that the tested lever about
-\mbox{\(t_2\)} did not rotate the robot far enough to remove the full initial
-deviation. A tangential lever is still required to align the EE-inferred
-orientation from a \mbox{\(t_2\)} initial deviation; the grinding face
-nevertheless ended flat because the remaining rotation was absorbed within the
-tool mount. Carry the same distinction into the conclusion.}
+\mbox{\(+40\,\mathrm{mm}\)}. The assisting lever is therefore necessary to
+produce helpful robot rotation about \mbox{\(t_2\)}, but the tested
+\mbox{\(40\,\mathrm{mm}\)} length does not remove the full initial
+EE-inferred deviation of approximately \mbox{\(10^\circ\)}. The grinding face
+is nevertheless classified as flat from TCP height, implying relative motion
+within the tool--gripper assembly that was not measured directly.}
 
 \Revised{What the offset achieves also differs between the tangents. About
 \mbox{\(t_1\)} the assisting side is level: from \mbox{\(-10\)} to
@@ -383,20 +365,7 @@ within-setting scatter of \mbox{\(0.05^\circ\)} elsewhere. The
 scatters by \mbox{\(2.35^\circ\)} for the same reason. Near the transition the
 contact resolves one way or the other from nominally identical starts.}
 
-\iffalse
-\Revised{\mbox{\Cref{fig:results_case_e_wrench}} reads one comparison in the
-order the load acts: the deviation first, then the press along the surface
-normal, then \mbox{\(M_{t_1}\)}, the moment about the commanded tangent, each as the
-controller commanded it and as the robot model estimated it. The press is negative
-because \mbox{\(n_s\)} points out of the plate, and it reaches
-\mbox{\(-77\)} to \mbox{\(-82\,\mathrm{N}\)} in all three conditions, so they
-are compared under the same normal load.}
-\Comment{The revised figure contains commanded signals only. Refer here to
-\mbox{\(F_{n,\mathrm{cmd}}\)} and \mbox{\(M_{t_1,\mathrm{cmd}}\)}, and remove
-the statement that the same panels also show model-estimated signals.}
-\fi
-
-\Added{\mbox{\Cref{fig:results_case_e_wrench}} reads one controller-response
+\Revised{\mbox{\Cref{fig:results_case_e_wrench}} reads one controller-response
 comparison in the order the load acts: the set-up rotation first, then the
 commanded normal force \mbox{\(F_{n,\mathrm{cmd}}\)}, and finally the commanded
 TCP moment \mbox{\(M_{t_1,\mathrm{cmd}}\)}. Both wrench components are the
@@ -416,57 +385,19 @@ load-consistency quantity.}
 force \(F_{n,\mathrm{cmd}}\), and commanded TCP moment
 \(M_{t_1,\mathrm{cmd}}\) for three centre positions. All conditions carry a
 commanded offset of \(+10^\circ\) about \(t_1\). The legends state the measured
-orientation at first contact.}
+orientation at the beginning of set-up.}
 \label{fig:results_case_e_wrench}
 \end{figure}
 
-\Revised{Both moments are referred to the TCP, which is the only point at
-which the commanded and the estimated one compare without a contact model
-between them. They track each other closely. At \mbox{\(-40\)}, \mbox{\(0\)}
-and \mbox{\(+40\,\mathrm{mm}\)} the commanded moment settles at
-\mbox{\(+3.28\)}, \mbox{\(+0.66\)} and \mbox{\(-2.44\,\mathrm{N\,m}\)}
-and the estimated one at \mbox{\(+2.94\)}, \mbox{\(-0.32\)} and
-\mbox{\(-3.54\,\mathrm{N\,m}\)}, so the environment returns within about
-\mbox{\(1\,\mathrm{N\,m}\)} of what the controller asks for.}
-
-\Revised{The two agree in sign at the outer positions and disagree only at
-the centred one, where the commanded moment is \mbox{\(+0.66\)} and the
-estimated \mbox{\(-0.32\,\mathrm{N\,m}\)}. Neither is the negative of the
-other, because the estimate reports the external wrench in the same sense as
-the command: a press directed into the plate is negative in both, so
-agreement means the contact is returning what the controller applies. What
-separates them is the moment the estimate does not attribute to the contact,
-\mbox{\(0.34\)} to \mbox{\(1.10\,\mathrm{N\,m}\)} across the three
-conditions, which is where joint friction and the error of the model itself
-appear. At the centred position that gap is larger than either value, so the
-sign of the smaller pair is not resolved by the measurement; at the outer
-positions the moments exceed it several times over and the sign is.}
-
-\Revised{What the centre position changes is the sign of that moment, not its
-size. The magnitudes at the two outer positions are alike, and the conditions
-end at \mbox{\(9.39\)} and \mbox{\(3.07^\circ\)}. The larger moment is the
-one that leaves the tool tilted. Under a common press this rules out both the
-load and the size of the moment as what separates the conditions, and leaves
-the direction in which it acts.}
-
-\Revised{Referring the same two wrenches to the centre of compliance instead
-gives a nearly constant pair: \mbox{\(+0.66\)}, \mbox{\(+0.69\)} and
-\mbox{\(+0.01\,\mathrm{N\,m}\)} commanded against \mbox{\(-0.32\)},
-\mbox{\(-0.46\)} and \mbox{\(-0.29\,\mathrm{N\,m}\)} estimated. That is
-the point shift working as constructed: the centre sees a block-diagonal
-impedance, so the moment there is the rotational spring acting on the
-orientation error and little else. The displacement does not change what the
-centre carries; it changes where that point sits relative to the contact, and
-with it the moment at the TCP.
-\mbox{\Cref{fig:results_case_e_diagnostics}} resolves both referenced moments
-and the rotation on the surface axes for the two extremes of the same
-comparison.}
-\Comment{Remove the frozen commanded-versus-estimated discussion in
-lines 378--435. The revised figure deliberately uses the commanded force and
-commanded moment on one consistent controller-response basis. In addition,
-\mbox{\texttt{O\_F\_ext\_hat\_K}} is the estimated wrench acting on stiffness frame K,
-so the earlier subtraction of \mbox{\(p_{\mathrm{EE}}\times f\)} does not establish a
-TCP moment and cannot support the stated sign comparison.}
+\Revised{At \mbox{\(-40\)}, \mbox{\(0\)}, and
+\mbox{\(+40\,\mathrm{mm}\)}, the commanded TCP moment settles at
+\mbox{\(+3.28\)}, \mbox{\(+0.66\)}, and \mbox{\(-2.44\,\mathrm{N\,m}\)},
+respectively. The outer positions have similar magnitudes and opposite signs,
+while their set-up rotations differ by \mbox{\(7.73^\circ\)}. Under the common
+commanded normal force, this supports the conclusion that moment direction,
+rather than normal-load magnitude, separates the two responses.
+\mbox{\Cref{fig:results_case_e_diagnostics}} resolves the commanded wrench and
+set-up rotation on the surface axes.}
 
 \begin{figure}[H]
 \centering
@@ -490,7 +421,7 @@ is not produced by the normal component of the press alone.}
 \begin{table}[H]
 \centering
 \small
-\caption{Case-G alignment change by centre position along the tool axis
+\caption{Case-G signed set-up rotation by centre position along the tool axis
 (mean \(\pm\) SD over three repetitions).}
 \label{tab:results_case_g}
 \begin{tabular}{@{}lrrrrrrr@{}}
@@ -498,12 +429,10 @@ is not produced by the normal component of the press alone.}
 Position & \(-40\) & \(-20\) & \(-10\) & \(0\) & \(+10\) & \(+20\)
 & \(+40\,\mathrm{mm}\) \\
 \midrule
-\(\Delta\theta_{\mathrm{align}}\) & \(+5.37\) & \(+5.77\) & \(+5.84\)
-& \(+5.94\) & \(+5.94\) & \(+6.09\) & \(+6.25\) \\
-Standard deviation & \(0.04\) & \(0.03\) & \(0.02\) & \(0.03\) & \(0.03\)
-& \(0.06\) & \(0.09\) \\
-Residual & \(3.97\) & \(3.55\) & \(3.48\) & \(3.38\) & \(3.36\) & \(3.17\)
-& \(3.07\) \\
+\(\Delta\theta_{\mathrm{set},t_1}\) & \(+7.26\) & \(+7.49\) & \(+7.58\)
+& \(+7.57\) & \(+7.58\) & \(+7.55\) & \(+7.60\) \\
+Standard deviation & \(0.13\) & \(0.01\) & \(0.01\) & \(0.01\) & \(0.01\)
+& \(0.03\) & \(0.04\) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -516,14 +445,12 @@ axis.}
 \label{fig:results_case_g}
 \end{figure}
 
-\Revised{The coordinate does act, and it acts monotonically: the change rises
-from \mbox{\(+5.37\)} to \mbox{\(+6.25^\circ\)} across the sampled range
-and the rotation the robot makes from \mbox{\(+7.26\)} to
-\mbox{\(+7.60^\circ\)}. The tool ends flat at every position, so the
-coordinate changes how the flattening is shared rather than whether it
-happens. The whole
-span is \mbox{\(0.88^\circ\)}, against the \mbox{\(6.3^\circ\)} the tangential
-direction of Case~E carries at the same commanded offset. The zero-moment
+\Revised{The signed set-up rotation changes from \mbox{\(+7.26\)} to
+\mbox{\(+7.60^\circ\)} across the sampled range, but it is not strictly
+monotonic. The tool is classified as flat at every position. The total span is
+\mbox{\(0.34^\circ\)}, compared with the \mbox{\(7.73^\circ\)} change between
+the outer tangential positions of Case~E for the positive \mbox{\(t_1\)}
+command. The zero-moment
 statement holds to first order and is not exact: a purely normal press is an
 idealisation, and tangential force components, the finite rotation, the
 evolving contact geometry and compliance in the tool mounting each leave the
@@ -541,42 +468,36 @@ point keeps its direction while a tool-fixed one follows the tool.}
 \begin{table}[H]
 \centering
 \small
-\caption{Case-F alignment change by the frame the offset is named in
-(mean \(\pm\) SD over three repetitions).}
+\caption{Case-F signed set-up rotation by the frame in which the offset is
+defined (mean \(\pm\) SD over three repetitions, in degrees). The initial
+column is the EE-inferred angular deviation at the beginning of set-up; the
+response columns give the \(t_1\) component of
+\(\Delta\theta_{\mathrm{set}}\).}
 \label{tab:results_case_f}
 \begin{tabular}{@{}lrrr@{}}
 \toprule
 Commanded offset & Initial & Tool frame (Case~E) & Surface frame \\
 \midrule
-None & \(0.76\) & \(-1.09\pm0.04\) & \(-1.71\pm0.17\) \\
-\(+10^\circ\) about \(t_1\) & \(9.33\) & \(+6.19\pm0.09\)
-& \(-0.13\pm0.01\) \\
+None & \(0.76\) & \(-0.06\pm0.01\) & \(-1.05\pm0.02\) \\
+\(+10^\circ\) about \(t_1\) & \(9.33\) & \(+7.87\pm0.01\)
+& \(+0.13\pm0.01\) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\Revised{At \mbox{\(10^\circ\)} about \mbox{\(t_1\)} the two definitions
-separate by \mbox{\(6.32^\circ\)}: the surface-frame definition leaves
-\mbox{\(-0.13\pm0.01^\circ\)} where the tool-frame definition gives
-\mbox{\(+6.19\pm0.09^\circ\)} at the same distance. Naming the offset in
-surface coordinates therefore does not weaken the response, it removes it, and
-removes with it the part the contact produces on its own. Resolved along the
-surface axes the rotation about the commanded tangent is
-\mbox{\(+0.13^\circ\)}, so the tool did not turn toward the surface at all.}
+\Revised{At \mbox{\(10^\circ\)} about \mbox{\(t_1\)}, the tool-frame lever
+produces \mbox{\(+7.87\pm0.01^\circ\)} of set-up rotation, whereas the
+surface-frame lever produces \mbox{\(+0.13\pm0.01^\circ\)}. Naming the offset
+in surface coordinates therefore removes almost the entire helpful robot
+rotation in this comparison. The surface-frame condition is also classified as
+not flat from TCP height.}
 
-\Revised{At zero commanded offset the two definitions describe one point, so
-they are expected to agree, and they do not: the tool-frame trial gave
-\mbox{\(-1.09\pm0.04^\circ\)} against \mbox{\(-1.71\pm0.17^\circ\)} in
-surface coordinates, a difference of \mbox{\(0.62^\circ\)}. That is six
-times the descriptive comparison scale and larger than either scatter. Both
-trials carry the same commanded spin, the same distance and the same
-assisting direction, so the geometry does not account for it; what remains is
-the tool-mount uncertainty of \mbox{\cref{sec:results_limitations}}, which
-acts on the residual and not on a difference between conditions. The
-zero-offset pair therefore does not deliver the consistency check it was
-measured for, and the separation at \mbox{\(10^\circ\)} should be read as a
-comparison between two conditions rather than as a deviation from an
-established agreement.}
+\Revised{At zero commanded offset, contact still induces rotation. The
+tool-frame condition rotates by \mbox{\(-0.06\pm0.01^\circ\)}, whereas the
+surface-frame condition rotates by \mbox{\(-1.05\pm0.02^\circ\)}. The two
+lever definitions can therefore diverge during set-up even when their initial
+points coincide. Case~F is consequently interpreted as a frame-sensitivity
+test, not as a zero-offset consistency check.}
 
 
 \subsection{Case H: Dependence on the Commanded Magnitude}
@@ -590,7 +511,11 @@ the commanded offset does.}
 \begin{table}[H]
 \centering
 \small
-\caption{Alignment change at both commanded magnitudes (mean \(\pm\) SD over three repetitions).}
+\caption{Signed set-up rotation at both commanded orientation-offset magnitudes
+(mean over three repetitions, in degrees). The
+\(\theta_{\mathrm{align,before}}\) row is the EE-inferred value at the
+beginning of set-up; all other rows give
+\(\Delta\theta_{\mathrm{set}}\).}
 \label{tab:results_case_h}
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
@@ -600,8 +525,8 @@ Centre position & \(+5^\circ\) & \(+10^\circ\) & \(+5^\circ\) & \(+10^\circ\) \\
 \midrule
 \(\theta_{\mathrm{align,before}}\) & \(4.29\) & \(9.34\) & \(5.19\) & \(10.04\) \\
 \addlinespace
-\(0\,\mathrm{mm}\)   & \(+1.53\) & \(+5.94\) & \(-1.58\) & \(-1.74\) \\
-\(+40\,\mathrm{mm}\) & \(+1.63\) & \(+6.19\) & \(+3.39\) & \(+4.18\) \\
+\(0\,\mathrm{mm}\)   & \(+2.55\) & \(+7.57\) & \(-1.40\) & \(-1.63\) \\
+\(+40\,\mathrm{mm}\) & \(+2.70\) & \(+7.87\) & \(+5.91\) & \(+4.43\) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -614,15 +539,13 @@ magnitudes, by centre position along the assisting tangent.}
 \label{fig:results_case_h}
 \end{figure}
 
-\Revised{The pattern of Case~E survives the halving. About \mbox{\(t_1\)} the
-centre position changes little at either magnitude, \mbox{\(0.10^\circ\)} at
-\mbox{\(5^\circ\)} and \mbox{\(0.25^\circ\)} at \mbox{\(10^\circ\)}.
-About \mbox{\(t_2\)} it decides the sign of the response at both, carrying
-\mbox{\(-1.58\)} to \mbox{\(+3.39^\circ\)} at the smaller offset and
-\mbox{\(-1.74\)} to \mbox{\(+4.18^\circ\)} at the larger one. Read as the
-rotation the robot made, the same pair runs from \mbox{\(-1.40\)} to
-\mbox{\(+5.91^\circ\)} and from \mbox{\(-1.63\)} to
-\mbox{\(+4.43^\circ\)}. The tool ends flat in all eight conditions.}
+\Revised{The pattern of Case~E survives the halving. About \mbox{\(t_1\)}, the
+centre position changes the rotation by only \mbox{\(0.15^\circ\)} at
+\mbox{\(5^\circ\)} and \mbox{\(0.30^\circ\)} at \mbox{\(10^\circ\)}.
+About \mbox{\(t_2\)}, it reverses the response at both magnitudes: from
+\mbox{\(-1.40\)} to \mbox{\(+5.91^\circ\)} at the smaller offset and from
+\mbox{\(-1.63\)} to \mbox{\(+4.43^\circ\)} at the larger one. The tool is
+classified as flat in all eight conditions.}
 
 \Revised{The rotation is not proportional to the commanded offset. About
 \mbox{\(t_1\)} the robot turns \mbox{\(+7.57^\circ\)} for a commanded
@@ -650,24 +573,25 @@ The two principal directions are the corresponding trials of Case~E.}
 \caption{Case-C response with the offset selected for the commanded direction
 against one held fixed (mean of three repetitions).}
 \label{tab:results_case_c}
-\begin{tabular}{@{}lrrrr@{}}
+\begin{tabular}{@{}lrr@{}}
 \toprule
-Commanded direction & \multicolumn{2}{c}{\(\Delta\theta_{\mathrm{set}}\)}
-& \multicolumn{2}{c}{\(\Delta\theta_{\mathrm{align}}\)} \\
-\cmidrule(lr){2-3}\cmidrule(lr){4-5}
- & selected & fixed & selected & fixed \\
+Commanded direction & \multicolumn{2}{c}{\(\Delta\theta_{\mathrm{set}}\)} \\
+\cmidrule(lr){2-3}
+ & selected & fixed \\
 \midrule
-\(-45^\circ\) from \(t_1\) & \(+4.46\) & \(+4.39\) & \(+5.30\) & \(+4.18\) \\
-\(+45^\circ\) from \(t_1\) & \(+4.85\) & \(+4.80\) & \(+1.51\) & \(-0.12\) \\
-\(+90^\circ\), about \(t_2\) & \(+4.43\) & \(-1.61\) & \(+4.18\) & \(-1.62\) \\
+\(-45^\circ\) from \(t_1\) & \(+4.46\) & \(+4.39\) \\
+\(+45^\circ\) from \(t_1\) & \(+4.85\) & \(+4.80\) \\
+\(+90^\circ\), about \(t_2\) & \(+4.43\) & \(-1.61\) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\Revised{The selected offset gives the larger response at every direction. The
-margin is \mbox{\(1.12^\circ\)} at \mbox{\(-45^\circ\)},
-\mbox{\(1.63^\circ\)} at \mbox{\(+45^\circ\)} and \mbox{\(5.80^\circ\)} about
-\mbox{\(t_2\)}, and the tool ends flat in all six conditions.}
+\Revised{The selected lever gives a slightly larger set-up rotation at both
+diagonal directions: \mbox{\(0.07^\circ\)} at \mbox{\(-45^\circ\)} and
+\mbox{\(0.05^\circ\)} at \mbox{\(+45^\circ\)}. About \mbox{\(t_2\)}, the
+selected lever changes the response from \mbox{\(-1.61^\circ\)} to
+\mbox{\(+4.43^\circ\)}, a difference of \mbox{\(6.04^\circ\)}. The tool is
+classified as flat in all six conditions.}
 
 \Revised{The two diagonals separate the rule from the axis it was derived on.
 At the diagonals the set-up rotation is almost the same whether the offset is
@@ -715,7 +639,8 @@ In every condition,
 rrrc@{}}
 \toprule
 Commanded offset & Varied entries & Setting & \shortstack{Cross-axis\\translation} &
-\shortstack{Command-axis\\rotation} & \(\Delta\theta_{\mathrm{set}}\) & Tool flat \\
+\shortstack{Command-axis\\rotation} & \(\Delta\theta_{\mathrm{set}}\) &
+\shortstack{Flat by\\TCP height} \\
  & & & \([\mathrm{N/m}]\) & \([\mathrm{N\,m/rad}]\) & \([{}^\circ]\) & \\
 \midrule
 \(+10^\circ\) about \(t_1\) & \(K_{p,t_2}, K_{R,t_1}\) & translation only
@@ -736,8 +661,8 @@ Commanded offset & Varied entries & Setting & \shortstack{Cross-axis\\translatio
 
 \Revised{The translational entry does almost nothing. Across a factor of
 nearly seven, from \mbox{\(300\)} to \mbox{\(2000\,\mathrm{N/m}\)}, the set-up
-rotation about \mbox{\(t_1\)} moves by \mbox{\(0.02^\circ\)} and the tool ends
-flat at every setting. About \mbox{\(t_2\)} the rotation moves by
+rotation about \mbox{\(t_1\)} moves by \mbox{\(0.02^\circ\)}, and the TCP-height
+metric classifies every translation-only setting as flat. About \mbox{\(t_2\)} the rotation moves by
 \mbox{\(0.61^\circ\)}, and in the direction that makes the deviation worse
 rather than better.}
 
@@ -749,15 +674,12 @@ stiffness across it.}
 \label{fig:results_case_b}
 \end{figure}
 
-\Revised{The combined condition is not a combination of two effects. Its
+\Revised{The both-varied condition does not show an additive interaction. Its
 response, \mbox{\(+2.80^\circ\)} about \mbox{\(t_1\)}, matches the
 \mbox{\(+2.73^\circ\)} of the rotational entry alone at the same value, and
-the tool ends tilted in both. The rotational entry accounts for the result and
+both are classified as tilted. The rotational entry accounts for the result and
 the translational one adds nothing measurable to it, which is the reading the
 separate variations already support.}
-\Comment{Use ``both-varied condition'' instead of ``combined condition'' here,
-matching the table label and stating that both listed stiffness entries were
-changed in the same setting.}
 
 
 \subsection{Case A: Effect of Rotational Stiffness}
@@ -781,7 +703,7 @@ tangent entry remains \(5\,\mathrm{N\,m/rad}\), while
 \begin{tabular}{@{}llrrc@{}}
 \toprule
 Commanded offset & Varied entry & Value & \(\Delta\theta_{\mathrm{set}}\) &
-Tool flat \\
+\shortstack{Flat by\\TCP height} \\
  & & \([\mathrm{N\,m/rad}]\) & \([{}^\circ]\) & \\
 \midrule
 \(+10^\circ\) about \(t_1\) & \(K_{R,t_1}\) & 5 & \(+7.57\) & yes \\
@@ -795,12 +717,13 @@ Tool flat \\
 \end{tabular}
 \end{table}
 
-\Revised{About \mbox{\(t_1\)} the rotational entry decides whether the tool
-ends flat. At \mbox{\(5\)} and \mbox{\(15\,\mathrm{N\,m/rad}\)} the robot turns
-\mbox{\(7.6\)} and \mbox{\(7.3^\circ\)} and the tool lies flat. At
-\mbox{\(50\,\mathrm{N\,m/rad}\)} it turns only \mbox{\(2.7^\circ\)} and the
-tool ends tilted, with the TCP standing \mbox{\(3.6\,\mathrm{mm}\)} above the
-flat-tool height. The spring that holds the attitude captured at first contact
+\Revised{About \mbox{\(t_1\)} the rotational entry decides the TCP-height
+classification. At \mbox{\(5\)} and \mbox{\(15\,\mathrm{N\,m/rad}\)} the robot turns
+\mbox{\(7.6\)} and \mbox{\(7.3^\circ\)}, and the TCP height is consistent with
+a flat tool. At \mbox{\(50\,\mathrm{N\,m/rad}\)} it turns only
+\mbox{\(2.7^\circ\)} and is classified as tilted, with the TCP standing
+\mbox{\(3.6\,\mathrm{mm}\)} above the
+flat-tool height. The spring that holds the attitude captured at the clearance transition
 is then strong enough to keep the tool off the surface.}
 
 \begin{figure}[H]
@@ -811,7 +734,8 @@ is then strong enough to keep the tool off the surface.}
 \end{figure}
 
 \Revised{About \mbox{\(t_2\)} the entry changes little, because the robot
-barely turns at any of the three settings. The tool ends flat throughout, and
+barely turns at any of the three settings. The TCP-height metric classifies the
+tool as flat throughout, and
 what the deviation records is how much of the commanded attitude the gripper
 kept.}
 
@@ -851,6 +775,11 @@ than \mbox{\(0.983\pm0.053\,\mathrm{mm}\)}. The largest position error \mbox{\(e
 the complete pose-hold study was \mbox{\(1.304\,\mathrm{mm}\)}, below the predefined
 \mbox{\(2\,\mathrm{mm}\)} acceptance limit.}
 
+\Revised{The geometric Jacobian combines translational and rotational rows
+without a common length scale. The reported
+\mbox{\(\sigma_{\min}\)} is therefore a relative indicator under this fixed
+Jacobian convention, not a unit-invariant manipulability measure.}
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.96\textwidth]{figures/MAIN_NS_nullspace_automatic.pdf}
@@ -864,8 +793,9 @@ repetitions.}
 
 \Revised{Matched pose-hold trials isolate the projected damping and sigma-torque
 terms under a repeatable internally commanded disturbance. The contact
-measurements establish alignment performance with projected damping as the
-active null-space configuration.}
+measurements establish alignment performance with both projected damping and
+singular-value conditioning active in mode~3. They do not isolate the two
+null-space contributions.}
 
 \section{Discussion}
 \label{sec:discussion_contact}
@@ -874,21 +804,21 @@ active null-space configuration.}
 \label{sec:discussion_parameter_influence}
 \label{sec:discussion_pole_height}
 
-\Revised{The measured effect sizes differed substantially across the varied parameter
-families. For \mbox{\(t_1\)}, increasing the tilted-axis rotational stiffness from
-\mbox{\(5\)} to \mbox{\(50\,\mathrm{N\,m/rad}\)} reduced the alignment improvement
-\mbox{\(\Delta\theta_{\mathrm{align}}\)} by
-\mbox{\(0.15^\circ\)}. For \mbox{\(t_2\)}, the highest tested rotational stiffness reduced
-the response by \mbox{\(0.44^\circ\)} relative to the
-\mbox{\(15\,\mathrm{N\,m/rad}\)} condition. Reducing the perpendicular translational
-stiffness from \mbox{\(2000\)} to \mbox{\(300\,\mathrm{N/m}\)} changed the response by
-\mbox{\(-0.06^\circ\)} about \mbox{\(t_1\)} and by \mbox{\(+0.73^\circ\)} about \mbox{\(t_2\)}.}
+\Revised{The measured effect sizes differed substantially across the varied
+parameter families. Increasing the command-axis rotational stiffness from
+\mbox{\(5\)} to \mbox{\(50\,\mathrm{N\,m/rad}\)} reduced the signed set-up
+rotation from \mbox{\(+7.57\)} to \mbox{\(+2.73^\circ\)} about \mbox{\(t_1\)}.
+About \mbox{\(t_2\)}, it changed from \mbox{\(-1.63\)} to
+\mbox{\(-0.48^\circ\)}. Reducing the perpendicular translational stiffness
+from \mbox{\(2000\)} to \mbox{\(300\,\mathrm{N/m}\)} changed the rotation by
+only \mbox{\(0.02^\circ\)} about \mbox{\(t_1\)} and \mbox{\(-0.61^\circ\)}
+about \mbox{\(t_2\)}.}
 
-\Revised{The compliance-centre position \mbox{\(p_c\)} produced the largest
-measured changes. Across Case~E the alignment change ranges from
-\mbox{\(-4.60\)} to \mbox{\(+7.65^\circ\)}, a span of
-\mbox{\(12.25^\circ\)}, against at most \mbox{\(0.44^\circ\)} from either
-stiffness family over its tested range.}
+\Revised{The tangential compliance-centre position produced the largest
+within-series changes. For the positive \mbox{\(t_1\)} command, the two outer
+positions differ by \mbox{\(7.73^\circ\)}; for the positive \mbox{\(t_2\)}
+command, they differ by \mbox{\(8.94^\circ\)}. These spans exceed the changes
+caused by either stiffness family over its tested range.}
 
 \Revised{Both spans were measured under the same press and at the same
 commanded offset, so the comparison is controlled. Within the tested
@@ -959,35 +889,23 @@ assisting lever signs being opposite for the two tilted axes.}
 \Revised{The component of \mbox{\(r_c\)} parallel to the press direction contributes no moment
 because its cross product with \mbox{\(f_{\mathrm{press}}\)} is zero. A centre displaced along
 the tool axis is close to that case, because the tool stands nearly normal to
-the surface. At a \mbox{\(10^\circ\)} tilt, a \mbox{\(90\,\mathrm{mm}\)} axial
-displacement has a tangential projection of approximately
-\mbox{\(15.6\,\mathrm{mm}\)}, about one quarter of the
-\mbox{\(40\,\mathrm{mm}\)} tangential offset. To first order the
-coordinate should therefore do little.}
+the surface. At a \mbox{\(10^\circ\)} physical inclination, a
+\mbox{\(40\,\mathrm{mm}\)} axial displacement has a tangential projection of
+approximately \mbox{\(6.9\,\mathrm{mm}\)}, far below the direct
+\mbox{\(40\,\mathrm{mm}\)} tangential lever.}
 
-\Revised{The normal coordinate nevertheless changes the response. Case~C
-measured a \mbox{\(0.9^\circ\)} range along \mbox{\(n_s\)}, and Case~G a
-\mbox{\(0.88^\circ\)} range along the tool axis, rising monotonically from
-\mbox{\(+5.37\)} to \mbox{\(+6.25^\circ\)} across the sampled positions. The
-zero-moment statement assumes a purely normal force. Tangential force
-components, finite translation and rotation, the evolving contact geometry, and
-compliance within the tool mounting could each make the coordinate act. The
-point-shifted transformation also changes the effective rotational resistance
-when a normal offset is introduced.}
+\Revised{Case~G accordingly changes the signed set-up rotation by only
+\mbox{\(0.34^\circ\)} across the full \mbox{\(-40\)} to
+\mbox{\(+40\,\mathrm{mm}\)} tool-axis range. The variation can arise from
+tangential force components, finite rotation, evolving contact geometry, or
+mount compliance. The experiment does not isolate these contributions.}
 
-\Revised{For an axial displacement \mbox{\(d\)} and a tilt angle \mbox{\(\theta\)}, the effective
-tangential component is \mbox{\(d\sin\theta\)}. At \mbox{\(10^\circ\)}, an axial
-displacement of approximately \mbox{\(345\,\mathrm{mm}\)} would be required to
-produce a tangential component of \mbox{\(60\,\mathrm{mm}\)}. The tested axial
-placement therefore generated substantially less coupling moment than the
-direct tangential placement.}
-\Comment{The normal-coordinate Case-C study and the \mbox{\(90\,\mathrm{mm}\)}
-tool-axis comparison in the preceding paragraphs are not part of the reported
-57-setting campaign. Case~C varies only the tangential direction at
-\mbox{\(40\,\mathrm{mm}\)}, and Case~G spans \mbox{\(-40\)} to
-\mbox{\(+40\,\mathrm{mm}\)} along the tool axis. The
-\mbox{\(60\,\mathrm{mm}\)} equivalence should therefore be recalculated using
-the reported \mbox{\(40\,\mathrm{mm}\)} tangential reference.}
+\Revised{For an axial displacement \mbox{\(d\)} and a physical inclination
+\mbox{\(\theta\)}, the effective tangential component is
+\mbox{\(d\sin\theta\)}. At \mbox{\(10^\circ\)}, approximately
+\mbox{\(230\,\mathrm{mm}\)} of axial displacement would be needed to match a
+\mbox{\(40\,\mathrm{mm}\)} tangential component. This first-order comparison
+explains why the tested axial placement had a much smaller effect.}
 
 \Revised{The lower model-estimated normal loads \mbox{\(F_n\)} at the assisting lever positions are
 consistent with the same mechanism. A larger alignment motion allows part of
@@ -1006,10 +924,10 @@ moment effect.}
 \Revised{The lever is a commanded setting and does not change sign on its own
 during a run. Case~E measured the consequence of its sign directly, and at
 both signs of the commanded offset. About \mbox{\(t_1\)} the response moved
-between \mbox{\(+6.19\)} and \mbox{\(-0.12^\circ\)} as the centre was
+between \mbox{\(+7.87\)} and \mbox{\(+0.14^\circ\)} as the centre was
 carried from one side of the TCP to the other, and reversing the commanded
 offset exchanged the two ends. About \mbox{\(t_2\)} the same exchange spans
-\mbox{\(+4.18\)} to \mbox{\(-4.60^\circ\)}. The signed commanded rotation
+\mbox{\(+4.43\)} to \mbox{\(-4.51^\circ\)}. The signed commanded rotation
 direction therefore defines the assisting offset direction. For every reported
 run, that direction was selected before set-up from the commanded rotation
 direction.}
@@ -1020,43 +938,44 @@ direction.}
 \Revised{Case~D separates the contact from the coupling. With the centre of
 compliance at the TCP the commanded press produces no moment, and what remains
 is the response of the contact and the finite rotational stiffness. That
-response is large about \mbox{\(t_1\)}: \mbox{\(5.94^\circ\)} of the measured \mbox{\(9.32^\circ\)}
-was recovered with the centre on the TCP, and \mbox{\(7.19^\circ\)} of \mbox{\(9.43^\circ\)}
-at the reversed offset.}
+response is large about \mbox{\(t_1\)}: the robot turns
+\mbox{\(+7.57^\circ\)} for the positive commanded offset and
+\mbox{\(-10.83^\circ\)} for the negative offset.}
 
-\Revised{About \mbox{\(t_2\)} the same contact recovers almost nothing at one sign,
-\mbox{\(+1.20^\circ\)}, and increases the misalignment at the other, from \mbox{\(10.07\)} to
-\mbox{\(11.81^\circ\)}. The contact face is \mbox{\(20\,\mathrm{mm}\)} half-width across
-\mbox{\(t_2\)} and \mbox{\(60\,\mathrm{mm}\)} across \mbox{\(t_1\)}, so the two directions present
-different support to a pressing tool. The measured asymmetry follows the face
-geometry rather than the commanded offset.}
+\Revised{About \mbox{\(t_2\)}, the robot turns only
+\mbox{\(-1.63^\circ\)} and \mbox{\(-1.25^\circ\)}. The contact face has
+different half-dimensions across the two tangents, and the observed unloaded
+mount clearance lies near the \mbox{\(t_2\)} axis. The asymmetry is therefore
+consistent with the combined effects of contact geometry, mount compliance,
+and frame definition; the experiment does not isolate one cause.}
 
 \Revised{This changes what the compliance centre has to achieve on each axis.
-About \mbox{\(t_1\)} a correction is already present and the centre adds almost
-nothing to it: across the whole assisting side of Case~E the response stays
-between \mbox{\(+5.69\)} and \mbox{\(+6.19^\circ\)}, against \mbox{\(+5.94^\circ\)} with the centre
-on the TCP. About \mbox{\(t_2\)} the centre is what produces the correction at all,
-carrying \mbox{\(-1.74\)} to \mbox{\(+4.18^\circ\)} at the positive offset and \mbox{\(+1.20\)} to
-\mbox{\(+7.65^\circ\)} at the negative one. The same displacement is therefore
-decisive on one tangent and irrelevant on the other.}
+About \mbox{\(t_1\)}, a helpful robot rotation is already present and the
+assisting \mbox{\(40\,\mathrm{mm}\)} lever adds only \mbox{\(0.30^\circ\)},
+from \mbox{\(+7.57\)} to \mbox{\(+7.87^\circ\)}. About \mbox{\(t_2\)}, the
+same lever changes the response from \mbox{\(-1.63\)} to
+\mbox{\(+4.43^\circ\)}. A tangential lever is therefore necessary for helpful
+robot rotation about \mbox{\(t_2\)}, but the tested length is insufficient to
+remove the full initial EE-inferred deviation.}
 
 \subsection{Frame and Magnitude of the Lever}
 \label{sec:discussion_lever_frame}
 
 \Revised{Case~F separates the frame the offset is named in from the offset
 itself. At \mbox{\(10^\circ\)} about \mbox{\(t_1\)} the two definitions differ by
-\mbox{\(6.32^\circ\)}: the surface-frame definition leaves \mbox{\(-0.13^\circ\)} where the
-tool-frame one gives \mbox{\(+6.19^\circ\)} at the same distance, and where the
-contact alone gives \mbox{\(+5.94^\circ\)}. Naming the point in surface coordinates
-removes the correction rather than weakening it.}
+\mbox{\(7.74^\circ\)} in set-up rotation: \mbox{\(+0.13^\circ\)} for the
+surface-frame lever and \mbox{\(+7.87^\circ\)} for the tool-frame lever.
+The frame in which the lever is fixed is therefore part of the controller
+setting and cannot be omitted from its definition.}
 
-\Revised{The usable magnitude is set by the face dimension the tool rocks
-over. About \mbox{\(t_2\)} an offset of \mbox{\(60\,\mathrm{mm}\)} carried a \mbox{\(5^\circ\)}
-commanded offset out to a \mbox{\(20.7^\circ\)} excursion, and \mbox{\(80\,\mathrm{mm}\)}
-aborted the motion on a wrist-torque reflex, which is why the reported sweeps
-stop at \mbox{\(40\,\mathrm{mm}\)}. About \mbox{\(t_1\)}, where the face is three times
-longer, the same distances stayed in range throughout. The magnitude that
-suits one tangent therefore does not suit the other.}
+\Revised{The reported campaign bounds the tangential lever at
+\mbox{\(40\,\mathrm{mm}\)}. This length adds little to the already helpful
+\mbox{\(t_1\)} response, but it is necessary to obtain helpful robot rotation
+about \mbox{\(t_2\)}. It still corrects less than half of the approximately
+\mbox{\(10^\circ\)} initial EE-inferred deviation for the positive command.
+The optimum or sufficient \mbox{\(t_2\)} lever length therefore lies outside
+the tested conclusion and must be established with a wider, safety-bounded
+sweep.}
 
 \subsection{Implications for Controller Parameter Selection}
 \label{sec:discussion_parameter_selection}
@@ -1094,10 +1013,11 @@ present tests, reducing it increased the response about \mbox{\(t_2\)}, while th
 \Revised{This measured sequence provides an initial tuning procedure for the
 investigated contact geometry and parameter range.
 Cases~C and~E establish the direction and sign rule at the tested conditions,
-and Cases~E and~G establish where the centre should sit along each coordinate.
-On the tangent the best position depends on the sign of the commanded offset;
-along the tool axis it was the largest sampled displacement, where the
-response was still rising.}
+and Cases~E and~G quantify sensitivity along the tangential and tool-axis
+coordinates. On the tangent, the helpful side depends on the sign of the
+commanded offset. Along the tool axis, the response varies by only
+\mbox{\(0.34^\circ\)} over the tested range and does not justify a unique
+preferred position.}
 
 \begin{table}[H]
 \centering
@@ -1124,20 +1044,19 @@ About \(t_2\) & \([+40.0,0]\) & \(+4.43\) & \(-1.61\) \\
 
 \Revised{The selected lever assisted in all four Case-C directions. The common
 magnitude isolates the vector direction rule in
-\mbox{\cref{eq:discussion_general_lever_selection}}. The measured fractions describe
-the direction-selection response at this shared magnitude.}
-\Comment{The revised table reports the common \mbox{\(40\,\mathrm{mm}\)} campaign and
-set-up rotation. Remove the frozen reference to ``fractions'', which belonged
-to the superseded \mbox{\(60\,\mathrm{mm}\)} Case-C data.}
+\mbox{\cref{eq:discussion_general_lever_selection}}. The diagonal comparisons
+show little difference because the fixed lever retains a component along the
+selected direction. The \mbox{\(t_2\)} comparison shows the full consequence
+of using the perpendicular fixed lever.}
 
-\Revised{Where the sign of the initial tilt is unknown, a fixed tangential lever
+\Revised{Where the sign of the initial orientation deviation is unknown, a fixed tangential lever
 can assist one direction and oppose the other, and Case~E measured the cost of
 the wrong sign at both: about \mbox{\(t_1\)} the response fell from
-\mbox{\(+6.19\)} to \mbox{\(-0.12^\circ\)}, and about \mbox{\(t_2\)} from
-\mbox{\(+4.18\)} to \mbox{\(-4.60^\circ\)}. A placement along the tool axis
+\mbox{\(+7.87\)} to \mbox{\(+0.14^\circ\)}, and about \mbox{\(t_2\)} from
+\mbox{\(+4.43\)} to \mbox{\(-4.51^\circ\)}. A placement along the tool axis
 carries no such choice, because it produces no first-order moment about either
-tangent, and Case~G measured its largest response at the furthest sampled
-position. Matching the tangential direction to the signed offset is therefore
+tangent, and Case~G showed only weak sensitivity over its tested range.
+Matching the tangential direction to the signed offset is therefore
 required only where that displacement is used. The reported controller applied
 this matching during experimental set-up.}
 
@@ -1148,22 +1067,23 @@ this matching during experimental set-up.}
 
 \Revised{The parameter matrix includes commanded offsets of \mbox{\(5^\circ\)}
 and \mbox{\(10^\circ\)} about both surface tangents. The rotational and
-translational stiffnesses were varied at three levels. The combined comparison
-used one low-translational-stiffness and high-rotational-stiffness pair for each
+translational stiffnesses were varied at three levels. The both-varied comparison
+used one both-varied pair: the low cross-axis translational stiffness and high
+command-axis rotational stiffness were applied together for each
 axis. The compliance-centre comparison sampled seven positions along the
 assisting tangent at both signs of the commanded offset, and six along the
 tool axis. Case~C additionally
-sampled four combined in-plane tilt and lever directions at one common
+sampled four in-plane commanded rotation and lever directions at one common
 magnitude. These settings establish the direction and sign of the assisting
-displacement and the dependence of the response on the centre position. The combined
+displacement and the dependence of the response on the centre position. The both-varied
 stiffness result applies to the selected pair, and the direction result covers
 the four sampled in-plane directions.}
 
 \Revised{The measured centre positions are geometry-specific design values
 defined by the tool-face dimensions, commanded press, and calibrated surface.
 The transferable controller results are the rule relating lever direction and
-sign to the signed tilt direction, and the finding that displacing the centre
-along the tool axis improves the response without a sign to choose. The
+sign to the signed commanded rotation direction, and the finding that the
+tool-axis coordinate has only a weak effect over the tested range. The
 distances are then selected for the contact geometry.}
 
 \Revised{A fixed Panda configuration, rectangular tool, plane surface, and commanded
@@ -1174,33 +1094,33 @@ and defines the reference response of the complete robot--gripper--tool system.}
 \subsection{Measurement and Tool-Mount Uncertainty}
 
 \Revised{The alignment metric combines the measured end-effector orientation with the
-calibrated grinding-face direction and surface normal \mbox{\(n_s\)}. This measurement chain
-quantifies the combined robot--gripper--tool response. The approximately
-\mbox{\(\pm2^\circ\)} rotational freedom about \mbox{\(y_{\mathrm{EE}}\)} defines the
-mount-related contribution to its uncertainty.}
+calibrated grinding-face direction and surface normal \mbox{\(n_s\)}. It
+therefore infers tool orientation under the assumption that the calibrated
+tool-to-end-effector relation remains fixed. Approximately
+\mbox{\(\pm2^\circ\)} of unloaded clearance was observed about
+\mbox{\(y_{\mathrm{EE}}\)}, but this observation is not a calibrated uncertainty
+bound under contact load.}
 
-\Revised{For the tested mounting orientation, \mbox{\(y_{\mathrm{EE}}\)} lay approximately
-\mbox{\(25^\circ\)} from \mbox{\(t_2\)}. Relative tool motion may therefore have contributed
-more strongly to the \mbox{\(t_2\)} conditions than to the \mbox{\(t_1\)} conditions. The
-\mbox{\(10^\circ\)} \mbox{\(t_2\)} repetition gave an alignment change
-\mbox{\(\Delta\theta_{\mathrm{align}}\)} near zero. It
-was included in the reported mean and standard deviation, preserving the
-observed variability.}
+\Revised{For the tested mounting orientation, the projected
+\mbox{\(y_{\mathrm{EE}}\)} line was aligned with \mbox{\(t_2\)} by the
+commanded \mbox{\(90^\circ\)} normal-axis spin. Relative tool motion may
+therefore have contributed more strongly to the \mbox{\(t_2\)} conditions. The
+TCP-height and EE-inferred results imply larger relative motion in some runs,
+but its magnitude and physical cause were not measured independently.}
 
-\Revised{Within-setting scatter grew with the size of the correction on both
-tangents. The largest spread about \mbox{\(t_1\)} was measured in the
-\mbox{\(6.05^\circ\)} compliance-centre condition. These repeatability measurements
-provide the quantitative scale for the combined alignment metric.}
+\Revised{Within-setting scatter was not uniform and increased near transitions
+between response regimes. The setting-specific standard deviations are
+therefore reported where they materially affect a comparison rather than being
+replaced by one global uncertainty value.}
 
 \Revised{Within-setting scatter is not the only scale that bounds a comparison.
-The direction of the grinding face in end-effector coordinates was measured by
-seating the face on the surface at several orientations about the surface normal
-and solving for the direction those seatings share. Within one such measurement
-the seatings agreed to between \mbox{\(0.12\)} and \mbox{\(0.28^\circ\)}.
-Repeated measurements of the same arrangement, however, differed by
-\mbox{\(1.70\)} and \mbox{\(2.17^\circ\)}, and the difference appeared as the
-tool settled in the mount under repeated pressing. The absolute zero of the
-alignment metric is therefore known to one to two degrees, and no better.}
+The grinding-face direction in end-effector coordinates was obtained by
+seating the face on the surface at several normal-axis orientations and solving
+for their invariant direction. The archived controller settings preserve the
+result used in every reported run, but the mount was not independently
+characterised under load. The absolute zero of the EE-inferred alignment metric
+therefore carries calibration and mounting uncertainty that is not represented
+by the repeated-run standard deviation.}
 
 \Revised{This bounds the absolute residuals and not the comparisons. A constant
 error in the measured face direction shifts every condition by the same amount
@@ -1239,10 +1159,10 @@ basis, preserving a consistent comparison across the contact campaign.}
 
 \subsection{Null-Space Configuration and Real-Time Operation}
 
-\Revised{The surface-contact results establish alignment performance with projected
-damping as the active null-space configuration. Matched pose-hold trials
-quantify projected damping and singular-value conditioning under an internally
-commanded point-force equivalent.}
+\Revised{The surface-contact results establish controller performance with
+projected damping and singular-value conditioning active together in
+null-space mode~3. Matched pose-hold trials isolate the two contributions under
+an internally commanded point-force equivalent.}
 
 \Revised{The communication check described in
 \mbox{\cref{subsec:experimental_software_computer}} passed the \mbox{\(0.90\)}

@@ -4,35 +4,32 @@
 principal measured ordering, null-space result, and scope limits without
 overloading the reader with the full parameter matrix.}
 
-Angular tool--surface mismatch causes edge-first contact. Under rigid position
-control, the robot resists the aligning rotation and develops contact forces
-and moments.
+Angular tool--surface mismatch causes edge-first contact; rigid position
+control resists the aligning rotation and develops contact forces and moments.
 
 A real-time, phase-dependent Cartesian impedance controller was implemented
-for a seven-degree-of-freedom (\abbr{DOF}) Franka Emika Panda. During contact
-set-up, stiffness and damping defined about a selected virtual centre of
-compliance \(p_c\) were transformed to the tool centre point. The resulting coupling
-allowed the commanded pressing motion along the surface normal \(n_s\) to generate a
-corrective moment.
+for a seven-degree-of-freedom (\abbr{DOF}) Franka Emika Panda. During set-up,
+stiffness and damping defined about a virtual centre of compliance \(p_c\) were
+transformed to the tool centre point, converting the commanded normal press
+into a corrective moment.
 
-The experiments varied directional stiffness and the direction and magnitude
-of the compliance-centre lever \(r_c\). Within the tested range, the in-plane
-compliance-centre position produced the largest change. The assisting lever was
-perpendicular to the commanded rotation axis. Reversing the commanded tool
-orientation offset also reversed the assisting lever direction. This selection
-gave about \(6^\circ\) improvement in both tangent-axis tests. The best tested
-lever magnitude depended on the commanded rotation axis and offset angle.
-Higher rotational stiffness reduced alignment, with axis-dependent behaviour.
+The experiments varied directional stiffness and the compliance-centre lever
+\(r_c\); its in-plane position produced the largest change. The assisting lever
+was perpendicular to the commanded rotation axis, and its direction reversed
+with the commanded offset. About \(t_1\), the robot already rotated \(7.57^\circ\) without
+a lever, and the assisting \(40\,\mathrm{mm}\) lever increased this to only
+\(7.87^\circ\). About \(t_2\), the same lever changed the set-up rotation from
+\(-1.63^\circ\) to \(+4.43^\circ\); it was necessary for helpful robot rotation
+but insufficient to remove the full initial deviation.
 
-\Revised{For four commanded offsets in the tangent plane, a direction-selected
-lever improved alignment in every case, while one fixed lever reduced it.}
+\Revised{Across four tangent-plane offsets, a direction-selected lever increased
+the signed set-up rotation in every matched comparison, whereas one fixed lever
+produced less rotation. Tool-frame and surface-frame lever definitions also
+diverged after the end effector rotated.}
 
-\Revised{Without any lever, the contact alone corrected an offset about one
-surface tangent and increased one about the other. Defining the lever in the
-tool frame rather than in surface coordinates changed the response once the tool
-turned.}
-
-Complementary Cartesian pose-hold trials showed that projected null-space
-damping reduced redundant motion. Both tested conditioning torque commands
-returned the minimum singular value \(\sigma_{\min}\) to approximately its initial level after
-the disturbance.
+In complementary pose-hold trials, projected null-space damping reduced
+redundant motion, and both conditioning torque commands returned
+\(\sigma_{\min}\) approximately to its initial level. Signed set-up rotation was
+the common contact-test metric. The supporting alignment angle was inferred
+from the end-effector pose, so unmeasured tool-mount motion limits its physical
+interpretation.

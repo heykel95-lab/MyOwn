@@ -3,8 +3,8 @@
 % carry: the angle between the mounting axes and the surface tangents projects
 % to nothing in elevation.
 %
-% The commanded spin of 115.05 degrees about the normal places y_EE at that
-% angle from t_1, and therefore approximately 25 degrees from t_2. The face is
+% The commanded spin of 90 degrees about the normal places the projected long
+% face axis on the t_2 line. The face is
 % 40 mm along x_EE and 120 mm along y_EE. One drawing unit is 35 mm.
 %
 % Uses only tikz + arrows.meta, which config/packages.tex loads. Colour follows
@@ -24,9 +24,8 @@
 \draw[ax] (0,0) -- (0,3.05) node[lbl, above] {$t_2$};
 
 % ---- the calibrated grinding face and its mounting axes ------------------
-% Local x is x_EE and local y is y_EE, so the scope rotation places y_EE at
-% 115.05 degrees from t_1.
-\begin{scope}[rotate=25.05]
+% Local x is x_EE and local y is y_EE.
+\begin{scope}
   \draw[face] (-0.571,-1.714) rectangle (0.571,1.714);
 
   \draw[mnt] (0,0) -- (1.15,0);
@@ -50,9 +49,7 @@
   \end{scope}
 \end{scope}
 
-% ---- the y_EE label and the angle it makes with t_2 ----------------------
-\node[lbl, orange!65!black] at (119:2.30) {$y_{\mathrm{EE}}$};
-\draw[arc] (90:2.80) arc (90:115.05:2.80);
-\node[lbl, gray!55!black] at (103:3.10) {$25^\circ$};
+% ---- the y_EE label ------------------------------------------------------
+\node[lbl, orange!65!black] at (90:2.30) {$y_{\mathrm{EE}}$};
 
 \end{tikzpicture}

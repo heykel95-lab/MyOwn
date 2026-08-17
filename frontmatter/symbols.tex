@@ -23,7 +23,7 @@ column makes the mixed translational and rotational quantities traceable.}
 \symgroup{Frames and Kinematics}{
 \symrow{$\{0\}$}{Robot base frame}{[-]}
 \symrow{$\{i\}$}{Joint frame $i$}{[-]}
-\symrow{$\{\mathrm{EE}\}$}{End-effector (tool) frame}{[-]}
+\symrow{$\{\mathrm{EE}\}$}{End-effector frame used by the robot model}{[-]}
 \symrow{$n$}{Number of joints ($n=7$)}{[-]}
 \symrow{$q,\ \dot{q}$}{Joint position / velocity vector}{[rad], [rad/s]}
 \symrow{$q_{\mathrm{init}}$}{Initial joint configuration used by the controller and pose-hold study}{[rad]}
@@ -89,22 +89,19 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$t_1,\ t_2$}{Surface tangent directions (unit)}{[-]}
 \symrow{$a_s,\ \tilde{t}_1$}{Surface-frame reference direction / projected tangent before normalisation}{[-]}
 \symrow{$R_{\mathrm{surface}}$}{Surface task frame $[\,t_1\;\;t_2\;\;n_s\,]$ in the base frame}{[-]}
-\symrow{$p_i,\ r_{\mathrm{probe,EE}}$}{Captured marked-corner point in the base frame / fixed corner offset in the EE frame}{[m], [m]}
-\symrow{$R_i,\ \bar R$}{Captured tool-calibration rotation / mean of the three estimation rotations}{[-]}
+\symrow{$p_{\mathrm{cal},i},\ r_{\mathrm{probe,EE}}$}{Captured marked-corner point in the base frame / fixed corner offset in the EE frame}{[m], [m]}
+\symrow{$T_{\mathrm{cal},i},\ R_{\mathrm{cal},i},\ \bar R$}{Captured tool-calibration pose / its rotation / mean of the three estimation rotations}{[-]}
 \symrow{$\bar n_B$}{Invariant base-frame direction in the tool-normal calibration}{[-]}
-\symrow{$\varepsilon_{\mathrm{plane}},\ \varepsilon_{\mathrm{tool}},\ \varepsilon_g$}{Surface-plane validation residual / grinding-face direction validation residual / grinding-face feature-selection tolerance}{[m], [rad], [m]}
+\symrow{$\varepsilon_{\mathrm{plane}},\ \varepsilon_g$}{Surface-plane validation residual / grinding-face feature-selection tolerance}{[m]}
 \symrow{$U,\ \Sigma,\ V$}{Singular-value decomposition factors of $\bar R$}{[-]}
 \symrow{$n_{\mathrm{EE}},\ n_T,\ n_d$}{Calibrated grinding-face direction in the EE frame / EE-inferred grinding-face direction in the base frame / signed controller target direction}{[-]}
 \symrow{$s_a$}{Tool-axis target sign, with \(n_d=s_a n_s\)}{[-]}
 \symrow{$p_s$}{Point on the configured surface}{[m]}
-\symrow{$p_c$}{Centre of compliance, held constant from the geometric clearance transition}{[m]}
+\symrow{$p_c$}{Centre of compliance}{[m]}
 \symrow{$r_c$}{Compliance-centre-to-TCP lever, $p_{\mathrm{TCP}}-p_c$}{[m]}
-\symrow{$h$}{Selected normal offset of the centre of compliance}{[m]}
-\symrow{$p_{\mathrm{contact}}$}{Physical contact point}{[m]}
-\symrow{$r_{\mathrm{contact}}$}{Contact-to-TCP lever, $p_{\mathrm{TCP}}-p_{\mathrm{contact}}$; transfers a measured moment and is distinct from $r_c$}{[m]}
-\symrow{$r_{\mathrm{face,EE}},\ r_{\mathrm{width,EE}},\ r_{\mathrm{length,EE}}$}{Grinding-face centre offset / half-width vector / half-length vector in the EE frame}{[m]}
+\symrow{$r_{\mathrm{face,EE}}$}{Grinding-face centre offset in the EE frame}{[m]}
+\symrow{$r_{\mathrm{width,EE}},\ r_{\mathrm{length,EE}}$}{Grinding-face half-width / half-length vector in the EE frame}{[m]}
 \symrow{$r_{g,\mathrm{EE}},\ p_g$}{Selected grinding-face point or edge in the EE frame / its base-frame position}{[m]}
-\symrow{$M_{\mathrm{TCP}},\ M_{\mathrm{contact}}$}{Estimated external moment change about the TCP / about the contact point}{[N\,m]}
 \symrow{$f_C$}{Environment-on-tool contact force used in the geometric sketch}{[N]}
 }
 
@@ -121,7 +118,7 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$r_{c,t},\ \rho_c$}{Selected tangential compliance-centre lever / its magnitude}{[m]}
 \symrow{$\Delta p_g,\ s_g$}{Grinding contact-point displacement / its magnitude}{[m]}
 \symrow{$\Delta p_{\mathrm{TCP}},\ s_{\mathrm{TCP}}$}{TCP displacement / its magnitude}{[m]}
-\symrow{$F_n$}{Normal magnitude of the model-estimated external-force change from the clearance transition}{[N]}
+\symrow{$F_n$}{Positive normal magnitude of the model-estimated external-force change from the clearance transition, $|n_s^\top\Delta\hat f_{\mathrm{ext}}|$}{[N]}
 \symrow{$F_{n,\mathrm{cmd}},\ M_{t_i,\mathrm{cmd}}$}{Signed commanded normal force / commanded TCP moment about surface tangent $t_i$}{[N], [N\,m]}
 \symrow{$F_{n,\mathrm{block}}$}{Fully blocked normal virtual-spring command scale}{[N]}
 \symrow{$\hat f_{\mathrm{ext}},\ \hat f_{\mathrm{ref}}$}{Model-estimated external force / clearance-transition reference}{[N]}

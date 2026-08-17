@@ -1,14 +1,5 @@
 \chapter{Theoretical Background}
 \label{ch:theory}
-\ReviewMark{purple}{The chapter was revised in full and every paragraph is
-settled. No further editing is to be applied to it, and any remaining concern
-is raised as a comment rather than as a change.}
-
-\Comment{In the settled prose, use ``commanded tool orientation offset'' for
-the deliberate angular command and ``commanded rotation axis'' or ``commanded
-rotation direction'' for its components. Retain ``tilt'' only for a physical
-inclination or a calibrated surface angle.}
-
 \makeatletter
 \@ifundefined{ifProfessorStopAfterForwardKinematics}{%
   \newif\ifProfessorStopAfterForwardKinematics
@@ -86,7 +77,7 @@ formulation and the controller
 
 \Revised{        The directions \mbox{\(t_1\)} and \mbox{\(t_2\)} lie in the surface plane and are
         mutually orthogonal, while \mbox{\(n_s\)} is normal to the surface. This
-        frame is used to describe the commanded tilt and to assign stiffness
+        frame is used to describe the commanded tool orientation offset and to assign stiffness
         and damping values according to the two tangential directions and the
         normal direction. For the contact task, the task-frame orientation
         \mbox{\(R_{\mathrm{task}}\)} equals the surface-frame orientation:}
@@ -300,7 +291,7 @@ p_d-p_{\mathrm{EE}}
 \label{eq:position_control_error}
 \end{equation}
 
-\Revised{A positive position error \mbox{\(e_p\)} therefore points from the current TCP position toward
+\Revised{A positive position error \mbox{\(e_p\)} therefore points from the current TCP position towards
 the desired TCP position.}
 
 \paragraph{Orientation error.}
@@ -583,43 +574,6 @@ the Jacobian also depends on \mbox{\(q\)}. In the implemented controller,
 \mbox{\(J(q)\)} is obtained directly from the libfranka model interface.}
 
 
-\Revised{The Jacobian describes the local relation between joint velocities and the
-end-effector twist. For a robot with \mbox{\(n\)} joints it is written column-wise,}
-\begin{equation}
-\begin{bmatrix}\dot p_{\mathrm{EE}}\\\omega_{\mathrm{EE}}\end{bmatrix}
-=
-J(q)\dot q,
-\qquad
-J(q)=\begin{bmatrix}J_1&J_2&\cdots&J_n\end{bmatrix}
-\in\mathbb{R}^{6\times n},
-\label{eq:jacobian_velocity_relation}
-\end{equation}
-\Revised{where each column \mbox{\(J_i\)} is the contribution of joint \mbox{\(i\)}. The Panda has
-only revolute joints, so with \mbox{\(z_{i-1}\)} the unit vector along the axis of
-joint \mbox{\(i\)} and \mbox{\(p_{i-1}\)} a point on that axis, both expressed in the base
-frame, the column is}
-\begin{equation}
-J_i=
-\begin{bmatrix}
-z_{i-1}\times\left(p_{\mathrm{EE}}-p_{i-1}\right)\\
-z_{i-1}
-\end{bmatrix}
-\in\mathbb{R}^6 .
-\label{eq:jacobian_column_revolute}
-\end{equation}
-\Revised{This standard form follows from the instantaneous velocity of a point under a
-revolute motion \mbox{\cite{Siciliano2009,Craig2005}}. The vector
-\mbox{\(p_{\mathrm{EE}}-p_{i-1}\)} is the lever arm from the joint axis to the
-end-effector, so the cross product
-\mbox{\(z_{i-1}\times(p_{\mathrm{EE}}-p_{i-1})\)} is the linear velocity that rotation
-of joint \mbox{\(i\)} produces at the end-effector, while the lower block \mbox{\(z_{i-1}\)}
-is the corresponding angular velocity. Each column therefore stacks a linear
-contribution above an angular one.}
-
-\Revised{Because \mbox{\(z_{i-1}\)}, \mbox{\(p_{i-1}\)} and \mbox{\(p_{\mathrm{EE}}\)} all depend on the
-current joint configuration, the Jacobian is configuration dependent, and the
-influence of each joint on the end-effector motion changes as the robot moves.}
-
 \section{Cartesian Impedance Control}
 \label{sec:cartesian_impedance_control}
 
@@ -814,28 +768,35 @@ added to this expression to obtain the complete commanded torque in
 \subsection{Commanded and Estimated Wrench}
 \label{sec:commanded_versus_estimated_wrench}
 
-\Revised{Two wrenches appear in this work, and they are obtained in opposite
-directions. The commanded wrench \mbox{\(F\)} is formed from
-\mbox{\cref{eq:cartesian_force_moment_vector}} and reaches the joints through
-\mbox{\(J^\top\)}. The robot reports a second one. Its translational part is the
-model-estimated external force \mbox{\(\hat f_{\mathrm{ext}}\)}, inferred from
-the measured joint torques after the dynamic model has been subtracted.}
+\Revised{The commanded wrench \mbox{\(F\)} and the model-estimated external
+wrench are distinct controller signals. The commanded wrench follows from
+\mbox{\cref{eq:cartesian_force_moment_vector}} and is mapped to the joints by
+\mbox{\(J^\top\)}. By contrast, the robot estimates the external wrench from the
+measured joint torques and its dynamic model. Its translational part is denoted
+by \mbox{\(\hat f_{\mathrm{ext}}\)}.}
 
-\Revised{The commanded wrench needs no such inference. The stiffness and the
-pose error are both held by the controller. \mbox{\(K_{p,0}e_p\)} is therefore
-known while the motion is commanded. Against a rigid plane the tool barely
-moves, and the reference sets the error.}
+\Revised{Contact evaluation uses the force change from the value stored at the
+clearance transition,}
 
-\Revised{At rest the two are related by the contact. The torques from
-\mbox{\(J^\top F\)} are balanced by the contact reaction through the same
-Jacobian. \mbox{\(\hat f_{\mathrm{ext}}\)} then follows \mbox{\(-F\)}, up to
-model error, friction, and motion absorbed by the tool. While the reference
-still moves, the damping term \mbox{\(D_{p,0}\dot{p}_d\)} adds to the commanded
-force. It leaves when the reference stops.}
+\begin{equation}
+\Delta\hat f_{\mathrm{ext}}
+=
+\hat f_{\mathrm{ext}}-\hat f_{\mathrm{ref}}.
+\label{eq:estimated_external_force_change}
+\end{equation}
 
-\Revised{The estimate is an independent measurement of a load the controller
-already knows. It is not the only route to that load. Agreement between the two
-is used in \mbox{\cref{ch:results_discussion}} as a check on the impedance.}
+\Revised{Both \mbox{\(f\)} and \mbox{\(\Delta\hat f_{\mathrm{ext}}\)} are expressed in the
+base frame. Their signed components along the surface normal \mbox{\(n_s\)} are
+therefore obtained by projection. The commanded normal force is
+\mbox{\(F_{n,\mathrm{cmd}}=n_s^\top f\)}, whereas the estimated normal-load
+magnitude is \mbox{\(F_n=|n_s^\top\Delta\hat f_{\mathrm{ext}}|\)}.}
+
+\Revised{During a quasi-static press, the selected sign convention gives
+\mbox{\(n_s^\top\Delta\hat f_{\mathrm{ext}}\approx
+F_{n,\mathrm{cmd}}<0\)} and hence
+\mbox{\(F_n\approx-F_{n,\mathrm{cmd}}\)}. This relation expresses approximate
+force balance; it does not identify the two signals. Model error, friction,
+transient motion, and motion within the tool mount can produce differences.}
 
 \section{Surface Task Frame}
 \label{subsec:surface_task_frame}
@@ -846,18 +807,15 @@ values instead of as abstract base-frame directions.}
 
 \Revised{Let the unit surface normal \mbox{\(n_s\in\mathbb{R}^3\)}, with
 \mbox{\(\|n_s\|=1\)}, be
-expressed in the robot base frame. To complete the frame, choose an auxiliary
-direction \mbox{\(a_s\in\mathbb{R}^3\)} that is not parallel to \mbox{\(n_s\)}. This auxiliary
-direction is only used to define a repeatable tangent direction on the surface.
+expressed in the robot base frame. To complete the frame, choose a surface-frame
+reference direction \mbox{\(a_s\in\mathbb{R}^3\)} that is not parallel to \mbox{\(n_s\)}.
+This direction fixes the orientation of \mbox{\(t_1\)} within the surface plane.
 The first tangent vector is obtained by projecting \mbox{\(a_s\)} onto the plane
 orthogonal to \mbox{\(n_s\)}, and the second tangent vector is then obtained by a cross
 product. With \mbox{\(\tilde{t}_1\)} denoting the unnormalised projected tangent, the
-construction is a Gram--Schmidt orthonormalization step applied to the surface
-normal \mbox{\(n_s\)} and the auxiliary direction \mbox{\cite{Siciliano2009,Craig2005}}:}
-
-\Comment{Replace ``auxiliary direction'' with ``surface-frame reference
-direction''. Define \mbox{\(a_s\)} as the selected vector used only to fix the
-orientation of \mbox{\(t_1\)} within the surface plane.}
+construction is a Gram--Schmidt orthonormalisation step applied to the surface
+normal \mbox{\(n_s\)} and the surface-frame reference direction
+\mbox{\cite{Siciliano2009,Craig2005}}:}
 
 \begin{equation}
 \begin{aligned}
@@ -876,7 +834,7 @@ n_s\times t_1 .
 
 \Revised{Here, \mbox{\(t_1\)} and \mbox{\(t_2\)} are unit tangent vectors lying in the surface plane.
 The construction is valid as long as \mbox{\(\|\tilde{t}_1\|\neq0\)}, which means that
-the auxiliary direction \mbox{\(a_s\)} must not be parallel to the normal \mbox{\(n_s\)}. To
+the surface-frame reference direction \mbox{\(a_s\)} must not be parallel to the normal \mbox{\(n_s\)}. To
 match the implemented controller and its parameter order, the surface task
 frame collects the two tangents first and the normal last,}
 \begin{equation}
@@ -893,7 +851,7 @@ implementation uses
 \mbox{\([\,\text{tangent 1},\text{tangent 2},\text{normal}\,]^\top\)}.
 In the gain representation below, the contact task uses this frame by setting
 \mbox{\(R_{\mathrm{task}}=R_{\mathrm{surface}}\)}. This makes stiffness values such as
-\mbox{\(K_{t_1}\)}, \mbox{\(K_{t_2}\)}, and \mbox{\(K_n\)} local surface-frame quantities in that
+\mbox{\(K_{p,t_1}\)}, \mbox{\(K_{p,t_2}\)}, and \mbox{\(K_{p,n}\)} local surface-frame quantities in that
 same order.}
 
 
@@ -1008,9 +966,9 @@ K_{p,\mathrm{task}}
 =
 \operatorname{diag}
 \left(
-K_{t_1},
-K_{t_2},
-K_n
+K_{p,t_1},
+K_{p,t_2},
+K_{p,n}
 \right),
 \end{equation}
 
@@ -1022,49 +980,39 @@ K_{p,0}
 R_{\mathrm{surface}}\,
 \operatorname{diag}
 \left(
-K_{t_1},
-K_{t_2},
-K_n
+K_{p,t_1},
+K_{p,t_2},
+K_{p,n}
 \right)
 R_{\mathrm{surface}}^\top.
 \label{eq:spatial_gain_matrix}
 \end{equation}
 
-\Revised{The local rotational-stiffness entries \mbox{\(K_{r,t_1}\)},
-\mbox{\(K_{r,t_2}\)}, and \mbox{\(K_{r,n}\)} follow the same axis order:}
+\Revised{The local rotational-stiffness entries \mbox{\(K_{R,t_1}\)},
+\mbox{\(K_{R,t_2}\)}, and \mbox{\(K_{R,n}\)} follow the same axis order:}
 
 \begin{equation}
 K_{R,\mathrm{task}}
 =
 \operatorname{diag}
 \left(
-K_{r,t_1},
-K_{r,t_2},
-K_{r,n}
+K_{R,t_1},
+K_{R,t_2},
+K_{R,n}
 \right),
 \end{equation}
 
 \Revised{and the damping matrices are constructed analogously. A change in the
 configured surface orientation therefore changes the corresponding base-frame
 gain matrices even when the local gain values remain unchanged.}
-\Comment{Unify the scalar gain notation with Chapters~4 and~5. Replace
-\mbox{\(K_{t_1},K_{t_2},K_n\)} by
-\mbox{\(K_{p,t_1},K_{p,t_2},K_{p,n}\)} and replace
-\mbox{\(K_{r,t_1},K_{r,t_2},K_{r,n}\)} by
-\mbox{\(K_{R,t_1},K_{R,t_2},K_{R,n}\)}. The first subscript then identifies
-translation or rotation, while the second identifies the surface-frame axis.}
-
 \Revised{During approach, contact set-up, and grinding, the reported contact runs
 used this surface-frame construction for both translational and rotational gain
-blocks. For set-up and grinding, the translational entries
-\mbox{\([2000,2000,800]\,\mathrm{N/m}\)} were assigned to
-\mbox{\([t_1,t_2,n_s]\)} before transformation to the base frame. The active gain
-matrices were based on the configured surface frame and were not rotated with
-the current end-effector orientation \mbox{\(R_{\mathrm{EE}}\)}.}
-
-\Comment{Remove the numerical \mbox{\(K_p\)} entries from the theory chapter.
-Introduce their values later with the controller configuration.}
-
+blocks. In the reported experiments, the phase-indexed numerical matrices in
+\mbox{\cref{eq:experimental_setup_translational_stiffness,eq:experimental_setup_rotational_stiffness}}
+were assigned to \mbox{\([t_1,t_2,n_s]\)} before transformation to the base
+frame. The active gain matrices were based on the calibrated surface frame and
+were not rotated with the current end-effector orientation
+\mbox{\(R_{\mathrm{EE}}\)}.}
 
 \section{Centre of Compliance}
 \label{sec:coupled_pole_stiffness}
@@ -1084,23 +1032,10 @@ translation--rotation coupling that supports tool alignment.}
 \Revised{\mbox{\Cref{fig:compliance_lever_moment}} shows this geometry for the two signs
 of the tangential lever.}
 
-\Revised{Two levers occur in this thesis and they are separate quantities. The
-lever \mbox{\(r_c\)} of this section is a control parameter: it places the
-virtual spring and is selected before a run. The contact lever}
-
-\begin{equation}
-r_{\mathrm{contact}}
-=
-p_{\mathrm{TCP}}-p_{\mathrm{contact}}
-\in\R{3}
-\label{eq:contact_lever_definition}
-\end{equation}
-
-\Revised{runs from the physical contact point to the TCP and is an evaluation
-quantity: it carries an estimated external moment between those two points, as
-\mbox{\cref{eq:contact_moment_transfer}} states. It follows from the tool
-geometry, whereas \mbox{\(r_c\)} follows from a setting, and neither appears in
-the other's expression.}
+\Revised{The lever \mbox{\(r_c\)} is a controller parameter. It places the
+virtual spring relative to the TCP and is selected before a run. It is distinct
+from the geometric point or edge of the grinding face used to generate the
+set-up trajectory.}
 
 \Revised{Three forces occur in this thesis and they carry separate symbols, so
 that the one entering a cross product is never in doubt:}
@@ -1113,8 +1048,8 @@ that the one entering a cross product is never in doubt:}
         section works with, \mbox{\(f_{\mathrm{press}}=K_pe_p\)}, the part of
         the commanded force that the compression against the surface produces;}
   \item \Revised{\mbox{\(\Delta\hat f_{\mathrm{ext}}\)} is the model-estimated
-        external force change since first contact, a measurement rather than a
-        command, whose normal magnitude is \mbox{\(F_n\)}.}
+        external force change from the clearance-transition reference. It is
+        distinct from the command, and its normal magnitude is \mbox{\(F_n\)}.}
 \end{itemize}
 
 \Revised{The moment \mbox{\(m_c\)} of this section is elastic and follows from
@@ -1396,7 +1331,7 @@ continuously, the gain matrices would become configuration dependent.}
 
 \Revised{The local linearised centre of compliance \mbox{\(p_c\)} is consequently a
 selected point rather than a measured physical pivot. It need not coincide with
-the physical contact point \mbox{\(p_{\mathrm{contact}}\)}. The observed motion also depends on the
+the physical contact location. The observed motion also depends on the
 finite rotational stiffness, the lever direction, the environmental
 constraint, friction, and the additional active controller terms introduced
 later.}
@@ -1878,10 +1813,10 @@ values \mbox{\(\sigma_+\)} and \mbox{\(\sigma_-\)} correspond to
 \label{eq:nullspace_singular_value_difference}
 \end{equation}
 
-\Revised{The direction selector \mbox{\(s\)} is defined as}
+\Revised{The singular-value-conditioning direction selector \mbox{\(s_\sigma\)} is defined as}
 
 \begin{equation}
-s
+s_\sigma
 =
 \begin{cases}
 +1, & \Delta_\sigma>\delta_\sigma,\\
@@ -1891,16 +1826,12 @@ s
 \label{eq:nullspace_direction_selection}
 \end{equation}
 
-\Comment{Rename the singular-value-conditioning selector \mbox{\(s\)} to
-\mbox{\(s_\sigma\)}. Chapter~4 also uses \mbox{\(s(t)\)} for the commanded
-disturbance profile, so the unindexed symbol currently has two meanings.}
-
 \Revised{where \mbox{\(\delta_\sigma\geq0\)} is the comparison deadband. Within this deadband,
-the selector is set to zero and the conditioning contribution is suppressed.}
+the selector \mbox{\(s_\sigma\)} is set to zero and the conditioning contribution is suppressed.}
 
 \Revised{The selected direction is invariant to the sign convention of \mbox{\(v_7\)}
 returned by the \mbox{\abbr{SVD}}. Reversing \mbox{\(v_7\)} exchanges \mbox{\(q_+\)} and \mbox{\(q_-\)}
-and reverses \mbox{\(s\)}, so the product \mbox{\(sv_7\)} remains unchanged.}
+and reverses \mbox{\(s_\sigma\)}, so the product \mbox{\(s_\sigma v_7\)} remains unchanged.}
 
 \Revised{The conditioning-torque magnitude \mbox{\(k_\sigma\)} is specified
 independently of the probe angle.}
@@ -1911,19 +1842,19 @@ local approximations of the nonlinear constant-pose self-motion. The
 corresponding preservation of the end-effector pose is therefore a first-order
 property of the sampled direction.}
 
-\Revised{The selector uses the sign of \mbox{\(\Delta_\sigma\)} to choose the sampled
+\Revised{The selector \mbox{\(s_\sigma\)} uses the sign of \mbox{\(\Delta_\sigma\)} to choose the sampled
 direction with the larger value of \mbox{\(\sigma_{\min}\)}. This produces a
 two-point directional conditioning strategy based on local comparison rather
 than on the magnitude of the sampled variation.}
 
-\Revised{The vector \mbox{\(sv_7\)} defines the selected secondary joint-space direction.
+\Revised{The vector \mbox{\(s_\sigma v_7\)} defines the selected secondary joint-space direction.
 Projecting it with \mbox{\(N_\tau\)} gives the singular-value conditioning torque
 \mbox{\(\tau_\sigma\)}:}
 
 \begin{equation}
 \tau_\sigma
 =
-k_\sigma N_\tau\left(sv_7\right),
+k_\sigma N_\tau\left(s_\sigma v_7\right),
 \label{eq:nullspace_sigma_torque}
 \end{equation}
 
@@ -1955,7 +1886,7 @@ within the projected subspace.}
 =
 -d_{\mathrm{null}}N_\tau\dot q
 +
-k_\sigma N_\tau\left(sv_7\right)
+k_\sigma N_\tau\left(s_\sigma v_7\right)
 \in\mathbb{R}^7.
 \label{eq:nullspace_torque}
 \end{equation}

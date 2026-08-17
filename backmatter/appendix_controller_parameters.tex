@@ -4,19 +4,10 @@
 null-space values, and collision settings are collected in one reproducibility
 record.}
 
-This appendix records the active controller configuration used for the reported
-experiments. It is a reproducibility record for the implementation described in
-\cref{ch:implementation,ch:methodology}. The controller loads
-fifteen disjoint files in a fixed order:
-\texttt{Run\_Settings.txt}, \texttt{safety.txt},
-\texttt{Gripper\_Action.txt}, \texttt{Auto\_Damping.txt},
-\texttt{Plane\_Definition.txt}, \texttt{Tool\_Orientation.txt},
-\texttt{Tool\_Geometry.txt}, \texttt{Q\_Init.txt},
-\texttt{Approach\_Phase.txt}, \texttt{Clearance\_Gate.txt},
-\texttt{SetUp\_Phase.txt}, \texttt{Grind\_Phase.txt},
-\texttt{Nullspace.txt}, \texttt{hold.txt}, and \texttt{guidance.txt}.
-The values below are those recorded with each run rather than the defaults
-compiled into the controller.
+This appendix records the effective controller configuration stored with the
+reported experiments. It is a reproducibility record for the implementation
+described in \cref{ch:implementation,ch:methodology}; the values are the
+run-specific archived settings rather than compiled defaults.
 
 \section{Surface and Tool Geometry}
 \ReviewMark{green}{The configured geometry and initial joint vector are stated
@@ -44,14 +35,14 @@ Quantity & Configuration key & Value \\
 Surface point & \texttt{surface\_point} &
   \([0.515267,-0.107172,0.003108]\,\mathrm{m}\) \\
 Surface tilts & \(\alpha_s,\beta_s\) & \(-1.585^\circ,\ +0.988^\circ\) \\
-Entered first tangent & \texttt{alignment\_target\_tangent1} &
-  \([-0.905786,-0.422854,\newline 0.027332]\) \\
+First-tangent hint & \texttt{surface\_tangent1\_hint\_base} &
+  \([1,0,0]\) \\
 Tool axis in EE & \texttt{tool\_axis\_ee} &
-  \([-0.006011,0.000246,\newline 0.999982]\) \\
+  \([0.026387057,-0.006678514,\newline 0.999629492]\) \\
 Signed alignment target & \texttt{tool\_axis\_target\_sign} & \(-n_s\) \\
 Spin about the tool axis, from \(t_1\) &
   \texttt{tool\_target\_offset\_}\newline\texttt{normal\_deg} &
-  \(115.05^\circ\) \\
+  \(90.0^\circ\) \\
 Grinding-face centre in EE & \texttt{tool\_contact\_face\_center\_ee} &
   \([0,0,0.020]\,\mathrm{m}\) \\
 Grinding-face size & width \(\times\) length &
@@ -60,13 +51,13 @@ Feature tie tolerance &
   \texttt{tool\_contact\_feature\_}\newline\texttt{tie\_tolerance} &
   \(10^{-4}\,\mathrm{m}\) \\
 Initial-joint case & \texttt{q\_init\_case} &
-  \texttt{horizontal\_table\_search} \\
+  \texttt{saved\_qinit} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-This case selects the \texttt{q\_init\_table} entries, so the corresponding
-initial joint vector is
+The saved posture is numerically equal to the archived table-search posture.
+The active initial joint vector is
 \[
 \begin{aligned}
 q_{\mathrm{init}}={}&[
@@ -95,25 +86,24 @@ Approach translation &
   \([150,150,150]\,\mathrm{N/m}\), surface \([t_1,t_2,n_s]\) &
   \([20,20,20]\,\mathrm{N\,s/m}\) \\
 Approach rotation &
-  \([90,90,90]\,\mathrm{N\,m/rad}\), surface \([t_1,t_2,n_s]\) &
-  \([12,12,12]\,\mathrm{N\,m\,s/rad}\) \\
+  \([180,180,90]\,\mathrm{N\,m/rad}\), surface \([t_1,t_2,n_s]\) &
+  \([15,15,12]\,\mathrm{N\,m\,s/rad}\) \\
 Pre-set-up gate translation &
-  \(5000\,\mathrm{N/m}\), isotropic base &
-  \(200\,\mathrm{N\,s/m}\) \\
+  \([2000,2000,350]\,\mathrm{N/m}\), surface \([t_1,t_2,n_s]\) &
+  \([10,10,175]\,\mathrm{N\,s/m}\) \\
 Pre-set-up gate rotation &
-  \(90\,\mathrm{N\,m/rad}\), inherited approach rotation &
-  inherited cached approach \(D_R\) \\
+  \([5,5,50]\,\mathrm{N\,m/rad}\), surface \([t_1,t_2,n_s]\) &
+  \([10.01,10.01,10]\,\mathrm{N\,m\,s/rad}\) \\
 Set-up translation (compliance-centre source) &
-  \([2000,2000,350]\,\mathrm{N/m}\) in Cases~D to~H,
-  \([2000,2000,800]\,\mathrm{N/m}\) in Cases~A to~C, surface
+  \([2000,2000,350]\,\mathrm{N/m}\) in all Cases~A to~H, surface
   \([t_1,t_2,n_s]\) &
-  \([50,50,25]\,\mathrm{N\,s/m}\) \\
+  \([10,10,175]\,\mathrm{N\,s/m}\) \\
 Set-up rotation (compliance-centre source) &
   \([5,5,50]\,\mathrm{N\,m/rad}\), surface \([t_1,t_2,n_s]\) &
   \([10.01,10.01,10]\,\mathrm{N\,m\,s/rad}\) \\
 Grind translation (decoupled) &
   as the set-up entry above, surface \([t_1,t_2,n_s]\) &
-  \([50,50,25]\,\mathrm{N\,s/m}\) \\
+  \([10,10,175]\,\mathrm{N\,s/m}\) \\
 Grind rotation (decoupled) &
   \([5,5,50]\,\mathrm{N\,m/rad}\), surface \([t_1,t_2,n_s]\) &
   \([10.01,10.01,10]\,\mathrm{N\,m\,s/rad}\) \\
@@ -130,9 +120,9 @@ Manual guidance &
 \end{tabular}
 \end{table}
 
-The enabled pre-set-up gate overrides only translational stiffness. The
-pre-grind gate was also enabled; it remains in set-up and keeps the coupled
-pressed law rather than using the pre-set-up gate gains.
+The pre-set-up gate was disabled in all reported contact runs, so its defined
+gains were inactive. The enabled pre-grind gate remains in set-up and keeps the
+coupled pressed law rather than using the pre-set-up gate gains.
 
 With \texttt{setup\_translation\_surface\_frame} set, the set-up and grind
 translational blocks are read from the surface-frame keys listed above. The
@@ -149,9 +139,14 @@ no part in the reported runs.
 \toprule
 Quantity & Configuration key & Value \\
 \midrule
-Orient minimum time & \texttt{approach\_orient\_min\_time} & \(0.5\,\mathrm{s}\) \\
+Orient minimum time & \texttt{approach\_orient\_min\_time} & \(1.0\,\mathrm{s}\) \\
 Tool-axis switch tolerance &
-  \texttt{approach\_orient\_error\_threshold} & \(0.035\,\mathrm{rad}\) \\
+  \texttt{approach\_orient\_error\_threshold} & \(0.016\,\mathrm{rad}\) \\
+Spin switch tolerance &
+  \texttt{approach\_orient\_spin\_error\_threshold} & \(0.009\,\mathrm{rad}\) \\
+Orient timeout / maximum rate &
+  \texttt{approach\_orient\_timeout}, \texttt{approach\_orient\_max\_rate\_deg} &
+  \(8.0\,\mathrm{s}\), \(20^\circ\!/\mathrm{s}\) \\
 Descent speed / maximum distance &
   \texttt{descend\_speed}, \texttt{descend\_max\_distance} &
   \(0.1\,\mathrm{m/s}\), \(0.640\,\mathrm{m}\) \\
@@ -164,13 +159,12 @@ Set-up moment-change threshold &
   \texttt{setup\_moment\_threshold} & \(150\,\mathrm{N\,m}\) \\
 Set-up push speed / endpoint &
   \texttt{setup\_push\_speed}, \texttt{setup\_push\_end} &
-  \(0.050\,\mathrm{m/s}\), \(0.060\,\mathrm{m}\) in Cases~A to~C;
-  \(0.080\,\mathrm{m/s}\), \(0.240\,\mathrm{m}\) in Cases~D to~H \\
-Grinding reference mode & \texttt{grind\_sweep\_enabled} &
-  fixed tangential coordinates (configured \(t_2,\ 0.030\,\mathrm{m},\ 0.2\,\mathrm{Hz}\)) \\
+  \(0.080\,\mathrm{m/s}\), \(0.240\,\mathrm{m}\) in all Cases~A to~H \\
+Configured grinding sweep & \texttt{grind\_sweep\_enabled} &
+  enabled along \(t_2\), \(0.030\,\mathrm{m}\), \(0.2\,\mathrm{Hz}\); not entered in the reported runs \\
 Pre-set-up / pre-grind gates &
   \texttt{pause\_before\_set\_up}, \texttt{pause\_before\_grind} &
-enabled, enabled \\
+disabled, enabled \\
 \bottomrule
 \end{tabular}
 }
@@ -179,10 +173,10 @@ enabled, enabled \\
 \section{Inertia-Scaled Damping and Centre of Compliance}
 
 Inertia-scaled damping follows \cref{eq:implementation_cartesian_inertia,eq:implementation_inertia_scaled_damping}.
-It is enabled for approach, set-up, grind, and the pause gate. The
-approach factor is \(\zeta=1.9\), while set-up and grind use
-\(\zeta=1.0\). The pause gate uses separate translational and rotational factors because the two
-gain blocks are expressed in different frames. The configured maximum
+It is enabled for approach, set-up, the configured grinding phase, and the
+pause gate. The approach factor is \(\zeta=1.9\), while set-up and grinding use
+\(\zeta=1.0\). The pause gate fits separate translational and rotational
+factors to its two configured damping targets. The configured maximum
 coefficient \texttt{auto\_damping\_max} is \(400\). The configured values in
 \cref{tab:active_phase_gains} provide fallback damping for the phases using
 inertia-scaled damping. With
@@ -204,20 +198,19 @@ semidefiniteness. The factor \(\zeta=1\) is the directional coefficient used by
 the online damping calculation.
 
 The coupled \(6\times6\) law is enabled only during set-up, and in Cases~C
-and~E to~H. The lever was entered directly in surface coordinates through
-\texttt{coupled\_use\_direct\_rc\_surface}, so
+and~E to~H. Case~F used the surface-frame lever definition. The other shifted
+cases used tool-fixed offsets configured in end-effector coordinates. For the
+surface-fixed definition,
 \[
 r_c=R_{\mathrm{surface}}\,r_c^{S},
 \qquad
 r_c^{S}=[\,r_{c,t_1},\ r_{c,t_2},\ r_{c,n}\,]^\top ,
 \]
-with the tested components listed in \cref{tab:experimental_test_cases}. The
-alternative offset-from-edge convention, in which the centre of compliance \(p_c\) is
-placed relative to the contact point projected onto the surface at the
-\(20\,\mathrm{mm}\) clearance hand-off, is preserved in the implementation for
-archived configuration files and was not used for the reported runs. With
-\texttt{coupled\_pole\_freeze\_at\_contact=1}, the references are those captured
-at the hand-off, so the active \(r_c\) is constant throughout set-up.
+with the tested components listed in \cref{tab:experimental_test_cases}. A
+tool-fixed offset remains constant in end-effector coordinates and rotates in
+the base frame with the end effector; a surface-fixed lever remains constant
+in surface coordinates. The controller transforms the selected definition to
+base coordinates during each set-up cycle.
 
 \section{Null-Space and Operating Parameters}
 \ReviewMark{green}{The selected mode, gains, probe settings, logging capacity,
@@ -238,10 +231,11 @@ Robot-side monitoring applied these thresholds throughout the reported runs.
 \toprule
 Parameter & Symbol / key & Value \\
 \midrule
-Null-space mode & \texttt{nullspace\_mode} & \(1\) (projected damping only) \\
+Null-space mode & \texttt{nullspace\_mode} &
+  \(3\) (projected damping and singular-value conditioning) \\
 Null-space damping & \(d_{\mathrm{null}}\) & \(2.0\,\mathrm{N\,m\,s/rad}\) \\
 Sigma torque magnitude & \(k_\sigma\) &
-  \(1.0\,\mathrm{N\,m}\) (inactive in mode \(1\)) \\
+  \(1.0\,\mathrm{N\,m}\) \\
 Probe distance & \(\alpha_{\mathrm{probe}}\) & \(0.08\,\mathrm{rad}\) \\
 Sigma difference deadband & \(\delta_\sigma\) & \(10^{-6}\) \\
 Relative SVD cutoff & \(\rho\) & \(10^{-4}\) \\
