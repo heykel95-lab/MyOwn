@@ -1096,14 +1096,27 @@ quantity: it carries an estimated external moment between those two points, as
 geometry, whereas \mbox{\(r_c\)} follows from a setting, and neither appears in
 the other's expression.}
 
-\Revised{The wrench of this section is likewise elastic rather than measured.
-The force \mbox{\(f\)} is the restoring force of the virtual spring,
-\mbox{\(f=K_pe_p\)}, and \mbox{\(m_c\)} is the moment that force exerts at the
-TCP through the lever. That moment is the cross product of the vector running
-from the TCP to the centre of compliance with the force, in that order. The
-vector in this direction is \mbox{\(-r_c\)}, which is the reversal that
-produces the sign in
-\mbox{\cref{eq:pole_translation_moment_sign_check}}: written with
+\Revised{Three forces occur in this thesis and they carry separate symbols, so
+that the one entering a cross product is never in doubt:}
+
+\begin{itemize}
+  \item \Revised{\mbox{\(f\)} is the commanded Cartesian force of the control
+        law, the translational half of the wrench \mbox{\(F\)} that
+        \mbox{\cref{eq:joint_torque_mapping}} maps to joint torques;}
+  \item \Revised{\mbox{\(f_{\mathrm{press}}\)} is the elastic press this
+        section works with, \mbox{\(f_{\mathrm{press}}=K_pe_p\)}, the part of
+        the commanded force that the compression against the surface produces;}
+  \item \Revised{\mbox{\(\Delta\hat f_{\mathrm{ext}}\)} is the model-estimated
+        external force change since first contact, a measurement rather than a
+        command, whose normal magnitude is \mbox{\(F_n\)}.}
+\end{itemize}
+
+\Revised{The moment \mbox{\(m_c\)} of this section is elastic and follows from
+\mbox{\(f_{\mathrm{press}}\)} alone. It is the moment that press exerts at the
+TCP through the lever, namely the cross product of the vector running from the
+TCP to the centre of compliance with the press, in that order. The vector in
+this direction is \mbox{\(-r_c\)}, which is the reversal that produces the sign
+in \mbox{\cref{eq:pole_translation_moment_sign_check}}: written with
 \mbox{\(r_c\)} itself the cross product points the other way. The measured
 contact wrench, and the form it takes during the experiment, is treated in
 \mbox{\cref{sec:discussion_compliance_lever}}.}
@@ -1274,7 +1287,7 @@ the block-diagonal impedance defined directly at the TCP.}
 reduces to a single term. With}
 
 \[
-f=K_pe_p,
+f_{\mathrm{press}}=K_pe_p,
 \]
 
 \Revised{the elastic moment at the TCP is}
@@ -1282,9 +1295,9 @@ f=K_pe_p,
 \begin{equation}
 m_c
 =
-[r_c]_\times^\top f
+[r_c]_\times^\top f_{\mathrm{press}}
 =
--r_c\times f.
+-r_c\times f_{\mathrm{press}}.
 \label{eq:pole_translation_moment_sign_check}
 \end{equation}
 

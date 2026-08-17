@@ -18,7 +18,6 @@
 % --------------------------------------------------------------- entry keys
 \node[lbl] (ins) at (0,1.0)    {menu \texttt{s}};
 \node[lbl] (inh) at (6.6,1.0)  {menu \texttt{h}};
-\node[lbl] (int) at (11.6,1.0) {menu \texttt{t}};
 
 % ------------------------------------------------------------- main sequence
 \node[ph]   (orient) at (0, 0.0)  {\texttt{approach\_orient}};
@@ -33,15 +32,14 @@
 \node[ph]   (grind)  at (0,-10.15){\texttt{grind}};
 
 % ------------------------------------------------------------- side branches
-% The three cases the hold phase runs in. Two are entered from the menu and
-% differ only in the impedance they hold with. The third is the wait at a phase
-% gate, which holds the pose the sequence arrived at with its own impedance.
+% The hold entered from the menu, which holds with the hold impedance.
 \node[ph] (hold)  at (6.6, 0.0)  {\texttt{hold}\\[-2pt]
       \footnotesize hold impedance};
-\node[ph] (holdt) at (11.6, 0.0) {\texttt{hold}\\[-2pt]
+% The hold the run returns to after grinding, which keeps the set-up impedance
+% so the tool stays pressed. Pressing s starts the sequence again from its
+% first phase, which is what closes the loop.
+\node[ph] (holdset) at (-4.6,-5.0) {\texttt{hold}\\[-2pt]
       \footnotesize set-up impedance};
-\node[ph] (holdg) at (11.6,-5.8) {\texttt{hold}\\[-2pt]
-      \footnotesize gate impedance};
 \node[ph] (guide) at (6.6,-2.9)  {\texttt{manual\_guide}};
 \node[side, draw=red!45] (stop) at (6.6,-10.15)
       {\footnotesize \texttt{e} stops any phase};
@@ -49,12 +47,14 @@
 % --------------------------------------------------------------------- flow
 \draw[flow] (ins) -- (orient);
 \draw[flow] (inh) -- (hold);
-\draw[flow] (int) -- (holdt);
 
-% Both gates hold this way while they wait, drawn once from the first of them.
-\draw[flow] (g1.east)
-      -- node[lbl, above, pos=0.55] {at either gate}
-      (9.0,-4.35) -- (9.0,-5.8) -- (holdg.west);
+% The loop. Grinding ends in a hold that keeps the set-up impedance, and the
+% run starts again from the first phase on the same key that started it.
+\draw[flow] (grind.west) -- (-4.6,-10.15) -- (holdset.south);
+\draw[flow] (holdset.north) -- (-4.6,0.0)
+      -- node[lbl, above, pos=0.6] {\texttt{s}}
+      (orient.west);
+
 \draw[flow] (orient) -- (d1);
 \draw[flow] (d1)     -- (desc);
 \draw[flow] (desc)   -- (g1);
@@ -78,7 +78,7 @@
       (6.6,-5.8) -- (guide.south);
 \draw[flow] (guide.west) -- (3.3,-2.9) -- (3.3,1.65)
       -- node[lbl, above, pos=0.45] {\texttt{p} recaptures}
-      (-2.5,1.65) -- (-2.5,0.0) -- (orient.west);
+      (-2.5,1.65) -- (-2.5,0.425) -- (orient.north west);
 
 \draw[flow, red!45!black] (grind) -- (stop);
 
