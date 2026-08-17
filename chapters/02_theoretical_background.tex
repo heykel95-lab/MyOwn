@@ -1063,14 +1063,14 @@ whereas the point shift changes the point about which the impedance is defined.
 \mbox{\Cref{fig:compliance_lever_moment}} shows this geometry for the two signs
 of the tangential lever.
 
-Three points are involved and they must be kept apart. The contact point
-\mbox{\(p_{\mathrm{contact}}\)} is the point or edge of the grinding face that
-reaches the surface; the controller determines it from the rectangular face
-geometry and the current tool orientation. The tool centre point
+Three points are involved and they must be kept apart. The selected
+grinding-face point \mbox{\(p_g\)} is the point or edge of the face that reaches
+the surface, so it is the predicted contact point; the controller determines it
+from the rectangular face geometry and the current tool orientation. The tool centre point
 \mbox{\(p_{\mathrm{TCP}}\)} is the Cartesian reference point of the controller.
 The centre of compliance \mbox{\(p_c\)} is a software-defined point about which
 the translational and rotational impedance is formulated before being
-transformed to the TCP. It is not the physical contact point.
+transformed to the TCP. It is not the predicted contact point.
 
 Moving \mbox{\(p_c\)} therefore moves neither the contact point nor the
 physical contact force. The surface force still acts where the tool touches.
@@ -1087,9 +1087,9 @@ the other side it opposes or reverses it.
 The two offsets are separate quantities and add:
 
 \[
-p_{\mathrm{contact}}-p_c
+p_g-p_c
 =
-\underbrace{\left(p_{\mathrm{contact}}-p_{\mathrm{TCP}}\right)}_{\text{tool and contact geometry}}
+\underbrace{\left(p_g-p_{\mathrm{TCP}}\right)}_{\text{tool and contact geometry}}
 +
 \underbrace{\left(p_{\mathrm{TCP}}-p_c\right)}_{r_c}.
 \]
@@ -1113,10 +1113,12 @@ that the one entering a cross product is never in doubt:
         distinct from the command, and its normal magnitude is \mbox{\(F_n\)}.
 \end{itemize}
 
-The moment \mbox{\(m_c\)} of this section is elastic and follows from
-\mbox{\(f_{\mathrm{press}}\)} alone. It is the moment that press exerts at the
-TCP through the lever, namely the cross product of the vector running from the
-TCP to the centre of compliance with the press, in that order. The vector in
+The moment \mbox{\(m_c\)} of this section is the controller-side coupling
+moment produced when the elastic press term is shifted from the virtual centre
+of compliance to the TCP. It follows from \mbox{\(f_{\mathrm{press}}\)} alone,
+and is distinguished from the physical moment of the surface contact force
+about the TCP. Algebraically it is the cross product of the vector running from
+the TCP to the centre of compliance with the press, in that order. The vector in
 this direction is \mbox{\(-r_c\)}, which is the reversal that produces the sign
 in \mbox{\cref{eq:pole_translation_moment_sign_check}}: written with
 \mbox{\(r_c\)} itself the cross product points the other way. The measured
