@@ -1112,15 +1112,18 @@ viewpoint. The controller generates the Cartesian wrench of
 separates into an elastic and a damping contribution,
 
 \begin{equation}
-f
-=
-K_pe_p+D_p\left(\dot p_d-\dot p_{\mathrm{EE}}\right)
-=
-f_{\mathrm{press}}+f_D,
+f=f_K+f_D,
 \qquad
-f_{\mathrm{press}}=K_pe_p.
+f_K=K_pe_p,
+\qquad
+f_D=D_p\left(\dot p_d-\dot p_{\mathrm{EE}}\right),
 \label{eq:commanded_force_split}
 \end{equation}
+
+where \mbox{\(f_K\)} is the elastic commanded force component and
+\mbox{\(f_D\)} the damping component. The name matters here: \mbox{\(f_K\)} is
+the spring contribution alone and not the complete force pressing against the
+surface, which is \mbox{\(f\)}.
 
 Independently, the robot model provides an estimate of the external wrench.
 Relative to the value stored at the clearance transition, its change is
@@ -1139,55 +1142,94 @@ Thus \mbox{\(F\)} describes what the controller commands, whereas
 \mbox{\(\Delta\hat F_{\mathrm{ext}}\)} provides a model-based observation of
 the resulting external loading.
 
-The role of the tool-geometry lever can be illustrated from the estimated
-external force. If its resultant is represented as acting at the selected tool
-point, the corresponding geometry-based moment about the TCP is
+On the commanded side, the rotational impedance of
+\mbox{\cref{eq:rotational_impedance_moment}} already produces a moment at the
+TCP whatever the centre of compliance is. Writing it as
 
 \begin{equation}
-m_{\mathrm{contact,TCP}}=r_T\times\Delta\hat f_{\mathrm{ext}}.
-\label{eq:contact_moment_about_tcp}
+m_0=K_Re_R-D_R\omega_{\mathrm{EE}},
+\label{eq:zero_lever_commanded_moment}
 \end{equation}
 
-This is the moment contribution obtained when the resultant external force is
-represented as acting at \mbox{\(p_T\)}. Since the selected tool point is a
-geometric contact reference rather than the exact instantaneous
-force-application point, \mbox{\(m_{\mathrm{contact,TCP}}\)} is a
-geometry-based reconstruction and not an independently measured moment. It is
-therefore distinct from \mbox{\(\Delta\hat m_{\mathrm{ext}}\)}, which the robot
-model estimates directly, and the two are compared rather than equated. About
-the centre of compliance the same reconstruction would take the complete lever
-of \mbox{\cref{eq:pole_lever_sum}},
-\mbox{\(\left(r_T+r_c\right)\times\Delta\hat f_{\mathrm{ext}}\)}, which the
-controller never forms.
-
-The virtual lever acts instead on the commanded impedance. For a purely
-translational spring-damper error, shifting the impedance from \mbox{\(p_c\)}
-to the TCP generates the commanded coupling moment
+the shifted impedance adds a coupling contribution when \mbox{\(r_c\neq0\)}.
+Both the stiffness and the damping matrices are shifted, so both commanded
+force components acquire the same lever,
 
 \begin{equation}
-m_{c,\mathrm{trans}}=-r_c\times f.
+m_{c,K}=-r_c\times f_K,
+\qquad
+m_{c,D}=-r_c\times f_D,
+\label{eq:pole_coupling_moment_parts}
+\end{equation}
+
+and their sum is the complete translational coupling moment
+
+\begin{equation}
+m_{c,\mathrm{trans}}=m_{c,K}+m_{c,D}=-r_c\times f.
 \label{eq:pole_coupling_moment_translational}
 \end{equation}
 
-The complete translational commanded force therefore receives a corresponding
-moment, and not only its elastic part. To isolate the elastic alignment
-mechanism, the sign analysis below retains \mbox{\(f_{\mathrm{press}}\)} alone,
-giving
+The commanded moment is therefore \mbox{\(m_{\mathrm{cmd}}\approx m_0+
+m_{c,\mathrm{trans}}\)} in this simplified picture. The approximation is
+deliberate: when \mbox{\(e_R\neq0\)} the shifted law of
+\mbox{\cref{eq:coupled_tcp_stiffness,eq:coupled_tcp_damping}} carries further
+\mbox{\(r_c\)}-dependent terms in its lower-right block, so the sum explains
+the translational coupling mechanism rather than expanding every term of the
+shifted law.
+
+The two contributions act over different time scales. The damping term is
+velocity dependent, so as the commanded reference stops advancing and the robot
+settles, \mbox{\(\dot p_d-\dot p_{\mathrm{EE}}\to\mathbf{0}\)} and
+\mbox{\(f_D\to\mathbf{0}\)}, leaving
+\mbox{\(m_{c,\mathrm{trans}}\to-r_c\times f_K\)}. The elastic contribution
+therefore carries the steady alignment tendency, while the damping
+contribution shapes the transient. The sign analysis below uses the elastic
+contribution alone, written
 
 \[
-m_c=-r_c\times f_{\mathrm{press}},
+m_{c,K}=-r_c\times f_K,
 \]
 
 which \mbox{\cref{eq:pole_translation_moment_sign_check}} obtains from the
-point-shifted stiffness blocks. The damping-induced coupling follows from the
-shifted damping matrix in the same manner.
+point-shifted stiffness blocks.
 
-The two viewpoints are therefore kept apart by their symbols.
-\mbox{\Cref{fig:moment_bookkeeping}} places them side by side:
-\mbox{\(r_T\)} pairs with the model-estimated external force on the observed
-contact side, and \mbox{\(r_c\)} pairs with the commanded force on the
-controller side. The measured contact wrench, and the form it takes during the
-experiment, is treated in \mbox{\cref{sec:results_case_d}}.
+On the observed side, the surface interaction produces an external wrench whose
+change the robot model estimates as \mbox{\(\Delta\hat m_{\mathrm{ext}}\)}. The
+tool-geometry lever explains how an external force acting away from the TCP
+contributes to that moment. Representing the estimated resultant as acting at
+the selected tool point gives the force-lever contribution
+
+\begin{equation}
+m_{r_T}=r_T\times\Delta\hat f_{\mathrm{ext}}.
+\label{eq:contact_moment_about_tcp}
+\end{equation}
+
+Since the selected tool point is a geometric contact reference rather than the
+exact instantaneous force-application point, \mbox{\(m_{r_T}\)} is a
+geometry-based reconstruction and not an independently measured moment. It is
+compared with \mbox{\(\Delta\hat m_{\mathrm{ext}}\)} and never equated to it,
+and it is not added to \mbox{\(m_0\)} or \mbox{\(m_{c,K}\)}: those belong to the
+command, and \mbox{\(\Delta\hat F_{\mathrm{ext}}\)} is the observation of what
+the resulting interaction produced. About the centre of compliance the same
+reconstruction would take the complete lever of
+\mbox{\cref{eq:pole_lever_sum}},
+\mbox{\(\left(r_T+r_c\right)\times\Delta\hat f_{\mathrm{ext}}\)}, which the
+controller never forms.
+
+The zero-lever condition is therefore not a zero-moment condition. Setting
+\mbox{\(r_c=0\)} removes \mbox{\(m_{c,K}\)} alone. The commanded rotational moment
+\mbox{\(m_0\)} remains, and because \mbox{\(r_T\neq0\)} the external force can
+still contribute \mbox{\(m_{r_T}\)}, so contact-induced rotation is possible
+with the centre of compliance at the TCP. Shifting the centre of compliance
+adds \mbox{\(m_{c,K}\)} to the command, which changes the interaction and with it
+the estimated \mbox{\(\Delta\hat f_{\mathrm{ext}}\)} and
+\mbox{\(\Delta\hat m_{\mathrm{ext}}\)}. The external moment is the result of
+that closed-loop interaction rather than an algebraic sum of the commanded and
+reconstructed terms.
+
+\mbox{\Cref{fig:moment_bookkeeping}} places the two sides side by side. The
+measured contact wrench, and the form it takes during the experiment, is
+treated in \mbox{\cref{sec:results_case_d}}.
 
 \begin{figure}[H]
   \centering
@@ -1362,17 +1404,17 @@ For a purely translational error, \mbox{\(e_R=0\)}, the coupling
 reduces to a single term. With
 
 \[
-f_{\mathrm{press}}=K_pe_p,
+f_K=K_pe_p,
 \]
 
 the elastic moment at the TCP is
 
 \begin{equation}
-m_c
+m_{c,K}
 =
-[r_c]_\times^\top f_{\mathrm{press}}
+[r_c]_\times^\top f_K
 =
--r_c\times f_{\mathrm{press}}.
+-r_c\times f_K.
 \label{eq:pole_translation_moment_sign_check}
 \end{equation}
 
@@ -1426,24 +1468,24 @@ Because the set-up motion is commanded primarily along the surface normal, the
 elastic press is approximated for this sign analysis as
 
 \begin{equation}
-f_{\mathrm{press}}
+f_K
 \approx
--F_{\mathrm{press}} n_s,
+-F_{K,n} n_s,
 \qquad
-F_{\mathrm{press}}>0,
+F_{K,n}>0,
 \label{eq:general_compliance_normal_force}
 \end{equation}
 
-where \mbox{\(F_{\mathrm{press}}\)} denotes the quasi-static magnitude of the
-elastic press. It is a commanded quantity and is not the model-estimated
-normal-force change \mbox{\(F_n\)}. Tangential force components caused by pose error, friction, or the
+where \mbox{\(F_{K,n}=-n_s^\top f_K>0\)} is the magnitude of the commanded
+elastic normal component. It is a commanded quantity and is not the
+model-estimated external normal-load magnitude \mbox{\(F_n\)}. Tangential force components caused by pose error, friction, or the
 evolving contact geometry are not represented in this first-order argument.
 Substitution into \mbox{\cref{eq:pole_translation_moment_sign_check}} gives
 
 \begin{equation}
-m_c
+m_{c,K}
 \approx
--F_{\mathrm{press}}\rho_c
+-F_{K,n}\rho_c
 \frac{
 \theta_{t_1}t_1+\theta_{t_2}t_2
 }{
@@ -1454,9 +1496,9 @@ m_c
 
 Thus, the press-induced moment is directed opposite to the commanded
 orientation offset. For a positive command about \mbox{\(t_1\)} it reduces to
-\mbox{\(m_c\approx-F_{\mathrm{press}}\rho_c t_1\)}, and for a positive command
+\mbox{\(m_{c,K}\approx-F_{K,n}\rho_c t_1\)}, and for a positive command
 about \mbox{\(t_2\)} it reduces to
-\mbox{\(m_c\approx-F_{\mathrm{press}}\rho_c t_2\)}. Reversing the orientation offset
+\mbox{\(m_{c,K}\approx-F_{K,n}\rho_c t_2\)}. Reversing the orientation offset
 reverses both the selected lever and the generated moment.
 
 The coupling vanishes for \mbox{\(r_c=0\)}. Conversely, if \mbox{\(K_p\)} is nonsingular,

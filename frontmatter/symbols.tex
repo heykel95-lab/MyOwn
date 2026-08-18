@@ -73,7 +73,7 @@ column makes the mixed translational and rotational quantities traceable.}
 \symgroup{Dynamics and Torques}{
 \symrow{$F$}{Cartesian wrench}{[N], [N\,m]}
 \symrow{$f,\ m$}{Commanded Cartesian force / moment}{[N], [N\,m]}
-\symrow{$f_{\mathrm{press}},\ m_c$}{Elastic press against the surface, $f_{\mathrm{press}}=K_pe_p$ / corresponding compliance-centre coupling moment}{[N], [N\,m]}
+\symrow{$f_K,\ m_{c,K}$}{Elastic commanded force component, $f_K=K_pe_p$ / its compliance-centre coupling moment, $m_{c,K}=-r_c	imes f_K$}{[N], [N\,m]}
 \symrow{$K,\ D$}{Full Cartesian stiffness / damping matrices}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
 \symrow{$\Lambda$}{Operational-space (Cartesian) inertia matrix}{[kg], [kg\,m], [kg\,m$^2$]}
 \symrow{$M(q)$}{Joint-space mass matrix}{[kg\,m$^2$]}
@@ -103,7 +103,8 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$r_{\mathrm{width,EE}},\ r_{\mathrm{length,EE}}$}{Tool face half-width / half-length vector in the EE frame}{[m]}
 \symrow{$r_{T,\mathrm{EE}},\ p_T$}{Selected tool point in the EE frame / its base-frame position}{[m]}
 \symrow{$r_T$}{Selected tool-point offset from the TCP, $p_T-p_{\mathrm{TCP}}$}{[m]}
-\symrow{$m_{\mathrm{contact,TCP}}$}{Geometry-based contact moment about the TCP, reconstructed as $r_T\times\Delta\hat f_{\mathrm{ext}}$}{[N\,m]}
+\symrow{$m_0$}{Commanded rotational impedance moment at the TCP, independent of $r_c$}{[N\,m]}
+\symrow{$m_{r_T}$}{Geometry-based force-lever moment about the TCP, reconstructed as $r_T\times\Delta\hat f_{\mathrm{ext}}$}{[N\,m]}
 }
 
 \symgroup{Compliance and Alignment}{
@@ -121,12 +122,13 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$\Delta p_{\mathrm{TCP}},\ s_{\mathrm{TCP}}$}{TCP displacement / its magnitude}{[m]}
 \symrow{$F_n$}{Positive normal magnitude of the model-estimated external-force change from the clearance transition, $|n_s^\top\Delta\hat f_{\mathrm{ext}}|$}{[N]}
 \symrow{$F_{n,\mathrm{cmd}},\ M_{t_i,\mathrm{cmd}}$}{Signed commanded normal force / commanded TCP moment about surface tangent $t_i$}{[N], [N\,m]}
-\symrow{$F_{\mathrm{press}}$}{Quasi-static magnitude of the commanded elastic press, $f_{\mathrm{press}}\approx-F_{\mathrm{press}}n_s$}{[N]}
+\symrow{$F_{K,n}$}{Magnitude of the commanded elastic normal component, $F_{K,n}=-n_s^\top f_K$}{[N]}
 \symrow{$F_{n,\mathrm{block}}$}{Fully blocked normal virtual-spring command scale}{[N]}
 \symrow{$\hat f_{\mathrm{ext}},\ \hat f_{\mathrm{ref}}$}{Model-estimated external force / clearance-transition reference}{[N]}
 \symrow{$\Delta\hat F_{\mathrm{ext}},\ \Delta\hat m_{\mathrm{ext}}$}{Model-estimated external-wrench change from the clearance transition / its moment part}{[N], [N\,m]}
-\symrow{$f_D$}{Damping part of the commanded translational force, $f=f_{\mathrm{press}}+f_D$}{[N]}
-\symrow{$m_{c,\mathrm{trans}}$}{Commanded coupling moment of the complete translational force, $-r_c\times f$}{[N\,m]}
+\symrow{$f_D$}{Damping commanded force component, $f=f_K+f_D$}{[N]}
+\symrow{$m_{c,D}$}{Coupling moment of the damping component, $-r_c\times f_D$}{[N\,m]}
+\symrow{$m_{c,\mathrm{trans}}$}{Complete translational coupling moment, $m_{c,K}+m_{c,D}=-r_c\times f$}{[N\,m]}
 }
 
 \symgroup{Quasi-Static Stiffness and Damping Design}{

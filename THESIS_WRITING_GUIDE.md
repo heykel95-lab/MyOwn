@@ -807,7 +807,7 @@ and the analysed total are stated once, in the data-recording subsection. The
 evaluation section says how repeated settings are reported and where the
 standard deviations appear, and does not restate the counts.
 
-**Isotropic matrices are a table, not a display.** Four \(3	imes3\)
+**Isotropic matrices are a table, not a display.** Four \(3\times3\)
 matrices whose diagonal entries are all equal spent most of a page saying four
 numbers. They are one small table with a sentence saying every entry was
 isotropic.
@@ -921,7 +921,7 @@ The physical surface force still acts at the actual contact point. What changes
 is the point about which the compliance is defined, and therefore the
 translation–rotation coupling: the same normal press produces a different
 rotational response as \(p_c\) moves. Give that explanation before introducing
-\(r_c=p_{\mathrm{TCP}}-p_c\) and \(m_c=-r_c\times f_{\mathrm{press}}\), not
+\(r_c=p_{\mathrm{TCP}}-p_c\) and \(m_{c,K}=-r_c\times f_K\), not
 after. If \(p_c\) lies on the relevant line of action the moment contribution
 becomes small or zero; displacing it to one side produces a moment that assists
 the required alignment, and to the other side one that opposes or reverses it.
@@ -1005,38 +1005,84 @@ extended to physical disturbances or contact response.
   force was introduced and then removed, because the thesis already has the two
   viewpoints it needs and inventing a third force blurred them. Build every
   moment statement on the existing quantities: the **commanded** side is
-  \(F=[f;m]\) with \(f=f_{\mathrm{press}}+f_D\), and the **model-estimated**
+  \(F=[f;m]\) with \(f=f_K+f_D\), and the **model-estimated**
   side is \(\Delta\hat F_{\mathrm{ext}}=[\Delta\hat f_{\mathrm{ext}};
   \Delta\hat m_{\mathrm{ext}}]\) relative to the clearance transition.
 - **Each lever pairs with one of those two viewpoints, and the pairing is the
   point.** \(r_T\) goes with the estimated force,
-  \(m_{\mathrm{contact,TCP}}=r_T\times\Delta\hat f_{\mathrm{ext}}\); \(r_c\)
+  \(m_{r_T}=r_T\times\Delta\hat f_{\mathrm{ext}}\); \(r_c\)
   goes with the commanded force, \(m_{c,\mathrm{trans}}=-r_c\times f\). Show
   them together — the figure in the compliance-centre section draws the same
   geometry twice and fades out whichever lever does not act.
-- **\(m_{\mathrm{contact,TCP}}\) is a reconstruction, not a measurement.** It is
+- **\(m_{r_T}\) is a reconstruction, not a measurement.** It is
   what the moment would be if the estimated resultant acted at \(p_T\), and
   \(p_T\) is a geometric reference rather than the instantaneous
   force-application point. It is therefore compared with the directly estimated
-  \(\Delta\hat m_{\mathrm{ext}}\) and never equated to it.
+  \(\Delta\hat m_{\mathrm{ext}}\) and never equated to it. **Do not call it
+  \(m_{\mathrm{contact}}\)** — that name reads as the complete contact moment,
+  which it is not.
+- **The moments do not add across the two sides.** There are not three terms to
+  sum. The commanded side carries \(m_0=K_Re_R-D_R\omega_{\mathrm{EE}}\), the
+  ordinary rotational impedance, plus the coupling \(m_{c,K}\) when \(r_c\neq0\);
+  the observed side carries \(\Delta\hat m_{\mathrm{ext}}\), with \(m_{r_T}\)
+  as a reconstruction of the force-lever contribution to it. **Never add
+  \(m_{r_T}\) to \(m_0\) or \(m_{c,K}\).** One interaction, seen from two sides:
+  the command produces motion and press, and the external moment is the result
+  of the closed-loop interaction rather than an algebraic sum.
+- **\(m_{\mathrm{cmd}}\approx m_0+m_{c,K}\) is a mechanism explanation, not an
+  identity.** When \(e_R\neq0\) the shifted \(6\times6\) law carries further
+  \(r_c\)-dependent terms in its lower-right block, so say "approximately" and
+  say why.
+- **\(r_c=0\) is not a zero-moment condition.** It removes \(m_{c,K}\) alone.
+  \(m_0\) remains, and \(r_T\neq0\) means contact can still contribute
+  \(m_{r_T}\). This is what makes the strong zero-lever \(t_1\) rotation
+  unsurprising, and the thesis states it where the reader will otherwise assume
+  the opposite.
+- **Never write \(r_T\times f_K\).** \(f_K\) is a
+  commanded elastic force; the contact-side reconstruction takes the estimated
+  force, \(r_T\times\Delta\hat f_{\mathrm{ext}}\). Crossing a lever from one
+  side with a force from the other is the error this whole section exists to
+  prevent.
 - The complete translational command carries a moment, not only its elastic
   part: \(m_{c,\mathrm{trans}}=-r_c\times f\). The sign analysis then retains
-  \(f_{\mathrm{press}}\) alone, giving \(m_c=-r_c\times f_{\mathrm{press}}\),
-  and says that it is doing so — otherwise \(f_{\mathrm{press}}\) appears to
+  \(f_K\) alone, giving \(m_{c,K}=-r_c\times f_K\),
+  and says that it is doing so — otherwise \(f_K\) appears to
   enter arbitrarily. The damping coupling follows from the shifted damping
   matrix in the same way.
 - About the centre of compliance the same reconstruction would take
   \((r_T+r_c)\times\Delta\hat f_{\mathrm{ext}}\). **Mention this once.** The
   controller never forms it: the congruence transformation receives \(r_c\), as
   the appendix source listing shows.
-- **The commanded press magnitude is \(F_{\mathrm{press}}\), never \(F_n\).**
-  \(F_n\) is reserved for the positive normal magnitude of the model-estimated
-  external-force change. Writing \(f_{\mathrm{press}}\approx-F_n n_s\) put a
+- **The commanded elastic normal magnitude is \(F_{K,n}=-n_s^\top f_K\), never
+  \(F_n\).** \(F_n\) is reserved for the positive normal magnitude of the
+  model-estimated external-force change. Writing \(f_K\approx-F_n n_s\) put a
   measured symbol inside a commanded quantity; it is
-  \(f_{\mathrm{press}}\approx-F_{\mathrm{press}}n_s\) with
-  \(F_{\mathrm{press}}>0\). Likewise \(f_{\mathrm{press}}=K_pe_p\) is the
-  elastic part of the commanded force \(f\), not the whole wrench
-  \(F=[f^\top,m^\top]^\top\).
+  \(f_K\approx-F_{K,n}n_s\).
+- **The settled force and moment names.** `press` as a symbol name was
+  withdrawn, because \(f_{\mathrm{press}}\) read as the complete force pressing
+  against the surface when it was only the spring term. The subscript now says
+  which term it is:
+
+  | Symbol | Is | Name |
+  |---|---|---|
+  | \(f_K=K_pe_p\) | commanded | elastic commanded force |
+  | \(f_D=D_p(\dot p_d-\dot p_{\mathrm{EE}})\) | commanded | damping commanded force |
+  | \(f=f_K+f_D\) | commanded | total commanded force |
+  | \(m_{c,K}=-r_c\times f_K\) | commanded | elastic coupling moment |
+  | \(m_{c,D}=-r_c\times f_D\) | commanded | damping coupling moment |
+  | \(m_{c,\mathrm{trans}}=-r_c\times f\) | commanded | total translational coupling |
+  | \(\Delta\hat f_{\mathrm{ext}}\) | estimated | external-force change |
+
+  **The point shift acts on both matrices**, so the damping force acquires the
+  same lever as the elastic one; say so rather than leaving the reader to
+  assume only stiffness couples. The sign analysis then uses \(m_{c,K}\) alone,
+  **and says why**: \(f_D\to\mathbf{0}\) as the reference stops advancing, so
+  the elastic term is what carries the steady alignment tendency while the
+  damping term shapes the transient.
+
+  This is a rule about **symbols only**. Ordinary prose such as `the press`,
+  `the normal press` or `press-induced moment` describes the physical action
+  and stays.
 - The measured moment transfer is
   \(M_{\mathrm{contact}}=M_{\mathrm{TCP}}+r_T\times\Delta\hat
   f_{\mathrm{ext}}\), with \(M_{\mathrm{TCP}}\) the model-estimated external
@@ -1149,7 +1195,7 @@ and \(t_2\) results one finding rather than two unrelated ones.
 
 About \(t_1\) the end effector already rotated in the assisting direction with
 the centre of compliance at the TCP, and the selected lever added little. This
-is **consistent with** the contact moment \(m_{\mathrm{contact,TCP}}=r_T	imes
+is **consistent with** the contact moment \(m_{r_T}=r_T\times
 f_C\) and the tool-mount compliance already producing that rotation. It does
 not show that \(r_T\) was sufficient on its own: the contributions of contact
 geometry and mounting compliance were never isolated, and the conclusion must
