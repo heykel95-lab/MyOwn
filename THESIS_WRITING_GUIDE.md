@@ -1233,15 +1233,25 @@ The implemented phase structure already embodies this, and the thesis says so:
 the point-shifted impedance is used during set-up, while the grinding phase
 returns to the decoupled branch.
 
-**Two limits on how far this may be pushed.** First, write `neutral centre for
-sustained contact`, never `universally optimal centre` — the A--H campaign did
-not test a lever held through sustained grinding, and did not vary the surface
-orientation during contact. Second, the informal observation at the pre-grinding
-gate, where the tool was seen to follow a manually reoriented surface with the
-centre at the TCP, is **not a recorded experiment and must not be cited as
-evidence**. The argument in the thesis runs from the model and from the
-recorded set-up results; the gate observation may motivate future work, and
-nothing more, unless it is recorded and repeated.
+**Say it as a displacement of the reference point, never of the force.** The
+physical surface force keeps acting where the tool touches. What moves is the
+impedance reference point, from the TCP to \(p_c\), and that is what makes the
+translational press generate an additional commanded moment. `The pressing
+force is displaced to \(p_c\)` is wrong and must not appear.
+
+**Write `neutral centre for sustained contact`, never `universally optimal
+centre`.** The A--H campaign did not test a displacement held through sustained
+grinding, and did not vary the surface orientation during contact. Say that
+explicitly where the claim is made.
+
+**The pre-grinding gate observation is admissible as qualitative evidence,
+labelled as such.** With the centre at the TCP the tool followed manually
+introduced changes in surface orientation while maintaining contact; with a
+fixed non-zero tangential displacement the response became direction dependent.
+This is the author's own observation and it belongs in the discussion, but it
+was not part of Cases~A--H, so the sentence that reports it also says so. Do
+not present it as a measurement, do not give it numbers, and do not let a
+conclusion rest on it alone.
 
 ### Why the two tangents behaved differently, and what may be concluded from it
 
