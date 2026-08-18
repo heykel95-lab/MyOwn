@@ -3,71 +3,52 @@
 \ReviewMark{green}{The German summary remains aligned with the English abstract
 in structure, certainty, findings, and limitations.}
 
-Eine Winkelabweichung zwischen einem Schleifwerkzeug und einer Fl\"ache kann zu
-Kantenkontakt f\"uhren. Ein starr geregelter Roboter behindert die daraus
-folgende ausrichtende Drehung und kann dadurch hohe Kontaktkr\"afte und -momente
-erzeugen. Weder die Gr\"o\ss{}e noch die Richtung dieser Winkelabweichung ist
-vor dem Kontakt bekannt, sodass sich die Nachgiebigkeit, die sie aufnehmen
-soll, nicht allein aus der bekannten Geometrie festlegen l\"asst. Diese Arbeit
-untersucht die kontaktinduzierte Ausrichtung eines drehmomentgeregelten
-kollaborativen Roboters an einer ebenen Fl\"ache und bewertet, ob sich ein
-festes Nachgiebigkeitszentrum unabh\"angig von Richtung und Vorzeichen der
-anf\"anglichen Winkelabweichung w\"ahlen l\"asst.
+\begin{otherlanguage}{ngerman}
 
-F\"ur einen 7-achsigen Franka Emika Panda wurde ein kartesischer
-Echtzeit-Impedanzregler implementiert. Der Regler stellt die translatorische und
-rotatorische Nachgiebigkeit relativ zur Fl\"ache ein und erlaubt es, das
-virtuelle Nachgiebigkeitszentrum gegen\"uber dem Werkzeugbezugspunkt (TCP) zu
-verschieben. Diese Verschiebung f\"uhrt zu einer Kopplung zwischen Translation
-und Rotation: Dr\"uckt der Roboter das Werkzeug gegen die Fl\"ache, so kann die
-resultierende Kraft ein Moment erzeugen, das die ausrichtende Drehung
-unterst\"utzt.
+Eine Winkelabweichung zwischen einem Schleifwerkzeug und einer Fläche kann zu
+Kantenkontakt und erhöhten Kontaktbelastungen führen. Bei Anwendungen, in
+denen die Lage der Fläche und die Werkzeugaufnahme Toleranzen aufweisen, sind
+Richtung und Größe dieser Winkelabweichung vor dem Kontakt in der Regel nicht
+bekannt. Diese Arbeit untersucht einen kartesischen Impedanzregelungsansatz,
+bei dem die Kontaktinteraktion selbst die rotatorische Ausrichtung des
+Werkzeugs an einer ebenen Fläche unterstützt.
 
-Untersucht wurden richtungsabh\"angige kartesische Steifigkeit und verschiedene
-Lagen des virtuellen Nachgiebigkeitszentrums. Unter den gepr\"uften Parametern
-bewirkte die Lage des Nachgiebigkeitszentrums die gr\"o\ss{}te \"Anderung der
-gemessenen Ausrichtungsreaktion. Eine unterst\"utzende Verschiebung lag in der
-Fl\"achenebene und senkrecht zur erforderlichen Drehrichtung. Eine Umkehr der
-anf\"anglichen Winkelabweichung kehrte auch die erforderliche
-Verschiebungsrichtung um. Eine Verschiebung, die die Ausrichtung um die eine
-Fl\"achentangente unterst\"utzte, bewirkte um die orthogonale Tangente nicht
-dasselbe.
+Für einen 7-achsigen Franka Emika Panda wurde ein kartesischer
+Echtzeit-Impedanzregler implementiert. Die translatorische und rotatorische
+Nachgiebigkeit wird relativ zur Flächengeometrie definiert. Zusätzlich kann das
+virtuelle Nachgiebigkeitszentrum gegenüber dem Werkzeugbezugspunkt (TCP)
+verschoben werden. Dadurch entsteht eine Kopplung zwischen Translation und
+Rotation innerhalb der kartesischen Impedanz. Während der normalen
+Anpressbewegung erzeugt diese Kopplung ein zusätzliches Moment, dessen Richtung
+von der Lage des Nachgiebigkeitszentrums abhängt. Eine geeignete Verschiebung
+kann somit die erforderliche Ausrichtungsdrehung unterstützen, ohne eine
+zusätzliche rotatorische Trajektorie vorzugeben.
 
-Die Reaktion war stark richtungsabh\"angig. Um die eine Achse in der Ebene trat
-bereits mit dem Nachgiebigkeitszentrum im TCP eine deutliche ausrichtende
-Drehung auf. Um die orthogonale Achse \"anderte eine gew\"ahlte Verschiebung
-von \(40\,\mathrm{mm}\) die gemessene Drehung beim Kontaktaufbau von
-\(-1{,}63^\circ\) auf \(+4{,}43^\circ\). Versuche in dazwischen liegenden
-Richtungen der Ebene waren mit derselben geometrischen Richtungsregel
-vereinbar. Ein f\"ur alle Richtungen geeigneter Betrag der Verschiebung konnte
-mit den gepr\"uften Bedingungen jedoch nicht bestimmt werden.
+Experimentell wurden der Einfluss der richtungsabhängigen kartesischen
+Steifigkeit sowie die Lage, Richtung, Bezugsbasis und Größe der virtuellen
+Verschiebung des Nachgiebigkeitszentrums untersucht. Innerhalb der geprüften
+Parameterbereiche führte die Lage des Nachgiebigkeitszentrums zur größten
+Änderung der Ausrichtungsreaktion. Eine unterstützende tangentiale Verschiebung
+liegt senkrecht zur erforderlichen Drehrichtung, während ihr Vorzeichen dem
+Vorzeichen der anfänglichen Winkelabweichung folgt. Dieser Zusammenhang zeigte
+sich ebenfalls für dazwischenliegende Richtungen in der Flächenebene. Um die
+schwächere der beiden Hauptausrichtungsrichtungen änderte eine gewählte
+Verschiebung von \(40\,\mathrm{mm}\) die gemessene Drehung beim Kontaktaufbau
+von \(-1{,}63^\circ\) auf \(+4{,}43^\circ\).
 
-Die gepr\"uften tangentialen Verschiebungen waren damit fallabh\"angig. Jede
-Verschiebung war nur f\"ur einen Teil des untersuchten Bereichs der
-Winkelabweichung wirksam. Innerhalb der untersuchten Aufgabe war das
-Nachgiebigkeitszentrum im TCP unter den gepr\"uften Lagen das
-richtungsunabh\"angige feste Nachgiebigkeitszentrum, da es sich ohne vorherige
-Kenntnis von Vorzeichen und Richtung der anf\"anglichen Winkelabweichung in der
-Fl\"achenebene w\"ahlen lie\ss{}. Dies bedeutet nicht, dass der TCP in jedem
-Einzelfall die gr\"o\ss{}te ausrichtende Drehung erzeugte. Wo zus\"atzliche
-Ausrichtungsdrehung erforderlich war, lieferte ein geeignet gew\"ahltes
-verschobenes Zentrum die gr\"o\ss{}ere Ausrichtungswirkung. Die anschlie\ss{}ende
-R\"uckkehr des Nachgiebigkeitszentrums zum TCP hob die zus\"atzliche
-richtungsabh\"angige Kopplung f\"ur die Phase des dauerhaften Kontakts wieder
-auf.
+Die untersuchten tangentialen Verschiebungen stellen damit eine
+fallabhängige Möglichkeit zur Erhöhung der Ausrichtungswirkung dar. Unter den
+geprüften Lagen bildet das Nachgiebigkeitszentrum im TCP den
+richtungsunabhängigen festen Bezug für die untersuchte Aufgabe, da seine Wahl
+keine vorherige Kenntnis von Richtung oder Vorzeichen der Winkelabweichung
+erfordert. Bei zusätzlichem Bedarf an rotatorischer Ausrichtungswirkung kann
+anschließend ein geeignet verschobenes Nachgiebigkeitszentrum gewählt werden.
 
-Eine erg\"anzende Nullraumuntersuchung bewertete die projizierte D\"ampfung
-und die Singul\"arwert-Konditionierung. Die projizierte D\"ampfung verringerte die
-redundante Gelenkbewegung, ohne die redundante Konfiguration in ihren
-Ausgangszustand zur\"uckzuf\"uhren. Die durchgehend aktive
-Singul\"arwert-Konditionierung hielt die netto st\"orungsbedingte redundante
-Verschiebung f\"ur die untersuchte St\"orungsrichtung nahe null.
-
-Der entwickelte Regler stellt ein Echtzeitverfahren bereit, mit dem sich ein
-Teil der normalen Pressbewegung \"uber eine virtuelle Verschiebung des
-Nachgiebigkeitszentrums in ein ausrichtendes Moment umsetzen l\"asst. Der
-wesentliche experimentelle Befund ist die Unterscheidung zwischen dem
-richtungsunabh\"angigen Zustand mit Zentrum im TCP und einem fallabh\"angigen
-verschobenen Zentrum, zusammen mit einer geometrischen Regel, mit der Richtung
-und Vorzeichen der Verschiebung aus der erforderlichen Ausrichtungsdrehung
-bestimmt werden. Der Schleifvorgang selbst wurde experimentell nicht bewertet.
+Eine ergänzende Nullraumuntersuchung zeigte, dass projizierte Dämpfung die
+redundante Gelenkbewegung verringerte, während die
+Singulärwert-Konditionierung die netto störungsbedingte redundante Verschiebung
+für die untersuchte Störungsrichtung begrenzte. Die experimentelle Auswertung
+umfasste die Kontakt- und Ausrichtungsphase bis zum Übergang vor dem
+Schleifvorgang; ein dauerhafter Schleifkontakt war nicht Bestandteil der
+experimentellen Untersuchung.
+\end{otherlanguage}
