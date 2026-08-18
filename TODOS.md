@@ -6,6 +6,10 @@ situation changes, per the rule in `AGENTS.md`. Detailed specifications live in
 `THESIS_WRITING_GUIDE.md`, `THESIS_VOICE.md` and `FIGURE_STYLE.md` and are
 referenced from here rather than repeated.
 
+**A finished item is deleted from this file, not annotated as done.** Whoever
+completes it removes the entry in the same turn, so that no later session — and
+no other agent — repeats work that is already in the document.
+
 ## Waiting on the plotting code
 
 ### Figure 5.13 legend still reads "EE-inferred angular deviation"
@@ -76,12 +80,26 @@ Still to do:
 - reorder the chapter to follow the signal path, from the surface and tool
   geometry through to the torque sent to the robot.
 
-## Chapter 4 restructure — not started
+## Chapter 4 restructure — partly done
 
-Specified in full in `THESIS_WRITING_GUIDE.md`. Stop re-explaining the
-controller, let the tables replace the prose that repeats them, delete the
-case-grouping table, move the fallback damping matrices to the parameter
-appendix, and remove the mean and standard-deviation equations.
+Specified in full in `THESIS_WRITING_GUIDE.md`.
+
+Still to do:
+
+- the calibration section keeps the runtime relations
+  \(n_T=R_{\mathrm{EE}}n_{\mathrm{EE}}\) and \(R_dn_{\mathrm{EE}}=-n_s\), which
+  describe how the controller uses the calibration rather than how it was
+  calibrated, and belong in Chapter 3;
+- the calibrated-geometry subsection still gives the face centre, half-width
+  and half-length as vector equations, and still repeats
+  \(p_g=p_{\mathrm{EE}}+R_{\mathrm{EE}}r_{g,\mathrm{EE}}\) from Chapter 3. One
+  calibrated-geometry table plus a cross-reference replaces both;
+- the null-space configuration is still its own subsection with its own
+  equation, and should fold into the common-gain table as rows plus one
+  sentence saying it was held fixed;
+- the data-recording subsection still lists the logged signals a third time.
+  One sentence pointing at Chapter 3 and the data-format appendix is enough;
+  the run counts and the excluded run stay.
 
 ## Before the next prose session
 
@@ -92,4 +110,6 @@ time, and the restructures deserve the complete pass.
 Write edits through a file-based script with raw strings. Inline shell scripts
 twice stripped a backslash level and turned `\begin`, `\right` and `\resizebox`
 into control characters, which is invisible when reading the source and only
-the build catches.
+the build catches. A quoted heredoc is not a workaround: the same script
+written through `cat <<'EOF'` failed to parse at all, so write the script with
+the file-writing tool and run it separately.

@@ -67,6 +67,12 @@ completed. Remove or amend an entry the moment it is finished or overtaken.
 Never let it describe a state that has passed: a todo file that lags is worse
 than none, because it is trusted.
 
+**A finished entry is deleted, not marked done.** Whoever completes the work —
+this agent, another agent, or the user — removes the entry in the same turn.
+A file that accumulates completed items invites the next session to redo work
+that is already in the document, and to argue with a state that no longer
+exists. The record of what was done is the document itself.
+
 An entry says what is wrong, what the fix is, and what is blocking it. Where a
 task is partly done, say which part, so the next session does not redo it or
 assume it whole. Detailed specifications stay in the guide they belong to and

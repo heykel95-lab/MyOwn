@@ -30,14 +30,9 @@ internally commanded disturbance.
 
 The experiments were performed with a seven-degree-of-freedom Franka Emika
 Panda operated through the Franka Control Interface. Joint-torque commands were
-transmitted through libfranka at the nominal sampling period
-
-\begin{equation}
-T_s=1\,\mathrm{ms},
-\label{eq:sampling_time_contact}
-\end{equation}
-
-corresponding to a nominal control rate of \(1\,\mathrm{kHz}\). The real-time
+transmitted through libfranka at the nominal control rate of
+\(1\,\mathrm{kHz}\), corresponding to a sampling period of
+\(1\,\mathrm{ms}\). The real-time
 controller, Cartesian impedance law, contact geometry, and phase sequence are
 described in \Cref{ch:implementation}.
 
@@ -492,158 +487,46 @@ common experimental basis before the individual cases are introduced in
 \label{subsec:experimental_inertia_scaled_damping}
 
 The phase-dependent gains are diagonal in the calibrated surface frame
-\([t_1,t_2,n_s]\) before any compliance-centre shift. During orientation and
-approach, the translational stiffness was isotropic and the rotational
-stiffness was higher about the surface tangents:
+\([t_1,t_2,n_s]\) before any compliance-centre shift.
+\Cref{tab:experimental_common_gains} gives the entries used by every reported
+contact run, together with the damping ratio \(\zeta\) of the corresponding
+phase. The configured grinding phase carried the set-up entries unchanged. The
+pre-set-up gate was configured with the same stiffness as set-up and was
+disabled in the reported runs, so it did not act as a separate phase.
 
-\begin{equation}
-K_{p,\mathrm{app}}
-=
-\begin{bmatrix}
-150 & 0 & 0\\
-0 & 150 & 0\\
-0 & 0 & 150
-\end{bmatrix}
-\,\mathrm{N/m},
-\qquad
-K_{R,\mathrm{app}}
-=
-\begin{bmatrix}
-180 & 0 & 0\\
-0 & 180 & 0\\
-0 & 0 & 90
-\end{bmatrix}
-\,\mathrm{N\,m/rad}.
-\label{eq:experimental_approach_stiffness}
-\end{equation}
+\begin{table}[H]
+\centering
+\small
+\caption{Common Cartesian gains and damping ratio by phase.}
+\label{tab:experimental_common_gains}
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+& \multicolumn{3}{c}{\(K_p\) [N/m]} & \multicolumn{3}{c}{\(K_R\) [N\,m/rad]} & \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+\textbf{Phase} & \(t_1\) & \(t_2\) & \(n_s\) & \(t_1\) & \(t_2\) & \(n_s\) & \(\zeta\)\\
+\midrule
+Orientation and approach & 150 & 150 & 150 & 180 & 180 & 90 & 1.9\\
+Set-up and grinding & 2000 & 2000 & 350 & 5 & 5 & 50 & 1.0\\
+\bottomrule
+\end{tabular}
+\end{table}
 
-The pre-set-up gate was configured with the same stiffness as the nominal
-set-up state,
+During orientation and approach the translational stiffness was isotropic and
+the rotational stiffness was higher about the surface tangents. In set-up the
+lower normal entry limits the elastic normal-force increase for a given normal
+position error, while the higher tangential entries restrict motion in the
+surface plane. The low rotational stiffnesses about \(t_1\) and \(t_2\) permit
+contact-induced alignment rotation, and the higher entry about \(n_s\) mainly
+resists in-plane spin of the grinding face. Because the set-up translational
+stiffness \(K_{p,\mathrm{set}}\) is diagonal in the surface frame, the effective
+normal stiffness \(K_{p,n}=n_s^\top K_{p,\mathrm{set}}n_s\) equals the tabulated
+normal entry of \(350\,\mathrm{N/m}\).
 
-\begin{equation}
-K_{p,\mathrm{gate}}
-=
-\begin{bmatrix}
-2000 & 0 & 0\\
-0 & 2000 & 0\\
-0 & 0 & 350
-\end{bmatrix}
-\,\mathrm{N/m},
-\qquad
-K_{R,\mathrm{gate}}
-=
-\begin{bmatrix}
-5 & 0 & 0\\
-0 & 5 & 0\\
-0 & 0 & 50
-\end{bmatrix}
-\,\mathrm{N\,m/rad}.
-\label{eq:experimental_gate_stiffness}
-\end{equation}
-
-The gate was disabled in the reported contact runs and these gains therefore
-did not act as a separate phase. The nominal set-up and configured grinding
-stiffnesses were
-
-\begin{equation}
-K_{p,\mathrm{set}}
-=
-K_{p,\mathrm{grind}}
-=
-\begin{bmatrix}
-2000 & 0 & 0\\
-0 & 2000 & 0\\
-0 & 0 & 350
-\end{bmatrix}
-\,\mathrm{N/m},
-\label{eq:experimental_setup_translational_stiffness}
-\end{equation}
-
-and
-
-\begin{equation}
-K_{R,\mathrm{set}}
-=
-K_{R,\mathrm{grind}}
-=
-\begin{bmatrix}
-5 & 0 & 0\\
-0 & 5 & 0\\
-0 & 0 & 50
-\end{bmatrix}
-\,\mathrm{N\,m/rad}.
-\label{eq:experimental_setup_rotational_stiffness}
-\end{equation}
-
-The lower normal translational stiffness limits the elastic normal-force
-increase for a given normal position error, while the higher tangential
-entries restrict motion in the surface plane. The low rotational stiffnesses
-about \(t_1\) and \(t_2\) permit contact-induced alignment rotation. The higher
-entry about \(n_s\) mainly resists in-plane spin of the grinding face. Because
-the translational matrix is diagonal in the surface frame,
-
-\begin{equation}
-K_{p,n}
-=
-n_s^\top K_{p,\mathrm{set}}n_s
-=
-350\,\mathrm{N/m}.
-\label{eq:experimental_effective_normal_stiffness}
-\end{equation}
-
-The directional damping coefficients for approach, set-up, and the configured
-grinding phase were calculated from the Cartesian inertia and the active
-stiffness as described in \Cref{subsec:inertia_scaled_damping_calculation}.
-Approach used \(\zeta=1.9\); set-up and grinding used \(\zeta=1.0\). The
-configured fallback matrices, used only if the inertia-based calculation could
-not be applied, were
-
-\begin{equation}
-D_{p,\mathrm{app}}
-=
-\begin{bmatrix}
-20 & 0 & 0\\
-0 & 20 & 0\\
-0 & 0 & 20
-\end{bmatrix}
-\,\mathrm{N\,s/m},
-\qquad
-D_{R,\mathrm{app}}
-=
-\begin{bmatrix}
-15 & 0 & 0\\
-0 & 15 & 0\\
-0 & 0 & 12
-\end{bmatrix}
-\,\mathrm{N\,m\,s/rad},
-\label{eq:experimental_approach_damping_reference}
-\end{equation}
-
-and
-
-\begin{equation}
-D_{p,\mathrm{set}}
-=
-\begin{bmatrix}
-10 & 0 & 0\\
-0 & 10 & 0\\
-0 & 0 & 175
-\end{bmatrix}
-\,\mathrm{N\,s/m},
-\qquad
-D_{R,\mathrm{set}}
-=
-\begin{bmatrix}
-10.01 & 0 & 0\\
-0 & 10.01 & 0\\
-0 & 0 & 10
-\end{bmatrix}
-\,\mathrm{N\,m\,s/rad}.
-\label{eq:experimental_setup_damping_reference}
-\end{equation}
-
-The detailed archived damping configuration is reproduced in
-\Cref{app:controller_parameters}.
+The directional damping coefficients were calculated from the Cartesian inertia
+and the active stiffness at the tabulated damping ratio, as described in
+\Cref{subsec:inertia_scaled_damping_calculation}. Detailed fallback damping
+values, used only if the inertia-based calculation could not be applied, are
+provided in \Cref{app:controller_parameters}.
 
 
 \subsection{Contact Sequence and Set-Up Motion}
@@ -693,50 +576,34 @@ Configured grinding sweep & \(t_2\), \(0.030\,\mathrm{m}\), \(0.2\,\mathrm{Hz}\)
 \end{longtable}
 \endgroup
 
-Before each run, the active parameter set was loaded and the robot was moved
-to the configured initial joint posture. The calibrated surface frame,
-grinding-face geometry, phase gains, damping settings, null-space parameters,
-and compliance-centre definition were prepared before the torque callback
-started.
+Before each run, the active parameter set was loaded and the robot was moved to
+the configured initial joint posture. The calibrated geometry, the phase gains
+and damping, and the compliance-centre definition were prepared before the
+torque callback started.
 
-During the orientation phase, the TCP position was held while the calibrated
-grinding-face direction was brought to the required surface-relative
-orientation, including the commanded angular offset of the active case.
-Surface approach then moved the Cartesian reference along the descent direction
-at \(0.1\,\mathrm{m/s}\). During approach, the controller continuously evaluated
-the point or edge of the rectangular face with the smallest geometric
-clearance.
+Approach ended when the grinding-face point or edge with the smallest clearance
+reached \(20\,\mathrm{mm}\) above the calibrated plane. That transition was
+defined by geometry rather than by a force threshold. At the same instant the
+controller stored the TCP pose, the orientation reference, the selected
+grinding-face point or edge with its projection onto the plane, and the
+model-estimated external wrench, which serve as the references for the
+evaluation quantities of \Cref{sec:experimental_evaluation}.
 
-The clearance transition occurred when this selected grinding-face point or
-edge was \(20\,\mathrm{mm}\) above the calibrated plane. The transition was
-therefore defined by geometry and not by a force threshold. At that instant,
-the controller stored the TCP pose, the orientation reference, the selected
-grinding-face point or edge, its projection onto the plane, and the
-model-estimated external wrench as a reference for later evaluation. Because
-the pre-set-up gate was disabled, the controller entered set-up directly.
+The set-up press endpoint of \(+0.240\,\mathrm{m}\) is a Cartesian spring
+reference beyond the calibrated plane and is not interpreted as a physical
+penetration of the same magnitude. The reference reached it after approximately
+\(3.25\,\mathrm{s}\) and was then held. Throughout set-up the rotational
+reference remained the orientation captured at the clearance transition, so the
+measured alignment rotation is a response to contact rather than the tracking
+of a time-varying orientation command. In Cases~A, B, and~C the decoupled
+Cartesian impedance was active during set-up, and in Cases~D to~H the
+point-shifted \(6\times6\) impedance associated with the selected centre of
+compliance.
 
-During set-up, the signed press coordinate advanced from the captured clearance
-value, approximately \(-0.020\,\mathrm{m}\), toward \(+0.240\,\mathrm{m}\) at
-\(0.080\,\mathrm{m/s}\). The endpoint is a Cartesian spring reference beyond
-the calibrated plane; it is not interpreted as a physical penetration of the
-same magnitude. The reference reaches the endpoint after approximately
-\(3.25\,\mathrm{s}\) and is then held until the phase ends.
-
-Cases~A, B, and~C used the decoupled Cartesian impedance during set-up.
-Cases~D to~H used the point-shifted \(6\times6\) impedance associated with the
-selected centre of compliance. In every case, the orientation captured at the
-clearance transition remained the rotational reference during set-up. The
-measured alignment rotation therefore results from the contact response rather
-than from a time-varying orientation command.
-
-After the minimum set-up duration of \(2\,\mathrm{s}\), the phase could end if
-the norm of the model-estimated external-moment change reached
-\(150\,\mathrm{N\,m}\). A separate \(5\,\mathrm{s}\) timeout provided the
-second termination condition. Every reported contact run ended at the timeout;
-the moment-change threshold was not reached. The enabled pre-grind gate then
-held the reached pose. The reported measurements were terminated at this gate,
-so the archived data contain orientation, approach, and set-up, but no grinding
-sweep.
+Every reported contact run ended at the \(5\,\mathrm{s}\) set-up timeout, and
+the moment-change threshold was reached in none of them. The pre-grind gate
+then held the reached pose. No run entered the configured grinding sweep, so
+the archived data cover orientation, approach, and set-up only.
 
 The set-up stiffness and commanded press range also define a virtual elastic
 command scale. For a completely blocked \(0.260\,\mathrm{m}\) reference change
