@@ -131,14 +131,39 @@ first. And the scripts that *are* kept would, if run, overwrite nothing and
 reintroduce nothing useful, since their output names no longer appear in the
 thesis.
 
-**Outstanding on this account:** the legend of the metric-comparison figure
-still reads `EE-inferred angular deviation`, and the term is banned everywhere
-else in the thesis. It must become **`Alignment angle from end-effector
-pose`**. The string is not patchable in the PDF — it appears in none of the
-decompressible content streams, so a binary edit risks corrupting the font
-subset. The same reconstruction should also emit the case letters agreed in the
-renumbering, since the file names were changed by hand in the thesis repository
-and no script knows about it.
+Still true of the case letters: a reconstruction should emit the letters agreed
+in the renumbering, since the file names were changed by hand in the thesis
+repository and no script knows about it.
+
+### Correcting a label in a plot that has no generator
+
+The metric-comparison legend read `EE-inferred angular deviation` after the term
+was banned everywhere else, and it was recorded here as unpatchable. **That was
+wrong, and the reason it was wrong is worth keeping.** The search had been for
+the plain ASCII bytes. The text is drawn through an `Identity-H`
+`CIDFontType2`, so every character occupies two bytes and the string sits in the
+content stream as UTF-16BE. Searching for `text.encode("utf-16-be")` finds it
+immediately. It now reads `Alignment angle from end-effector pose`.
+
+Editing a label this way is legitimate when the generator is lost, but only
+after three checks, in this order:
+
+1. **Decode `/CIDToGIDMap`** and confirm every character of the replacement has
+   a non-zero glyph. A missing glyph renders blank, and nothing warns you.
+2. **Check the `/W` array** covers the same code points. A code with no width
+   falls back to `/DW` and the spacing goes visibly wrong.
+3. **Look at where the label sits.** Length changes are not reflowed, so a
+   longer string simply runs on. Here the entry below it in the same legend
+   column was already half as long again, so the replacement had room.
+
+The stream length changes, which moves every later object, so the cross-
+reference table has to be rebuilt from the new offsets rather than patched.
+Keep the original alongside as `.orig` until the replacement has been seen in
+the compiled thesis — not in the standalone figure, which proves only that the
+file still opens.
+
+This is a repair, not a substitute for the plotting code. It cannot change a
+data series, an axis, or a case letter.
 
 ### Naming
 
