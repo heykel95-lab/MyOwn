@@ -858,16 +858,16 @@ of one thing:
   flat, as long as the wording stays explicit that it is geometry-based rather
   than an independent physical orientation measurement. Where it is
   satisfied, write `classified as flat by the TCP-height criterion` or `the
-  final geometry was consistent with a flatly seated grinding face`. Never
+  final geometry was consistent with a flatly seated tool face`. Never
   claim the physical face angle was measured as zero: the tool orientation was
-  not measured independently under load.
+  not tracked under load.
 
 **Do not write that a lever was insufficient to align the tool**, or that it
 `did not remove the full initial deviation`. Both read as claims about the
-physical grinding face, which was not measured. A residual pose-based
-alignment angle is not by itself evidence of residual physical tilt, because
-relative motion between the tool and its mount was not measured. Report what
-was measured — the signed set-up rotation changed from \(-1.63\) to
+physical tool face, whose orientation under load was not tracked. A residual
+pose-based alignment angle is not by itself evidence of residual physical tilt,
+because the instantaneous relative tool--gripper rotation was not tracked
+during the contact runs. Report what was measured — the signed set-up rotation changed from \(-1.63\) to
 \(+4.43^\circ\) about \(t_2\) with the selected \(40\,\mathrm{mm}\) lever, and
 the final configuration satisfied the TCP-height flatness criterion.
 
@@ -1141,9 +1141,18 @@ not claim they were.
 About \(t_2\) the zero-lever condition satisfied the TCP-height criterion while
 the end effector rotated slightly the wrong way. **Do not write that the robot
 became correctly aligned.** The defensible reading is that the tool seated
-against the surface while the end-effector orientation followed the compliant
-mounting; since relative tool--gripper motion was not measured, that mechanism
-is consistent with the data rather than demonstrated by it.
+against the surface through the mounting compliance while the end-effector
+orientation moved further the other way. The mounting play supports that
+reading rather than proving it, because it was measured unloaded.
+
+**Do not write that relative tool--gripper motion "was not measured".** It was:
+the mounting exhibits approximately \(\pm2^\circ\) of rotational play about
+\(y_{\mathrm{EE}}\), and the thesis reports that value. The precise
+limitation is narrower and must be stated as such — the play was characterised
+**in the unloaded condition**, and the **instantaneous** relative tool--gripper
+rotation was **not tracked separately during the contact runs**. The blanket
+phrasing claims the measurement was never made, which is wrong and gives away a
+result the thesis actually has.
 
 The general point is that **satisfying the flatness criterion and producing an
 alignment-directed end-effector rotation are not the same thing**, which is
