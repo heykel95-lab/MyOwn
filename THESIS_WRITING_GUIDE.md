@@ -1123,13 +1123,37 @@ treatment is short. Uniform length across five entries is as recognisable as
 uniform structure. This applies to the case sections in Chapter 5; Chapter 6 no
 longer enumerates the cases at all.
 
-**Assign each chapter one role and hold it.** Interpretation was being written
-three times — once in each case section, again in the discussion, and again in
-the conclusion. Sections 5.3–5.7 carry observations and local interpretation;
-Section 5.9 carries comparison across parameters and the mechanism; Chapter 6
-carries final conclusions only. Detailed limitations live in Section 5.10, and
-Chapter 6 summarises them in four short paragraphs without restating the
-mechanisms.
+**Interpretation goes directly under the evidence that supports it, and
+Chapter 5 has no separate discussion section.** The chapter previously ran all
+the cases and then re-discussed them in a Cross-Case Discussion several pages
+later: relative parameter influence, the compliance-centre mechanism, axis
+dependence, parameter selection, and measurement interpretation. Every one of
+those repeated numbers the reader had already met. That section has been
+removed and its content distributed to the point where the evidence first
+appears:
+
+| Was in the cross-case discussion | Now sits under |
+|---|---|
+| Relative influence of the parameters | Case C, closing the stiffness pair |
+| Physical role of the compliance-centre lever | Case D, under the lever sweep |
+| Weak tool-axis sensitivity | Case F |
+| Axis-dependent response | Case A, where the asymmetry first shows |
+| Measurement interpretation | Case A, and the flatness summary |
+| Implications for parameter selection | Case H, after the direction rule |
+| Scope of interpretation | deleted; Chapter 6 *Limitations* already carried it |
+
+The editorial unit is **question, then figure or table, then observation, then
+interpretation, then conclusion** — and then the next question. A case section
+states what it tests before its table, and its interpretation follows its own
+figure rather than waiting several pages.
+
+A plot that is an evaluation consistency check rather than a finding does not
+interrupt the argument; it goes to the supporting-plots appendix and is
+referred to from the chapter.
+
+**Assign each chapter one role and hold it.** Chapter 5 carries observation and
+interpretation together, case by case; Chapter 6 carries final conclusions
+only, and summarises the limitations without restating the mechanisms.
 
 **Group the limitations under named subsections** rather than listing them as
 consecutive paragraphs of identical shape (state limitation, explain mechanism,

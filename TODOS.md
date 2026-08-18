@@ -32,8 +32,8 @@ Specified in full in `THESIS_WRITING_GUIDE.md`:
   calibrated, and belong in Chapter 3;
 - the calibrated-geometry subsection still gives the face centre, half-width
   and half-length as vector equations, and still repeats
-  \(p_g=p_{\mathrm{EE}}+R_{\mathrm{EE}}r_{g,\mathrm{EE}}\) from Chapter 3. One
-  calibrated-geometry table plus a cross-reference replaces both;
+  \(p_T=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{T,\mathrm{EE}}\) from Chapter 3.
+  One calibrated-geometry table plus a cross-reference replaces both;
 - the null-space configuration is still its own subsection with its own
   equation, and should fold into the common-gain table as rows plus one
   sentence saying it was held fixed;
@@ -56,6 +56,36 @@ appendix parameter tables. A diagram that is *shrunk* by the wrapper has the
 opposite fault and is equally wrong. Each needs looking at in the compiled
 document, and the scale factor moving inside the picture wherever the label
 size is off. This is judged by eye on the page, not from the source.
+
+## Four Chapter 5 figures still need redrawing
+
+The Chapter 5 restructure is done in prose: the discussion now sits under the
+evidence, the Cross-Case Discussion is gone, and two plots have moved to the
+supporting-plots appendix. Four requested figure *redesigns* could not be made,
+because no script produces any of the current plots:
+
+- **Case A** (`MAIN_A_contact`): the x-axis labels should read
+  \(+10^\circ\,t_1\), \(-10^\circ\,t_1\), \(+10^\circ\,t_2\),
+  \(-10^\circ\,t_2\). The measured initial values belong in the table, not
+  on the axis.
+- **Case D** (`MAIN_D_sign`): split the four curves into two panels, (a) the
+  \(t_1\) commands and (b) the \(t_2\) commands, on identical axis limits.
+- **Case F** (`MAIN_F_toolaxis`): replace with one figure plotting the
+  tangential sweep of Case D against the tool-axis sweep of Case F on the same
+  axes, for the same \(+10^\circ\) \(t_1\) command, so the comparison of
+  spans is visible rather than stated.
+- **Case G** (`MAIN_G_magnitude`): replot against the commanded offset
+  (\(5^\circ\), \(10^\circ\)) with one series for the zero lever and one
+  for the selected \(40\,\mathrm{mm}\) lever, in two panels for \(t_1\)
+  and \(t_2\). The present figure plots against centre position, which is not
+  the question the case asks.
+
+The prose around each already states the comparison the redrawn figure would
+make, so the argument does not depend on them.
+
+`figures/MAIN_DQ_descent.pdf` is now unused: it was Figure 5.1 and was removed
+because it only showed that two time histories settle. Delete the file or keep
+it for reference, but do not reinstate the figure.
 
 ## Run counts could not be reconciled against `metrics.csv`
 
@@ -101,7 +131,9 @@ written through `cat <<'EOF'` failed to parse at all, so write the script with
 the file-writing tool and run it separately.
 
 Check `\Cref` output in the compiled PDF, not only in the source. cleveref
-cannot determine the counter type of a label set inside a `longtable`, and
-silently printed `Section 4.4` for a table across four labels until it was
-caught by eye. Those labels now use cleveref's explicit form,
-`\label[table]{...}`; any new `longtable` needs the same.
+cannot handle a label set inside a `longtable` and fails in two different ways,
+neither of which warns: with a plain `\label{}` it printed `Section 4.4` for a
+table, and with `\label[table]{}` it fixed the type but built the number from
+the section prefix, printing `Table 4.3.2` for Table 4.3 across four labels.
+Those four are now referenced as literal `Table~ef{...}`, which is right in
+both respects. Any new `longtable` needs the same treatment.
