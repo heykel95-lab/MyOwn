@@ -59,6 +59,9 @@ def read_run(run_dir):
         "tau_disturbance_1", "tau_disturbance_2", "tau_disturbance_3",
         "tau_disturbance_4", "tau_disturbance_5", "tau_disturbance_6",
         "tau_disturbance_7", "e_p_x", "e_p_y", "e_p_z",
+        "nullspace_dq_1", "nullspace_dq_2", "nullspace_dq_3",
+        "nullspace_dq_4", "nullspace_dq_5", "nullspace_dq_6",
+        "nullspace_dq_7",
     )
     data = {name: np.array([_float(row, name) for row in rows])
             for name in names}
@@ -77,6 +80,17 @@ def read_run(run_dir):
     increments = 0.5 * (speed[:-1] + speed[1:]) * dt
     cumulative = np.concatenate(([0.0], np.cumsum(increments)))
 
+    # Same integrand as the cumulative motion, without the magnitude: the
+    # trapezoidal integral of the projected joint velocity is the net
+    # displacement of the redundant configuration over the driven interval.
+    # It is a 7-vector; because the null space is one-dimensional at full row
+    # rank it lies along +-v_7, so a single reference direction resolves every
+    # run onto one signed axis (see net_displacements below).
+    dq_null = np.column_stack([data[f"nullspace_dq_{joint}"][driven]
+                               for joint in range(1, 8)])
+    net_vector = np.sum(0.5 * (dq_null[:-1] + dq_null[1:]) * dt[:, None],
+                        axis=0)
+
     force = np.sqrt(sum(data[f"disturbance_force_base_{axis}"] ** 2
                         for axis in "xyz"))
     tau = np.sqrt(sum(data[f"tau_disturbance_{joint}"] ** 2
@@ -89,6 +103,7 @@ def read_run(run_dir):
         "relative_time": t_driven - t_driven[0],
         "cumulative_excursion": cumulative,
         "excursion_rad": float(cumulative[-1]),
+        "net_vector_rad": net_vector,
         "sigma_gain": float(data["sigma_current"][-1]
                             - data["sigma_current"][0]),
         "task_error_peak_mm": float(np.max(task_error_mm)),
@@ -103,6 +118,30 @@ def read_run(run_dir):
 
 def sample_sd(values):
     return float(np.std(values, ddof=1)) if len(values) > 1 else np.nan
+
+
+def net_displacements(groups, reference_id=CONDITIONS[0][0]):
+    """Resolve every run's net redundant displacement onto one signed axis.
+
+    The redundant direction v_7 is not in the log: the controller only records
+    it while the conditioning term is selecting a sign, so it is absent from
+    the runs without null-space torque. It is recovered from the data instead.
+    Every net displacement lies in the one-dimensional null space, so the
+    reference condition -- the one in which the disturbance moves the redundant
+    configuration furthest -- fixes that axis, and its own mean is the largest
+    signal available for the purpose. Each run is then projected onto it, which
+    keeps the sign of a displacement rather than its magnitude alone.
+    """
+    reference = [group for group in groups if group["run_id"] == reference_id]
+    if not reference:
+        raise ValueError(f"reference condition {reference_id} not loaded")
+    mean_vector = np.mean([run["net_vector_rad"]
+                           for run in reference[0]["runs"]], axis=0)
+    axis = mean_vector / np.linalg.norm(mean_vector)
+    for group in groups:
+        for run in group["runs"]:
+            run["net_displacement_rad"] = float(axis @ run["net_vector_rad"])
+    return axis
 
 
 def load_conditions():
@@ -120,7 +159,9 @@ def write_summary(groups):
     os.makedirs(os.path.dirname(SUMMARY), exist_ok=True)
     fields = (
         "run_id", "study", "gain", "n", "provenance_status",
-        "excursion_mean_rad", "excursion_sd_rad", "sigma_gain_mean",
+        "excursion_mean_rad", "excursion_sd_rad",
+        "net_displacement_mean_rad", "net_displacement_sd_rad",
+        "sigma_gain_mean",
         "sigma_gain_sd", "task_error_peak_mean_mm",
         "task_error_peak_sd_mm", "task_error_peak_max_mm",
         "force_peak_mean_N", "disturbance_tau_peak_mean_Nm",
@@ -134,6 +175,7 @@ def write_summary(groups):
             runs = group["runs"]
             values = lambda key: np.array([run[key] for run in runs])
             excursion = values("excursion_rad")
+            net = values("net_displacement_rad")
             sigma = values("sigma_gain")
             task = values("task_error_peak_mm")
             writer.writerow({
@@ -145,6 +187,9 @@ def write_summary(groups):
                 "excursion_mean_rad": f"{np.mean(excursion):.9g}",
                 "excursion_sd_rad": (f"{sample_sd(excursion):.9g}"
                                       if len(runs) > 1 else ""),
+                "net_displacement_mean_rad": f"{np.mean(net):.9g}",
+                "net_displacement_sd_rad": (f"{sample_sd(net):.9g}"
+                                            if len(runs) > 1 else ""),
                 "sigma_gain_mean": f"{np.mean(sigma):.9g}",
                 "sigma_gain_sd": (f"{sample_sd(sigma):.9g}"
                                   if len(runs) > 1 else ""),
@@ -286,6 +331,9 @@ def main():
         found = {group["run_id"] for group in groups}
         missing = [run_id for run_id, _, _ in CONDITIONS if run_id not in found]
         raise SystemExit("missing Case-F data: " + ", ".join(missing))
+    axis = net_displacements(groups)
+    print("  redundant axis from "
+          f"{CONDITIONS[0][0]}: {np.array2string(axis, precision=3)}")
     write_summary(groups)
     make_figure(groups)
     return 0

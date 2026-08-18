@@ -29,7 +29,9 @@ comparing it against the file in `figures/`.
 `make_coc_figures.py` also writes `MAIN_D_contact.pdf`, `MAIN_G_toolaxis.pdf`
 and `MAIN_H_magnitude.pdf`, which are in `figures/` as `MAIN_A_contact.pdf`,
 `MAIN_F_toolaxis.pdf` and `MAIN_G_magnitude.pdf` but are no longer included by
-any chapter.
+any chapter. `plot_angle_descent.py` writes `MAIN_DQ_descent.pdf`, which is in
+`figures/` and is likewise no longer included; it is kept here so that every
+generated file in `figures/` has its generator.
 
 The four Chapter 5 figures drawn in `pgfplots` — the Case-A bars, the Case-D
 panels, the Case-D-against-Case-F comparison and the Case-G panels — have no
@@ -64,6 +66,30 @@ trials as defaults in the file.
 `make_nullspace_figure.py` for its colours and its `save` helper; the figures
 `make_figures.py` writes when run on its own belong to the superseded set and
 are not in the thesis.
+
+## What the null-space script gained
+
+`make_nullspace_figure.py` originally reported one redundant-motion quantity,
+the integral of the projected joint-velocity magnitude, which Chapter 4 now
+calls the **cumulative projected null-space motion**. That integral is a path
+length, so it cannot distinguish a configuration that was displaced from one
+that moved back and forth and ended where it started -- the difference between
+the two sigma settings turns on exactly that.
+
+The script now also integrates the projected joint velocity **without** the
+magnitude, giving the net displacement \(\Delta q_{\mathrm{null}}\), and
+resolves every run onto one signed axis in `net_displacements()`. The axis
+comes from the condition without null-space torque: the recorded null direction
+`sigma_n_best_*` is written only while the conditioning term is selecting a
+sign, so it is zero throughout the runs that have no conditioning torque, and
+the direction has to be recovered from the motion itself. At full row rank the
+null space is one dimensional, so every net displacement lies along that one
+axis. Two columns were added to `derived/MAIN_NS_automatic_summary.csv`:
+`net_displacement_mean_rad` and `net_displacement_sd_rad`.
+
+Running it against `MyController/experiments/results/` reproduces every
+null-space value in Chapters 5 and 6, and the figure in `figures/` was
+regenerated from that run, so its axis label now matches the text.
 
 ## The one edit
 
