@@ -23,7 +23,26 @@ description; it is not the subject of the thesis.
 
 Use declarative scientific prose. Do not create headings or passages framed as
 “Research Question”, “Experimental Question”, “RQ1”, “central question”, or
-similar. State the investigated dependencies directly. For example:
+similar.
+
+**The ban covers every name the reader sees, not only section headings.**
+Chapter titles, section and subsection headings, figure and table captions,
+short caption entries, and appendix titles are all declarative noun phrases. A
+caption reading `Which lever pairs with which force to give which moment.`
+was replaced by `Moment relations on the commanded and observed sides.` — the
+question form had slipped in because the caption was written to describe what
+the figure explains rather than to name what it shows.
+
+The test is mechanical: **no title or caption may begin with `Which`, `What`,
+`How`, `Why`, `Does`, `Do`, `Is`, `Are`, `Can`, `When` or `Where`, and none
+may end with a question mark.** Grep for those openers across `\caption{`,
+`\caption[`, `\chapter{`, `\section{` and `\subsection{` before submitting.
+
+Stating the question inside the running text is different and stays: `Case F
+asks whether displacing the centre of compliance in any direction produces
+alignment` opens a section usefully. It is the *name* that must be declarative.
+
+State the investigated dependencies directly. For example:
 
 > The experimental study evaluates the influence of the paired surface-tangent
 > rotational stiffness \(K_{R,t_1}=K_{R,t_2}\) and virtual
@@ -230,7 +249,9 @@ rules below cover captions and what the text around a figure must carry.
 
 Keep figure and table captions short, preferably one line and normally below
 about 12 words. Use a descriptive noun phrase that identifies the plotted
-quantity, comparison, geometry, or parameter set.
+quantity, comparison, geometry, or parameter set. **A noun phrase, never a
+question** — see the question-framing ban under *Scientific narrative*, which
+covers captions as well as headings.
 
 Good examples:
 
@@ -1187,6 +1208,40 @@ The principal experimental conclusions of the calibrated-plane campaign are:
    commanding the same mismatch about the tool-face axes places the response
    near the linear combination of the tangent components, which attributes the
    asymmetry to the surface frame rather than to the face geometry.
+
+### The shifted centre is an alignment mechanism, not a steady-contact centre
+
+**Do not summarise the compliance-centre result as "find the best non-zero
+lever and use it."** That reading does not survive the model. The coupling
+moment \(m_{c,K}=-r_c	imes f_K\) does not vanish when the tool reaches a flat
+orientation: as long as a normal press is present and \(r_c
+eq0\), a fixed
+tangential lever keeps commanding rotation in one direction, whether or not
+alignment has already been achieved. A lever that assists one initial
+misalignment therefore biases the steady contact afterwards.
+
+The defensible summary separates two regimes:
+
+- **Transient alignment.** A tangential displacement supplies a corrective
+  moment while the natural contact response is weak or opposed. The \(t_2\)
+  measurements demonstrate this.
+- **Sustained contact.** \(r_c=0\) gives \(m_{c,K}=0\), so the TCP is the
+  neutral centre: no preferred tangential direction, and the tool responds to
+  the actual contact geometry.
+
+The implemented phase structure already embodies this, and the thesis says so:
+the point-shifted impedance is used during set-up, while the grinding phase
+returns to the decoupled branch.
+
+**Two limits on how far this may be pushed.** First, write `neutral centre for
+sustained contact`, never `universally optimal centre` — the A--H campaign did
+not test a lever held through sustained grinding, and did not vary the surface
+orientation during contact. Second, the informal observation at the pre-grinding
+gate, where the tool was seen to follow a manually reoriented surface with the
+centre at the TCP, is **not a recorded experiment and must not be cited as
+evidence**. The argument in the thesis runs from the model and from the
+recorded set-up results; the gate observation may motivate future work, and
+nothing more, unless it is recorded and repeated.
 
 ### Why the two tangents behaved differently, and what may be concluded from it
 

@@ -207,6 +207,18 @@ file still opens.
 This is a repair, not a substitute for the plotting code. It cannot change a
 data series, an axis, or a case letter.
 
+### Captions and in-figure text are never questions
+
+A caption, a panel sub-label, or any text inside the drawing is a declarative
+noun phrase. `Which lever pairs with which force to give which moment.` was a
+real caption in this thesis and had to be replaced. The full rule, with the
+list of banned openers and the grep that finds them, is under *Scientific
+narrative* in `THESIS_WRITING_GUIDE.md`; it covers captions, headings and
+appendix titles alike.
+
+Writing a caption to say what a figure *explains* is what produces the question
+form. Say what it *shows*.
+
 ### Naming
 
 `MAIN_<INDEX>_<subject>.pdf`, uppercase prefix, uppercase index, lower-case

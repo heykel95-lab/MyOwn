@@ -55,6 +55,28 @@ alignment, no additional virtual lever is necessary, whereas directions with an
 insufficient or opposing end-effector response can be supported by a
 direction-selected tangential lever.
 
+The compliance-centre results also distinguish between transient alignment and
+sustained surface contact. A tangential displacement of the centre of
+compliance can provide an additional corrective moment during set-up when the
+natural contact response is weak or acts in the undesired direction, which is
+what the \(t_2\) measurements show. A non-zero tangential lever, however, also
+produces a directional coupling moment for as long as a normal pressing force
+is present, since \(m_{c,K}=-r_c\times f_K\) does not vanish when the tool
+reaches a flat orientation. Retaining that moment after the tool is seated
+would bias the steady contact towards one rotational direction instead of
+leaving a neutral response to changes in surface orientation. The TCP-centred
+condition \(p_c=p_{\mathrm{TCP}}\), for which \(r_c=0\) and therefore
+\(m_{c,K}=0\), removes the additional coupling and is in that sense the neutral
+centre for sustained contact. The shifted centre of compliance is consequently
+interpreted as an alignment mechanism used while additional rotational
+correction is required, rather than as a centre that must remain displaced
+throughout the subsequent contact task. This reading is consistent with the
+implemented phase structure: the point-shifted impedance is used during set-up,
+whereas the grinding phase returns to the decoupled Cartesian impedance, as
+described in \Cref{subsec:implementation_grinding_phase}. The reported
+experiments establish that the lever can alter the alignment response; they do
+not evaluate a lever held through sustained grinding, which was not tested.
+
 These measurements support a simple geometric rule for selecting the
 compliance-centre lever. With
 \[
@@ -182,8 +204,12 @@ surface contact.
 
 Finally, the lever-selection rule can be incorporated directly into the
 controller. After the initial angular deviation is determined at the clearance
-transition, the controller could select the tangential lever direction and
-sign so that the resulting press-induced moment acts against that deviation.
-The lever magnitude could then be scheduled within predefined geometric and
-joint-torque limits. This would replace a compliance-centre lever chosen before
+transition, the controller could introduce a direction-selected tangential
+displacement of the centre of compliance only while an additional corrective
+moment is required, with its magnitude scheduled within predefined geometric
+and joint-torque limits. Once an alignment criterion is satisfied, the centre
+of compliance could be returned smoothly to the TCP before sustained contact or
+grinding. Such a phase-dependent strategy would keep the alignment authority
+the shifted centre demonstrated while avoiding a persistent directional moment
+after alignment, and it would replace a compliance-centre lever chosen before
 the run with a geometry-based, run-specific selection.
