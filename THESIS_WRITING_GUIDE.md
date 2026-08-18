@@ -291,9 +291,30 @@ circulation, the settled choices are:
   the frame, normal, and tangents. `workpiece` also reads as if it might be the
   tool. It is not — the robot holds the tool; the surface is stationary. Since
   both are flat, the two must never be allowed to blur: **`surface` always
-  means the contacted plane.** The tool's own flat sides are the **tool face**
-  or the **grinding face**, never a bare `surface`, and their measurements are
-  `tool-face dimensions`.
+  means the contacted plane.** The tool's own flat side is the **tool face**,
+  never a bare `surface`, and its measurements are `tool-face dimensions`.
+
+  **`grinding face` is retired; write `tool face`.** The attributive compounds
+  go with it, because `grinding-face direction` and `grinding-face geometry`
+  cost four syllables to say what `tool normal` and `tool geometry` say
+  exactly:
+
+  | Was | Now |
+  |---|---|
+  | grinding face | tool face |
+  | grinding-face direction, grinding-face normal | tool normal |
+  | grinding-face geometry | tool geometry |
+  | grinding-face orientation | tool orientation |
+  | grinding-face axis | tool axis |
+  | grinding-face point | tool point |
+  | Grinding-Face Direction Calibration *(heading)* | Tool Normal Calibration |
+
+  The **grinding phase** keeps its name, as do the **grinding tool** and the
+  **grinding sweep**: those name the process and the object, not the face.
+
+  One exception to the pattern. The centre of the face is the **tool-face
+  centre**, not the `tool centre`, which a reader two lines from
+  \(p_{\mathrm{TCP}}\) will read as the tool centre point.
 
   **Keep the surface generic.** Describe it as `a plane surface`, `a given
   surface`, or simply `the surface`. Do not name its material: the results are
@@ -335,6 +356,18 @@ circulation, the settled choices are:
   every chapter, never a `tool feature` and never a bare `edge`. `edge`
   presumes edge contact, and the set-up phase is designed to seat the tool face
   flat.
+
+  **Do not write `selected tool point or edge`.** \(p_T\) is one position
+  vector; where an edge leads, the controller uses its midpoint. Say what it is
+  once, at the definition — depending on the tool orientation it is a leading
+  corner, the midpoint of a leading edge, or the tool centre — and then call it
+  the selected tool point everywhere else.
+
+  \(r_{T,\mathrm{EE}}\) is what is **fixed relative to the tool** once the
+  contact reference has been selected. Its base-frame representation
+  \(r_T=R_{\mathrm{EE}}r_{T,\mathrm{EE}}=p_T-p_{\mathrm{TCP}}\) rotates with
+  the tool, so do not write that \(r_T\) is fixed by the geometry: name the
+  frame the statement is true in.
 - **pole** is implementation vocabulary from the parameter names. Keep it in
   equation labels and parameter keys, not in the running text.
 - **commanded tool orientation offset** for the deliberate angular command: a
@@ -437,6 +470,16 @@ matrices are \(R\) without exception.
 Macros defined in `config/commands.tex` (`\vF`, `\mK`, `\R{3}`, …) predate this
 convention. `\R{n}` for \(\mathbb{R}^n\) is in active use and stays; the
 bold-producing ones are not used in the chapters and should not be reintroduced.
+
+**cleveref cannot type a label set inside a `longtable`.** Both obvious fixes
+are wrong and the second is worse, because it looks right in the source:
+`\label{}` alone gives the correct number with the wrong type, so `\Cref`
+printed `Section 4.4` for a table; `\label[table]{}` fixes the type but builds
+the number from the enclosing section prefix, so the same reference printed
+`Table 4.3.2` for Table 4.3. Reference a `longtable` as literal
+`Table~ef{...}`, which takes its number from `\@currentlabel` and is right
+in both respects. Check the rendered words in the PDF, not the source — neither
+failure raises a warning.
 
 **Never normalise notation with a bulk regex.** A backslash-stripping
 substitution across the `.tex` files silently produced 190 undefined macros and

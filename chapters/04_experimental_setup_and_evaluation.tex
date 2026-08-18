@@ -37,7 +37,7 @@ controller, Cartesian impedance law, contact geometry, and phase sequence are
 described in \Cref{ch:implementation}.
 
 The rectangular grinding tool was held by the Franka Hand using custom gripper
-fingers. The grinding face measured \(40\times120\,\mathrm{mm}\), with the
+fingers. The tool face measured \(40\times120\,\mathrm{mm}\), with the
 width along \(X_{\mathrm{EE}}\) and the length along \(Y_{\mathrm{EE}}\). Its
 centre was located \(20\,\mathrm{mm}\) along \(+Z_{\mathrm{EE}}\) from the
 reported end-effector origin. The pads holding the tool were screwed to the
@@ -48,7 +48,7 @@ load.
 
 The surface was a plane plate mounted on a raised base board. All reported
 measurements used dry contact. The physical surface orientation and the
-grinding-face direction were calibrated separately before the measurements, as
+tool normal were calibrated separately before the measurements, as
 described in \Cref{sec:surface_tool_calibration}.
 
 \begin{figure}[H]
@@ -94,7 +94,7 @@ component type. These thresholds supplied the Franka reflex mechanism and were
 kept unchanged throughout the reported measurements.
 
 The main hardware and software configuration is summarised in
-\Cref{tab:reproducibility_record}. The complete run-specific controller
+Table~\ref{tab:reproducibility_record}. The complete run-specific controller
 configuration is given in \Cref{app:controller_parameters}.
 
 {\small
@@ -102,7 +102,7 @@ configuration is given in \Cref{app:controller_parameters}.
 >{\raggedright\arraybackslash}p{0.29\textwidth}
 >{\raggedright\arraybackslash}p{0.64\textwidth}@{}}
 \caption{Documented configuration of the experimental system.}
-\label[table]{tab:reproducibility_record}\\
+\label{tab:reproducibility_record}\\
 \toprule
 \textbf{Item} & \textbf{Configuration used in the reported experiments}\\
 \midrule
@@ -118,7 +118,7 @@ configuration is given in \Cref{app:controller_parameters}.
 Robot & Franka Emika Panda with seven actuated joints.\\
 Robot interface & libfranka joint-torque interface at a nominal control period of \(1\,\mathrm{ms}\).\\
 Gripper and mounting & Franka Hand with custom fingers; approximately \(\pm2^\circ\) unloaded relative rotation about \(y_{\mathrm{EE}}\).\\
-Grinding tool & Rectangular \(40\times120\,\mathrm{mm}\) grinding face; centre \(20\,\mathrm{mm}\) along \(+Z_{\mathrm{EE}}\) from the reported end-effector origin.\\
+Grinding tool & Rectangular \(40\times120\,\mathrm{mm}\) tool face; centre \(20\,\mathrm{mm}\) along \(+Z_{\mathrm{EE}}\) from the reported end-effector origin.\\
 Surface & Plane plate on a raised base board; dry contact.\\
 Operating system & Ubuntu~20.04.3.\\
 Real-time kernel & Linux \texttt{5.9.1-rt20} with \texttt{PREEMPT\_RT}.\\
@@ -135,11 +135,11 @@ Collision thresholds & \(140\,\mathrm{N\,m}\) joint-side and \(240\,\mathrm{N}\)
 \label{sec:contact_geometry}
 % ============================================================================
 
-The controller requires the physical plane and the grinding-face direction in
+The controller requires the physical plane and the tool normal in
 consistent coordinate frames. These quantities were estimated independently.
 The surface calibration determined a point on the plane, its normal, and the
-two surface tangents. The tool calibration determined the grinding-face normal
-in end-effector coordinates. The calibrated values were then used by both the
+two surface tangents. The tool calibration determined that normal in
+end-effector coordinates. The calibrated values were then used by both the
 controller and the evaluation.
 
 \begin{figure}[H]
@@ -154,7 +154,7 @@ controller and the evaluation.
 \label{subsec:plane_calibration_protocol}
 
 Four positions distributed over the plate were probed with the same marked
-\(+X_{\mathrm{EE}},+Y_{\mathrm{EE}}\) corner of the grinding face. The first
+\(+X_{\mathrm{EE}},+Y_{\mathrm{EE}}\) corner of the tool face. The first
 three points, \(P_1\)--\(P_3\), defined the plane; the fourth point \(P_4\) was
 excluded from the fit and used for validation.
 
@@ -324,16 +324,16 @@ All surface-resolved quantities use the coordinate order
 \([t_1,t_2,n_s]\).
 
 
-\subsection{Grinding-Face Direction Calibration}
+\subsection{Tool Normal Calibration}
 \label{subsec:grinding_face_calibration}
 
-The grinding-face direction in the end-effector frame cannot be taken from the
+The tool normal in the end-effector frame cannot be taken from the
 nominal \(+Z_{\mathrm{EE}}\) axis alone because the physical tool and its mount
-introduce geometric offsets. To identify this direction, the complete grinding
+introduce geometric offsets. To identify this direction, the complete tool
 face was seated flat on the calibrated plane at four different yaw angles. The
 face normal in the base frame remains unchanged when only the yaw is varied;
 therefore the end-effector-frame direction that maps to the same base-frame
-direction across the captures identifies the grinding-face normal.
+direction across the captures identifies the tool normal.
 
 The first three captured rotations were used for estimation and the fourth was
 retained for validation. With \(R_{\mathrm{cal},i}\) the rotational part of the
@@ -354,7 +354,7 @@ The estimator formed
 \(\bar R=(R_{\mathrm{cal},1}+R_{\mathrm{cal},2}+R_{\mathrm{cal},3})/3\) and
 applied the singular-value decomposition \(\bar R=U\Sigma V^\top\). The
 corresponding dominant singular-vector pair provided the invariant base-frame
-direction and the grinding-face direction in the end-effector frame. The sign
+direction and the tool normal in the end-effector frame. The sign
 was chosen toward nominal \(+Z_{\mathrm{EE}}\). The final value used in every
 reported run was
 
@@ -392,14 +392,14 @@ R_d n_{\mathrm{EE}}=-n_s.
 \end{equation}
 
 The target sign is therefore \(s_a=-1\). The commanded spin about the desired
-grinding-face axis, measured from \(t_1\), was \(90^\circ\) for all reported
+tool axis, measured from \(t_1\), was \(90^\circ\) for all reported
 runs. In the flat target orientation the projected long face axis is aligned
 with the \(t_2\) line.
 
 \begin{figure}[H]
   \centering
   \input{figures/tool_face_plan_view.tex}
-  \caption{Calibrated grinding face and mounting axes in the surface plane.}
+  \caption{Calibrated tool face and mounting axes in the surface plane.}
   \label{fig:tool_face_plan_view}
 \end{figure}
 
@@ -407,7 +407,7 @@ with the \(t_2\) line.
 \subsection{Calibrated Experimental Geometry}
 \label{subsec:calibrated_contact_geometry}
 
-The calibrated grinding face is represented in end-effector coordinates by
+The calibrated tool face is represented in end-effector coordinates by
 its centre offset
 
 \begin{equation}
@@ -454,7 +454,7 @@ p_T=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{T,\mathrm{EE}}.
 \end{equation}
 
 The controller uses the rectangular-face model described in
-\Cref{ch:implementation} to determine the point or edge with the smallest
+\Cref{ch:implementation} to determine the point with the smallest
 geometric clearance to the plane. The feature-selection tolerance was
 
 \begin{equation}
@@ -517,7 +517,7 @@ lower normal entry limits the elastic normal-force increase for a given normal
 position error, while the higher tangential entries restrict motion in the
 surface plane. The low rotational stiffnesses about \(t_1\) and \(t_2\) permit
 contact-induced alignment rotation, and the higher entry about \(n_s\) mainly
-resists in-plane spin of the grinding face. Because the set-up translational
+resists in-plane spin of the tool face. Because the set-up translational
 stiffness \(K_{p,\mathrm{set}}\) is diagonal in the surface frame, the effective
 normal stiffness \(K_{p,n}=n_s^\top K_{p,\mathrm{set}}n_s\) equals the tabulated
 normal entry of \(350\,\mathrm{N/m}\).
@@ -536,15 +536,15 @@ provided in \Cref{app:controller_parameters}.
 \label{sec:experimental_procedure_contact}
 
 The common trajectory and transition parameters are collected in
-\Cref{tab:experimental_phase_parameters}. The table is the single reference
+Table~\ref{tab:experimental_phase_parameters}. The table is the single reference
 for the fixed contact-test sequence used by Cases~A to~H.
 
 \begingroup
 \small
 \begin{longtable}{@{}p{0.43\textwidth}p{0.20\textwidth}p{0.27\textwidth}@{}}
 \caption{Common phase-transition and trajectory parameters for Cases~A to~H.}
-\label[table]{tab:experimental_phase_parameters}
-\label[table]{tab:experimental_case_dh_parameters}\\
+\label{tab:experimental_phase_parameters}
+\label{tab:experimental_case_dh_parameters}\\
 \toprule
 \textbf{Quantity} & \textbf{Value} & \textbf{Role}\\
 \midrule
@@ -581,11 +581,11 @@ the configured initial joint posture. The calibrated geometry, the phase gains
 and damping, and the compliance-centre definition were prepared before the
 torque callback started.
 
-Approach ended when the tool point or edge with the smallest clearance
-reached \(20\,\mathrm{mm}\) above the calibrated plane. That transition was
+Approach ended when the selected tool point reached \(20\,\mathrm{mm}\)
+above the calibrated plane. That transition was
 defined by geometry rather than by a force threshold. At the same instant the
-controller stored the TCP pose, the orientation reference, the selected
-selected tool point or edge with its projection onto the plane, and the
+controller stored the TCP pose, the orientation reference, the selected tool
+point and its projection onto the plane, and the
 model-estimated external wrench, which serve as the references for the
 evaluation quantities of \Cref{sec:experimental_evaluation}.
 
@@ -652,7 +652,7 @@ experiment of \Cref{sec:nullspace_hold_study}.
 \label{subsec:experimental_recorded_quantities}
 
 The real-time logging buffer recorded the measured robot state, Cartesian
-reference and error, selected tool point or edge, active control phase,
+reference and error, selected tool point, active control phase,
 commanded Cartesian wrench, final commanded joint torque, null-space mode, and
 libfranka model-estimated external wrench. The complete signal list and CSV
 structure are given in \Cref{sec:recorded_signals} and
@@ -678,7 +678,7 @@ Cases~B and~C, compliance-centre behaviour in Cases~A and~D to~G, and
 generalisation of the lever-direction rule in Case~H. Case~A is the common
 zero-lever reference, with the centre of compliance at the TCP, so that the
 commanded press produces no moment through a compliance-centre lever.
-\Cref{tab:experimental_test_cases} lists the complete parameter variations and
+Table~\ref{tab:experimental_test_cases} lists the complete parameter variations and
 the shared reference conditions. The case letters are retained throughout
 \Cref{ch:results_discussion} so that each experimental setting maps directly to
 its reported result. Two cases need a geometric explanation that the table
@@ -695,7 +695,7 @@ cannot carry, and both are treated after it.
 >{\centering\arraybackslash}p{0.06\textwidth}
 >{\raggedright\arraybackslash}p{0.17\textwidth}@{}}
 \caption{Experimental cases and parameter variations.}
-\label[table]{tab:experimental_test_cases}\\
+\label{tab:experimental_test_cases}\\
 \toprule
 \textbf{Case} & \textbf{Varied quantity} & {\scriptsize\textbf{Commanded tool orientation offset}} & \textbf{Tested values} & \textbf{Runs} & \textbf{Comparison}\\
 \midrule
@@ -771,7 +771,7 @@ directions.\\
 \end{longtable}
 \endgroup
 
-The run counts in \Cref{tab:experimental_test_cases} include the three scheduled
+The run counts in Table~\ref{tab:experimental_test_cases} include the three scheduled
 repetitions for each newly recorded setting. Shared reference conditions are
 identified in the table and were not recorded or counted twice.
 
@@ -794,7 +794,7 @@ r_c=p_{\mathrm{TCP}}-p_c.
 
 This is the shift of the impedance reference point. It is not the offset
 between the TCP and the physical contact point, which follows from the
-grinding-face geometry of \Cref{subsec:calibrated_contact_geometry}. The two
+tool geometry of \Cref{subsec:calibrated_contact_geometry}. The two
 are separate quantities and are reported as such, as set out in
 \Cref{sec:coupled_pole_stiffness}.
 
@@ -905,13 +905,13 @@ R_{\mathrm{surface}}^\top\Delta\theta_{\mathrm{set}}.
 The signed component along the commanded rotation direction is the primary
 controller-response metric. A positive value denotes rotation in the intended
 alignment direction. This quantity is calculated from end-effector motion and
-does not require the calibrated grinding-face direction \(n_{\mathrm{EE}}\).
+does not require the calibrated tool normal \(n_{\mathrm{EE}}\).
 
 
 \subsection{Alignment Angle and Flatness Classification}
 \label{subsec:experimental_alignment_change}
 
-The grinding-face direction used for the alignment calculation is obtained
+The tool normal used for the alignment calculation is obtained
 from the measured end-effector orientation and the calibrated direction in the
 end-effector frame:
 
@@ -930,7 +930,7 @@ The alignment angle is
 \end{equation}
 
 The negative sign follows the flat target
-\(R_dn_{\mathrm{EE}}=-n_s\). The angle describes the grinding-face alignment
+\(R_dn_{\mathrm{EE}}=-n_s\). The angle describes the tool alignment
 calculated from the end-effector pose under the assumption that the calibrated
 relation between the tool and end effector remains fixed. Relative motion in
 the tool mounting is not captured by this calculation.
@@ -952,17 +952,16 @@ the end of set-up.
 
 A separate geometry-based flatness classification is obtained from the final
 TCP height relative to the calibrated plane and the height expected from the
-calibrated rectangular tool geometry when the grinding face is flat. This
+calibrated rectangular tool geometry when the tool face is flat. This
 classification uses the end-effector position and calibrated geometry; it is
-not a direct angular measurement of the physical grinding face. The alignment
+not a direct angular measurement of the physical tool face. The alignment
 angle and the TCP-height classification are therefore reported separately from
 the primary set-up rotation.
 
 
 \subsection{Displacement and Wrench Quantities}
 
-Let \(p_T\) denote the point or edge of the grinding face selected at the
-clearance transition. Its displacement and magnitude are
+Let \(p_T\) denote the tool point selected at the clearance transition. Its displacement and magnitude are
 
 \begin{equation}
 \Delta p_T

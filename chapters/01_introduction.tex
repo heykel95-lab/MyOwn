@@ -16,7 +16,7 @@ specified directly and account for a growing share of industrial deployments
 torque-level command interface determine how the robot yields under contact as
 well as where it moves. In surface finishing, this capability can reduce the
 loads caused by angular tool--surface misalignment. It can also permit the
-grinding face to rotate towards the surface while maintaining the commanded
+tool face to rotate towards the surface while maintaining the commanded
 normal press. The resulting alignment is evaluated relative to the physical
 surface.
 
@@ -167,14 +167,14 @@ stiffness values according to the contact geometry.
 
 Each run follows a fixed sequence of control phases. First, the tool is brought
 to the commanded orientation and approaches the surface up to a specified
-geometric clearance. Based on the rectangular grinding-face geometry and the
+geometric clearance. Based on the rectangular tool geometry and the
 current tool orientation, the controller predicts the point on the tool expected
 to reach the surface first. For this purpose, the four tool corners are compared
 along the approach direction. A single leading corner is selected for a general
 orientation offset. If two neighbouring corners are equally close to the surface, their
 midpoint is used as the predicted contact point at the centre of the leading
 edge. If all four corners are equally close to the surface, the centre of the
-grinding face is used. This predicted contact point is fixed when the clearance
+tool face is used. This predicted contact point is fixed when the clearance
 is reached and remains unchanged during set-up and grinding.
 
 During contact set-up, the desired position of the predicted contact point is
@@ -216,7 +216,7 @@ the 7-\mbox{\abbr{DOF}} Franka Emika Panda. It also includes a spatial
 compliance-centre formulation in which the \mbox{\(6\times6\)} stiffness and damping
 matrices are defined at a selected virtual centre of compliance \mbox{\(p_c\)} and transformed
 to the TCP. In addition, a contact and evaluation methodology was developed in
-which the physical surface orientation and the grinding-face axis are defined
+which the physical surface orientation and the tool axis are defined
 independently, allowing the alignment of the tool to be evaluated relative to
 the surface.
 

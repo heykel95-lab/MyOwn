@@ -9,7 +9,7 @@ control period of \mbox{\(1\,\mathrm{ms}\)}.
 
 The implementation is organised around the control flow required for the
 surface-alignment task. A surface-relative task representation first defines
-the surface frame, the grinding-face orientation, and the point or edge of the
+the surface frame, the tool orientation, and the point of the
 rectangular face used by the contact sequence. The real-time callback then
 updates the Cartesian reference, evaluates the impedance wrench, and maps it to
 joint torque. During set-up, the directional impedance can be shifted to a
@@ -48,7 +48,7 @@ and run evaluation are performed after torque control has stopped.
 \textbf{Subsystem} & \textbf{Responsibility} \\
 \hline
 Configuration & Validates the parameter set and constructs the typed controller configuration. \\[1mm]
-Task geometry & Constructs the surface frame, tool orientation target, grinding-face geometry, and geometric clearance quantities. \\[1mm]
+Task geometry & Constructs the surface frame, tool orientation target, tool geometry, and geometric clearance quantities. \\[1mm]
 Real-time controller & Updates the active phase and Cartesian reference and evaluates the \(1\,\mathrm{kHz}\) joint-torque callback. \\[1mm]
 Impedance and null-space control & Constructs the active Cartesian gains, optional compliance-centre shift, Cartesian wrench, and secondary null-space torque. \\[1mm]
 Operator and robot interface & Manages mode selection, manual guidance, robot preparation, gripper actions, and tool handling. \\[1mm]
@@ -92,7 +92,7 @@ understand the contact-alignment controller.
 \label{sec:surface_task_plane}
 
 The contact sequence is formulated relative to the calibrated surface and to
-the known geometry of the grinding face. The controller therefore constructs a
+the known geometry of the tool face. The controller therefore constructs a
 surface task frame, a surface-relative tool orientation target, and a geometric
 reference point on the rectangular face before the set-up impedance is applied.
 
@@ -142,7 +142,7 @@ from the free-space starting region towards the configured plane. The calibrated
 \subsection{Surface-Relative Tool Orientation}
 \label{sec:tool_orientation_given_surface}
 
-The grinding-face direction is calibrated once in the end-effector frame. Its
+The tool normal is calibrated once in the end-effector frame. Its
 current direction in the robot base frame is calculated from the measured
 end-effector orientation:
 
@@ -165,7 +165,7 @@ n_d
 
 The shortest rotation that aligns the captured tool direction with
 \mbox{\(n_d\)} is applied to the complete start orientation. The implementation
-can additionally prescribe a twist about the desired grinding-face axis. The
+can additionally prescribe a twist about the desired tool axis. The
 long axis of the rectangular face and the selected surface tangent are
 projected onto the plane normal to \mbox{\(n_d\)}, and the requested in-plane
 rotation is then applied about that axis. Because a centred rectangle is
@@ -182,7 +182,7 @@ measurements are stated in \mbox{\Cref{ch:methodology}}.
 \subsection{Grinding-Face Geometry and Geometric Clearance}
 \label{sec:tool_contact_geometry}
 
-The grinding face is represented as a rectangle fixed in the end-effector
+The tool face is represented as a rectangle fixed in the end-effector
 frame. Its centre offset, half-width vector, and half-length vector define the
 four vertices
 
@@ -195,12 +195,13 @@ r_{\mathrm{face,EE}}
 \label{eq:implementation_tool_face_vertices}
 \end{equation}
 
-The rectangular face geometry determines the point or edge of the tool
-expected to reach the surface first. That point is the selected tool point
-\mbox{\(p_T\)}, and it is the geometric contact reference for the set-up motion
-that follows. It is distinct from the TCP and from the virtual centre of
-compliance. Its position follows from the fixed end-effector-frame offset
-\mbox{\(r_{T,\mathrm{EE}}\)},
+The tool geometry determines the point expected to reach the surface first.
+This point is denoted by \mbox{\(p_T\)} and is used as the contact reference
+during set-up; here the subscript \mbox{\(T\)} denotes the selected tool point.
+Depending on the tool orientation it corresponds to a leading corner, the
+midpoint of a leading edge, or the tool centre. It is distinct from the TCP and
+from the virtual centre of compliance. Its position follows from the
+end-effector-frame offset \mbox{\(r_{T,\mathrm{EE}}\)},
 
 \begin{equation}
 p_T=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{T,\mathrm{EE}},
@@ -208,9 +209,11 @@ p_T=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{T,\mathrm{EE}},
 \end{equation}
 
 where the tool centre point coincides with the reported end-effector origin in
-this implementation, \mbox{\(p_{\mathrm{TCP}}=p_{\mathrm{EE}}\)}. The vector
-\mbox{\(r_T=p_T-p_{\mathrm{TCP}}\)} therefore describes the tool geometry
-between the TCP and the selected contact reference. The compliance-centre shift
+this implementation, \mbox{\(p_{\mathrm{TCP}}=p_{\mathrm{EE}}\)}. The offset
+\mbox{\(r_{T,\mathrm{EE}}\)} is fixed relative to the tool once the contact
+reference has been selected. Its base-frame representation
+\mbox{\(r_T=R_{\mathrm{EE}}r_{T,\mathrm{EE}}=p_T-p_{\mathrm{TCP}}\)} changes
+with the tool orientation. The compliance-centre shift
 \mbox{\(r_c=p_{\mathrm{TCP}}-p_c\)} of
 \mbox{\Cref{sec:coupled_pole_stiffness}} is a different quantity: it is the
 virtual displacement used by the Cartesian impedance transformation, and it
@@ -227,7 +230,7 @@ equal corners define the face centre.
 \begin{figure}[H]
   \centering
   \input{figures/face_feature_selection.tex}
-  \caption{Grinding-face geometry and the selected leading feature.}
+  \caption{Tool face geometry and the selected leading feature.}
   \label{fig:face_feature_selection}
 \end{figure}
 
@@ -239,7 +242,7 @@ the reference point used for the subsequent set-up motion.
 At the geometric clearance transition, the implementation stores
 
 \begin{itemize}
-    \item the selected end-effector-frame point or edge reference;
+    \item the selected tool-point offset in the end-effector frame;
     \item its projection onto the calibrated surface;
     \item the measured TCP pose and the orientation that will be held during set-up; and
     \item the current model-estimated external wrench as a reference for later changes.
@@ -248,7 +251,7 @@ At the geometric clearance transition, the implementation stores
 The selected face offset is then kept fixed during set-up. The desired
 contact-point position is generated relative to its projected surface point and
 converted back to the corresponding TCP reference. This allows the phase logic
-to command the geometrically relevant point on the grinding face while the
+to command the geometrically relevant point on the tool face while the
 Cartesian impedance law remains formulated at the TCP.
 
 
@@ -673,7 +676,7 @@ surface approach.
 
 During surface approach, the desired position advances from the captured start
 position along \mbox{\(-n_s\)} with a rate limit and maximum travel. The
-rectangular grinding-face geometry is evaluated continuously during this
+rectangular tool geometry is evaluated continuously during this
 motion, so the controller always knows which corner or edge currently has the
 smallest geometric clearance to the surface.
 
@@ -682,7 +685,7 @@ configured geometric threshold. This is not a force-detected contact event.
 The model-estimated external wrench is recorded during approach, but it does
 not determine the phase transition.
 
-At the clearance transition, the selected tool point or edge is
+At the clearance transition, the selected tool point is
 selected and held constant, and the controller stores its projected surface
 point, the current TCP pose, the orientation reference, and the external-wrench
 reference. If the optional pre-set-up gate is enabled, the controller first
