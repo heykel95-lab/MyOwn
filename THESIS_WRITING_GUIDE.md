@@ -1125,6 +1125,44 @@ The principal experimental conclusions of the calibrated-plane campaign are:
    near the linear combination of the tangent components, which attributes the
    asymmetry to the surface frame rather than to the face geometry.
 
+### Why the two tangents behaved differently, and what may be concluded from it
+
+The conclusion carries this synthesis, because it is what makes the \(t_1\)
+and \(t_2\) results one finding rather than two unrelated ones.
+
+About \(t_1\) the end effector already rotated in the assisting direction with
+the centre of compliance at the TCP, and the selected lever added little. This
+is **consistent with** the contact moment \(m_{\mathrm{contact,TCP}}=r_T	imes
+f_C\) and the tool-mount compliance already producing that rotation. It does
+not show that \(r_T\) was sufficient on its own: the contributions of contact
+geometry and mounting compliance were never isolated, and the conclusion must
+not claim they were.
+
+About \(t_2\) the zero-lever condition satisfied the TCP-height criterion while
+the end effector rotated slightly the wrong way. **Do not write that the robot
+became correctly aligned.** The defensible reading is that the tool seated
+against the surface while the end-effector orientation followed the compliant
+mounting; since relative tool--gripper motion was not measured, that mechanism
+is consistent with the data rather than demonstrated by it.
+
+The general point is that **satisfying the flatness criterion and producing an
+alignment-directed end-effector rotation are not the same thing**, which is
+precisely where the two tangents differ.
+
+Two claims must not be made from this:
+
+- **Not that the TCP is the universally best centre.** About \(t_2\) the
+  TCP-centred impedance rotated the end effector the wrong way. The defensible
+  statement is that the TCP is a useful *neutral default*, since it adds no
+  virtual coupling moment and lets the contact geometry act on its own; where
+  the natural response already assists, no lever is needed, and where it is
+  weak or opposed, the direction-selected lever supplies the missing authority.
+- **Not that the lever magnitude changes an alignment time.** The set-up
+  interval was fixed at \(5\,\mathrm{s}\) and no alignment-time metric was
+  defined or compared. What may be said is the model statement: for the same
+  elastic press and a perpendicular lever, the predicted coupling moment is
+  proportional to \(ho_c\). A timing claim is future work.
+
 Report the \(t_2\) results as lower bounds. Unmeasured tool motion within the
 gripper can conceal correction that occurred but cannot create it.
 
