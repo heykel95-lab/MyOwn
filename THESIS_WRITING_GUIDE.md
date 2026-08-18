@@ -996,13 +996,32 @@ extended to physical disturbances or contact response.
   full row rank.
 - A retained singular value is inverted as \(1/\sigma_i\).
 - Distinguish the virtual-centre lever \(r_c=p_{\mathrm{TCP}}-p_c\) from the
-  physical-contact lever
-  \(r_{\mathrm{contact}}=p_{\mathrm{TCP}}-p_{\mathrm{contact}}\). The two never
-  appear in the same expression. \(r_c\) shapes the **commanded** wrench through
-  \(\mathrm{Ad}(r_c)\); \(r_{\mathrm{contact}}\) only transfers a **measured**
-  moment between two reference points.
-- The moment transfer is
-  \(M_{\mathrm{contact}}=M_{\mathrm{TCP}}+r_{\mathrm{contact}}\times\Delta\hat
+  tool-geometry lever \(r_T=p_T-p_{\mathrm{TCP}}\). \(r_T\) locates the contact
+  reference relative to the TCP; \(r_c\) locates the virtual centre of
+  compliance relative to the TCP. They never appear in the same expression.
+  \(r_c\) shapes the **commanded** wrench through \(\mathrm{Ad}(r_c)\);
+  \(r_T\) belongs to the physical contact geometry.
+- **Show the two moment concepts next to each other, and say which is which.**
+  Assuming the physical contact force \(f_C\) acts at the selected tool point,
+  \(m_{\mathrm{contact,TCP}}=r_T\times f_C\) is its moment about the TCP,
+  against \(m_c=-r_c\times f_{\mathrm{press}}\) for the controller-side
+  coupling. The physical moment about the centre of compliance would take the
+  complete lever, \(m_{\mathrm{contact},c}=(r_c+r_T)\times f_C\), but the
+  controller never calculates it: the congruence transformation receives
+  \(r_c\), as the appendix source listing shows.
+- **\(m_c=-r_c\times f_{\mathrm{press}}\) uses \(r_c\) alone and
+  \(f_{\mathrm{press}}\) alone**, and that must be explicit wherever the
+  equation is introduced.
+- **The commanded press magnitude is \(F_{\mathrm{press}}\), never \(F_n\).**
+  \(F_n\) is reserved for the positive normal magnitude of the model-estimated
+  external-force change. Writing \(f_{\mathrm{press}}\approx-F_n n_s\) put a
+  measured symbol inside a commanded quantity; it is
+  \(f_{\mathrm{press}}\approx-F_{\mathrm{press}}n_s\) with
+  \(F_{\mathrm{press}}>0\). Likewise \(f_{\mathrm{press}}=K_pe_p\) is the
+  elastic part of the commanded force \(f\), not the whole wrench
+  \(F=[f^\top,m^\top]^\top\).
+- The measured moment transfer is
+  \(M_{\mathrm{contact}}=M_{\mathrm{TCP}}+r_T\times\Delta\hat
   f_{\mathrm{ext}}\), with \(M_{\mathrm{TCP}}\) the model-estimated external
   moment about the TCP. Force is independent of the reference point and
   therefore carries no point subscript; the moments carry one because they do
