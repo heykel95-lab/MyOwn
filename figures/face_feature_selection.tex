@@ -1,0 +1,43 @@
+% Rectangular grinding face in the end-effector frame, and the three outcomes of
+% the leading-feature comparison along the descent direction.
+% Uses only tikz + arrows.meta/calc/positioning, which config/packages.tex loads.
+\begin{tikzpicture}[
+    font=\footnotesize,
+    face/.style={draw=gray!70!black, fill=white},
+    vec/.style={-{Latex[length=1.8mm]}, gray!55!black},
+    sel/.style={draw=gray!70!black, fill=gray!25},
+    lbl/.style={font=\footnotesize, inner sep=1.6pt},
+  ]
+
+  % ---- calibrated face, half-width along x_EE and half-length along y_EE
+  \draw[face] (0,0) rectangle (3.2,1.6);
+  \fill (1.6,0.8) circle (1.2pt);
+  \node[lbl, above right] at (1.6,0.8) {$r_{\mathrm{face,EE}}$};
+
+  \draw[vec] (1.6,0.8) -- (3.2,0.8);
+  \node[lbl, below] at (2.4,0.8) {$r_{\mathrm{width,EE}}$};
+  \draw[vec] (1.6,0.8) -- (1.6,1.6);
+  \node[lbl, right] at (1.6,1.25) {$r_{\mathrm{length,EE}}$};
+
+  \foreach \x/\y in {0/0, 3.2/0, 0/1.6, 3.2/1.6} {\fill (\x,\y) circle (1.4pt);}
+  \node[lbl, below] at (1.6,-0.15) {calibrated grinding face};
+
+  % ---- the three outcomes of the comparison along the descent direction
+  \begin{scope}[xshift=4.6cm]
+    \draw[face] (0,0) rectangle (1.5,0.75);
+    \fill[sel] (1.5,0) circle (2.2pt);
+    \node[lbl, below] at (0.75,-0.15) {leading corner};
+  \end{scope}
+
+  \begin{scope}[xshift=6.6cm]
+    \draw[face] (0,0) rectangle (1.5,0.75);
+    \draw[sel, line width=1.1pt] (0,0) -- (1.5,0);
+    \node[lbl, below] at (0.75,-0.15) {leading edge};
+  \end{scope}
+
+  \begin{scope}[xshift=8.6cm]
+    \draw[sel] (0,0) rectangle (1.5,0.75);
+    \node[lbl, below] at (0.75,-0.15) {face centre};
+  \end{scope}
+
+\end{tikzpicture}

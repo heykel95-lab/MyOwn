@@ -68,8 +68,23 @@ node the run passes, not just its centre.
 
 ### Clearance
 
+**No symbol touches anything.** A label, a symbol or a name never touches or
+overlaps an arrow, a line, a box, an axis, another label, or the drawing it
+belongs to. This is the rule that gets broken most often, because a label placed
+a small offset from its arrow looks separated in the source and lands on the
+arrowhead once `\resizebox` has scaled the picture. Offsets of one or two
+millimetres are not clearance; give a symbol beside an arrow roughly a third of
+its own width of space, and check the result in the compiled document rather
+than in the coordinates.
+
 Leave a visible gap between a label and any box: aim for at least half a line
 of text, and never let a label sit inside a node's bounding box.
+
+**Explanatory sentences do not go inside the picture.** A two-line note added
+beside a diagram widens its bounding box, and `\resizebox` then shrinks the
+whole drawing to fit the page, so the geometry becomes unreadable to buy room
+for prose that belongs in the body text. Keep the drawing to the geometry and
+its symbols; say the rest in the paragraph before or after it.
 
 **A label is never filled.** A white fill behind the text erases whatever it
 sits on, and on a label placed `above` a run it erases the top of that run, so
