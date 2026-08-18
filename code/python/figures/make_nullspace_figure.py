@@ -184,7 +184,7 @@ def damping_panel(ax, groups):
                         alpha=0.10, linewidth=0)
     ax.set_xlabel(r"Time after disturbance onset $t_d$ [s]")
     ax.set_ylabel(
-        r"Cumulative null-space excursion "
+        r"Cumulative projected null-space motion "
         r"$\int |\dot q_{\mathrm{null}}|\,\mathrm{d}t$ [$^\circ$]"
     )
     ax.text(0.01, 0.97, "(a)", transform=ax.transAxes,

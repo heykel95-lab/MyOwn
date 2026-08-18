@@ -4,37 +4,57 @@
 principal measured ordering, null-space result, and scope limits without
 overloading the reader with the full parameter matrix.}
 
-Angular misalignment between a grinding tool and a surface can cause edge-first
-contact. A rigidly controlled robot resists the resulting alignment motion and
-can therefore generate high contact forces and moments. This thesis
-investigates whether a torque-controlled collaborative robot can instead use
-contact itself to rotate the tool toward a planar surface.
+Angular misalignment between a grinding tool and a surface can cause
+edge-first contact. A rigidly controlled robot resists the resulting alignment
+motion and can therefore generate high contact forces and moments. Neither the
+size nor the direction of that misalignment is known before contact, so the
+compliance intended to absorb it cannot be arranged from the known geometry
+alone. This thesis investigates whether a torque-controlled collaborative robot
+can instead use contact itself to rotate the tool toward a planar surface. It
+also asks whether one centre of compliance can be selected before the direction
+and sign of the misalignment are known.
 
 A real-time Cartesian impedance controller was implemented for a
 seven-degree-of-freedom (\abbr{DOF}) Franka Emika Panda. The controller
 regulates translational and rotational compliance relative to the surface and
-allows the virtual centre of compliance to be displaced from the tool centre.
-This displacement introduces coupling between translation and rotation: when
-the robot presses the tool toward the surface, the resulting force can generate
-a moment that assists the alignment motion.
+allows the virtual centre of compliance to be displaced from the tool centre
+point (TCP). This displacement introduces coupling between translation and
+rotation: when the robot presses the tool toward the surface, the resulting
+force can generate a moment that assists the alignment motion.
 
 Experiments compared directional stiffness and different positions of the
 virtual compliance centre. The compliance-centre position produced the largest
 change in the measured alignment response. The assisting displacement lay in
 the surface plane and perpendicular to the required rotation direction.
 Reversing the initial angular misalignment also reversed the assisting
-displacement direction. The response was strongly direction-dependent: about
-one in-plane axis the robot already rotated substantially toward the surface
-without a displaced compliance centre, whereas about the orthogonal axis a
-selected \(40\,\mathrm{mm}\) displacement changed the measured set-up rotation
-from \(-1.63^\circ\) to \(+4.43^\circ\). Tests at intermediate in-plane
-directions supported the same geometric direction rule, but the experiments did
-not establish a universal best displacement magnitude.
+displacement direction, and a displacement selected for one surface tangent did
+not give the same response about the orthogonal tangent. The response was
+strongly direction-dependent: about one in-plane axis the robot already rotated
+substantially toward the surface without a displaced compliance centre, whereas
+about the orthogonal axis a selected \(40\,\mathrm{mm}\) displacement changed
+the measured set-up rotation from \(-1.63^\circ\) to \(+4.43^\circ\). Tests at
+intermediate in-plane directions supported the same geometric direction rule,
+but the experiments did not establish one displacement magnitude that suits
+every direction.
+
+A non-zero tangential displacement is therefore direction-dependent by
+construction, and none of those tested represents every tested misalignment.
+Within the investigated task, the compliance centre at the TCP is identified as
+the universal fixed centre of compliance. The term denotes the one position
+that can be selected independently of the sign and tangent-plane direction of
+the initial misalignment. It does not denote the position that produces the
+largest alignment rotation in every condition. A displaced centre remains a
+condition-dependent alignment mechanism for use where greater rotational
+authority is required, and returning to the TCP afterwards removes its
+directional coupling for the sustained contact that follows.
 
 A complementary null-space study showed that projected damping reduced
-unnecessary redundant joint motion, while a conditioning term improved the
-robot configuration after a repeatable disturbance. The work demonstrates a
+redundant joint motion without returning the redundant configuration, while a
+singular-value conditioning term active throughout the trial held that
+configuration against a repeatable disturbance. The work demonstrates a
 real-time method for using a virtual compliance-centre displacement to convert
-normal contact loading into an alignment moment. The main experimental
-contribution is a simple geometric rule for choosing the direction and sign of
-this displacement from the required tool-alignment rotation.
+normal contact loading into an alignment moment. Its main experimental
+contribution is the separation of the fixed centre from the displaced one,
+together with a simple geometric rule for choosing the direction and sign of
+the displacement from the required tool-alignment rotation. Grinding itself was
+not evaluated experimentally.

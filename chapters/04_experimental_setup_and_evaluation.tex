@@ -614,11 +614,21 @@ unchanged. Only the parameter assigned to the corresponding case was varied.
 \label{sec:experimental_question}
 % ============================================================================
 
-The experiments were organised into three groups: stiffness sensitivity in
-Cases~B and~C, compliance-centre behaviour in Cases~A and~D to~G, and
-generalisation of the lever-direction rule in Case~H. Case~A is the common
-zero-lever reference, with the centre of compliance at the TCP, so that the
-commanded press produces no moment through a compliance-centre lever.
+The surface-contact experiments were arranged to establish whether one fixed
+centre of compliance can provide suitable alignment behaviour across initial
+angular misalignments that are unknown before contact. Case~A establishes the
+TCP-centred reference, where \(r_c=0\) and the point shift contributes no
+coupling moment. Cases~B and~C test whether the direction-dependent response
+can instead be controlled through the rotational or the translational
+stiffness. Case~D then examines whether a fixed non-zero tangential centre can
+provide a common response for both signs of the commanded orientation offset
+and for both principal surface directions. Cases~E to~G test further
+dependencies of a displaced centre: the frame in which its lever is defined,
+the direction of the displacement, and the commanded orientation-offset
+magnitude. Case~H closes the sequence by testing whether one fixed non-zero
+tangential lever reproduces the direction-selected rule across several
+tangent-plane rotation directions.
+
 Table~\ref{tab:experimental_test_cases} lists the complete parameter variations and
 the shared reference conditions. The case letters are retained throughout
 \Cref{ch:results_discussion} so that each experimental setting maps directly to
@@ -652,16 +662,17 @@ cannot carry, and both are treated after it.
 \endlastfoot
 A & Zero-lever reference; the centre of compliance was placed at the TCP & None,
 and \(\pm10^\circ\) about \(t_1\) or \(t_2\) & No lever at each of the five
-commanded-orientation conditions. & 15 & Reference response without
-lever-induced coupling.\\
+commanded-orientation conditions. & 15 & Contact response without lever-induced
+coupling, as the reference for the remaining cases.\\
 \addlinespace
 
 B & Rotational stiffness & \(+10^\circ\) about \(t_1\) or \(t_2\) &
 \(K_{R,t_1}\) or \(K_{R,t_2}=15\) and \(50\,\mathrm{N\,m/rad}\), according
 to the commanded rotation direction. The orthogonal tangent remained at
 \(5\,\mathrm{N\,m/rad}\). The matched \(5\,\mathrm{N\,m/rad}\) reference is
-shared with Case~A and is not counted again here. & 12 & Influence of
-command-direction rotational stiffness on set-up rotation.\\
+shared with Case~A and is not counted again here. & 12 & Whether the
+command-direction rotational stiffness controls the direction-dependent
+response.\\
 \addlinespace
 
 C & Translational stiffness & \(+10^\circ\) about \(t_1\) or \(t_2\) & For a
@@ -669,36 +680,39 @@ command about \(t_1\), \(K_{p,t_2}=300\) and \(800\,\mathrm{N/m}\); for a
 command about \(t_2\), \(K_{p,t_1}\) carried those values. The shared
 \(2000\,\mathrm{N/m}\) reference is in Case~A. One additional condition per
 axis paired \(300\,\mathrm{N/m}\) with \(50\,\mathrm{N\,m/rad}\) command-axis
-rotational stiffness. & 18 & Influence of cross-axis translational stiffness
-and the combined low-translation/high-rotation condition.\\
+rotational stiffness. & 18 & Whether the cross-axis translational stiffness
+controls that response, with the combined low-translation/high-rotation
+condition.\\
 \addlinespace
 
 D & Direction and sign of the tangential compliance-centre lever &
 \(\pm10^\circ\) about \(t_1\) or \(t_2\) & \(-40\), \(-20\), \(-10\), \(0\),
 \(+10\), \(+20\), and \(+40\,\mathrm{mm}\) along the tangent perpendicular to
 the commanded rotation direction. Positive is the direction selected to assist
-a positive commanded orientation offset. & 72 & Dependence on tangential lever
-position, direction, and command sign.\\
+a positive commanded orientation offset. & 72 & Whether one fixed tangential
+lever assists both command signs and both principal tangents.\\
 \addlinespace
 
 E & Compliance-centre lever-definition frame & None and \(+10^\circ\) about
 \(t_1\) & The same nominal \(40\,\mathrm{mm}\) lever coordinates were defined
 once in the end-effector frame and once in the surface frame. The
-\(+10^\circ\) tool-frame reference is shared with Case~D. & 9 & Effect of the
-frame in which the lever is fixed as the end effector rotates.\\
+\(+10^\circ\) tool-frame reference is shared with Case~D. & 9 & Whether a lever
+magnitude and its nominal coordinates define the displacement, or the frame
+holding it as the end effector rotates as well.\\
 \addlinespace
 
 F & Compliance-centre position along the tool axis & \(+10^\circ\) about
 \(t_1\) & \(-40\), \(-20\), \(-10\), \(+10\), \(+20\), and
 \(+40\,\mathrm{mm}\) along the tool axis. The \(0\,\mathrm{mm}\) entry is the
-corresponding Case-D trial. & 18 & Sensitivity to an axial centre displacement
-whose tangential moment contribution is small at the tested inclination.\\
+corresponding Case-D trial. & 18 & Whether any centre displacement acts, or
+specifically its tangential component; the axial moment contribution is small
+at the tested inclination.\\
 \addlinespace
 
 G & Commanded orientation-offset magnitude & \(+5^\circ\) about \(t_1\) or
 \(t_2\) & \(0\) and \(+40\,\mathrm{mm}\) along the assisting tangent, compared
-with the same positions at \(+10^\circ\) in Case~D. & 12 & Dependence on
-commanded orientation-offset magnitude.\\
+with the same positions at \(+10^\circ\) in Case~D. & 12 & Whether one displaced centre gives a
+scaled response as the commanded orientation-offset magnitude changes.\\
 \addlinespace
 
 H & Commanded rotation direction and lever selection & \(+10^\circ\) in four
@@ -1071,12 +1085,25 @@ limited to
 The disturbance is internal to the controller and therefore provides a
 repeatable comparison input; it is not a separately applied physical force.
 
+In every trial the selected null-space law was active from the start of the
+pose-hold phase. The first \(5\,\mathrm{s}\) therefore formed a
+pre-disturbance settling interval, during which the conditioning torque of the
+sigma-only settings could already move the redundant configuration. The
+disturbance then acted from \(5\) to \(9\,\mathrm{s}\), followed by an
+observation interval until the end of the trial. No secondary term was enabled
+or disabled within a trial: the sigma-conditioning torque remained active
+throughout the complete sigma-only trial and was not switched on after the
+disturbance had been removed.
+
 
 \subsection{Evaluation Quantities}
 
 The predefined Cartesian task-retention criterion was a peak position-error
-norm below \(2\,\mathrm{mm}\). Redundant motion was quantified by integrating
-the norm of the projected joint velocity over the disturbance interval,
+norm below \(2\,\mathrm{mm}\).
+
+Two distinct redundant-motion quantities were calculated over the disturbance
+interval. The cumulative projected null-space motion \(E_N\) integrates the
+norm of the projected joint velocity,
 
 \begin{equation}
 E_N
@@ -1086,7 +1113,30 @@ E_N
 \label{eq:nullspace_excursion_metric}
 \end{equation}
 
-and the result was converted to degrees for reporting. Singular-value
-conditioning was evaluated from the final change in \(\sigma_{\min}\), while
-Cartesian task retention was evaluated from the peak position-error norm. The
-corresponding results are presented in \Cref{ch:results_discussion}.
+and the result was converted to degrees for reporting. \(E_N\) is a
+path-length quantity: it states how much redundant motion occurred, and it
+increases whether that motion advances in one direction or alternates about a
+configuration.
+
+How far the disturbance actually displaced the redundant configuration is a
+separate quantity. With \(v_7(q_5)\) the structural null direction at
+disturbance onset, the net redundant displacement
+\(\Delta\eta_{\mathrm{dist}}\) is the joint displacement over the
+disturbance interval resolved along that direction,
+
+\begin{equation}
+\Delta\eta_{\mathrm{dist}}
+=
+v_7(q_5)^\top\left[q(9\,\mathrm{s})-q(5\,\mathrm{s})\right],
+\label{eq:nullspace_net_displacement_metric}
+\end{equation}
+
+and carries a sign. For the one-dimensional null space of the full-rank
+Jacobian the two quantities can differ by orders of magnitude, since a
+configuration that moves repeatedly in alternating directions accumulates
+\(E_N\) while ending close to where it started.
+
+Singular-value conditioning was evaluated from the change in
+\(\sigma_{\min}\) across the disturbance interval, and Cartesian task
+retention from the peak position-error norm. The corresponding results are
+presented in \Cref{ch:results_discussion}.

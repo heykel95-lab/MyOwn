@@ -97,6 +97,62 @@ To close it: find the 171 run directories the thesis counted, confirm the one
 incomplete run, and map them onto rows in `metrics.csv`. Only if they fail to
 map does anything in the thesis need revisiting.
 
+## The null-space figure still carries the old axis label
+
+`figures/MAIN_NS_nullspace_automatic.pdf` was generated before the metric was
+renamed, so panel (a) is still labelled `Cumulative null-space excursion` while
+Chapters 4, 5 and 6 now call the quantity the **cumulative projected null-space
+motion**. The generator `code/python/figures/make_nullspace_figure.py` carries
+the new label already; the figure has to be regenerated from the pose-hold logs,
+which are not on this machine. Until that is done the axis label and the running
+text disagree by one word, and the integral printed beside the label is the only
+thing telling the reader they are the same quantity.
+
+## Confirm how the net redundant displacement was computed
+
+Chapter 4 now defines the net redundant displacement as
+\(\Delta\eta_{\mathrm{dist}}=v_7(q_5)^\top[q(9\,\mathrm{s})-q(5\,\mathrm{s})]\),
+and Chapter 5 reports \(0.131\pm0.016\), \(0.098\pm0.004\),
+\(3\times10^{-4}\) and \(-2\times10^{-4}\,\mathrm{rad}\) against it,
+together with the approximately \(0.013\,\mathrm{rad}\) pre-disturbance
+displacement of the sigma-only trials. Those values were supplied rather than
+recomputed here, and `make_nullspace_figure.py` does not calculate them: it
+reads `nullspace_speed` and integrates its magnitude, which cannot give a signed
+net displacement. **Confirm that the reported values come from the projection
+now written in the thesis**, and add the calculation to the analysis script so
+the definition and the numbers have one source. If the values were obtained some
+other way — a different interval, an unsigned norm, or a different reference
+direction — the equation in \S4.6.3 has to change to match them.
+
+## Inspect the pages this revision moved
+
+The contact study was rebuilt around the fixed-centre question, which changed
+Chapter 1 (problem statement, scope and contributions), the introduction to
+Section 4.4 and the comparison column of its case table, the case commentary
+and synthesis in Chapter 5, the whole of Section 6.1 with the limitations and
+future work, and both summaries. The null-space material was then reinterpreted
+in the same way: the trial timeline and a second motion metric in Section 4.6,
+the sigma result in Section 5.2, and the corresponding passages in Chapter 6 and
+the two summaries. Page breaks moved with all of it, and the compiled pages have
+not been read on screen. Two specific things to look at:
+
+- **The Abstract and the Kurzfassung now run to two pages each** (Abstract on
+  pages V--VI, Kurzfassung on VII--VIII). The one-page limit is suspended in
+  `THESIS_WRITING_GUIDE.md`, so this is allowed rather than a fault, but it is
+  a visible change and should be seen before submission. If the limit is
+  restored, the fixed-centre definition and the direction-independence
+  paragraph are the material that has to displace something older.
+- No heading was left stranded by an automated scan of the compiled document,
+  which is a weaker check than reading the pages.
+
+The three documents build clean here — `Thesis.tex`, `Professor_Draft.tex` and
+`Review_Draft.tex`, with bibtex and three passes each, no undefined references
+or citations and no overfull boxes. **The local build needed
+`compat=1.16`**, because the TeX Live 2019 on this machine predates the
+`compat=1.18` the sources set; the file was restored afterwards and the plots
+were therefore not rendered at the compat level the author's MiKTeX uses.
+Rebuild there before judging any figure.
+
 ## Final-pass work, once the two chapters above are closed
 
 The structural rewriting is finished. What remains is wording consistency,
@@ -119,5 +175,6 @@ cannot handle a label set inside a `longtable` and fails in two different ways,
 neither of which warns: with a plain `\label{}` it printed `Section 4.4` for a
 table, and with `\label[table]{}` it fixed the type but built the number from
 the section prefix, printing `Table 4.3.2` for Table 4.3 across four labels.
-Those four are now referenced as literal `Table~ef{...}`, which is right in
+Those four are now referenced as literal `Table~
+ef{...}`, which is right in
 both respects. Any new `longtable` needs the same treatment.

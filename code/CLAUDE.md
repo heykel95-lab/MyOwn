@@ -51,8 +51,10 @@ These are stated in the text and cannot drift:
 - Position error is desired minus current: `e_p = p_d - p_EE`.
 - Rotational error is `ΔR = R_EE^T R_d`, mapped to the base frame by
   left-multiplication with `R_EE`.
-- The compliance-centre lever is `r_c = p_TCP - p_c`; the physical-contact lever
-  is `r_C = p_C - p_TCP`. They are different points and never interchangeable.
+- The compliance-centre lever is `r_c = p_TCP - p_c`; the tool-geometry lever to
+  the selected tool point is `r_T = p_T - p_TCP`. They are different points and
+  never interchangeable. The names `r_C` and `p_C` were replaced because one
+  letter of case is not a readable distinction; do not reintroduce them.
 - Six singular values belong to the 6×7 Jacobian, `σ_min = σ_6`; `v_7` is the
   structural null direction at full row rank.
 - Control and logging rates are 1 kHz.

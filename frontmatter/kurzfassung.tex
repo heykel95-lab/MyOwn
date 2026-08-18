@@ -6,14 +6,18 @@ in structure, certainty, findings, and limitations.}
 Eine Winkelabweichung zwischen einem Schleifwerkzeug und einer Fl\"ache kann zu
 Kantenkontakt f\"uhren. Ein starr geregelter Roboter behindert die daraus
 folgende ausrichtende Drehung und kann dadurch hohe Kontaktkr\"afte und -momente
-erzeugen. Diese Arbeit untersucht, ob ein drehmomentgeregelter kollaborativer
-Roboter stattdessen den Kontakt selbst nutzen kann, um das Werkzeug zu einer
-ebenen Fl\"ache hin zu drehen.
+erzeugen. Weder die Gr\"o\ss{}e noch die Richtung dieser Winkelabweichung ist
+vor dem Kontakt bekannt, sodass sich die Nachgiebigkeit, die sie aufnehmen
+soll, nicht allein aus der bekannten Geometrie festlegen l\"asst. Diese Arbeit
+untersucht, ob ein drehmomentgeregelter kollaborativer Roboter stattdessen den
+Kontakt selbst nutzen kann, um das Werkzeug zu einer ebenen Fl\"ache hin zu
+drehen. Sie untersucht zudem, ob sich ein Nachgiebigkeitszentrum w\"ahlen
+l\"asst, bevor Richtung und Vorzeichen der Winkelabweichung bekannt sind.
 
 F\"ur einen 7-achsigen Franka Emika Panda wurde ein kartesischer
 Echtzeit-Impedanzregler implementiert. Der Regler stellt die translatorische und
 rotatorische Nachgiebigkeit relativ zur Fl\"ache ein und erlaubt es, das
-virtuelle Nachgiebigkeitszentrum gegen\"uber dem Werkzeugmittelpunkt zu
+virtuelle Nachgiebigkeitszentrum gegen\"uber dem Werkzeugbezugspunkt (TCP) zu
 verschieben. Diese Verschiebung f\"uhrt zu einer Kopplung zwischen Translation
 und Rotation: Dr\"uckt der Roboter das Werkzeug gegen die Fl\"ache, so kann die
 resultierende Kraft ein Moment erzeugen, das die ausrichtende Drehung
@@ -24,22 +28,40 @@ virtuellen Nachgiebigkeitszentrums. Die Lage des Nachgiebigkeitszentrums
 bewirkte die gr\"o\ss{}te \"Anderung der gemessenen Ausrichtungsreaktion. Die
 unterst\"utzende Verschiebung lag in der Fl\"achenebene und senkrecht zur
 erforderlichen Drehrichtung. Eine Umkehr der anf\"anglichen Winkelabweichung
-kehrte auch die Richtung der unterst\"utzenden Verschiebung um. Die Reaktion war
-stark richtungsabh\"angig: Um die eine Achse in der Ebene drehte sich der
-Roboter bereits ohne verschobenes Nachgiebigkeitszentrum deutlich zur Fl\"ache
-hin, w\"ahrend um die orthogonale Achse eine gew\"ahlte Verschiebung von
-\(40\,\mathrm{mm}\) die gemessene Drehung beim Kontaktaufbau von
-\(-1{,}63^\circ\) auf \(+4{,}43^\circ\) \"anderte. Versuche in dazwischen
-liegenden Richtungen der Ebene st\"utzten dieselbe geometrische Richtungsregel;
-ein universell bester Betrag der Verschiebung konnte mit den durchgef\"uhrten
-Versuchen jedoch nicht bestimmt werden.
+kehrte auch die Richtung der unterst\"utzenden Verschiebung um, und eine f\"ur
+die eine Fl\"achentangente gew\"ahlte Verschiebung ergab um die orthogonale
+Tangente nicht dieselbe Reaktion. Die Reaktion war stark richtungsabh\"angig:
+Um die eine Achse in der Ebene drehte sich der Roboter bereits ohne
+verschobenes Nachgiebigkeitszentrum deutlich zur Fl\"ache hin, w\"ahrend um die
+orthogonale Achse eine gew\"ahlte Verschiebung von \(40\,\mathrm{mm}\) die
+gemessene Drehung beim Kontaktaufbau von \(-1{,}63^\circ\) auf
+\(+4{,}43^\circ\) \"anderte. Versuche in dazwischen liegenden Richtungen der
+Ebene st\"utzten dieselbe geometrische Richtungsregel; ein f\"ur alle
+Richtungen gleicherma\ss{}en geeigneter Betrag der Verschiebung konnte mit den
+durchgef\"uhrten Versuchen jedoch nicht bestimmt werden.
+
+Eine tangentiale Verschiebung ist damit von ihrer Wirkungsweise her
+richtungsabh\"angig, und keine der untersuchten Verschiebungen deckt alle
+gepr\"uften Winkelabweichungen ab. Innerhalb der untersuchten Aufgabe wird
+daher das Nachgiebigkeitszentrum im TCP als universelles festes
+Nachgiebigkeitszentrum bestimmt. Der Begriff bezeichnet diejenige Lage, die
+sich unabh\"angig von Vorzeichen und Richtung der anf\"anglichen
+Winkelabweichung in der Fl\"achenebene w\"ahlen l\"asst. Er bezeichnet nicht
+diejenige Lage, die in jedem Einzelfall die gr\"o\ss{}te ausrichtende Drehung
+erzeugt. Eine verschobene Lage bleibt ein fallabh\"angiger
+Ausrichtungsmechanismus f\"ur den Fall, dass gr\"o\ss{}ere Drehwirkung
+erforderlich ist; die R\"uckkehr zum TCP hebt anschlie\ss{}end deren
+richtungsabh\"angige Kopplung f\"ur den dauerhaften Kontakt wieder auf.
 
 Eine erg\"anzende Nullraumuntersuchung zeigte, dass projizierte D\"ampfung
-unn\"otige redundante Gelenkbewegung verringerte, w\"ahrend ein
-Konditionierungsterm die Roboterkonfiguration nach einer wiederholbaren
-St\"orung verbesserte. Die Arbeit zeigt ein Echtzeitverfahren, mit dem sich
+die redundante Gelenkbewegung verringerte, ohne die redundante Konfiguration
+zur\"uckzuf\"uhren, w\"ahrend ein durchgehend aktiver
+Konditionierungsterm diese Konfiguration gegen eine wiederholbare St\"orung
+hielt. Die Arbeit zeigt ein Echtzeitverfahren, mit dem sich
 \"uber eine virtuelle Verschiebung des Nachgiebigkeitszentrums eine normale
 Kontaktbelastung in ein ausrichtendes Moment umsetzen l\"asst. Der wesentliche
-experimentelle Beitrag ist eine einfache geometrische Regel, mit der Richtung
-und Vorzeichen dieser Verschiebung aus der erforderlichen Ausrichtungsdrehung
-des Werkzeugs bestimmt werden.
+experimentelle Beitrag ist die Trennung des festen vom verschobenen
+Nachgiebigkeitszentrum, zusammen mit einer einfachen geometrischen Regel, mit
+der Richtung und Vorzeichen der Verschiebung aus der erforderlichen
+Ausrichtungsdrehung des Werkzeugs bestimmt werden. Der Schleifvorgang selbst
+wurde experimentell nicht bewertet.

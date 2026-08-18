@@ -107,16 +107,47 @@ software-defined virtual compliance centre \mbox{\(p_c\)} for planar tool--surfa
 
 The angular relation between the tool and the surface plane is uncertain before
 contact because both the surface placement and the tool mounting carry
-tolerances. Under rigid position control, this residual angle produces an
-undesired contact moment rather than a corrective motion. A tool tilted with
-respect to the surface cannot be brought flat by translational compliance alone,
-because the wrench that closes the gap must also contain a moment.
-Translational compliance therefore does not by itself produce the required
-corrective rotation. Placing the centre of compliance \mbox{\(p_c\)} away from the tool centre
-point (TCP) couples translation and rotation, so that pressing the tool into the
-plane also causes it to rotate towards the plane. This placement defines a
-task-to-impedance mapping rather than a physical pivot. The resulting response
-was evaluated from the motion measured during contact.
+tolerances. Neither the sign of that angle nor the tangent-plane direction
+about which it lies is known when the run starts. Under rigid position control,
+this residual angle produces an undesired contact moment rather than a
+corrective motion. A tool tilted with respect to the surface cannot be brought
+flat by translational compliance alone, because the wrench that closes the gap
+must also contain a moment. Translational compliance therefore does not by
+itself produce the required corrective rotation. Placing the centre of
+compliance \mbox{\(p_c\)} away from the tool centre point (TCP) couples
+translation and rotation, so that pressing the tool into the plane also causes
+it to rotate towards the plane. This placement defines a task-to-impedance
+mapping rather than a physical pivot. The resulting response was evaluated from
+the motion measured during contact.
+
+The coupling that a displaced centre introduces is itself directional. The
+lever \mbox{\(r_c=p_{\mathrm{TCP}}-p_c\)} enters the commanded wrench
+through a cross product with the commanded translational force, so a tangential
+displacement selects a tangential direction and with it a rotational sense for
+the additional moment. Selecting that displacement in advance therefore
+presumes knowledge of the angular deviation it is meant to correct. Since the
+misalignment is unknown before contact, the appropriate location of the centre
+of compliance is unknown with it, and the coupling relation alone does not
+settle whether one displacement can be fixed beforehand for every condition.
+
+The investigation is built on that open point: whether one fixed centre of
+compliance provides suitable alignment behaviour independently of the sign and
+the tangent-plane direction of the initial angular misalignment. In this
+thesis, a universal fixed centre of compliance denotes one centre position that
+can be selected independently of the sign and tangent-plane direction of the
+initial angular tool--surface misalignment. The definition is task specific.
+It asserts direction independence within the investigated task and parameter
+range, and it asserts nothing about optimality, about other robots, tools,
+contact geometries or surfaces, or about the alignment response of any
+individual condition.
+
+Contact-induced alignment is one stage of the intended task. The tool begins
+at an uncertain angle to the surface, aligns while contact is established, and
+then holds that contact for the tangential grinding motion. A
+compliance-centre placement therefore carries two roles: the corrective
+rotation it produces during set-up, and the contact response that remains once
+the tool is seated. Only the first was measured here, because the reported runs
+end at the pre-grinding gate.
 
 The alignment response cannot be predicted from the gain values alone because
 it also depends on the contact geometry, lever direction, robot configuration,
@@ -127,27 +158,39 @@ misalignment between the tool and the surface.
 \mbox{\Cref{ch:theory,ch:implementation}} introduce the frame conventions and
 controller formulation required for these comparisons.
 
-The investigation addresses three dependencies in sequence. Each one
-concerns contact-induced alignment under a commanded tool orientation offset:
+The experiments approach that point in four steps. Each one concerns
+contact-induced alignment under a commanded tool orientation offset, which
+represents the initial angular misalignment:
 
 \begin{enumerate}[leftmargin=1.1cm]
-\item The effects of rotational stiffness about the commanded rotation
-axis and translational stiffness perpendicular to it are evaluated first.
-\item The direction, sign, and magnitude of the tangential
-compliance-centre lever \mbox{\(r_c\)} are then varied across commanded rotation
-axes, directions, and offset angles.
-\item Finally, these results are used to evaluate a geometric lever-selection
-rule beyond the two principal surface tangents.
+\item The contact response with the centre of compliance on the TCP is
+measured first, where the virtual lever \mbox{\(r_c\)} vanishes and the
+point shift contributes no coupling moment.
+\item The rotational stiffness about the commanded rotation axis and the
+translational stiffness perpendicular to it are then varied, to establish
+whether the Cartesian gains control the direction dependence of that response.
+\item The direction, sign, and magnitude of the tangential compliance-centre
+lever are varied next, across commanded rotation axes, directions, and offset
+angles.
+\item The resulting geometric lever-selection rule is finally tested against
+one fixed lever at tangent-plane directions between the two principal surface
+tangents.
 \end{enumerate}
+
+Steps three and four carry the question stated above, because they establish
+whether a displaced centre selected for one condition remains suitable when
+the sign or the direction of the initial misalignment changes.
 
 \section{Scope and Contributions}
 \label{sec:objectives}
 
 Within this scope, the experiments evaluate how the commanded tool
 orientation offset, surface-frame stiffness, and virtual centre of compliance
-\mbox{\(p_c\)} influence contact-induced alignment. The sequence begins with an
-alignment baseline. Stiffness and compliance-centre effects are then isolated
-before the geometric lever-selection rule is evaluated.
+\mbox{\(p_c\)} influence contact-induced alignment. The contact experiments
+first establish the response with the compliance centre at the TCP. They then
+examine whether stiffness tuning or a fixed displaced centre provides a general
+response across different initial misalignments, and finally whether the
+resulting selection rule holds beyond the two principal surface tangents.
 
 The controller is a phase-scheduled Cartesian impedance controller written in C++
 using libfranka and Eigen. It runs in the \mbox{\(1\,\mathrm{kHz}\)} torque-control
@@ -219,37 +262,50 @@ which the physical surface orientation and the tool axis are defined
 independently, allowing the alignment of the tool to be evaluated relative to
 the surface.
 
-The experimental findings follow the same progression. First, the
-measurements quantify how rotational stiffness about the commanded rotation
-axis and translational stiffness perpendicular to it affect
-contact-induced alignment. The response was axis-dependent, and the tested
-combination of low translational and high rotational stiffness was consistent
-with the individual stiffness effects acting approximately additively within
-the descriptive comparison scale. Within the investigated range, however, these stiffness changes were
-smaller than the effect of moving the virtual centre of compliance \mbox{\(p_c\)}.
+The first experimental contribution concerns the fixed centre itself. No
+tested non-zero tangential displacement gave a response that could be selected
+in advance of the initial misalignment: the assisting side of the TCP reverses
+when the commanded rotation direction reverses, and the displacement that
+assists a command about \mbox{\(t_1\)} does not assist one about
+\mbox{\(t_2\)}. Neither stiffness parameter removed that dependence. Raising
+the rotational stiffness about the commanded rotation axis reduced the set-up
+rotation, and the tested cross-axis translational stiffness changed it less;
+the combination of low translational and high rotational stiffness was
+consistent with the individual effects acting approximately additively within
+the descriptive comparison scale. Within the investigated task and parameter
+range, the TCP-centred condition is therefore identified as the universal fixed
+centre of compliance in the sense defined in the problem statement, since it
+requires no prior selection of misalignment direction or sign.
 
-Second, the compliance-centre study establishes distinct effects of
-lever direction, sign, definition frame, and tested position. The assisting tangential lever was
-perpendicular to the commanded rotation axis. Reversing the commanded rotation
-direction reversed the assisting lever sign on both principal surface tangents.
-About \mbox{\(t_1\)}, the zero-lever baseline already produced almost the full
-helpful robot rotation, whereas about \mbox{\(t_2\)} a tangential lever was
-necessary to produce rotation in the assisting direction. With that lever, the
-final configuration about \mbox{\(t_2\)} satisfied the TCP-height flatness
-criterion.
+Direction independence and alignment authority are separate properties, and
+the second contribution is the mechanism that separates them. A tangential
+displacement enters the commanded moment as
+\mbox{\(m_{c,K}=-r_c\times f_K\)}, so it converts part of the normal press
+into rotation of one sense for as long as the press is present. That is what
+makes a displaced centre condition dependent, and it is also what makes it
+effective where it is chosen correctly. About \mbox{\(t_1\)}, the zero-lever
+baseline already produced almost the full helpful robot rotation, whereas about
+\mbox{\(t_2\)} a selected \mbox{\(40\,\mathrm{mm}\)} tangential lever was
+required to obtain rotation in the assisting direction, and the final
+configuration then satisfied the TCP-height flatness criterion. A displaced
+centre is accordingly reported as a condition-dependent means of adding
+rotational alignment authority rather than as a candidate fixed setting. The
+same mechanism bears on the configuration used after alignment: retaining the
+displacement while the press continues also retains its rotational sense, and
+the implemented grinding branch returns to the decoupled impedance.
 
-Third, these observations lead to an offset-dependent geometric selection
-rule. The tangential lever is chosen perpendicular to the commanded rotation
-axis, and its sign is selected so that the press-induced moment opposes the
-angular error. Case~H tested
-this rule at four tangent-plane directions using one common
+The third contribution is the geometric selection rule that applies once such
+a displacement is used deliberately. The tangential lever is chosen
+perpendicular to the commanded rotation axis, and its sign is selected so that
+the press-induced moment opposes the angular error. Case~H tested this rule at
+four tangent-plane directions using one common
 \mbox{\(40\,\mathrm{mm}\)} magnitude. At the two diagonal directions, the
 selected and fixed levers differed by only \mbox{\(0.07^\circ\)} and
-\mbox{\(0.05^\circ\)}, within the descriptive experimental scatter, because the
-fixed lever retained a component along the selected direction. About
+\mbox{\(0.05^\circ\)}, within the descriptive experimental scatter, because
+the fixed lever retained a component along the selected direction. About
 \mbox{\(t_2\)}, the selected lever changed the response from
-\mbox{\(-1.61^\circ\)} to \mbox{\(+4.43^\circ\)}. This extends the
-contribution beyond separate \mbox{\(t_1\)} and \mbox{\(t_2\)} comparisons.
+\mbox{\(-1.61^\circ\)} to \mbox{\(+4.43^\circ\)}, which is the
+separation that a fixed lever cannot reproduce.
 
 Projected joint damping and two-point minimum-singular-value
 \mbox{\(\sigma_{\min}\)} conditioning were

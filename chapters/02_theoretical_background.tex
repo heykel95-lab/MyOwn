@@ -820,10 +820,21 @@ that the local gain entries can later be interpreted as normal and tangential
 values instead of as abstract base-frame directions.
 
 Let the unit surface normal \mbox{\(n_s\in\mathbb{R}^3\)}, with
-\mbox{\(\|n_s\|=1\)}, be
-expressed in the robot base frame. To complete the frame, choose a surface-frame
-reference direction \mbox{\(a_s\in\mathbb{R}^3\)} that is not parallel to \mbox{\(n_s\)}.
-This direction fixes the orientation of \mbox{\(t_1\)} within the surface plane.
+\mbox{\(\|n_s\|=1\)}, be expressed in the robot base frame. The normal alone
+does not determine the frame. One rotational freedom about \mbox{\(n_s\)}
+remains, so the two tangent directions follow from a separate choice rather
+than from the surface geometry.
+
+That choice is the surface-frame reference direction
+\mbox{\(a_s\in\mathbb{R}^3\)}, also expressed in the base frame. It is a
+configured direction and not a measured property of the surface. It need not
+lie in the surface plane, because only its component in the plane is used, and
+the single requirement is that it must not be parallel to \mbox{\(n_s\)}: a
+direction parallel to the normal leaves nothing to project. Two reference
+directions differing only by a multiple of \mbox{\(n_s\)} therefore define
+the same frame, whereas rotating \mbox{\(a_s\)} within the plane rotates
+\mbox{\(t_1\)} and \mbox{\(t_2\)} with it.
+
 The first tangent vector is obtained by projecting \mbox{\(a_s\)} onto the plane
 orthogonal to \mbox{\(n_s\)}, and the second tangent vector is then obtained by a cross
 product. With \mbox{\(\tilde{t}_1\)} denoting the unnormalised projected tangent, the
@@ -850,9 +861,18 @@ Here, \mbox{\(t_1\)} and \mbox{\(t_2\)} are unit tangent vectors lying in the su
 This frame makes the gain directions physically meaningful: separate
 translational and rotational compliance can be assigned along the two surface
 tangents and along or about the surface normal instead of along arbitrary
-base-frame axes.
-The construction is valid as long as \mbox{\(\|\tilde{t}_1\|\neq0\)}, which means that
-the surface-frame reference direction \mbox{\(a_s\)} must not be parallel to the normal \mbox{\(n_s\)}. To
+base-frame axes. Since the plane and its normal do not depend on
+\mbox{\(a_s\)}, a different reference direction changes which in-plane
+direction carries the name \mbox{\(t_1\)} without changing the surface
+geometry. An axis-specific result therefore holds with respect to the
+configured reference direction, which for the reported experiments was the
+base-frame \mbox{\(x\)}-axis; the resulting tangents are given in
+\mbox{\Cref{sec:surface_tool_calibration}}.
+
+The construction requires \mbox{\(\|\tilde{t}_1\|\neq0\)}, and the
+behaviour of the implementation when the configured direction is close to the
+normal is described in
+\mbox{\Cref{subsec:implemented_surface_task_frame}}. To
 match the implemented controller and its parameter order, the surface task
 frame collects the two tangents first and the normal last,
 \begin{equation}
@@ -1228,8 +1248,8 @@ that closed-loop interaction rather than an algebraic sum of the commanded and
 reconstructed terms.
 
 \mbox{\Cref{fig:moment_bookkeeping}} places the two sides side by side. The
-measured contact wrench, and the form it takes during the experiment, is
-treated in \mbox{\cref{sec:results_case_d}}.
+model-estimated external wrench, and the form it takes during the experiment,
+is treated in \mbox{\cref{sec:results_case_d}}.
 
 \begin{figure}[H]
   \centering
@@ -1558,7 +1578,7 @@ direction remains after the six task-producing directions are accounted for.
 The singular value decomposition (\mbox{\abbr{SVD}}) is used here for two
 distinct purposes: \mbox{\(v_7\)} identifies this redundant direction, while
 \mbox{\(\sigma_6\)} describes the weakest task-producing mapping. The controller
-damps motion in the projected null space and can additionally bias the robot
+damps motion in the projected null space and can additionally drive the robot
 toward the sampled null-space direction with the larger \mbox{\(\sigma_6\)}.
 The required null-space direction, pseudoinverse, and projector are introduced
 before the two torque contributions are defined.
@@ -2124,9 +2144,9 @@ probes along \mbox{\(+v_7\)} and \mbox{\(-v_7\)}.
 
 The two contributions therefore have different roles: \mbox{\(\tau_d\)}
 opposes redundant joint motion that is already present, whereas
-\mbox{\(\tau_\sigma\)} actively biases the robot along the selected redundant
-direction toward the nearby sampled configuration with the larger
-\mbox{\(\sigma_{\min}\)}.
+\mbox{\(\tau_\sigma\)} applies an active torque that moves the redundant
+configuration along the selected direction toward the nearby sampled
+configuration with the larger \mbox{\(\sigma_{\min}\)}.
 
 The activation of the damping and conditioning contributions is a controller
 configuration choice. The available combinations and the configuration used

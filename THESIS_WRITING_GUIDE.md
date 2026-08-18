@@ -439,6 +439,24 @@ literal source: `robot.automaticErrorRecovery()` is the libfranka call and the
 verbatim inside listings. Existing `\label{}` keys and generated figure
 filenames also keep their spelling, since neither reaches the reader.
 
+**`bias`, `biased` and `unbiased` are not used in thesis prose.** The word
+carries a statistical meaning the thesis never intends, and in the
+compliance-centre discussion it hid the actual mechanism: a tangential
+\(r_c\) does not bias anything, it selects a tangential direction and
+therefore a rotational sense for the coupling moment. Name that instead:
+
+| Was | Now |
+|---|---|
+| the lever biases the steady contact | the lever keeps a preferred rotational direction while the press continues |
+| a biased response | a direction-dependent response; a directional asymmetry |
+| the additional biased moment | the additional one-sided moment |
+| an unbiased centre | a centre that selects no tangential direction |
+| \(\tau_\sigma\) biases the robot toward the sampled direction | \(\tau_\sigma\) drives the robot toward the sampled direction; applies an active torque toward |
+| alignment-angle bias | common calibration offset; systematic calibration-related offset |
+
+The ban covers running text, captions and headings alike. Literal source
+identifiers keep their spelling.
+
 Do not build a name out of the state a quantity happens to be in. The term
 `frozen` is not used in thesis prose. State when a quantity is selected and
 that it is held constant, then use its ordinary technical name. For example,
@@ -498,7 +516,8 @@ are wrong and the second is worse, because it looks right in the source:
 printed `Section 4.4` for a table; `\label[table]{}` fixes the type but builds
 the number from the enclosing section prefix, so the same reference printed
 `Table 4.3.2` for Table 4.3. Reference a `longtable` as literal
-`Table~ef{...}`, which takes its number from `\@currentlabel` and is right
+`Table~
+ef{...}`, which takes its number from `\@currentlabel` and is right
 in both respects. Check the rendered words in the PDF, not the source — neither
 failure raises a warning.
 
@@ -999,10 +1018,71 @@ as a floor unless a setting has been shown not to pass it.
 If damping was not varied, report only that no sustained oscillation was
 observed with the selected damping. Do not claim a measured damping effect.
 
-Matched free-space null-space trials now isolate the projected damping and
-singular-value terms under an internally commanded point-force equivalent.
-Claims from those trials remain limited to that hold condition and must not be
-extended to physical disturbances or contact response.
+Matched free-space null-space trials compare the four selectable null-space
+modes under an internally commanded point-force equivalent. Claims from those
+trials remain limited to that hold condition and must not be extended to
+physical disturbances or contact response.
+
+### The two null-space motion quantities, and what the sigma result says
+
+**\(E_N\) is the cumulative projected null-space motion, not a
+displacement.** It integrates \(\lVert N_q\dot q\rVert_2\) over the
+disturbance interval, so it is a path length: a configuration that moves
+repeatedly in alternating directions accumulates \(E_N\) while ending where it
+started. The words `excursion` and `displacement` are wrong for it and have
+been removed. **The net redundant displacement is
+\(\Delta\eta_{\mathrm{dist}}=v_7(q_5)^\top[q(9\,\mathrm{s})-q(5\,\mathrm{s})]\)**,
+a signed quantity along the null direction at disturbance onset. The two are
+reported together, because for the sigma-only settings they differ by orders of
+magnitude, and that difference is the result.
+
+**Do not write that the conditioning term returned, recovered or restored
+\(\sigma_{\min}\) or the configuration.** The selected null-space law was
+active from the start of every pose-hold trial, so the first
+\(5\,\mathrm{s}\) were a pre-disturbance settling interval and the
+conditioning torque was never switched on after a displacement had occurred.
+What the measurements show is that the redundant configuration was
+**prevented** from being displaced: the net displacement stayed near zero and
+\(\sigma_{\min}\) changed by about \(2\times10^{-5}\) across the
+disturbance interval, against \(-2\times10^{-3}\) without null-space torque.
+Chapter 4 states the timeline explicitly so the reading cannot drift back.
+
+**The three modes behave differently in kind, and the prose says which kind.**
+Without null-space torque the disturbance displaces the redundant
+configuration. Projected damping reduces the displacement while the motion
+lasts, and \(\tau_d=-d_{\mathrm{null}}N_\tau\dot q\) vanishes with that
+motion, so it requests no return. Singular-value conditioning is an active
+configuration objective that drives the redundant configuration towards a
+locally larger \(\sigma_{\min}\).
+
+**\(\tau_\sigma\) is not a brake and is not dissipative.** It behaved as
+disturbance rejection here only because the tested disturbance acted away from
+the configuration the objective favours; a disturbance acting towards larger
+\(\sigma_{\min}\) would move with it. Say that where the rejection is
+claimed. There is also **no stored preferred configuration**: the
+implementation holds no \(q_{\mathrm{ref}}\) spring and compares
+\(q\pm\alpha_{\mathrm{probe}}v_7\) at every cycle, so write `drives the
+redundant configuration towards a local region with larger
+\(\sigma_{\min}\)`, never `returns to its preferred configuration`.
+
+**\(k_\sigma\) is a commanded torque magnitude, not a proportional gain.**
+The command is \(\tau_\sigma=k_\sigma N_\tau(s_\sigma v_7)\) with
+\(s_\sigma\in\{-1,0,+1\}\), and the deadband alone decides when the
+selector is zero. The larger tested magnitude therefore produces repeated
+direction changes near the locally preferred region. Call that **switching
+activity** or **oscillatory null-space motion**; `dithering` is not used, and
+the larger \(E_N\) is **not** evidence of poorer rejection or of a fault in
+the law. The defensible finding is a parameter selection:
+\(k_\sigma=1.5\,\mathrm{N\,m}\) gave the same suppression of net
+displacement with substantially less redundant motion, and a smoother
+conditioning law is future work rather than a retrofit to these experiments.
+
+**The comparison is between complete modes, not isolated torques.** Because the
+conditioning torque was active before the disturbance, the sigma-only trials
+entered it from a redundant configuration displaced by approximately
+\(0.013\,\mathrm{rad}\) from the one at which the other trials began. State
+this where the comparison is made; do not claim the difference isolates an
+instantaneous opposing torque at identical joint configurations.
 
 ## Technical conventions that must remain explicit
 
@@ -1209,16 +1289,59 @@ The principal experimental conclusions of the calibrated-plane campaign are:
    near the linear combination of the tangent components, which attributes the
    asymmetry to the surface frame rather than to the face geometry.
 
+### What the contact study is investigating, and in which order
+
+The contact chapters are built on one open question, stated in running text and
+never as a heading (the question-framing ban above still binds): **the initial
+angular tool--surface misalignment is unknown before contact, so the
+appropriate location of the centre of compliance is also unknown before
+contact.** What the campaign establishes is whether one fixed centre can be
+selected in advance of that knowledge, or whether the centre has to be chosen
+per misalignment.
+
+The narrative is therefore **not** "a displaced centre improves alignment, so
+find the best displaced lever". Chapter 1 introduces the question without
+answering it, Chapter 4 states the progression of Cases A to H before the case
+table, Chapter 5 answers case by case, and Chapter 6 states the result.
+
+The purposes of the cases are settled and are stated in this order:
+
+| Case | What it establishes |
+|---|---|
+| A | The contact-induced response with \(p_c=p_{\mathrm{TCP}}\), \(r_c=0\): the zero-coupling reference, not yet an answer. |
+| B | Whether rotational stiffness can control the direction-dependent response. It changes the magnitude, chiefly about \(t_1\), and does not produce the missing alignment-directed \(t_2\) response at zero lever. |
+| C | Whether cross-axis translational stiffness resolves the direction dependence. Its influence is smaller over the tested range. |
+| D | Whether one fixed non-zero tangential centre can assist different misalignment signs and both principal directions. It cannot: the assisting side reverses with the sign, and the required lever differs between \(t_1\) and \(t_2\). This is the central experiment. |
+| E | Whether a displaced centre is defined by a magnitude and nominal coordinates alone. It is not: the definition frame changes the response. |
+| F | Whether any displacement produces the effect. The tangential component does; the tool-axis sweep spans \(0.34^\circ\) against \(7.73^\circ\). |
+| G | Whether one displaced centre gives a simply scaled response as the commanded offset magnitude changes. No proportional scaling was established. |
+| H | Whether one fixed non-zero tangential lever represents the direction-selected rule across tangent-plane directions. It does not; the \(t_2\) comparison, \(+4.43\) against \(-1.61^\circ\), is the decisive separation. |
+
+The synthesis is that no tested non-zero tangential centre is
+direction-independent, so \(p_c=p_{\mathrm{TCP}}\) is the fixed default
+centre for the investigated task, and a displaced centre is a
+condition-dependent means of adding rotational alignment authority. The
+Case-H diagonal similarity is **not** evidence that a fixed lever is universal:
+the fixed \(t_1\) lever retains a substantial projection along the selected
+direction there, and the thesis says so where the numbers appear.
+
+The design sequence that follows from this — start at the TCP, evaluate the
+required alignment, introduce a direction-selected shift where more authority
+is needed, and return to the TCP afterwards — is **controller-design
+interpretation and future work**. Only the first two steps of it were
+implemented and measured; do not present the scheduling and the return as
+completed adaptive functionality.
+
 ### The shifted centre is an alignment mechanism, not a steady-contact centre
 
 **Do not summarise the compliance-centre result as "find the best non-zero
 lever and use it."** That reading does not survive the model. The coupling
-moment \(m_{c,K}=-r_c	imes f_K\) does not vanish when the tool reaches a flat
-orientation: as long as a normal press is present and \(r_c
-eq0\), a fixed
+moment \(m_{c,K}=-r_c\times f_K\) does not vanish when the tool reaches a flat
+orientation: as long as a normal press is present and \(r_c\neq0\), a fixed
 tangential lever keeps commanding rotation in one direction, whether or not
 alignment has already been achieved. A lever that assists one initial
-misalignment therefore biases the steady contact afterwards.
+misalignment therefore carries its preferred rotational direction into the
+steady contact afterwards.
 
 The defensible summary separates two regimes:
 
@@ -1231,7 +1354,16 @@ The defensible summary separates two regimes:
 
 The implemented phase structure already embodies this, and the thesis says so:
 the point-shifted impedance is used during set-up, while the grinding phase
-returns to the decoupled branch.
+returns to the decoupled branch. That is **architecture consistency, not
+experimental evidence**: the reported quantitative runs ended at the
+pre-grinding gate.
+
+**This argument is the second reason for the TCP, not the first.** The first is
+direction independence under an unknown initial misalignment. The
+sustained-contact reading follows it and is written as the consequence it is:
+once the press continues after alignment, a retained tangential lever also
+retains its preferred coupling-moment direction, so \(r_c=0\) is the
+appropriate neutral virtual reference for the phase that follows.
 
 **Say it as a displacement of the reference point, never of the force.** The
 physical surface force keeps acting where the tool touches. What moves is the
@@ -1239,19 +1371,48 @@ impedance reference point, from the TCP to \(p_c\), and that is what makes the
 translational press generate an additional commanded moment. `The pressing
 force is displaced to \(p_c\)` is wrong and must not appear.
 
-**Write `neutral centre for sustained contact`, never `universally optimal
-centre`.** The A--H campaign did not test a displacement held through sustained
-grinding, and did not vary the surface orientation during contact. Say that
-explicitly where the claim is made.
+**`universal fixed centre of compliance` is permitted, and only in one
+sense.** The term names the centre that can be selected *before* the initial
+angular tool--surface misalignment is known, and nothing else. It is defined in
+Chapter 1, in the thesis's own words, close to: *a universal fixed centre of
+compliance denotes one centre position that can be selected independently of
+the sign and tangent-plane direction of the initial angular tool--surface
+misalignment.* Every later use rests on that definition, and the definition is
+task specific: one robot, one tool, one surface, one press trajectory, and the
+tested range of misalignment directions.
 
-**The pre-grinding gate observation is admissible as qualitative evidence,
-labelled as such.** With the centre at the TCP the tool followed manually
-introduced changes in surface orientation while maintaining contact; with a
-fixed non-zero tangential displacement the response became direction dependent.
-This is the author's own observation and it belongs in the discussion, but it
-was not part of Cases~A--H, so the sentence that reports it also says so. Do
-not present it as a measurement, do not give it numbers, and do not let a
-conclusion rest on it alone.
+The claim the thesis may make is that **within the investigated task and
+parameter range, the TCP-centred condition is the direction-independent fixed
+centre of compliance, because it requires no prior knowledge of the sign or
+tangent-plane direction of the initial misalignment.** `fixed centre` and
+`default centre` are the usable synonyms.
+
+**`universally optimal centre` remains banned, as does `best` and `optimal` for
+any centre.** So does any statement extending the result to every robot, tool,
+contact geometry, surface, grinding process, or impedance controller. The A--H
+campaign did not test a displacement held through sustained grinding, and did
+not vary the surface orientation during contact; say that where the claim is
+made.
+
+**Universality and alignment authority are separate properties, and the thesis
+states the separation at least once in Chapter 5 and once in Chapter 6.** The
+centre that is independent of the initial misalignment direction is not
+necessarily the centre that produces the largest alignment-directed
+end-effector rotation for every condition: about \(t_2\) the selected
+\(40\,\mathrm{mm}\) lever changed the response from \(-1.63\) to
+\(+4.43^\circ\). Write that the TCP provides the fixed direction-independent
+condition, and that a displaced centre can provide greater condition-specific
+alignment authority.
+
+**No informal manual test, demonstration, or video is reported anywhere in the
+thesis.** This overturns an earlier ruling that admitted the pre-grinding gate
+observation as labelled qualitative evidence. That paragraph has been removed
+from Chapter 5. The reason for the change is that a hand-applied check carries
+no controlled condition and no recorded quantity, so a reader cannot separate
+it from the measured cases however carefully it is labelled. The
+sustained-contact argument does not need it: it rests on the mechanism, that
+\(m_{c,K}=-r_c\times f_K\) persists while the press is present, and on the
+Case-D and Case-E measurements.
 
 ### Why the two tangents behaved differently, and what may be concluded from it
 
@@ -1288,17 +1449,19 @@ precisely where the two tangents differ.
 
 Two claims must not be made from this:
 
-- **Not that the TCP is the universally best centre.** About \(t_2\) the
-  TCP-centred impedance rotated the end effector the wrong way. The defensible
-  statement is that the TCP is a useful *neutral default*, since it adds no
-  virtual coupling moment and lets the contact geometry act on its own; where
-  the natural response already assists, no lever is needed, and where it is
-  weak or opposed, the direction-selected lever supplies the missing authority.
+- **Not that the TCP is the best centre, or the optimal one.** About
+  \(t_2\) the TCP-centred impedance rotated the end effector the wrong way.
+  What is defensible is the direction-independence claim defined above: the TCP
+  is the fixed default centre, since it adds no virtual coupling moment and
+  selects no tangential direction, so it can be set before the misalignment is
+  known. Where the natural response already assists, no lever is needed, and
+  where it is weak or opposed, the direction-selected lever supplies the
+  missing authority.
 - **Not that the lever magnitude changes an alignment time.** The set-up
   interval was fixed at \(5\,\mathrm{s}\) and no alignment-time metric was
   defined or compared. What may be said is the model statement: for the same
   elastic press and a perpendicular lever, the predicted coupling moment is
-  proportional to \(ho_c\). A timing claim is future work.
+  proportional to \(\rho_c\). A timing claim is future work.
 
 Report the \(t_2\) results as lower bounds. Unmeasured tool motion within the
 gripper can conceal correction that occurred but cannot create it.
