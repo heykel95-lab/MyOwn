@@ -1,0 +1,84 @@
+% The same three points twice, with the lever, force and moment that belong
+% together on each side. Panel (a) is the model-estimated contact side, where
+% r_T pairs with the estimated external force. Panel (b) is the commanded side,
+% where r_c pairs with the commanded force. The lever that plays no part is
+% drawn faint in each panel, which is the point the figure exists to make.
+% The panels are stacked so that each moment relation has the full text width.
+\begin{tikzpicture}[
+    font=\small,
+    tool/.style={draw=gray!70!black, fill=white},
+    lev/.style={-{Latex[length=2mm]}, gray!55!black, thick},
+    dead/.style={-{Latex[length=2mm]}, gray!30, thick, densely dotted},
+    frc/.style={-{Latex[length=2.2mm]}, black, very thick},
+    mom/.style={-{Latex[length=2mm]}, gray!70!black, thick},
+    lbl/.style={font=\small, inner sep=2pt},
+    sub/.style={font=\footnotesize, inner sep=2pt},
+  ]
+
+% =================== (a) model-estimated contact side ======================
+\begin{scope}
+  \draw[gray!70!black] (0.3,0) -- (5.7,0);
+  \node[sub, anchor=west] at (4.75,-0.34) {surface};
+
+  \begin{scope}[rotate around={10:(1.50,0.55)}]
+    \draw[tool] (1.50,0.55) rectangle (4.30,1.15);
+  \end{scope}
+
+  \fill (1.50,0.55) circle (1.7pt);
+  \node[lbl, left] at (1.38,0.50) {$p_T$};
+  \fill (2.83,1.09) circle (1.7pt);
+  \node[lbl, above right] at (2.92,1.12) {$p_{\mathrm{TCP}}$};
+  \fill (5.30,2.25) circle (1.7pt);
+  \node[lbl, right] at (5.42,2.25) {$p_c$};
+
+  % r_T acts here; r_c does not
+  \draw[lev] (2.83,1.09) -- (1.50,0.55);
+  \node[sub, below] at (2.16,0.72) {$r_T$};
+  \draw[dead] (5.30,2.25) -- (2.83,1.09);
+  \node[sub, gray!45, anchor=north] at (4.34,1.62) {$r_c$};
+
+  % the model-estimated external force, represented at the tool point
+  \draw[frc] (1.50,0.55) -- (1.22,1.85);
+  \node[lbl, above] at (1.18,1.88) {$\Delta\hat f_{\mathrm{ext}}$};
+
+  \draw[mom] (3.40,1.46) arc (25:135:0.60);
+
+  \node[sub, anchor=west] at (6.40,1.10)
+    {$m_{\mathrm{contact,TCP}}=r_T\times\Delta\hat f_{\mathrm{ext}}$};
+  \node[lbl, anchor=west] at (0.30,-0.95) {(a) model-estimated contact side};
+\end{scope}
+
+% =================== (b) commanded controller side =========================
+\begin{scope}[yshift=-4.3cm]
+  \draw[gray!70!black] (0.3,0) -- (5.7,0);
+  \node[sub, anchor=west] at (4.75,-0.34) {surface};
+
+  \begin{scope}[rotate around={10:(1.50,0.55)}]
+    \draw[tool] (1.50,0.55) rectangle (4.30,1.15);
+  \end{scope}
+
+  \fill (1.50,0.55) circle (1.7pt);
+  \node[lbl, left] at (1.38,0.50) {$p_T$};
+  \fill (2.83,1.09) circle (1.7pt);
+  \node[lbl, below right] at (2.92,1.02) {$p_{\mathrm{TCP}}$};
+  \fill (5.30,2.25) circle (1.7pt);
+  \node[lbl, right] at (5.42,2.25) {$p_c$};
+
+  % r_c acts here; r_T does not
+  \draw[dead] (2.83,1.09) -- (1.50,0.55);
+  \node[sub, below, gray!45] at (2.16,0.72) {$r_T$};
+  \draw[lev] (5.30,2.25) -- (2.83,1.09);
+  \node[sub, anchor=north] at (4.34,1.62) {$r_c$};
+
+  % the commanded translational force, applied at the TCP
+  \draw[frc] (2.83,2.30) -- (2.83,1.26);
+  \node[lbl, right] at (2.94,2.10) {$f$};
+
+  \draw[mom] (2.26,1.46) arc (155:265:0.60);
+
+  \node[sub, anchor=west] at (6.40,1.10)
+    {$m_{c,\mathrm{trans}}=-r_c\times f$};
+  \node[lbl, anchor=west] at (0.30,-0.95) {(b) commanded controller side};
+\end{scope}
+
+\end{tikzpicture}

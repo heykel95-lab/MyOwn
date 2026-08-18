@@ -1001,17 +1001,34 @@ extended to physical disturbances or contact response.
   compliance relative to the TCP. They never appear in the same expression.
   \(r_c\) shapes the **commanded** wrench through \(\mathrm{Ad}(r_c)\);
   \(r_T\) belongs to the physical contact geometry.
-- **Show the two moment concepts next to each other, and say which is which.**
-  Assuming the physical contact force \(f_C\) acts at the selected tool point,
-  \(m_{\mathrm{contact,TCP}}=r_T\times f_C\) is its moment about the TCP,
-  against \(m_c=-r_c\times f_{\mathrm{press}}\) for the controller-side
-  coupling. The physical moment about the centre of compliance would take the
-  complete lever, \(m_{\mathrm{contact},c}=(r_c+r_T)\times f_C\), but the
-  controller never calculates it: the congruence transformation receives
-  \(r_c\), as the appendix source listing shows.
-- **\(m_c=-r_c\times f_{\mathrm{press}}\) uses \(r_c\) alone and
-  \(f_{\mathrm{press}}\) alone**, and that must be explicit wherever the
-  equation is introduced.
+- **There is no \(f_C\).** A symbol for an abstract environment-on-tool contact
+  force was introduced and then removed, because the thesis already has the two
+  viewpoints it needs and inventing a third force blurred them. Build every
+  moment statement on the existing quantities: the **commanded** side is
+  \(F=[f;m]\) with \(f=f_{\mathrm{press}}+f_D\), and the **model-estimated**
+  side is \(\Delta\hat F_{\mathrm{ext}}=[\Delta\hat f_{\mathrm{ext}};
+  \Delta\hat m_{\mathrm{ext}}]\) relative to the clearance transition.
+- **Each lever pairs with one of those two viewpoints, and the pairing is the
+  point.** \(r_T\) goes with the estimated force,
+  \(m_{\mathrm{contact,TCP}}=r_T\times\Delta\hat f_{\mathrm{ext}}\); \(r_c\)
+  goes with the commanded force, \(m_{c,\mathrm{trans}}=-r_c\times f\). Show
+  them together — the figure in the compliance-centre section draws the same
+  geometry twice and fades out whichever lever does not act.
+- **\(m_{\mathrm{contact,TCP}}\) is a reconstruction, not a measurement.** It is
+  what the moment would be if the estimated resultant acted at \(p_T\), and
+  \(p_T\) is a geometric reference rather than the instantaneous
+  force-application point. It is therefore compared with the directly estimated
+  \(\Delta\hat m_{\mathrm{ext}}\) and never equated to it.
+- The complete translational command carries a moment, not only its elastic
+  part: \(m_{c,\mathrm{trans}}=-r_c\times f\). The sign analysis then retains
+  \(f_{\mathrm{press}}\) alone, giving \(m_c=-r_c\times f_{\mathrm{press}}\),
+  and says that it is doing so — otherwise \(f_{\mathrm{press}}\) appears to
+  enter arbitrarily. The damping coupling follows from the shifted damping
+  matrix in the same way.
+- About the centre of compliance the same reconstruction would take
+  \((r_T+r_c)\times\Delta\hat f_{\mathrm{ext}}\). **Mention this once.** The
+  controller never forms it: the congruence transformation receives \(r_c\), as
+  the appendix source listing shows.
 - **The commanded press magnitude is \(F_{\mathrm{press}}\), never \(F_n\).**
   \(F_n\) is reserved for the positive normal magnitude of the model-estimated
   external-force change. Writing \(f_{\mathrm{press}}\approx-F_n n_s\) put a
