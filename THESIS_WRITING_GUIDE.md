@@ -38,9 +38,28 @@ The test is mechanical: **no title or caption may begin with `Which`, `What`,
 may end with a question mark.** Grep for those openers across `\caption{`,
 `\caption[`, `\chapter{`, `\section{` and `\subsection{` before submitting.
 
-Stating the question inside the running text is different and stays: `Case F
-asks whether displacing the centre of compliance in any direction produces
-alignment` opens a section usefully. It is the *name* that must be declarative.
+**The ban now extends to the running text as well.** The earlier version of this
+rule allowed `Case F asks whether displacing the centre of compliance in any
+direction produces alignment` as a useful section opener. A supervisor pass
+overturned that: the thesis does not need to keep telling the reader it is
+answering questions, and the construction was the largest remaining source of
+an AI-written impression after the repetition. State what a case *evaluates* or
+*separates*, not what it *asks*:
+
+| Was | Now |
+|---|---|
+| Case F asks whether displacing the centre in any direction produces alignment | Case F separates the contribution of the tangential displacement component from that of a displacement along the tool axis |
+| Case G asks whether the lever effect persists when the commanded misalignment changes | Case G evaluates the dependence of the lever effect on the commanded misalignment magnitude |
+| Two matters were investigated experimentally: whether … and whether … | The experimental investigation addressed contact-induced rotational alignment and the selection of a fixed centre of compliance |
+| This thesis investigates whether … It also asks whether … | This thesis investigates contact-induced alignment … and evaluates whether a fixed centre can be selected independently of … |
+| The cases are reported in the order in which they narrow one question | The cases are reported in the order in which they progressively constrain … |
+| Steps three and four carry the question stated above | Steps three and four establish whether … |
+| The design question that remains is when … | The remaining design issue is when … |
+
+`evaluates`, `separates`, `establishes`, `addressed`, `constrain` and
+`determines` are the verbs to reach for. A single embedded `whether` clause is
+fine — `evaluates whether a fixed centre can be selected` — because it names
+what was evaluated rather than posing a question to the reader.
 
 State the investigated dependencies directly. For example:
 
@@ -1491,6 +1510,27 @@ became correctly aligned.** The defensible reading is that the tool seated
 against the surface through the mounting compliance while the end-effector
 orientation moved further the other way. The mounting play supports that
 reading rather than proving it, because it was measured unloaded.
+
+**Every rotation claim names the body that rotated.** Because the physical tool
+orientation is never measured independently, a sentence may say the **end
+effector** rotated, never that "contact rotated the tool":
+
+| Was | Now |
+|---|---|
+| contact still rotated the tool | contact still produced end-effector rotation |
+| the physical tool may have rotated further than the end effector did | the physical tool may have undergone additional rotation relative to the end effector |
+
+`further` is wrong even as a hedge, because it implies the sign of the relative
+motion is known. It is not: the instantaneous relative tool--gripper rotation
+was not tracked. Write `additional rotation relative to the end effector`.
+
+**The \(\pm2^\circ\) is mechanical play, not measurement uncertainty.** Name its
+physical origin where it is introduced — clearance in the custom pads clamping
+the tool to the gripper fingers, about \(y_{\mathrm{EE}}\), which corresponds
+approximately to \(t_2\) in the flat configuration — and say that the robot
+does not measure that relative rotation. Never write `the angle measurement has
+an uncertainty of \(\pm2^\circ\)`, which claims a calibrated statistical bound
+the value does not carry.
 
 **Do not write that relative tool--gripper motion "was not measured".** It was:
 the mounting exhibits approximately \(\pm2^\circ\) of rotational play about
