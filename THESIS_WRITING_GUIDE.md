@@ -61,6 +61,26 @@ an AI-written impression after the repetition. State what a case *evaluates* or
 fine — `evaluates whether a fixed centre can be selected` — because it names
 what was evaluated rather than posing a question to the reader.
 
+**No sentence begins with a `Wh-` word used as a fronted nominal.** The
+pseudo-cleft `What X does is Y` is the commonest form and reads as an answer to
+a question the reader was never asked. State the subject and let the verb
+carry the sentence:
+
+| Was | Now |
+|---|---|
+| What changes is the point about which the impedance is defined | The point about which the impedance is defined changes |
+| What changes at the phase transition is the generated reference | The phase transition changes the generated reference |
+| What the four settings compare is the closed-loop behaviour | The four settings compare the closed-loop behaviour |
+| What the measurement supports is a statement about the end effector | The measurement supports a statement about the end effector |
+| What the measurements establish is that every lever tested is direction dependent | The measurements establish that every lever tested is direction dependent |
+| What translational compliance alone does not supply is a commanded rotational contribution | Translational compliance alone supplies no commanded rotational contribution |
+| What it does provide is the property a fixed centre requires | It supplies the property a fixed centre requires |
+| Whether the tool ended flat is not read from any of these | None of these determines whether the tool ended flat |
+
+`When …` and `Where …` as ordinary subordinate clauses are unaffected: `When
+\(J(q)\) has full row rank, the null space is one-dimensional` is normal
+technical prose and stays.
+
 State the investigated dependencies directly. For example:
 
 > The experimental study evaluates the influence of the paired surface-tangent
