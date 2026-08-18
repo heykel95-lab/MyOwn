@@ -40,13 +40,21 @@ The rectangular grinding tool was held by the Franka Hand using custom gripper
 fingers. The tool face measured \(40\times120\,\mathrm{mm}\), with the
 width along \(X_{\mathrm{EE}}\) and the length along \(Y_{\mathrm{EE}}\). Its
 centre was located \(20\,\mathrm{mm}\) along \(+Z_{\mathrm{EE}}\) from the
-reported end-effector origin. The pads holding the tool were screwed to the
-gripper fingers. The mounting exhibited approximately \(\pm2^\circ\) of
-relative rotational play about \(y_{\mathrm{EE}}\). That value was measured in
-the unloaded condition, and the instantaneous relative tool--gripper rotation
-was not tracked separately during the contact experiments. It is therefore a
-mounting characteristic rather than a calibrated uncertainty bound under
-contact load.
+reported end-effector origin. The tool was clamped by custom pads screwed to
+the gripper fingers. Mechanical clearance in that clamping allowed the tool to
+rotate relative to the gripper by approximately \(\pm2^\circ\) about
+\(y_{\mathrm{EE}}\), which corresponds approximately to the \(t_2\) direction
+in the flat experimental configuration. The robot does not measure this
+relative rotation: it is absent from the joint and end-effector state. The
+\(\pm2^\circ\) was measured in the unloaded condition, and the instantaneous
+relative tool--gripper rotation was not tracked during the contact
+experiments. It is therefore a mechanical property of the mounting rather than
+a calibrated measurement uncertainty.
+
+Orientation quantities reconstructed from \(R_{\mathrm{EE}}\) and the
+calibrated tool normal consequently describe the tool orientation under the
+assumption of a fixed tool-to-end-effector transformation, and any motion of
+the tool within the gripper is not included in them.
 
 The surface was a plane plate mounted on a raised base board. All reported
 measurements used dry contact. The physical surface orientation and the
@@ -905,6 +913,37 @@ so a positive value means that the calculated angular difference decreased.
 The before value is taken at the clearance transition and the after value at
 the end of set-up.
 
+The alignment angle carries no direction, and the case comparisons need one.
+The same geometric relation therefore also supplies a signed decomposition. Let
+\(\theta_{\mathrm{dev}}\) be the rotation vector of the shortest rotation
+taking the pose-based tool axis \(n_T\) onto the flat target direction
+\(-n_s\). Resolved on the surface axes it gives
+
+\begin{equation}
+\theta_{\mathrm{dev}}^{S}
+=
+R_{\mathrm{surface}}^\top\theta_{\mathrm{dev}}
+=
+[\,\theta_{\mathrm{dev},t_1},\ \theta_{\mathrm{dev},t_2},
+\ \theta_{\mathrm{dev},n}\,]^\top ,
+\label{eq:signed_deviation_components}
+\end{equation}
+
+whose components are reported in degrees and whose norm is the alignment angle
+itself, \(\lVert\theta_{\mathrm{dev}}^{S}\rVert=\theta_{\mathrm{align}}\).
+The two quantities are the magnitude and the signed components of one vector,
+not independent measurements.
+
+Two properties of the sign convention matter when the values are read.
+\(\theta_{\mathrm{dev}}^{S}\) is the rotation still required to reach the flat
+target, so its sign is opposite to that of the commanded tool orientation
+offset that produced the deviation: a commanded \(+10^\circ\) about \(t_1\)
+appears as a negative \(t_1\) component. Its magnitude is also somewhat below
+the commanded value, because the orientation phase exits on an angular
+tolerance rather than driving the offset to completion. The value at set-up
+entry is written \(\theta_{\mathrm{dev},t_i,\mathrm{before}}\), and it is
+distinct from \(\theta_{\mathrm{align,before}}\), which is unsigned.
+
 A separate geometry-based flatness classification is obtained from the final
 TCP height relative to the calibrated plane and the height expected from the
 calibrated rectangular tool geometry when the tool face is flat. This
@@ -1118,10 +1157,10 @@ path-length quantity: it states how much redundant motion occurred, and it
 increases whether that motion advances in one direction or alternates about a
 configuration.
 
-How far the disturbance actually displaced the redundant configuration follows
-from the same integrand without the magnitude. The net projected joint
+A complementary signed measure of the net redundant displacement follows from
+the same integrand without the magnitude. The net projected joint
 displacement over the interval and its signed component along a fixed redundant
-direction \(u\) are
+comparison direction \(v_{\mathrm{ref}}\) are
 
 \begin{equation}
 \Delta q_{\mathrm{null}}
@@ -1131,16 +1170,22 @@ N_q(q)\dot q\,\mathrm{d}t,
 \qquad
 \Delta\eta_{\mathrm{dist}}
 =
-u^\top\Delta q_{\mathrm{null}},
+v_{\mathrm{ref}}^\top\Delta q_{\mathrm{null}},
 \label{eq:nullspace_net_displacement_metric}
 \end{equation}
 
 with \(\Delta\eta_{\mathrm{dist}}\) the net redundant displacement, which
-carries a sign. At full row rank the null space is one-dimensional, so every
+carries a sign. It is a signed projection of the accumulated projected joint
+motion onto one redundant direction, and not an exact nonlinear
+redundant-coordinate displacement: the projector is configuration dependent,
+while \(v_{\mathrm{ref}}\) is held fixed over the interval. At full row rank
+the null space is one-dimensional, so every
 \(\Delta q_{\mathrm{null}}\) lies along \(\pm v_7\) and one direction
-resolves all four settings onto a common signed axis. That direction was taken
-from the setting without null-space torque, in which the disturbance displaces
-the redundant configuration furthest, because the recorded null direction is
+resolves all four settings onto a common signed axis. The comparison direction
+\(v_{\mathrm{ref}}\) was taken as the unit vector along \(\Delta
+q_{\mathrm{null}}\) of the setting without null-space torque, in which the
+disturbance displaces the redundant configuration furthest. It was obtained
+from that condition because the recorded null direction is
 written only while the conditioning term is selecting a sign and is therefore
 absent from the settings where that term is inactive.
 

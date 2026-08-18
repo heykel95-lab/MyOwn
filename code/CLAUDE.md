@@ -43,6 +43,37 @@ renamed by hand after they were generated, so the scripts still write the old
 case letters; `code/python/figures/README.md` carries the name map and is the
 first thing to read before changing a plot.
 
+## Which controller is authoritative
+
+Two controller repositories exist on the author's machine and they are **not**
+equal in standing. Getting this wrong silently attributes the reported results
+to the wrong implementation.
+
+- **`Thesis_Final_Control/surface_grinding_controller` is the final
+  controller.** Every contact experiment reported in the thesis — the
+  calibrated-plane campaign, Cases A to H, the centre-of-compliance work — was
+  run with it. It is the authority on the impedance law, the phase structure,
+  the compliance-centre conventions, and the set-up evaluation. It contains the
+  controller **source only**: no `experiments/` directory, no logged CSV, and
+  no run records. Those stayed on the lab machine.
+- **`MyController` is superseded and must not be cited for the contact
+  results.** The one part of it still in use is the **null-space pose-hold
+  experiment under the internally commanded disturbance**, whose run records
+  under `MyController/experiments/results/` are the source of the null-space
+  values in Chapters 5 and 6 and of `MAIN_NS_nullspace_automatic.pdf`.
+  `MyController/experiments/derived/metrics.csv` belongs to the superseded
+  generation: it carries no `P2_` rows and does not reproduce any reported
+  contact figure.
+- **`code/cpp/` in this repository is older still.** It is the pose-tracking,
+  virtual-wall and stiffness-variation controller from the earlier experiments,
+  not the calibrated-plane controller. Do not read a contact-campaign
+  convention out of it.
+
+The practical consequence: a sign, gain, frame or metric convention for the
+contact results is checked against `Thesis_Final_Control`, and a null-space
+convention against `MyController`. A convention read from the wrong one is a
+factual error in the thesis, not a stylistic one.
+
 ## Conventions that must match the thesis
 
 These are stated in the text and cannot drift:

@@ -279,12 +279,12 @@ R_{\mathrm{EE}}^\top(p_d-p_{\mathrm{EE}})\\
 
 When the current and desired poses coincide,
 \mbox{\(T_{\mathrm{err}}=I_4\)}. The rotational and translational blocks of
-\mbox{\cref{eq:expanded_transformation_error}} therefore both represent zero error in
+\mbox{\Cref{eq:expanded_transformation_error}} therefore both represent zero error in
 this case.
 
 \paragraph{Position error.}
 
-The translational block of \mbox{\cref{eq:expanded_transformation_error}} expresses
+The translational block of \mbox{\Cref{eq:expanded_transformation_error}} expresses
 the position error \mbox{\(e_p\)} in the current end-effector frame. The position error
 \mbox{\(e_p\)} used by the Cartesian impedance law is expressed in the base frame:
 
@@ -302,7 +302,7 @@ the desired TCP position.
 \paragraph{Orientation error.}
 
 The relative rotation \mbox{\(\Delta R\)} is the rotational block of
-\mbox{\cref{eq:expanded_transformation_error}}:
+\mbox{\Cref{eq:expanded_transformation_error}}:
 
 \begin{equation}
 \Delta R
@@ -706,7 +706,7 @@ J^\top(q)F,
 where \mbox{\(\tau_{\mathrm{cart}}\in\mathbb{R}^n\)} is the Cartesian impedance
 torque contribution and
 \mbox{\(J^\top(q)\in\mathbb{R}^{n\times6}\)}. Substituting
-\mbox{\cref{eq:cartesian_force_moment_vector}} gives
+\mbox{\Cref{eq:cartesian_force_moment_vector}} gives
 
 \begin{equation}
 \tau_{\mathrm{cart}}
@@ -777,14 +777,14 @@ which follows the official libfranka Cartesian impedance example
 \mbox{\cite{libfrankaCartesianExample}}. The null-space torque
 \mbox{\(\tau_{\mathrm{null}}\)} introduced later is
 added to this expression to obtain the complete commanded torque in
-\mbox{\cref{eq:nullspace_complete_torque_command}}.
+\mbox{\Cref{eq:nullspace_complete_torque_command}}.
 
 \subsection{Commanded and Estimated Wrench}
 \label{sec:commanded_versus_estimated_wrench}
 
 The commanded wrench \mbox{\(F\)} and the model-estimated external
 wrench are distinct controller signals. The commanded wrench follows from
-\mbox{\cref{eq:cartesian_force_moment_vector}} and is mapped to the joints by
+\mbox{\Cref{eq:cartesian_force_moment_vector}} and is mapped to the joints by
 \mbox{\(J^\top\)}. By contrast, the robot estimates the external wrench from the
 measured joint torques and its dynamic model. Its translational part is denoted
 by \mbox{\(\hat f_{\mathrm{ext}}\)}.
@@ -1051,7 +1051,7 @@ gain matrices even when the local gain values remain unchanged.
 During approach, contact set-up, and grinding, the reported contact runs
 used this surface-frame construction for both translational and rotational gain
 blocks. In the reported experiments, the phase-indexed numerical entries of
-\mbox{\cref{tab:experimental_common_gains}} were assigned to
+\mbox{\Cref{tab:experimental_common_gains}} were assigned to
 \mbox{\([t_1,t_2,n_s]\)} before transformation to the base frame. The active gain matrices were based on the calibrated surface frame and
 were not rotated with the current end-effector orientation
 \mbox{\(R_{\mathrm{EE}}\)}.
@@ -1060,7 +1060,7 @@ were not rotated with the current end-effector orientation
 \label{sec:coupled_pole_stiffness}
 
 The task-frame transformation of
-\mbox{\cref{eq:full_task_frame_gain_transform}} rotates the principal stiffness
+\mbox{\Cref{eq:full_task_frame_gain_transform}} rotates the principal stiffness
 directions while leaving the impedance reference point at the end-effector
 origin, identified here with the tool centre point (TCP). Independently of this
 orientation choice, the virtual spring can be centred at a different point.
@@ -1128,7 +1128,7 @@ impedance.
 
 The contact interaction is considered from a commanded and a model-estimated
 viewpoint. The controller generates the Cartesian wrench of
-\mbox{\cref{eq:cartesian_force_moment_vector}}, whose translational part
+\mbox{\Cref{eq:cartesian_force_moment_vector}}, whose translational part
 separates into an elastic and a damping contribution,
 
 \begin{equation}
@@ -1163,7 +1163,7 @@ Thus \mbox{\(F\)} describes what the controller commands, whereas
 the resulting external loading.
 
 On the commanded side, the rotational impedance of
-\mbox{\cref{eq:rotational_impedance_moment}} already produces a moment at the
+\mbox{\Cref{eq:rotational_impedance_moment}} already produces a moment at the
 TCP whatever the centre of compliance is. Writing it as
 
 \begin{equation}
@@ -1189,10 +1189,11 @@ m_{c,\mathrm{trans}}=m_{c,K}+m_{c,D}=-r_c\times f.
 \label{eq:pole_coupling_moment_translational}
 \end{equation}
 
-The commanded moment is therefore \mbox{\(m_{\mathrm{cmd}}\approx m_0+
-m_{c,\mathrm{trans}}\)} in this simplified picture. The approximation is
+The commanded moment is therefore \mbox{\(m\approx m_0+
+m_{c,\mathrm{trans}}\)} in this simplified picture, with \mbox{\(m\)} the
+moment part of the commanded wrench \mbox{\(F=[f^\top,\ m^\top]^\top\)}. The approximation is
 deliberate: when \mbox{\(e_R\neq0\)} the shifted law of
-\mbox{\cref{eq:coupled_tcp_stiffness,eq:coupled_tcp_damping}} carries further
+\mbox{\Cref{eq:coupled_tcp_stiffness,eq:coupled_tcp_damping}} carries further
 \mbox{\(r_c\)}-dependent terms in its lower-right block, so the sum explains
 the translational coupling mechanism rather than expanding every term of the
 shifted law.
@@ -1210,7 +1211,7 @@ contribution alone, written
 m_{c,K}=-r_c\times f_K,
 \]
 
-which \mbox{\cref{eq:pole_translation_moment_sign_check}} obtains from the
+which \mbox{\Cref{eq:pole_translation_moment_sign_check}} obtains from the
 point-shifted stiffness blocks.
 
 On the observed side, the surface interaction produces an external wrench whose
@@ -1232,15 +1233,24 @@ and it is not added to \mbox{\(m_0\)} or \mbox{\(m_{c,K}\)}: those belong to the
 command, and \mbox{\(\Delta\hat F_{\mathrm{ext}}\)} is the observation of what
 the resulting interaction produced. About the centre of compliance the same
 reconstruction would take the complete lever of
-\mbox{\cref{eq:pole_lever_sum}},
+\mbox{\Cref{eq:pole_lever_sum}},
 \mbox{\(\left(r_T+r_c\right)\times\Delta\hat f_{\mathrm{ext}}\)}, which the
 controller never forms.
 
 The zero-lever condition is therefore not a zero-moment condition. Setting
-\mbox{\(r_c=0\)} removes \mbox{\(m_{c,K}\)} alone. The commanded rotational moment
-\mbox{\(m_0\)} remains, and because \mbox{\(r_T\neq0\)} the external force can
-still contribute \mbox{\(m_{r_T}\)}, so contact-induced rotation is possible
-with the centre of compliance at the TCP. Shifting the centre of compliance
+\mbox{\(r_c=0\)} makes \mbox{\(\mathrm{Ad}(r_c)\)} the identity, so it removes
+the complete additional coupling introduced by the virtual point shift: the
+elastic and damping coupling moments \mbox{\(m_{c,K}\)} and
+\mbox{\(m_{c,D}\)}, their sum \mbox{\(m_{c,\mathrm{trans}}\)}, and the
+remaining \mbox{\(r_c\)}-dependent terms of \mbox{\(K_{\mathrm{TCP}}\)} and
+\mbox{\(D_{\mathrm{TCP}}\)}, including the off-diagonal blocks and the added
+rotational entries \mbox{\([r_c]_\times^\top K_p[r_c]_\times\)} and
+\mbox{\([r_c]_\times^\top D_p[r_c]_\times\)}. The ordinary rotational impedance
+and the physical tool and contact geometry are untouched by it. The commanded
+rotational moment \mbox{\(m_0\)} remains, the rotational compliance stays
+finite, and because \mbox{\(r_T\neq0\)} the external force can still contribute
+\mbox{\(m_{r_T}\)}, so contact-induced rotation is possible with the centre of
+compliance at the TCP. Shifting the centre of compliance
 adds \mbox{\(m_{c,K}\)} to the command, which changes the interaction and with it
 the estimated \mbox{\(\Delta\hat f_{\mathrm{ext}}\)} and
 \mbox{\(\Delta\hat m_{\mathrm{ext}}\)}. The external moment is the result of
@@ -1249,19 +1259,25 @@ reconstructed terms.
 
 \mbox{\Cref{fig:moment_bookkeeping}} places the two sides side by side. The
 model-estimated external wrench, and the form it takes during the experiment,
-is treated in \mbox{\cref{sec:results_case_d}}.
+is treated in \mbox{\Cref{sec:results_case_d}}.
 
 \begin{figure}[H]
   \centering
   \input{figures/moment_bookkeeping.tex}
-  \caption{Moment relations on the commanded and observed sides.}
+  \caption[Commanded and observed moment relations]{Commanded and observed
+  moment relations: (a) the translation-induced coupling carried by the
+  commanded wrench; (b) the model-estimated external interaction with the
+  geometry-based force-lever reconstruction.}
   \label{fig:moment_bookkeeping}
 \end{figure}
 
 \begin{figure}[H]
   \centering
   \input{figures/compliance_lever_moment.tex}
-  \caption{Moment produced by the compliance-centre lever at both lever signs.}
+  \caption[Elastic coupling moment for both lever signs]{Elastic
+  compliance-centre coupling moment for the two tangential lever signs:
+  (a) the lever selected from the orientation offset; (b) the lever with the
+  opposite sign.}
   \label{fig:compliance_lever_moment}
 \end{figure}
 
@@ -1335,7 +1351,7 @@ I_3 & [r_c]_\times\\[2pt]
 The point-shift adjoint \mbox{\(\mathrm{Ad}(r_c)\)} changes the reference point of the
 impedance. By contrast,
 \mbox{\(T_R=\operatorname{diag}(R_{\mathrm{task}},R_{\mathrm{task}})\)} in
-\mbox{\cref{eq:full_task_frame_gain_transform}} changes its principal directions.
+\mbox{\Cref{eq:full_task_frame_gain_transform}} changes its principal directions.
 
 After any required task-frame rotation, the decoupled centre-of-compliance
 stiffness \mbox{\(K_c\)} and damping \mbox{\(D_c\)} are
@@ -1357,7 +1373,7 @@ D_p & 0\\
 \label{eq:pole_block_gains}
 \end{equation}
 
-All blocks in \mbox{\cref{eq:pole_block_gains}} are expressed in the base-frame
+All blocks in \mbox{\Cref{eq:pole_block_gains}} are expressed in the base-frame
 orientation. The compliance-centre wrench \mbox{\(F_c\)} is
 
 \[
@@ -1474,7 +1490,7 @@ r_{c,t}
 The selected lever is therefore perpendicular to the commanded
 orientation-offset direction in the surface plane. Its sign changes when the
 commanded offset is reversed. For the two principal
-surface tangents, \cref{eq:general_compliance_lever_selection} reduces to
+surface tangents, \Cref{eq:general_compliance_lever_selection} reduces to
 
 \[
 r_{c,t}=-\rho_c t_2
@@ -1500,7 +1516,7 @@ where \mbox{\(F_{K,n}=-n_s^\top f_K>0\)} is the magnitude of the commanded
 elastic normal component. It is a commanded quantity and is not the
 model-estimated external normal-load magnitude \mbox{\(F_n\)}. Tangential force components caused by pose error, friction, or the
 evolving contact geometry are not represented in this first-order argument.
-Substitution into \mbox{\cref{eq:pole_translation_moment_sign_check}} gives
+Substitution into \mbox{\Cref{eq:pole_translation_moment_sign_check}} gives
 
 \begin{equation}
 m_{c,K}
@@ -1674,7 +1690,7 @@ directions.
 
 Similarly, the columns of \mbox{\(U_J\)} form an orthonormal basis of the
 six-dimensional end-effector-velocity space. Substituting
-\mbox{\(\dot q=V_Jc\)} into \mbox{\cref{eq:nullspace_jacobian_relation}} gives
+\mbox{\(\dot q=V_Jc\)} into \mbox{\Cref{eq:nullspace_jacobian_relation}} gives
 
 \begin{equation}
 \dot x
@@ -1994,7 +2010,7 @@ numerical null space.
 
 The current joint velocity \mbox{\(\dot q\)} is separated into task-related and null-space
 components according to
-\mbox{\cref{eq:joint_velocity_task_null_decomposition}}. The null-space damping
+\mbox{\Cref{eq:joint_velocity_task_null_decomposition}}. The null-space damping
 torque \mbox{\(\tau_d\)} acts on the component \mbox{\(N_q\dot q\)}:
 
 \begin{equation}
@@ -2151,7 +2167,7 @@ configuration with the larger \mbox{\(\sigma_{\min}\)}.
 The activation of the damping and conditioning contributions is a controller
 configuration choice. The available combinations and the configuration used
 in the reported experiments are described in
-\mbox{\cref{sec:nullspace_conditioning_implementation}}.
+\mbox{\Cref{sec:nullspace_conditioning_implementation}}.
 
 \section{Complete Joint-Torque Command}
 \label{sec:complete_joint_torque_command}

@@ -22,22 +22,27 @@ centre introduces is directional, while the misalignment it would have to
 correct is unknown before contact.
 
 With the centre of compliance at the TCP, contact still rotated the tool.
-Setting \(r_c=0\) removes the coupling moment \(m_{c,K}\) alone: the commanded
-rotational moment and the tool-geometry lever \(r_T\) remain, so the physical
-contact geometry continues to act. For a commanded \(+10^\circ\) orientation
+Setting \(r_c=0\) removes the coupling introduced by the virtual point shift,
+and nothing beyond it: the commanded rotational moment, the finite rotational
+compliance and the tool-geometry lever \(r_T\) remain, so the physical contact
+geometry continues to act. For a commanded \(+10^\circ\) orientation
 offset the end effector rotated by \(+7.57^\circ\) about \(t_1\), which is
 close to the \(+7.87^\circ\) obtained later with the assisting
-\(40\,\mathrm{mm}\) lever. This behaviour is consistent with the contact moment
-\(m_{r_T}=r_T\times\Delta\hat f_{\mathrm{ext}}\) and the mounting compliance
-already supplying that rotation, and the experiments do not separate their
-contributions. About \(t_2\), the same command produced \(-1.63^\circ\), so the
-TCP-centred condition produced no alignment-directed end-effector rotation
-under this metric, although the final configuration satisfied the TCP-height
-flatness criterion. The tool mounting exhibited approximately \(\pm2^\circ\) of
-relative rotational play about the corresponding mounting direction, so the
-\(t_2\) behaviour is consistent with the tool seating against the surface
-through the mounting compliance while the end-effector orientation moved
-further the other way. Satisfying the flatness criterion and producing an
+\(40\,\mathrm{mm}\) lever. The measured zero-lever rotation is compatible with contributions from the
+physical contact geometry represented by \(r_T\), the ordinary rotational
+impedance, and the mounting compliance. Their individual contributions were not
+isolated, and \(m_{r_T}=r_T\times\Delta\hat f_{\mathrm{ext}}\) remains a
+geometry-based interpretation rather than a measured decomposition. About \(t_2\), the same command produced \(-1.63^\circ\): the end effector did
+not exhibit alignment-directed rotation about \(t_2\) under that metric,
+although the final configuration satisfied the TCP-height flatness criterion.
+The tool mounting exhibited approximately \(\pm2^\circ\) of rotational play
+about the mounting direction associated with \(t_2\), and that relative
+rotation is not measured by the robot. The physical tool may therefore have
+rotated further than the end effector did, which is consistent with the two
+observations occurring together. The instantaneous relative tool--gripper
+rotation was not tracked under load, so the contribution cannot be isolated
+and no seating mechanism is established as fact. What the measurement supports
+is a statement about the end effector, not about the physical tool face. Satisfying the flatness criterion and producing an
 alignment-directed end-effector rotation are therefore not the same thing, and
 the two tangents differ in exactly that respect.
 
@@ -72,7 +77,7 @@ changed the set-up rotation by only \(0.34^\circ\) over the tested \(-40\) to
 response did not scale proportionally with the commanded orientation-offset
 magnitude.
 
-The experiments do not identify a universal non-zero compliance-centre
+The experiments do not identify a direction-independent non-zero compliance-centre
 displacement. They show instead why such a displacement cannot be direction
 independent: the assisting lever reverses with the sign of the initial angular
 deviation, and it changes with the required tangent-plane rotation direction.
@@ -83,7 +88,7 @@ selected-versus-fixed comparisons differed by only \(0.07^\circ\) and
 follows from the projection the fixed lever retains along the selected
 direction, while the \(t_2\) comparison separated \(-1.61^\circ\) from
 \(+4.43^\circ\). Under the definition introduced in \Cref{ch:intro}, the
-TCP-centred condition is therefore identified as the universal fixed centre of
+TCP-centred condition is therefore identified as the direction-independent fixed centre of
 compliance for the investigated task, because it requires no prior selection of
 misalignment direction or sign.
 
@@ -135,7 +140,7 @@ The thesis therefore identifies two distinct roles for the centre of
 compliance. The TCP-centred condition provides the direction-independent fixed
 centre for the investigated task, and it is the placement that can be selected
 before the initial misalignment is known. A non-zero tangential displacement is
-not a universal centre but a condition-dependent means of adding rotational
+not a direction-independent centre but a condition-dependent means of adding rotational
 alignment authority, and the geometric direction-and-sign rule states how it
 should be chosen when it is required. The implemented contribution is built around these two roles: a
 phase-consistent real-time Cartesian impedance architecture in which the
@@ -164,7 +169,7 @@ exploratory tool-axis displacement beyond the reported Case-F range was stopped
 by a joint-torque limit, so the centre position has to be selected together
 with those limits.
 
-The identification of the TCP as the universal fixed centre of compliance holds
+The identification of the TCP as the direction-independent fixed centre of compliance holds
 under the definition given in \Cref{ch:intro} and within that same scope. What
 the measurements establish is that every non-zero tangential lever tested here
 is direction dependent. For this robot, tool, surface, press trajectory and

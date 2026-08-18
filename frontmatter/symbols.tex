@@ -24,6 +24,8 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$\{0\}$}{Robot base frame}{[-]}
 \symrow{$\{i\}$}{Joint frame $i$}{[-]}
 \symrow{$\{\mathrm{EE}\}$}{End-effector frame used by the robot model}{[-]}
+\symrow{$\{d\}$}{Desired end-effector and TCP reference frame}{[-]}
+\symrow{$\{S\}$}{Surface task frame, with axes $t_1$, $t_2$ and $n_s$}{[-]}
 \symrow{$n$}{Number of joints ($n=7$)}{[-]}
 \symrow{$q,\ \dot{q}$}{Joint position / velocity vector}{[rad], [rad/s]}
 \symrow{$q_{\mathrm{init}}$}{Initial joint configuration used by the controller and pose-hold study}{[rad]}
@@ -98,10 +100,13 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$s_a$}{Tool-axis target sign, with \(n_d=s_a n_s\)}{[-]}
 \symrow{$p_s$}{Point on the configured surface}{[m]}
 \symrow{$p_c$}{Centre of compliance}{[m]}
-\symrow{$r_c$}{Compliance-centre-to-TCP lever, $p_{\mathrm{TCP}}-p_c$}{[m]}
+\symrow{$r_c$}{Compliance-centre-to-TCP lever, $p_{\mathrm{TCP}}-p_c$, as it enters the point-shift transformation}{[m]}
+\symrow{$r_{c,t_1},\ r_{c,t_2},\ r_{c,n}$}{Surface-frame components of $r_c$ along $t_1$, $t_2$ and $n_s$}{[m]}
+\symrow{$d_c$}{Signed centre offset reported by the experimental plots and tables, $d_c=p_c-p_{\mathrm{TCP}}=-r_c$}{[m]}
+\symrow{$d_{c,t_1},\ d_{c,t_2},\ d_{c,n}$}{Surface-frame components of $d_c$}{[m]}
 \symrow{$r_{\mathrm{face,EE}}$}{Tool-face centre offset in the EE frame}{[m]}
 \symrow{$r_{\mathrm{width,EE}},\ r_{\mathrm{length,EE}}$}{Tool face half-width / half-length vector in the EE frame}{[m]}
-\symrow{$r_{T,\mathrm{EE}},\ p_T$}{Selected tool point in the EE frame / its base-frame position}{[m]}
+\symrow{$r_{T,\mathrm{EE}},\ p_T$}{Selected tool-point offset from the TCP, expressed in the EE frame / selected tool-point position in the base frame}{[m]}
 \symrow{$r_T$}{Selected tool-point offset from the TCP, $p_T-p_{\mathrm{TCP}}$}{[m]}
 \symrow{$m_0$}{Commanded rotational impedance moment at the TCP, independent of $r_c$}{[N\,m]}
 \symrow{$m_{r_T}$}{Geometry-based force-lever moment about the TCP, reconstructed as $r_T\times\Delta\hat f_{\mathrm{ext}}$}{[N\,m]}
@@ -120,12 +125,15 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$r_{c,t},\ \rho_c$}{Selected tangential compliance-centre lever / its magnitude}{[m]}
 \symrow{$\Delta p_T,\ s_T$}{Selected tool point displacement / its magnitude}{[m]}
 \symrow{$\Delta p_{\mathrm{TCP}},\ s_{\mathrm{TCP}}$}{TCP displacement / its magnitude}{[m]}
+\symrow{$\theta_{\mathrm{dev}},\ \theta_{\mathrm{dev}}^{S}$}{Rotation vector taking $n_T$ onto the flat target $-n_s$ / the same vector resolved on the surface axes; $\lVert\theta_{\mathrm{dev}}^{S}\rVert=\theta_{\mathrm{align}}$}{[rad], reported in [deg]}
+\symrow{$\theta_{\mathrm{dev},t_i,\mathrm{before}}$}{Signed surface-frame component of $\theta_{\mathrm{dev}}^{S}$ at set-up entry; opposite in sign to the commanded orientation offset}{[rad], reported in [deg]}
 \symrow{$F_n$}{Positive normal magnitude of the model-estimated external-force change from the clearance transition, $|n_s^\top\Delta\hat f_{\mathrm{ext}}|$}{[N]}
 \symrow{$F_{n,\mathrm{cmd}},\ M_{t_i,\mathrm{cmd}}$}{Signed commanded normal force / commanded TCP moment about surface tangent $t_i$}{[N], [N\,m]}
 \symrow{$F_{K,n}$}{Magnitude of the commanded elastic normal component, $F_{K,n}=-n_s^\top f_K$}{[N]}
 \symrow{$F_{n,\mathrm{block}}$}{Fully blocked normal virtual-spring command scale}{[N]}
 \symrow{$\hat f_{\mathrm{ext}},\ \hat f_{\mathrm{ref}}$}{Model-estimated external force / clearance-transition reference}{[N]}
-\symrow{$\Delta\hat F_{\mathrm{ext}},\ \Delta\hat m_{\mathrm{ext}}$}{Model-estimated external-wrench change from the clearance transition / its moment part}{[N], [N\,m]}
+\symrow{$\Delta\hat F_{\mathrm{ext}}$}{Model-estimated external-wrench change relative to the clearance-transition reference}{[N], [N\,m]}
+\symrow{$\Delta\hat f_{\mathrm{ext}},\ \Delta\hat m_{\mathrm{ext}}$}{Force part / moment part of $\Delta\hat F_{\mathrm{ext}}$}{[N], [N\,m]}
 \symrow{$f_D$}{Damping commanded force component, $f=f_K+f_D$}{[N]}
 \symrow{$m_{c,D}$}{Coupling moment of the damping component, $-r_c\times f_D$}{[N\,m]}
 \symrow{$m_{c,\mathrm{trans}}$}{Complete translational coupling moment, $m_{c,K}+m_{c,D}=-r_c\times f$}{[N\,m]}
@@ -140,9 +148,9 @@ column makes the mixed translational and rotational quantities traceable.}
 \symgroup{Null-Space and Singular Value Decomposition}{
 \symrow{$J^+$}{Thresholded-SVD Moore--Penrose pseudoinverse}{[rad/m], [-]}
 \symrow{$N_q,\ N_\tau$}{Joint-velocity / torque null-space projector}{[-]}
-\symrow{$\rho,\ \sigma_{\mathrm{thr}}$}{Relative SVD tolerance / resulting singular-value threshold}{[-], [m/rad]}
-\symrow{$\sigma_i,\ \sigma_{\min}$}{Jacobian singular value / $\sigma_6$ conditioning indicator; its value follows the length unit of the linear rows}{[m/rad]}
-\symrow{$U_J,\ \Sigma_J,\ V_J$}{Singular value decomposition factors of $J$}{[-], [m/rad], [-]}
+\symrow{$\rho,\ \sigma_{\mathrm{thr}}$}{Relative SVD tolerance / resulting singular-value threshold; the threshold follows the scaling of $\sigma_i$ below}{[-], [m/rad], [-]}
+\symrow{$\sigma_i,\ \sigma_{\min}$}{Jacobian singular value / $\sigma_6$ conditioning indicator. The geometric Jacobian mixes linear and angular rows, so a singular value carries no single physical unit and its numerical value depends on the chosen Jacobian representation and length unit; it is used as a relative indicator under one fixed convention}{[m/rad], [-]}
+\symrow{$U_J,\ \Sigma_J,\ V_J$}{Singular value decomposition factors of $J$; $\Sigma_J$ follows the scaling of $\sigma_i$}{[-], [m/rad] and [-], [-]}
 \symrow{$c,\ c_i$}{Joint-velocity coefficients in the right-singular-vector basis / coefficient for direction $i$}{[rad/s]}
 \symrow{$u_i,\ v_i$}{Left / right singular vectors}{[-]}
 \symrow{$v_6,\ v_7$}{$\sigma_6$-associated direction / structural null direction}{[-]}
@@ -154,11 +162,15 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$d_{\mathrm{null}}$}{Null-space damping}{[N\,m\,s/rad]}
 \symrow{$k_\sigma$}{Sigma-conditioning torque magnitude}{[N\,m]}
 \symrow{$\alpha_{\mathrm{probe}}$}{Null-direction sampling angle}{[rad]}
-\symrow{$\delta_\sigma,\ \Delta_\sigma$}{Sigma-comparison deadband / sampled difference}{[m/rad]}
+\symrow{$q_+,\ q_-$}{Joint configurations sampled at $q\pm\alpha_{\mathrm{probe}}v_7$}{[rad]}
+\symrow{$\sigma_+,\ \sigma_-$}{Minimum Jacobian singular values evaluated at $q_+$ and $q_-$}{[m/rad], [-]}
+\symrow{$\delta_\sigma,\ \Delta_\sigma$}{Sigma-comparison deadband / sampled difference $\sigma_+-\sigma_-$ used by the controller's direction selector}{[m/rad], [-]}
+\symrow{$\Delta\sigma_{\min,\mathrm{dist}}$}{Experimental change in $\sigma_{\min}$ over the disturbance interval, $\sigma_{\min}(9\,\mathrm{s})-\sigma_{\min}(5\,\mathrm{s})$; distinct from the controller's $\Delta_\sigma$}{[m/rad], [-]}
 \symrow{$s_\sigma$}{Deadbanded singular-value-conditioning direction selector}{[-]}
 \symrow{$\tau_d,\ \tau_\sigma,\ \tau_{\mathrm{null}}$}{Projected damping / sigma / total null-space torque}{[N\,m]}
 \symrow{$E_N$}{Cumulative projected null-space motion; integrated projected joint-velocity magnitude during the disturbance interval, reported in degrees}{[rad]}
-\symrow{$\Delta q_{\mathrm{null}},\ \Delta\eta_{\mathrm{dist}}$}{Net projected joint displacement over the disturbance interval / its signed component along the redundant direction $u$}{[rad]}
+\symrow{$v_{\mathrm{ref}}$}{Fixed redundant comparison direction, taken from the condition without null-space torque}{[-]}
+\symrow{$\Delta q_{\mathrm{null}},\ \Delta\eta_{\mathrm{dist}}$}{Net projected joint displacement over the disturbance interval / its signed component along $v_{\mathrm{ref}}$}{[rad]}
 }
 
 \symgroup{Miscellaneous}{

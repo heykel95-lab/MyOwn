@@ -6,7 +6,7 @@ defined in \mbox{\Cref{ch:methodology}}, and each result is interpreted where
 it appears. The signed set-up rotation
 \mbox{\(\Delta\theta_{\mathrm{set}}\)} about the commanded rotation direction
 is the primary controller-response quantity, as defined in
-\mbox{\cref{sec:experimental_evaluation}}. The TCP-height flatness criterion
+\mbox{\Cref{sec:experimental_evaluation}}. The TCP-height flatness criterion
 and the alignment angle \mbox{\(\theta_{\mathrm{align}}\)} calculated from the
 end-effector pose provide supporting information, together with the
 displacements, the commanded wrench, and the model-estimated normal load.
@@ -39,9 +39,10 @@ retained in the tables where it is required.
 \section{Surface-Contact Results}
 \label{sec:results_cases_a_h}
 
-The cases are reported in the order in which they narrow one question: whether
-one centre of compliance can be fixed before the sign and the tangent-plane
-direction of the initial angular misalignment are known. Case~A provides the
+The cases are reported in the order in which they progressively constrain
+whether one centre of compliance can be fixed before the sign and the
+tangent-plane direction of the initial angular misalignment are known.
+Case~A provides the
 zero-lever reference. Cases~B and~C quantify stiffness sensitivity. Case~D then
 tests the tangential compliance-centre lever over both surface tangents and
 both signs of the commanded orientation offset, which is where a fixed non-zero
@@ -56,10 +57,11 @@ intermediate tangent-plane directions.
 
 Case~A records what contact-induced alignment occurs when no virtual lever is
 present. The centre of compliance is placed on the TCP, so that
-\mbox{\(r_c=0\)}. That setting removes the coupling moment
-\mbox{\(m_{c,K}\)} and nothing else. The commanded rotational moment
-\mbox{\(m_0\)} remains, and the tool-geometry lever \mbox{\(r_T\)} is
-unchanged, so contact can still rotate the tool. The measured response is the
+\mbox{\(r_c=0\)}. The TCP-centred condition removes the coupling introduced by
+the virtual point shift, while leaving the ordinary rotational impedance and
+the tool-geometry lever \mbox{\(r_T\)} unchanged. The commanded rotational
+moment \mbox{\(m_0\)} remains and the rotational compliance stays finite, so
+contact can still rotate the tool. The measured response is the
 zero-coupling reference for the remaining contact cases under the common
 Cartesian impedance and null-space settings, and not yet an answer about where
 the centre of compliance should be placed.
@@ -92,8 +94,8 @@ None & \(0.74\) & \(-0.97\) & \(-1.56\pm0.01\) & yes \\
 \end{figure}
 
 With the centre of compliance at the TCP, the response is strongly
-direction-dependent. As \cref{tab:results_case_a} records and
-\cref{fig:results_case_a} plots against the commanded tangent, the positive
+direction-dependent. As \Cref{tab:results_case_a} records and
+\Cref{fig:results_case_a} plots against the commanded tangent, the positive
 \mbox{\(10^\circ\)} command rotates the end effector by
 \mbox{\(+7.57^\circ\)} about \mbox{\(t_1\)} but by \mbox{\(-1.63^\circ\)}
 about \mbox{\(t_2\)}. Reversing the commanded orientation gives
@@ -179,7 +181,7 @@ Commanded orientation offset & Varied entry & Value & \(\Delta\theta_{\mathrm{se
 
 Increasing the rotational stiffness about the commanded tangent suppresses the
 contact-induced rotation. \Cref{tab:results_case_b} lists the response at the
-three tested stiffnesses and \cref{fig:results_case_b} plots it. About
+three tested stiffnesses and \Cref{fig:results_case_b} plots it. About
 \mbox{\(t_1\)}, raising \mbox{\(K_{R,t_1}\)} from \mbox{\(5\)} to
 \mbox{\(50\,\mathrm{N\,m/rad}\)} reduces the signed set-up rotation from
 \mbox{\(+7.57\)} to \mbox{\(+2.73^\circ\)}. The final TCP-height
@@ -247,7 +249,7 @@ Commanded orientation offset & Varied entries & Setting & \shortstack{Cross-axis
 
 The effect of cross-axis translational stiffness is considerably smaller.
 \Cref{tab:results_case_c} separates the translation-only settings from the
-combined condition, and \cref{fig:results_case_c} plots the translation-only
+combined condition, and \Cref{fig:results_case_c} plots the translation-only
 line; the combined condition is a separate point and not part of that line.
 About \mbox{\(t_1\)}, changing the cross-axis stiffness from \mbox{\(300\)} to
 \mbox{\(2000\,\mathrm{N/m}\)} changes the signed set-up rotation by only
@@ -286,12 +288,15 @@ sweep.
 \begin{table}[H]
 \centering
 \small
-\setlength{\tabcolsep}{4pt}
-\caption{Case-D response by tangential centre position.}
+\setlength{\tabcolsep}{3pt}
+\caption[Case-D response versus tangential centre offset]{Case-D signed set-up
+rotation \(\Delta\theta_{\mathrm{set}}\) [deg] versus the signed tangential
+centre offset \(d_c=p_c-p_{\mathrm{TCP}}=-r_c\).}
 \label{tab:results_case_d}
 \begin{tabular}{@{}lrrrrrrrr@{}}
 \toprule
-\shortstack{Commanded orientation\\offset} & Initial & \(-40\) & \(-20\) & \(-10\) & \(0\) & \(+10\)
+\shortstack{Commanded orientation\\offset} &
+\shortstack{\(\theta_{\mathrm{dev,before}}\)\\{[deg]}} & \(-40\) & \(-20\) & \(-10\) & \(0\) & \(+10\)
 & \(+20\) & \(+40\,\mathrm{mm}\) \\
 \midrule
 \(+10^\circ\) about \(t_1\) & \(-9.32\) & \(+0.14\) & \(+0.99\) & \(+7.45\)
@@ -313,9 +318,9 @@ sweep.
 \label{fig:results_case_d}
 \end{figure}
 
-The tangential compliance-centre position is the dominant geometric parameter
-in the tested contact conditions. \Cref{tab:results_case_d} gives the seven
-tested positions, and \cref{fig:results_case_d} separates the two commanded
+The tangential compliance-centre position produced the largest response
+variation over the tested parameter ranges. \Cref{tab:results_case_d} gives the seven
+tested positions, and \Cref{fig:results_case_d} separates the two commanded
 axes so that the sign reversal is readable within each panel. Reversing
 the commanded orientation direction reverses the side of the TCP that assists
 the motion. About \mbox{\(t_1\)}, the positive command produces
@@ -390,7 +395,7 @@ along \mbox{\(t_2\)}, and the lever that assists a command about
 one displacement either. The direction and sign that make a non-zero tangential
 centre assist alignment therefore follow from the initial misalignment. That
 misalignment is not known before contact. No tested non-zero tangential centre
-consequently satisfies the definition of a universal fixed centre of compliance
+consequently satisfies the definition of a direction-independent fixed centre of compliance
 used in this thesis.
 
 The two tangents also differ in their sensitivity on the assisting side. About
@@ -514,7 +519,7 @@ surface-fixed lever remains fixed relative to the calibrated surface.
 \label{tab:results_case_e}
 \begin{tabular}{@{}lrrr@{}}
 \toprule
-Commanded orientation offset & Initial & Tool frame (Case~D) & Surface frame \\
+Commanded orientation offset & \(\theta_{\mathrm{align,before}}\) [deg] & Tool frame (Case~D) & Surface frame \\
 \midrule
 None & \(0.76\) & \(-0.06\pm0.01\) & \(-1.05\pm0.02\) \\
 \(+10^\circ\) about \(t_1\) & \(9.33\) & \(+7.87\pm0.01\)
@@ -531,7 +536,7 @@ None & \(0.76\) & \(-0.06\pm0.01\) & \(-1.05\pm0.02\) \\
 \end{figure}
 
 It does not. \Cref{tab:results_case_e} pairs the two definitions at each
-command, and \cref{fig:results_case_e} shows how far apart they fall. For the
+command, and \Cref{fig:results_case_e} shows how far apart they fall. For the
 \mbox{\(+10^\circ\)} command about \mbox{\(t_1\)}, the tool-fixed definition
 gives \mbox{\(+7.87\pm0.01^\circ\)} of set-up rotation, whereas the
 surface-fixed definition gives only \mbox{\(+0.13\pm0.01^\circ\)}. The
@@ -555,9 +560,9 @@ direction and the definition frame along with the coupling.
 \subsubsection{Case~F: Tool-Axis Centre Position}
 \label{sec:results_case_f}
 
-Case~F asks whether displacing the centre of compliance in any direction
-produces alignment, or whether the tangential component is specifically
-responsible. The centre is moved along the tool axis at a fixed
+Case~F separates the contribution of the tangential displacement component
+from that of a displacement along the tool axis. The centre is moved along the
+tool axis at a fixed
 \mbox{\(+10^\circ\)} command about \mbox{\(t_1\)}, so that the results are
 directly comparable with the tangential sweep of Case~D at the same command.
 
@@ -588,7 +593,7 @@ Standard deviation & \(0.13\) & \(0.01\) & \(0.01\) & \(0.01\) & \(0.01\)
 
 The tangential component is responsible. \Cref{tab:results_case_f} lists the
 seven axial positions with their standard deviations, and
-\cref{fig:results_case_f} places the two displacement directions on one pair of
+\Cref{fig:results_case_f} places the two displacement directions on one pair of
 axes for the same command. The tool-axis sweep is flat across its whole range:
 the signed set-up rotation changes from \mbox{\(+7.26\)} to
 \mbox{\(+7.60^\circ\)} between \mbox{\(-40\)} and \mbox{\(+40\,\mathrm{mm}\)},
@@ -597,7 +602,7 @@ tangential displacement over the same interval. Every Case-F position is
 classified as flat, and the response is not strictly monotonic.
 
 This supports the cross-product interpretation of
-\mbox{\cref{eq:discussion_general_lever_moment}}: a lever component parallel
+\mbox{\Cref{eq:discussion_general_lever_moment}}: a lever component parallel
 to the normal press contributes no alignment moment. The parameter that acts is
 not the distance between the centre of compliance and the TCP, but the lever
 component perpendicular to the press that enters
@@ -612,8 +617,9 @@ contributions are not isolated by the experiment.
 \subsubsection{Case~G: Commanded Orientation-Offset Magnitude}
 \label{sec:results_case_g}
 
-Case~G asks whether the lever effect persists when the commanded misalignment
-changes. The zero-lever and assisting-lever conditions are repeated at
+Case~G evaluates the dependence of the lever effect on the commanded
+misalignment magnitude. The zero-lever and assisting-lever conditions are
+repeated at
 \mbox{\(+5^\circ\)} and \mbox{\(+10^\circ\)} about both surface tangents.
 
 \begin{table}[H]
@@ -643,7 +649,7 @@ Centre position & \(+5^\circ\) & \(+10^\circ\) & \(+5^\circ\) & \(+10^\circ\) \\
 \end{figure}
 
 It does. \Cref{tab:results_case_g} sets the two commanded magnitudes side by
-side, and \cref{fig:results_case_g} plots the response against the commanded
+side, and \Cref{fig:results_case_g} plots the response against the commanded
 offset with the two centre positions as the compared series. About
 \mbox{\(t_1\)}, the assisting lever adds only \mbox{\(0.15^\circ\)} at the
 \mbox{\(5^\circ\)} command and \mbox{\(0.30^\circ\)} at
@@ -704,7 +710,7 @@ About \(t_2\) & \([+40.0,0]\) & \(+4.43\) & \(-1.61\) \\
 \end{figure}
 
 \Cref{tab:results_case_h} gives the lever vectors with both responses, and
-\cref{fig:results_case_h} shows the two levers against each other at every
+\Cref{fig:results_case_h} shows the two levers against each other at every
 tested direction. At the two diagonal directions the selected and fixed levers
 differ by only \mbox{\(0.07^\circ\)} and \mbox{\(0.05^\circ\)}, which is
 within the observed scatter, because the fixed lever still has a substantial
@@ -714,7 +720,7 @@ projection along the selected direction. The clearest separation occurs about
 \mbox{\(-1.61^\circ\)}.
 
 The measurements therefore support the geometric lever-direction rule of
-\mbox{\cref{eq:experimental_general_lever_rule}} over the four tested
+\mbox{\Cref{eq:experimental_general_lever_rule}} over the four tested
 directions. They do not establish one lever magnitude that suits every tested
 direction. The two diagonal results are also not evidence that the fixed lever
 is general: at \mbox{\(\pm45^\circ\)} the lever selected for the
@@ -732,7 +738,7 @@ follows the required alignment rotation. A displaced centre has to be chosen
 from that rotation. The TCP-centred condition, \mbox{\(r_c=0\)}, is the only
 condition among those tested that requires no such selection. Within the
 investigated task and parameter range it is therefore identified as the
-universal fixed centre of compliance in the sense defined in
+direction-independent fixed centre of compliance in the sense defined in
 \mbox{\Cref{ch:intro}}.
 
 Direction independence is not the same property as alignment authority. The
@@ -778,17 +784,23 @@ so the waveform was applied without clipping.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.96\textwidth]{figures/MAIN_NS_nullspace_automatic.pdf}
-\caption[Null-space response during the Cartesian pose-hold disturbance
-test.]{Null-space response during the Cartesian pose-hold disturbance test. In
-(a), the solid curves show the mean cumulative projected null-space motion and
-the shaded bands indicate \(\pm\) one standard deviation across the three
-repetitions.}
+\caption[Null-space pose-hold response]{Null-space response during the
+Cartesian pose-hold disturbance test. (a) Mean cumulative projected null-space
+motion \(E_N\) without null-space torque and with projected damping, the
+shaded bands showing \(\pm\) one standard deviation across the three
+repetitions. (b) Change in the minimum Jacobian singular value over the
+disturbance interval, \(\Delta\sigma_{\min,\mathrm{dist}}\), together with the
+peak Cartesian position error, for the two singular-value conditioning
+magnitudes; error bars show \(\pm\) one standard deviation and the dashed line
+marks the \(2\,\mathrm{mm}\) task-retention limit.}
 \label{fig:results_nullspace_automatic}
 \end{figure}
 
 \Cref{fig:results_nullspace_automatic} shows the cumulative projected
-null-space motion and the singular-value response across the four settings,
-with the spread over the three repetitions shaded. Projected null-space damping
+null-space motion for the settings without conditioning torque, with the
+spread over the three repetitions shaded, and the disturbance-interval
+singular-value change beside the peak Cartesian position error for the two
+conditioning magnitudes. The values for all four settings are given below. Projected null-space damping
 reduced \mbox{\(E_N\)} from \mbox{\((7.596\pm0.916)^\circ\)} without
 null-space torque to \mbox{\((5.687\pm0.228)^\circ\)} at
 \mbox{\(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\)}, a reduction of
@@ -807,8 +819,8 @@ the damping-only settings. It was already active during the
 \mbox{\(5\,\mathrm{s}\)} preceding the disturbance and remained active
 throughout it, so it did not act as a term applied after the redundant
 configuration had been displaced. Both sigma-only settings ended the
-disturbance interval with a net redundant displacement indistinguishable from
-zero at the scatter of three repetitions:
+disturbance interval with a net redundant displacement whose magnitude was
+smaller than the scatter across the three repetitions:
 \mbox{\((0.3\pm0.3)\times10^{-3}\,\mathrm{rad}\)} at
 \mbox{\(k_\sigma=1.5\,\mathrm{N\,m}\)} and
 \mbox{\((-0.1\pm0.2)\times10^{-3}\,\mathrm{rad}\)} at
@@ -827,13 +839,14 @@ The two sigma magnitudes differed in motion activity rather than in net
 displacement. At \mbox{\(k_\sigma=2.0\,\mathrm{N\,m}\)} the cumulative
 projected null-space motion was \mbox{\((1.619\pm0.130)^\circ\)}, against
 \mbox{\((0.283\pm0.007)^\circ\)} at \mbox{\(1.5\,\mathrm{N\,m}\)}, a
-factor of about six, while both net displacements stayed near zero. The
-conditioning law commands a fixed torque magnitude along the selected
+factor of about six, while both net displacements stayed near zero.
+The larger torque magnitude was associated with greater switching activity near
+the locally preferred region. This is consistent with the form of the law: the
+conditioning term commands a fixed torque magnitude along the selected
 direction, and the selector \mbox{\(s_\sigma\)} is set to zero only inside
-the comparison deadband, so a larger magnitude produces repeated direction
-changes near the locally preferred region. Read through the law, that larger
-cumulative motion is switching activity around the same region rather than
-poorer disturbance rejection. At \mbox{\(1.5\,\mathrm{N\,m}\)} the mean
+the comparison deadband. On that reading the larger cumulative motion is
+switching activity around the same region rather than poorer disturbance
+rejection. At \mbox{\(1.5\,\mathrm{N\,m}\)} the mean
 peak Cartesian position error was also lower,
 \mbox{\(0.889\pm0.024\,\mathrm{mm}\)} against
 \mbox{\(0.983\pm0.053\,\mathrm{mm}\)}. The largest position error measured

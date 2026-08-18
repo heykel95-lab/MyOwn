@@ -306,6 +306,33 @@ circulation, the settled choices are:
 - **centre of compliance** for the point the \(6\times6\) stiffness is
   defined about, \(p_c\), with \(r_c=p_{\mathrm{TCP}}-p_c\) as its lever.
   Attributively, `compliance-centre lever`, `compliance-centre coordinate`.
+
+  **\(r_c\) and the plotted centre position are opposite in sign, and must
+  never be renamed into one another.** The experimental plots and tables report
+  the signed *centre offset*
+
+  \[d_c=p_c-p_{\mathrm{TCP}}=-r_c,\]
+
+  which is what `centre position +40 mm` means. The point-shift equations and
+  the mechanical lever rule keep \(r_c\). The two are checkable against each
+  other in the thesis's own numbers: Table 4.4 gives \(r_c=[0,-40,0]\,\mathrm{mm}\)
+  for the selected \(+10^\circ\) condition about \(t_1\), while the Case-D
+  sweep shows the assisting centre for that same condition at
+  \(+40\,\mathrm{mm}\) along \(t_2\).
+
+  **Relabelling a `centre position` axis as \(r_{c,t_2}\) reverses the sign and
+  is a factual error.** Where the signed experimental coordinate is meant,
+  write \(d_c\) (or its components \(d_{c,t_1}\), \(d_{c,t_2}\), \(d_{c,n}\))
+  and say once that \(d_c=-r_c\). Do not describe `centre position` and
+  `\(r_c\) lever` as the same signed vector anywhere.
+
+  This also has a configuration-level counterpart. The controller accepts the
+  centre through **two parameters of opposite sign**: the tool-frame
+  `compliance_center_offset_ee` defines \(p_c-p_{\mathrm{TCP}}\), from which
+  the implementation forms \(r_c=-(R_{\mathrm{EE}}\cdot\text{offset})\), while
+  the surface-frame `r_tcp_from_compliance_center_surface` defines \(r_c\)
+  directly. Appendix C must state both rather than calling them one
+  "centre displacement".
 - **surface** for the flat object the tool is pressed against, and **surface
   plane** where the plane itself is meant. Not `workpiece`: the only property
   that matters is the plane the tool contacts, and `surface` already carries
@@ -1134,11 +1161,29 @@ instantaneous opposing torque at identical joint configurations.
   identity.** When \(e_R\neq0\) the shifted \(6\times6\) law carries further
   \(r_c\)-dependent terms in its lower-right block, so say "approximately" and
   say why.
-- **\(r_c=0\) is not a zero-moment condition.** It removes \(m_{c,K}\) alone.
-  \(m_0\) remains, and \(r_T\neq0\) means contact can still contribute
-  \(m_{r_T}\). This is what makes the strong zero-lever \(t_1\) rotation
-  unsurprising, and the thesis states it where the reader will otherwise assume
-  the opposite.
+- **\(r_c=0\) is not a zero-moment condition, and it does not remove
+  \(m_{c,K}\) alone.** The earlier wording of this rule said "it removes
+  \(m_{c,K}\) alone", which is too narrow and has been replaced. Setting
+  \(r_c=0\) makes \(\mathrm{Ad}(r_c)\) the identity, so it removes the
+  **complete** additional coupling the virtual point shift introduces:
+  \(m_{c,K}\), \(m_{c,D}\), \(m_{c,\mathrm{trans}}\), and every remaining
+  \(r_c\)-dependent term of the shifted \(K_{\mathrm{TCP}}\) and
+  \(D_{\mathrm{TCP}}\) — both the off-diagonal blocks and the added rotational
+  entries \([r_c]_\times^\top K_p[r_c]_\times\) and
+  \([r_c]_\times^\top D_p[r_c]_\times\).
+
+  What it does **not** remove: the ordinary decoupled rotational impedance
+  \(m_0\), the finite rotational compliance, the tool geometry \(r_T\), the
+  physical contact interaction, the external contact moment, and therefore
+  contact-induced robot rotation. \(r_T\neq0\) means contact can still
+  contribute \(m_{r_T}\). This is what makes the strong zero-lever \(t_1\)
+  rotation unsurprising, and the thesis states it where the reader will
+  otherwise assume the opposite.
+
+  The general form to use is: *setting \(r_c=0\) removes the additional
+  translation--rotation coupling introduced by the virtual point shift; the
+  ordinary rotational impedance and the physical tool and contact geometry
+  remain.* **Never write that a zero lever gives a zero moment.**
 - **Never write \(r_T\times f_K\).** \(f_K\) is a
   commanded elastic force; the contact-side reconstruction takes the estimated
   force, \(r_T\times\Delta\hat f_{\mathrm{ext}}\). Crossing a lever from one
@@ -1371,15 +1416,28 @@ impedance reference point, from the TCP to \(p_c\), and that is what makes the
 translational press generate an additional commanded moment. `The pressing
 force is displaced to \(p_c\)` is wrong and must not appear.
 
-**`universal fixed centre of compliance` is permitted, and only in one
-sense.** The term names the centre that can be selected *before* the initial
-angular tool--surface misalignment is known, and nothing else. It is defined in
-Chapter 1, in the thesis's own words, close to: *a universal fixed centre of
+**`universal fixed centre of compliance` is now banned outright.** The earlier
+version of this rule permitted it in one defined sense; a supervisor pass
+overturned that, and the term has been removed from the thesis. The reason is
+that `universal` claims more than the campaign can support: the experiments
+show that the *tested* non-zero tangential displacements are direction
+dependent, not that no centre position anywhere in three dimensions, under any
+frame definition or geometry, could be direction independent.
+
+**The settled term is `direction-independent fixed centre of compliance`**,
+defined in Chapter 1 close to: *a direction-independent fixed centre of
 compliance denotes one centre position that can be selected independently of
 the sign and tangent-plane direction of the initial angular tool--surface
-misalignment.* Every later use rests on that definition, and the definition is
-task specific: one robot, one tool, one surface, one press trajectory, and the
-tested range of misalignment directions.
+misalignment.* The definition is task specific — one robot, one tool, one
+surface, one press trajectory, the tested range of misalignment directions —
+and **it is applied only to the centre positions actually tested**.
+
+Where the claim is stated, scope it to the tested set: `the
+direction-independent fixed centre among the tested centre positions`, or
+`the TCP-centred configuration as a direction-neutral fixed reference`. Say
+once that whether some untested centre position could also be direction
+independent was not determined. `universal`, `universally optimal`, `best` and
+`optimal` remain banned for any centre.
 
 The claim the thesis may make is that **within the investigated task and
 parameter range, the TCP-centred condition is the direction-independent fixed

@@ -493,21 +493,10 @@ current reference is maintained.
 For phase groups configured to use inertia-scaled damping, the damping
 coefficients are calculated from the current Cartesian inertia and the active
 directional stiffness. The joint-space inertia matrix \mbox{\(M(q)\)} is obtained
-from the libfranka model and factorised using a lower--diagonal--lower-transpose
-(\mbox{\abbr{LDLT}}) decomposition,
-
-\[
-M=LDL^\top.
-\]
-
-Rather than explicitly forming \mbox{\(M^{-1}\)}, Eigen's
-\mbox{\texttt{LDLT}} factorisation is used to solve
-
-\[
-MX=J^\top,
-\]
-
-which gives \mbox{\(X=M^{-1}J^\top\)}. The regularised base-frame
+from the libfranka model. Rather than forming \mbox{\(M^{-1}\)} explicitly, a
+lower--diagonal--lower-transpose (\mbox{\abbr{LDLT}}) factorisation of
+\mbox{\(M\)} is used to solve \mbox{\(MX=J^\top\)} for
+\mbox{\(X=M^{-1}J^\top\)}. The regularised base-frame
 operational-space inertia estimate is then
 
 \begin{equation}
@@ -649,7 +638,7 @@ hold, set-up-impedance hold, and manual guidance are separate operator modes.
 
 \begin{figure}[H]
   \centering
-  \resizebox{0.62\textwidth}{!}{\input{figures/phase_flow_chart.tex}}
+  \resizebox{\textwidth}{!}{\input{figures/phase_flow_chart.tex}}
   \caption{Run phase sequence and Cartesian pose hold.}
   \label{fig:phase_flow_chart}
 \end{figure}
@@ -843,6 +832,13 @@ The projected joint velocity and damping torque are
 \label{eq:implementation_projected_nullspace_damping}
 \end{equation}
 
+For the Moore--Penrose \mbox{\abbr{SVD}} construction used here the orthogonal
+projector is symmetric, so \mbox{\(N_\tau=N_q\)} analytically. The
+implementation uses the numerically symmetrised \mbox{\(N_\tau\)} both for the
+secondary torque and for the recorded projected joint velocity. The two symbols
+are kept apart in \mbox{\Cref{sec:nullspace_svd}} only to distinguish the
+quantity the projector acts on.
+
 The controller provides the four secondary-torque modes listed in
 \mbox{\Cref{tab:implementation_nullspace_modes}}.
 
@@ -915,7 +911,7 @@ libfranka.
 No additional application-side saturation or torque-rate limiter is applied
 after the Cartesian, null-space, disturbance, and Coriolis terms have been
 assembled. The configured robot-side collision/reflex monitoring therefore
-remains an important independent safety layer. A robot communication,
+remains an independent robot-side protection and reflex mechanism. A robot communication,
 motion-generation, or torque-control error exits the callback through
 \mbox{\texttt{franka::Exception}}. Configuration, file, and numerical errors are
 handled separately through standard exceptions.

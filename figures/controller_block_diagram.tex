@@ -21,11 +21,11 @@
 \node[src] (state)  at ( 0.0,  0.0) {robot state\\[-2pt]\footnotesize $q,\ \dot q,\ T_{EE}$};
 \node[sel] (phase)  at ( 3.5,  0.0) {phase machine\\[-2pt]\footnotesize $p_d,\ R_d$};
 \node[blk] (err)    at ( 7.0,  0.0) {Cartesian error\\[-2pt]\footnotesize $e_p,\ e_R$};
-\node[blk] (wrench) at (10.5,  0.0) {spring wrench\\[-2pt]\footnotesize $F=K\Delta x+D\Delta v$};
-\node[blk] (jt)     at (13.8,  0.0) {\footnotesize $\tau_{\text{task}}=J^{\!\top}F$};
+\node[blk] (wrench) at (10.5,  0.0) {\footnotesize Cartesian impedance\\[-2pt]wrench\\[-2pt]$F=K\Delta x+D\Delta v$};
+\node[blk] (jt)     at (13.8,  0.0) {\footnotesize $\tau_{\mathrm{cart}}=J^{\!\top}F$};
 
 % ------------------------------------------------------------- lower inputs
-\node[src] (model)  at ( 0.0, -2.1) {model\\[-2pt]\footnotesize $J,\ M(q),\ c(q,\dot q)$};
+\node[src] (model)  at ( 0.0, -2.1) {model\\[-2pt]\footnotesize $J,\ M(q),\ \tau_c(q,\dot q)$};
 \node[sel] (null)   at ( 3.5, -2.1) {null-space term\\[-2pt]\footnotesize $N_\tau$: damping, $\sigma_{\min}$};
 % The text width is fixed rather than left to the content, and the value is a
 % compromise between two failures. Unconstrained, this box reaches past
@@ -80,7 +80,7 @@
 
 % run 5: Coriolis compensation into the sum from below
 \draw[sig] (model.south) -- (0.0,-5.15) -- node[lbl, below, pos=0.55]
-      {$c(q,\dot q)$} (13.8,-5.15) -- (plus.south);
+      {$\tau_c(q,\dot q)$} (13.8,-5.15) -- (plus.south);
 
 % run 6: the loop closes through the robot, around the left
 \draw[sig] (out.south) -- (16.6,-5.95) -- node[lbl, below, pos=0.55]

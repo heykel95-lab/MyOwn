@@ -48,7 +48,7 @@
 
   \node[sub, anchor=west] at (6.40,1.42) {commanded:};
   \node[sub, anchor=west] at (6.40,1.00)
-    {$m_{\mathrm{cmd}}\approx m_0+m_{c,\mathrm{trans}}$};
+    {$m\approx m_0+m_{c,\mathrm{trans}}$};
   \node[sub, anchor=west] at (6.40,0.58)
     {$m_{c,\mathrm{trans}}=-r_c\times f$,\quad $f=f_K+f_D$};
   \node[lbl, anchor=west] at (0.30,-0.95) {(a) commanded side};
@@ -76,8 +76,10 @@
   \draw[dead] (5.30,2.25) -- (2.83,1.09);
   \node[sub, gray!45, anchor=north] at (4.34,1.62) {$r_c$};
 
-  % the model-estimated external force, represented at the tool point
-  \draw[frc] (1.50,0.55) -- (1.22,1.85);
+  % the model-estimated external force, represented at the tool point. It acts
+  % into the surface: the logged sign convention gives n_s^T df_ext < 0, so the
+  % arrow points along -n_s, the same sense as the commanded press in panel (a).
+  \draw[frc] (1.22,1.85) -- (1.50,0.55);
   \node[lbl, above] at (1.18,1.88) {$\Delta\hat f_{\mathrm{ext}}$};
 
   \draw[mom] (3.40,1.46) arc (25:135:0.60);
