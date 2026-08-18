@@ -671,9 +671,29 @@ terminates the approach.
 Set-up generates the contact press that is evaluated in the experiments. The
 selected grinding-face point is advanced from its projected surface location
 along the descent direction. A scalar set-up coordinate is integrated at the
-configured speed and clamped at its configured endpoint. From this
-contact-point target and the stored end-effector-frame offset, the controller
-calculates the corresponding TCP reference.
+configured speed and clamped at its configured endpoint. Writing
+\mbox{\(p_{g,0}\)} for the projection of the selected point onto the surface and
+\mbox{\(s_{\mathrm{set}}(t)\)} for that coordinate, the commanded position of the
+grinding-face point is
+
+\begin{equation}
+p_{g,d}(t)=p_{g,0}+s_{\mathrm{set}}(t)\left(-n_s\right).
+\label{eq:implementation_setup_face_point_reference}
+\end{equation}
+
+The controller does not command the TCP directly along this path. It
+reconstructs the TCP reference that places the selected point at
+\mbox{\(p_{g,d}(t)\)}, using the end-effector-frame offset
+\mbox{\(r_{g,\mathrm{EE}}\)} stored at the clearance transition together with the
+orientation \mbox{\(R_{\mathrm{clr}}\)} held from that instant:
+
+\begin{equation}
+p_d(t)=p_{g,d}(t)-R_{\mathrm{clr}}\,r_{g,\mathrm{EE}}.
+\label{eq:implementation_setup_tcp_reference}
+\end{equation}
+
+The surface prevents the commanded point from reaching its target, so the
+resulting Cartesian position error generates the press.
 
 The desired orientation remains equal to the orientation captured at the
 clearance transition. It therefore acts as a finite-stiffness rotational
