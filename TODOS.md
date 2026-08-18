@@ -57,35 +57,29 @@ opposite fault and is equally wrong. Each needs looking at in the compiled
 document, and the scale factor moving inside the picture wherever the label
 size is off. This is judged by eye on the page, not from the source.
 
-## Four Chapter 5 figures still need redrawing
+## Verify the joint-torque figures before reinstating them
 
-The Chapter 5 restructure is done in prose: the discussion now sits under the
-evidence, the Cross-Case Discussion is gone, and two plots have moved to the
-supporting-plots appendix. Four requested figure *redesigns* could not be made,
-because no script produces any of the current plots:
+Chapter 5 carried a paragraph saying that an exploratory tool-axis test at
+\(120\,\mathrm{mm}\) drove the commanded sixth-joint torque to
+\(21.4\,\mathrm{N\,m}\) "against its \(12\,\mathrm{N\,m}\) limit" and
+aborted, while the reported sweep reached \(15.1\,\mathrm{N\,m}\) at its
+final position. **As written the two are inconsistent**: if the limit is
+\(12\,\mathrm{N\,m}\), a reported run cannot sit at
+\(15.1\,\mathrm{N\,m}\) without explanation. There may be a real
+distinction — commanded torque against the value libfranka actually applies, a
+transient against a configured threshold, or rated against peak torque — but
+the text did not state it, and it cannot be checked here because no run logs
+are on this machine.
 
-- **Case A** (`MAIN_A_contact`): the x-axis labels should read
-  \(+10^\circ\,t_1\), \(-10^\circ\,t_1\), \(+10^\circ\,t_2\),
-  \(-10^\circ\,t_2\). The measured initial values belong in the table, not
-  on the axis.
-- **Case D** (`MAIN_D_sign`): split the four curves into two panels, (a) the
-  \(t_1\) commands and (b) the \(t_2\) commands, on identical axis limits.
-- **Case F** (`MAIN_F_toolaxis`): replace with one figure plotting the
-  tangential sweep of Case D against the tool-axis sweep of Case F on the same
-  axes, for the same \(+10^\circ\) \(t_1\) command, so the comparison of
-  spans is visible rather than stated.
-- **Case G** (`MAIN_G_magnitude`): replot against the commanded offset
-  (\(5^\circ\), \(10^\circ\)) with one series for the zero lever and one
-  for the selected \(40\,\mathrm{mm}\) lever, in two panels for \(t_1\)
-  and \(t_2\). The present figure plots against centre position, which is not
-  the question the case asks.
+The paragraph has been removed from Chapter 5. The Limitations section of
+Chapter 6 now carries the defensible part without the numbers: the lever
+magnitude is bounded by the joint-torque limits, and an exploratory
+displacement beyond the reported Case-F range was stopped by one.
 
-The prose around each already states the comparison the redrawn figure would
-make, so the argument does not depend on them.
-
-`figures/MAIN_DQ_descent.pdf` is now unused: it was Figure 5.1 and was removed
-because it only showed that two time histories settle. Delete the file or keep
-it for reference, but do not reinstate the figure.
+To close it: confirm what the \(12\,\mathrm{N\,m}\) figure refers to and
+whether the \(15.1\,\mathrm{N\,m}\) value is a commanded or an applied
+torque. If both are commanded values and libfranka handles the limit, say so in
+one clause and the paragraph can go back.
 
 ## Run counts could not be reconciled against `metrics.csv`
 

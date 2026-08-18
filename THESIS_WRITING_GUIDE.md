@@ -779,6 +779,39 @@ Section by section:
   standard-deviation equations** and say instead that repeated settings are
   reported by their arithmetic mean and sample standard deviation.
 
+### Chapter 4, settled after the compression pass
+
+The chapter's purpose is: what hardware and geometry were used, how they were
+calibrated, what was held constant, what was varied, and how the results were
+calculated. Four rules keep it there.
+
+**A configuration table that only restates the prose around it goes.** The
+system table repeated the robot, the tool dimensions, the mounting play, the
+operating system, the kernel and the library versions, all of which the section
+had just said in sentences. Unlike the gain, phase and case tables, it did no
+analytical work. The prose stays and the table is gone; the exhaustive
+configuration lives in the parameter appendix.
+
+**Runtime relations belong to Chapter 3, even inside the calibration section.**
+\(n_T=R_{\mathrm{EE}}n_{\mathrm{EE}}\) was numbered twice, once in the
+calibration section and again in the evaluation section that actually needs it.
+It is kept where it is used. \(R_dn_{\mathrm{EE}}=-n_s\) describes what the
+controller does with the calibration, not how the calibration was made, and is
+stated in a clause rather than as a numbered equation. The same applies to
+\(p_T=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{T,\mathrm{EE}}\): Chapter 4
+records the calibrated offsets and the selection tolerance and points at
+Chapter 3 for the algorithm that consumes them.
+
+**A run count has one home.** The repetitions, the total, the incomplete run
+and the analysed total are stated once, in the data-recording subsection. The
+evaluation section says how repeated settings are reported and where the
+standard deviations appear, and does not restate the counts.
+
+**Isotropic matrices are a table, not a display.** Four \(3	imes3\)
+matrices whose diagonal entries are all equal spent most of a page saying four
+numbers. They are one small table with a sentence saying every entry was
+isotropic.
+
 ## Evidence and claims
 
 Never invent measurements, repetitions, fitted values, confidence intervals,

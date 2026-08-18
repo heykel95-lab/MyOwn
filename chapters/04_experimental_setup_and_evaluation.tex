@@ -93,40 +93,8 @@ thresholds of \(240\,\mathrm{N}\) or \(240\,\mathrm{N\,m}\), according to the
 component type. These thresholds supplied the Franka reflex mechanism and were
 kept unchanged throughout the reported measurements.
 
-The main hardware and software configuration is summarised in
-Table~\ref{tab:reproducibility_record}. The complete run-specific controller
-configuration is given in \Cref{app:controller_parameters}.
-
-{\small
-\begin{longtable}{@{}
->{\raggedright\arraybackslash}p{0.29\textwidth}
->{\raggedright\arraybackslash}p{0.64\textwidth}@{}}
-\caption{Documented configuration of the experimental system.}
-\label{tab:reproducibility_record}\\
-\toprule
-\textbf{Item} & \textbf{Configuration used in the reported experiments}\\
-\midrule
-\endfirsthead
-\toprule
-\textbf{Item} & \textbf{Configuration used in the reported experiments}\\
-\midrule
-\endhead
-\midrule
-\endfoot
-\bottomrule
-\endlastfoot
-Robot & Franka Emika Panda with seven actuated joints.\\
-Robot interface & libfranka joint-torque interface at a nominal control period of \(1\,\mathrm{ms}\).\\
-Gripper and mounting & Franka Hand with custom fingers; approximately \(\pm2^\circ\) unloaded relative rotation about \(y_{\mathrm{EE}}\).\\
-Grinding tool & Rectangular \(40\times120\,\mathrm{mm}\) tool face; centre \(20\,\mathrm{mm}\) along \(+Z_{\mathrm{EE}}\) from the reported end-effector origin.\\
-Surface & Plane plate on a raised base board; dry contact.\\
-Operating system & Ubuntu~20.04.3.\\
-Real-time kernel & Linux \texttt{5.9.1-rt20} with \texttt{PREEMPT\_RT}.\\
-Compiler & \texttt{g++~9.3}, C++14, optimisation level \texttt{-O2}.\\
-Libraries & Eigen~3.3.7 and libfranka~0.7.1.\\
-Collision thresholds & \(140\,\mathrm{N\,m}\) joint-side and \(240\,\mathrm{N}\) or \(240\,\mathrm{N\,m}\) Cartesian, according to the channel type.\\
-\end{longtable}
-}
+The complete run-specific controller configuration is given in
+\Cref{app:controller_parameters}.
 
 
 % ============================================================================
@@ -376,22 +344,9 @@ The calibration identifies the effective geometric direction used by the
 controller and evaluation; it does not determine the physical source of this
 offset.
 
-During each controller cycle, the corresponding direction in the base frame
-is calculated from
-
-\begin{equation}
-n_T=R_{\mathrm{EE}}n_{\mathrm{EE}}.
-\label{eq:grinding_face_direction_base}
-\end{equation}
-
-The flat orientation target satisfies
-
-\begin{equation}
-R_d n_{\mathrm{EE}}=-n_s.
-\label{eq:implemented_tool_axis_target}
-\end{equation}
-
-The target sign is therefore \(s_a=-1\). The commanded spin about the desired
+This calibrated direction is the one used by both the controller and the
+evaluation. The flat orientation target is the orientation that maps it onto
+the inward surface normal, so the target sign is \(s_a=-1\). The commanded spin about the desired
 tool axis, measured from \(t_1\), was \(90^\circ\) for all reported
 runs. In the flat target orientation the projected long face axis is aligned
 with the \(t_2\) line.
@@ -445,28 +400,12 @@ r_{\mathrm{length,EE}}
 \label{eq:grinding_face_half_dimensions}
 \end{equation}
 
-For any point on the face with end-effector-frame offset
-\(r_{T,\mathrm{EE}}\), the corresponding base-frame position is
-
-\begin{equation}
-p_T=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{T,\mathrm{EE}}.
-\label{eq:controlled_grinding_face_position}
-\end{equation}
-
-The controller uses the rectangular-face model described in
-\Cref{ch:implementation} to determine the point with the smallest
-geometric clearance to the plane. The feature-selection tolerance was
-
-\begin{equation}
-\varepsilon_g=0.1\,\mathrm{mm}.
-\label{eq:grinding_face_selection_tolerance}
-\end{equation}
-
-Corners whose heights differ by no more than this tolerance are treated as one
-edge or face and averaged to obtain the geometric reference used at the
-clearance transition. \Cref{ch:implementation} describes the corresponding
-run-time selection algorithm; the present chapter only records the calibrated
-geometry used by that algorithm.
+These calibrated offsets, together with a feature-selection tolerance of
+\(\varepsilon_g=0.1\,\mathrm{mm}\), were used by the tool-point selection
+described in \Cref{sec:tool_contact_geometry}. Corners whose
+heights differ by no more than that tolerance are treated as one edge or face
+and averaged. The present chapter records the calibrated geometry; the
+selection algorithm that consumes it belongs to \Cref{ch:implementation}.
 
 
 % ============================================================================
@@ -1024,13 +963,10 @@ convention, but they remain distinct controller signals.
 Repeated settings are reported using the arithmetic mean and the sample
 standard deviation over their usable repetitions.
 
-Three repetitions were scheduled for every parameter setting. As noted in
-\Cref{subsec:experimental_recorded_quantities}, one Case-D setting contains two
-usable repetitions because one archived run is incomplete; all other settings
-contain three. Comparisons are restricted to settings with the same calibrated
-geometry, common phase timing, fixed gain entries, and null-space configuration.
 The within-setting standard deviations are reported with the corresponding
-results in \Cref{ch:results_discussion}.
+results in \Cref{ch:results_discussion}. Comparisons are restricted to settings
+with the same calibrated geometry, common phase timing, fixed gain entries, and
+null-space configuration.
 
 
 % ============================================================================
@@ -1047,53 +983,28 @@ internally commanded disturbance.
 
 \subsection{Experimental Configuration}
 
-The pose-hold controller maintained the initial TCP pose with isotropic
-stiffness
+The pose-hold controller maintained the initial TCP pose with the gains of
+\Cref{tab:experimental_hold_gains}. Every entry was isotropic, so each matrix
+is the stated value times the identity. Unlike the contact-sequence phases, the
+twelve pose-hold trials used fixed Cartesian damping rather than inertia-scaled
+damping.
 
-\begin{equation}
-K_{p,\mathrm{hold}}
-=
-\begin{bmatrix}
-2000 & 0 & 0\\
-0 & 2000 & 0\\
-0 & 0 & 2000
-\end{bmatrix}
-\,\mathrm{N/m},
-\qquad
-K_{R,\mathrm{hold}}
-=
-\begin{bmatrix}
-50 & 0 & 0\\
-0 & 50 & 0\\
-0 & 0 & 50
-\end{bmatrix}
-\,\mathrm{N\,m/rad}.
-\label{eq:experimental_hold_stiffness}
-\end{equation}
-
-Unlike the contact-sequence phases, the twelve pose-hold trials used fixed
-Cartesian damping matrices rather than inertia-scaled damping:
-
-\begin{equation}
-D_{p,\mathrm{hold}}
-=
-\begin{bmatrix}
-50 & 0 & 0\\
-0 & 50 & 0\\
-0 & 0 & 50
-\end{bmatrix}
-\,\mathrm{N\,s/m},
-\qquad
-D_{R,\mathrm{hold}}
-=
-\begin{bmatrix}
-8 & 0 & 0\\
-0 & 8 & 0\\
-0 & 0 & 8
-\end{bmatrix}
-\,\mathrm{N\,m\,s/rad}.
-\label{eq:experimental_hold_fixed_damping}
-\end{equation}
+\begin{table}[H]
+\centering
+\small
+\caption{Isotropic Cartesian gains of the pose-hold trials.}
+\label{tab:experimental_hold_gains}
+\begin{tabular}{@{}llr@{}}
+\toprule
+\textbf{Quantity} & & \textbf{Value}\\
+\midrule
+Translational stiffness & \(K_{p,\mathrm{hold}}\) & \(2000\,\mathrm{N/m}\)\\
+Rotational stiffness    & \(K_{R,\mathrm{hold}}\) & \(50\,\mathrm{N\,m/rad}\)\\
+Translational damping   & \(D_{p,\mathrm{hold}}\) & \(50\,\mathrm{N\,s/m}\)\\
+Rotational damping      & \(D_{R,\mathrm{hold}}\) & \(8\,\mathrm{N\,m\,s/rad}\)\\
+\bottomrule
+\end{tabular}
+\end{table}
 
 Four null-space settings were tested with three repetitions each: no null-space
 torque, projected damping with

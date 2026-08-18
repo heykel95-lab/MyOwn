@@ -154,6 +154,29 @@ Still true of the case letters: a reconstruction should emit the letters agreed
 in the renumbering, since the file names were changed by hand in the thesis
 repository and no script knows about it.
 
+### Result figures may be drawn from the reported means
+
+The current plots have no generator, but a figure whose content is already
+tabulated in the thesis does not need one. Four Chapter 5 figures were redrawn
+directly in `pgfplots` from the means in their own tables: the Case-A bars, the
+two-panel Case-D sweep, the Case-D-against-Case-F comparison, and the two-panel
+Case-G plot. They are `\input` as `.tex`, so they take the document font and
+need no `esizebox`.
+
+This is not a licence to invent data. **The only numbers a redrawn figure may
+contain are ones already reported in the thesis**, and where the table carries
+standard deviations they are drawn as error bars, as in the Case-F series.
+
+Where the original plot carried information the table does not, redrawing loses
+it, and the original is kept rather than discarded. `MAIN_D_sign.pdf` showed
+the per-setting spread of the Case-D sweep, which appears in no table, so it
+moved to the supporting-plots appendix instead of being deleted.
+
+**Check every legend against the data in the compiled figure.** Three of the
+four redrawn figures first placed a legend on top of a curve, in a corner that
+looked empty when the coordinates were written. `legend pos` is chosen per
+panel from where that panel's data actually are, not once for the figure.
+
 ### Correcting a label in a plot that has no generator
 
 The metric-comparison legend read `EE-inferred angular deviation` after the term

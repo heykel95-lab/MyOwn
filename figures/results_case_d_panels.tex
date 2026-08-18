@@ -1,0 +1,52 @@
+% Case-D tangential lever sweep, split by commanded rotation axis so that the
+% sign reversal in each panel is readable on its own. Both panels share the
+% same x and y limits. Values are the reported means of Table~\ref{tab:results_case_d};
+% the per-setting spread is carried by the figure in the supporting-plots appendix.
+\begin{tikzpicture}
+\pgfplotsset{
+  every axis/.append style={
+    width=7.1cm, height=6.0cm,
+    xmin=-48, xmax=48, ymin=-13, ymax=10,
+    xtick={-40,-20,0,20,40},
+    ytick={-12,-9,-6,-3,0,3,6,9},
+    grid=major,
+    grid style={gray!25, very thin},
+    tick label style={font=\footnotesize},
+    label style={font=\footnotesize},
+    legend style={font=\footnotesize, draw=gray!50, fill=white,
+                  cells={anchor=west}, inner sep=2pt},
+    every axis plot/.append style={thick, mark size=2.1pt},
+  },
+}
+\begin{groupplot}[
+    group style={group size=2 by 1, horizontal sep=1.5cm},
+  ]
+
+\nextgroupplot[
+    xlabel={Centre position along \(t_2\) [mm]},
+    ylabel={\(\Delta\theta_{\mathrm{set}}\) about \(t_1\) [\(^\circ\)]},
+    title={\footnotesize (a) commanded about \(t_1\)},
+    legend pos=north west,
+  ]
+\addplot[black, mark=o] coordinates {
+  (-40,0.14) (-20,0.99) (-10,7.45) (0,7.57) (10,7.67) (20,7.73) (40,7.87)};
+\addlegendentry{\(+10^\circ\)}
+\addplot[blue!55!black, mark=square, densely dashed] coordinates {
+  (-40,-11.30) (-20,-11.18) (-10,-11.14) (0,-10.83) (10,-10.36) (20,-5.01) (40,-0.09)};
+\addlegendentry{\(-10^\circ\)}
+
+\nextgroupplot[
+    xlabel={Centre position along \(t_1\) [mm]},
+    ylabel={\(\Delta\theta_{\mathrm{set}}\) about \(t_2\) [\(^\circ\)]},
+    title={\footnotesize (b) commanded about \(t_2\)},
+    legend pos=north west,
+  ]
+\addplot[black, mark=o] coordinates {
+  (-40,-4.51) (-20,-1.95) (-10,-1.85) (0,-1.63) (10,-1.31) (20,-1.12) (40,4.43)};
+\addlegendentry{\(+10^\circ\)}
+\addplot[blue!55!black, mark=square, densely dashed] coordinates {
+  (-40,-10.51) (-20,-1.51) (-10,-1.29) (0,-1.25) (10,-1.29) (20,-1.28) (40,4.68)};
+\addlegendentry{\(-10^\circ\)}
+
+\end{groupplot}
+\end{tikzpicture}

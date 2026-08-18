@@ -77,7 +77,7 @@ None & \(0.74\) & \(-0.97\) & \(-1.56\pm0.01\) & yes \\
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.85\textwidth]{figures/MAIN_A_contact.pdf}
+\input{figures/results_case_a_bars.tex}
 \caption{Set-up rotation with the centre of compliance at the TCP.}
 \label{fig:results_case_a}
 \end{figure}
@@ -282,15 +282,15 @@ orientation offset.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{figures/MAIN_D_sign.pdf}
-\caption{Set-up rotation by tangential centre position, both tangents and signs.}
+\input{figures/results_case_d_panels.tex}
+\caption{Set-up rotation by tangential centre position, by commanded axis.}
 \label{fig:results_case_d}
 \end{figure}
 
 The tangential compliance-centre position is the dominant geometric parameter
 in the tested contact conditions. \Cref{tab:results_case_d} gives the seven
-tested positions and \cref{fig:results_case_d} plots all four command
-conditions, which is where the sign dependence is easiest to read. Reversing
+tested positions, and \cref{fig:results_case_d} separates the two commanded
+axes so that the sign reversal is readable within each panel. Reversing
 the commanded orientation direction reverses the side of the TCP that assists
 the motion. About \mbox{\(t_1\)}, the positive command produces
 \mbox{\(+7.87^\circ\)} at \mbox{\(+40\,\mathrm{mm}\)} but only
@@ -471,19 +471,19 @@ Standard deviation & \(0.13\) & \(0.01\) & \(0.01\) & \(0.01\) & \(0.01\)
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.85\textwidth]{figures/MAIN_F_toolaxis.pdf}
-\caption{Set-up rotation by centre position along the tool axis.}
+\input{figures/results_case_f_comparison.tex}
+\caption{Tangential against tool-axis centre displacement at the same command.}
 \label{fig:results_case_f}
 \end{figure}
 
 The tangential component is responsible. \Cref{tab:results_case_f} lists the
 seven axial positions with their standard deviations, and
-\cref{fig:results_case_f} plots them on the same rotation axis used for the
-tangential sweep. The signed set-up rotation changes from \mbox{\(+7.26\)} to
-\mbox{\(+7.60^\circ\)} over the full \mbox{\(-40\)} to
-\mbox{\(+40\,\mathrm{mm}\)} range, a span of \mbox{\(0.34^\circ\)} against
-\mbox{\(7.73^\circ\)} for the tangential displacement of
-\cref{tab:results_case_d} at the same command. Every Case-F position is
+\cref{fig:results_case_f} places the two displacement directions on one pair of
+axes for the same command. The tool-axis sweep is flat across its whole range:
+the signed set-up rotation changes from \mbox{\(+7.26\)} to
+\mbox{\(+7.60^\circ\)} between \mbox{\(-40\)} and \mbox{\(+40\,\mathrm{mm}\)},
+a span of \mbox{\(0.34^\circ\)} against \mbox{\(7.73^\circ\)} for the
+tangential displacement over the same interval. Every Case-F position is
 classified as flat, and the response is not strictly monotonic.
 
 This supports the cross-product interpretation of
@@ -524,13 +524,14 @@ Centre position & \(+5^\circ\) & \(+10^\circ\) & \(+5^\circ\) & \(+10^\circ\) \\
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{figures/MAIN_G_magnitude.pdf}
-\caption{Set-up rotation by centre position at both commanded magnitudes.}
+\input{figures/results_case_g_panels.tex}
+\caption{Set-up rotation by commanded orientation offset, with and without the lever.}
 \label{fig:results_case_g}
 \end{figure}
 
 It does. \Cref{tab:results_case_g} sets the two commanded magnitudes side by
-side and \cref{fig:results_case_g} plots them by centre position. About
+side, and \cref{fig:results_case_g} plots the response against the commanded
+offset with the two centre positions as the compared series. About
 \mbox{\(t_1\)}, the assisting lever adds only \mbox{\(0.15^\circ\)} at the
 \mbox{\(5^\circ\)} command and \mbox{\(0.30^\circ\)} at
 \mbox{\(10^\circ\)}, because substantial zero-lever alignment is already
@@ -609,51 +610,8 @@ translational stiffness treated as a secondary variable for this geometry.
 This ordering is a practical interpretation of the present measurements rather
 than a universal rule.
 
-The lever magnitude is bounded by both the desired coupling and the robot
-torque limits. An exploratory tool-axis test outside the reported Case-F range
-used a \mbox{\(120\,\mathrm{mm}\)} displacement; the commanded sixth-joint
-torque reached \mbox{\(21.4\,\mathrm{N\,m}\)} against its
-\mbox{\(12\,\mathrm{N\,m}\)} limit and the run aborted. Across the reported
-sweep the same joint remained near \mbox{\(6\,\mathrm{N\,m}\)} and reached
-\mbox{\(15.1\,\mathrm{N\,m}\)} only at the final tested position. The centre
-position must therefore be selected together with the joint-torque limits.
-
-\subsection{Flatness Classification Across the Cases}
-\label{sec:results_flatness_summary}
-
-The TCP-height criterion classified \mbox{\(50\)} of the \mbox{\(57\)}
-parameter settings as flat. The seven settings classified as tilted are listed
-in \mbox{\cref{tab:results_not_flat}}.
-
-\begin{table}[H]
-\centering
-\small
-\caption{Conditions classified as tilted by TCP height.}
-\label{tab:results_not_flat}
-\begin{tabular}{@{}lrrr@{}}
-\toprule
-Condition & Excess height & \(\Delta\theta_{\mathrm{align}}\) &
-\(\Delta\theta_{\mathrm{set}}\) \\
-\midrule
-Case~B, \(50\,\mathrm{N\,m/rad}\) about \(t_1\) & \(3.6\,\mathrm{mm}\) & \(+2.38\) & \(+2.73\) \\
-Case~C, both stiffness entries varied about \(t_1\) & \(3.5\,\mathrm{mm}\) & \(+2.46\) & \(+2.80\) \\
-Case~D, \(-20\,\mathrm{mm}\) at \(+10^\circ\) about \(t_1\) & \(5.3\,\mathrm{mm}\) & \(+0.70\) & \(+0.99\) \\
-Case~D, \(-40\,\mathrm{mm}\) at \(+10^\circ\) about \(t_1\) & \(6.0\,\mathrm{mm}\) & \(-0.12\) & \(+0.14\) \\
-Case~D, \(+20\,\mathrm{mm}\) at \(-10^\circ\) about \(t_1\) & \(5.2\,\mathrm{mm}\) & \(+4.43\) & \(-5.01\) \\
-Case~D, \(+40\,\mathrm{mm}\) at \(-10^\circ\) about \(t_1\) & \(9.3\,\mathrm{mm}\) & \(-0.13\) & \(-0.09\) \\
-Case~E, surface frame at \(+10^\circ\) about \(t_1\) & \(5.9\,\mathrm{mm}\) & \(-0.13\) & \(+0.13\) \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The alignment angle can carry a bias from the calibrated tool normal. Because
-the same calibration is used for all runs, this bias is common to the
-evaluation chain, but it does not necessarily appear as an identical additive
-angular offset in every orientation. The primary signed set-up rotation does
-not use the calibrated tool normal; it is obtained from the measured
-end-effector motion and then resolved in the surface frame, which makes it the
-more direct quantity for comparing the controller-induced rotation between
-settings. An internal consistency check between the two is given in
+Across the \mbox{\(57\)} tested settings, \mbox{\(50\)} satisfied the
+TCP-height flatness criterion; the seven that did not are listed in
 \mbox{\Cref{app:additional_plots}}.
 
 \section{Null-Space Pose-Hold Results}
