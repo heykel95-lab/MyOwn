@@ -172,18 +172,17 @@ current tool orientation, the controller predicts the point on the tool expected
 to reach the surface first. For this purpose, the four tool corners are compared
 along the approach direction. A single leading corner is selected for a general
 orientation offset. If two neighbouring corners are equally close to the surface, their
-midpoint is used as the predicted contact point at the centre of the leading
-edge. If all four corners are equally close to the surface, the centre of the
-tool face is used. This predicted contact point is fixed when the clearance
+midpoint at the centre of the leading edge is selected instead. If all four corners are equally close to the surface, the centre of the
+tool face is used. This selected tool point is fixed when the clearance
 is reached and remains unchanged during set-up and grinding.
 
-During contact set-up, the desired position of the predicted contact point is
+During contact set-up, the desired position of the selected tool point is
 moved gradually from the clearance position towards the surface and slightly
 beyond the surface plane. The physical surface prevents the tool from reaching
 this virtual target, so the resulting position error \mbox{\(e_p\)} generates the normal
 pressing force. Because the robot command is defined at the TCP, the controller
 calculates the corresponding TCP target using the fixed geometric offset between
-the TCP and the predicted contact point.
+the TCP and the selected tool point.
 
 The desired tool orientation remains equal to the orientation reached at the
 clearance point, but it is not enforced rigidly. The finite rotational
