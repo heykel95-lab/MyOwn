@@ -80,6 +80,25 @@ than in the coordinates.
 Leave a visible gap between a label and any box: aim for at least half a line
 of text, and never let a label sit inside a node's bounding box.
 
+### Scale the picture, do not resize it
+
+**A tikz diagram is sized by `scale=` inside `egin{tikzpicture}[...]`, not by
+wrapping the `\input` in `esizebox`.** `scale=` moves the coordinates and
+leaves node text at the size it was declared; `esizebox` magnifies the text
+along with the drawing, so a diagram drawn at 7 cm and stretched to the text
+width comes out with labels about twice the size of the body text. It also
+multiplies every clearance, which is how a label that looked separated in the
+source ends up on an arrowhead.
+
+This was found on the three Chapter 3 diagrams, where the symbols were visibly
+larger than the surrounding prose and two labels overlapped each other. Draw the
+picture at whatever size is convenient, then pick the `scale=` that brings it to
+the width it should occupy, and include it with a plain `\input`.
+
+The rule holds in the other direction too. A wide diagram shrunk to fit by
+`esizebox` has labels *smaller* than the body text, which is the same fault
+and is easier to miss.
+
 **Explanatory sentences do not go inside the picture.** A two-line note added
 beside a diagram widens its bounding box, and `\resizebox` then shrinks the
 whole drawing to fit the page, so the geometry becomes unreadable to buy room

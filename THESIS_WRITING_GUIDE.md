@@ -311,18 +311,30 @@ circulation, the settled choices are:
   does or does not model stay — `no environment friction model or friction
   coefficient is used in the control command` is a control-design fact, not a
   materials claim.
-- **contact point** for the physical point the tool touches,
-  \(p_{\mathrm{contact}}\), with
-  \(r_{\mathrm{contact}}=p_{\mathrm{TCP}}-p_{\mathrm{contact}}\) as its lever.
-  It is a different point from the centre of compliance and the two are never
-  used for one another.
+- **selected tool point** for the point or edge of the grinding face used as
+  the geometric contact reference, \(p_T\), with the **tool
+  contact-reference offset** \(r_T=p_T-p_{\mathrm{TCP}}\) as its lever. It is
+  a different point from the centre of compliance and the two are never used
+  for one another.
 
-  The subscript is spelled out on purpose. The two levers were previously
-  \(r_c\) and \(r_C\), distinguished only by the case of one letter, which no
-  reader can hold across a page and which a printed subscript does not reliably
-  show. `contact` also settles the wording: the point is the **contact point**
-  in every chapter, never a `tool feature` and never an `edge`. `edge` presumes
-  edge contact, and the set-up phase is designed to seat the tool face flat.
+  **State at its first appearance that the subscript \(T\) is the tool point
+  and not the \(T\) of a homogeneous transformation matrix.** Without that
+  sentence the symbol is genuinely ambiguous, and the whole notation depends on
+  the reader not making that substitution.
+
+  The symbol was previously \(p_g\), and before that \(p_{\mathrm{contact}}\)
+  in this guide while the chapters used \(p_g\). One name now: \(p_T\) in
+  every chapter, the symbol list, and every figure, with \(r_{T,\mathrm{EE}}\)
+  for its end-effector-frame offset and \(\Delta p_T\), \(s_T\) for its
+  displacement. The two levers were at one point \(r_c\) and \(r_C\),
+  distinguished only by the case of one letter, which no reader can hold across
+  a page and which a printed subscript does not reliably show; \(r_T\) against
+  \(r_c\) is the replacement and must not drift back.
+
+  The wording is settled with the symbol: it is the **selected tool point** in
+  every chapter, never a `tool feature` and never a bare `edge`. `edge`
+  presumes edge contact, and the set-up phase is designed to seat the tool face
+  flat.
 - **pole** is implementation vocabulary from the parameter names. Keep it in
   equation labels and parameter keys, not in the running text.
 - **commanded tool orientation offset** for the deliberate angular command: a
@@ -631,7 +643,7 @@ currently fragmented, and the fix is to follow the signal path:
    real-time loop.
 2. **Surface and tool representation** — what is stored, without re-deriving
    Chapter 2: surface frame; grinding-face orientation; face geometry and
-   contact-point selection, naming \(p_g\) and saying it is neither the TCP nor
+   contact-point selection, naming \(p_T\) and saying it is neither the TCP nor
    the centre of compliance.
 3. **Phase-dependent reference generation** — collected in one place instead of
    scattered after the impedance law. Approach carries
@@ -646,9 +658,9 @@ currently fragmented, and the fix is to follow the signal path:
    thing missing.
 4. **Cartesian impedance and virtual centre of compliance** — error and wrench,
    directional gains and inertia-scaled damping merged into one subsection, then
-   the compliance-centre shift, closing on the statement that \(p_g\) fixes
+   the compliance-centre shift, closing on the statement that \(p_T\) fixes
    where the interaction happens geometrically while \(p_c\) fixes the virtual
-   reference of the impedance, and that moving \(p_c\) does not move \(p_g\).
+   reference of the impedance, and that moving \(p_c\) does not move \(p_T\).
 5. **Real-time torque calculation** — one callback, in order, ending at
    \(\tau_{\mathrm{cmd}}=J^\top F+\tau_{\mathrm{null}}+\tau_c\), with
    \(\tau_{\mathrm{dist}}\) mentioned only for the pose-hold experiment.
@@ -668,7 +680,7 @@ The chapter should come out shorter and stronger, not longer.
 
 Figures to add, in priority order: grinding-face geometry and leading-feature
 selection (four vertices, tie tolerance, the corner/edge/face-centre outcomes);
-the three points \(p_g\), \(p_{\mathrm{TCP}}\) and \(p_c\) with the two offsets
+the three points \(p_T\), \(p_{\mathrm{TCP}}\) and \(p_c\) with the two offsets
 and their sum; and set-up reference generation, showing the press coordinate
 advancing past the surface so the endpoint reads as a spring reference rather
 than a commanded penetration.
@@ -696,7 +708,7 @@ Section by section:
 - **Calibrated geometry.** Replace the vector equations for the face centre,
   half-width and half-length with one calibrated-geometry table, and
   cross-reference the contact-point construction in Chapter 3 rather than
-  repeating \(p_g=p_{\mathrm{EE}}+R_{\mathrm{EE}}r_{g,\mathrm{EE}}\).
+  repeating \(p_T=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{T,\mathrm{EE}}\).
 - **Common configuration.** This is the largest duplication. Do not retell the
   phase sequence; state that the runs followed the sequence of Chapter 3, give
   the settings in the existing phase-parameter table, and add that the
@@ -783,26 +795,50 @@ was measured — the signed set-up rotation changed from \(-1.63\) to
 \(+4.43^\circ\) about \(t_2\) with the selected \(40\,\mathrm{mm}\) lever, and
 the final configuration satisfied the TCP-height flatness criterion.
 
-### Three distinct points: contact, TCP, compliance centre
+### Three distinct points: selected tool point, TCP, compliance centre
 
-\(p_{\mathrm{contact}}\), \(p_{\mathrm{TCP}}\) and \(p_c\) are different points
-and the prose must keep them apart.
+\(p_T\), \(p_{\mathrm{TCP}}\) and \(p_c\) are different points and the prose
+must keep them apart.
 
-- \(p_{\mathrm{contact}}\) is the point or edge of the grinding face that
-  contacts, or is predicted to contact, the surface. The controller determines
-  it from the rectangular face geometry and the current tool orientation.
+- \(p_T\) is the selected tool point: the point or edge of the grinding face
+  that contacts, or is predicted to contact, the surface. The controller
+  determines it from the rectangular face geometry and the current tool
+  orientation.
 - \(p_{\mathrm{TCP}}\) is the Cartesian reference point of the controller.
 - \(p_c\) is the virtual centre of compliance: a software-defined point about
   which the Cartesian stiffness and damping are formulated before being
   transformed to the TCP. It is **not** the physical contact point.
 
-So \(r_c=p_{\mathrm{TCP}}-p_c\) is the compliance-centre-to-TCP shift used by
-the impedance transformation. It is not a physical contact-point lever; that is
-a separate vector, \(r_{\mathrm{contact}}=p_{\mathrm{contact}}-p_{\mathrm{TCP}}\),
-and the two combine as
-\(p_{\mathrm{contact}}-p_c=(p_{\mathrm{contact}}-p_{\mathrm{TCP}})+(p_{\mathrm{TCP}}-p_c)\),
+\(p_T\) is **selected at the clearance transition and then held constant
+relative to the tool** for the whole of set-up. Say so where it is introduced.
+Once the tool starts to rotate under contact it is a geometric contact
+reference, not the exact point at which the surface force acts at every
+instant, and a sentence that treats it as the latter overstates what the
+geometry gives.
+
+The two levers are named separately and never stand in for one another:
+
+- \(r_T=p_T-p_{\mathrm{TCP}}\) is **tool geometry** — the offset from the TCP
+  to the selected contact reference, fixed by the face geometry and the current
+  orientation. In end-effector coordinates it is \(r_{T,\mathrm{EE}}\), so
+  that \(p_T=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{T,\mathrm{EE}}\); the
+  implementation has \(p_{\mathrm{TCP}}=p_{\mathrm{EE}}\), which is worth
+  stating once rather than silently writing \(p_{\mathrm{EE}}\) in its place.
+- \(r_c=p_{\mathrm{TCP}}-p_c\) is **virtual controller geometry** — the
+  software-defined displacement used by the point-shift transformation of the
+  Cartesian impedance. It carries no tool geometry at all.
+
+They combine as \(p_T-p_c=(p_T-p_{\mathrm{TCP}})+(p_{\mathrm{TCP}}-p_c)=r_T+r_c\),
 which is worth stating because it separates the physical contact geometry from
 the virtual shift.
+
+The contact sequence therefore originates at the selected tool point, not at
+the TCP and not at the centre of compliance: the face geometry gives \(p_T\),
+the set-up trajectory moves it as \(p_{T,d}(t)=p_{T,0}+s_{\mathrm{set}}(t)(-n_s)\),
+and the TCP target is reconstructed from it as
+\(p_d(t)=p_{T,d}(t)-R_{\mathrm{clr}}r_{T,\mathrm{EE}}\), which produces the
+press. The centre of compliance is a separate mechanism acting through
+\(r_c\) on the force–moment coupling. Do not merge the two chains.
 
 **Never write that the compliance centre moves the force application point.**
 The physical surface force still acts at the actual contact point. What changes

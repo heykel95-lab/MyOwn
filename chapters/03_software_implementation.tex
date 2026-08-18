@@ -195,13 +195,26 @@ r_{\mathrm{face,EE}}
 \label{eq:implementation_tool_face_vertices}
 \end{equation}
 
-For a selected point on the face with end-effector-frame offset
-\mbox{\(r_{g,\mathrm{EE}}\)}, its current base-frame position is
+The rectangular face geometry determines the point or edge of the tool
+expected to reach the surface first. That point is the selected tool point
+\mbox{\(p_T\)}, and it is the geometric contact reference for the set-up motion
+that follows. It is distinct from the TCP and from the virtual centre of
+compliance. Its position follows from the fixed end-effector-frame offset
+\mbox{\(r_{T,\mathrm{EE}}\)},
 
 \begin{equation}
-p_g=p_{\mathrm{EE}}+R_{\mathrm{EE}}r_{g,\mathrm{EE}}.
+p_T=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{T,\mathrm{EE}},
 \label{eq:implementation_contact_point_position}
 \end{equation}
+
+where the tool centre point coincides with the reported end-effector origin in
+this implementation, \mbox{\(p_{\mathrm{TCP}}=p_{\mathrm{EE}}\)}. The vector
+\mbox{\(r_T=p_T-p_{\mathrm{TCP}}\)} therefore describes the tool geometry
+between the TCP and the selected contact reference. The compliance-centre shift
+\mbox{\(r_c=p_{\mathrm{TCP}}-p_c\)} of
+\mbox{\Cref{sec:coupled_pole_stiffness}} is a different quantity: it is the
+virtual displacement used by the Cartesian impedance transformation, and it
+carries no tool geometry at all.
 
 During tool orientation and surface approach, all four vertices are transformed
 to the base frame and compared along the descent direction. The vertex with the
@@ -213,7 +226,7 @@ equal corners define the face centre.
 
 \begin{figure}[H]
   \centering
-  \resizebox{\textwidth}{!}{\input{figures/face_feature_selection.tex}}
+  \input{figures/face_feature_selection.tex}
   \caption{Grinding-face geometry and the selected leading feature.}
   \label{fig:face_feature_selection}
 \end{figure}
@@ -291,7 +304,7 @@ The phase state machine supplies the desired TCP position \mbox{\(p_d\)}, desire
 linear velocity \mbox{\(\dot p_d\)}, and desired orientation \mbox{\(R_d\)}. Their
 meaning depends on the active phase: tool orientation changes the orientation
 reference while holding position, approach advances the position reference
-along \mbox{\(-n_s\)}, set-up advances the selected grinding-face point into the
+along \mbox{\(-n_s\)}, set-up advances the selected tool point into the
 surface, grinding maintains the normal press and can add a tangential sweep,
 and pose hold regulates a captured Cartesian pose. The detailed phase logic is
 described in \mbox{\Cref{sec:control_phases}}.
@@ -592,8 +605,8 @@ matrices remain fixed as long as the source gains do not change.
 
 \begin{figure}[H]
   \centering
-  \resizebox{0.92\textwidth}{!}{\input{figures/three_points.tex}}
-  \caption{Selected face point, tool centre point, and centre of compliance.}
+  \input{figures/three_points.tex}
+  \caption{Selected tool point, tool centre point, and centre of compliance.}
   \label{fig:three_points}
 \end{figure}
 
@@ -607,7 +620,7 @@ form.
 This coupling is the mechanism used for contact-induced alignment during
 set-up. The desired orientation is held at the value captured at the geometric
 clearance transition, so no time-varying tipping trajectory is commanded.
-Instead, the selected grinding-face point is advanced towards the surface. The
+Instead, the selected tool point is advanced towards the surface. The
 resulting normal press acts through the finite Cartesian impedance; when a
 non-zero compliance-centre lever is enabled, the shifted impedance introduces a
 corresponding moment that can assist or oppose the contact-induced rotation.
@@ -669,7 +682,7 @@ configured geometric threshold. This is not a force-detected contact event.
 The model-estimated external wrench is recorded during approach, but it does
 not determine the phase transition.
 
-At the clearance transition, the selected grinding-face point or edge is
+At the clearance transition, the selected tool point or edge is
 selected and held constant, and the controller stores its projected surface
 point, the current TCP pose, the orientation reference, and the external-wrench
 reference. If the optional pre-set-up gate is enabled, the controller first
@@ -683,26 +696,26 @@ terminates the approach.
 \label{subsec:implementation_setup_phase}
 
 Set-up generates the contact press that is evaluated in the experiments. The
-selected grinding-face point is advanced from its projected surface location
+selected tool point is advanced from its projected surface location
 along the descent direction. A scalar set-up coordinate is integrated at the
 configured speed and clamped at its configured endpoint. Writing
-\mbox{\(p_{g,0}\)} for the projection of the selected point onto the surface and
+\mbox{\(p_{T,0}\)} for the projection of the selected point onto the surface and
 \mbox{\(s_{\mathrm{set}}(t)\)} for that coordinate, the commanded position of the
-grinding-face point is
+selected tool point is
 
 \begin{equation}
-p_{g,d}(t)=p_{g,0}+s_{\mathrm{set}}(t)\left(-n_s\right).
+p_{T,d}(t)=p_{T,0}+s_{\mathrm{set}}(t)\left(-n_s\right).
 \label{eq:implementation_setup_face_point_reference}
 \end{equation}
 
 The controller does not command the TCP directly along this path. It
 reconstructs the TCP reference that places the selected point at
-\mbox{\(p_{g,d}(t)\)}, using the end-effector-frame offset
-\mbox{\(r_{g,\mathrm{EE}}\)} stored at the clearance transition together with the
+\mbox{\(p_{T,d}(t)\)}, using the end-effector-frame offset
+\mbox{\(r_{T,\mathrm{EE}}\)} stored at the clearance transition together with the
 orientation \mbox{\(R_{\mathrm{clr}}\)} held from that instant:
 
 \begin{equation}
-p_d(t)=p_{g,d}(t)-R_{\mathrm{clr}}\,r_{g,\mathrm{EE}}.
+p_d(t)=p_{T,d}(t)-R_{\mathrm{clr}}\,r_{T,\mathrm{EE}}.
 \label{eq:implementation_setup_tcp_reference}
 \end{equation}
 
@@ -711,8 +724,8 @@ resulting Cartesian position error generates the press.
 
 \begin{figure}[H]
   \centering
-  \resizebox{0.86\textwidth}{!}{\input{figures/setup_reference.tex}}
-  \caption{Set-up reference generation for the selected face point.}
+  \input{figures/setup_reference.tex}
+  \caption{Set-up reference generation for the selected tool point.}
   \label{fig:setup_reference}
 \end{figure}
 
@@ -956,7 +969,7 @@ Time and controller state
 TCP state and reference
 & Measured and desired TCP pose quantities, Cartesian errors, and linear and angular velocities. \\[1mm]
 Tool and surface geometry
-& Controlled grinding-face point, stored clearance geometry, desired contact target, and set-up coordinate. \\[1mm]
+& Controlled tool point, stored clearance geometry, desired contact target, and set-up coordinate. \\[1mm]
 Cartesian wrench
 & Commanded wrench and model-estimated external wrench, including the clearance-transition reference. \\[1mm]
 Null-space controller
@@ -993,7 +1006,7 @@ The output preserves the commanded Cartesian wrench and the model-estimated
 external wrench as separate quantities. It also stores the geometric
 clearance-transition references needed to calculate subsequent force and moment
 changes. The implementation produces a set-up summary containing the final
-pose, grinding-face point, external-wrench change, phase termination condition,
+pose, selected tool point, external-wrench change, phase termination condition,
 and active controller settings. Detailed experimental metrics are intentionally
 defined in \mbox{\Cref{ch:methodology}} and \mbox{\Cref{app:recorded_data}} so
 that the implementation chapter remains focused on how the signals are generated

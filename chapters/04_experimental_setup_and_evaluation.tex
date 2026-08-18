@@ -446,10 +446,10 @@ r_{\mathrm{length,EE}}
 \end{equation}
 
 For any point on the face with end-effector-frame offset
-\(r_{g,\mathrm{EE}}\), the corresponding base-frame position is
+\(r_{T,\mathrm{EE}}\), the corresponding base-frame position is
 
 \begin{equation}
-p_g=p_{\mathrm{EE}}+R_{\mathrm{EE}}r_{g,\mathrm{EE}}.
+p_T=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{T,\mathrm{EE}}.
 \label{eq:controlled_grinding_face_position}
 \end{equation}
 
@@ -581,11 +581,11 @@ the configured initial joint posture. The calibrated geometry, the phase gains
 and damping, and the compliance-centre definition were prepared before the
 torque callback started.
 
-Approach ended when the grinding-face point or edge with the smallest clearance
+Approach ended when the tool point or edge with the smallest clearance
 reached \(20\,\mathrm{mm}\) above the calibrated plane. That transition was
 defined by geometry rather than by a force threshold. At the same instant the
 controller stored the TCP pose, the orientation reference, the selected
-grinding-face point or edge with its projection onto the plane, and the
+selected tool point or edge with its projection onto the plane, and the
 model-estimated external wrench, which serve as the references for the
 evaluation quantities of \Cref{sec:experimental_evaluation}.
 
@@ -652,7 +652,7 @@ experiment of \Cref{sec:nullspace_hold_study}.
 \label{subsec:experimental_recorded_quantities}
 
 The real-time logging buffer recorded the measured robot state, Cartesian
-reference and error, selected grinding-face point or edge, active control phase,
+reference and error, selected tool point or edge, active control phase,
 commanded Cartesian wrench, final commanded joint torque, null-space mode, and
 libfranka model-estimated external wrench. The complete signal list and CSV
 structure are given in \Cref{sec:recorded_signals} and
@@ -961,15 +961,15 @@ the primary set-up rotation.
 
 \subsection{Displacement and Wrench Quantities}
 
-Let \(p_g\) denote the point or edge of the grinding face selected at the
+Let \(p_T\) denote the point or edge of the grinding face selected at the
 clearance transition. Its displacement and magnitude are
 
 \begin{equation}
-\Delta p_g
+\Delta p_T
 =
-p_{g,\mathrm{after}}-p_{g,\mathrm{before}},
+p_{T,\mathrm{after}}-p_{T,\mathrm{before}},
 \qquad
-s_g=\lVert\Delta p_g\rVert.
+s_T=\lVert\Delta p_T\rVert.
 \label{eq:contact_feature_displacement}
 \end{equation}
 

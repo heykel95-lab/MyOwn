@@ -41,6 +41,22 @@ Specified in full in `THESIS_WRITING_GUIDE.md`:
   One sentence pointing at Chapter 3 and the data-format appendix is enough;
   the run counts and the excluded run stay.
 
+## Six diagrams are still sized by `\resizebox`
+
+The three Chapter 3 diagrams were drawn at about 7--10 cm and then stretched to
+the text width, which magnified their label text along with the drawing: at
+figure 3.3 the symbols came out roughly twice the size of the body text and
+collided with each other. They now carry a `scale=` inside the picture and are
+included without `\resizebox`, so the labels keep the size they were declared
+at.
+
+The same wrapper is still on `controller_block_diagram`, `phase_flow_chart`,
+`tool_transfer_flow`, `setup_schematic`, `calibration_flow`, and the two
+appendix parameter tables. A diagram that is *shrunk* by the wrapper has the
+opposite fault and is equally wrong. Each needs looking at in the compiled
+document, and the scale factor moving inside the picture wherever the label
+size is off. This is judged by eye on the page, not from the source.
+
 ## Run counts could not be reconciled against `metrics.csv`
 
 Raised while looking for the plotting code, and **not established as a fault in

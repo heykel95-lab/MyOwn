@@ -1062,16 +1062,23 @@ whereas the point shift changes the point about which the impedance is defined.
 \mbox{\Cref{fig:compliance_lever_moment}} shows this geometry for the two signs
 of the tangential lever.
 
-Three points are involved and they must be kept apart. The selected
-grinding-face point \mbox{\(p_g\)} is the point or edge of the face that reaches
-the surface, so it is the predicted contact point; the controller determines it
-from the rectangular face geometry and the current tool orientation. The tool centre point
-\mbox{\(p_{\mathrm{TCP}}\)} is the Cartesian reference point of the controller.
-The centre of compliance \mbox{\(p_c\)} is a software-defined point about which
-the translational and rotational impedance is formulated before being
-transformed to the TCP. It is not the predicted contact point.
+Three points are involved and they must be kept apart. The selected tool
+point \mbox{\(p_T\)} is the point or edge of the grinding face that reaches the
+surface, so it is the predicted contact point; the controller determines it from
+the rectangular face geometry and the current tool orientation. Here the
+subscript \mbox{\(T\)} denotes the selected point on the tool grinding face and
+is not the \mbox{\(T\)} used for homogeneous transformation matrices. The tool
+centre point \mbox{\(p_{\mathrm{TCP}}\)} is the Cartesian reference point of the
+controller. The centre of compliance \mbox{\(p_c\)} is a software-defined point
+about which the translational and rotational impedance is formulated before
+being transformed to the TCP. It is not the predicted contact point.
 
-Moving \mbox{\(p_c\)} therefore moves neither the contact point nor the
+The selected tool point is fixed at the clearance transition and then held
+constant relative to the tool for the whole of set-up. Once the tool begins to
+rotate under contact, it is therefore a geometric contact reference rather than
+the exact point at which the surface force acts at every instant.
+
+Moving \mbox{\(p_c\)} therefore moves neither the selected tool point nor the
 physical contact force. The surface force still acts where the tool touches.
 What changes is the point about which the compliance is defined, and with it
 the translation--rotation coupling of the Cartesian impedance. The same normal
@@ -1083,19 +1090,38 @@ or no moment. Displacing it sideways gives the compliant response an effective
 lever: to one side the induced moment assists the required alignment, and to
 the other side it opposes or reverses it.
 
-The two offsets are separate quantities and add:
+Each point is reached from the TCP by its own offset, and the two are named
+separately. The tool contact-reference offset
 
 \[
-p_g-p_c
-=
-\underbrace{\left(p_g-p_{\mathrm{TCP}}\right)}_{\text{tool and contact geometry}}
-+
-\underbrace{\left(p_{\mathrm{TCP}}-p_c\right)}_{r_c}.
+r_T=p_T-p_{\mathrm{TCP}}
 \]
 
-The first term is fixed by the face geometry and the current orientation. The
-second is the controller parameter selected before a run, and it is the one the
-experiments vary.
+is the tool-geometry lever from the TCP to the selected tool point, fixed by the
+face geometry and the current orientation. The compliance-centre shift
+
+\[
+r_c=p_{\mathrm{TCP}}-p_c
+\]
+
+is the software-defined displacement used by the point-shift transformation of
+the Cartesian impedance. It is not a contact-point lever, and the two never
+appear in the same expression as though they were interchangeable. The offsets
+add,
+
+\[
+p_T-p_c
+=
+\underbrace{\left(p_T-p_{\mathrm{TCP}}\right)}_{r_T}
++
+\underbrace{\left(p_{\mathrm{TCP}}-p_c\right)}_{r_c}
+=
+r_T+r_c,
+\]
+
+which makes the geometry between the selected tool point and the virtual centre
+of compliance explicit. Of the two, \mbox{\(r_c\)} is the controller parameter
+selected before a run, and it is the one the experiments vary.
 
 Three forces occur in this thesis and they carry separate symbols, so
 that the one entering a cross product is never in doubt:
