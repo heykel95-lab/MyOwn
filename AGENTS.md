@@ -58,6 +58,23 @@ that file, never synonym substitution.
 `THESIS_WRITING_GUIDE.md` governs what a chapter contains, what a claim may
 assert, and the terminology and unit conventions.
 
+## Keep TODOS.md current, every turn
+
+**`TODOS.md` is the standing record of everything agreed but not yet done, and
+it is updated in the same turn the situation changes** — without being asked.
+Add an entry the moment work is deferred, blocked, or requested and not
+completed. Remove or amend an entry the moment it is finished or overtaken.
+Never let it describe a state that has passed: a todo file that lags is worse
+than none, because it is trusted.
+
+An entry says what is wrong, what the fix is, and what is blocking it. Where a
+task is partly done, say which part, so the next session does not redo it or
+assume it whole. Detailed specifications stay in the guide they belong to and
+are referenced from here rather than duplicated.
+
+Finishing a turn with deferred work not written down is a failure of the turn,
+even when everything attempted succeeded.
+
 ## Record new style rulings as they are given
 
 **When the user states an editorial preference, a terminology decision, a

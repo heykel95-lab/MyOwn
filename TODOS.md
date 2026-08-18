@@ -1,9 +1,10 @@
 # Open items
 
-Work agreed but not yet carried out. Each entry says what is wrong, what the
-fix is, and what is blocking it. The editorial rules behind these live in
-`THESIS_WRITING_GUIDE.md`, `THESIS_VOICE.md` and `FIGURE_STYLE.md`; this file
-only tracks what is outstanding.
+Everything agreed but not yet done. Each entry says what is wrong, what the fix
+is, and what is blocking it. This file is kept current in the same turn the
+situation changes, per the rule in `AGENTS.md`. Detailed specifications live in
+`THESIS_WRITING_GUIDE.md`, `THESIS_VOICE.md` and `FIGURE_STYLE.md` and are
+referenced from here rather than repeated.
 
 ## Waiting on the plotting code
 
@@ -53,30 +54,42 @@ To close it: find the 171 run directories the thesis counted, confirm the one
 incomplete run, and map them onto rows in `metrics.csv`. Only if they fail to
 map does anything in the thesis need revisiting.
 
-## Chapter restructures
+## Chapter 3 restructure — partly done
 
-Both are specified in full in `THESIS_WRITING_GUIDE.md`. Neither was started,
-because a restructure abandoned midway leaves a chapter worse than one not
-begun.
+Specified in full in `THESIS_WRITING_GUIDE.md`.
 
-### Chapter 3
+Already carried out:
 
-Reorder to follow the signal path, from surface and tool geometry to the torque
-sent to the robot. Delete the functional-subsystems, null-space-mode and
-logged-signal tables, simplify or drop the gain-frame table, and remove the
-`robot.control` listing. Add the set-up reference relations, which are the
-largest omission. Add three figures: grinding-face geometry and leading-feature
-selection; the three points with their two offsets; set-up reference
-generation.
+- the five pseudo-equations and the process-arrow display are prose;
+- the set-up reference relations are in, with the sentence explaining that the
+  controller reconstructs the tool centre point target rather than commanding
+  it down;
+- all three figures are drawn and checked in the compiled document: the
+  grinding-face geometry with the corner, edge and face-centre outcomes; the
+  three points with their offsets and sum; and set-up reference generation.
 
-### Chapter 4
+Still to do:
 
-Stop re-explaining the controller, let the tables replace the prose that repeats
-them, delete the case-grouping table, move the fallback damping matrices to the
-parameter appendix, and remove the mean and standard-deviation equations.
+- delete the functional-subsystems, null-space-mode and logged-signal tables,
+  and simplify or drop the gain-frame table;
+- remove the `robot.control` listing, which shows nothing the prose does not;
+- reorder the chapter to follow the signal path, from the surface and tool
+  geometry through to the torque sent to the robot.
+
+## Chapter 4 restructure — not started
+
+Specified in full in `THESIS_WRITING_GUIDE.md`. Stop re-explaining the
+controller, let the tables replace the prose that repeats them, delete the
+case-grouping table, move the fallback damping matrices to the parameter
+appendix, and remove the mean and standard-deviation equations.
 
 ## Before the next prose session
 
 Read `THESIS_VOICE.md` and `THESIS_WRITING_GUIDE.md` in full. The recent prose
 turns used targeted reads because of context limits, which was flagged each
 time, and the restructures deserve the complete pass.
+
+Write edits through a file-based script with raw strings. Inline shell scripts
+twice stripped a backslash level and turned `\begin`, `\right` and `\resizebox`
+into control characters, which is invisible when reading the source and only
+the build catches.
