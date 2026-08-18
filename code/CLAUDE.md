@@ -37,6 +37,12 @@ produces the alignment metrics reported in Chapter 5, and
 `make_thesis_result_figures.py` generates the principal Chapter 5 figures.
 (`cartesian_impedance_experiments.cpp` sits in this directory despite being C++.)
 
+`code/python/figures/` holds the generators for the plots the thesis actually
+includes, recovered from the two experiment repositories. The figures were
+renamed by hand after they were generated, so the scripts still write the old
+case letters; `code/python/figures/README.md` carries the name map and is the
+first thing to read before changing a plot.
+
 ## Conventions that must match the thesis
 
 These are stated in the text and cannot drift:

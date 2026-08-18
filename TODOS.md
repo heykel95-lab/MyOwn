@@ -97,16 +97,6 @@ To close it: find the 171 run directories the thesis counted, confirm the one
 incomplete run, and map them onto rows in `metrics.csv`. Only if they fail to
 map does anything in the thesis need revisiting.
 
-## The plotting code is still missing
-
-Not blocking anything now that the metric-comparison legend has been corrected
-in the PDF itself, but it still bounds what can be changed. No script in either
-repository produces any of the thirteen current plots; the scripts in
-`MyController/experiments/analysis/` emit the superseded figure set. A data
-series, an axis, or a case letter inside a plot cannot be changed until the code
-is found. `FIGURE_STYLE.md` records what a reconstruction would need and what a
-direct PDF edit can and cannot do.
-
 ## Final-pass work, once the two chapters above are closed
 
 The structural rewriting is finished. What remains is wording consistency,
