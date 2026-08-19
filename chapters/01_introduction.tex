@@ -106,221 +106,146 @@ software-defined virtual compliance centre \mbox{\(p_c\)} for planar tool--surfa
 \section{Problem Statement}
 
 The angular relation between the tool and the surface plane is uncertain before
-contact because both the surface placement and the tool mounting carry
-tolerances. Neither the sign of that angle nor the tangent-plane direction
-about which it lies is known when the run starts. Under rigid position control,
-this residual angle produces an undesired contact moment rather than a
-corrective motion. A purely translational Cartesian spring does not
-command a rotational correction, because the commanded wrench that closes the
-gap carries no moment of its own. Contact-induced rotation remains possible
-even then, since the physical contact geometry can generate an external moment
-and the rotational impedance is finite. Translational compliance alone supplies no commanded rotational contribution
-whose direction can be selected. Placing the centre of compliance \mbox{\(p_c\)} away from the tool
-centre point (TCP) couples translation and rotation, so that the translational
-impedance action reaches the command as a moment as well as a force. Depending
-on its direction and sign, that moment can assist or oppose the
-contact-induced rotation. This placement defines a task-to-impedance
-mapping rather than a physical pivot. The resulting response was evaluated from
-the motion measured during contact.
+contact because the surface placement and tool mounting both carry tolerances.
+The sign of the initial angle and its tangent-plane rotation direction are
+therefore unknown when a run starts. Under rigid position control, the contact
+geometry can generate high moments while the controller resists the corrective
+motion. Finite rotational compliance allows contact-induced rotation, while a
+displaced centre of compliance adds a selectable coupling between translation
+and rotation.
 
-The coupling that a displaced centre introduces is itself directional. The
-lever \mbox{\(r_c=p_{\mathrm{TCP}}-p_c\)} enters the commanded wrench
-through a cross product with the commanded translational force, so a tangential
-displacement selects a tangential direction and with it a rotational sense for
-the additional moment. Selecting that displacement in advance therefore
-presumes knowledge of the angular deviation it is meant to correct. Since the
-misalignment is unknown before contact, the appropriate location of the centre
-of compliance is unknown with it, and the coupling relation alone does not
-settle whether one displacement can be fixed beforehand for every condition.
+The virtual centre of compliance \mbox{\(p_c\)} is defined relative to the TCP by
+\mbox{\(r_c=p_{\mathrm{TCP}}-p_c\)}. A tangential lever enters the commanded
+wrench through a cross product with the translational force and thereby selects
+an additional rotational moment. The direction and sign of this moment depend
+on the lever direction. A displaced centre chosen before contact therefore
+encodes a preferred alignment direction.
 
-The investigation is built on that open point: whether one fixed centre of
-compliance provides suitable alignment behaviour independently of the sign and
-the tangent-plane direction of the initial angular misalignment. In this
-thesis, a direction-independent fixed centre of compliance denotes one centre
-position that can be selected independently of the sign and tangent-plane
-direction of the initial angular tool--surface misalignment. The definition is
-task specific, and it is applied only to the centre positions actually tested.
-It asserts direction independence within the investigated task and parameter
-range, and it asserts nothing about optimality, about other robots, tools,
-contact geometries or surfaces, or about the alignment response of any
-individual condition.
+The investigation evaluates a fixed centre of compliance for conditions in
+which the sign and tangent-plane direction of the initial angular misalignment
+are unknown. In this thesis, a direction-independent fixed centre denotes a
+centre position that can be selected without this prior information. The
+assessment is limited to the investigated task, parameter range, and tested
+centre positions. The term describes direction independence of the selected
+reference and carries no claim of global optimality.
 
-Contact-induced alignment is one stage of the intended task. The tool begins
-at an uncertain angle to the surface, aligns while contact is established, and
-then holds that contact for the tangential grinding motion. A
-compliance-centre placement therefore carries two roles: the corrective
-rotation it produces during set-up, and the contact response that remains once
-the tool is seated. Only the first was measured here, because the reported runs
-end at the pre-grinding gate.
+Contact-induced alignment forms the set-up stage of the intended surface task.
+The tool approaches the surface with an angular offset, establishes contact,
+and rotates under the compliant interaction. Sustained tangential motion would
+follow after alignment. The reported measurements cover the contact set-up
+stage and end at the pre-grinding gate.
 
-The alignment response cannot be predicted from the gain values alone because
-it also depends on the contact geometry, lever direction, robot configuration,
-and compliance of the tool mount. The experiments therefore compare
-directional stiffness and compliance-centre placement under otherwise matched
+The alignment response depends on the directional stiffness, contact geometry,
+lever direction, robot configuration, and compliance of the tool mounting. The
+experiments therefore vary these controller parameters under otherwise matched
 conditions. A commanded tool orientation offset represents the initial angular
-misalignment between the tool and the surface.
-\mbox{\Cref{ch:theory,ch:implementation}} introduce the frame conventions and
-controller formulation required for these comparisons.
+misalignment between the tool and the surface. \mbox{\Cref{ch:theory,ch:implementation}}
+introduce the frame conventions and controller formulation used in the
+experiments.
 
-The experiments approach that point in four steps. Each one concerns
-contact-induced alignment under a commanded tool orientation offset, which
-represents the initial angular misalignment:
+The experimental sequence follows four steps:
 
 \begin{enumerate}[leftmargin=1.1cm]
-\item The contact response with the centre of compliance on the TCP is
-measured first, where the virtual lever \mbox{\(r_c\)} vanishes and the
-point shift contributes no coupling moment.
+\item The TCP-centred condition is measured first. Here \mbox{\(r_c=0\)} and the
+virtual point shift contributes no coupling moment.
 \item The rotational stiffness about the commanded rotation axis and the
-translational stiffness perpendicular to it are then varied, to establish
-whether the Cartesian gains control the direction dependence of that response.
+translational stiffness perpendicular to it are varied to quantify their
+influence on the direction-dependent response.
 \item The direction, sign, and magnitude of the tangential compliance-centre
-lever are varied next, across commanded rotation axes, directions, and offset
-angles.
-\item The resulting geometric lever-selection rule is finally tested against
-one fixed lever at tangent-plane directions between the two principal surface
-tangents.
+lever are varied across commanded rotation axes, directions, and offset angles.
+\item The geometric lever-selection rule is evaluated at tangent-plane
+directions between the two principal surface tangents and compared with one
+fixed lever.
 \end{enumerate}
 
-Steps three and four establish whether a displaced centre selected for one
-condition remains suitable when the sign or the direction of the initial
-misalignment changes.
+This sequence separates the response already present at the TCP from the
+additional effect introduced by a displaced centre and then tests the geometric
+dependence of that displacement.
 
 \section{Scope and Contributions}
 \label{sec:objectives}
 
-Within this scope, the experiments evaluate the influence of the commanded tool
-orientation offset, surface-frame stiffness, and virtual centre of compliance
-\mbox{\(p_c\)} influence contact-induced alignment. The contact experiments
-first establish the response with the compliance centre at the TCP. They then
-examine whether stiffness tuning or a fixed displaced centre provides a general
-response across different initial misalignments, and finally whether the
-resulting selection rule holds beyond the two principal surface tangents.
+The experiments evaluate the influence of the commanded tool orientation
+offset, surface-frame stiffness, and virtual centre of compliance
+\mbox{\(p_c\)} on contact-induced alignment. The controller contribution and the
+experimental contribution are treated separately.
 
-The controller is a phase-scheduled Cartesian impedance controller written in C++
-using libfranka and Eigen. It runs in the \mbox{\(1\,\mathrm{kHz}\)} torque-control
-loop of the Franka Emika Panda. The commanded Cartesian wrench \mbox{\(F\)} is mapped to
-the Cartesian impedance torque \mbox{\(\tau_{\mathrm{cart}}\)} through
-\mbox{\(J^\top\)}, and the Coriolis torque \mbox{\(\tau_c\)} is obtained from the
-robot model and added to the command. Each control phase uses its own Cartesian
-stiffness values, while the damping is calculated from an estimate of the
-Cartesian inertia \mbox{\(\Lambda\)}.
+The implemented controller is a phase-scheduled Cartesian impedance controller
+written in C++ using libfranka and Eigen. It runs in the
+\mbox{\(1\,\mathrm{kHz}\)} torque-control loop of the Franka Emika Panda. The
+commanded Cartesian wrench \mbox{\(F\)} is mapped to the Cartesian impedance
+torque \mbox{\(\tau_{\mathrm{cart}}\)} through \mbox{\(J^\top\)}, and the Coriolis
+torque \mbox{\(\tau_c\)} from the robot model is added to the command. Each
+control phase uses phase-specific Cartesian stiffness values, while the damping
+is calculated from an estimate of the Cartesian inertia \mbox{\(\Lambda\)}.
 
-A surface-fixed coordinate frame is constructed from the surface geometry. Its
-axes consist of the unit surface normal \mbox{\(n_s\)} and two mutually orthogonal unit
-vectors \mbox{\(t_1\)} and \mbox{\(t_2\)} lying in the surface plane. The directions \mbox{\(t_1\)}
-and \mbox{\(t_2\)} therefore represent the two independent tangential directions along
-the surface. This frame is used to define the translational and rotational
-stiffness values according to the contact geometry.
+A surface-fixed coordinate frame is constructed from the calibrated surface
+geometry. Its axes are the unit surface normal \mbox{\(n_s\)} and the two
+orthogonal tangent directions \mbox{\(t_1\)} and \mbox{\(t_2\)}. The same frame is
+used for the orientation offsets, directional gains, compliance-centre
+coordinates, and surface-resolved evaluation quantities.
 
-Each run follows a fixed sequence of control phases. First, the tool is brought
-to the commanded orientation and approaches the surface up to a specified
-geometric clearance. Based on the rectangular tool geometry and the
-current tool orientation, the controller predicts the point on the tool expected
-to reach the surface first. For this purpose, the four tool corners are compared
-along the approach direction. A single leading corner is selected for a general
-orientation offset. If two neighbouring corners are equally close to the surface, their
-midpoint at the centre of the leading edge is selected instead. If all four corners are equally close to the surface, the centre of the
-tool face is used. This selected tool point is fixed when the clearance
-is reached and remains unchanged during set-up and grinding.
+Each run follows a fixed control sequence. The tool is first brought to the
+commanded orientation and approaches the surface to a geometric clearance. The
+controller then selects the leading tool feature from the rectangular face
+geometry and stores its offset relative to the TCP. During set-up, the desired
+position of this selected tool point advances toward the surface and slightly
+beyond the plane as a virtual spring reference. The physical contact limits the
+motion and generates the normal pressing action. The desired orientation is
+held at the value reached at the clearance transition, so the measured rotation
+during set-up arises from the compliant contact response.
 
-During contact set-up, the desired position of the selected tool point is
-moved gradually from the clearance position towards the surface and slightly
-beyond the surface plane. The physical surface prevents the tool from reaching
-this virtual target, so the resulting position error \mbox{\(e_p\)} generates the normal
-pressing force. Because the robot command is defined at the TCP, the controller
-calculates the corresponding TCP target using the fixed geometric offset between
-the TCP and the selected tool point.
+During the shifted set-up conditions, the \mbox{\(6\times6\)} stiffness and
+damping matrices defined at the virtual centre of compliance are transformed to
+the TCP by an adjoint congruence transformation. The resulting off-diagonal
+blocks couple translation and rotation and allow the normal pressing action to
+produce an additional commanded alignment moment. The reported contact runs
+end at the pre-grinding gate. The implemented grinding phase therefore lies
+outside the quantitative evaluation.
 
-The desired tool orientation remains equal to the orientation reached at the
-clearance point, but it is not enforced rigidly. The finite rotational
-stiffness allows the actual tool orientation to change when the contact forces
-produce a moment, so the tool can rotate towards the surface during set-up.
+The implementation contribution consists of the real-time integration of this
+point-shifted Cartesian impedance with the surface-relative task frame, contact
+sequence, null-space controller, safety handling, and data recording. The
+experimental methodology defines the physical surface and tool geometry
+independently so that the measured end-effector response can be evaluated
+relative to the calibrated surface.
 
-During this phase, the \mbox{\(6\times6\)} stiffness and damping matrices defined at
-the virtual centre of compliance \mbox{\(p_c\)} are transformed to the TCP through an adjoint
-congruence transformation. The resulting off-diagonal blocks couple
-translation and rotation, allowing the commanded pressing motion to generate a
-corrective moment that helps the tool align with the plane surface during
-set-up. The effects of this translation--rotation coupling are investigated in
-this thesis. After contact set-up, the controller proceeds to the tangential
-grinding motion.
+The first experimental result concerns the fixed centre. Every tested non-zero
+tangential displacement showed a dependence on the sign or direction of the
+initial misalignment. The assisting side of the TCP reversed with the sign of
+the commanded rotation, and the displacement used for a command about
+\mbox{\(t_1\)} differed from that used about \mbox{\(t_2\)}. Changes in
+rotational and cross-axis translational stiffness modified the response
+magnitude while preserving this directional dependence. Within the investigated
+task and tested centre positions, the TCP-centred condition is therefore the
+direction-independent fixed reference because it requires no prior selection of
+misalignment direction or sign.
 
-The software implements a subsequent grinding phase, including an
-optional tangential sweep. The reported runs ended at the enabled pre-grinding
-gate and therefore contain no grinding motion. The quantitative evaluation is
-restricted to the contact-induced alignment established during set-up.
+The second experimental result concerns the additional alignment authority of a
+displaced centre. A tangential lever contributes the commanded moment
+\mbox{\(m_{c,K}=-r_c\times f_K\)} and thereby converts part of the normal pressing
+action into rotation of a selected sense. About \mbox{\(t_1\)}, the TCP-centred
+condition already produced substantial alignment-directed rotation. About
+\mbox{\(t_2\)}, a selected \mbox{\(40\,\mathrm{mm}\)} tangential lever changed
+the signed set-up rotation from \mbox{\(-1.63^\circ\)} to
+\mbox{\(+4.43^\circ\)}. The displaced centre therefore serves as a
+condition-dependent means of adding rotational alignment authority.
 
-The point-shift adjoint and congruence transformation are established
-theory. The implementation contribution lies in their phase-dependent,
-real-time integration with the contact sequence and controller described in
-\mbox{\Cref{ch:implementation}}.
-
-Accordingly, the contributions of this thesis are divided into implemented
-controller components and experimentally established findings. The implemented
-work includes a frame-consistent real-time Cartesian impedance controller for
-the 7-\mbox{\abbr{DOF}} Franka Emika Panda. It also includes a spatial
-compliance-centre formulation in which the \mbox{\(6\times6\)} stiffness and damping
-matrices are defined at a selected virtual centre of compliance \mbox{\(p_c\)} and transformed
-to the TCP. In addition, a contact and evaluation methodology was developed in
-which the physical surface orientation and the tool axis are defined
-independently, allowing the alignment of the tool to be evaluated relative to
-the surface.
-
-The first experimental contribution concerns the fixed centre itself. No
-tested non-zero tangential displacement gave a response that could be selected
-in advance of the initial misalignment: the assisting side of the TCP reverses
-when the commanded rotation direction reverses, and the displacement that
-assists a command about \mbox{\(t_1\)} does not assist one about
-\mbox{\(t_2\)}. Neither stiffness parameter removed that dependence. Raising
-the rotational stiffness about the commanded rotation axis reduced the set-up
-rotation, and the tested cross-axis translational stiffness changed it less;
-the combination of low translational and high rotational stiffness was
-consistent with the individual effects acting approximately additively within
-the descriptive comparison scale. Within the investigated task and parameter
-range, the TCP-centred condition is therefore the direction-independent fixed
-centre among the tested centre positions, in the sense defined in the problem
-statement, since it requires no prior selection of misalignment direction or
-sign. The tested non-zero tangential displacements are direction dependent;
-whether some untested centre position could also be direction independent was
-not determined.
-
-Direction independence and alignment authority are separate properties, and
-the second contribution is the mechanism that separates them. A tangential
-displacement enters the commanded moment as
-\mbox{\(m_{c,K}=-r_c\times f_K\)}, so it converts part of the normal press
-into rotation of one sense for as long as the press is present. This property
-makes a displaced centre condition dependent, and it equally makes it
-effective where it is chosen correctly. About \mbox{\(t_1\)}, the zero-lever
-baseline already produced almost the full helpful robot rotation, whereas about
-\mbox{\(t_2\)} a selected \mbox{\(40\,\mathrm{mm}\)} tangential lever was
-required to obtain rotation in the assisting direction, and the final
-configuration then satisfied the TCP-height flatness criterion. A displaced
-centre is accordingly reported as a condition-dependent means of adding
-rotational alignment authority rather than as a candidate fixed setting. The
-same mechanism bears on the configuration used after alignment: retaining the
-displacement while the press continues also retains its rotational sense, and
-the implemented grinding branch returns to the decoupled impedance.
-
-The third contribution is the geometric selection rule that applies once such
-a displacement is used deliberately. The tangential lever is chosen
-perpendicular to the commanded rotation axis, and its sign is selected so that
-the press-induced moment opposes the angular error. Case~H tested this rule at
-four tangent-plane directions using one common
-\mbox{\(40\,\mathrm{mm}\)} magnitude. At the two diagonal directions, the
-selected and fixed levers differed by only \mbox{\(0.07^\circ\)} and
-\mbox{\(0.05^\circ\)}, within the descriptive experimental scatter, because
-the fixed lever retained a component along the selected direction. About
-\mbox{\(t_2\)}, the selected lever changed the response from
-\mbox{\(-1.61^\circ\)} to \mbox{\(+4.43^\circ\)}, which is the
-separation that a fixed lever cannot reproduce.
+The third experimental result is the geometric lever-selection rule. The
+assisting tangential lever lies perpendicular to the commanded rotation
+direction, with its sign chosen so that the induced moment acts in the required
+alignment direction. Case~H evaluated this relation at four tangent-plane
+directions using one common \mbox{\(40\,\mathrm{mm}\)} magnitude. The diagonal
+selected-versus-fixed comparisons differed by \mbox{\(0.07^\circ\)} and
+\mbox{\(0.05^\circ\)}, while the \mbox{\(t_2\)} comparison separated
+\mbox{\(-1.61^\circ\)} from \mbox{\(+4.43^\circ\)}.
 
 Projected joint damping and two-point minimum-singular-value
-\mbox{\(\sigma_{\min}\)} conditioning were
-also implemented for the redundant seventh joint. Complementary Cartesian
-pose-hold trials evaluated both terms using an internally generated joint-torque
-disturbance equivalent to a point force at an offset point on link~3. The point
-was located \mbox{\(0.200\,\mathrm{m}\)} along the link-frame \mbox{\(z\)}-axis. The
-results describe the null-space response to this commanded disturbance.
+\mbox{\(\sigma_{\min}\)} conditioning were also implemented for the redundant
+seventh joint. Complementary Cartesian pose-hold trials evaluated both terms
+under an internally generated joint-torque disturbance equivalent to a point
+force at an offset point on link~3. These trials provide a separate assessment
+of the secondary null-space controller.
 
 \section{Thesis Structure}
 
