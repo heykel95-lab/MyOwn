@@ -290,13 +290,21 @@ plots cannot reintroduce an old name.
   required, add green, purple, cyan, and orange in that order. Grey is reserved
   for reference lines and excluded data. Continuous fields may use a continuous
   colour map where a categorical palette would misrepresent the quantity.
-- **A bar chart skips the red and pairs black with blue.** The order above is
-  written for curves, where red is a thin line. A filled red bar carries far
-  more ink than a red curve, reads as a warning beside the black bar next to
-  it, and prints heavy. The direction comparison and the frame comparison both
-  took `SERIES_COLOURS[2]` for their second series on this ground, and the
-  Case-A bars already used a blue fill. Beyond two bar series, continue with
-  yellow and then the extended order, still skipping red.
+- **A bar chart skips the red and pairs black with the bar blue.** The order
+  above is written for curves, where red is a thin line. A filled red bar
+  carries far more ink than a red curve, reads as a warning beside the black bar
+  next to it, and prints heavy. The direction comparison and the frame
+  comparison both dropped it on this ground. Beyond two bar series, continue
+  with yellow and then the extended order, still skipping red.
+
+  **The bar blue is `#B2B2FF`, and it is not the line-plot blue.** Bars are
+  filled, so they take the pale fill the Case-A bars established rather than the
+  saturated `SERIES_BLUE` a curve uses. That value was read off the compiled
+  page, not off the source: the Case-A `pgfplots` figure asks for
+  `blue!20!white`, which resolves to `#CCCCFF` on its own, and pgfplots
+  composites it to `#B2B2FF` on the page. `make_coc_figures.py` carries it as
+  `BAR_FILL_BLUE`. If a bar colour ever has to be matched again, sample the
+  rendered page rather than trusting the colour specification.
 - **Measured points use open markers with restrained connecting lines.** Use a
   white marker face, a coloured edge of approximately \(1.1\) points, and a
   line width of approximately \(1.25\) points. Marker shape repeats the series
