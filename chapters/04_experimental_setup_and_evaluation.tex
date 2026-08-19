@@ -619,23 +619,19 @@ unchanged. Only the parameter assigned to the corresponding case was varied.
 % ============================================================================
 \section{Surface-Contact Experimental Matrix}
 \label{sec:experimental_design}
-\label{sec:experimental_question}
 % ============================================================================
 
-The surface-contact experiments were arranged to establish whether one fixed
-centre of compliance can provide suitable alignment behaviour across initial
-angular misalignments that are unknown before contact. Case~A establishes the
-TCP-centred reference, where \(r_c=0\) and the point shift contributes no
-coupling moment. Cases~B and~C test whether the direction-dependent response
-can instead be controlled through the rotational or the translational
-stiffness. Case~D then examines whether a fixed non-zero tangential centre can
-provide a common response for both signs of the commanded orientation offset
-and for both principal surface directions. Cases~E to~G test further
-dependencies of a displaced centre: the frame in which its lever is defined,
-the direction of the displacement, and the commanded orientation-offset
-magnitude. Case~H closes the sequence by testing whether one fixed non-zero
-tangential lever reproduces the direction-selected rule across several
-tangent-plane rotation directions.
+The surface-contact experiments compare the TCP-centred condition with
+stiffness variations and displaced centres of compliance across a controlled
+set of initial angular misalignments. Case~A establishes the TCP-centred
+reference, where \(r_c=0\) and the point shift contributes no coupling moment.
+Cases~B and~C quantify the influence of rotational and cross-axis translational
+stiffness. Case~D evaluates the sign and direction dependence of a non-zero
+tangential centre across both principal surface tangents. Cases~E to~G examine
+the lever-definition frame, the displacement direction, and the commanded
+orientation-offset magnitude. Case~H extends the comparison to intermediate
+tangent-plane rotation directions and contrasts a direction-selected lever with
+one fixed lever.
 
 Table~\ref{tab:experimental_test_cases} lists the complete parameter variations and
 the shared reference conditions. The case letters are retained throughout
@@ -737,12 +733,13 @@ identified in the table and were not recorded or counted twice.
 In Case~F the centre of compliance was displaced along the tool axis. An axial
 displacement produces no tangential lever component when the tool axis is
 exactly parallel to the normal press direction. At finite inclination a small
-tangential component remains, so the case tests the sensitivity of a nominally
-weak direction rather than an expected effect.
+tangential component remains. Case~F therefore
+quantifies the residual influence of this nominally weak displacement
+direction.
 
 
 \subsection{Case-H Direction and Lever Definition}
-\label{subsec:impedance_around_pole}
+\label{subsec:case_h_lever_definition}
 
 The compliance-centre lever follows the convention
 
@@ -751,11 +748,11 @@ r_c=p_{\mathrm{TCP}}-p_c.
 \label{eq:experimental_compliance_lever}
 \end{equation}
 
-This is the shift of the impedance reference point. It is not the offset
-between the TCP and the selected tool point \(p_T\), which follows from the
-tool geometry of \Cref{subsec:calibrated_contact_geometry}. The two
-are separate quantities and are reported as such, as set out in
-\Cref{sec:coupled_pole_stiffness}.
+This quantity defines the shift of the impedance reference point. The
+selected tool-point offset \(p_T-p_{\mathrm{TCP}}\) follows from the physical
+tool geometry and is treated separately, as defined in
+\Cref{subsec:calibrated_contact_geometry} and
+\Cref{sec:centre_of_compliance}.
 
 A tool-fixed lever is constant in end-effector coordinates and therefore
 rotates in the base frame with the end effector. A surface-fixed lever is
@@ -824,18 +821,29 @@ three times.
 % ============================================================================
 
 The evaluation separates the controller response from geometric quantities
-that depend on the calibrated tool model. The signed set-up rotation is the
-primary comparison quantity for Cases~A to~H. The alignment angle, TCP-height
-classification, displacements, commanded wrench, and model-estimated normal
-load provide complementary information and are not treated as interchangeable
-measurements of the same physical quantity.
+that depend on the calibrated tool model. The primary comparison quantity for
+Cases~A to~H is the signed end-effector rotation during set-up,
+\(\Delta\theta_{\mathrm{set}}\). Supporting quantities are the alignment
+angle \(\theta_{\mathrm{align}}\), the TCP-height flatness classification,
+the selected tool-point displacement \(\Delta p_T\) and its magnitude
+\(s_T\), the TCP displacement \(\Delta p_{\mathrm{TCP}}\) and its magnitude
+\(s_{\mathrm{TCP}}\), the commanded Cartesian wrench
+\(F=[f^\top,m^\top]^\top\), and the model-estimated external normal-load
+magnitude \(F_n\). These quantities describe different aspects of the
+response and are not treated as interchangeable measurements of the same
+physical quantity.
 
 
 \subsection{Signed Set-Up Rotation}
 \label{subsec:experimental_supporting_metrics}
 
-The finite end-effector rotation between the clearance transition and the end
-of set-up is written as
+The primary response quantity measures how the end effector actually rotated
+between the clearance transition and the end of set-up. The relative
+end-effector rotation is
+\(R_{\mathrm{after}}R_{\mathrm{before}}^\top\). Using the finite-rotation
+relations introduced in \Cref{eq:angle_from_trace,eq:rotation_axis_from_matrix},
+its angle \(\phi_{\mathrm{set}}\) and unit axis \(u_{\mathrm{set}}\) define
+the rotation vector
 
 \begin{equation}
 \Delta\theta_{\mathrm{set}}
@@ -844,15 +852,10 @@ of set-up is written as
 \label{eq:contact_induced_rotation}
 \end{equation}
 
-Here \(\phi_{\mathrm{set}}\) and \(u_{\mathrm{set}}\) are the angle and unit
-axis of the relative rotation
-\(R_{\mathrm{after}}R_{\mathrm{before}}^\top\), evaluated using the same
-finite-rotation relations as in
-\Cref{eq:angle_from_trace,eq:rotation_axis_from_matrix}. The vector is expressed
-in the robot base frame.
-
-For comparison with the commanded surface directions, it is resolved in the
-surface frame:
+The vector \(\Delta\theta_{\mathrm{set}}\) is expressed in the robot base
+frame and contains both the magnitude and direction of the finite end-effector
+rotation during set-up. For comparison with the commanded surface directions,
+it is resolved in the surface frame:
 
 \begin{equation}
 \Delta\theta_{\mathrm{set}}^{S}
@@ -862,9 +865,10 @@ R_{\mathrm{surface}}^\top\Delta\theta_{\mathrm{set}}.
 \end{equation}
 
 The signed component along the commanded rotation direction is the primary
-controller-response metric. A positive value denotes rotation in the intended
-alignment direction. This quantity is calculated from end-effector motion and
-does not require the calibrated tool normal \(n_{\mathrm{EE}}\).
+controller-response metric. A positive value denotes end-effector rotation in
+the intended alignment direction. This quantity is calculated directly from
+the measured end-effector orientations and does not require the calibrated tool
+normal \(n_{\mathrm{EE}}\).
 
 
 \subsection{Alignment Angle and Flatness Classification}
@@ -882,19 +886,22 @@ n_T=R_{\mathrm{EE}}n_{\mathrm{EE}}.
 The alignment angle is
 
 \begin{equation}
-\theta_{\mathrm{align}}
+\theta_{\mathrm{align}}(t)
 =
-\cos^{-1}\!\left(-n_T^\top n_s\right).
+\cos^{-1}\!\left(-n_T(t)^\top n_s\right).
 \label{eq:contact_alignment_error_cross}
 \end{equation}
 
-The negative sign follows the flat target
-\(R_dn_{\mathrm{EE}}=-n_s\). The angle describes the tool alignment
-calculated from the end-effector pose under the assumption that the calibrated
-relation between the tool and end effector remains fixed. Relative motion in
-the tool mounting is not captured by this calculation.
+The negative sign follows the experimental flat target
+\(R_dn_{\mathrm{EE}}=-n_s\). The quantity
+\(\theta_{\mathrm{align}}(t)\geq0\) is an unsigned instantaneous geometric
+error: it states how far the reconstructed tool normal is from the flat target
+at time \(t\). It is calculated from the end-effector pose and the calibrated
+tool normal and therefore assumes that the calibrated relation between the tool
+and end effector remains fixed. Relative motion in the tool mounting is not
+captured by this calculation.
 
-The change over set-up is reported as
+The reduction of this unsigned alignment error over set-up is reported as
 
 \begin{equation}
 \Delta\theta_{\mathrm{align}}
@@ -905,9 +912,13 @@ The change over set-up is reported as
 \label{eq:alignment_error_improvement}
 \end{equation}
 
-so a positive value means that the calculated angular difference decreased.
-The before value is taken at the clearance transition and the after value at
-the end of set-up.
+where the before value is taken at the clearance transition and the after value
+at the end of set-up. A positive \(\Delta\theta_{\mathrm{align}}\) therefore
+means that the reconstructed angular difference from the flat target decreased.
+This quantity is a change of two unsigned alignment-error magnitudes; it is not
+the finite end-effector rotation itself. The latter is measured separately by
+\(\Delta\theta_{\mathrm{set}}\) in
+\Cref{eq:contact_induced_rotation}.
 
 The alignment angle carries no direction, and the case comparisons need one.
 The same geometric relation therefore also supplies a signed decomposition. Let
@@ -946,7 +957,7 @@ calibrated rectangular tool geometry when the tool face is flat. This
 classification uses the end-effector position and calibrated geometry; it is
 not a direct angular measurement of the physical tool face. The alignment
 angle and the TCP-height classification are therefore reported separately from
-the primary set-up rotation.
+the primary end-effector set-up rotation.
 
 
 \subsection{Displacement and Wrench Quantities}
@@ -1096,22 +1107,48 @@ u_f
 \label{eq:nullspace_disturbance_direction}
 \end{equation}
 
-The commanded force magnitude was \(F_d=20\,\mathrm{N}\). The force waveform
-and corresponding equivalent joint torque were
+The commanded force magnitude was \(F_d=20\,\mathrm{N}\). The virtual force
+and its equivalent joint torque were
 
 \begin{equation}
+f_d(t)=F_d s_d(t)u_f,
+\qquad
 \tau_{\mathrm{dist}}(t)
 =
-J_p(q(t))^\top f_d(t),
-\qquad
-f_d(t)=F_d s_d(t)u_f.
+J_p(q(t))^\top f_d(t).
 \label{eq:nullspace_automatic_disturbance}
 \end{equation}
 
-The scale \(s_d(t)\) increased from zero to one through a half-cosine from
-\(5\) to \(7\,\mathrm{s}\), remained at one until \(8\,\mathrm{s}\), and
-returned to zero during the following second. The equivalent disturbance was
-limited to
+Here \(u_f\) is the fixed unit force direction defined in
+\Cref{eq:nullspace_disturbance_direction}, and \(s_d(t)\in[0,1]\) is a
+dimensionless time-scaling function that switches the commanded virtual
+disturbance smoothly on and off. It was defined as
+
+\begin{equation}
+s_d(t)=
+\begin{cases}
+0,
+& t<5\,\mathrm{s},\\[1mm]
+\dfrac{1}{2}\left[
+1-\cos\!\left(\pi\dfrac{t-5\,\mathrm{s}}{2\,\mathrm{s}}\right)
+\right],
+& 5\,\mathrm{s}\leq t<7\,\mathrm{s},\\[3mm]
+1,
+& 7\,\mathrm{s}\leq t<8\,\mathrm{s},\\[1mm]
+\dfrac{1}{2}\left[
+1+\cos\!\left(\pi\dfrac{t-8\,\mathrm{s}}{1\,\mathrm{s}}\right)
+\right],
+& 8\,\mathrm{s}\leq t<9\,\mathrm{s},\\[3mm]
+0,
+& t\geq9\,\mathrm{s}.
+\end{cases}
+\label{eq:nullspace_disturbance_scale}
+\end{equation}
+
+Thus the disturbance increased smoothly from zero to the full commanded
+magnitude between \(5\) and \(7\,\mathrm{s}\), remained at full magnitude
+until \(8\,\mathrm{s}\), and decreased smoothly to zero by
+\(9\,\mathrm{s}\). The equivalent disturbance torque was limited to
 
 \[
 \lVert\tau_{\mathrm{dist}}\rVert_2\leq3\,\mathrm{N\,m}.
@@ -1133,65 +1170,124 @@ disturbance had been removed.
 
 \subsection{Evaluation Quantities}
 
-The predefined Cartesian task-retention criterion was a peak position-error
-norm below \(2\,\mathrm{mm}\).
+All quantities in this subsection are evaluated over the interval in which the
+internally commanded virtual disturbance acts,
+\(t\in[5,9]\,\mathrm{s}\). The first criterion checks whether the primary
+Cartesian pose-hold task remains approximately unchanged while the disturbance
+and the selected null-space law act. The predefined task-retention criterion is
 
-Two distinct redundant-motion quantities were calculated over the disturbance
-interval. The cumulative projected null-space motion \(E_N\) integrates the
-norm of the projected joint velocity,
+\begin{equation}
+\max_{5\,\mathrm{s}\leq t\leq9\,\mathrm{s}}
+\lVert e_p(t)\rVert_2
+<2\,\mathrm{mm},
+\label{eq:nullspace_cartesian_retention_criterion}
+\end{equation}
+
+where \(e_p(t)\) is the Cartesian position-error vector. A trial therefore
+satisfies the criterion when the TCP position-error norm remains below
+\(2\,\mathrm{mm}\) throughout the commanded disturbance interval.
+
+The redundant joint motion is evaluated from the projected joint velocity
+
+\begin{equation}
+\dot q_{\mathrm{null}}(t)
+=
+N_q(q(t))\dot q(t),
+\label{eq:nullspace_projected_joint_velocity_metric}
+\end{equation}
+
+where \(N_q(q)\) is the kinematic null-space projector. The vector
+\(\dot q_{\mathrm{null}}\in\mathbb{R}^7\) has units of
+\(\mathrm{rad/s}\) and represents the component of the measured joint
+velocity that lies in the instantaneous kinematic null space.
+
+Two complementary quantities are formed from this projected velocity. The
+first is the cumulative projected null-space motion
 
 \begin{equation}
 E_N
 =
 \int_{5\,\mathrm{s}}^{9\,\mathrm{s}}
-\lVert N_q(q)\dot q\rVert_2\,\mathrm{d}t,
+\lVert\dot q_{\mathrm{null}}(t)\rVert_2\,\mathrm{d}t.
 \label{eq:nullspace_excursion_metric}
 \end{equation}
 
-and the result was converted to degrees for reporting. \(E_N\) is a
-path-length quantity: it states how much redundant motion occurred, and it
-increases whether that motion advances in one direction or alternates about a
-configuration.
+Because the norm is taken before integration, motion in opposite directions
+contributes positively in both cases. \(E_N\) therefore measures the total
+amount of redundant joint motion that occurred during the commanded disturbance
+interval. Its unit is radians and the reported values are converted to degrees.
+For example, motion of \(+5^\circ\) along a redundant direction followed by
+\(-5^\circ\) back along the same direction contributes approximately
+\(10^\circ\) to \(E_N\), even though the final redundant configuration can
+be close to its starting value. In this sense \(E_N\) is a joint-space
+path-length quantity, not a torque or energy measure.
 
-A complementary signed measure of the net redundant displacement follows from
-the same integrand without the magnitude. The net projected joint
-displacement over the interval and its signed component along a fixed redundant
-comparison direction \(v_{\mathrm{ref}}\) are
+The second quantity retains the direction of the motion. Integrating the
+projected velocity without taking its norm gives the accumulated projected
+joint displacement
 
 \begin{equation}
 \Delta q_{\mathrm{null}}
 =
 \int_{5\,\mathrm{s}}^{9\,\mathrm{s}}
-N_q(q)\dot q\,\mathrm{d}t,
-\qquad
+\dot q_{\mathrm{null}}(t)\,\mathrm{d}t
+=
+\int_{5\,\mathrm{s}}^{9\,\mathrm{s}}
+N_q(q(t))\dot q(t)\,\mathrm{d}t.
+\label{eq:nullspace_net_joint_displacement}
+\end{equation}
+
+The vector \(\Delta q_{\mathrm{null}}\in\mathbb{R}^7\) has units of radians.
+It describes the net accumulated projected joint motion during the disturbance
+interval, so motion in opposite directions can cancel. It is not an integrated
+torque: the integrated quantity is joint velocity.
+
+A common direction is introduced to express this seven-dimensional net
+displacement by one signed scalar. Let \(\Delta q_{\mathrm{null},0}\) denote
+the reference net projected displacement obtained from the condition without
+null-space torque. The corresponding unit direction is
+
+\begin{equation}
+v_{\mathrm{ref}}
+=
+\frac{\Delta q_{\mathrm{null},0}}
+{\lVert\Delta q_{\mathrm{null},0}\rVert_2}.
+\label{eq:nullspace_reference_direction_metric}
+\end{equation}
+
+Thus \(v_{\mathrm{ref}}\) represents the redundant joint-space direction in
+which the commanded virtual disturbance moves the robot in the reference
+condition without a secondary null-space torque. The same direction is used
+for all tested null-space settings. Their signed net displacement along this
+common direction is
+
+\begin{equation}
 \Delta\eta_{\mathrm{dist}}
 =
-v_{\mathrm{ref}}^\top\Delta q_{\mathrm{null}},
+v_{\mathrm{ref}}^\top\Delta q_{\mathrm{null}}.
 \label{eq:nullspace_net_displacement_metric}
 \end{equation}
 
-with \(\Delta\eta_{\mathrm{dist}}\) the net redundant displacement, which
-carries a sign. It is a signed projection of the accumulated projected joint
-motion onto one redundant direction, and not an exact nonlinear
-redundant-coordinate displacement: the projector is configuration dependent,
-while \(v_{\mathrm{ref}}\) is held fixed over the interval. At full row rank
-the null space is one-dimensional, so every
-\(\Delta q_{\mathrm{null}}\) lies along \(\pm v_7\) and one direction
-resolves all four settings onto a common signed axis. The comparison direction
-\(v_{\mathrm{ref}}\) was taken as the unit vector along \(\Delta
-q_{\mathrm{null}}\) of the setting without null-space torque, in which the
-disturbance displaces the redundant configuration furthest. It was obtained
-from that condition because the recorded null direction is
-written only while the conditioning term is selecting a sign and is therefore
-absent from the settings where that term is inactive.
+A positive \(\Delta\eta_{\mathrm{dist}}\) denotes net motion in the same
+direction as the reference disturbance response, a negative value denotes net
+motion in the opposite direction, and a value near zero indicates little
+remaining net displacement along that direction. The quantity is a signed
+projection of the accumulated projected joint motion rather than an exact
+nonlinear redundant-coordinate displacement, because \(N_q(q)\) changes with
+the robot configuration while \(v_{\mathrm{ref}}\) is held fixed. At full
+row rank the Panda has a one-dimensional instantaneous null space, so this
+common direction provides a meaningful signed comparison of the four tested
+settings.
 
-The two quantities can differ by orders of magnitude for the same trial. A
-configuration that moves repeatedly in alternating directions accumulates
-\(E_N\) while ending close to where it started, so \(E_N\) states how much
-redundant motion occurred and \(\Delta\eta_{\mathrm{dist}}\) how far the
-disturbance moved the configuration.
+The two redundant-motion metrics therefore answer different questions:
+\(E_N\) measures how much redundant joint motion occurred in total, whereas
+\(\Delta\eta_{\mathrm{dist}}\) measures how much net displacement remained
+along the common reference disturbance direction. A trajectory can consequently
+have a comparatively large \(E_N\) while ending close to its starting
+redundant configuration and therefore having a small
+\(\Delta\eta_{\mathrm{dist}}\).
 
 Singular-value conditioning was evaluated from the change in
-\(\sigma_{\min}\) across the disturbance interval, and Cartesian task
+\(\sigma_{\min}\) across the same disturbance interval, and Cartesian task
 retention from the peak position-error norm. The corresponding results are
 presented in \Cref{ch:results_discussion}.
