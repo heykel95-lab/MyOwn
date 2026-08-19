@@ -319,6 +319,21 @@ plots cannot reintroduce an old name.
   scientifically material exclusion is documented in the accompanying text or
   table rather than added as a diagnostic series to each figure.
 - **No internal title**, for the same reason as a drawn diagram.
+- **A multi-panel figure labels its panels `(a)`, `(b)`, … and the body text
+  refers to them by those labels.** This is not the internal title the rule
+  above bans: a title restates the caption, whereas a panel label is the only
+  way the text can point at one half of a figure. Set it with
+  `ax.set_title("(a)")` in matplotlib and `title={\footnotesize (a) …}` in
+  `pgfplots`, where the Case-D panels already carry a short description after
+  the letter. The caption then names what the figure shows and stops; what each
+  panel carries is a sentence in the text, not a second caption paragraph.
+  Figure D.2 was rewritten this way — its caption had grown to four lines
+  describing both panels, which is exactly the material the body text is for.
+- **An axis label names which quantity is plotted, not its kind.** `Angle [°]`
+  was the y-axis of Figure D.2's first panel, where both curves are the
+  alignment angle obtained two different ways, so the label left the reader to
+  guess. It now reads `Alignment angle [°]` and the legend separates the two
+  routes to it.
 
 ## Checking a figure
 
