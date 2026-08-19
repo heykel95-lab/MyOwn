@@ -1,55 +1,69 @@
-% Plan view of the Case-C direction rule, seen along the inward surface normal.
+% Plan view of the Case-H direction rule, seen along the inward surface normal.
 % One panel per commanded rotation direction. Each panel carries the surface
-% tangents, the commanded rotation direction, and the tangential lever selected by
-% eq:experimental_general_lever_rule. The lever is perpendicular to the
-% rotation axis, as recorded by the right-angle marker at the origin.
+% tangents, the commanded rotation vector theta_tilt, and the tangential lever
+% selected by eq:experimental_general_lever_rule. The lever is perpendicular to
+% the commanded rotation, as recorded by the right-angle marker at the origin.
 %
-% The four rotation axes are t_1, -45 degrees, +45 degrees and t_2. The selected
-% lever is the perpendicular direction given by
-% r_c,t = rho (theta_t2 t1 - theta_t1 t2), matching the vectors in
-% tab:experimental_case_c_vectors.
+% The commanded direction is drawn as a single arrow rather than a two-headed
+% axis, because the rule depends on its sense and not only on its line, and the
+% arrowed arc gives the in-plane angle measured from t_1. All four commands
+% carry the same magnitude; only the direction changes between panels.
 %
-% Uses only tikz + arrows.meta, which config/packages.tex loads. Colour follows
-% the established meaning: orange for what a parameter selects (the lever),
-% grey for the frame and the commanded rotation axis.
+% Palette per FIGURE_STYLE.md: black for the frame, red for the command, blue
+% for the compliance-centre lever, matching r_c in the moment-bookkeeping
+% figure. Solid lines only, no grey and no white.
 \begin{tikzpicture}[
     font=\small,
-    ax/.style={-{Latex[length=1.8mm]}, gray!60!black},
-    rotax/.style={{Latex[length=1.8mm]}-{Latex[length=1.8mm]}, densely dashed,
-                   gray!55!black},
-    lev/.style={-{Latex[length=2.2mm]}, thick, orange!75!black},
+    ax/.style={-{Latex[length=1.8mm]}, black},
+    cmd/.style={-{Latex[length=2.2mm]}, thick, red},
+    swp/.style={-{Latex[length=1.6mm]}, red},
+    lev/.style={-{Latex[length=2.2mm]}, thick, blue},
     lbl/.style={font=\footnotesize, inner sep=1.8pt},
   ]
 
-\foreach \dx/\ua/\name in {%
-    0/0/{about $t_1$},
-    3.4/-45/{$-45^\circ$ from $t_1$},
-    6.8/45/{$+45^\circ$ from $t_1$},
-    10.2/90/{about $t_2$}}
+% The angle label sits at \arad. Only the -45 panel needs a larger radius: its
+% arc bisector runs just under the +t_1 axis, where the t_1 label already sits.
+\foreach \dx/\ua/\arc/\arad/\angtext/\name in {%
+    0/0/0/0.95/{}/{about $t_1$},
+    3.4/-45/1/1.25/{$-45^\circ$}/{$-45^\circ$ from $t_1$},
+    6.8/45/1/0.95/{$+45^\circ$}/{$+45^\circ$ from $t_1$},
+    10.2/90/1/0.95/{$+90^\circ$}/{about $t_2$}}
 {
   \begin{scope}[xshift=\dx cm]
     \pgfmathsetmacro{\ra}{\ua-90}
+    \pgfmathsetmacro{\amid}{\ua/2}
+
+    % ---- commanded rotation, drawn in its own sense ---------------------
+    % Drawn before the tangents so that in the two panels where the command
+    % lies along a tangent, the thin black axis stays visible on top of it.
+    \draw[cmd] (0,0) -- (\ua:1.15);
+    \node[lbl, red] at (\ua:1.42) {$\theta_{\mathrm{tilt}}$};
 
     % ---- surface tangents ----------------------------------------------
-    \draw[ax] (0,0) -- (0.95,0) node[lbl, right] {$t_1$};
-    \draw[ax] (0,0) -- (0,0.95) node[lbl, above] {$t_2$};
+    % The tangent labels sit below and to the left of their arrow tips, so
+    % that in the panels where the command lies along a tangent they clear the
+    % theta_tilt label instead of sitting on it.
+    \draw[ax] (0,0) -- (0.80,0) node[lbl, below] {$t_1$};
+    \draw[ax] (0,0) -- (0,0.80) node[lbl, left] {$t_2$};
 
-    % ---- commanded rotation axis, drawn through the origin in both senses
-    % The label sits on the far end so it does not crowd the lever label of
-    % the neighbouring panel.
-    \draw[rotax] (\ua+180:1.08) -- (\ua:1.08);
-    \node[lbl, gray!55!black] at (\ua+180:1.32) {rotation direction};
+    % ---- arc from t_1 to the commanded direction, with its angle --------
+    % The angle is set well outside the arc radius so the value reads clear of
+    % the arc itself.
+    \ifnum\arc=1
+      \draw[swp] (0.46,0) arc (0:\ua:0.46);
+      \node[lbl, red] at (\amid:\arad) {\angtext};
+    \fi
 
     % ---- selected tangential lever --------------------------------------
-    \draw[lev] (0,0) -- (\ra:1.08);
-    \node[lbl, orange!65!black] at (\ra:1.30) {$r_{c,t}$};
+    \draw[lev] (0,0) -- (\ra:1.10);
+    \node[lbl, blue] at (\ra:1.34) {$r_{c,t}$};
 
     % ---- right angle between the two ------------------------------------
     \begin{scope}[rotate=\ra]
-      \draw[gray!60, thin] (0.17,0) -- (0.17,0.17) -- (0,0.17);
+      \draw[black, thin] (0.17,0) -- (0.17,0.17) -- (0,0.17);
     \end{scope}
 
-    \node[lbl] at (0,-1.62) {\name};
+    \node[lbl] at (0,-1.95) {\name};
   \end{scope}
 }
 

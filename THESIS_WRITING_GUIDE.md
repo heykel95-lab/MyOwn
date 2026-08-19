@@ -523,6 +523,45 @@ therefore a rotational sense for the coupling moment. Name that instead:
 The ban covers running text, captions and headings alike. Literal source
 identifiers keep their spelling.
 
+**`sweep` is not used for a set of tested parameter values.** It is too vague:
+it names neither the quantity that was varied nor the values it took, and it
+carries an impression of a continuous traverse where the campaign tested a
+handful of discrete settings. Name the quantity and the positions instead:
+
+| Was | Now |
+|---|---|
+| Case~D is the main compliance-centre sweep | Case~D is the main compliance-centre variation |
+| would appear as one column of the sweep | would appear as one column of the table |
+| The preceding sweep establishes the final dependence | The preceding lever positions establish the final dependence |
+| comparable with the tangential sweep of Case~D | comparable with the tangential displacement of Case~D |
+| The tool-axis sweep is flat across its whole range | The tool-axis response is flat across the whole tested range |
+| the per-setting spread of this sweep | the per-setting spread of these lever positions |
+
+**The grinding sweep keeps the word**, because there it names a physical
+oscillating motion of a definite amplitude and frequency rather than a set of
+parameter values, and it is the name the controller parameter carries. Literal
+identifiers such as `grind_sweep_enabled` keep their spelling in listings and
+in the parameter appendix.
+
+**A run is recorded or it is not; it is never `newly recorded`.** The thesis
+does not sort its measurements by when they were captured, so `newly recorded`,
+`already recorded`, `previously recorded` and `re-recorded` all invite a reader
+to look for an ordering the thesis never reports, and they read as an account of
+how the campaign was assembled rather than of what it measured. Say `recorded`,
+or say nothing about recording at all:
+
+| Was | Now |
+|---|---|
+| the five newly recorded Case-H settings | the five Case-H settings |
+| the three scheduled repetitions for each newly recorded setting | the three scheduled repetitions of each setting |
+| the \(5\,\mathrm{N\,m/rad}\) condition … is not a separate measurement | the \(5\,\mathrm{N\,m/rad}\) condition is the corresponding zero-lever reference of Case~A |
+
+The same applies to the run-count bookkeeping. Where one case reuses a
+condition from an earlier case, state the relation between the cases — `a
+condition that a case shares with an earlier one is counted with that earlier
+case` — and not the recording history that produced it. Never write `not
+counted again`, `not recorded twice`, or `an additional run`.
+
 Do not build a name out of the state a quantity happens to be in. The term
 `frozen` is not used in thesis prose. State when a quantity is selected and
 that it is held constant, then use its ordinary technical name. For example,
