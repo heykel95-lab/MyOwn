@@ -2,23 +2,26 @@
 % is the commanded side: the rotational impedance gives m_0 whatever the centre
 % of compliance is, and a non-zero r_c adds the coupling term. Panel (b) is the
 % observed side: the model-estimated external force, represented at the selected
-% tool point, contributes m_{r_T} to the estimated external moment. The lever
-% that plays no part in a panel is drawn faint, which is what the figure is for.
+% tool point, contributes m_{r_T} to the estimated external moment.
+% Each lever keeps one colour in both panels, blue for r_c and green for r_T,
+% and the lever that plays no part in a panel is drawn thin rather than broken:
+% every line here is solid, and no line is grey or white.
 \begin{tikzpicture}[
     font=\small,
-    tool/.style={draw=gray!70!black, fill=white},
-    lev/.style={-{Latex[length=2mm]}, gray!55!black, thick},
-    dead/.style={-{Latex[length=2mm]}, gray!30, thick, densely dotted},
-    frc/.style={-{Latex[length=2.2mm]}, black, very thick},
-    mom/.style={-{Latex[length=2mm]}, gray!70!black, thick},
-    mom0/.style={-{Latex[length=2mm]}, gray!45, thick},
+    tool/.style={draw=black, thick},
+    levc/.style={-{Latex[length=2mm]}, blue, very thick},
+    levt/.style={-{Latex[length=2mm]}, green!60!black, very thick},
+    levcoff/.style={-{Latex[length=1.6mm]}, blue, thin},
+    levtoff/.style={-{Latex[length=1.6mm]}, green!60!black, thin},
+    frc/.style={-{Latex[length=2.2mm]}, red, very thick},
+    mom/.style={-{Latex[length=2mm]}, black, thick},
     lbl/.style={font=\small, inner sep=2pt},
     sub/.style={font=\footnotesize, inner sep=2pt},
   ]
 
 % =================== (a) commanded side ====================================
 \begin{scope}
-  \draw[gray!70!black] (0.3,0) -- (5.7,0);
+  \draw[black] (0.3,0) -- (5.7,0);
   \node[sub, anchor=west] at (4.75,-0.34) {surface};
 
   \begin{scope}[rotate around={10:(1.50,0.55)}]
@@ -33,18 +36,19 @@
   \node[lbl, right] at (5.42,2.25) {$p_c$};
 
   % r_c acts here; r_T does not
-  \draw[dead] (2.83,1.09) -- (1.50,0.55);
-  \node[sub, below, gray!45] at (2.16,0.72) {$r_T$};
-  \draw[lev] (5.30,2.25) -- (2.83,1.09);
-  \node[sub, anchor=north] at (4.34,1.62) {$r_c$};
+  \draw[levtoff] (2.83,1.09) -- (1.50,0.55);
+  \node[sub, below, green!60!black] at (2.16,0.72) {$r_T$};
+  \draw[levc] (5.30,2.25) -- (2.83,1.09);
+  \node[sub, anchor=north, blue] at (4.34,1.62) {$r_c$};
 
   % the commanded translational force, applied at the TCP
   \draw[frc] (2.83,2.30) -- (2.83,1.26);
-  \node[lbl, right] at (2.94,2.10) {$f$};
+  \node[lbl, right, red] at (2.94,2.10) {$f$};
 
   % the coupling moment the shifted impedance adds; m_0 needs no lever and is
   % therefore named in the annotation rather than drawn
   \draw[mom] (3.36,0.95) arc (-15:-115:0.55);
+  \node[sub, anchor=west] at (3.42,0.60) {$m_{c,\mathrm{trans}}$};
 
   \node[sub, anchor=west] at (6.40,1.42) {commanded:};
   \node[sub, anchor=west] at (6.40,1.00)
@@ -56,7 +60,7 @@
 
 % =================== (b) observed side =====================================
 \begin{scope}[yshift=-4.3cm]
-  \draw[gray!70!black] (0.3,0) -- (5.7,0);
+  \draw[black] (0.3,0) -- (5.7,0);
   \node[sub, anchor=west] at (4.75,-0.34) {surface};
 
   \begin{scope}[rotate around={10:(1.50,0.55)}]
@@ -71,18 +75,19 @@
   \node[lbl, right] at (5.42,2.25) {$p_c$};
 
   % r_T acts here; r_c does not
-  \draw[lev] (2.83,1.09) -- (1.50,0.55);
-  \node[sub, below] at (2.16,0.72) {$r_T$};
-  \draw[dead] (5.30,2.25) -- (2.83,1.09);
-  \node[sub, gray!45, anchor=north] at (4.34,1.62) {$r_c$};
+  \draw[levt] (2.83,1.09) -- (1.50,0.55);
+  \node[sub, below, green!60!black] at (2.16,0.72) {$r_T$};
+  \draw[levcoff] (5.30,2.25) -- (2.83,1.09);
+  \node[sub, anchor=north, blue] at (4.34,1.62) {$r_c$};
 
   % the model-estimated external force, represented at the tool point. It acts
   % into the surface: the logged sign convention gives n_s^T df_ext < 0, so the
   % arrow points along -n_s, the same sense as the commanded press in panel (a).
   \draw[frc] (1.22,1.85) -- (1.50,0.55);
-  \node[lbl, above] at (1.18,1.88) {$\Delta\hat f_{\mathrm{ext}}$};
+  \node[lbl, above, red] at (1.18,1.88) {$\Delta\hat f_{\mathrm{ext}}$};
 
   \draw[mom] (3.40,1.46) arc (25:135:0.60);
+  \node[sub, above] at (2.98,1.88) {$m_{r_T}$};
 
   \node[sub, anchor=west] at (6.40,1.35) {observed:};
   \node[sub, anchor=west] at (6.40,0.90)

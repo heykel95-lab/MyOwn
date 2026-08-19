@@ -47,6 +47,35 @@ orange for what a parameter selects, grey for what is computed, red reserved
 for a stop or an abort path. A figure that uses colour decoratively is harder
 to read in print, where the fills are close in tone.
 
+**The drawn palette is black, red, blue and green, with yellow only if a fifth
+is unavoidable.** This was settled on the moment-bookkeeping figure and applies
+to every hand-drawn diagram, not only to plots. Three consequences follow, and
+they override the greyscale conventions above wherever the two disagree:
+
+- **Grey is not a drawing colour.** A quantity that is present but inactive in
+  one panel is drawn thin in its own colour, not faint grey. Grey remains
+  available only for reference lines and excluded data in plots.
+- **White is not a colour either.** Do not fill a shape white to hide what
+  passes behind it; order the drawing so nothing needs hiding, and leave the
+  shape unfilled.
+- **Every line is solid**, in diagrams as in plots. A dashed or dotted line
+  reads as a different kind of quantity — a model, a bound, a projection — so
+  it must not be spent on marking one of two otherwise identical objects.
+  Distinguish by colour first and by line weight second.
+
+**One quantity, one colour, across every panel of a figure.** In the
+moment-bookkeeping figure \(r_c\) is blue and \(r_T\) is green in both panels,
+which is what lets a reader see that the same two levers are being shown twice
+with different ones acting. Give the label the colour of the thing it names.
+
+**Pure `green` is too light to print on white.** Use `green!60!black`, which
+still reads as green beside blue and red. The same caution applies to `yellow`
+if a fifth colour is ever needed.
+
+**A drawn moment carries its symbol.** An arc with no label states that a
+moment exists but not which one, and the reader cannot match it to the relation
+in the annotation. Label the arc with the symbol the surrounding text uses.
+
 ### Routing
 
 **Orthogonal only.** A diagonal line in a block diagram reads as a different

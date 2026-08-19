@@ -10,15 +10,82 @@ referenced from here rather than repeated.
 completes it removes the entry in the same turn, so that no later session — and
 no other agent — repeats work that is already in the document.
 
-## For the lab machine, 2026-08-19
+## For the lab machine, 2026-08-20
 
-Only one item genuinely needs the other machine. An earlier session listed far
-more than this and was wrong: it treated the figure work as a data problem when
-almost all of it is a drawing problem. **Chapter 5 already reports every
-null-space value with its standard deviation**, and figures in this thesis are
-routinely drawn from tabulated means written into the source, which is how
-`make_coc_figures.py` draws the Case-H comparison. Do not go looking for logs
-before checking whether the number is already in the chapter.
+### Complete the run archive so every reported run carries its full record
+
+**Goal.** Every run behind a reported number has a complete, archived record:
+the logged per-cycle CSV, `terminal.log`, `params_effective/`, and `meta.txt`.
+At present the archived directories that have been inspected carry the metadata
+but **not** the CSV, so no reported contact figure can be regenerated away from
+the lab machine.
+
+**What the thesis claims, and therefore what the archive has to support.**
+\(171\) surface-contact runs were scheduled over \(57\) settings at three
+repetitions each; \(170\) are analysed. Twelve pose-hold trials cover four
+null-space settings at three repetitions. The per-case split reconciles to the
+\(57\) as follows, and this is the checklist to audit directory by directory:
+
+| Case | Settings | Runs | Tested values behind the settings |
+|---|---|---|---|
+| A | 5 | 15 | No lever at none and \(\pm10^\circ\) about \(t_1\) or \(t_2\) |
+| B | 4 | 12 | \(K_R=15\) and \(50\,\mathrm{N\,m/rad}\), for a \(t_1\) and a \(t_2\) command |
+| C | 6 | 18 | \(K_p=300\) and \(800\,\mathrm{N/m}\) per axis, plus one combined \(300\,\mathrm{N/m}\) with \(K_R=50\,\mathrm{N\,m/rad}\) per axis |
+| D | 24 | 72 | Six non-zero lever positions \(-40,-20,-10,+10,+20,+40\,\mathrm{mm}\) at each of the four \(\pm10^\circ\) commands; the \(0\,\mathrm{mm}\) column is Case A |
+| E | 3 | 9 | Surface-frame lever at none and \(+10^\circ\); tool-frame at none. The \(+10^\circ\) tool-frame setting is Case D |
+| F | 6 | 18 | \(-40,-20,-10,+10,+20,+40\,\mathrm{mm}\) along the tool axis; \(0\,\mathrm{mm}\) is Case D |
+| G | 4 | 12 | \(0\) and \(+40\,\mathrm{mm}\) at \(+5^\circ\) about \(t_1\) and about \(t_2\) |
+| H | 5 | 15 | Both diagonals with the selected and with the fixed lever, and \(t_2\) with the fixed lever |
+| Null-space | 4 | 12 | Baseline, \(d_{\mathrm{null}}=2\), \(k_\sigma=1.5\), \(k_\sigma=2.0\) |
+
+**The one gap the thesis states but cannot name.** Section 4.4.4 records that
+one run of one **Case-D** setting was not recorded completely and was excluded,
+leaving that setting with two usable repetitions against three everywhere else.
+**Which** Case-D setting is not stated anywhere in the thesis, and cannot be
+determined from this machine. Find it — it is the Case-D run directory holding
+two usable repetitions rather than three — and then either re-record the third
+repetition under the identical parameter set, or note the setting explicitly so
+the asymmetry is traceable. If it is re-recorded, the counts in Section 4.4.4
+become \(171\) analysed of \(171\) and that sentence must be updated with them.
+
+**Confirmed missing, from the inspection done in an earlier session.**
+
+- No per-cycle CSV in `MAIN_F7_baseline_20N_200mm/r01/`, and by extension the
+  other three null-space conditions. Panel (a) of Figure 5.10 needs the full
+  time history, so the summary alone is not enough.
+- No per-cycle CSV in `P2_t1_pos_m040/r01/` or `P2_t1_pos_p040/r01/`, which
+  Figure D.2 needs.
+- `MyController/experiments/derived/metrics.csv` has \(240\) rows and not one
+  `P2_` row, so it reproduces no reported contact figure.
+
+**Still to be audited, because it was never checked.** Whether the remaining
+\(55\) contact settings and the other eleven pose-hold trials carry their CSV.
+Do this as a sweep over `experiments/results/` rather than per figure, since
+the same absence blocked three separate figures.
+
+**Two identifier questions to settle in the same pass.**
+
+- The null-space runs are archived as `MAIN_F7_*` and `MAIN_F8_*` while
+  `make_nullspace_figure.py` expects `MAIN_NS7_*` and `MAIN_NS8_*`. Confirm the
+  two sets are the same four conditions before renaming either.
+- Whether **every** pose-hold trial ran to \(18\,\mathrm{s}\). The
+  \(5\)--\(9\,\mathrm{s}\) disturbance interval is already confirmed from
+  `terminal.log`; the trial end is not. Do not write a
+  \(9\)--\(18\,\mathrm{s}\) observation interval until checked.
+
+Push whatever is recovered, per the section below.
+
+### The figure work is mostly a drawing problem, not a data problem
+
+The archive completion above is the item that genuinely needs the lab machine.
+The three figure items below are a different matter, and an earlier session got
+them wrong by treating all of them as blocked on data. **Chapter 5 already
+reports every null-space value with its standard deviation**, and figures in
+this thesis are routinely drawn from tabulated means written into the source,
+which is how `make_coc_figures.py` draws the Case-H comparison. Do not go
+looking for logs before checking whether the number is already in the chapter.
+Their source edits can and should be made here first; only the regeneration
+needs the data.
 
 ### Three figure items, all blocked on the same missing CSV
 
