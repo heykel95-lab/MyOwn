@@ -112,17 +112,17 @@ coordinates are not to be published. `MyOwn/.gitignore` blocks no CSV, so this
 repository is also a possible home, but then the scripts' `HERE/../experiments`
 resolution means the data has to sit at `code/python/experiments/`.
 
-### Two figure-label edits, still open
+### One figure-label edit, still open
 
-Both inputs are on this machine. The scripts resolve their data as
-`HERE/../experiments`, so run each beside its data rather than copying the
-archive into this repository: `make_nullspace_figure.py` against
-`MyController/experiments/`, and `make_coc_figures.py` against
-`Thesis_Final_Control/experiments/`.
+Its input is on this machine. `make_coc_figures.py` resolves its data as
+`HERE/../experiments`, so run it beside `Thesis_Final_Control/experiments/`
+rather than copying the archive into this repository.
 
-A third entry here covered the axis labels of `plot_setup_diagnostics.py` and
-is gone with the appendix section that included its figure. The script and
-`figures/MAIN_D_diagnostics.pdf` stay; see `code/python/figures/README.md`.
+Two entries that stood here are gone. The `plot_setup_diagnostics.py` axis
+labels went with the appendix section that included their figure, and the
+Figure 5.10 y-axis was corrected in the pass that put the thesis symbols on
+every plot axis; that figure now reads
+\(\Delta\sigma_{\min,\mathrm{dist}}\) and \(E_N\).
 
 **Make the source edits below first, then regenerate and copy the PDF back.**
 Line numbers were checked on 2026-08-19.
@@ -134,27 +134,7 @@ level; and `sed -i 's/\\cref{/\\Cref{/g'`, which **reported success and changed
 nothing**. Use a file-based script written by an editor, or an editing tool,
 and verify by re-reading the file.
 
-#### 1. Figure 5.10 y-axis — `code/python/figures/make_nullspace_figure.py`
-
-Panel (b)'s y-axis reads `Final singular-value change`, which is vague and does
-not use the symbol the thesis now defines. The caption is already correct and
-the figure is honest as it stands, so this is polish rather than a fault.
-
-    line 268:  label=r"Final $\Delta\sigma_{\min}$ (mean $\pm$ SD)"
-        ->     label=r"$\Delta\sigma_{\min,\mathrm{dist}}$ (mean $\pm$ SD)"
-
-    line 274:  ax.set_ylabel(r"Final singular-value change $\Delta\sigma_{\min}$ [-]")
-        ->     ax.set_ylabel(r"Change in $\sigma_{\min}$ over disturbance "
-                             r"interval $\Delta\sigma_{\min,\mathrm{dist}}$ [-]")
-
-**Line 312 repeats the same label string** in the legend list and must change
-with line 268, or the legend and the series will disagree.
-
-Keep the `[-]` unit marker rather than writing `[m/rad]`: the symbol list now
-states that a singular value of the mixed geometric Jacobian carries no single
-physical unit and is a relative indicator under one fixed representation.
-
-#### 2. Legends of Figures 5.2, 5.3 and D.1 — `code/python/figures/make_coc_figures.py`
+#### The remaining item: legends of Figures 5.2, 5.3 and D.1 — `code/python/figures/make_coc_figures.py`
 
 These read `initial $-9.31^\circ$ about $t_1$` and similar. They are no longer
 wrong, because the signed set-up-entry deviation is now defined in Section 4.5,

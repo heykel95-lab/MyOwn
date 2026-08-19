@@ -334,6 +334,25 @@ plots cannot reintroduce an old name.
   alignment angle obtained two different ways, so the label left the reader to
   guess. It now reads `Alignment angle [°]` and the legend separates the two
   routes to it.
+- **An axis carries the symbol the symbol list assigns to the quantity.** A
+  reader who has met \(d_{c,t_2}\) in the text should not have to work out that
+  `Centre position along t_2` is the same thing. Where a symbol exists, the
+  axis is that symbol and its unit; a descriptive phrase may stay in front of it
+  where the symbol alone would be cryptic, as in
+  `Cumulative projected null-space motion \(E_N\) [°]`. The pass that applied
+  this set the axes to \(d_{c,t_1}\), \(d_{c,t_2}\),
+  \(\Delta\theta_{\mathrm{set},t_i}\), \(\phi_{\mathrm{tilt}}\),
+  \(\theta_{\mathrm{align}}\), \(\phi_{\mathrm{set}}\),
+  \(|\Delta\theta_{\mathrm{align}}|\), \(E_N\) and
+  \(\Delta\sigma_{\min,\mathrm{dist}}\).
+
+  **Where no symbol is assigned to what the axis means, the words stay.** Three
+  axes kept their prose for that reason: the Case-F comparison, whose \(x\)
+  carries a tangential displacement on one series and a tool-axis displacement
+  on the other, so no single component symbol covers it; the categorical axes of
+  the Case-A bars and the direction comparison, which list conditions rather
+  than plot a quantity; and the time axes, which the author prefers as they
+  read. Do not invent a symbol to satisfy this rule.
 
 ## Checking a figure
 

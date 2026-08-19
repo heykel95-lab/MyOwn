@@ -229,8 +229,7 @@ def damping_panel(ax, groups):
                         alpha=0.10, linewidth=0)
     ax.set_xlabel(r"Time after disturbance onset $t_d$ [s]")
     ax.set_ylabel(
-        r"Cumulative projected null-space motion "
-        r"$\int |\dot q_{\mathrm{null}}|\,\mathrm{d}t$ [$^\circ$]"
+        r"Cumulative projected null-space motion $E_N$ [$^\circ$]"
     )
     ax.text(0.01, 0.97, "(a)", transform=ax.transAxes,
             ha="left", va="top")
@@ -265,13 +264,13 @@ def sigma_panel(ax, groups):
         markerfacecolor="white", markeredgecolor=SERIES_BLACK,
         markeredgewidth=1.1, linewidth=1.25, elinewidth=1.0,
         capthick=1.0, capsize=3,
-        label=r"Final $\Delta\sigma_{\min}$ (mean $\pm$ SD)")
+        label=r"$\Delta\sigma_{\min,\mathrm{dist}}$ (mean $\pm$ SD)")
     ax.plot(gains[screening], sigma_means[screening], color=SERIES_BLACK,
             marker="D", markerfacecolor="white", markeredgewidth=1.1,
             linestyle="none")
-    ax.axhline(0.0, color="0.45", linestyle="--", linewidth=1.0)
+    ax.axhline(0.0, color="0.45", linewidth=1.0)
     ax.set_xlabel(r"Conditioning torque $k_\sigma$ [N m]")
-    ax.set_ylabel(r"Final singular-value change $\Delta\sigma_{\min}$ [-]")
+    ax.set_ylabel(r"$\Delta\sigma_{\min,\mathrm{dist}}$ [-]")
     ax.set_xticks(gains)
     ax.ticklabel_format(axis="y", style="sci", scilimits=(0, 0),
                         useMathText=True)
@@ -298,7 +297,7 @@ def sigma_panel(ax, groups):
                  marker="D", markerfacecolor="white", markeredgewidth=1.1,
                  linestyle="none")
     criterion_handle = task_ax.axhline(
-        2.0, color="0.45", linestyle=":", linewidth=1.0,
+        2.0, color="0.45", linewidth=1.0,
         label="2 mm peak Cartesian position error limit")
     task_ax.set_ylabel(
         r"Peak Cartesian position error $\|e_p\|_{\max}$ [mm]",
@@ -309,7 +308,7 @@ def sigma_panel(ax, groups):
 
     return (
         [sigma_handle, task_handle, criterion_handle],
-        [r"Final $\Delta\sigma_{\min}$ (mean $\pm$ SD)",
+        [r"$\Delta\sigma_{\min,\mathrm{dist}}$ (mean $\pm$ SD)",
          "Peak Cartesian position error (mean $\pm$ SD)",
          "2 mm peak Cartesian position error limit"],
     )
