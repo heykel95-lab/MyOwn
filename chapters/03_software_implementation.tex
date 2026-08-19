@@ -66,8 +66,7 @@ null-space parameters, safety thresholds, and data-recording settings.
 At program start, the robot connection is established and the robot model is
 loaded after error recovery and collision configuration. A separate keyboard
 thread receives operator requests. These requests are transferred through
-atomic variables so that the real-time callback does not wait for terminal
-input. Before each new controller session, the configuration is read and
+atomic variables, keeping terminal input outside the real-time callback. Before each new controller session, the configuration is read and
 validated again, which permits settings to be changed between runs without
 recompiling the program.
 
@@ -83,8 +82,8 @@ enter the command.
   \label{fig:controller_block_diagram}
 \end{figure}
 
-The following sections describe these blocks in the order required to
-understand the contact-alignment controller.
+The following sections describe the task geometry, impedance calculation,
+phase logic, null-space controller, and real-time support functions in sequence.
 
 
 \section{Surface-Relative Task Representation}
@@ -150,17 +149,58 @@ n_T=R_{\mathrm{EE}}n_{\mathrm{EE}}.
 \label{eq:implementation_current_tool_normal}
 \end{equation}
 
-The flat target direction is chosen as the configured sign of the surface
-normal. Commanded orientation offsets about \mbox{\(t_1\)} and \mbox{\(t_2\)} are
-combined into a surface-frame rotation vector and applied to this flat target:
+The calibrated surface normal \mbox{\(n_s\)} points outward from the surface
+towards the free-space region and therefore defines the flat tool-normal
+target. The commanded angular offsets about the two surface tangents are first
+combined into the rotation vector
+
+\begin{equation}
+\theta_{\mathrm{tilt}}
+=
+\theta_{t_1}t_1
++
+\theta_{t_2}t_2
+\in\mathbb{R}^3.
+\label{eq:implementation_tilt_rotation_vector}
+\end{equation}
+
+Its magnitude gives the total commanded tilt angle,
+
+\begin{equation}
+\phi_{\mathrm{tilt}}
+=
+\left\|\theta_{\mathrm{tilt}}\right\|
+=
+\sqrt{\theta_{t_1}^{2}+\theta_{t_2}^{2}}.
+\label{eq:implementation_tilt_angle}
+\end{equation}
+
+For \mbox{\(\phi_{\mathrm{tilt}}>0\)}, the corresponding unit rotation axis is
+
+\begin{equation}
+u_{\mathrm{tilt}}
+=
+\frac{\theta_{\mathrm{tilt}}}{\phi_{\mathrm{tilt}}}
+=
+\frac{\theta_{t_1}t_1+\theta_{t_2}t_2}
+{\sqrt{\theta_{t_1}^{2}+\theta_{t_2}^{2}}}.
+\label{eq:implementation_tilt_axis}
+\end{equation}
+
+Using Rodrigues' relation of \mbox{\Cref{eq:rodrigues_formula}}, the pair
+\mbox{\((u_{\mathrm{tilt}},\phi_{\mathrm{tilt}})\)} defines the rotation matrix
+\mbox{\(R_{\mathrm{tilt}}\)}. Applying this rotation to the outward surface normal
+gives the desired tool-normal direction,
 
 \begin{equation}
 n_d
-=\exp\!\left(
-[\theta_{t_1}t_1+\theta_{t_2}t_2]_\times
-\right)(\pm n_s).
+=
+R_{\mathrm{tilt}}n_s.
 \label{eq:implementation_tool_normal_target}
 \end{equation}
+
+For zero commanded tilt, \mbox{\(\theta_{t_1}=\theta_{t_2}=0\)}, the rotation is
+the identity and \mbox{\(n_d=n_s\)}.
 
 The shortest rotation that aligns the captured tool direction with
 \mbox{\(n_d\)} is applied to the complete start orientation. The implementation
@@ -489,41 +529,75 @@ current reference is maintained.
 \label{subsec:inertia_scaled_damping_calculation}
 
 For phase groups configured to use inertia-scaled damping, the damping
-coefficients are calculated from the current Cartesian inertia and the active
-directional stiffness. The joint-space inertia matrix \mbox{\(M(q)\)} is obtained
-from the libfranka model. Rather than forming \mbox{\(M^{-1}\)} explicitly, a
-lower--diagonal--lower-transpose (\mbox{\abbr{LDLT}}) factorisation of
-\mbox{\(M\)} is used to solve \mbox{\(MX=J^\top\)} for
-\mbox{\(X=M^{-1}J^\top\)}. The regularised base-frame
-operational-space inertia estimate is then
+coefficients are calculated from the active directional stiffness and the
+Cartesian inertia associated with the current robot configuration. The
+joint-space inertia matrix
 
 \begin{equation}
-\Lambda_0
+M(q)\in\mathbb{R}^{7\times7}
+\end{equation}
+
+is obtained from the libfranka model. The operational-space inertia in the
+robot base frame is evaluated from
+
+\begin{equation}
+\Lambda_0(q)
 =
 \left(
-JM^{-1}J^\top+10^{-9}I_6
-\right)^{-1}.
+J(q)M(q)^{-1}J^\top(q)
++\varepsilon I_6
+\right)^{-1},
+\qquad
+\varepsilon=10^{-9}.
 \label{eq:implementation_cartesian_inertia}
 \end{equation}
 
-The matrix is transformed into the coordinate frame of the active gain block,
+The inverse \mbox{\(M(q)^{-1}\)} is not formed explicitly in the implementation.
+Instead, a lower--diagonal--lower-transpose (\mbox{\abbr{LDLT}})
+factorisation of \mbox{\(M(q)\)} is used to solve
 
 \begin{equation}
-\Lambda
-=T_R^\top\Lambda_0T_R,
+M(q)Y(q)=J^\top(q),
 \qquad
-\lambda_i=\Lambda_{ii},
+Y(q)=M(q)^{-1}J^\top(q)\in\mathbb{R}^{7\times6}.
+\label{eq:implementation_mass_solve}
+\end{equation}
+
+Here, \mbox{\(Y(q)\)} is only the solution matrix of the linear system. The same
+operational-space inertia can therefore be evaluated numerically as
+
+\begin{equation}
+\Lambda_0(q)
+=
+\left(
+J(q)Y(q)+\varepsilon I_6
+\right)^{-1}.
+\label{eq:implementation_cartesian_inertia_solved}
+\end{equation}
+
+The base-frame matrix is then transformed into the coordinate frame of the
+active gain block,
+
+\begin{equation}
+\Lambda_{\mathrm{task}}(q)
+=
+T_R^\top\Lambda_0(q)T_R,
+\qquad
+\lambda_i(q)
+=
+\left[\Lambda_{\mathrm{task}}(q)\right]_{ii}.
 \label{eq:implementation_directional_inertia}
 \end{equation}
 
-so that each stiffness entry \mbox{\(k_i\)} is paired with the corresponding
-directional Cartesian inertia \mbox{\(\lambda_i\)}. The calculated damping
-coefficient is
+Thus, each directional stiffness entry \mbox{\(k_i\)} is paired with the
+corresponding Cartesian inertia \mbox{\(\lambda_i(q)\)} of the same
+translational or rotational direction. The directional damping coefficient is
+then
 
 \begin{equation}
-d_{\mathrm{dir},i}
+d_i(q)
 =
-2\zeta\sqrt{\lambda_i k_i},
+2\zeta\sqrt{\lambda_i(q)k_i},
 \label{eq:implementation_inertia_scaled_damping}
 \end{equation}
 
@@ -535,8 +609,9 @@ The calculation is performed independently for the three translational and
 three rotational directions and is subject to the configured coefficient
 bounds and numerical validity checks. The resulting damping is cached by phase
 group and recalculated when that group is entered again, so the current robot
-configuration is used for the new Cartesian-inertia estimate. If the calculation
-cannot be used, the configured damping matrix remains available as a fallback.
+configuration is reflected in \mbox{\(M(q)\)}, \mbox{\(J(q)\)}, and therefore in
+\mbox{\(\Lambda_{\mathrm{task}}(q)\)}. If the calculation cannot be used, the
+configured damping matrix remains available as a fallback.
 
 The reported surface-contact sequence used inertia-scaled damping in the phase
 groups stated in \mbox{\Cref{ch:methodology}}. Standard Cartesian pose hold is a
@@ -686,31 +761,64 @@ terminates the approach.
 \label{subsec:implementation_setup_phase}
 
 Set-up generates the contact press that is evaluated in the experiments. The
-selected tool point is advanced from its projected surface location
-along the descent direction. A scalar set-up coordinate is integrated at the
-configured speed and clamped at its configured endpoint. Writing
-\mbox{\(p_{T,0}\)} for the projection of the selected point onto the surface and
-\mbox{\(s_{\mathrm{set}}(t)\)} for that coordinate, the commanded position of the
-selected tool point is
+calibrated normal \mbox{\(n_s\)} points outward from the surface, so the descent
+direction towards the surface is \mbox{\(-n_s\)}. At the clearance transition,
+the selected tool point is projected onto the calibrated plane. This projected
+point is denoted by \mbox{\(p_{T,0}\)} and provides the starting reference for
+set-up. The scalar coordinate \mbox{\(s_{\mathrm{set}}(t)\geq0\)} describes the
+commanded displacement from this point towards the surface and is integrated at
+the configured speed and clamped at its configured endpoint. The desired
+position of the selected tool point is therefore
 
 \begin{equation}
-p_{T,d}(t)=p_{T,0}+s_{\mathrm{set}}(t)\left(-n_s\right).
+p_{T,d}(t)
+=
+p_{T,0}-s_{\mathrm{set}}(t)n_s.
 \label{eq:implementation_setup_face_point_reference}
 \end{equation}
 
-The controller does not command the TCP directly along this path. It
-reconstructs the TCP reference that places the selected point at
-\mbox{\(p_{T,d}(t)\)}, using the end-effector-frame offset
-\mbox{\(r_{T,\mathrm{EE}}\)} stored at the clearance transition together with the
-orientation \mbox{\(R_{\mathrm{clr}}\)} held from that instant:
+Here, \mbox{\(p_{T,d}(t)\)} is expressed in the robot base frame. The Cartesian
+impedance controller itself regulates the TCP, so this desired tool-point
+position must be converted into the corresponding desired TCP position.
+
+The vector \mbox{\(r_{T,\mathrm{EE}}\)} points from the TCP to the selected tool
+point and is expressed in the end-effector frame. At the clearance transition,
+the desired orientation for set-up is captured as \mbox{\(R_{\mathrm{clr}}\)}.
+Expressing the stored tool-point offset in the robot base frame at this
+orientation gives
 
 \begin{equation}
-p_d(t)=p_{T,d}(t)-R_{\mathrm{clr}}\,r_{T,\mathrm{EE}}.
+r_{T,\mathrm{clr}}
+=
+R_{\mathrm{clr}}r_{T,\mathrm{EE}}.
+\label{eq:implementation_setup_tool_point_offset}
+\end{equation}
+
+The desired tool-point position and desired TCP position are related by the
+same rigid-body geometry,
+
+\begin{equation}
+p_{T,d}(t)
+=
+p_d(t)+r_{T,\mathrm{clr}}.
+\label{eq:implementation_setup_point_tcp_relation}
+\end{equation}
+
+Solving this relation for the desired TCP position gives
+
+\begin{equation}
+p_d(t)
+=
+p_{T,d}(t)-r_{T,\mathrm{clr}}
+=
+p_{T,d}(t)-R_{\mathrm{clr}}r_{T,\mathrm{EE}}.
 \label{eq:implementation_setup_tcp_reference}
 \end{equation}
 
-The surface prevents the commanded point from reaching its target, so the
-resulting Cartesian position error generates the press.
+Thus, \mbox{\(p_d(t)\)} is the TCP reference required to place the selected tool
+point at \mbox{\(p_{T,d}(t)\)} while maintaining the set-up orientation
+\mbox{\(R_{\mathrm{clr}}\)}. The surface restricts the commanded motion of the
+tool point, so the resulting Cartesian position error generates the press.
 
 \begin{figure}[H]
   \centering
@@ -935,8 +1043,8 @@ the configured joint-limit margins. The tool-transfer sequence is shown in
 \end{figure}
 
 \label{subsec:controller_exception_handling}
-These preparation functions are supporting implementation features; they do not
-change the Cartesian control law or the experimental parameter definitions.
+These preparation functions support robot operation while leaving the Cartesian
+control law and experimental parameter definitions unchanged.
 
 
 \subsection{Real-Time-Safe Data Recording}
@@ -1004,10 +1112,10 @@ external wrench as separate quantities. It also stores the geometric
 clearance-transition references needed to calculate subsequent force and moment
 changes. The implementation produces a set-up summary containing the final
 pose, selected tool point, external-wrench change, phase termination condition,
-and active controller settings. Detailed experimental metrics are intentionally
-defined in \mbox{\Cref{ch:methodology}} and \mbox{\Cref{app:recorded_data}} so
-that the implementation chapter remains focused on the generation and recording
-of the signals rather than on the evaluation of the reported comparisons.
+and active controller settings. Detailed experimental metrics are defined in
+\mbox{\Cref{ch:methodology}} and \mbox{\Cref{app:recorded_data}}. This chapter
+therefore remains focused on the generation and recording of the controller
+signals.
 
 The controller structure described in this chapter is used throughout the
 reported experiments. \mbox{\Cref{ch:methodology}} next specifies the physical

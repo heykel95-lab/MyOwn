@@ -81,8 +81,11 @@ formulation and the controller
         \end{equation}
 
         The directions \mbox{\(t_1\)} and \mbox{\(t_2\)} lie in the surface plane and are
-        mutually orthogonal, while \mbox{\(n_s\)} is normal to the surface. This
-        frame is used to describe the commanded tool orientation offset and to assign stiffness
+        mutually orthogonal. The unit normal \mbox{\(n_s\)} is defined to point
+        outward from the surface towards the free-space region above the plate.
+        This sign convention is kept throughout the contact sequence, so motion
+        towards the surface is along \mbox{\(-n_s\)}. The surface frame is used to
+        describe the commanded tool orientation offset and to assign stiffness
         and damping values according to the two tangential directions and the
         normal direction. For the contact task, the task-frame orientation
         \mbox{\(R_{\mathrm{task}}\)} equals the surface-frame orientation:
@@ -317,40 +320,22 @@ orientation to the desired orientation. If both orientations coincide, then
 
 For use in the impedance controller, \mbox{\(\Delta R\)} is represented by a rotation
 angle \mbox{\(\phi\)} and a unit rotation axis \mbox{\(u\in\mathbb{R}^3\)}
-\mbox{\cite{Siciliano2009,Murray1994}}. The angle follows from
+\mbox{\cite{Siciliano2009,Murray1994}}. The rotation-matrix and axis--angle
+representations can be converted in both directions. Given a unit axis
+\mbox{\(u\)} and an angle \mbox{\(\phi\)}, the corresponding rotation matrix is
+obtained from Rodrigues' formula,
 
 \begin{equation}
-\operatorname{tr}(\Delta R)
-=
-1+2\cos\phi,
-\label{eq:trace_angle_relation}
-\end{equation}
-
-and is therefore
-
-\begin{equation}
-\phi
-=
-\arccos\!\left(
-\frac{\operatorname{tr}(\Delta R)-1}{2}
-\right),
-\qquad
-\phi\in[0,\pi].
-\label{eq:angle_from_trace}
-\end{equation}
-
-Rodrigues' formula expresses the relative rotation as
-
-\begin{equation}
-\Delta R
+R(u,\phi)
 =
 I
 +\sin\phi\,[u]_\times
-+(1-\cos\phi)[u]_\times^2,
++(1-\cos\phi)[u]_\times^2.
 \label{eq:rodrigues_formula}
 \end{equation}
 
-where
+For the relative rotation considered here, \mbox{\(R(u,\phi)=\Delta R\)}. The
+skew-symmetric matrix of the rotation axis is
 
 \begin{equation}
 [u]_\times
@@ -363,6 +348,29 @@ u_z & 0 & -u_x\\
 \qquad
 [u]_\times^\top=-[u]_\times.
 \label{eq:skew_symmetric_axis_matrix}
+\end{equation}
+
+Conversely, when the rotation matrix \mbox{\(\Delta R\)} is known, the angle
+follows from
+
+\begin{equation}
+\operatorname{tr}(\Delta R)
+=
+1+2\cos\phi,
+\label{eq:trace_angle_relation}
+\end{equation}
+
+and therefore
+
+\begin{equation}
+\phi
+=
+\arccos\!\left(
+\frac{\operatorname{tr}(\Delta R)-1}{2}
+\right),
+\qquad
+\phi\in[0,\pi].
+\label{eq:angle_from_trace}
 \end{equation}
 
 Subtracting the transpose of \mbox{\(\Delta R\)} isolates its skew-symmetric part:
@@ -820,10 +828,12 @@ that the local gain entries can later be interpreted as normal and tangential
 values instead of as abstract base-frame directions.
 
 Let the unit surface normal \mbox{\(n_s\in\mathbb{R}^3\)}, with
-\mbox{\(\|n_s\|=1\)}, be expressed in the robot base frame. The normal alone
-does not determine the frame. One rotational freedom about \mbox{\(n_s\)}
-remains, so the two tangent directions follow from a separate choice rather
-than from the surface geometry.
+\mbox{\(\|n_s\|=1\)}, be expressed in the robot base frame. Its sign is chosen
+such that \mbox{\(n_s\)} points outward from the surface towards the free-space
+region above the plate. Consequently, the approach and set-up direction towards
+the surface is \mbox{\(-n_s\)}. The normal alone does not determine the frame.
+One rotational freedom about \mbox{\(n_s\)} remains, so the two tangent
+directions follow from a separate choice rather than from the surface geometry.
 
 That choice is the surface-frame reference direction
 \mbox{\(a_s\in\mathbb{R}^3\)}, also expressed in the base frame. It is a
@@ -1224,8 +1234,8 @@ m_{r_T}=r_T\times\Delta\hat f_{\mathrm{ext}}.
 \label{eq:contact_moment_about_tcp}
 \end{equation}
 
-Since the selected tool point is a geometric contact reference rather than the
-exact instantaneous force-application point, \mbox{\(m_{r_T}\)} is a
+Because the selected tool point is a geometric contact reference and the exact
+instantaneous force-application point is not measured, \mbox{\(m_{r_T}\)} is a
 geometry-based reconstruction and not an independently measured moment. It is
 compared with \mbox{\(\Delta\hat m_{\mathrm{ext}}\)} and never equated to it,
 and it is not added to \mbox{\(m_0\)} or \mbox{\(m_{c,K}\)}: those belong to the
