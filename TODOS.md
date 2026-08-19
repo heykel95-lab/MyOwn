@@ -342,27 +342,6 @@ what remains is software documentation that the chapter does not need:
 The chapter reordering called for in the guide has been carried out and should
 not be reopened.
 
-### Symbol list — entries for the symbols Chapter 3 gained on 2026-08-19
-
-The author's revised Chapter 3 expands two derivations, and the new symbols are
-introduced in the running text but are not in `frontmatter/symbols.tex`:
-
-- \(Y(q)=M(q)^{-1}J^\top(q)\), the solution matrix of the mass-matrix solve,
-  units `[kg^-1 s^2]`-equivalent — state it in the form the neighbouring rows
-  use rather than inventing a unit string;
-- \(\Lambda_{\mathrm{task}}(q)\) and \(\Lambda_0(q)\), which the list currently
-  covers only as a bare \(\Lambda\);
-- \(d_i(q)\), the directional damping coefficient, replacing the unlisted
-  \(d_{\mathrm{dir},i}\);
-- \(\theta_{\mathrm{tilt}}\), \(\phi_{\mathrm{tilt}}\), \(u_{\mathrm{tilt}}\)
-  and \(R_{\mathrm{tilt}}\) from the tool-orientation construction;
-- \(r_{T,\mathrm{clr}}=R_{\mathrm{clr}}r_{T,\mathrm{EE}}\), the stored
-  tool-point offset expressed in the base frame at the clearance orientation.
-
-Nothing is blocked: this is a decision about how much intermediate notation the
-list should carry, which is the author's to make. The list already omits
-comparable intermediates, so leaving them out is a defensible answer.
-
 ## Chapter 4 — remaining duplication
 
 Specified in full in `THESIS_WRITING_GUIDE.md`:

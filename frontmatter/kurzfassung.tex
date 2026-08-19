@@ -15,40 +15,43 @@ Werkzeugs an einer ebenen Fläche unterstützt.
 
 Für einen 7-achsigen Franka Emika Panda wurde ein kartesischer
 Echtzeit-Impedanzregler implementiert. Die translatorische und rotatorische
-Nachgiebigkeit wird relativ zur Flächengeometrie definiert. Zusätzlich kann das
-virtuelle Nachgiebigkeitszentrum gegenüber dem Werkzeugbezugspunkt (TCP)
-verschoben werden. Dadurch entsteht eine Kopplung zwischen Translation und
-Rotation innerhalb der kartesischen Impedanz. Während der normalen
-Anpressbewegung erzeugt diese Kopplung ein zusätzliches Moment, dessen Richtung
-von der Lage des Nachgiebigkeitszentrums abhängt. Eine geeignete Verschiebung
-kann somit die erforderliche Ausrichtungsdrehung unterstützen, ohne eine
-zusätzliche rotatorische Trajektorie vorzugeben.
+Nachgiebigkeit wird relativ zur Flächengeometrie definiert. Das virtuelle
+Nachgiebigkeitszentrum kann gegenüber dem Werkzeugbezugspunkt (TCP) verschoben
+werden. Dadurch entsteht eine Kopplung zwischen Translation und Rotation
+innerhalb der kartesischen Impedanz, sodass die kommandierte normale
+Anpressbewegung ein zusätzliches Moment erzeugen kann, das die erforderliche
+Ausrichtungsdrehung unterstützt, ohne eine zusätzliche rotatorische Trajektorie
+vorzugeben.
 
 Experimentell wurden der Einfluss der richtungsabhängigen kartesischen
-Steifigkeit sowie die Lage, Richtung, Bezugsbasis und Größe der virtuellen
-Verschiebung des Nachgiebigkeitszentrums untersucht. Innerhalb der geprüften
+Steifigkeit sowie Lage, Richtung, Bezugsrahmen und Größe der Verschiebung des
+virtuellen Nachgiebigkeitszentrums untersucht. Innerhalb der geprüften
 Parameterbereiche führte die Lage des Nachgiebigkeitszentrums zur größten
-Änderung der Ausrichtungsreaktion. Eine unterstützende tangentiale Verschiebung
-liegt senkrecht zur erforderlichen Drehrichtung, während ihr Vorzeichen dem
-Vorzeichen der anfänglichen Winkelabweichung folgt. Dieser Zusammenhang zeigte
-sich ebenfalls für dazwischenliegende Richtungen in der Flächenebene. Um die
-schwächere der beiden Hauptausrichtungsrichtungen änderte eine gewählte
-Verschiebung von \(40\,\mathrm{mm}\) die gemessene Drehung beim Kontaktaufbau
-von \(-1{,}63^\circ\) auf \(+4{,}43^\circ\).
+Variation der Ausrichtungsreaktion. Eine unterstützende tangentiale
+Verschiebung liegt senkrecht zur erforderlichen Drehrichtung. Wird das
+Vorzeichen der anfänglichen Winkelabweichung umgekehrt, muss der Hebel auf die
+gegenüberliegende Seite des TCP gelegt werden. Ändert sich die erforderliche
+Drehrichtung in der Tangentialebene, muss sich entsprechend auch die Richtung
+des Hebels ändern. Dieser Zusammenhang wurde ebenfalls für dazwischenliegende
+Richtungen in der Flächenebene bestätigt. Um die schwächere der beiden
+Hauptausrichtungsrichtungen änderte eine gewählte Verschiebung von
+\(40\,\mathrm{mm}\) die gemessene Drehung während des Kontaktaufbaus von
+\(-1{,}63^\circ\) auf \(+4{,}43^\circ\).
 
-Die untersuchten tangentialen Verschiebungen stellen damit eine
-fallabhängige Möglichkeit zur Erhöhung der Ausrichtungswirkung dar. Unter den
-geprüften Lagen bildet das Nachgiebigkeitszentrum im TCP den
-richtungsunabhängigen festen Bezug für die untersuchte Aufgabe, da seine Wahl
-keine vorherige Kenntnis von Richtung oder Vorzeichen der Winkelabweichung
-erfordert. Bei zusätzlichem Bedarf an rotatorischer Ausrichtungswirkung kann
-anschließend ein geeignet verschobenes Nachgiebigkeitszentrum gewählt werden.
+Unter den untersuchten Bedingungen war damit jede nicht verschwindende
+tangentiale Verschiebung, die die Ausrichtung unterstützte, von Richtung und
+Vorzeichen der anfänglichen Winkelabweichung abhängig. Die TCP-zentrierte
+Einstellung gibt keine bevorzugte tangentiale Richtung vor und stellt unter den
+getesteten Lagen das richtungsunabhängige feste Nachgiebigkeitszentrum für die
+untersuchte Aufgabe dar. Ein verschobenes Nachgiebigkeitszentrum kann dagegen
+gezielt eingesetzt werden, wenn die erforderliche Ausrichtungsrichtung bekannt
+ist und zusätzliche rotatorische Ausrichtungswirkung benötigt wird.
 
-Eine ergänzende Nullraumuntersuchung zeigte, dass projizierte Dämpfung die
-redundante Gelenkbewegung verringerte, während die
-Singulärwert-Konditionierung die netto störungsbedingte redundante Verschiebung
-für die untersuchte Störungsrichtung begrenzte. Die experimentelle Auswertung
-umfasste die Kontakt- und Ausrichtungsphase bis zum Übergang vor dem
-Schleifvorgang; ein dauerhafter Schleifkontakt war nicht Bestandteil der
-experimentellen Untersuchung.
+Eine ergänzende Nullraumuntersuchung zeigte, dass die projizierte Dämpfung
+redundante Gelenkbewegungen reduzierte. Die Singularwert-Konditionierung war
+während der kommandierten Störung aktiv und unterdrückte unter der untersuchten
+Störungsrichtung die daraus resultierende Netto-Verschiebung im Nullraum
+deutlich. Dieses Verhalten beschreibt somit eine Unterdrückung der Störwirkung
+während ihrer Einwirkung und keine nachträgliche Rückführung der redundanten
+Konfiguration.
 \end{otherlanguage}

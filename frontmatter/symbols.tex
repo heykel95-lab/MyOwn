@@ -70,6 +70,7 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$K_{p,0},\ D_{p,0}$}{Translational stiffness / damping used in the base-frame command}{[N/m], [N\,s/m]}
 \symrow{$K_{R,0},\ D_{R,0}$}{Rotational stiffness / damping used in the base-frame command}{[N\,m/rad], [N\,m\,s/rad]}
 \symrow{$K_0,\ D_0$}{Full $6\times6$ stiffness / damping used in the base-frame command}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
+\symrow{$G_{\mathrm{surface}},\ G_0$}{Generic diagonal directional gain block along $[t_1,t_2,n_s]$ / its base-frame representation}{[N/m] or [N\,m/rad]}
 }
 
 \symgroup{Dynamics and Torques}{
@@ -77,13 +78,14 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$f,\ m$}{Commanded Cartesian force / moment}{[N], [N\,m]}
 \symrow{$f_K,\ m_{c,K}$}{Elastic commanded force component, $f_K=K_pe_p$ / its compliance-centre coupling moment, $m_{c,K}=-r_c\times f_K$}{[N], [N\,m]}
 \symrow{$K,\ D$}{Full Cartesian stiffness / damping matrices}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
-\symrow{$\Lambda$}{Operational-space (Cartesian) inertia matrix}{[kg], [kg\,m], [kg\,m$^2$]}
+\symrow{$\Lambda_0(q),\ \Lambda_{\mathrm{task}}(q)$}{Operational-space (Cartesian) inertia matrix in the base frame / resolved in the active gain frame}{[kg], [kg\,m], [kg\,m$^2$]}
 \symrow{$M(q)$}{Joint-space mass matrix}{[kg\,m$^2$]}
 \symrow{$\zeta$}{Directional coefficient in the inertia-scaled damping calculation}{[-]}
 \symrow{$\tau$}{Joint torque vector}{[N\,m]}
 \symrow{$\tau_c,\ \tau_g$}{Coriolis / gravity compensation torque}{[N\,m]}
 \symrow{$\tau_{\mathrm{cart}}$}{Cartesian impedance torque, $J^\top(q)F$}{[N\,m]}
 \symrow{$\tau_{\mathrm{cmd}}$}{Complete commanded joint torque}{[N\,m]}
+\symrow{$\tau_{\mathrm{guide}},\ d_{\mathrm{guide}}$}{Manual-guidance joint torque / its joint-space damping coefficient}{[N\,m], [N\,m\,s/rad]}
 }
 
 \symgroup{Surface and Contact Geometry}{
@@ -92,11 +94,13 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$a_s,\ \tilde{t}_1$}{Configured base-frame reference direction fixing $t_1$ within the surface plane / projected tangent before normalisation}{[-]}
 \symrow{$R_{\mathrm{surface}}$}{Surface task frame $[\,t_1\;\;t_2\;\;n_s\,]$ in the base frame}{[-]}
 \symrow{$p_{\mathrm{cal},i},\ r_{\mathrm{probe,EE}}$}{Captured marked-corner point in the base frame / fixed corner offset in the EE frame}{[m], [m]}
-\symrow{$T_{\mathrm{cal},i},\ R_{\mathrm{cal},i},\ \bar R$}{Captured tool-calibration pose / its rotation / mean of the three estimation rotations}{[-]}
+\symrow{$R_{\mathrm{cal},i},\ \bar R$}{Rotation of a captured tool-calibration pose / mean of the three estimation rotations}{[-]}
 \symrow{$\bar n_B$}{Invariant base-frame direction in the tool-normal calibration}{[-]}
 \symrow{$\varepsilon_{\mathrm{plane}},\ \varepsilon_g$}{Surface-plane validation residual / tool-face feature-selection tolerance}{[m]}
 \symrow{$U,\ \Sigma,\ V$}{Singular-value decomposition factors of $\bar R$}{[-]}
 \symrow{$n_{\mathrm{EE}},\ n_T,\ n_d$}{Calibrated tool normal in the EE frame / pose-based tool normal in the base frame / signed controller target direction}{[-]}
+\symrow{$\theta_{\mathrm{tilt}},\ \phi_{\mathrm{tilt}},\ u_{\mathrm{tilt}}$}{Commanded orientation-offset rotation vector $\theta_{t_1}t_1+\theta_{t_2}t_2$ / its magnitude / its unit axis}{[rad], [rad], [-]}
+\symrow{$R_{\mathrm{tilt}}$}{Rotation built from $(u_{\mathrm{tilt}},\phi_{\mathrm{tilt}})$ and applied to $n_s$ to give $n_d$}{[-]}
 \symrow{$s_a$}{Tool-axis target sign, with \(n_d=s_a n_s\)}{[-]}
 \symrow{$p_s$}{Point on the configured surface}{[m]}
 \symrow{$p_c$}{Centre of compliance}{[m]}
@@ -108,6 +112,8 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$r_{\mathrm{width,EE}},\ r_{\mathrm{length,EE}}$}{Tool face half-width / half-length vector in the EE frame}{[m]}
 \symrow{$r_{T,\mathrm{EE}},\ p_T$}{Selected tool-point offset from the TCP, expressed in the EE frame / selected tool-point position in the base frame}{[m]}
 \symrow{$r_T$}{Selected tool-point offset from the TCP, $p_T-p_{\mathrm{TCP}}$}{[m]}
+\symrow{$R_{\mathrm{clr}},\ r_{T,\mathrm{clr}}$}{Orientation captured at the clearance transition and held through set-up / the stored tool-point offset expressed in the base frame at that orientation}{[-], [m]}
+\symrow{$p_{T,0},\ p_{T,d}(t),\ s_{\mathrm{set}}(t)$}{Projection of the selected tool point onto the calibrated plane / its commanded position during set-up / the commanded press coordinate}{[m], [m], [m]}
 \symrow{$m_0$}{Commanded rotational impedance moment at the TCP, independent of $r_c$}{[N\,m]}
 \symrow{$m_{r_T}$}{Geometry-based force-lever moment about the TCP, reconstructed as $r_T\times\Delta\hat f_{\mathrm{ext}}$}{[N\,m]}
 }
@@ -122,6 +128,7 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$\theta_{t_1},\ \theta_{t_2}$}{Surface-frame components of the commanded tool orientation offset}{[rad]}
 \symrow{$\Delta\theta_{\mathrm{set}},\ \Delta\theta_{\mathrm{set}}^S$}{Finite set-up rotation in the base frame / resolved in the surface frame; $\Delta\theta_{\mathrm{set},t_i}$ is its component about $t_i$}{[rad]}
 \symrow{$\phi_{\mathrm{set}},\ u_{\mathrm{set}}$}{Set-up rotation angle / unit rotation axis}{[rad], [-]}
+\symrow{$R_{\mathrm{before}},\ R_{\mathrm{after}}$}{End-effector orientation at the clearance transition / at the end of set-up}{[-]}
 \symrow{$r_{c,t},\ \rho_c$}{Selected tangential compliance-centre lever / its magnitude}{[m]}
 \symrow{$\Delta p_T,\ s_T$}{Selected tool point displacement / its magnitude}{[m]}
 \symrow{$\Delta p_{\mathrm{TCP}},\ s_{\mathrm{TCP}}$}{TCP displacement / its magnitude}{[m]}
@@ -141,8 +148,10 @@ column makes the mixed translational and rotational quantities traceable.}
 
 \symgroup{Quasi-Static Stiffness and Damping Design}{
 \symrow{$k_i$}{Directional translational or rotational stiffness}{[N/m] or [N\,m/rad]}
-\symrow{$\lambda_i$}{Directional Cartesian inertia used for damping selection}{[kg] or [kg\,m$^2$]}
-\symrow{$d_{\mathrm{dir},i}$}{Directional damping coefficient}{[N\,s/m] or [N\,m\,s/rad]}
+\symrow{$\lambda_i(q)$}{Directional Cartesian inertia used for damping selection, $[\Lambda_{\mathrm{task}}(q)]_{ii}$}{[kg] or [kg\,m$^2$]}
+\symrow{$d_i(q)$}{Directional damping coefficient, $2\zeta\sqrt{\lambda_i(q)k_i}$}{[N\,s/m] or [N\,m\,s/rad]}
+\symrow{$Y(q)$}{Solution matrix of $M(q)Y(q)=J^\top(q)$, used instead of forming $M(q)^{-1}$}{[kg$^{-1}$\,m/rad], [kg$^{-1}$]}
+\symrow{$\varepsilon$}{Regularisation added before inverting the operational-space inertia ($10^{-9}$)}{[-]}
 }
 
 \symgroup{Null-Space and Singular Value Decomposition}{
@@ -174,7 +183,6 @@ column makes the mixed translational and rotational quantities traceable.}
 }
 
 \symgroup{Miscellaneous}{
-\symrow{$T_s$}{Control sampling time ($1\,\mathrm{ms}$)}{[s]}
 \symrow{$I,\ I_3,\ I_4,\ I_6,\ I_7$}{Identity matrices}{[-]}
 }
 
