@@ -13,13 +13,13 @@ the surface frame, the tool orientation, and the point of the
 rectangular face used by the contact sequence. The real-time callback then
 updates the Cartesian reference, evaluates the impedance wrench, and maps it to
 joint torque. During set-up, the directional impedance can be shifted to a
-virtual centre of compliance \mbox{\(p_c\)}, so that the commanded normal press
+virtual \abbr{CoC} \mbox{\(p_c\)}, so that the commanded normal press
 also produces a moment. A secondary SVD-based null-space controller acts on the
 redundant joint motion without changing the Cartesian task to first order.
 
 The architecture is introduced first, followed by the task
 geometry, real-time impedance calculation, phase-dependent gains and virtual
-centre of compliance, contact sequence, null-space controller, and supporting
+\abbr{CoC}, contact sequence, null-space controller, and supporting
 real-time, safety, and recording functions. Numerical values used in the reported experiments are collected in
 \mbox{\Cref{ch:methodology}} and \mbox{\Cref{app:controller_parameters}}.
 
@@ -58,7 +58,7 @@ The main operating path is a phase sequence for tool orientation, surface
 approach, contact set-up, and grinding. Additional modes provide standard
 Cartesian pose hold, pose hold with the set-up impedance, and manual guidance.
 The same configuration system supplies the surface and tool geometry,
-phase-dependent Cartesian gains, damping settings, virtual centre of compliance,
+phase-dependent Cartesian gains, damping settings, virtual \abbr{CoC},
 null-space parameters, safety thresholds, and data-recording settings.
 
 At program start, the robot connection is established and the robot model is
@@ -237,7 +237,7 @@ This point is denoted by \mbox{\(p_T\)} and is used as the contact reference
 during set-up; here the subscript \mbox{\(T\)} denotes the selected tool point.
 Depending on the tool orientation it corresponds to a leading corner, the
 midpoint of a leading edge, or the tool-face centre. It is distinct from the TCP and
-from the virtual centre of compliance. Its position follows from the
+from the virtual \abbr{CoC}. Its position follows from the
 end-effector-frame offset \mbox{\(r_{T,\mathrm{EE}}\)},
 
 \begin{equation}
@@ -404,7 +404,7 @@ K_R e_R-D_R\omega_{\mathrm{EE}}
 
 The same force--moment ordering is used for the coupled branch, but the
 \mbox{\(6\times6\)} stiffness and damping matrices are first shifted from the
-selected centre of compliance to the TCP as described in
+selected \abbr{CoC} to the TCP as described in
 \mbox{\Cref{sec:self_alignment_virtual_center}}. The returned wrench is denoted
 
 \begin{equation}
@@ -460,7 +460,7 @@ collision behaviour remain active.
 
 The active Cartesian impedance is determined by three choices: the directional
 stiffness, the damping associated with those directions, and whether the
-impedance reference point is the TCP or a shifted virtual centre of compliance.
+impedance reference point is the TCP or a shifted virtual \abbr{CoC}.
 The controller constructs the directional gains first and applies the
 compliance-centre transformation afterwards.
 
@@ -623,7 +623,7 @@ than this inertia-scaled calculation.
 The theoretical point-shift formulation is derived in
 \mbox{\Cref{sec:centre_of_compliance}}. In the implementation, the source
 translational and rotational gains are first expressed in the required task
-frame and assembled at a selected virtual centre of compliance \mbox{\(p_c\)}.
+frame and assembled at a selected virtual \abbr{CoC} \mbox{\(p_c\)}.
 They are then shifted to the TCP.
 
 The implemented lever convention is
@@ -691,7 +691,7 @@ The measured response also depends on the directional stiffness, contact
 geometry, robot configuration, and physical tool--surface interaction.
 
 The coupled branch is used only in the controller modes configured for a
-virtual centre of compliance. Other phases use the decoupled Cartesian
+virtual \abbr{CoC}. Other phases use the decoupled Cartesian
 impedance. The exact cases that used the point-shifted branch in the reported
 experiments are specified in \mbox{\Cref{ch:methodology}} and
 \mbox{\Cref{app:controller_parameters}}.
@@ -829,7 +829,7 @@ The desired orientation remains equal to the orientation captured at the
 clearance transition. It therefore acts as a finite-stiffness rotational
 reference rather than as a rigid pose constraint. Contact-induced rotation can
 occur when the Cartesian wrench overcomes the corresponding rotational spring.
-When the virtual centre of compliance is enabled, the point-shifted matrices of
+When the virtual \abbr{CoC} is enabled, the point-shifted matrices of
 \mbox{\Cref{sec:self_alignment_virtual_center}} additionally couple the
 translational press to the commanded moment.
 
@@ -885,7 +885,7 @@ than as part of the evaluated contact data.
 
 Standard Cartesian pose hold regulates a captured pose with the dedicated hold
 impedance. Set-up-impedance hold uses the set-up gain construction and can retain
-the virtual centre of compliance. These hold modes are also used for dedicated
+the virtual \abbr{CoC}. These hold modes are also used for dedicated
 controller checks outside the main contact sequence.
 
 Manual guidance can be entered from an impedance-controlled state. The

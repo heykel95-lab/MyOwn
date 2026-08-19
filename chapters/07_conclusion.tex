@@ -9,132 +9,51 @@ impedance controller for contact-induced alignment of a grinding tool with a
 plane surface. The controller runs in the Franka Control Interface torque loop
 and combines surface-relative Cartesian impedance control, a virtual centre of
 compliance, and null-space control. During set-up, stiffness and damping defined
-at the selected centre of compliance \(p_c\) are shifted to the TCP. The
+at the selected \abbr{CoC} \(p_c\) are shifted to the TCP. The
 resulting translation--rotation coupling allows the commanded normal pressing
 action to generate an additional alignment moment without a time-varying
 rotational trajectory.
 
 The experiments focused on the measured end-effector response during contact
-set-up and on the selection of a fixed centre of compliance when the sign and
+set-up and on the selection of a fixed \abbr{CoC} when the sign and
 tangent-plane direction of the initial angular misalignment are unknown before
 contact. The TCP-centred condition, Cartesian stiffness, and displaced centres
 were evaluated under matched conditions.
 
-With the centre of compliance at the TCP, contact already produced substantial
-end-effector rotation about \(t_1\). A commanded \(+10^\circ\) orientation
-offset produced \(+7.57^\circ\) of signed set-up rotation, close to the
-\(+7.87^\circ\) obtained with the assisting \(40\,\mathrm{mm}\) lever. This
-zero-lever response is consistent with contributions from the physical contact
-geometry, ordinary rotational impedance, and compliance of the tool mounting.
-However, their individual contributions were not isolated experimentally, and
-\(m_{r_T}=r_T\times\Delta\hat f_{\mathrm{ext}}\) remains a geometry-based
-interpretation of the interaction.
+Firstly, the robot with the \abbr{CoC} located at the TCP was tested.
+The natural contact response was strongly direction dependent: the end effector
+already rotated considerably toward alignment about \(t_1\), whereas the
+corresponding response about \(t_2\) was weak and even had the opposite sign
+under the primary metric. Changing rotational stiffness changed the amount of
+rotation, and cross-axis translational stiffness had a smaller effect, but
+neither removed this directional asymmetry.
 
-About \(t_2\), the same commanded offset produced \(-1.63^\circ\) of signed
-end-effector rotation, while the final configuration satisfied the TCP-height
-flatness criterion. The tool mounting exhibited approximately \(\pm2^\circ\)
-of rotational play about the mounting direction associated with \(t_2\). This
-relative tool--gripper motion is absent from the robot state and was not tracked
-under contact load. The result therefore characterises the measured
-end-effector motion; the instantaneous physical tool orientation remains
-subject to the mounting compliance. The TCP-height criterion and the signed
-end-effector rotation describe different aspects of the final contact
-configuration.
+Moving the \abbr{CoC} tangentially had the strongest effect. Because
+the normal pressing force acts through an offset virtual reference, the shift
+creates an additional moment according to \(-r_c\times f\). The lever therefore
+has to lie perpendicular to the required alignment rotation and its sign must
+reverse when the initial angular error reverses. This was especially clear
+about \(t_2\), where a \(40\,\mathrm{mm}\) selected lever changed the response
+from \(-1.63^\circ\) at the TCP to \(+4.43^\circ\).
 
-Increasing the rotational stiffness about the commanded rotation axis reduced
-the set-up rotation, most clearly about \(t_1\). In contrast, changes in cross-axis
-translational stiffness produced a smaller response variation over the tested
-range. The combined low-translational-stiffness and high-rotational-stiffness
-condition was consistent with the individual effects acting approximately
-additively within the descriptive comparison scale. The axis dependence of the
-TCP-centred response remained present across the tested stiffness settings.
+The experiments also showed that the displacement direction and its coordinate
+frame matter, not simply its magnitude. A tool-axis displacement produced
+almost no change compared with a tangential displacement, and the same nominal
+\(40\,\mathrm{mm}\) lever behaved very differently when defined in the tool
+frame and surface frame.
 
-Changing the virtual centre of compliance produced the largest response
-variation over the tested parameter ranges. With
-\[
-r_c = p_{\mathrm{TCP}}-p_c,
-\qquad
-m_{c,K} = -\,r_c\times f_K,
-\]
-a tangential displacement introduces an additional commanded moment from the
-normal pressing action. The assisting lever lies in the surface tangent plane
-and perpendicular to the required rotation direction. Its sign changes with
-the sign of the angular misalignment.
+Testing intermediate rotation directions confirmed the geometric
+lever-direction rule, but also showed that one fixed non-zero tangential lever
+cannot provide the same effect for every unknown misalignment direction.
+Therefore the TCP is the direction-independent fixed \abbr{CoC} among
+the tested positions, while a displaced \abbr{CoC} can be used when
+the required alignment direction is already known and additional alignment
+authority is desired.
 
-About \(t_2\), the selected \(40\,\mathrm{mm}\) lever changed the signed set-up
-rotation from \(-1.63^\circ\) to \(+4.43^\circ\). Additional experiments showed
-that the lever-definition frame is part of the controller setting: a tool-fixed
-lever rotates with the end effector, while a surface-fixed lever remains fixed
-relative to the calibrated surface. A displacement along the tool axis changed
-the set-up rotation by only \(0.34^\circ\) over the tested
-\(-40\) to \(+40\,\mathrm{mm}\) range. The response also varied with the
-commanded orientation-offset magnitude without following a proportional
-scaling relation.
-
-Within the tested conditions, every non-zero tangential compliance-centre
-displacement that assisted alignment was specific to the initial misalignment.
-Reversing the sign of the angular deviation required the lever to be placed on
-the opposite side of the TCP, while changing the direction of the required
-alignment rotation required a corresponding change in the tangential lever
-direction. A non-zero displacement therefore cannot be selected independently
-of the initial misalignment direction and sign.
-
-Case~H evaluated this geometric direction-and-sign relation at four
-tangent-plane directions using a common lever magnitude of
-\(40\,\mathrm{mm}\). At the two diagonal directions, the direction-selected
-and fixed-lever responses differed by only \(0.07^\circ\) and
-\(0.05^\circ\), respectively, because the fixed lever retained a substantial
-projection along the selected direction. About \(t_2\), where this projection
-vanishes, the responses separated from \(-1.61^\circ\) to
-\(+4.43^\circ\).
-
-Within the definition introduced in \Cref{ch:intro}, the TCP-centred condition
-is therefore the direction-independent fixed centre among the tested positions.
-It can be selected before the sign and tangent-plane direction of the initial
-misalignment are known. A displaced centre serves a different role: when the
-required rotation direction is available, a suitable tangential lever provides
-additional alignment authority. These two roles separate a fixed reference
-from a condition-dependent alignment mechanism.
-
-The same mechanism guides the phase after alignment. A non-zero tangential
-lever retains its preferred rotational sense while the normal press continues.
-The implemented controller therefore uses the shifted impedance during set-up
-and returns to the decoupled TCP-centred impedance in the grinding branch. This
-phase arrangement follows the measured coupling mechanism. The reported runs
-ended at the pre-grinding gate, so the sustained grinding phase was outside the
-experimental evaluation.
-
-The complementary null-space study evaluated projected damping and
-singular-value conditioning under a repeatable internally commanded
-disturbance. Projected null-space damping reduced the cumulative projected
-null-space motion by approximately \(25\,\%\), with a similar reduction in net
-redundant displacement. Its velocity-dependent torque vanishes as the redundant
-motion stops.
-
-In contrast, singular-value conditioning was active before and throughout the
-commanded disturbance. Both tested torque magnitudes ended the disturbance interval with
-net redundant displacements more than two orders of magnitude smaller than the
-condition without null-space torque. Under the tested disturbance direction,
-the conditioning term acted concurrently with the disturbance and strongly
-suppressed the resulting redundant displacement. The near-zero net displacement
-therefore reflects disturbance rejection during its application rather than a
-subsequent return of the redundant configuration after the disturbance. The
-conditioning action drives the configuration toward the sampled neighbour with
-the larger \(\sigma_{\min}\). The lower tested conditioning magnitude achieved
-comparable suppression of net displacement with substantially less cumulative
-redundant motion. The Cartesian position error remained below the predefined
-\(2\,\mathrm{mm}\) limit in all pose-hold trials. These results apply to the
-separate pose-hold experiment; the surface-contact measurements used the
-combined secondary-torque mode.
-
-Overall, the experiments support two uses of the centre of compliance. The
-TCP-centred condition provides the direction-independent fixed reference for
-the investigated task. A non-zero tangential displacement provides
-condition-dependent rotational alignment authority, with direction and sign set
-by the required alignment rotation and magnitude set by the contact geometry,
-robot configuration, and operating limits. Projected damping and singular-value
-conditioning provide separate means of influencing the redundant degree of
-freedom while keeping the Cartesian task primary to first order.
+Finally, the null-space tests showed that projected damping reduced cumulative
+redundant joint motion by about \(25\,\%\), while singular-value conditioning
+nearly eliminated the net disturbance-induced redundant displacement for the
+tested disturbance direction without violating the Cartesian pose-error limit.
 
 \section{Limitations}
 \label{sec:limitations}
@@ -219,7 +138,7 @@ A second extension is an online direction-selected compliance-centre strategy.
 The experimental results motivate the following sequence:
 
 \begin{enumerate}[leftmargin=1.1cm]
-\item Begin the run with the centre of compliance at the TCP.
+\item Begin the run with the \abbr{CoC} at the TCP.
 \item Estimate the current tool--surface angular deviation at the clearance
 transition.
 \item Evaluate the alignment response available with the TCP-centred
