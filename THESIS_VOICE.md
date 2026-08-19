@@ -435,9 +435,38 @@ the highest-risk zone for similarity matching; see Originality below.
 
 ### 2. Connective scaffolding
 
-Openers that announce a logical relation the sentence then fails to earn:
-`In this way`, `As a result`, `Therefore`, `This means that`, `In other words`,
-`It is important to note that`, `Overall`, `Furthermore`, `Moreover`.
+**Amended by the author's connector list.** This pattern once banned
+`Moreover`, `Furthermore`, `Additionally`, `Overall` and `As a result`
+outright. The author supplied an academic-connector list that includes them,
+and it governs: those words may now be used. What survives unchanged is the
+*test*, which was always the substance of the rule and is not a matter of
+vocabulary.
+
+**The test.** A connector is written only where the relation it names is
+already in the logic. Delete it and read the sentence again: if it still
+follows, the connector was decoration and stays deleted; if it no longer
+follows, the relation is real and the connector belongs. Where a sentence does
+not follow its predecessor at all, the paragraph order is wrong, and reordering
+is the fix — a transition pasted over a bad order hides the fault rather than
+repairing it.
+
+The counts that prompted the change are worth keeping. The thesis linked almost
+entirely by consequence: `therefore` 104 times, `because` 33, against **zero**
+`However` and two `although`. Contrast and concession were missing altogether,
+which is what made adjacent results read as unrelated statements. Prefer
+contrast and concession where the relation is one of those, rather than adding
+more consequence.
+
+**Four items on the list are still not used**, because they collide with the
+evidence rules rather than with this pattern: `Obviously`, `Of course`,
+`Clearly` and `Undoubtedly` assert confidence instead of demonstrating it, and
+the guide requires certainty matched to one configuration and three
+repetitions. `clearly` is separately listed under *Style* in
+THESIS_WRITING_GUIDE.md.
+
+Openers that still announce a relation the sentence fails to earn:
+`In this way`, `This means that`, `In other words`,
+`It is important to note that`.
 
 Flagged, [02_theoretical_background.tex:260](chapters/02_theoretical_background.tex#L260):
 
@@ -987,9 +1016,12 @@ implied or needed.
 
 Search the changed `.tex` files for each of these:
 
-- `In this way`, `As a result`, `This means that`, `In other words`,
-  `It is important`, `It is worth noting`, `Overall`, `Furthermore`,
-  `Moreover`, `Additionally`
+- `In this way`, `This means that`, `In other words`, `It is important`,
+  `It is worth noting` — still scaffolding. `Moreover`, `Furthermore`,
+  `Additionally`, `Overall` and `As a result` are permitted by the author's
+  connector list; see pattern 2 for the test they must pass.
+- `Obviously`, `Of course`, `Clearly`, `Undoubtedly` — on the connector list but
+  not used here, because they assert certainty the evidence does not carry
 - `puts`, `uses`, `provides a`, `helps to`, `plays a role`, `deals with`
 - `useful`, `important`, `powerful`, `interesting`, `straightforward`,
   `another difficulty`
