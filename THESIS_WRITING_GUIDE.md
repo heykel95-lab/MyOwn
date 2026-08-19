@@ -909,8 +909,8 @@ Section by section:
   held fixed so it did not become a variable.
 - **Data recording.** Do not list the signals a third time. One sentence
   pointing at Chapter 3 and the data-format appendix. What stays is the data
-  quality: three repetitions planned, 171 runs over 57 settings, one incomplete,
-  170 analysed.
+  quality: three repetitions, 171 runs over 57 settings, none discarded, all
+  171 analysed.
 - **Case matrix.** The cases are currently explained three times — a grouping
   table, a prose walk-through, and the master table. **Delete the grouping
   table.** Keep one paragraph naming the three effects being separated, then the
@@ -947,10 +947,16 @@ stated in a clause rather than as a numbered equation. The same applies to
 records the calibrated offsets and the selection tolerance and points at
 Chapter 3 for the algorithm that consumes them.
 
-**A run count has one home.** The repetitions, the total, the incomplete run
-and the analysed total are stated once, in the data-recording subsection. The
+**A run count has one home.** The repetitions, the total and the analysed total
+are stated once, in the data-recording subsection. The
 evaluation section says how repeated settings are reported and where the
 standard deviations appear, and does not restate the counts.
+
+Every setting now carries its three repetitions and nothing was discarded, so
+the subsection states that and stops. Do not reintroduce an excluded-run
+sentence, and do not describe how the complete set was arrived at: `recorded`
+is the only permitted verb, per the rule against `re-recorded` under *Naming a
+technical quantity*.
 
 **Isotropic matrices are a table, not a display.** Four \(3\times3\)
 matrices whose diagonal entries are all equal spent most of a page saying four
@@ -1697,6 +1703,26 @@ figure rather than waiting several pages.
 A plot that is an evaluation consistency check rather than a finding does not
 interrupt the argument; it goes to the supporting-plots appendix and is
 referred to from the chapter.
+
+**Every supporting plot must carry something the chapter does not, and its
+section must say what that is in its first two sentences.** The appendix is not
+a place to keep every available plot: a figure that reaches the same conclusion
+as a chapter figure is removed, however correct it is, because an appendix of
+near-duplicates reads as accumulation rather than judgement. The three that
+earn their place, and the reason each does:
+
+| Supporting item | What it carries that the chapter does not |
+|---|---|
+| Conditions classified as tilted by TCP height | The seven settings behind the flatness count, which the chapter states only as a total |
+| Per-setting spread of the Case-D lever positions | The standard deviation of each setting; the chapter figure plots the means alone |
+| Consistency of the two angular quantities | A check on the choice of response metric, comparing \(\Delta\theta_{\mathrm{set}}\) against \(\Delta\theta_{\mathrm{align}}\) |
+
+A surface-frame component plot of the two outer Case-D positions was removed on
+this test. Its own text conceded that it reached the same conclusion as the
+chapter's wrench figure, in all three components rather than one, and the two
+extra components support no claim the thesis makes. **Do not restore it.** A
+figure whose introduction has to say `this is the same conclusion that
+\Cref{...} carries in the chapter` has failed the test in its own words.
 
 **Assign each chapter one role and hold it.** Chapter 5 carries observation and
 interpretation together, case by case; Chapter 6 carries final conclusions

@@ -33,6 +33,14 @@ any chapter. `plot_angle_descent.py` writes `MAIN_DQ_descent.pdf`, which is in
 `figures/` and is likewise no longer included; it is kept here so that every
 generated file in `figures/` has its generator.
 
+`MAIN_D_diagnostics.pdf` joined that set on 2026-08-19. Its appendix section
+was removed because it reached the same conclusion as the chapter's
+`MAIN_D_wrench.pdf` — a similar commanded normal force at both outer Case-D
+positions and a moment about \(t_1\) of opposite sign — with the two remaining
+surface-frame components adding no distinction the thesis relies on. The file
+and `plot_setup_diagnostics.py` stay, so the generator is still here if the
+section is ever restored.
+
 The four Chapter 5 figures drawn in `pgfplots` — the Case-A bars, the Case-D
 panels, the Case-D-against-Case-F comparison and the Case-G panels — have no
 generator here. They are `.tex` sources in `figures/` and are drawn from the

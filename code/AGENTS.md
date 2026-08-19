@@ -47,9 +47,14 @@ to the wrong implementation.
   controller.** Every contact experiment reported in the thesis — the
   calibrated-plane campaign, Cases A to H, the centre-of-compliance work — was
   run with it. It is the authority on the impedance law, the phase structure,
-  the compliance-centre conventions, and the set-up evaluation. It contains the
-  controller **source only**: no `experiments/` directory, no logged CSV, and
-  no run records. Those stayed on the lab machine.
+  the compliance-centre conventions, and the set-up evaluation. On the lab
+  machine it also holds the campaign archive under `experiments/results/`,
+  \(171\) run directories over the \(57\) reported settings, and the
+  `experiments/derived/metrics.csv` that the contact figure scripts read.
+  **A clone shows neither**: its `.gitignore` excludes
+  `experiments/results/**/*.csv` for size and `experiments/derived/` entirely,
+  so a session away from the lab machine sees run metadata without the logs and
+  must not conclude the records were never kept.
 - **`MyController` is superseded and must not be cited for the contact
   results.** The one part of it still in use is the **null-space pose-hold
   experiment under the internally commanded disturbance**, whose run records

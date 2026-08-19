@@ -10,101 +10,135 @@ referenced from here rather than repeated.
 completes it removes the entry in the same turn, so that no later session — and
 no other agent — repeats work that is already in the document.
 
-## For the lab machine, 2026-08-20
+## The campaign archive, and what it now supports
 
-### Complete the run archive so every reported run carries its full record
+The \(57\) reported settings each carry three repetitions. The Case-D run that
+Section 4.3.4 once recorded as excluded was re-recorded on 2026-08-19 under a
+byte-identical parameter set, so the count is \(171\) of \(171\) and the chapter
+says so. **Do not reintroduce an excluded-run sentence.**
 
-**Goal.** Every run behind a reported number has a complete, archived record:
-the logged per-cycle CSV, `terminal.log`, `params_effective/`, and `meta.txt`.
-At present the archived directories that have been inspected carry the metadata
-but **not** the CSV, so no reported contact figure can be regenerated away from
-the lab machine.
+The archive lives on the lab machine at
+`Thesis_Final_Control/experiments/results/`, \(171\) run directories each with
+`logs/surface_grinding_controller_log.csv`, and
+`experiments/derived/metrics.csv` carries the \(100\) `P2_` rows the contact
+figure scripts read. **A clone shows neither**, because that repository's
+`.gitignore` excludes `experiments/results/**/*.csv` for size and
+`experiments/derived/` entirely. The twelve pose-hold trials are in the other
+repository as `MyController/experiments/results/MAIN_NS{7,8}_*`, three
+repetitions each, all ending at \(18.001\,\mathrm{s}\).
 
-**What the thesis claims, and therefore what the archive has to support.**
-\(171\) surface-contact runs were scheduled over \(57\) settings at three
-repetitions each; \(170\) are analysed. Twelve pose-hold trials cover four
-null-space settings at three repetitions. The per-case split reconciles to the
-\(57\) as follows, and this is the checklist to audit directory by directory:
+The mapping from case letters to directories, which should not be re-derived:
 
-| Case | Settings | Runs | Tested values behind the settings |
-|---|---|---|---|
-| A | 5 | 15 | No lever at none and \(\pm10^\circ\) about \(t_1\) or \(t_2\) |
-| B | 4 | 12 | \(K_R=15\) and \(50\,\mathrm{N\,m/rad}\), for a \(t_1\) and a \(t_2\) command |
-| C | 6 | 18 | \(K_p=300\) and \(800\,\mathrm{N/m}\) per axis, plus one combined \(300\,\mathrm{N/m}\) with \(K_R=50\,\mathrm{N\,m/rad}\) per axis |
-| D | 24 | 72 | Six non-zero lever positions \(-40,-20,-10,+10,+20,+40\,\mathrm{mm}\) at each of the four \(\pm10^\circ\) commands; the \(0\,\mathrm{mm}\) column is Case A |
-| E | 3 | 9 | Surface-frame lever at none and \(+10^\circ\); tool-frame at none. The \(+10^\circ\) tool-frame setting is Case D |
-| F | 6 | 18 | \(-40,-20,-10,+10,+20,+40\,\mathrm{mm}\) along the tool axis; \(0\,\mathrm{mm}\) is Case D |
-| G | 4 | 12 | \(0\) and \(+40\,\mathrm{mm}\) at \(+5^\circ\) about \(t_1\) and about \(t_2\) |
-| H | 5 | 15 | Both diagonals with the selected and with the fixed lever, and \(t_2\) with the fixed lever |
-| Null-space | 4 | 12 | Baseline, \(d_{\mathrm{null}}=2\), \(k_\sigma=1.5\), \(k_\sigma=2.0\) |
+| Case | Settings | Run directories |
+|---|---|---|
+| A | 5 | `S1_none_00deg`, `P2_{t1,t2}_{pos,neg}_p000` |
+| B | 4 | `A_rot_{t1,t2}_{15,50}` |
+| C | 6 | `B_trans_{t1,t2}_{0300,0800}`, `B_combined_{t1,t2}` |
+| D | 24 | `P2_{t1,t2}_{pos,neg}_{m010,m020,m040,p010,p020,p040}` |
+| E | 3 | `S3_surface_00deg`, `S3_surface_t1_10deg`, `S2_tool_00deg` |
+| F | 6 | `P3_axis_{m010,m020,m040,p010,p020,p040}` |
+| G | 4 | `P5_mag_{t1,t2}_{p000,p040}` |
+| H | 5 | `C_dir_{m45,p45}`, `C_fixed_{m45,p45}`, `C_fixed_t2` |
 
-**The one gap the thesis states but cannot name.** Section 4.4.4 records that
-one run of one **Case-D** setting was not recorded completely and was excluded,
-leaving that setting with two usable repetitions against three everywhere else.
-**Which** Case-D setting is not stated anywhere in the thesis, and cannot be
-determined from this machine. Find it — it is the Case-D run directory holding
-two usable repetitions rather than three — and then either re-record the third
-repetition under the identical parameter set, or note the setting explicitly so
-the asymmetry is traceable. If it is re-recorded, the counts in Section 4.4.4
-become \(171\) analysed of \(171\) and that sentence must be updated with them.
+The `P2_*_{m080,p080}` directories and the `V_*`, `S4_*`, `S5_*`, `P4_*`,
+`P6_*`, `P_*`, `AXS*`, `REVS2_*` and `PROBE60_*` series are exploratory and
+outside the reported \(57\).
 
-**Confirmed missing, from the inspection done in an earlier session.**
+The aborted first attempt at `P2_t1_pos_m040/r02` was moved to
+`experiments/results_aborted/P2_t1_pos_m040_r02_20260817/` so no analysis script
+counts it. Its `README.md` says what it was. Do not delete it and do not move it
+back.
 
-- No per-cycle CSV in `MAIN_F7_baseline_20N_200mm/r01/`, and by extension the
-  other three null-space conditions. Panel (a) of Figure 5.10 needs the full
-  time history, so the summary alone is not enough.
-- No per-cycle CSV in `P2_t1_pos_m040/r01/` or `P2_t1_pos_p040/r01/`, which
-  Figure D.2 needs.
-- `MyController/experiments/derived/metrics.csv` has \(240\) rows and not one
-  `P2_` row, so it reproduces no reported contact figure.
+### The repeatability sentence in Chapter 5 cannot be reproduced
 
-**Still to be audited, because it was never checked.** Whether the remaining
-\(55\) contact settings and the other eleven pose-hold trials carry their CSV.
-Do this as a sweep over `experiments/results/` rather than per figure, since
-the same absence blocked three separate figures.
+Chapter 5 states that the median within-setting standard deviation of the
+signed set-up rotation was approximately \(0.04^\circ\) about \(t_1\) and
+\(0.14^\circ\) about \(t_2\), and treats differences below about
+\(0.1^\circ\) as scatter. **No definition tried on 2026-08-19 reproduces those
+two values** from `metrics.csv`: medians over the \(57\) reported settings give
+\(0.015\) and \(0.058\), over the \(28\) `P2_` settings \(0.041\) and
+\(0.157\), and over every archived setting \(0.016\) and \(0.054\). The
+\(0.041\) is close enough to be suggestive and its partner is not.
 
-**Two identifier questions to settle in the same pass.**
+This matters because the third repetition of `P2_t1_pos_m040` widened that
+setting's own scatter, so whatever the sentence was computed from has moved a
+little. **The number was left unchanged**, since changing a statistic that
+cannot be reproduced would be worse than leaving it. To close it: state which
+set of settings and which column the two medians came from, then recompute both
+and the \(0.1^\circ\) interpretation threshold with them.
 
-- The null-space runs are archived as `MAIN_F7_*` and `MAIN_F8_*` while
-  `make_nullspace_figure.py` expects `MAIN_NS7_*` and `MAIN_NS8_*`. Confirm the
-  two sets are the same four conditions before renaming either.
-- Whether **every** pose-hold trial ran to \(18\,\mathrm{s}\). The
-  \(5\)--\(9\,\mathrm{s}\) disturbance interval is already confirmed from
-  `terminal.log`; the trial end is not. Do not write a
-  \(9\)--\(18\,\mathrm{s}\) observation interval until checked.
+### Building on the lab machine, and the one thing it cannot check
 
-Push whatever is recovered, per the section below.
+`texlive-lang-german` is installed, so `ngerman.ldf` resolves and the document
+builds. `Thesis.tex` was built on 2026-08-19 with bibtex and three passes: no
+errors, no undefined references or citations, no overfull boxes, 171 pages.
+Judge a build by the final pass; the earlier ones always report undefined
+citations.
 
-### The figure work is mostly a drawing problem, not a data problem
+**`compat=1.18` cannot be used here.** This TeX Live 2019 ships pgfplots 1.16
+(`2018/03/28`), and `config/packages.tex` line 39 asks for `1.18`, which fails
+outright with `Sorry, 'compat=1.18' is unknown in this context`. Ubuntu 20.04
+has no newer TeX Live, so no apt package fixes it: the routes are a `tlmgr`
+update of pgfplots alone, or a current TeX Live installed alongside and put
+first on `PATH`.
 
-The archive completion above is the item that genuinely needs the lab machine.
-The three figure items below are a different matter, and an earlier session got
-them wrong by treating all of them as blocked on data. **Chapter 5 already
-reports every null-space value with its standard deviation**, and figures in
-this thesis are routinely drawn from tabulated means written into the source,
-which is how `make_coc_figures.py` draws the Case-H comparison. Do not go
-looking for logs before checking whether the number is already in the chapter.
-Their source edits can and should be made here first; only the regeneration
-needs the data.
+Until then a local build means lowering the line to `compat=1.16` and
+**restoring it afterwards** — done and restored twice on 2026-08-19. The
+consequence is that every `pgfplots` figure is rendered at 1.16 semantics
+rather than the 1.18 the author's MiKTeX uses, so **the plots must be seen in a
+build there before submission**. Nothing else about the document differs.
 
-### Three figure items, all blocked on the same missing CSV
+### Uncommitted work in the controller repository
 
-All three need logged per-trial CSV that is on neither this machine nor in
-either repository. Each entry gives the exact source edit, so the only work on
-the other machine is running the script and copying the PDF back. **Make the
-source edits here first** — they are already possible — then regenerate.
+`Thesis_Final_Control` holds the new `P2_t1_pos_m040/r02` archive, the
+`results_aborted/` directory, a regenerated `experiments/derived/metrics.csv`
+and two refreshed figures, none of it committed. The CSVs and `derived/` are
+excluded by its `.gitignore`, so a commit would carry the run's `terminal.log`,
+`params_effective/`, `about.txt` and `provenance.txt` only. Decide whether to
+commit it.
 
-**Before scripting any of this, read the tooling warning at the end of this
-section.**
+One artefact to know about: that run's `provenance.txt` records
+`tree_state: dirty`, because the aborted archive had been moved aside in the
+same working tree before the run started. The controller source and `params/`
+were unchanged and match the campaign commit.
+
+The wider question is whether the logs should be pushed anywhere at all, since
+without them a session on another machine cannot regenerate a figure. The
+smallest useful additions are `experiments/derived/metrics.csv` from
+`Thesis_Final_Control` and one complete null-space run from `MyController`.
+**Keep `MyController`'s calibration exclusion** in either case: its
+`.gitignore` drops the measured plane and tool-axis files because those
+coordinates are not to be published. `MyOwn/.gitignore` blocks no CSV, so this
+repository is also a possible home, but then the scripts' `HERE/../experiments`
+resolution means the data has to sit at `code/python/experiments/`.
+
+### Two figure-label edits, still open
+
+Both inputs are on this machine. The scripts resolve their data as
+`HERE/../experiments`, so run each beside its data rather than copying the
+archive into this repository: `make_nullspace_figure.py` against
+`MyController/experiments/`, and `make_coc_figures.py` against
+`Thesis_Final_Control/experiments/`.
+
+A third entry here covered the axis labels of `plot_setup_diagnostics.py` and
+is gone with the appendix section that included its figure. The script and
+`figures/MAIN_D_diagnostics.pdf` stay; see `code/python/figures/README.md`.
+
+**Make the source edits below first, then regenerate and copy the PDF back.**
+Line numbers were checked on 2026-08-19.
+
+**Editing warning.** Editing these `.tex` and `.py` files through an inline
+shell script **silently corrupts backslashes**. Both of these failed here:
+`python - <<'PY' ... PY`, where a quoted heredoc still stripped one backslash
+level; and `sed -i 's/\\cref{/\\Cref{/g'`, which **reported success and changed
+nothing**. Use a file-based script written by an editor, or an editing tool,
+and verify by re-reading the file.
 
 #### 1. Figure 5.10 y-axis — `code/python/figures/make_nullspace_figure.py`
 
-The caption is already correct and the figure is honest as it stands, so this
-is polish rather than a fault. Panel (b)'s y-axis still reads
-`Final singular-value change`, which is vague and does not use the symbol the
-thesis now defines.
-
-Two label strings to change:
+Panel (b)'s y-axis reads `Final singular-value change`, which is vague and does
+not use the symbol the thesis now defines. The caption is already correct and
+the figure is honest as it stands, so this is polish rather than a fault.
 
     line 268:  label=r"Final $\Delta\sigma_{\min}$ (mean $\pm$ SD)"
         ->     label=r"$\Delta\sigma_{\min,\mathrm{dist}}$ (mean $\pm$ SD)"
@@ -113,55 +147,14 @@ Two label strings to change:
         ->     ax.set_ylabel(r"Change in $\sigma_{\min}$ over disturbance "
                              r"interval $\Delta\sigma_{\min,\mathrm{dist}}$ [-]")
 
+**Line 312 repeats the same label string** in the legend list and must change
+with line 268, or the legend and the series will disagree.
+
 Keep the `[-]` unit marker rather than writing `[m/rad]`: the symbol list now
 states that a singular value of the mixed geometric Jacobian carries no single
 physical unit and is a relative indicator under one fixed representation.
 
-**Why it cannot run here.** Two separate reasons, and both must be solved:
-
-- **The run identifiers do not match.** `CONDITIONS` at lines 38--42 expects
-
-      MAIN_NS7_baseline_20N_200mm
-      MAIN_NS7_damping_2p0_20N_200mm
-      MAIN_NS8_ksigma_1p5_20N_200mm
-      MAIN_NS8_ksigma_2p0_20N_200mm
-
-  whereas `MyController/experiments/results/` holds the same four conditions
-  under `MAIN_F7_*` and `MAIN_F8_*`. Confirm which naming the reported figure
-  was generated from before renaming anything, and do not edit `CONDITIONS` to
-  match the old names without checking that the runs are the same.
-- **No per-cycle CSV is archived.** `MAIN_F7_baseline_20N_200mm/r01/` contains
-  `terminal.log`, `params_effective/`, the calibration overlays and
-  `meta.txt`, but no logged CSV. Panel (a) needs the full time history, so the
-  CSV is required, not just the summary.
-
-The script also expects `experiments/results/` and
-`experiments/derived/MAIN_NS_automatic_summary.csv` **relative to its own
-directory**, which resolves to `code/python/experiments/...` here. Either place
-the data there or run the script beside the data.
-
-#### 2. Figure D.2 axes — `code/python/figures/plot_setup_diagnostics.py`
-
-The axes read \(F_{\mathrm{cmd}}\) and \(M_{\mathrm{cmd}}\), neither of which is
-a thesis symbol. Do not invent a vector symbol for one appendix figure; the
-\(t_1\), \(t_2\), \(n_s\) legend already names the components.
-
-    line 112:  r"$F_{\mathrm{cmd}}$ [N]"    -> r"Commanded force component [N]"
-    line 114:  r"$M_{\mathrm{cmd}}$ [N m]"  -> r"Commanded moment component [N m]"
-
-The `f"F_cmd n ..."` and `f"M_cmd t1 ..."` strings at lines 118--119 are console
-output, not figure text, and stay.
-
-**Data needed**: its two default trials, and nothing more —
-
-    P2_t1_pos_m040/r01   ("centre -40 mm")
-    P2_t1_pos_p040/r01   ("centre +40 mm")
-
-Those detail strings say `centre`, which is \(d_c\) and **not** \(r_c\). Do not
-"correct" them to \(r_c\); see the \(d_c=-r_c\) rule above. After regenerating,
-check the caption still describes both columns.
-
-#### 3. Legends of Figures 5.2, 5.3 and D.1 — `code/python/figures/make_coc_figures.py`
+#### 2. Legends of Figures 5.2, 5.3 and D.1 — `code/python/figures/make_coc_figures.py`
 
 These read `initial $-9.31^\circ$ about $t_1$` and similar. They are no longer
 wrong, because the signed set-up-entry deviation is now defined in Section 4.5,
@@ -181,75 +174,10 @@ orientation actually reached. Say once in the surrounding text that the
 commanded offset and the measured entry deviation differ, and that the measured
 values are tabulated.
 
-**Data needed**: a `metrics.csv` containing the `P2_` rows. The copy here has
-240 rows and none of them. Note the README claim that this script "needs no
-data" is false — `main()` calls `load()`, which reads that file.
+### Correct the README claim about `make_coc_figures.py`
 
-#### Tooling warning, learned the hard way this session
-
-Editing these `.tex` and `.py` files through an inline shell script **silently
-corrupts backslashes**. Both of these failed on this machine:
-
-- `python - <<'PY' ... PY` — a quoted heredoc still stripped one backslash
-  level, so a pattern containing `\\[-2pt]` never matched and the script
-  reported a clean `AssertionError` only because it happened to assert;
-- `sed -i 's/\\cref{/\\Cref{/g'` — **reported success and changed nothing.**
-  That is the dangerous one, because a silent no-op looks like a completed
-  edit.
-
-Use a file-based script written by an editor, or an editing tool, and verify by
-re-reading the file rather than trusting the exit status.
-
-### Push the missing pieces to a repository while there
-
-The reason this work stalls on the other machine is that the campaign records
-were never committed anywhere. Pushing them once removes the dependency for
-every future session, on any machine.
-
-**Minimum, to close Figure D.2:**
-
-    experiments/results/P2_t1_pos_m040/r01/
-    experiments/results/P2_t1_pos_p040/r01/
-
-including the logged CSV each contains, not only `terminal.log` and
-`params_effective/`. The run directories archived so far carry the metadata but
-**not** the CSV, which is exactly why the figure cannot be re-run here.
-
-**Worth adding at the same time, so no later session is blocked again:**
-
-- a `metrics.csv` that actually contains the `P2_` rows. The copy on this
-  machine, `MyController/experiments/derived/metrics.csv`, has 240 rows and not
-  one `P2_` among them, so it reproduces no reported contact figure;
-- one complete null-space run CSV, which also settles the trial end time below;
-- the remaining `P2_*` run directories if their size is reasonable.
-
-**Where to push.** `Thesis_Final_Control` is the natural home, since it ran the
-campaign, and it currently has no `experiments/` directory at all. Its
-`.gitignore` does not exclude one. If the data goes into this thesis
-repository instead, note that the figure scripts resolve their input as
-`HERE/../experiments/results`, which from `code/python/figures/` means
-`code/python/experiments/results/`. Nothing in `MyOwn/.gitignore` blocks CSV,
-so either choice works.
-
-**One caution.** `MyController/.gitignore` deliberately excludes the measured
-plane and tool-axis calibration files, with the stated reason that the measured
-coordinates are not to be published. Keep that exclusion when moving anything
-across; push the run records, not the calibration coordinates.
-
-### Worth confirming while there
-
-- **The null-space trial end time** (item 26). The disturbance interval is
-  already confirmed from `MAIN_F7_baseline_20N_200mm/r01/terminal.log`, which
-  states `ramp 5.0--7.0 | hold to 8.0 | release 1.0 s` and therefore ends at
-  \(9.0\,\mathrm{s}\), matching Section 4.6.2. Unknown is whether **every**
-  trial ran to \(18\,\mathrm{s}\). Do not write
-  `9--18 s post-disturbance observation` until checked; if the runs differ in
-  length, say that instead of quoting one number.
-
-### Also worth fixing while the data is to hand
-
-`code/python/figures/README.md` claims `make_coc_figures.py` "needs no data ...
-so it runs anywhere". That is wrong: `main()` calls `load()`, which reads
+`code/python/figures/README.md` line 43 says the script "needs no data ... so it
+runs anywhere". That is wrong: `main()` calls `load()`, which reads
 `experiments/derived/metrics.csv` and raises `FileNotFoundError`. Either
 correct the claim or give the script the hardcoded-means path the README
 describes.
@@ -455,8 +383,14 @@ final position. **As written the two are inconsistent**: if the limit is
 \(15.1\,\mathrm{N\,m}\) without explanation. There may be a real
 distinction — commanded torque against the value libfranka actually applies, a
 transient against a configured threshold, or rated against peak torque — but
-the text did not state it, and it cannot be checked here because no run logs
-are on this machine.
+the text did not state it.
+
+The logs to check are on the lab machine after all. Case F is `P3_axis_*`,
+which stops at \(40\,\mathrm{mm}\), so the exploratory run is one of the
+out-of-campaign series — `S5_normal_*` reaches \(90\,\mathrm{mm}\) and
+`MyController` holds `B2_pole_normal_p120` and `MAIN_I3_rcn_p120`. Identify
+which one the paragraph described before quoting either number again, and note
+that `MyController` is the superseded controller.
 
 The paragraph has been removed from Chapter 5. The Limitations section of
 Chapter 6 now carries the defensible part without the numbers: the lever
@@ -467,22 +401,6 @@ To close it: confirm what the \(12\,\mathrm{N\,m}\) figure refers to and
 whether the \(15.1\,\mathrm{N\,m}\) value is a commanded or an applied
 torque. If both are commanded values and libfranka handles the limit, say so in
 one clause and the paragraph can go back.
-
-## Run counts could not be reconciled against `metrics.csv`
-
-Raised while looking for the plotting code, and **not established as a fault in
-the thesis**. The reported figures are internally consistent: the per-case runs
-sum to exactly 171, and 57 settings times 3 repetitions is 171.
-
-`MyController/experiments/derived/metrics.csv` holds 240 rows across several
-campaigns (`MAIN`, `B1`--`B4`, `A2`, `G1`--`G3`, `PILOT`), and no obvious
-filter reproduces 171 or 170. Its `test_case` letters are the old scheme, and
-101 rows carry none. The file sits beside the superseded plotting scripts and
-is plausibly from the same stale generation.
-
-To close it: find the 171 run directories the thesis counted, confirm the one
-incomplete run, and map them onto rows in `metrics.csv`. Only if they fail to
-map does anything in the thesis need revisiting.
 
 ## Inspect the pages this revision moved
 
