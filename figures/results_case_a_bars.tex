@@ -2,6 +2,7 @@
 % categorical, so they are labelled by the command itself rather than by the
 % measured initial angle, which stays in Table~\ref{tab:results_case_a}.
 \begin{tikzpicture}
+\definecolor{barblue}{HTML}{0057B8}
 \begin{axis}[
     width=11.0cm, height=6.2cm,
     ybar,
@@ -16,14 +17,17 @@
     grid style={gray!25, very thin},
     tick label style={font=\footnotesize},
     label style={font=\footnotesize},
-    xlabel={Commanded orientation offset},
+    xlabel={Commanded offset},
     ylabel={\(\Delta\theta_{\mathrm{set}}\) [\(^\circ\)]},
-    every axis plot/.append style={draw=black, fill=blue!20!white},
     nodes near coords,
     nodes near coords style={font=\scriptsize, /pgf/number format/fixed,
                              /pgf/number format/precision=2},
   ]
-\addplot coordinates {
+% The fill goes on the plot, not on every axis plot: the ybar cycle list sets
+% its own fill at thirty per cent of the plot colour and is applied after an
+% axis-level append style, which is why this figure rendered pale while the
+% generated bar charts did not.
+\addplot[draw=black, fill=barblue] coordinates {
   (none,-0.97) (p10t1,7.57) (m10t1,-10.83) (p10t2,-1.63) (m10t2,-1.25)};
 \end{axis}
 \end{tikzpicture}

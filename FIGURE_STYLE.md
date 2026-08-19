@@ -297,14 +297,19 @@ plots cannot reintroduce an old name.
   comparison both dropped it on this ground. Beyond two bar series, continue
   with yellow and then the extended order, still skipping red.
 
-  **The bar blue is `#B2B2FF`, and it is not the line-plot blue.** Bars are
-  filled, so they take the pale fill the Case-A bars established rather than the
-  saturated `SERIES_BLUE` a curve uses. That value was read off the compiled
-  page, not off the source: the Case-A `pgfplots` figure asks for
-  `blue!20!white`, which resolves to `#CCCCFF` on its own, and pgfplots
-  composites it to `#B2B2FF` on the page. `make_coc_figures.py` carries it as
-  `BAR_FILL_BLUE`. If a bar colour ever has to be matched again, sample the
-  rendered page rather than trusting the colour specification.
+  **The bar blue is `SERIES_BLUE`, `#0057B8` — the same blue a curve takes.**
+  All three bar figures carry it: the two written by `make_coc_figures.py` as
+  `BAR_FILL_BLUE`, and the Case-A bars, which name it with
+  `\definecolor{barblue}{HTML}{0057B8}`.
+
+  **In `pgfplots`, put a bar fill on the `\addplot`, never on
+  `every axis plot`.** The `ybar` cycle list sets its own fill at thirty per
+  cent of the plot colour and is applied *after* an axis-level append style, so
+  `every axis plot/.append style={fill=…}` is silently overridden. The Case-A
+  bars spent a long time rendering `#B2B2FF` — thirty per cent of pure blue —
+  while their source read `fill=blue!20!white`, which resolves to `#CCCCFF`.
+  Neither value was what the source asked for. Sample the compiled page when
+  checking a fill; do not trust the specification.
 - **Measured points use open markers with restrained connecting lines.** Use a
   white marker face, a coloured edge of approximately \(1.1\) points, and a
   line width of approximately \(1.25\) points. Marker shape repeats the series

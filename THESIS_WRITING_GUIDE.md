@@ -467,6 +467,20 @@ circulation, the settled choices are:
   input signal rather than a commanded orientation, and not `mismatch`, which
   implies an unwanted discrepancy where the angle is deliberate.
 
+  **In a table column heading or an axis label the short form is
+  `Commanded offset`.** The full name is for running prose, where there is room
+  to be exact; a heading has to be scanned, and the four Chapter 5 tables that
+  wrote `Commanded orientation offset` against one that wrote `Commanded
+  offset` made the same column look like two different quantities. Every table
+  heading and every axis naming that quantity now reads `Commanded offset`.
+  This is a shortening, not a new name: nothing else changes, and the full form
+  stays wherever the quantity is introduced or defined.
+
+  The Case-H table heading is **not** an instance of it. That column holds
+  `Commanded rotation direction` — the tangent-plane direction of the command,
+  with rows `about t1`, `-45 deg from t1` and so on, at a common offset
+  magnitude. It names a different component and keeps its own heading.
+
 **There is no fixture in this work, and the word must not appear.** No fixture,
 jig, clamp, or workholding device was used: the surface is simply positioned,
 and the tool is held in the gripper. Earlier drafts used `fixture` loosely for
