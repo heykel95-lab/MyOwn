@@ -431,3 +431,53 @@ table, and with `\label[table]{}` it fixed the type but built the number from
 the section prefix, printing `Table 4.3.2` for Table 4.3 across four labels.
 Those four are now referenced as literal `Table~\ref{...}`, which is right in
 both respects. Any new `longtable` needs the same treatment.
+
+## Later todos
+
+Wanted, agreed, and deliberately not done yet. Nothing here blocks submission.
+
+### Name the joints that carry the redundant motion, in Section 4.6
+
+The chapter states that the commanded disturbance is a point force on link~3 at
+\(r_p=[0,0,0.200]\,\mathrm{m}\), which is correct and matches every archived
+run. It does not say which joints then move, and the answer is not the one a
+reader expects: the base joint moves most.
+
+The redundant direction for the reported posture is
+
+    v_7 = [ 0.680, 0.008, -0.674, -0.00007, 0.236, 0.0002, -0.166 ]
+
+printed by `make_nullspace_figure.py` when it resolves the reference axis. Over
+the \(5\)--\(9\,\mathrm{s}\) disturbance interval of
+`MAIN_NS7_baseline_20N_200mm/r01`, the net projected joint displacement is
+\(+0.077\) and \(-0.076\,\mathrm{rad}\) at joints 1 and 3, then
+\(+0.027\) at joint 5 and \(-0.019\) at joint 7 — a \(39\,\%\),
+\(38\,\%\), \(13\,\%\), \(9\,\%\) split of the total motion, with joints 2, 4
+and 6 contributing nothing measurable.
+
+Joint~1 therefore carries the largest share regardless of where the disturbance
+acts, because the Cartesian impedance holds the TCP and the surviving motion
+has to lie along \(v_7\). One sentence saying so closes an examiner question
+that the current text invites — the force is applied at link~3, yet link~1 is
+what visibly swings.
+
+The values above are computed, not estimated: recompute them from the archive
+rather than copying them if the posture or \(q_{\mathrm{init}}\) ever changes.
+
+### Record that the video trials are not the reported configuration
+
+`Thesis_Final_Control/experiments/results/V_ns*` uses the same
+`disturbance_link = 3`, but at \(40\,\mathrm{N}\) and a
+\(150\,\mathrm{mm}\) offset on a faster timeline, against the reported
+\(20\,\mathrm{N}\) at \(200\,\mathrm{mm}\). Nothing in either repository warns
+a later session against taking a null-space number from them. The note belongs
+next to the existing repository-authority rules in `code/AGENTS.md`.
+
+### Thin the consequence links
+
+`therefore` appears 104 times across the chapters and `because` 33, which is
+the thesis's default and near-only link. The connector pass added contrast and
+concession where the logic already carried them, but did not touch the
+consequence links themselves. Reducing them is what would most improve the
+monotony the author described; it means rewriting on the order of a hundred
+sentences, so it was not started.
