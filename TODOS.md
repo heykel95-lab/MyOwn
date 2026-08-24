@@ -93,14 +93,12 @@ consequence is that every `pgfplots` figure is rendered at 1.16 semantics
 rather than the 1.18 the author's MiKTeX uses, so **the plots must be seen in a
 build there before submission**. Nothing else about the document differs.
 
-### Uncommitted work in the controller repository
+### Where the run logs should live
 
-`Thesis_Final_Control` holds the new `P2_t1_pos_m040/r02` archive, the
-`results_aborted/` directory, a regenerated `experiments/derived/metrics.csv`
-and two refreshed figures, none of it committed. The CSVs and `derived/` are
-excluded by its `.gitignore`, so a commit would carry the run's `terminal.log`,
-`params_effective/`, `about.txt` and `provenance.txt` only. Decide whether to
-commit it.
+`Thesis_Final_Control` now tracks the text record of every archived run,
+including `P2_t1_pos_m040/r02`, `results_aborted/` and the four `V_ns` video
+runs. Its `.gitignore` excludes the CSVs and `derived/`, so what is published
+is `terminal.log`, `params_effective/`, `about.txt` and `provenance.txt` only.
 
 One artefact to know about: that run's `provenance.txt` records
 `tree_state: dirty`, because the aborted archive had been moved aside in the
@@ -116,17 +114,6 @@ smallest useful additions are `experiments/derived/metrics.csv` from
 coordinates are not to be published. `MyOwn/.gitignore` blocks no CSV, so this
 repository is also a possible home, but then the scripts' `HERE/../experiments`
 resolution means the data has to sit at `code/python/experiments/`.
-
-### Uncommitted work in this repository
-
-The thesis working tree holds the \(p_{\mathrm{Tool}}\) rename, the
-Chapter 2 \(p_{\mathrm{Tool}}\) definition, the removal of `subscript` from
-the prose, the `moment_bookkeeping` figure corrections, the
-\(m_{r_c,0}\)/\(m_{r_c}\) moment rename, the reshaped Case-C table, the
-corrected \(r_c\) vector in Figures 2.2 and 4.1, the Chapter 2 paragraph on
-how the selected tool point is chosen, and the matching guide entries, none of
-it committed. All three documents build clean with these
-changes in place. Commit when the current round of figure work is finished.
 
 ### One figure-label edit, still open
 
