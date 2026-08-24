@@ -233,23 +233,23 @@ r_{\mathrm{face,EE}}
 \end{equation}
 
 The tool geometry determines the point expected to reach the surface first.
-This point is denoted by \mbox{\(p_T\)} and is used as the contact reference
-during set-up; here the subscript \mbox{\(T\)} denotes the selected tool point.
+This point is denoted by \mbox{\(p_{\mathrm{Tool}}\)}, the selected tool point, and is used
+as the contact reference during set-up.
 Depending on the tool orientation it corresponds to a leading corner, the
 midpoint of a leading edge, or the tool-face centre. It is distinct from the TCP and
 from the virtual \abbr{CoC}. Its position follows from the
-end-effector-frame offset \mbox{\(r_{T,\mathrm{EE}}\)},
+end-effector-frame offset \mbox{\(r_{\mathrm{Tool,EE}}\)},
 
 \begin{equation}
-p_T=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{T,\mathrm{EE}},
+p_{\mathrm{Tool}}=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{\mathrm{Tool,EE}},
 \label{eq:implementation_contact_point_position}
 \end{equation}
 
 where the tool centre point coincides with the reported end-effector origin in
 this implementation, \mbox{\(p_{\mathrm{TCP}}=p_{\mathrm{EE}}\)}. The offset
-\mbox{\(r_{T,\mathrm{EE}}\)} is fixed relative to the tool once the contact
+\mbox{\(r_{\mathrm{Tool,EE}}\)} is fixed relative to the tool once the contact
 reference has been selected. Its base-frame representation
-\mbox{\(r_T=R_{\mathrm{EE}}r_{T,\mathrm{EE}}=p_T-p_{\mathrm{TCP}}\)} changes
+\mbox{\(r_{\mathrm{Tool}}=R_{\mathrm{EE}}r_{\mathrm{Tool,EE}}=p_{\mathrm{Tool}}-p_{\mathrm{TCP}}\)} changes
 with the tool orientation. The compliance-centre shift
 \mbox{\(r_c=p_c-p_{\mathrm{TCP}}\)} of
 \mbox{\Cref{sec:centre_of_compliance}} is a different quantity: it is the
@@ -762,33 +762,33 @@ Set-up generates the contact press that is evaluated in the experiments. The
 calibrated normal \mbox{\(n_s\)} points outward from the surface, so the descent
 direction towards the surface is \mbox{\(-n_s\)}. At the clearance transition,
 the selected tool point is projected onto the calibrated plane. This projected
-point is denoted by \mbox{\(p_{T,0}\)} and provides the starting reference for
+point is denoted by \mbox{\(p_{\mathrm{Tool},0}\)} and provides the starting reference for
 set-up. The scalar coordinate \mbox{\(s_{\mathrm{set}}(t)\geq0\)} describes the
 commanded displacement from this point towards the surface and is integrated at
 the configured speed and clamped at its configured endpoint. The desired
 position of the selected tool point is therefore
 
 \begin{equation}
-p_{T,d}(t)
+p_{\mathrm{Tool},d}(t)
 =
-p_{T,0}-s_{\mathrm{set}}(t)n_s.
+p_{\mathrm{Tool},0}-s_{\mathrm{set}}(t)n_s.
 \label{eq:implementation_setup_face_point_reference}
 \end{equation}
 
-Here, \mbox{\(p_{T,d}(t)\)} is expressed in the robot base frame. The Cartesian
+Here, \mbox{\(p_{\mathrm{Tool},d}(t)\)} is expressed in the robot base frame. The Cartesian
 impedance controller itself regulates the TCP, so this desired tool-point
 position must be converted into the corresponding desired TCP position.
 
-The vector \mbox{\(r_{T,\mathrm{EE}}\)} points from the TCP to the selected tool
+The vector \mbox{\(r_{\mathrm{Tool,EE}}\)} points from the TCP to the selected tool
 point and is expressed in the end-effector frame. At the clearance transition,
 the desired orientation for set-up is captured as \mbox{\(R_{\mathrm{clr}}\)}.
 Expressing the stored tool-point offset in the robot base frame at this
 orientation gives
 
 \begin{equation}
-r_{T,\mathrm{clr}}
+r_{\mathrm{Tool,clr}}
 =
-R_{\mathrm{clr}}r_{T,\mathrm{EE}}.
+R_{\mathrm{clr}}r_{\mathrm{Tool,EE}}.
 \label{eq:implementation_setup_tool_point_offset}
 \end{equation}
 
@@ -796,9 +796,9 @@ The desired tool-point position and desired TCP position are related by the
 same rigid-body geometry,
 
 \begin{equation}
-p_{T,d}(t)
+p_{\mathrm{Tool},d}(t)
 =
-p_d(t)+r_{T,\mathrm{clr}}.
+p_d(t)+r_{\mathrm{Tool,clr}}.
 \label{eq:implementation_setup_point_tcp_relation}
 \end{equation}
 
@@ -807,14 +807,14 @@ Solving this relation for the desired TCP position gives
 \begin{equation}
 p_d(t)
 =
-p_{T,d}(t)-r_{T,\mathrm{clr}}
+p_{\mathrm{Tool},d}(t)-r_{\mathrm{Tool,clr}}
 =
-p_{T,d}(t)-R_{\mathrm{clr}}r_{T,\mathrm{EE}}.
+p_{\mathrm{Tool},d}(t)-R_{\mathrm{clr}}r_{\mathrm{Tool,EE}}.
 \label{eq:implementation_setup_tcp_reference}
 \end{equation}
 
 Thus, \mbox{\(p_d(t)\)} is the TCP reference required to place the selected tool
-point at \mbox{\(p_{T,d}(t)\)} while maintaining the set-up orientation
+point at \mbox{\(p_{\mathrm{Tool},d}(t)\)} while maintaining the set-up orientation
 \mbox{\(R_{\mathrm{clr}}\)}. The surface restricts the commanded motion of the
 tool point, so the resulting Cartesian position error generates the press.
 

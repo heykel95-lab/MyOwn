@@ -64,7 +64,7 @@ they override the greyscale conventions above wherever the two disagree:
   Distinguish by colour first and by line weight second.
 
 **One quantity, one colour, across every panel of a figure.** In the
-moment-bookkeeping figure \(r_c\) is blue and \(r_T\) is green in both panels,
+moment-bookkeeping figure \(r_c\) is blue and \(r_{\mathrm{Tool}}\) is green in both panels,
 which is what lets a reader see that the same two levers are being shown twice
 with different ones acting. Give the label the colour of the thing it names.
 
@@ -97,9 +97,13 @@ node the run passes, not just its centre.
 
 ### Clearance
 
-**No symbol touches anything.** A label, a symbol or a name never touches or
-overlaps an arrow, a line, a box, an axis, another label, or the drawing it
-belongs to. This is the rule that gets broken most often, because a label placed
+**Nothing in a figure intersects anything else.** A label, a symbol or a name
+never touches or overlaps an arrow, a line, an arc, a box, an axis, another
+label, or the drawing it belongs to, and two drawn elements do not cross where
+the crossing carries no meaning. Curved arrows are the usual offender, because
+an arc swings away from the coordinate that placed it and reaches a label that
+looked clear in the source. Place a symbol on the side of its arrow that the
+arc leaves free. This is the rule that gets broken most often, because a label placed
 a small offset from its arrow looks separated in the source and lands on the
 arrowhead once `\resizebox` has scaled the picture. Offsets of one or two
 millimetres are not clearance; give a symbol beside an arrow roughly a third of
@@ -400,12 +404,12 @@ plots cannot reintroduce an old name.
   guess. It now reads `Alignment angle [°]` and the legend separates the two
   routes to it.
 - **An axis carries the symbol the symbol list assigns to the quantity.** A
-  reader who has met \(d_{c,t_2}\) in the text should not have to work out that
+  reader who has met \(r_{c,t_2}\) in the text should not have to work out that
   `Centre position along t_2` is the same thing. Where a symbol exists, the
   axis is that symbol and its unit; a descriptive phrase may stay in front of it
   where the symbol alone would be cryptic, as in
   `Cumulative projected null-space motion \(E_N\) [°]`. The pass that applied
-  this set the axes to \(d_{c,t_1}\), \(d_{c,t_2}\),
+  this set the axes to \(r_{c,t_1}\), \(r_{c,t_2}\),
   \(\Delta\theta_{\mathrm{set},t_i}\), \(\phi_{\mathrm{tilt}}\),
   \(\theta_{\mathrm{align}}\), \(\phi_{\mathrm{set}}\),
   \(|\Delta\theta_{\mathrm{align}}|\), \(E_N\) and

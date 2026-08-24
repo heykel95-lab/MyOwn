@@ -60,8 +60,8 @@ column makes the mixed translational and rotational quantities traceable.}
 }
 
 \symgroup{Cartesian Impedance Gains}{
-\symrow{$K_p,\ D_p$}{Generic translational stiffness / damping block; a frame or phase subscript is added when needed}{[N/m], [N\,s/m]}
-\symrow{$K_R,\ D_R$}{Generic rotational stiffness / damping block; a frame or phase subscript is added when needed}{[N\,m/rad], [N\,m\,s/rad]}
+\symrow{$K_p,\ D_p$}{Generic translational stiffness / damping block; a frame or phase index is added when needed}{[N/m], [N\,s/m]}
+\symrow{$K_R,\ D_R$}{Generic rotational stiffness / damping block; a frame or phase index is added when needed}{[N\,m/rad], [N\,m\,s/rad]}
 \symrow{$K_{p,t_1},\ K_{p,t_2},\ K_{p,n}$}{Translational stiffness entries along $t_1$, $t_2$, and $n_s$}{[N/m]}
 \symrow{$K_{R,t_1},\ K_{R,t_2},\ K_{R,n}$}{Rotational stiffness entries about $t_1$, $t_2$, and $n_s$}{[N\,m/rad]}
 \symrow{$R_{\mathrm{task}},\ T_R$}{Generic task-frame orientation and corresponding block rotation; $R_{\mathrm{task}}=R_{\mathrm{surface}}$ for the implemented task}{[-]}
@@ -109,12 +109,12 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$r_{c,t_1},\ r_{c,t_2},\ r_{c,n}$}{Surface-frame components of $r_c$ along $t_1$, $t_2$ and $n_s$}{[m]}
 \symrow{$r_{\mathrm{face,EE}}$}{Tool-face centre offset in the EE frame}{[m]}
 \symrow{$r_{\mathrm{width,EE}},\ r_{\mathrm{length,EE}}$}{Tool face half-width / half-length vector in the EE frame}{[m]}
-\symrow{$r_{T,\mathrm{EE}},\ p_T$}{Selected tool-point offset from the TCP, expressed in the EE frame / selected tool-point position in the base frame}{[m]}
-\symrow{$r_T$}{Selected tool-point offset from the TCP, $p_T-p_{\mathrm{TCP}}$}{[m]}
-\symrow{$R_{\mathrm{clr}},\ r_{T,\mathrm{clr}}$}{Orientation captured at the clearance transition and held through set-up / the stored tool-point offset expressed in the base frame at that orientation}{[-], [m]}
-\symrow{$p_{T,0},\ p_{T,d}(t),\ s_{\mathrm{set}}(t)$}{Projection of the selected tool point onto the calibrated plane / its commanded position during set-up / the commanded press coordinate}{[m], [m], [m]}
-\symrow{$m_0$}{Commanded rotational impedance moment at the TCP, independent of $r_c$}{[N\,m]}
-\symrow{$m_{r_T}$}{Geometry-based force-lever moment about the TCP, reconstructed as $r_T\times\Delta\hat f_{\mathrm{ext}}$}{[N\,m]}
+\symrow{$r_{\mathrm{Tool,EE}},\ p_{\mathrm{Tool}}$}{Selected tool-point offset from the TCP, expressed in the EE frame / selected tool-point position in the base frame}{[m]}
+\symrow{$r_{\mathrm{Tool}}$}{Selected tool-point offset from the TCP, $p_{\mathrm{Tool}}-p_{\mathrm{TCP}}$}{[m]}
+\symrow{$R_{\mathrm{clr}},\ r_{\mathrm{Tool,clr}}$}{Orientation captured at the clearance transition and held through set-up / the stored tool-point offset expressed in the base frame at that orientation}{[-], [m]}
+\symrow{$p_{\mathrm{Tool},0}$,\ $p_{\mathrm{Tool},d}(t)$,\ $s_{\mathrm{set}}(t)$}{Projection of the selected tool point onto the calibrated plane / its commanded position during set-up / the commanded press coordinate}{[m], [m], [m]}
+\symrow{$m_{r_c,0}$}{Commanded moment at the TCP for $r_c=0$, the rotational impedance alone}{[N\,m]}
+\symrow{$m_{r_{\mathrm{Tool}}}$}{Geometry-based force-lever moment about the TCP, reconstructed as $r_{\mathrm{Tool}}\times\Delta\hat f_{\mathrm{ext}}$}{[N\,m]}
 }
 
 \symgroup{Compliance and Alignment}{
@@ -129,7 +129,7 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$\phi_{\mathrm{set}},\ u_{\mathrm{set}}$}{Set-up rotation angle / unit rotation axis}{[rad], [-]}
 \symrow{$R_{\mathrm{before}},\ R_{\mathrm{after}}$}{End-effector orientation at the clearance transition / at the end of set-up}{[-]}
 \symrow{$r_{c,t},\ \rho_c$}{Selected tangential compliance-centre lever / its magnitude}{[m]}
-\symrow{$\Delta p_T,\ s_T$}{Selected tool point displacement / its magnitude}{[m]}
+\symrow{$\Delta p_{\mathrm{Tool}},\ s_{\mathrm{Tool}}$}{Selected tool point displacement / its magnitude}{[m]}
 \symrow{$\Delta p_{\mathrm{TCP}},\ s_{\mathrm{TCP}}$}{TCP displacement / its magnitude}{[m]}
 \symrow{$\theta_{\mathrm{dev}},\ \theta_{\mathrm{dev}}^{S}$}{Rotation vector taking $n_{\mathrm{Tool},0}$ onto the flat target $-n_s$ / the same vector resolved on the surface axes; $\lVert\theta_{\mathrm{dev}}^{S}\rVert=\theta_{\mathrm{align}}$}{[rad], reported in [deg]}
 \symrow{$\theta_{\mathrm{dev},t_i,\mathrm{before}}$}{Signed surface-frame component of $\theta_{\mathrm{dev}}^{S}$ at set-up entry; opposite in sign to the commanded orientation offset}{[rad], reported in [deg]}
@@ -142,7 +142,7 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$\Delta\hat f_{\mathrm{ext}},\ \Delta\hat m_{\mathrm{ext}}$}{Force part / moment part of $\Delta\hat F_{\mathrm{ext}}$}{[N], [N\,m]}
 \symrow{$f_D$}{Damping commanded force component, $f=f_K+f_D$}{[N]}
 \symrow{$m_{c,D}$}{Coupling moment of the damping component, $r_c\times f_D$}{[N\,m]}
-\symrow{$m_{c,\mathrm{trans}}$}{Complete translational coupling moment, $m_{c,K}+m_{c,D}=r_c\times f$}{[N\,m]}
+\symrow{$m_{r_c}$}{Complete translational coupling moment carried by the lever $r_c$, $m_{c,K}+m_{c,D}=r_c\times f$}{[N\,m]}
 }
 
 \symgroup{Quasi-Static Stiffness and Damping Design}{

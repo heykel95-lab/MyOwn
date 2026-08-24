@@ -365,7 +365,7 @@ circulation, the settled choices are:
   **The coupling moment is positive: \(m_{c,K}=r_c\times f_K\).** Every
   moment built on the lever follows the same sign —
   \(m_{c,D}=r_c\times f_D\) and
-  \(m_{c,\mathrm{trans}}=r_c\times f\) — and the point-shift blocks carry
+  \(m_{r_c}=r_c\times f\) — and the point-shift blocks carry
   \(-[r_c]_\times\) where they once carried \(+[r_c]_\times\). Terms
   quadratic in the lever, \([r_c]_\times^\top K_p[r_c]_\times\) and its
   damping counterpart, are unchanged, because the sign cancels.
@@ -436,41 +436,61 @@ circulation, the settled choices are:
   coefficient is used in the control command` is a control-design fact, not a
   materials claim.
 - **selected tool point** for the point or edge of the grinding face used as
-  the geometric contact reference, \(p_T\), with the **tool
-  contact-reference offset** \(r_T=p_T-p_{\mathrm{TCP}}\) as its lever. It is
+  the geometric contact reference, \(p_{\mathrm{Tool}}\), with the **tool
+  contact-reference offset**
+  \(r_{\mathrm{Tool}}=p_{\mathrm{Tool}}-p_{\mathrm{TCP}}\) as its lever. It is
   a different point from the centre of compliance and the two are never used
   for one another.
 
-  **State at its first appearance that the subscript \(T\) is the tool point
-  and not the \(T\) of a homogeneous transformation matrix.** Without that
-  sentence the symbol is genuinely ambiguous, and the whole notation depends on
-  the reader not making that substitution.
+  **Bind the symbol to the point positively at its first appearance**, by
+  naming what \(p_{\mathrm{Tool}}\) is and what it does: the point of the tool
+  face that contacts the surface, or is predicted to contact it, used as the
+  contact reference during set-up.
 
-  The symbol was previously \(p_g\), and before that \(p_{\mathrm{contact}}\)
-  in this guide while the chapters used \(p_g\). One name now: \(p_T\) in
-  every chapter, the symbol list, and every figure, with \(r_{T,\mathrm{EE}}\)
-  for its end-effector-frame offset and \(\Delta p_T\), \(s_T\) for its
+  An earlier version of this rule required the sentence *the subscript \(T\)
+  is the tool point and not the \(T\) of a homogeneous transformation
+  matrix*. **That is withdrawn**, on two counts. It is the `X, not Y`
+  correction that *The negation-correction reflex* and *The `X, not Y`
+  disclaimer* in [THESIS_VOICE.md](THESIS_VOICE.md) both rule against, and it
+  reaches for typographic vocabulary where the thesis should be describing
+  geometry.
+
+  **`subscript` is not used in thesis prose**, in any chapter or in the symbol
+  list. Where a symbol's index carries a frame, a phase or a point, say what
+  the symbol *is* — `\(n_{\mathrm{Tool,EE}}\) is the tool-face normal in
+  end-effector coordinates`, `a frame or phase index is added when needed` —
+  rather than describing its notation to the reader.
+
+  The symbol has been \(p_{\mathrm{contact}}\), then \(p_g\), then
+  \(p_T\). **The index is spelled out as `Tool`**, because a single \(T\)
+  reads as the contact, as a transpose, or as a homogeneous transformation
+  before it reads as the tool. One name now: \(p_{\mathrm{Tool}}\) in every
+  chapter, the symbol list, and every figure, with
+  \(r_{\mathrm{Tool,EE}}\) for its end-effector-frame offset and
+  \(\Delta p_{\mathrm{Tool}}\), \(s_{\mathrm{Tool}}\) for its
   displacement. The two levers were at one point \(r_c\) and \(r_C\),
   distinguished only by the case of one letter, which no reader can hold across
-  a page and which a printed subscript does not reliably show; \(r_T\) against
-  \(r_c\) is the replacement and must not drift back.
+  a page and which a printed index does not reliably show;
+  \(r_{\mathrm{Tool}}\) against \(r_c\) is the replacement and must not
+  drift back.
 
   The wording is settled with the symbol: it is the **selected tool point** in
   every chapter, never a `tool feature` and never a bare `edge`. `edge`
   presumes edge contact, and the set-up phase is designed to seat the tool face
   flat.
 
-  **Do not write `selected tool point or edge`.** \(p_T\) is one position
+  **Do not write `selected tool point or edge`.** \(p_{\mathrm{Tool}}\) is one position
   vector; where an edge leads, the controller uses its midpoint. Say what it is
   once, at the definition — depending on the tool orientation it is a leading
   corner, the midpoint of a leading edge, or the tool centre — and then call it
   the selected tool point everywhere else.
 
-  \(r_{T,\mathrm{EE}}\) is what is **fixed relative to the tool** once the
+  \(r_{\mathrm{Tool,EE}}\) is what is **fixed relative to the tool** once the
   contact reference has been selected. Its base-frame representation
-  \(r_T=R_{\mathrm{EE}}r_{T,\mathrm{EE}}=p_T-p_{\mathrm{TCP}}\) rotates with
-  the tool, so do not write that \(r_T\) is fixed by the geometry: name the
-  frame the statement is true in.
+  \(r_{\mathrm{Tool}}=R_{\mathrm{EE}}r_{\mathrm{Tool,EE}}
+  =p_{\mathrm{Tool}}-p_{\mathrm{TCP}}\) rotates with the tool, so do not write
+  that \(r_{\mathrm{Tool}}\) is fixed by the geometry: name the frame the
+  statement is true in.
 - **pole** is implementation vocabulary from the parameter names. Keep it in
   equation labels and parameter keys, not in the running text.
 - **commanded tool orientation offset** for the deliberate angular command: a
@@ -897,7 +917,7 @@ currently fragmented, and the fix is to follow the signal path:
    real-time loop.
 2. **Surface and tool representation** — what is stored, without re-deriving
    Chapter 2: surface frame; grinding-face orientation; face geometry and
-   contact-point selection, naming \(p_T\) and saying it is neither the TCP nor
+   contact-point selection, naming \(p_{\mathrm{Tool}}\) and saying it is neither the TCP nor
    the centre of compliance.
 3. **Phase-dependent reference generation** — collected in one place instead of
    scattered after the impedance law. Approach carries
@@ -912,9 +932,9 @@ currently fragmented, and the fix is to follow the signal path:
    thing missing.
 4. **Cartesian impedance and virtual centre of compliance** — error and wrench,
    directional gains and inertia-scaled damping merged into one subsection, then
-   the compliance-centre shift, closing on the statement that \(p_T\) fixes
+   the compliance-centre shift, closing on the statement that \(p_{\mathrm{Tool}}\) fixes
    where the interaction happens geometrically while \(p_c\) fixes the virtual
-   reference of the impedance, and that moving \(p_c\) does not move \(p_T\).
+   reference of the impedance, and that moving \(p_c\) does not move \(p_{\mathrm{Tool}}\).
 5. **Real-time torque calculation** — one callback, in order, ending at
    \(\tau_{\mathrm{cmd}}=J^\top F+\tau_{\mathrm{null}}+\tau_c\), with
    \(\tau_{\mathrm{dist}}\) mentioned only for the pose-hold experiment.
@@ -934,7 +954,7 @@ The chapter should come out shorter and stronger, not longer.
 
 Figures to add, in priority order: grinding-face geometry and leading-feature
 selection (four vertices, tie tolerance, the corner/edge/face-centre outcomes);
-the three points \(p_T\), \(p_{\mathrm{TCP}}\) and \(p_c\) with the two offsets
+the three points \(p_{\mathrm{Tool}}\), \(p_{\mathrm{TCP}}\) and \(p_c\) with the two offsets
 and their sum; and set-up reference generation, showing the press coordinate
 advancing past the surface so the endpoint reads as a spring reference rather
 than a commanded penetration.
@@ -962,7 +982,7 @@ Section by section:
 - **Calibrated geometry.** Replace the vector equations for the face centre,
   half-width and half-length with one calibrated-geometry table, and
   cross-reference the contact-point construction in Chapter 3 rather than
-  repeating \(p_T=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{T,\mathrm{EE}}\).
+  repeating \(p_{\mathrm{Tool}}=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{\mathrm{Tool,EE}}\).
 - **Common configuration.** This is the largest duplication. Do not retell the
   phase sequence; state that the runs followed the sequence of Chapter 3, give
   the settings in the existing phase-parameter table, and add that the
@@ -975,8 +995,8 @@ Section by section:
   held fixed so it did not become a variable.
 - **Data recording.** Do not list the signals a third time. One sentence
   pointing at Chapter 3 and the data-format appendix. What stays is the data
-  quality: three repetitions, 171 runs over 57 settings, none discarded, all
-  171 analysed.
+  quality: three repetitions, 165 runs over 55 settings, none discarded, all
+  165 analysed.
 - **Case matrix.** The cases are currently explained three times — a grouping
   table, a prose walk-through, and the master table. **Delete the grouping
   table.** Keep one paragraph naming the three effects being separated, then the
@@ -1023,7 +1043,7 @@ a validation step for a third calibration output.
 \(R_dn_{\mathrm{Tool,EE}}=-n_s\) still describes what the
 controller does with the calibration, not how the calibration was made, and is
 stated in a clause rather than as a numbered equation. The same applies to
-\(p_T=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{T,\mathrm{EE}}\): Chapter 4
+\(p_{\mathrm{Tool}}=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{\mathrm{Tool,EE}}\): Chapter 4
 records the calibrated offsets and the selection tolerance and points at
 Chapter 3 for the algorithm that consumes them.
 
@@ -1104,10 +1124,10 @@ the final configuration satisfied the TCP-height flatness criterion.
 
 ### Three distinct points: selected tool point, TCP, compliance centre
 
-\(p_T\), \(p_{\mathrm{TCP}}\) and \(p_c\) are different points and the prose
+\(p_{\mathrm{Tool}}\), \(p_{\mathrm{TCP}}\) and \(p_c\) are different points and the prose
 must keep them apart.
 
-- \(p_T\) is the selected tool point: the point or edge of the grinding face
+- \(p_{\mathrm{Tool}}\) is the selected tool point: the point or edge of the grinding face
   that contacts, or is predicted to contact, the surface. The controller
   determines it from the rectangular face geometry and the current tool
   orientation.
@@ -1116,8 +1136,17 @@ must keep them apart.
   which the Cartesian stiffness and damping are formulated before being
   transformed to the TCP. It is **not** the physical contact point.
 
-\(p_T\) is **selected at the clearance transition and then held constant
+\(p_{\mathrm{Tool}}\) is **selected at the clearance transition and then held constant
 relative to the tool** for the whole of set-up. Say so where it is introduced.
+
+**Chapter 2 also says how the point is chosen and what it is for.** Naming the
+three outcomes without the rule that produces them left a reader unable to see
+where the point comes from, and unable to tell whether it serves the command or
+only the evaluation. Both belong in the compliance-centre section, in two
+clauses: the leading corner along the descent direction, with tied corners
+averaged, and the fact that the set-up reference is generated on the point
+while the TCP target is reconstructed from it. The algorithm itself stays in
+Chapter 3, which the theory chapter cross-references rather than repeats.
 Once the tool starts to rotate under contact it is a geometric contact
 reference, not the exact point at which the surface force acts at every
 instant, and a sentence that treats it as the latter overstates what the
@@ -1125,25 +1154,25 @@ geometry gives.
 
 The two levers are named separately and never stand in for one another:
 
-- \(r_T=p_T-p_{\mathrm{TCP}}\) is **tool geometry** — the offset from the TCP
+- \(r_{\mathrm{Tool}}=p_{\mathrm{Tool}}-p_{\mathrm{TCP}}\) is **tool geometry** — the offset from the TCP
   to the selected contact reference, fixed by the face geometry and the current
-  orientation. In end-effector coordinates it is \(r_{T,\mathrm{EE}}\), so
-  that \(p_T=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{T,\mathrm{EE}}\); the
+  orientation. In end-effector coordinates it is \(r_{\mathrm{Tool,EE}}\), so
+  that \(p_{\mathrm{Tool}}=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{\mathrm{Tool,EE}}\); the
   implementation has \(p_{\mathrm{TCP}}=p_{\mathrm{EE}}\), which is worth
   stating once rather than silently writing \(p_{\mathrm{EE}}\) in its place.
 - \(r_c=p_c-p_{\mathrm{TCP}}\) is **virtual controller geometry** — the
   software-defined displacement used by the point-shift transformation of the
   Cartesian impedance. It carries no tool geometry at all.
 
-They combine as \(p_T-p_c=(p_T-p_{\mathrm{TCP}})-(p_c-p_{\mathrm{TCP}})=r_T-r_c\),
+They combine as \(p_{\mathrm{Tool}}-p_c=(p_{\mathrm{Tool}}-p_{\mathrm{TCP}})-(p_c-p_{\mathrm{TCP}})=r_{\mathrm{Tool}}-r_c\),
 which is worth stating because it separates the physical contact geometry from
 the virtual shift.
 
 The contact sequence therefore originates at the selected tool point, not at
-the TCP and not at the centre of compliance: the face geometry gives \(p_T\),
-the set-up trajectory moves it as \(p_{T,d}(t)=p_{T,0}+s_{\mathrm{set}}(t)(-n_s)\),
+the TCP and not at the centre of compliance: the face geometry gives \(p_{\mathrm{Tool}}\),
+the set-up trajectory moves it as \(p_{\mathrm{Tool},d}(t)=p_{\mathrm{Tool},0}+s_{\mathrm{set}}(t)(-n_s)\),
 and the TCP target is reconstructed from it as
-\(p_d(t)=p_{T,d}(t)-R_{\mathrm{clr}}r_{T,\mathrm{EE}}\), which produces the
+\(p_d(t)=p_{\mathrm{Tool},d}(t)-R_{\mathrm{clr}}r_{\mathrm{Tool,EE}}\), which produces the
 press. The centre of compliance is a separate mechanism acting through
 \(r_c\) on the force–moment coupling. Do not merge the two chains.
 
@@ -1288,11 +1317,11 @@ instantaneous opposing torque at identical joint configurations.
   full row rank.
 - A retained singular value is inverted as \(1/\sigma_i\).
 - Distinguish the virtual-centre lever \(r_c=p_c-p_{\mathrm{TCP}}\) from the
-  tool-geometry lever \(r_T=p_T-p_{\mathrm{TCP}}\). \(r_T\) locates the contact
+  tool-geometry lever \(r_{\mathrm{Tool}}=p_{\mathrm{Tool}}-p_{\mathrm{TCP}}\). \(r_{\mathrm{Tool}}\) locates the contact
   reference relative to the TCP; \(r_c\) locates the virtual centre of
   compliance relative to the TCP. They never appear in the same expression.
   \(r_c\) shapes the **commanded** wrench through \(\mathrm{Ad}(r_c)\);
-  \(r_T\) belongs to the physical contact geometry.
+  \(r_{\mathrm{Tool}}\) belongs to the physical contact geometry.
 - **There is no \(f_C\).** A symbol for an abstract environment-on-tool contact
   force was introduced and then removed, because the thesis already has the two
   viewpoints it needs and inventing a third force blurred them. Build every
@@ -1301,27 +1330,36 @@ instantaneous opposing torque at identical joint configurations.
   side is \(\Delta\hat F_{\mathrm{ext}}=[\Delta\hat f_{\mathrm{ext}};
   \Delta\hat m_{\mathrm{ext}}]\) relative to the clearance transition.
 - **Each lever pairs with one of those two viewpoints, and the pairing is the
-  point.** \(r_T\) goes with the estimated force,
-  \(m_{r_T}=r_T\times\Delta\hat f_{\mathrm{ext}}\); \(r_c\)
-  goes with the commanded force, \(m_{c,\mathrm{trans}}=r_c\times f\). Show
+  point.** \(r_{\mathrm{Tool}}\) goes with the estimated force,
+  \(m_{r_{\mathrm{Tool}}}=r_{\mathrm{Tool}}\times\Delta\hat f_{\mathrm{ext}}\); \(r_c\)
+  goes with the commanded force, \(m_{r_c}=r_c\times f\). Show
   them together — the figure in the compliance-centre section draws the same
   geometry twice and fades out whichever lever does not act.
-- **\(m_{r_T}\) is a reconstruction, not a measurement.** It is
-  what the moment would be if the estimated resultant acted at \(p_T\), and
-  \(p_T\) is a geometric reference rather than the instantaneous
+- **\(m_{r_{\mathrm{Tool}}}\) is a reconstruction, not a measurement.** It is
+  what the moment would be if the estimated resultant acted at \(p_{\mathrm{Tool}}\), and
+  \(p_{\mathrm{Tool}}\) is a geometric reference rather than the instantaneous
   force-application point. It is therefore compared with the directly estimated
   \(\Delta\hat m_{\mathrm{ext}}\) and never equated to it. **Do not call it
   \(m_{\mathrm{contact}}\)** — that name reads as the complete contact moment,
   which it is not.
+
+  **The word `reconstructed` does not appear in the figure.** It reads as a
+  procedure the reader is expected to follow rather than as a statement of
+  where a quantity came from, and a figure has no room to explain it. Name the
+  origin instead: \(\Delta\hat m_{\mathrm{ext}}\) is labelled `model-estimated`
+  and \(m_{r_{\mathrm{Tool}}}\) `from the tool geometry`. The running text and
+  the symbol list keep the full statement, because that is where the
+  distinction between a geometry-based moment and a measured one has to be
+  made in full.
 - **The moments do not add across the two sides.** There are not three terms to
-  sum. The commanded side carries \(m_0=K_Re_R-D_R\omega_{\mathrm{EE}}\), the
+  sum. The commanded side carries \(m_{r_c,0}=K_Re_R-D_R\omega_{\mathrm{EE}}\), the
   ordinary rotational impedance, plus the coupling \(m_{c,K}\) when \(r_c\neq0\);
-  the observed side carries \(\Delta\hat m_{\mathrm{ext}}\), with \(m_{r_T}\)
+  the observed side carries \(\Delta\hat m_{\mathrm{ext}}\), with \(m_{r_{\mathrm{Tool}}}\)
   as a reconstruction of the force-lever contribution to it. **Never add
-  \(m_{r_T}\) to \(m_0\) or \(m_{c,K}\).** One interaction, seen from two sides:
+  \(m_{r_{\mathrm{Tool}}}\) to \(m_{r_c,0}\) or \(m_{c,K}\).** One interaction, seen from two sides:
   the command produces motion and press, and the external moment is the result
   of the closed-loop interaction rather than an algebraic sum.
-- **\(m_{\mathrm{cmd}}\approx m_0+m_{c,K}\) is a mechanism explanation, not an
+- **\(m\approx m_{r_c,0}+m_{r_c}\) is a mechanism explanation, not an
   identity.** When \(e_R\neq0\) the shifted \(6\times6\) law carries further
   \(r_c\)-dependent terms in its lower-right block, so say "approximately" and
   say why.
@@ -1330,17 +1368,17 @@ instantaneous opposing torque at identical joint configurations.
   \(m_{c,K}\) alone", which is too narrow and has been replaced. Setting
   \(r_c=0\) makes \(\mathrm{Ad}(r_c)\) the identity, so it removes the
   **complete** additional coupling the virtual point shift introduces:
-  \(m_{c,K}\), \(m_{c,D}\), \(m_{c,\mathrm{trans}}\), and every remaining
+  \(m_{c,K}\), \(m_{c,D}\), \(m_{r_c}\), and every remaining
   \(r_c\)-dependent term of the shifted \(K_{\mathrm{TCP}}\) and
   \(D_{\mathrm{TCP}}\) — both the off-diagonal blocks and the added rotational
   entries \([r_c]_\times^\top K_p[r_c]_\times\) and
   \([r_c]_\times^\top D_p[r_c]_\times\).
 
   What it does **not** remove: the ordinary decoupled rotational impedance
-  \(m_0\), the finite rotational compliance, the tool geometry \(r_T\), the
+  \(m_{r_c,0}\), the finite rotational compliance, the tool geometry \(r_{\mathrm{Tool}}\), the
   physical contact interaction, the external contact moment, and therefore
-  contact-induced robot rotation. \(r_T\neq0\) means contact can still
-  contribute \(m_{r_T}\). This is what makes the strong zero-lever \(t_1\)
+  contact-induced robot rotation. \(r_{\mathrm{Tool}}\neq0\) means contact can still
+  contribute \(m_{r_{\mathrm{Tool}}}\). This is what makes the strong zero-lever \(t_1\)
   rotation unsurprising, and the thesis states it where the reader will
   otherwise assume the opposite.
 
@@ -1348,19 +1386,19 @@ instantaneous opposing torque at identical joint configurations.
   translation--rotation coupling introduced by the virtual point shift; the
   ordinary rotational impedance and the physical tool and contact geometry
   remain.* **Never write that a zero lever gives a zero moment.**
-- **Never write \(r_T\times f_K\).** \(f_K\) is a
+- **Never write \(r_{\mathrm{Tool}}\times f_K\).** \(f_K\) is a
   commanded elastic force; the contact-side reconstruction takes the estimated
-  force, \(r_T\times\Delta\hat f_{\mathrm{ext}}\). Crossing a lever from one
+  force, \(r_{\mathrm{Tool}}\times\Delta\hat f_{\mathrm{ext}}\). Crossing a lever from one
   side with a force from the other is the error this whole section exists to
   prevent.
 - The complete translational command carries a moment, not only its elastic
-  part: \(m_{c,\mathrm{trans}}=r_c\times f\). The sign analysis then retains
+  part: \(m_{r_c}=r_c\times f\). The sign analysis then retains
   \(f_K\) alone, giving \(m_{c,K}=r_c\times f_K\),
   and says that it is doing so — otherwise \(f_K\) appears to
   enter arbitrarily. The damping coupling follows from the shifted damping
   matrix in the same way.
 - About the centre of compliance the same reconstruction would take
-  \((r_T-r_c)\times\Delta\hat f_{\mathrm{ext}}\). **Mention this once.** The
+  \((r_{\mathrm{Tool}}-r_c)\times\Delta\hat f_{\mathrm{ext}}\). **Mention this once.** The
   controller never forms it: the congruence transformation receives \(r_c\), as
   the appendix source listing shows.
 - **The commanded elastic normal magnitude is \(F_{K,n}=-n_s^\top f_K\), never
@@ -1378,9 +1416,10 @@ instantaneous opposing torque at identical joint configurations.
   | \(f_K=K_pe_p\) | commanded | elastic commanded force |
   | \(f_D=D_p(\dot p_d-\dot p_{\mathrm{EE}})\) | commanded | damping commanded force |
   | \(f=f_K+f_D\) | commanded | total commanded force |
+  | \(m_{r_c,0}=K_Re_R-D_R\omega_{\mathrm{EE}}\) | commanded | commanded moment at \(r_c=0\) |
   | \(m_{c,K}=r_c\times f_K\) | commanded | elastic coupling moment |
   | \(m_{c,D}=r_c\times f_D\) | commanded | damping coupling moment |
-  | \(m_{c,\mathrm{trans}}=r_c\times f\) | commanded | total translational coupling |
+  | \(m_{r_c}=r_c\times f\) | commanded | total translational coupling |
   | \(\Delta\hat f_{\mathrm{ext}}\) | estimated | external-force change |
 
   **The point shift acts on both matrices**, so the damping force acquires the
@@ -1390,11 +1429,28 @@ instantaneous opposing torque at identical joint configurations.
   the elastic term is what carries the steady alignment tendency while the
   damping term shapes the transient.
 
+  **`trans` is retired, and the commanded pair is named for the lever.**
+  \(m_{c,\mathrm{trans}}\) is now \(m_{r_c}\), the moment the lever \(r_c\)
+  produces, and \(m_0\) is now \(m_{r_c,0}\), the commanded moment obtained at
+  \(r_c=0\). Two things follow from writing it that way. The decomposition
+  \(m\approx m_{r_c,0}+m_{r_c}\) shows on its face which part exists without a
+  lever and which the lever adds, where \(m_0\) said only that something was
+  zero. And it matches the observed side, where
+  \(m_{r_{\mathrm{Tool}}}=r_{\mathrm{Tool}}\times\Delta\hat f_{\mathrm{ext}}\)
+  is already named for its own lever, so one convention now covers both sides
+  of the moment-bookkeeping figure. `trans` named the source of the coupling,
+  the translational command, which is not recoverable from the four letters.
+
+  The elastic and damping parts keep \(m_{c,K}\) and \(m_{c,D}\). Those follow
+  the one-point-one-index convention under *Naming a technical quantity*,
+  alongside \(p_c\), \(r_c\), \(K_c\) and \(D_c\), and they carry the sign
+  analysis in Chapter 2 and the rules above.
+
   This is a rule about **symbols only**. Ordinary prose such as `the press`,
   `the normal press` or `press-induced moment` describes the physical action
   and stays.
 - The measured moment transfer is
-  \(M_{\mathrm{contact}}=M_{\mathrm{TCP}}+r_T\times\Delta\hat
+  \(M_{\mathrm{contact}}=M_{\mathrm{TCP}}+r_{\mathrm{Tool}}\times\Delta\hat
   f_{\mathrm{ext}}\), with \(M_{\mathrm{TCP}}\) the model-estimated external
   moment about the TCP. Force is independent of the reference point and
   therefore carries no point subscript; the moments carry one because they do
@@ -1648,9 +1704,9 @@ and \(t_2\) results one finding rather than two unrelated ones.
 
 About \(t_1\) the end effector already rotated in the assisting direction with
 the centre of compliance at the TCP, and the selected lever added little. This
-is **consistent with** the contact moment \(m_{r_T}=r_T\times
+is **consistent with** the contact moment \(m_{r_{\mathrm{Tool}}}=r_{\mathrm{Tool}}\times
 f_C\) and the tool-mount compliance already producing that rotation. It does
-not show that \(r_T\) was sufficient on its own: the contributions of contact
+not show that \(r_{\mathrm{Tool}}\) was sufficient on its own: the contributions of contact
 geometry and mounting compliance were never isolated, and the conclusion must
 not claim they were.
 

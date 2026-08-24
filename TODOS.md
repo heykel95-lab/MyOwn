@@ -117,6 +117,17 @@ coordinates are not to be published. `MyOwn/.gitignore` blocks no CSV, so this
 repository is also a possible home, but then the scripts' `HERE/../experiments`
 resolution means the data has to sit at `code/python/experiments/`.
 
+### Uncommitted work in this repository
+
+The thesis working tree holds the \(p_{\mathrm{Tool}}\) rename, the
+Chapter 2 \(p_{\mathrm{Tool}}\) definition, the removal of `subscript` from
+the prose, the `moment_bookkeeping` figure corrections, the
+\(m_{r_c,0}\)/\(m_{r_c}\) moment rename, the reshaped Case-C table, the
+corrected \(r_c\) vector in Figures 2.2 and 4.1, the Chapter 2 paragraph on
+how the selected tool point is chosen, and the matching guide entries, none of
+it committed. All three documents build clean with these
+changes in place. Commit when the current round of figure work is finished.
+
 ### One figure-label edit, still open
 
 Its input is on this machine. `make_coc_figures.py` resolves its data as
@@ -279,10 +290,12 @@ from this list rather than annotated, so everything here is still open.
   tables. **The values and signs do not change**: under the redefined
   \(r_c=p_c-p_{\mathrm{TCP}}\) the plotted coordinate already is
   \(r_{c,t_i}\).
-- **21, 22, 23** — Figure 4.2 calibration notation (Option A), Figure 4.1
-  labels and caption, and the Figure 3.5 set-up symbols
-  \(p_{T,0}\), \(p_{T,d}\), \(s_{\mathrm{set}}\), \(R_{\mathrm{clr}}\),
-  which should also join the symbol list.
+- **22, 23** — Figure 4.1 labels and caption, and the Figure 3.5 set-up
+  symbols \(p_{\mathrm{Tool},0}\), \(p_{\mathrm{Tool},d}\),
+  \(s_{\mathrm{set}}\), \(R_{\mathrm{clr}}\). Item 21, the Figure 4.2
+  calibration notation, is done: the figure now runs one band per calibration
+  and its symbols match Section 4.2, and all four set-up symbols are in the
+  symbol list.
 - **31, 33, 34, 37, 38** — the pgfplots figures and their tables: Figures 5.1,
   5.4, 5.7, 5.8 are `.tex` sources and can be edited directly.
 - **44** — global table-unit audit across Tables 5.1 to 5.8.

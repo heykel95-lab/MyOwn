@@ -1093,15 +1093,25 @@ whereas the point shift changes the point about which the impedance is defined.
 of the tangential lever.
 
 Three points must be distinguished. The selected tool point
-\mbox{\(p_T\)} is determined from the tool geometry and is used as the contact
-reference. The tool centre point \mbox{\(p_{\mathrm{TCP}}\)} is the Cartesian
-control point of the robot, while \mbox{\(p_c\)} is the virtual centre of
-compliance.
+\mbox{\(p_{\mathrm{Tool}}\)} is the point of the tool face that contacts the surface, or is
+predicted to contact it. Depending on the tool orientation it is a leading
+corner, the midpoint of a leading edge, or the centre of the face. The tool centre point \mbox{\(p_{\mathrm{TCP}}\)} is the
+Cartesian control point of the robot, while \mbox{\(p_c\)} is the virtual
+centre of compliance.
 
 The selected tool point is chosen at the clearance transition and then held
 constant relative to the tool for the whole of set-up. Once the tool begins to
 rotate under contact, it is therefore a geometric contact reference rather than
 the exact point at which the surface force acts at every instant.
+
+The choice follows from the face geometry and the current tool orientation. Of
+the four corners of the rectangular tool face, the one lying furthest along the
+descent direction leads, and corners that lead within a tolerance are averaged.
+That point then enters the commanded motion. During set-up the reference is
+generated on it, and the TCP target is reconstructed from that reference, so
+the press is prescribed where the tool meets the surface.
+\mbox{\Cref{sec:tool_contact_geometry}} and
+\mbox{\Cref{subsec:implementation_setup_phase}} carry both constructions.
 
 Moving \mbox{\(p_c\)} moves neither the selected tool point nor the physical
 contact force. The surface force still acts where the tool touches. The point about which the Cartesian impedance is defined changes, and with
@@ -1114,10 +1124,11 @@ or no moment. Displacing it sideways gives the compliant response an effective
 lever: to one side the induced moment assists the required alignment, and to
 the other side it opposes or reverses it.
 
-Each point is reached from the TCP by its own offset,
+The selected tool point \mbox{\(p_{\mathrm{Tool}}\)} and the centre of compliance
+\mbox{\(p_c\)} are each reached from the TCP by their own offset,
 
 \begin{equation}
-r_T=p_T-p_{\mathrm{TCP}},
+r_{\mathrm{Tool}}=p_{\mathrm{Tool}}-p_{\mathrm{TCP}},
 \qquad
 r_c=p_c-p_{\mathrm{TCP}},
 \label{eq:pole_lever_definitions}
@@ -1126,11 +1137,11 @@ r_c=p_c-p_{\mathrm{TCP}},
 and therefore
 
 \begin{equation}
-p_T-p_c=r_T-r_c.
+p_{\mathrm{Tool}}-p_c=r_{\mathrm{Tool}}-r_c.
 \label{eq:pole_lever_sum}
 \end{equation}
 
-The two vectors have different mechanical roles. The vector \mbox{\(r_T\)}
+The two vectors have different mechanical roles. The vector \mbox{\(r_{\mathrm{Tool}}\)}
 describes the physical tool geometry between the TCP and the selected tool
 point, whereas \mbox{\(r_c\)} describes the virtual shift of the Cartesian
 impedance.
@@ -1173,14 +1184,16 @@ the resulting external loading.
 
 On the commanded side, the rotational impedance of
 \mbox{\Cref{eq:rotational_impedance_moment}} already produces a moment at the
-TCP whatever the \abbr{CoC} is. Writing it as
+TCP whatever the \abbr{CoC} is. For \mbox{\(r_c=0\)} that moment is the
+complete commanded moment,
 
 \begin{equation}
-m_0=K_Re_R-D_R\omega_{\mathrm{EE}},
+m_{r_c,0}=K_Re_R-D_R\omega_{\mathrm{EE}},
 \label{eq:zero_lever_commanded_moment}
 \end{equation}
 
-the shifted impedance adds a coupling contribution when \mbox{\(r_c\neq0\)}.
+and the shifted impedance adds a coupling contribution when
+\mbox{\(r_c\neq0\)}.
 Both the stiffness and the damping matrices are shifted, so both commanded
 force components acquire the same lever,
 
@@ -1194,12 +1207,12 @@ m_{c,D}=r_c\times f_D,
 and their sum is the complete translational coupling moment
 
 \begin{equation}
-m_{c,\mathrm{trans}}=m_{c,K}+m_{c,D}=r_c\times f.
+m_{r_c}=m_{c,K}+m_{c,D}=r_c\times f.
 \label{eq:pole_coupling_moment_translational}
 \end{equation}
 
-The commanded moment is therefore \mbox{\(m\approx m_0+
-m_{c,\mathrm{trans}}\)} in this simplified picture, with \mbox{\(m\)} the
+The commanded moment is therefore \mbox{\(m\approx m_{r_c,0}+
+m_{r_c}\)} in this simplified picture, with \mbox{\(m\)} the
 moment part of the commanded wrench \mbox{\(F=[f^\top,\ m^\top]^\top\)}. The approximation is
 deliberate: when \mbox{\(e_R\neq0\)} the shifted law of
 \mbox{\Cref{eq:coupled_tcp_stiffness,eq:coupled_tcp_damping}} carries further
@@ -1211,7 +1224,7 @@ The two contributions act over different time scales. The damping term is
 velocity dependent, so as the commanded reference stops advancing and the robot
 settles, \mbox{\(\dot p_d-\dot p_{\mathrm{EE}}\to\mathbf{0}\)} and
 \mbox{\(f_D\to\mathbf{0}\)}, leaving
-\mbox{\(m_{c,\mathrm{trans}}\to r_c\times f_K\)}. The elastic contribution
+\mbox{\(m_{r_c}\to r_c\times f_K\)}. The elastic contribution
 therefore carries the steady alignment tendency, while the damping
 contribution shapes the transient. The sign analysis below uses the elastic
 contribution alone, written
@@ -1230,35 +1243,35 @@ contributes to that moment. Representing the estimated resultant as acting at
 the selected tool point gives the force-lever contribution
 
 \begin{equation}
-m_{r_T}=r_T\times\Delta\hat f_{\mathrm{ext}}.
+m_{r_{\mathrm{Tool}}}=r_{\mathrm{Tool}}\times\Delta\hat f_{\mathrm{ext}}.
 \label{eq:contact_moment_about_tcp}
 \end{equation}
 
 Because the selected tool point is a geometric contact reference and the exact
-instantaneous force-application point is not measured, \mbox{\(m_{r_T}\)} is a
+instantaneous force-application point is not measured, \mbox{\(m_{r_{\mathrm{Tool}}}\)} is a
 geometry-based reconstruction and not an independently measured moment. It is
 compared with \mbox{\(\Delta\hat m_{\mathrm{ext}}\)} and never equated to it,
-and it is not added to \mbox{\(m_0\)} or \mbox{\(m_{c,K}\)}: those belong to the
+and it is not added to \mbox{\(m_{r_c,0}\)} or \mbox{\(m_{c,K}\)}: those belong to the
 command, and \mbox{\(\Delta\hat F_{\mathrm{ext}}\)} is the observation of the
 resulting interaction. About the \abbr{CoC} the same
 reconstruction would take the complete lever of
 \mbox{\Cref{eq:pole_lever_sum}},
-\mbox{\(\left(r_T-r_c\right)\times\Delta\hat f_{\mathrm{ext}}\)}, which the
+\mbox{\(\left(r_{\mathrm{Tool}}-r_c\right)\times\Delta\hat f_{\mathrm{ext}}\)}, which the
 controller never forms.
 
 The zero-lever condition is therefore not a zero-moment condition. Setting
 \mbox{\(r_c=0\)} makes \mbox{\(\mathrm{Ad}(r_c)\)} the identity, so it removes
 the complete additional coupling introduced by the virtual point shift: the
 elastic and damping coupling moments \mbox{\(m_{c,K}\)} and
-\mbox{\(m_{c,D}\)}, their sum \mbox{\(m_{c,\mathrm{trans}}\)}, and the
+\mbox{\(m_{c,D}\)}, their sum \mbox{\(m_{r_c}\)}, and the
 remaining \mbox{\(r_c\)}-dependent terms of \mbox{\(K_{\mathrm{TCP}}\)} and
 \mbox{\(D_{\mathrm{TCP}}\)}, including the off-diagonal blocks and the added
 rotational entries \mbox{\([r_c]_\times^\top K_p[r_c]_\times\)} and
 \mbox{\([r_c]_\times^\top D_p[r_c]_\times\)}. The ordinary rotational impedance
 and the physical tool and contact geometry are untouched by it. The commanded
-rotational moment \mbox{\(m_0\)} remains, the rotational compliance stays
-finite, and because \mbox{\(r_T\neq0\)} the external force can still contribute
-\mbox{\(m_{r_T}\)}, so contact-induced rotation is possible with the centre of
+rotational moment \mbox{\(m_{r_c,0}\)} remains, the rotational compliance stays
+finite, and because \mbox{\(r_{\mathrm{Tool}}\neq0\)} the external force can still contribute
+\mbox{\(m_{r_{\mathrm{Tool}}}\)}, so contact-induced rotation is possible with the centre of
 compliance at the TCP. Shifting the \abbr{CoC}
 adds \mbox{\(m_{c,K}\)} to the command, which changes the interaction and with it
 the estimated \mbox{\(\Delta\hat f_{\mathrm{ext}}\)} and
@@ -1276,7 +1289,7 @@ is treated in \mbox{\Cref{sec:results_case_d}}.
   \caption[Commanded and observed moment relations]{Commanded and observed
   moment relations: (a) the translation-induced coupling carried by the
   commanded wrench; (b) the model-estimated external interaction with the
-  geometry-based force-lever reconstruction.}
+  geometry-based force-lever moment.}
   \label{fig:moment_bookkeeping}
 \end{figure}
 
