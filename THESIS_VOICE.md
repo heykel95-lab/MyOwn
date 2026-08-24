@@ -60,9 +60,9 @@ apparatus, the campaign, or the data** is written in the passive:
 | Case D held every gain at baseline and moved only the lever. | In Case D every gain was held at its baseline value and only the lever was moved. |
 | A fourth column placed the compliance centre on the face. | In a fourth column the compliance centre was placed on the face. |
 | The compliance-centre study sampled three tangential levels. | In the compliance-centre study three tangential levels were sampled. |
-| Three probed points fitted the surface plane. | The surface plane was fitted from three probed points. |
+| One seated pose determined the surface plane. | The surface plane was determined from one seated pose. |
 | This thesis built a controller for the Panda. | In this thesis a controller was implemented for the Panda. |
-| The probing used the same robot and tool. | The probing was carried out with the same robot and tool. |
+| The seating used the same robot and tool. | The seating was carried out with the same robot and tool. |
 
 Naming a case, a chapter, or "this thesis" as the grammatical subject of an
 action is the same first-person sentence with the pronoun swapped out. `Case D
@@ -687,13 +687,13 @@ scientific commitment being dropped.
 ### 11. Timeless present in a chapter about completed work
 
 Chapter 4 was written as a specification — `The experiment is performed on`,
-`The plane is fitted from three probed points`, `The controller computer uses`
+`The plane is determined from one seated pose`, `The controller computer uses`
 — for work that finished months ago. THESIS_WRITING_GUIDE.md already requires
 Chapter 4 to describe completed experiments; the present tense quietly broke
 that, and it also removes the author from the page entirely.
 
-**Rule.** Past tense for what was done to the hardware: `Three probed points
-fitted the plane`, `The controller computer ran Ubuntu 20.04.3`, `The optional
+**Rule.** Past tense for what was done to the hardware: `The plane was
+determined from one seated pose`, `The controller computer ran Ubuntu 20.04.3`, `The optional
 pre-grind gate stayed disabled for every reported run`. Present tense stays for
 the controller's standing behaviour, for equations, and for what a table shows.
 

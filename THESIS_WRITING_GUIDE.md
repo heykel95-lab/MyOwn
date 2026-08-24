@@ -262,8 +262,8 @@ Use British spelling consistently, including `centre`, `behaviour`, and
 
 Write impersonally. Never use `I`, `we`, `our`, `us`, `my`, or `the author`, and
 put anything the author did to the apparatus, the campaign, or the data into the
-passive: `the rotational stiffness was raised`, `the plane was fitted from three
-probed points`, `the controller was implemented`. Naming a case or the thesis as
+passive: `the rotational stiffness was raised`, `the plane was determined from
+one seated pose`, `the controller was implemented`. Naming a case or the thesis as
 the agent — `Case D held every gain at baseline`, `this thesis built` — is the
 same sentence with the pronoun hidden, and is rewritten the same way. The active
 voice stays where the subject is a physical quantity, an effect, or an artefact:
@@ -343,35 +343,51 @@ Give each quantity one name and use it everywhere. Where several names are in
 circulation, the settled choices are:
 
 - **centre of compliance** for the point the \(6\times6\) stiffness is
-  defined about, \(p_c\), with \(r_c=p_{\mathrm{TCP}}-p_c\) as its lever.
+  defined about, \(p_c\), with \(r_c=p_c-p_{\mathrm{TCP}}\) as its lever.
   Attributively, `compliance-centre lever`, `compliance-centre coordinate`.
 
-  **\(r_c\) and the plotted centre position are opposite in sign, and must
-  never be renamed into one another.** The experimental plots and tables report
-  the signed *centre offset*
+  **\(r_c\) points from the TCP to the centre, and there is no second
+  symbol.** An earlier convention defined \(r_c=p_{\mathrm{TCP}}-p_c\) and
+  carried a separate \(d_c=p_c-p_{\mathrm{TCP}}=-r_c\) for what the plots
+  and tables report, with a standing warning never to rename one into the
+  other. **That is withdrawn.** \(d_c\) is removed from the thesis, and
+  \(r_c\) now *is* the reported signed coordinate: `centre position +40 mm`
+  and \(r_{c,t_2}=+40\,\mathrm{mm}\) are the same statement. Labelling a
+  `centre position` axis \(r_{c,t_2}\) is now correct rather than a sign
+  error.
 
-  \[d_c=p_c-p_{\mathrm{TCP}}=-r_c,\]
+  The change removes a real contradiction. Under the old convention the Case-H
+  table gave \(r_c=[0,-40,0]\,\mathrm{mm}\) for the selected
+  \(+10^\circ\) condition about \(t_1\) while the Case-D results showed the
+  assisting centre for that same condition at \(+40\,\mathrm{mm}\) along
+  \(t_2\). Both now read \(+40\,\mathrm{mm}\).
 
-  which is what `centre position +40 mm` means. The point-shift equations and
-  the mechanical lever rule keep \(r_c\). The two are checkable against each
-  other in the thesis's own numbers: Table 4.4 gives \(r_c=[0,-40,0]\,\mathrm{mm}\)
-  for the selected \(+10^\circ\) condition about \(t_1\), while the Case-D
-  sweep shows the assisting centre for that same condition at
-  \(+40\,\mathrm{mm}\) along \(t_2\).
+  **The coupling moment is positive: \(m_{c,K}=r_c\times f_K\).** Every
+  moment built on the lever follows the same sign —
+  \(m_{c,D}=r_c\times f_D\) and
+  \(m_{c,\mathrm{trans}}=r_c\times f\) — and the point-shift blocks carry
+  \(-[r_c]_\times\) where they once carried \(+[r_c]_\times\). Terms
+  quadratic in the lever, \([r_c]_\times^\top K_p[r_c]_\times\) and its
+  damping counterpart, are unchanged, because the sign cancels.
 
-  **Relabelling a `centre position` axis as \(r_{c,t_2}\) reverses the sign and
-  is a factual error.** Where the signed experimental coordinate is meant,
-  write \(d_c\) (or its components \(d_{c,t_1}\), \(d_{c,t_2}\), \(d_{c,n}\))
-  and say once that \(d_c=-r_c\). Do not describe `centre position` and
-  `\(r_c\) lever` as the same signed vector anywhere.
+  **The Introduction does not carry \(p_c\).** Chapter 1 names the point in
+  words throughout — `centre of compliance`, `virtual CoC`, `compliance
+  centre` — and leaves the symbol to Chapter 2, where it is defined. This is a
+  deliberate exception to the rule under *Mathematical notation* that a defined
+  quantity carries its symbol wherever it is named; do not "restore" the symbol
+  there.
 
-  This also has a configuration-level counterpart. The controller accepts the
-  centre through **two parameters of opposite sign**: the tool-frame
-  `compliance_center_offset_ee` defines \(p_c-p_{\mathrm{TCP}}\), from which
-  the implementation forms \(r_c=-(R_{\mathrm{EE}}\cdot\text{offset})\), while
-  the surface-frame `r_tcp_from_compliance_center_surface` defines \(r_c\)
-  directly. Appendix C must state both rather than calling them one
-  "centre displacement".
+  The lever \(r_c\) does stay in Chapter 1, because the chapter uses it at
+  \(r_c=0\) and in \(m_{c,K}=r_c\times f_K\). It is introduced there
+  without \(p_c\), as the displacement from the TCP to the virtual CoC.
+
+  **The implementation stores the opposite vector, and the appendix says so.**
+  The tool-frame `compliance_center_offset_ee` defines \(p_c-p_{\mathrm{TCP}}\),
+  which is now \(r_c\) itself, while the surface-frame
+  `r_tcp_from_compliance_center_surface` defines \(-r_c\). The source forms
+  `r_c = -(R_EE * offset)`, so the variable named `r_c` in the listings is
+  \(-r_c\) in the thesis convention. The listings are not edited to match;
+  Appendix C and the code appendix state the relation instead.
 - **surface** for the flat object the tool is pressed against, and **surface
   plane** where the plane itself is meant. Not `workpiece`: the only property
   that matters is the plane the tool contacts, and `surface` already carries
@@ -602,6 +618,19 @@ first definition. It does not apply to generic physical nouns that do not denote
 a specific defined variable, or to an unambiguous pronoun or shortened reference
 such as `this matrix` or `the value`.
 
+**A direction that exists in two frames carries the frame in its subscript.**
+The tool-face normal is \(n_{\mathrm{Tool,EE}}\) in end-effector coordinates
+and \(n_{\mathrm{Tool},0}\) in the base frame, with
+\(n_{\mathrm{Tool},0}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}\). They are one
+physical direction in two frames, and the subscript is what says which.
+
+This replaces \(n_{\mathrm{EE}}\) and \(n_T\), which were read as two different
+quantities: \(n_{\mathrm{EE}}\) looked like a property of the end effector
+rather than of the tool, and \(n_T\) named no frame at all. The longer form is
+deliberate — it is harder to misread, and the pair \(n_{\mathrm{T,EE}}\) /
+\(n_{\mathrm{T},0}\) was rejected for the same reason. `Tool` stays capitalised
+and roman in both.
+
 **One typeface: plain italic.** Every symbol — scalars, vectors, and matrices
 alike — is set plain: \(F\), \(f\), \(m\), \(e_p\), \(e_R\), \(p\), \(q\),
 \(K\), \(D\), \(J\), \(R\), \(T\), \(N\). Do not use `\mathbf`.
@@ -726,6 +755,18 @@ subject.
 Complete parameter names belong in the parameter appendix and the data-format
 appendix, where the identifier is the point.
 
+**`run time` and `runtime` are not used for the moment of execution.** Written
+that way the words name a part of the implementation rather than anything the
+reader can check, and they read as source vocabulary in prose that is otherwise
+about geometry and measurement. Say what happens and to what: `that direction
+\(n_T\) follows from \(n_{\mathrm{EE}}\) and the measured end-effector
+orientation`, `the controller forms`, `during set-up`, `while the press
+continues`.
+
+**The elapsed-time sense keeps the words.** The logged `Run time` column and
+its row in the Chapter 3 table name the seconds since the run started, which is
+a physical quantity. Do not sweep those away with the ban.
+
 ## Repository and software language
 
 Do not mention Git repositories, branches, tags, commits, checkouts,
@@ -770,14 +811,25 @@ visible from inside any single chapter:
   no calibration overlay, and no run record. The calibrated plane is
   \(p_s=(0.5153,-0.1072,0.0031)\,\mathrm{m}\), \(a=-1.585^\circ\),
   \(b=+0.988^\circ\), used by all 193 recorded runs.
-- **Which procedure.** The physical plane was described both as fitted from
-  three probed points and as estimated by seating the tool face. Resolved: the
-  physical plane comes from **four probed points**, three fitted and one held
-  out at \(0.82\,\mathrm{mm}\), repeated three times; the **seatings** measured
-  the grinding-face normal, not the surface. The controller holds only the
-  configured plane, set from the tilt angles \(a\) and \(b\), and contains no
-  calibration routine at all — so any sentence implying the controller measured
-  the surface is wrong by construction.
+- **Which procedure.** The physical plane comes from **one seated pose of the
+  complete tool face**, as `tools/measure_plane.cpp` performs it. The plane
+  normal is the *configured* end-effector axis carried into the base frame, and
+  for the stored plane that axis was the **nominal \(+Z_{\mathrm{EE}}\)**:
+  the plane was calibrated before the tool normal and was never measured again
+  afterwards, so \(n_s=R_{\mathrm{EE}}[0,0,1]^\top\) and **not**
+  \(n_s=R_{\mathrm{EE}}n_{\mathrm{EE}}\), which this guide asserted until
+  2026-08-24. The two differ by the \(1.56^\circ\) between the calibrated tool
+  normal and \(+Z_{\mathrm{EE}}\), and Section 4.2.1 states that difference as a
+  calibration offset common to every reported run. The plane point is the
+  tool-face centre of that same pose,
+  \(p_s=p_{\mathrm{EE}}+R_{\mathrm{EE}}r_{\mathrm{face,EE}}\). The repository
+  contains no plane-fitting routine of any kind. The **tool-normal seatings**
+  are a separate
+  calibration and measure the tool, not the surface. The controller holds only
+  the configured plane, set from the tilt angles \(a\) and \(b\), and contains
+  no calibration routine at all — the calibration tools are separate
+  executables — so any sentence implying the controller measured the surface is
+  wrong by construction.
 
 **Rule.** A number or configuration fact has one home — the methodology chapter
 or the parameter appendix — and every other mention cross-references it rather
@@ -951,10 +1003,24 @@ had just said in sentences. Unlike the gain, phase and case tables, it did no
 analytical work. The prose stays and the table is gone; the exhaustive
 configuration lives in the parameter appendix.
 
-**Runtime relations belong to Chapter 3, even inside the calibration section.**
-\(n_T=R_{\mathrm{EE}}n_{\mathrm{EE}}\) was numbered twice, once in the
-calibration section and again in the evaluation section that actually needs it.
-It is kept where it is used. \(R_dn_{\mathrm{EE}}=-n_s\) describes what the
+**Section 4.2 says what each calibration produces, and stops there.** The
+section had grown to mix procedure, frame definitions, validation and the later
+combination of the two results before the reader knew what either calibration
+delivered. The settled shape is: state the two quantities needed, name what
+each procedure supplies —
+\(p_s\), \(n_s\) and \(R_{\mathrm{surface}}\) from the surface calibration,
+\(n_{\mathrm{Tool,EE}}\) from the tool calibration — and leave the combination
+to the chapters that use it. The transformation into the base frame belongs to
+Chapter 3 and \(\theta_{\mathrm{align}}\) to the evaluation section; Section 4.2
+cross-references both rather than deriving either.
+
+**The figure carries the same division.** Each band runs input, method, result,
+and the checks hang below the result box feeding nothing. Giving `Re-seated
+check` and `Held-out check` the same place in the arrow chain as
+\(R_{\mathrm{surface}}\) and \(n_{\mathrm{Tool,EE}}\) is what made readers take
+a validation step for a third calibration output.
+
+\(R_dn_{\mathrm{Tool,EE}}=-n_s\) still describes what the
 controller does with the calibration, not how the calibration was made, and is
 stated in a clause rather than as a numbered equation. The same applies to
 \(p_T=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{T,\mathrm{EE}}\): Chapter 4
@@ -1065,11 +1131,11 @@ The two levers are named separately and never stand in for one another:
   that \(p_T=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{T,\mathrm{EE}}\); the
   implementation has \(p_{\mathrm{TCP}}=p_{\mathrm{EE}}\), which is worth
   stating once rather than silently writing \(p_{\mathrm{EE}}\) in its place.
-- \(r_c=p_{\mathrm{TCP}}-p_c\) is **virtual controller geometry** — the
+- \(r_c=p_c-p_{\mathrm{TCP}}\) is **virtual controller geometry** — the
   software-defined displacement used by the point-shift transformation of the
   Cartesian impedance. It carries no tool geometry at all.
 
-They combine as \(p_T-p_c=(p_T-p_{\mathrm{TCP}})+(p_{\mathrm{TCP}}-p_c)=r_T+r_c\),
+They combine as \(p_T-p_c=(p_T-p_{\mathrm{TCP}})-(p_c-p_{\mathrm{TCP}})=r_T-r_c\),
 which is worth stating because it separates the physical contact geometry from
 the virtual shift.
 
@@ -1086,7 +1152,7 @@ The physical surface force still acts at the actual contact point. What changes
 is the point about which the compliance is defined, and therefore the
 translation–rotation coupling: the same normal press produces a different
 rotational response as \(p_c\) moves. Give that explanation before introducing
-\(r_c=p_{\mathrm{TCP}}-p_c\) and \(m_{c,K}=-r_c\times f_K\), not
+\(r_c=p_c-p_{\mathrm{TCP}}\) and \(m_{c,K}=r_c\times f_K\), not
 after. If \(p_c\) lies on the relevant line of action the moment contribution
 becomes small or zero; displacing it to one side produces a moment that assists
 the required alignment, and to the other side one that opposes or reverses it.
@@ -1221,7 +1287,7 @@ instantaneous opposing torque at identical joint configurations.
   \(\sigma_{\min}=\sigma_6\), while \(v_7\) is the structural null direction at
   full row rank.
 - A retained singular value is inverted as \(1/\sigma_i\).
-- Distinguish the virtual-centre lever \(r_c=p_{\mathrm{TCP}}-p_c\) from the
+- Distinguish the virtual-centre lever \(r_c=p_c-p_{\mathrm{TCP}}\) from the
   tool-geometry lever \(r_T=p_T-p_{\mathrm{TCP}}\). \(r_T\) locates the contact
   reference relative to the TCP; \(r_c\) locates the virtual centre of
   compliance relative to the TCP. They never appear in the same expression.
@@ -1237,7 +1303,7 @@ instantaneous opposing torque at identical joint configurations.
 - **Each lever pairs with one of those two viewpoints, and the pairing is the
   point.** \(r_T\) goes with the estimated force,
   \(m_{r_T}=r_T\times\Delta\hat f_{\mathrm{ext}}\); \(r_c\)
-  goes with the commanded force, \(m_{c,\mathrm{trans}}=-r_c\times f\). Show
+  goes with the commanded force, \(m_{c,\mathrm{trans}}=r_c\times f\). Show
   them together — the figure in the compliance-centre section draws the same
   geometry twice and fades out whichever lever does not act.
 - **\(m_{r_T}\) is a reconstruction, not a measurement.** It is
@@ -1288,13 +1354,13 @@ instantaneous opposing torque at identical joint configurations.
   side with a force from the other is the error this whole section exists to
   prevent.
 - The complete translational command carries a moment, not only its elastic
-  part: \(m_{c,\mathrm{trans}}=-r_c\times f\). The sign analysis then retains
-  \(f_K\) alone, giving \(m_{c,K}=-r_c\times f_K\),
+  part: \(m_{c,\mathrm{trans}}=r_c\times f\). The sign analysis then retains
+  \(f_K\) alone, giving \(m_{c,K}=r_c\times f_K\),
   and says that it is doing so — otherwise \(f_K\) appears to
   enter arbitrarily. The damping coupling follows from the shifted damping
   matrix in the same way.
 - About the centre of compliance the same reconstruction would take
-  \((r_T+r_c)\times\Delta\hat f_{\mathrm{ext}}\). **Mention this once.** The
+  \((r_T-r_c)\times\Delta\hat f_{\mathrm{ext}}\). **Mention this once.** The
   controller never forms it: the congruence transformation receives \(r_c\), as
   the appendix source listing shows.
 - **The commanded elastic normal magnitude is \(F_{K,n}=-n_s^\top f_K\), never
@@ -1312,9 +1378,9 @@ instantaneous opposing torque at identical joint configurations.
   | \(f_K=K_pe_p\) | commanded | elastic commanded force |
   | \(f_D=D_p(\dot p_d-\dot p_{\mathrm{EE}})\) | commanded | damping commanded force |
   | \(f=f_K+f_D\) | commanded | total commanded force |
-  | \(m_{c,K}=-r_c\times f_K\) | commanded | elastic coupling moment |
-  | \(m_{c,D}=-r_c\times f_D\) | commanded | damping coupling moment |
-  | \(m_{c,\mathrm{trans}}=-r_c\times f\) | commanded | total translational coupling |
+  | \(m_{c,K}=r_c\times f_K\) | commanded | elastic coupling moment |
+  | \(m_{c,D}=r_c\times f_D\) | commanded | damping coupling moment |
+  | \(m_{c,\mathrm{trans}}=r_c\times f\) | commanded | total translational coupling |
   | \(\Delta\hat f_{\mathrm{ext}}\) | estimated | external-force change |
 
   **The point shift acts on both matrices**, so the damping force acquires the
@@ -1377,7 +1443,8 @@ present a logged diagnostic as a universal primary metric.
 
 Keep the configured normal \(n_{\mathrm{cfg}}\) distinct from the physical
 normal \(n_{\mathrm{phys}}\). Describe only the physical-plane method actually
-used for the reported data. A proposed three-point calibration belongs in
+used for the reported data, which is the single seated pose of
+\Cref{subsec:plane_calibration_protocol}. A proposed multi-point fit belongs in
 Future Work, not in the completed methodology or results.
 
 Hardware constraints belong in setup and operating constraints, not in the
@@ -1479,7 +1546,7 @@ completed adaptive functionality.
 
 **Do not summarise the compliance-centre result as "find the best non-zero
 lever and use it."** That reading does not survive the model. The coupling
-moment \(m_{c,K}=-r_c\times f_K\) does not vanish when the tool reaches a flat
+moment \(m_{c,K}=r_c\times f_K\) does not vanish when the tool reaches a flat
 orientation: as long as a normal press is present and \(r_c\neq0\), a fixed
 tangential lever keeps commanding rotation in one direction, whether or not
 alignment has already been achieved. A lever that assists one initial
@@ -1567,7 +1634,7 @@ from Chapter 5. The reason for the change is that a hand-applied check carries
 no controlled condition and no recorded quantity, so a reader cannot separate
 it from the measured cases however carefully it is labelled. The
 sustained-contact argument does not need it: it rests on the mechanism, that
-\(m_{c,K}=-r_c\times f_K\) persists while the press is present, and on the
+\(m_{c,K}=r_c\times f_K\) persists while the press is present, and on the
 Case-D and Case-E measurements.
 
 ### Why the two tangents behaved differently, and what may be concluded from it
@@ -1778,7 +1845,7 @@ When a calibrated pilot is recorded after the main campaign:
 - state which earlier runs are decoupled controls and which runs activate the
   point-shifted law;
 - report the controller lever using
-  \(r_c=p_{\mathrm{TCP}}-p_c\), rather than calling its sign simply “left” or
+  \(r_c=p_c-p_{\mathrm{TCP}}\), rather than calling its sign simply “left” or
   “right”;
 - retain the pose-based alignment metric and the operator-observed contact
   state as separate outcomes when tool-to-gripper motion is unmeasured;

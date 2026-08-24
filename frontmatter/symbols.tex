@@ -76,7 +76,7 @@ column makes the mixed translational and rotational quantities traceable.}
 \symgroup{Dynamics and Torques}{
 \symrow{$F$}{Cartesian wrench}{[N], [N\,m]}
 \symrow{$f,\ m$}{Commanded Cartesian force / moment}{[N], [N\,m]}
-\symrow{$f_K,\ m_{c,K}$}{Elastic commanded force component, $f_K=K_pe_p$ / its compliance-centre coupling moment, $m_{c,K}=-r_c\times f_K$}{[N], [N\,m]}
+\symrow{$f_K,\ m_{c,K}$}{Elastic commanded force component, $f_K=K_pe_p$ / its compliance-centre coupling moment, $m_{c,K}=r_c\times f_K$}{[N], [N\,m]}
 \symrow{$K,\ D$}{Full Cartesian stiffness / damping matrices}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
 \symrow{$\Lambda_0(q),\ \Lambda_{\mathrm{task}}(q)$}{Operational-space (Cartesian) inertia matrix in the base frame / resolved in the active gain frame}{[kg], [kg\,m], [kg\,m$^2$]}
 \symrow{$M(q)$}{Joint-space mass matrix}{[kg\,m$^2$]}
@@ -93,21 +93,20 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$t_1,\ t_2$}{Surface tangent directions (unit)}{[-]}
 \symrow{$a_s,\ \tilde{t}_1$}{Configured base-frame reference direction fixing $t_1$ within the surface plane / projected tangent before normalisation}{[-]}
 \symrow{$R_{\mathrm{surface}}$}{Surface task frame $[\,t_1\;\;t_2\;\;n_s\,]$ in the base frame}{[-]}
-\symrow{$p_{\mathrm{cal},i},\ r_{\mathrm{probe,EE}}$}{Captured marked-corner point in the base frame / fixed corner offset in the EE frame}{[m], [m]}
-\symrow{$R_{\mathrm{cal},i},\ \bar R$}{Rotation of a captured tool-calibration pose / mean of the three estimation rotations}{[-]}
+\symrow{$p_{\mathrm{cal}},\ n_{\mathrm{cal}}$}{Tool-face centre and surface normal obtained from a seated pose, both in the base frame}{[m], [-]}
+\symrow{$R_{\mathrm{cal},i}$}{Rotation of a captured tool-calibration pose}{[-]}
 \symrow{$\bar n_B$}{Invariant base-frame direction in the tool-normal calibration}{[-]}
-\symrow{$\varepsilon_{\mathrm{plane}},\ \varepsilon_g$}{Surface-plane validation residual / tool-face feature-selection tolerance}{[m]}
-\symrow{$U,\ \Sigma,\ V$}{Singular-value decomposition factors of $\bar R$}{[-]}
-\symrow{$n_{\mathrm{EE}},\ n_T,\ n_d$}{Calibrated tool normal in the EE frame / pose-based tool normal in the base frame / signed controller target direction}{[-]}
+\symrow{$\varepsilon_{\mathrm{plane}},\ \varepsilon_g$}{Surface-plane re-seating residual / tool-face feature-selection tolerance}{[m]}
+\symrow{$\psi_{\mathrm{plane}}$}{Angle between the re-seated and the stored surface normal}{[rad]}
+\symrow{$\Delta\alpha_s,\ \Delta\beta_s$}{The same re-seating comparison read per axis, as differences from the stored $\alpha_s$ and $\beta_s$}{[rad], [rad]}
+\symrow{$n_{\mathrm{Tool,EE}},\ n_{\mathrm{Tool},0},\ n_d$}{Tool-face normal expressed in the EE frame, fixed by calibration / the same direction expressed in the base frame, $n_{\mathrm{Tool},0}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}$ / signed controller target direction}{[-]}
 \symrow{$\theta_{\mathrm{tilt}},\ \phi_{\mathrm{tilt}},\ u_{\mathrm{tilt}}$}{Commanded orientation-offset rotation vector $\theta_{t_1}t_1+\theta_{t_2}t_2$ / its magnitude / its unit axis}{[rad], [rad], [-]}
 \symrow{$R_{\mathrm{tilt}}$}{Rotation built from $(u_{\mathrm{tilt}},\phi_{\mathrm{tilt}})$ and applied to $n_s$ to give $n_d$}{[-]}
 \symrow{$s_a$}{Tool-axis target sign, with \(n_d=s_a n_s\)}{[-]}
 \symrow{$p_s$}{Point on the configured surface}{[m]}
 \symrow{$p_c$}{Centre of compliance}{[m]}
-\symrow{$r_c$}{Compliance-centre-to-TCP lever, $p_{\mathrm{TCP}}-p_c$, as it enters the point-shift transformation}{[m]}
+\symrow{$r_c$}{TCP-to-compliance-centre lever, $p_c-p_{\mathrm{TCP}}$, as it enters the point-shift transformation and as the experimental plots and tables report it}{[m]}
 \symrow{$r_{c,t_1},\ r_{c,t_2},\ r_{c,n}$}{Surface-frame components of $r_c$ along $t_1$, $t_2$ and $n_s$}{[m]}
-\symrow{$d_c$}{Signed centre offset reported by the experimental plots and tables, $d_c=p_c-p_{\mathrm{TCP}}=-r_c$}{[m]}
-\symrow{$d_{c,t_1},\ d_{c,t_2},\ d_{c,n}$}{Surface-frame components of $d_c$}{[m]}
 \symrow{$r_{\mathrm{face,EE}}$}{Tool-face centre offset in the EE frame}{[m]}
 \symrow{$r_{\mathrm{width,EE}},\ r_{\mathrm{length,EE}}$}{Tool face half-width / half-length vector in the EE frame}{[m]}
 \symrow{$r_{T,\mathrm{EE}},\ p_T$}{Selected tool-point offset from the TCP, expressed in the EE frame / selected tool-point position in the base frame}{[m]}
@@ -120,7 +119,7 @@ column makes the mixed translational and rotational quantities traceable.}
 
 \symgroup{Compliance and Alignment}{
 \symrow{$K_{\mathrm{task}},\ D_{\mathrm{task}}$}{Full local Cartesian stiffness / damping in the chosen task frame}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
-\symrow{$\mathrm{Ad}(r_c)$}{Compliance-centre-to-TCP point-shift adjoint}{[-]}
+\symrow{$\mathrm{Ad}(r_c)$}{TCP-to-compliance-centre point-shift adjoint}{[-]}
 \symrow{$K_c,D_c$}{Block-diagonal stiffness / damping at the centre of compliance}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
 \symrow{$F_c,\ F_{\mathrm{TCP}}$}{Cartesian wrench at the centre of compliance / corresponding wrench at the TCP}{[N], [N\,m]}
 \symrow{$K_{\mathrm{TCP}},D_{\mathrm{TCP}}$}{Centre-of-compliance gains mapped by congruence to the TCP}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
@@ -132,7 +131,7 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$r_{c,t},\ \rho_c$}{Selected tangential compliance-centre lever / its magnitude}{[m]}
 \symrow{$\Delta p_T,\ s_T$}{Selected tool point displacement / its magnitude}{[m]}
 \symrow{$\Delta p_{\mathrm{TCP}},\ s_{\mathrm{TCP}}$}{TCP displacement / its magnitude}{[m]}
-\symrow{$\theta_{\mathrm{dev}},\ \theta_{\mathrm{dev}}^{S}$}{Rotation vector taking $n_T$ onto the flat target $-n_s$ / the same vector resolved on the surface axes; $\lVert\theta_{\mathrm{dev}}^{S}\rVert=\theta_{\mathrm{align}}$}{[rad], reported in [deg]}
+\symrow{$\theta_{\mathrm{dev}},\ \theta_{\mathrm{dev}}^{S}$}{Rotation vector taking $n_{\mathrm{Tool},0}$ onto the flat target $-n_s$ / the same vector resolved on the surface axes; $\lVert\theta_{\mathrm{dev}}^{S}\rVert=\theta_{\mathrm{align}}$}{[rad], reported in [deg]}
 \symrow{$\theta_{\mathrm{dev},t_i,\mathrm{before}}$}{Signed surface-frame component of $\theta_{\mathrm{dev}}^{S}$ at set-up entry; opposite in sign to the commanded orientation offset}{[rad], reported in [deg]}
 \symrow{$F_n$}{Positive normal magnitude of the model-estimated external-force change from the clearance transition, $|n_s^\top\Delta\hat f_{\mathrm{ext}}|$}{[N]}
 \symrow{$F_{n,\mathrm{cmd}},\ M_{t_i,\mathrm{cmd}}$}{Signed commanded normal force / commanded TCP moment about surface tangent $t_i$}{[N], [N\,m]}
@@ -142,8 +141,8 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$\Delta\hat F_{\mathrm{ext}}$}{Model-estimated external-wrench change relative to the clearance-transition reference}{[N], [N\,m]}
 \symrow{$\Delta\hat f_{\mathrm{ext}},\ \Delta\hat m_{\mathrm{ext}}$}{Force part / moment part of $\Delta\hat F_{\mathrm{ext}}$}{[N], [N\,m]}
 \symrow{$f_D$}{Damping commanded force component, $f=f_K+f_D$}{[N]}
-\symrow{$m_{c,D}$}{Coupling moment of the damping component, $-r_c\times f_D$}{[N\,m]}
-\symrow{$m_{c,\mathrm{trans}}$}{Complete translational coupling moment, $m_{c,K}+m_{c,D}=-r_c\times f$}{[N\,m]}
+\symrow{$m_{c,D}$}{Coupling moment of the damping component, $r_c\times f_D$}{[N\,m]}
+\symrow{$m_{c,\mathrm{trans}}$}{Complete translational coupling moment, $m_{c,K}+m_{c,D}=r_c\times f$}{[N\,m]}
 }
 
 \symgroup{Quasi-Static Stiffness and Damping Design}{

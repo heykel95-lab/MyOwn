@@ -113,17 +113,41 @@ The complete run-specific controller configuration is given in
 \label{sec:contact_geometry}
 % ============================================================================
 
-The controller requires the physical plane and the tool normal in
-consistent coordinate frames. These quantities were estimated independently.
-The surface calibration determined a point on the plane, its normal, and the
-two surface tangents, whereas the tool calibration determined the tool normal
-in end-effector coordinates. The calibrated values were then used by both the
-controller and the evaluation.
+Two geometric quantities were required before the contact experiments could be
+performed: a surface reference expressed in the robot base frame, and the
+normal direction of the physical tool face expressed in the end-effector frame.
+Each came from its own calibration procedure.
+
+The surface-plane calibration of \Cref{subsec:plane_calibration_protocol}
+supplies a point \(p_s\) on the plate and its outward normal \(n_s\), both in
+the base frame. The two tangent directions \(t_1\) and \(t_2\) are constructed
+from \(n_s\), which completes the surface frame
+\(R_{\mathrm{surface}}=[\,t_1\;\;t_2\;\;n_s\,]\). The tool-normal calibration
+of \Cref{subsec:grinding_face_calibration} supplies \(n_{\mathrm{Tool,EE}}\), the
+direction normal to the physical tool face in end-effector coordinates. That
+second calibration is needed because the physical face is not exactly
+perpendicular to the nominal \(+Z_{\mathrm{EE}}\) axis.
+
+The subscripts name the frame each direction is expressed in:
+\(n_{\mathrm{Tool,EE}}\) is the tool-face normal in end-effector coordinates,
+and \(n_{\mathrm{Tool},0}\) is the same physical direction in the base frame.
+Only the first is calibrated. The second follows from it during operation, as
+\Cref{sec:tool_orientation_given_surface} sets out, and
+\Cref{sec:alignment_evaluation} uses it for the alignment angle
+\(\theta_{\mathrm{align}}\).
+
+Neither calibration entered the other. The surface reference was obtained
+first, from one seated pose, using the nominal \(+Z_{\mathrm{EE}}\) direction;
+the tool normal calibrated afterwards was not used to revise it. Determining
+\(n_{\mathrm{Tool,EE}}\) in turn used only the relative orientations of four seated
+yaw poses, and no value of \(n_s\). That separation matters, because the
+calibrated \(n_{\mathrm{Tool,EE}}\) later differed from nominal
+\(+Z_{\mathrm{EE}}\) by approximately \(1.56^\circ\).
 
 \begin{figure}[H]
   \centering
   \resizebox{\textwidth}{!}{\input{figures/calibration_flow.tex}}
-  \caption{Surface and tool calibration flow.}
+  \caption{The two independent calibrations and the result each produces.}
   \label{fig:calibration_flow}
 \end{figure}
 
@@ -131,45 +155,48 @@ controller and the evaluation.
 \subsection{Surface-Plane Calibration}
 \label{subsec:plane_calibration_protocol}
 
-Four positions distributed over the plate were probed with the same marked
-\(+X_{\mathrm{EE}},+Y_{\mathrm{EE}}\) corner of the tool face. The first
-three points, \(P_1\)--\(P_3\), defined the plane; the fourth point \(P_4\) was
-excluded from the fit and used for validation.
+This calibration determines a fixed plane reference \((p_s,n_s)\) in the robot
+base frame. The surface tangents and the surface frame used throughout the
+experiments are constructed from that pair.
 
-For each capture \(i\), the measured end-effector position
-\(p_{\mathrm{EE},i}\) and orientation \(R_{\mathrm{EE},i}\) were combined with
-the fixed end-effector-frame corner offset
-
-\begin{equation}
-r_{\mathrm{probe,EE}}
-=
-\begin{bmatrix}
-0.020\\
-0.060\\
-0.020
-\end{bmatrix}
-\mathrm{m}.
-\label{eq:plane_probe_corner_offset}
-\end{equation}
-
-The corresponding base-frame corner position was
+The complete tool face was seated flat on the plate, and one end-effector pose
+\((p_{\mathrm{EE}},R_{\mathrm{EE}})\) was recorded. No motion was commanded
+while that pose was taken. At this stage the physical tool normal
+\(n_{\mathrm{Tool,EE}}\) had not yet been calibrated, so the nominal
+\(+Z_{\mathrm{EE}}\) axis was used as the seated direction. The recorded
+orientation then carries the orientation of the plane,
 
 \begin{equation}
-p_{\mathrm{cal},i}
+n_s
 =
-p_{\mathrm{EE},i}+R_{\mathrm{EE},i}r_{\mathrm{probe,EE}}.
-\label{eq:plane_probe_corner_position}
+R_{\mathrm{EE}}[\,0,\ 0,\ 1\,]^\top ,
+\label{eq:plane_seated_normal}
 \end{equation}
 
-The calibrated plane is represented by
+with the sign taken to give a positive base-frame \(z\) component, so that
+\(n_s\) is the outward normal.
+
+The same seated pose also supplies a point on the plane. The centre of the tool
+face sits at the fixed end-effector-frame offset \(r_{\mathrm{face,EE}}\) of
+\Cref{eq:grinding_face_center_ee}, so its base-frame position is
+
+\begin{equation}
+p_{\mathrm{cal}}
+=
+p_{\mathrm{EE}}+R_{\mathrm{EE}}r_{\mathrm{face,EE}}.
+\label{eq:plane_seated_face_centre}
+\end{equation}
+
+Because the complete face is seated on the plate, that centre lies on the
+plane, and \(p_s=p_{\mathrm{cal}}\). The calibrated plane is consequently
 
 \begin{equation}
 n_s^\top(p-p_s)=0,
 \label{eq:calibrated_surface_plane}
 \end{equation}
 
-where \(p_s\) is a point on the plane and \(n_s\) is the unit outward surface
-normal. The fitted plane point stored in the controller was
+with \(n_s\) the unit outward surface normal. The plane point stored in the
+controller was
 
 \begin{equation}
 p_s
@@ -183,8 +210,7 @@ p_s
 \label{eq:calibrated_surface_point}
 \end{equation}
 
-This point is the centroid of the three fitted corner coordinates. The
-controller stores the plane orientation through rotations \(\alpha_s\) about
+The controller stores the plane orientation through rotations \(\alpha_s\) about
 the base \(x\)-axis and \(\beta_s\) about the base \(y\)-axis. With \(e_z\)
 the base-frame \(z\)-axis,
 
@@ -199,6 +225,15 @@ R_y(\beta_s)R_x(\alpha_s)e_z
 \cos(\beta_s)\cos(\alpha_s)
 \end{bmatrix}.
 \label{eq:implemented_surface_normal_angles}
+\end{equation}
+
+Inverting that relation returns the stored angles from the measured normal,
+
+\begin{equation}
+\alpha_s=\arcsin(-n_{s,y}),
+\qquad
+\beta_s=\operatorname{atan2}(n_{s,x},n_{s,z}).
+\label{eq:surface_tilt_from_normal}
 \end{equation}
 
 The calibrated angles were
@@ -225,22 +260,45 @@ n_s
 \label{eq:surface_normal}
 \end{equation}
 
-The held-out point provided an independent geometric check. Its perpendicular
-residual from the calibrated plane was
+The surface calibration was completed before the physical tool normal was
+identified, so \(n_s\) was calculated with the nominal \(+Z_{\mathrm{EE}}\)
+axis and retained unchanged for all reported experiments. The subsequent tool
+calibration showed that the physical tool-face normal differs from that axis by
+approximately \(1.56^\circ\). Substituting \(n_{\mathrm{Tool,EE}}\) for the nominal
+axis in \Cref{eq:plane_seated_normal} would therefore rotate the stored surface
+normal. Since the surface was not recalibrated after \(n_{\mathrm{Tool,EE}}\) had
+been determined, the originally stored \(p_s\), \(n_s\) and
+\(R_{\mathrm{surface}}\) were used consistently in both the controller and the
+evaluation, and the resulting difference is common to the complete data set.
+
+Repeating the measurement while the tool face remains seated gives the
+consistency check of the stored plane. The repeat pose supplies a normal
+\(n_{\mathrm{cal}}\) through \Cref{eq:plane_seated_normal} and a face centre
+\(p_{\mathrm{cal}}\) through \Cref{eq:plane_seated_face_centre}. Comparing them
+with the stored values gives
 
 \begin{equation}
+\psi_{\mathrm{plane}}
+=
+\arccos\left(n_{\mathrm{cal}}^\top n_s\right),
+\qquad
 \varepsilon_{\mathrm{plane}}
 =
-\left|n_s^\top(p_{\mathrm{cal},4}-p_s)\right|,
+\left|n_s^\top(p_{\mathrm{cal}}-p_s)\right| .
 \label{eq:surface_plane_validation_residual}
 \end{equation}
 
-with
-
-\begin{equation}
-\varepsilon_{\mathrm{plane}}=0.82\,\mathrm{mm}.
-\label{eq:surface_plane_validation_value}
-\end{equation}
+Reading the orientation per axis adds \(\Delta\alpha_s\) and
+\(\Delta\beta_s\). Both are differences between the tilt angles of
+\(n_{\mathrm{cal}}\), returned by \Cref{eq:surface_tilt_from_normal}, and the
+stored angles of \Cref{eq:calibrated_surface_tilt_angles}.
+\(\psi_{\mathrm{plane}}\), \(\Delta\alpha_s\) and \(\Delta\beta_s\) describe
+the orientation, and \(\varepsilon_{\mathrm{plane}}\) the position of the plane
+along its own normal. A single seated point constrains no orientation, so
+neither part describes the agreement on its own. \(\psi_{\mathrm{plane}}\)
+additionally carries any difference between the axis configured for the repeat
+measurement and the nominal axis of \Cref{eq:plane_seated_normal}. An
+orientation of the plate measured independently of the tool was not recorded.
 
 The in-plane orientation was fixed by projecting the base-frame reference
 direction \(a_s=e_x\) onto the calibrated plane:
@@ -305,39 +363,58 @@ All surface-resolved quantities use the coordinate order
 \subsection{Tool Normal Calibration}
 \label{subsec:grinding_face_calibration}
 
-The tool normal in the end-effector frame cannot be taken from the
-nominal \(+Z_{\mathrm{EE}}\) axis alone because the physical tool and its mount
-introduce geometric offsets. To identify this direction, the complete tool
-face was seated flat on the calibrated plane at four different yaw angles. The
-face normal in the base frame remains unchanged when only the yaw is varied;
-therefore the end-effector-frame direction that maps to the same base-frame
-direction across the captures identifies the tool normal.
+This calibration determines \(n_{\mathrm{Tool,EE}}\), the direction normal to the
+physical tool face in end-effector coordinates. It is not assumed to coincide
+with nominal \(+Z_{\mathrm{EE}}\), because the manufactured tool and its
+mounting introduce a small geometric offset.
 
-The first three captured rotations were used for estimation and the fourth was
-retained for validation. With \(R_{\mathrm{cal},i}\) the rotational part of the
-captured pose,
+To identify \(n_{\mathrm{Tool,EE}}\), the complete tool face was seated flat on the
+same plate at four different yaw orientations. Rotating a flat tool about the
+surface normal changes the end-effector orientation, and leaves the physical
+direction normal to the seated face unchanged in the base frame. The
+calibration therefore searches for the one direction fixed in the end-effector
+frame that becomes the same base-frame direction in every flat yaw pose. Only
+the recorded orientations enter that search, so no value of the calibrated
+plane of \Cref{subsec:plane_calibration_protocol} reaches
+\(n_{\mathrm{Tool,EE}}\).
+
+The first three captured rotations were used for the estimate, and the fourth
+was retained for validation. With \(R_{\mathrm{cal},i}\) the rotational part of
+the captured pose, perfect seating would carry the tool normal onto one
+base-frame direction \(\bar n_B\) in all three,
 
 \begin{equation}
-R_{\mathrm{cal},1}n_{\mathrm{EE}}
+R_{\mathrm{cal},1}n_{\mathrm{Tool,EE}}
 \approx
-R_{\mathrm{cal},2}n_{\mathrm{EE}}
+R_{\mathrm{cal},2}n_{\mathrm{Tool,EE}}
 \approx
-R_{\mathrm{cal},3}n_{\mathrm{EE}}
+R_{\mathrm{cal},3}n_{\mathrm{Tool,EE}}
 =
 \bar n_B.
 \label{eq:tool_axis_invariant_direction}
 \end{equation}
 
-The estimator formed
-\(\bar R=(R_{\mathrm{cal},1}+R_{\mathrm{cal},2}+R_{\mathrm{cal},3})/3\) and
-applied the singular-value decomposition \(\bar R=U\Sigma V^\top\). The
-corresponding dominant singular-vector pair provided the invariant base-frame
-direction and the tool normal in the end-effector frame. The sign
-was chosen toward nominal \(+Z_{\mathrm{EE}}\). The final value used in every
-reported run was
+Seating scatter leaves no direction that satisfies this exactly. The tool
+normal was therefore taken as the unit direction that comes closest across
+every pair of captures,
 
 \begin{equation}
-n_{\mathrm{EE}}
+n_{\mathrm{Tool,EE}}
+=
+\operatorname*{arg\,min}_{\lVert n\rVert=1}
+\sum_{i<j}
+\bigl\lVert(R_{\mathrm{cal},i}-R_{\mathrm{cal},j})n\bigr\rVert^2 ,
+\label{eq:tool_axis_least_squares}
+\end{equation}
+
+whose minimiser is the eigenvector of
+\(\sum_{i<j}(R_{\mathrm{cal},i}-R_{\mathrm{cal},j})^\top
+(R_{\mathrm{cal},i}-R_{\mathrm{cal},j})\) belonging to the smallest eigenvalue.
+The sign was chosen toward nominal \(+Z_{\mathrm{EE}}\). The final value used in
+every reported run was
+
+\begin{equation}
+n_{\mathrm{Tool,EE}}
 =
 \begin{bmatrix}
 0.026387057\\
@@ -345,7 +422,7 @@ n_{\mathrm{EE}}
 0.999629492
 \end{bmatrix},
 \qquad
-\|n_{\mathrm{EE}}\|=1.
+\|n_{\mathrm{Tool,EE}}\|=1.
 \label{eq:calibrated_grinding_face_direction}
 \end{equation}
 
@@ -354,9 +431,11 @@ The calibration identifies the effective geometric direction used by the
 controller and evaluation; it does not determine the physical source of this
 offset.
 
-This calibrated direction is the one used by both the controller and the
-evaluation. The flat orientation target is the orientation that maps it onto
-the inward surface normal, so the target sign is \(s_a=-1\). The commanded spin about the desired
+\(n_{\mathrm{Tool,EE}}\) is the output of this calibration, and
+\Cref{sec:tool_orientation_given_surface} carries it into the base frame during
+operation. Flat contact requires that base-frame direction to coincide with the
+inward surface normal, so the target sign is
+\(s_a=-1\). The commanded spin about the desired
 tool axis, measured from \(t_1\), was \(90^\circ\) for all reported
 runs. In the flat target orientation the projected long face axis is aligned
 with the \(t_2\) line.
@@ -733,7 +812,7 @@ direction.
 The compliance-centre lever follows the convention
 
 \begin{equation}
-r_c=p_{\mathrm{TCP}}-p_c.
+r_c=p_c-p_{\mathrm{TCP}}.
 \label{eq:experimental_compliance_lever}
 \end{equation}
 
@@ -756,7 +835,7 @@ For a commanded rotation represented by surface components
 r_{c,t}
 =
 \frac{\rho_c}{\sqrt{\theta_{t_1}^{2}+\theta_{t_2}^{2}}}
-\left(\theta_{t_2}t_1-\theta_{t_1}t_2\right),
+\left(\theta_{t_1}t_2-\theta_{t_2}t_1\right),
 \label{eq:experimental_general_lever_rule}
 \end{equation}
 
@@ -778,14 +857,14 @@ Commanded direction & Lever setting &
 \([\theta_{t_1},\theta_{t_2}]\) (deg) &
 \([r_{c,t_1},r_{c,t_2},r_{c,n}]\) (mm)\\
 \midrule
-About \(t_1\) & selected & \([+10.0,0.0]\) & \([0,-40.0,0]\)\\
-\(-45^\circ\) from \(t_1\) & selected & \([+7.1,-7.1]\) & \([-28.3,-28.3,0]\)\\
-\(+45^\circ\) from \(t_1\) & selected & \([+7.1,+7.1]\) & \([+28.3,-28.3,0]\)\\
-About \(t_2\) & selected & \([0.0,+10.0]\) & \([+40.0,0,0]\)\\
+About \(t_1\) & selected & \([+10.0,0.0]\) & \([0,+40.0,0]\)\\
+\(-45^\circ\) from \(t_1\) & selected & \([+7.1,-7.1]\) & \([+28.3,+28.3,0]\)\\
+\(+45^\circ\) from \(t_1\) & selected & \([+7.1,+7.1]\) & \([-28.3,+28.3,0]\)\\
+About \(t_2\) & selected & \([0.0,+10.0]\) & \([-40.0,0,0]\)\\
 \addlinespace
-\(-45^\circ\) from \(t_1\) & fixed at the \(t_1\) selection & \([+7.1,-7.1]\) & \([0,-40.0,0]\)\\
-\(+45^\circ\) from \(t_1\) & fixed at the \(t_1\) selection & \([+7.1,+7.1]\) & \([0,-40.0,0]\)\\
-About \(t_2\) & fixed at the \(t_1\) selection & \([0.0,+10.0]\) & \([0,-40.0,0]\)\\
+\(-45^\circ\) from \(t_1\) & fixed at the \(t_1\) selection & \([+7.1,-7.1]\) & \([0,+40.0,0]\)\\
+\(+45^\circ\) from \(t_1\) & fixed at the \(t_1\) selection & \([+7.1,+7.1]\) & \([0,+40.0,0]\)\\
+About \(t_2\) & fixed at the \(t_1\) selection & \([0.0,+10.0]\) & \([0,+40.0,0]\)\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -856,7 +935,7 @@ The signed component along the commanded rotation direction is the primary
 controller-response metric. A positive value denotes end-effector rotation in
 the intended alignment direction. This quantity is calculated directly from
 the measured end-effector orientations and does not require the calibrated tool
-normal \(n_{\mathrm{EE}}\).
+normal \(n_{\mathrm{Tool,EE}}\).
 
 
 \subsection{Alignment Angle and Flatness Classification}
@@ -867,7 +946,7 @@ from the measured end-effector orientation and the calibrated direction in the
 end-effector frame:
 
 \begin{equation}
-n_T=R_{\mathrm{EE}}n_{\mathrm{EE}}.
+n_{\mathrm{Tool},0}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}.
 \label{eq:evaluation_grinding_face_direction}
 \end{equation}
 
@@ -876,12 +955,12 @@ The alignment angle is
 \begin{equation}
 \theta_{\mathrm{align}}(t)
 =
-\cos^{-1}\!\left(-n_T(t)^\top n_s\right).
+\cos^{-1}\!\left(-n_{\mathrm{Tool},0}(t)^\top n_s\right).
 \label{eq:contact_alignment_error_cross}
 \end{equation}
 
 The negative sign follows the experimental flat target
-\(R_dn_{\mathrm{EE}}=-n_s\). The quantity
+\(R_dn_{\mathrm{Tool,EE}}=-n_s\). The quantity
 \(\theta_{\mathrm{align}}(t)\geq0\) is an unsigned instantaneous geometric
 error: it states how far the reconstructed tool normal is from the flat target
 at time \(t\). It is calculated from the end-effector pose and the calibrated
@@ -911,7 +990,7 @@ the finite end-effector rotation itself. The latter is measured separately by
 The alignment angle carries no direction, and the case comparisons need one.
 The same geometric relation therefore also supplies a signed decomposition. Let
 \(\theta_{\mathrm{dev}}\) be the rotation vector of the shortest rotation
-taking the pose-based tool axis \(n_T\) onto the flat target direction
+taking the pose-based tool axis \(n_{\mathrm{Tool},0}\) onto the flat target direction
 \(-n_s\). Resolved on the surface axes it gives
 
 \begin{equation}

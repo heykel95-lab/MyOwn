@@ -56,7 +56,7 @@ Mat3 makeSpatialGainMatrix(
 \section{Tool Orientation and Rotation Error}
 \label{app:orientation}
 
-The physical tool normal \(n_{\mathrm{EE}}\) is configured in the EE frame. The desired orientation
+The physical tool normal \(n_{\mathrm{Tool,EE}}\) is configured in the EE frame. The desired orientation
 is the minimum rotation of the captured start orientation that maps this axis
 onto the signed normal; it is not obtained by assigning the complete surface
 frame to the EE frame. The commanded angular offsets of a case are applied to
@@ -241,14 +241,11 @@ harder press. Latching removes that dependence on waiting time.
 \section{Centre of Compliance and the Offset Adjoint}
 \label{app:center_compliance}
 
-The lever \(r_c\) passed to the implementation points from the selected centre of
-compliance \(p_c\) to the TCP:
-\[
-r_c=p_{\mathrm{TCP}}-p_c.
-\]
-The same congruence is applied to stiffness and damping.
+The lever \(r_c=p_c-p_{\mathrm{TCP}}\) points from the TCP to the selected
+centre of compliance, and the implementation uses the same convention. The
+same congruence is applied to stiffness and damping.
 
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Compliance-centre-to-TCP adjoint and congruence transform.}, label={lst:app_compliance_adjoint}]
+\begin{lstlisting}[style=cppstyle, language=C++, caption={TCP-to-compliance-centre adjoint and congruence transform.}, label={lst:app_compliance_adjoint}]
 Mat3 skewMatrix(const Vec3& v) {
   Mat3 s;
   s << 0.0, -v(2),  v(1),
@@ -260,7 +257,7 @@ Mat3 skewMatrix(const Vec3& v) {
 Mat6x6 complianceShiftMatrix(const Vec3& r_c) {
   Mat6x6 adjoint = Mat6x6::Zero();
   adjoint.block<3, 3>(0, 0) = Mat3::Identity();
-  adjoint.block<3, 3>(0, 3) = skewMatrix(r_c);
+  adjoint.block<3, 3>(0, 3) = -skewMatrix(r_c);
   adjoint.block<3, 3>(3, 3) = Mat3::Identity();
   return adjoint;
 }
@@ -275,8 +272,8 @@ Mat6x6 shiftGainToTcp(
 The wrench routine selects between the decoupled and the coupled law and
 constructs the lever. The centre can be defined relative to the TCP in
 end-effector coordinates, or the lever can be given directly in surface
-coordinates. Both definitions use the convention
-\(r_c=p_{\mathrm{TCP}}-p_c\).
+coordinates. The surface-frame parameter keeps its original name and stores
+\(-r_c\), which the sign in the listing corrects.
 
 \begin{lstlisting}[style=cppstyle, language=C++, caption={Selection of the decoupled or coupled spring wrench (abridged).}, label={lst:app_spring_wrench}]
 const bool coupled =
@@ -295,10 +292,10 @@ if (!coupled) {
 
 Vec3 r_c = Vec3::Zero();
 if (params.compliance_center_in_tool_frame) {
-  r_c = -(R_EE * params.compliance_center_offset_ee);
+  r_c = R_EE * params.compliance_center_offset_ee;
 } else {
-  r_c = R_base_surface
-      * params.r_tcp_from_compliance_center_surface;
+  r_c = -(R_base_surface
+      * params.r_tcp_from_compliance_center_surface);
 }
 const Mat6x6 K_tcp =
     shiftGainToTcp(blockDiagonal(Kp, KR), r_c);

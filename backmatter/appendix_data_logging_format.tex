@@ -70,8 +70,8 @@ constant during set-up.\\
 \texttt{angular\_deviation\_deg} &
 The alignment angle of
 \mbox{\Cref{eq:contact_alignment_error_cross}},
-\mbox{\(\theta_{\mathrm{align}}=\cos^{-1}(-n_T^\top n_s)\)}, between the
-pose-based tool axis \mbox{\(n_T\)} and the flat target
+\mbox{\(\theta_{\mathrm{align}}=\cos^{-1}(-n_{\mathrm{Tool},0}^\top n_s)\)}, between the
+pose-based tool axis \mbox{\(n_{\mathrm{Tool},0}\)} and the flat target
 \mbox{\(-n_s\)}, with \mbox{\(n_s\)} the calibrated physical-plane normal
 stored in the controller configuration [\(^{\circ}\)]. It is zero for a tool
 face parallel to the surface. This recorded quantity produced the deviation
@@ -83,7 +83,7 @@ The same angular deviation resolved on \(t_1\), \(t_2\), and \(n_s\)
 [\(^{\circ}\)]. These supply the per-tangent decomposition reported in the
 results.\\
 \texttt{p\_CoC}, \texttt{r\_eff} &
-\abbr{CoC} \(p_{\mathrm{TCP}}-r_c\) and the offset from it to the
+\abbr{CoC} \(p_{\mathrm{TCP}}+r_c\) and the offset from it to the
 selected tool point, \(p_T-p_c\), both in the base
 frame [m]. A zero lever leaves the centre on the TCP, so the pair is written
 for every run and no case has to be separated.\\
@@ -136,28 +136,36 @@ Final commanded joint torque [N\,m].\\
 \ReviewMark{green}{The short summary routes each reported metric to its recorded
 source without reintroducing unused fields.}
 
-The contact-alignment angle \mbox{\(\theta_{\mathrm{align}}\)} was calculated from the measured end-effector
-orientation and \mbox{\(n_s\)}, the three-point physical-plane normal copied into
-the controller configuration. The before value was taken at the start of
-set-up and the after value from the settled set-up interval. The analysis did
-not substitute another plane normal. Selected contact-point displacement was
-calculated from \mbox{\texttt{tool\_contact}}, while the reported normal load
-\mbox{\(F_n\)} was
-the model-estimated force change from the clearance transition.
+The contact-alignment angle \mbox{\(\theta_{\mathrm{align}}\)} was calculated
+from the measured end-effector orientation and the calibrated surface normal
+\mbox{\(n_s\)}. Its before value was taken at the start of set-up, and its
+after value from the settled set-up interval. No other plane normal was
+substituted in the analysis. Selected contact-point displacement was
+calculated from \mbox{\texttt{tool\_contact}}. The reported normal load
+\mbox{\(F_n\)} was the model-estimated force change since the clearance
+transition.
 
-Three markers are written once, into the set-up report rather than into every
-row. \texttt{t\_align\_fraction} is the time at which the deviation first fell
-below a configured fraction of its value at the start of set-up, which unlike
-the absolute tolerance is reached by conditions that end far from flat.
-\texttt{deviation\_min} is the smallest deviation the run reached and the time
-it reached it, and is defined for every run. \texttt{align\_status} records
-\texttt{aligned} or \texttt{not\_aligned}, so the runs that never met the
-tolerance can be sorted out without being discarded.
+Three markers of that same angle are written once into the set-up report
+rather than into every row. All three read \mbox{\(\theta_{\mathrm{align}}\)}
+and the clock alone. None feeds the phase exit or the command.
+\texttt{t\_align\_fraction} is the time at which
+\mbox{\(\theta_{\mathrm{align}}\)} first fell below a configured fraction of
+its value at first contact. Being a relative threshold, it is reached by
+conditions that end far from flat, which the absolute tolerance is not.
+\texttt{deviation\_min} is the smallest \mbox{\(\theta_{\mathrm{align}}\)} the
+run reached, together with the time at which it was reached. Both are defined
+for every run, so a condition that never aligned still records how close it
+came. \texttt{align\_status} reads \texttt{aligned} where
+\mbox{\(\theta_{\mathrm{align}}\)} settled inside the tolerance for the
+required hold time, and \texttt{not\_aligned} otherwise. Runs that never
+settled are identified rather than discarded.
 
 None of these determines whether the tool itself ended flat. That is
-calculated afterwards as the height of the TCP above the calibrated plane,
-\(n_s^\top(p_{\mathrm{EE}}-p_s)\), compared with the height a flat tool face would give. Only \texttt{p\_EE} and the plane enter it, so unlike the
-deviation it is not affected by the play between the tool and the gripper.
+calculated afterwards from the height of the TCP above the calibrated plane,
+\(n_s^\top(p_{\mathrm{EE}}-p_s)\), against the height a flatly seated tool
+face would give. Only \mbox{\(p_{\mathrm{EE}}\)} and the stored plane enter it.
+Unlike \mbox{\(\theta_{\mathrm{align}}\)}, it therefore carries no assumption
+about the rotation of the tool within the gripper.
 
 For the internally commanded hold study, redundant motion is calculated by integrating the
 norm of the recorded projected joint velocity \(\dot q_{\mathrm{null}}\) over the disturbance interval.

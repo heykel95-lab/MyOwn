@@ -143,7 +143,7 @@ current direction in the robot base frame is calculated from the measured
 end-effector orientation:
 
 \begin{equation}
-n_T=R_{\mathrm{EE}}n_{\mathrm{EE}}.
+n_{\mathrm{Tool},0}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}.
 \label{eq:implementation_current_tool_normal}
 \end{equation}
 
@@ -251,7 +251,7 @@ this implementation, \mbox{\(p_{\mathrm{TCP}}=p_{\mathrm{EE}}\)}. The offset
 reference has been selected. Its base-frame representation
 \mbox{\(r_T=R_{\mathrm{EE}}r_{T,\mathrm{EE}}=p_T-p_{\mathrm{TCP}}\)} changes
 with the tool orientation. The compliance-centre shift
-\mbox{\(r_c=p_{\mathrm{TCP}}-p_c\)} of
+\mbox{\(r_c=p_c-p_{\mathrm{TCP}}\)} of
 \mbox{\Cref{sec:centre_of_compliance}} is a different quantity: it is the
 virtual displacement used by the Cartesian impedance transformation, and it
 carries no tool geometry at all.
@@ -629,7 +629,7 @@ They are then shifted to the TCP.
 The implemented lever convention is
 
 \[
-r_c=p_{\mathrm{TCP}}-p_c.
+r_c=p_c-p_{\mathrm{TCP}}.
 \]
 
 Two definitions are supported because the meaning of a fixed lever depends on

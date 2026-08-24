@@ -189,16 +189,15 @@ outstanding from the author on that front.
 
 ### Settled at source, and binding on the remaining figure work
 
-- **The plotted centre position is \(d_c=-r_c\).** The experimental plots and
-  tables report the signed centre offset \(d_c=p_c-p_{\mathrm{TCP}}\), which is
-  the **negative** of the lever \(r_c\) in the point-shift equations. Checked
-  inside the thesis's own numbers: Table 4.4 gives
-  \(r_c=[0,-40,0]\,\mathrm{mm}\) for the selected \(+10^\circ\) condition
-  about \(t_1\), while the Case-D sweep shows the assisting centre for that
-  same condition at \(+40\,\mathrm{mm}\) along \(t_2\). **Relabelling a
-  `centre position` axis as \(r_{c,t_2}\) reverses the sign and is a factual
-  error.** The rule and the symbols \(d_c\), \(d_{c,t_i}\) are recorded in
-  `THESIS_WRITING_GUIDE.md` and the symbol list.
+- **The lever and the plotted centre position are now one signed quantity.**
+  \(r_c\) was redefined on 2026-08-24 as \(p_c-p_{\mathrm{TCP}}\), \(d_c\)
+  was removed from the thesis, and the coupling moment became
+  \(m_{c,K}=r_c\times f_K\). The Case-H lever vectors flipped sign with the
+  definition; the Case-D columns did not, because they already reported
+  \(p_c-p_{\mathrm{TCP}}\). Both now read \(+40\,\mathrm{mm}\) for the
+  selected \(+10^\circ\) condition about \(t_1\), which they did not before.
+  **Labelling a `centre position` axis \(r_{c,t_2}\) is now correct.** The
+  rule is recorded in `THESIS_WRITING_GUIDE.md` and the symbol list.
 
   An earlier turn inferred the opposite from
   `MyController/.../MAIN_D1_t1_rc_t2_m060`. That inference is **withdrawn**:
@@ -240,8 +239,6 @@ from this list rather than annotated, so everything here is still open.
   `r_tcp_from_compliance_center_surface` defines \(r_c\)) rather than calling
   both "centre displacement". The rule is already recorded in
   `THESIS_WRITING_GUIDE.md`; only the appendix wording remains.
-- **50** — Appendix B `t_align`, `align_status` and `deviation_min` must read as
-  observational, not as phase-termination conditions.
 - **57** — \(\tau_{\mathrm{cmd}}\) carries two definitions in Section 2.4.3.
   Reserve it for the implemented command and rename the generic form.
 - **59** — Introduction citation-support audit. Check each literature-supported
@@ -271,11 +268,12 @@ from this list rather than annotated, so everything here is still open.
 - **A.4** — Figure 3.1 still shows `spring wrench`, `tau_task` and `c(q,qdot)`.
   Correct to the Cartesian impedance wrench, \(\tau_{\mathrm{cart}}=J^\top F\)
   and \(\tau_c\). It is a TikZ source and needs no data.
-- **Rename the plotted centre coordinate to \(d_c\).** Figure 5.4's axes read
-  `Centre position along t_2 [mm]`, which is correct in value but no longer
-  correct in notation now that \(d_c\) exists. The same applies to Table 4.3
-  and the Case-F, Case-G and Case-H tables. **The values and signs do not
-  change** — this is notation only, and \(r_c\) must not be substituted.
+- **Rename the plotted centre coordinate to \(r_{c}\).** Figure 5.4's axes read
+  `Centre position along t_2 [mm]`, which is correct in value but not in
+  notation. The same applies to Table 4.3 and the Case-F, Case-G and Case-H
+  tables. **The values and signs do not change**: under the redefined
+  \(r_c=p_c-p_{\mathrm{TCP}}\) the plotted coordinate already is
+  \(r_{c,t_i}\).
 - **21, 22, 23** — Figure 4.2 calibration notation (Option A), Figure 4.1
   labels and caption, and the Figure 3.5 set-up symbols
   \(p_{T,0}\), \(p_{T,d}\), \(s_{\mathrm{set}}\), \(R_{\mathrm{clr}}\),
@@ -321,10 +319,6 @@ not be reopened.
 
 Specified in full in `THESIS_WRITING_GUIDE.md`:
 
-- the calibration section keeps the runtime relations
-  \(n_T=R_{\mathrm{EE}}n_{\mathrm{EE}}\) and \(R_dn_{\mathrm{EE}}=-n_s\), which
-  describe how the controller uses the calibration rather than how it was
-  calibrated, and belong in Chapter 3;
 - the calibrated-geometry subsection still gives the face centre, half-width
   and half-length as vector equations, and still repeats
   \(p_T=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{T,\mathrm{EE}}\) from Chapter 3.
@@ -335,6 +329,55 @@ Specified in full in `THESIS_WRITING_GUIDE.md`:
 - the data-recording subsection still lists the logged signals a third time.
   One sentence pointing at Chapter 3 and the data-format appendix is enough;
   the run counts and the excluded run stay.
+
+## The surface-plane re-seating check carries no measured values
+
+Section 4.2.1 describes the calibration the code performs: one seated pose of
+the complete tool face, with the plane normal formed from the end-effector axis
+configured at the time — the nominal \(+Z_{\mathrm{EE}}\) for the stored plane —
+and \(p_s=p_{\mathrm{EE}}+R_{\mathrm{EE}}r_{\mathrm{face,EE}}\).
+
+**A repeat measurement is not expected to report a near-zero angle.** With the
+calibrated tool normal now configured, the angle between the measured and the
+stored normal carries the \(1.56^\circ\) between that normal and
+\(+Z_{\mathrm{EE}}\). Record what the tool prints; do not treat that offset as
+a fault in the stored plane, and do not overwrite `surface.conf` with the
+measured values, which would stop the file describing the campaign.
+
+The verification is defined in the text but carries no measured values, because
+none is recorded anywhere in the controller repository. **Do not estimate one.**
+Section 4.2.1 now names the four quantities the tool reports, in its own
+notation: \(\psi_{\mathrm{plane}}\), the angle between the re-seated and the
+stored normal; \(\Delta\alpha_s\) and \(\Delta\beta_s\), the same comparison per
+axis; and \(\varepsilon_{\mathrm{plane}}\), the offset of the re-seated
+tool-face centre from the stored plane. They map onto the tool's printed lines
+as `total mismatch`, the `difference: a(x) | b(y)` row, and
+`configured-plane offset`. Re-run `tools/measure_plane` with the face seated on
+the plate that the stored values describe, read those four, and put them into
+the paragraph after \Cref{eq:surface_plane_validation_residual}.
+Should the plate have moved since the campaign, the check cannot be recovered,
+and the paragraph stays as the definition of the check with that stated.
+
+**The four hand-guided poses are correct and must not be "corrected".** The axis
+in `params/tool_orientation.conf` came from the hand-guided calibration —
+\(T_1\)--\(T_3\) for the fit and \(T_4\) held out — confirmed by the author on
+2026-08-24. Section 4.2.2 and Figure 4.2 stay at four poses.
+
+## The other drawn diagrams still open their boxes in lower case
+
+`FIGURE_STYLE.md` now requires every line of node text in a drawn diagram to
+begin with a capital, with lines that start with a symbol left as notation. The
+rule was applied to `calibration_flow` when it was set, and the remaining TikZ
+diagrams have not been through it: `controller_block_diagram` (`robot state`,
+`phase machine`, `model`), `setup_schematic` (`compliance`), and any box text in
+`phase_flow_chart`, `tool_transfer_flow`, `reference_frames`,
+`compliance_lever_moment`, `moment_bookkeeping`, `three_points`,
+`face_feature_selection`, `tool_face_plan_view` and `case_c_direction_rule`.
+
+Capitalising a line widens its box, which can close the gap its arrows need —
+that happened in `calibration_flow` and cost a column-spacing adjustment. Do
+one diagram at a time and look at each in the compiled document before moving
+on.
 
 ## Six diagrams are still sized by `\resizebox`
 

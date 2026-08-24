@@ -3,38 +3,41 @@
     minimum width=3.6cm, minimum height=1.05cm, align=center},
   blk/.style={draw=gray!70!black, fill=white, rounded corners=2pt,
     minimum width=3.6cm, minimum height=1.05cm, align=center},
-  sel/.style={draw=gray!70!black, fill=white, rounded corners=2pt,
+  res/.style={draw=gray!70!black, line width=0.9pt, fill=white,
+    rounded corners=2pt, minimum width=3.6cm, minimum height=1.05cm,
+    align=center},
+  chk/.style={draw=gray!60, fill=white, rounded corners=2pt,
     minimum width=3.6cm, minimum height=1.05cm, align=center},
-  sig/.style={-{Latex[length=2mm]}, thick, gray!55!black}
+  sig/.style={-{Latex[length=2mm]}, thick, gray!55!black},
+  % Band headings, centred over the first box of each band.
+  row/.style={font=\footnotesize, anchor=south},
+  % What a band delivers into the operation band.
+  carry/.style={font=\footnotesize, inner sep=2pt}
 ]
-  \node[src] (plane-data) at (0,2.0)
-    {$P_1$--$P_3$\\same marked face corner};
-  \node[blk] (plane-fit) at (5.0,2.0)
-    {three-point plane fit\\$p_s,\ R_{\mathrm{surface}}$};
-  \node[sel] (plane-check) at (10.0,2.0)
-    {$P_4$ held-out check\\$0.82\,\mathrm{mm}$};
+  % ---- Band A: surface calibration, ending in its stored reference ----------
+  \node[row] at (0,5.45) {Surface calibration};
+  \node[src] (a-in)  at (0,4.6)    {One seated pose\\Complete tool face flat};
+  \node[blk] (a-fit) at (5.2,4.6)  {Plane from nominal $+Z_{\mathrm{EE}}$};
+  \node[res] (a-out) at (10.4,4.6) {Surface reference\\$p_s,\ n_s,\ R_{\mathrm{surface}}$};
+  \node[chk] (a-chk) at (10.4,2.9) {Re-seated check\\Consistency only};
 
-  \node[src] (tool-data) at (0,0.0)
-    {$T_1$--$T_3$\\flat-face yaw poses};
-  \node[blk] (tool-fit) at (5.0,0.0)
-    {invariant-direction fit\\$n_{\mathrm{EE}}$};
-  \node[sel] (tool-check) at (10.0,0.0)
-    {$T_4$ held-out check\\$0.50^\circ$};
+  % ---- Band B: tool calibration, ending in the tool normal -----------------
+  \node[row] at (0,1.45) {Tool calibration};
+  \node[src] (b-in)  at (0,0.6)    {$T_1$--$T_4$\\Flat-face yaw poses};
+  \node[blk] (b-fit) at (5.2,0.6)  {Invariant-direction fit\\$T_1$--$T_3$};
+  \node[res] (b-out) at (10.4,0.6) {Tool normal\\$n_{\mathrm{Tool,EE}}$};
+  \node[chk] (b-chk) at (10.4,-1.1) {Held-out check\\$T_4$, consistency only};
 
-  \node[blk, minimum width=5.2cm] (runtime) at (7.5,-2.0)
-    {run-time geometry\\$n_T=R_{\mathrm{EE}}n_{\mathrm{EE}}$ relative to $n_s$};
+  % Routing. Each band runs left to right and stops at its output box, and the
+  % check hangs below that box and feeds nothing. That is the point of the
+  % layout: the reader sees what each calibration produces before meeting the
+  % checks, and the checks are visibly not a third result. Where the two
+  % outputs are combined is Chapter 3 and the evaluation section, not here.
+  \draw[sig] (a-in) -- (a-fit);
+  \draw[sig] (a-fit) -- (a-out);
+  \draw[sig] (a-out) -- (a-chk);
 
-  % Routing. The run-time box spans x = 4.9 to 10.1 and y = -2.525 to -1.475,
-  % so the two feed-in runs are kept on separate heights and separate columns:
-  %   y = -1.00  the tool chain, entering the box from the north;
-  %   y = -2.00  the plane chain, entering the box from the east;
-  %   x =  12.6  the plane chain's descent, clear of the T_4 box at x = 11.8.
-  % An earlier version dropped the tool chain to y = -1.45, which laid that run
-  % along the top edge of the run-time box.
-  \draw[sig] (plane-data) -- (plane-fit);
-  \draw[sig] (plane-fit) -- (plane-check);
-  \draw[sig] (tool-data) -- (tool-fit);
-  \draw[sig] (tool-fit) -- (tool-check);
-  \draw[sig] (plane-check.east) -- (12.6,2.0) -- (12.6,-2.0) -- (runtime.east);
-  \draw[sig] (tool-check.south) -- (10.0,-1.0) -- (7.5,-1.0) -- (runtime.north);
+  \draw[sig] (b-in) -- (b-fit);
+  \draw[sig] (b-fit) -- (b-out);
+  \draw[sig] (b-out) -- (b-chk);
 \end{tikzpicture}

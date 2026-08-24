@@ -142,6 +142,51 @@ name. Give the label room instead.
 If a label crowds something, move the run rather than nudging the label. The
 spacing between runs is what creates room for their labels.
 
+### Node text begins with a capital
+
+Every line of text inside a box starts with an uppercase letter — `One seated
+pose`, `Complete tool face flat`, `Re-seated check`, `Invariant-direction fit`.
+This applies to the second line of a two-line node as well, because the two
+lines read as parallel labels rather than as a sentence running on.
+
+**A line that begins with a symbol keeps the symbol**, unchanged and
+uncapitalised: `$T_1$--$T_3$`, `$p_s,\ R_{\mathrm{surface}}$`,
+`$\varepsilon_{\mathrm{plane}}$`, `$0.50^\circ$`. Notation is not prose and
+must not be recased to satisfy a typographic rule.
+
+The same holds for row headings and for a label placed beside an arrow, except
+that a bare symbol carried by an arrow — `$n_{\mathrm{EE}}$`, `$n_s$` — is
+notation and stays as it is.
+
+Widening a box to fit a capitalised or lengthened line can close the gap its
+arrows need. The calibration flow lost almost all of the first run in its top
+row this way. Move the columns apart rather than shortening the text, and check
+the arrow runs in the compiled figure afterwards.
+
+### A diagram of parallel chains names each chain
+
+Where a diagram runs two or more chains as separate rows, each row carries a
+heading naming what it produces. The calibration flow needed this because both
+of its chains begin with the tool face seated flat, so the top row read as tool
+calibration until it was labelled; the reader could not tell which row was
+which.
+
+**The heading is capitalised and centred over its row's first box** —
+`Surface plane`, `Tool normal` — set in `\footnotesize` with `anchor=south`, a
+third of a line above the box. Centring over the first box rather than
+left-aligning at its edge is what makes the heading read as belonging to the
+row rather than floating beside it.
+
+Put the headings above the rows, not to the left of them. A label column widens
+the picture, and `\resizebox{\textwidth}` then shrinks every other label to buy
+the room, which is the fault the scaling rule above describes. Headings above
+cost height, which is free. Where the lower heading has no clearance, move the
+rows apart rather than tightening the gap around it.
+
+A row heading is not the internal title banned below. A title restates the
+caption; a heading names one chain of several, which the caption cannot do
+without describing the whole drawing.
+
 ### What does not belong in the drawing
 
 - An internal title. The caption identifies the figure; a title repeats it.

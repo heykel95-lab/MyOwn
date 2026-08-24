@@ -34,7 +34,7 @@ tracking behaviour.
 
 The relevant literature comprises three areas: Cartesian impedance control,
 real-time implementation on torque-controlled robots, and the placement of the
-centre of compliance (\abbr{CoC}) \mbox{\(p_c\)}. The first area is Cartesian impedance control itself. The
+centre of compliance (\abbr{CoC}). The first area is Cartesian impedance control itself. The
 controller uses standard serial-manipulator kinematics
 \mbox{\citep{Siciliano2009,Craig2005,Murray1994}}: homogeneous transformations for
 representing the end-effector pose and the Jacobian for relating joint motion
@@ -66,11 +66,9 @@ force skills with impedance control on a 7-\mbox{\abbr{DOF}} collaborative robot
 impedance control to regulate the contact force during robotic grinding
 \mbox{\citep{Wu2023DualPIDImpedance}}. These studies address force-controlled surface
 treatment. The present work instead examines contact-induced angular alignment
-through directional Cartesian stiffness and a virtual \abbr{CoC}
-\mbox{\(p_c\)}.
+through directional Cartesian stiffness and a virtual \abbr{CoC}.
 
-The third area concerns the location of the \abbr{CoC}
-\mbox{\(p_c\)}. Fasse and
+The third area concerns the location of the \abbr{CoC}. Fasse and
 Broenink formulated spatial impedance about a selected point, so that translation
 and rotation become coupled through the position of this point
 \mbox{\citep{Fasse1997SpatialImpedance}}. This formulation provides the theoretical
@@ -86,22 +84,20 @@ mechanically compliant mechanisms, elastic bending produces the alignment motion
 rather than software control alone. In these approaches, the compliance is
 arranged so that contact forces reduce misalignment instead of increasing it.
 Most of these studies focus on insertion tasks and define the compliance centre
-\mbox{\(p_c\)}
 through either the mechanical design or a strategy adapted to the hole geometry.
 In this thesis, an equivalent effect is created in software by shifting the
-virtual \abbr{CoC} \mbox{\(p_c\)} away from the TCP. The independent effects of this
+virtual \abbr{CoC} away from the TCP. The independent effects of this
 position and the axis-specific stiffness during planar tool alignment are then
 investigated on a torque-controlled robot.
 
 Suomalainen \mbox{et al.\ }experimentally investigated how
 compliance-centre placement and compliant-axis selection influence alignment
 in an assembly task \mbox{\citep{Suomalainen2019DualArmCompliance}}. Friedrich
-\mbox{et al.\ }subsequently proposed an active remote \abbr{CoC}
-\mbox{\(p_c\)} that
+\mbox{et al.\ }subsequently proposed an active remote \abbr{CoC} that
 combines passive compliance with active force control
 \mbox{\citep{Friedrich2025ActiveRCC}}. These approaches further illustrate the role
 of compliance location in contact alignment. The present work examines a
-software-defined virtual compliance centre \mbox{\(p_c\)} for planar tool--surface alignment.
+software-defined virtual compliance centre for planar tool--surface alignment.
 
 \section{Problem Statement}
 
@@ -114,8 +110,8 @@ motion. In contrast, finite rotational compliance allows contact-induced rotatio
 whereas a displaced \abbr{CoC} adds a selectable coupling between
 translation and rotation.
 
-The virtual \abbr{CoC} \mbox{\(p_c\)} is defined relative to the TCP by
-\mbox{\(r_c=p_{\mathrm{TCP}}-p_c\)}. A tangential lever enters the commanded
+The lever \mbox{\(r_c\)} is the displacement from the TCP to the virtual
+\abbr{CoC}. A tangential lever enters the commanded
 wrench through a cross product with the translational force and thereby selects
 an additional rotational moment. The direction and sign of this moment depend
 on the lever direction. A displaced centre chosen before contact therefore
@@ -166,8 +162,7 @@ dependence of that displacement.
 \label{sec:objectives}
 
 The experiments evaluate the influence of the commanded tool orientation
-offset, surface-frame stiffness, and virtual \abbr{CoC}
-\mbox{\(p_c\)} on contact-induced alignment. The controller contribution and the
+offset, surface-frame stiffness, and virtual \abbr{CoC} on contact-induced alignment. The controller contribution and the
 experimental contribution are treated separately.
 
 The implemented controller is a phase-scheduled Cartesian impedance controller
@@ -223,7 +218,7 @@ misalignment direction or sign.
 
 The second experimental result concerns the additional alignment authority of a
 displaced centre. A tangential lever contributes the commanded moment
-\mbox{\(m_{c,K}=-r_c\times f_K\)} and thereby converts part of the normal pressing
+\mbox{\(m_{c,K}=r_c\times f_K\)} and thereby converts part of the normal pressing
 action into rotation of a selected sense. About \mbox{\(t_1\)}, the TCP-centred
 condition already produced substantial alignment-directed rotation. About
 \mbox{\(t_2\)}, a selected \mbox{\(40\,\mathrm{mm}\)} tangential lever changed

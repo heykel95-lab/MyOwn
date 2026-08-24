@@ -1119,14 +1119,14 @@ Each point is reached from the TCP by its own offset,
 \begin{equation}
 r_T=p_T-p_{\mathrm{TCP}},
 \qquad
-r_c=p_{\mathrm{TCP}}-p_c,
+r_c=p_c-p_{\mathrm{TCP}},
 \label{eq:pole_lever_definitions}
 \end{equation}
 
 and therefore
 
 \begin{equation}
-p_T-p_c=r_T+r_c.
+p_T-p_c=r_T-r_c.
 \label{eq:pole_lever_sum}
 \end{equation}
 
@@ -1185,16 +1185,16 @@ Both the stiffness and the damping matrices are shifted, so both commanded
 force components acquire the same lever,
 
 \begin{equation}
-m_{c,K}=-r_c\times f_K,
+m_{c,K}=r_c\times f_K,
 \qquad
-m_{c,D}=-r_c\times f_D,
+m_{c,D}=r_c\times f_D,
 \label{eq:pole_coupling_moment_parts}
 \end{equation}
 
 and their sum is the complete translational coupling moment
 
 \begin{equation}
-m_{c,\mathrm{trans}}=m_{c,K}+m_{c,D}=-r_c\times f.
+m_{c,\mathrm{trans}}=m_{c,K}+m_{c,D}=r_c\times f.
 \label{eq:pole_coupling_moment_translational}
 \end{equation}
 
@@ -1211,13 +1211,13 @@ The two contributions act over different time scales. The damping term is
 velocity dependent, so as the commanded reference stops advancing and the robot
 settles, \mbox{\(\dot p_d-\dot p_{\mathrm{EE}}\to\mathbf{0}\)} and
 \mbox{\(f_D\to\mathbf{0}\)}, leaving
-\mbox{\(m_{c,\mathrm{trans}}\to-r_c\times f_K\)}. The elastic contribution
+\mbox{\(m_{c,\mathrm{trans}}\to r_c\times f_K\)}. The elastic contribution
 therefore carries the steady alignment tendency, while the damping
 contribution shapes the transient. The sign analysis below uses the elastic
 contribution alone, written
 
 \[
-m_{c,K}=-r_c\times f_K,
+m_{c,K}=r_c\times f_K,
 \]
 
 which \mbox{\Cref{eq:pole_translation_moment_sign_check}} obtains from the
@@ -1243,7 +1243,7 @@ command, and \mbox{\(\Delta\hat F_{\mathrm{ext}}\)} is the observation of the
 resulting interaction. About the \abbr{CoC} the same
 reconstruction would take the complete lever of
 \mbox{\Cref{eq:pole_lever_sum}},
-\mbox{\(\left(r_T+r_c\right)\times\Delta\hat f_{\mathrm{ext}}\)}, which the
+\mbox{\(\left(r_T-r_c\right)\times\Delta\hat f_{\mathrm{ext}}\)}, which the
 controller never forms.
 
 The zero-lever condition is therefore not a zero-moment condition. Setting
@@ -1296,13 +1296,13 @@ alignment response \mbox{\citep{Suomalainen2019DualArmCompliance}}. This task-le
 result motivates the placement study in this thesis. The point-shift adjoint
 below remains derived from the spatial-transformation formulation.
 
-The compliance-centre shift \mbox{\(r_c\)} from the \abbr{CoC}
-\mbox{\(p_c\)} to the TCP, expressed in the base frame, is
+The compliance-centre shift \mbox{\(r_c\)} from the TCP to the \abbr{CoC}
+\mbox{\(p_c\)}, expressed in the base frame, is
 
 \begin{equation}
 r_c
 =
-p_{\mathrm{TCP}}-p_c
+p_c-p_{\mathrm{TCP}}
 \in\R{3},
 \qquad
 p_{\mathrm{TCP}}=p_{\mathrm{EE}}.
@@ -1316,17 +1316,17 @@ compliance-centre position error \mbox{\(e_{p,c}\)} is
 \begin{equation}
 e_{p,c}
 =
-e_p+[r_c]_\times e_R.
+e_p-[r_c]_\times e_R.
 \label{eq:pole_small_motion_error}
 \end{equation}
 
-The positive sign follows from the selected lever convention. The vector from
-the TCP to the \abbr{CoC} \mbox{\(p_c\)} is \mbox{\(-r_c\)}, and therefore
+The negative sign follows from the selected lever convention. The vector from
+the TCP to the \abbr{CoC} \mbox{\(p_c\)} is \mbox{\(r_c\)} itself, and therefore
 
 \[
-e_R\times(-r_c)
+e_R\times r_c
 =
-[r_c]_\times e_R.
+-[r_c]_\times e_R.
 \]
 
 The compliance-centre error \mbox{\(e_c\)} stacks the translational error
@@ -1351,7 +1351,7 @@ e_R
 \mathrm{Ad}(r_c)
 =
 \begin{bmatrix}
-I_3 & [r_c]_\times\\[2pt]
+I_3 & -[r_c]_\times\\[2pt]
 0 & I_3
 \end{bmatrix}.
 \label{eq:offset_adjoint}
@@ -1410,9 +1410,9 @@ K_c
 \begin{bmatrix}
 K_p
 &
-K_p[r_c]_\times
+-K_p[r_c]_\times
 \\[4pt]
-[r_c]_\times^\top K_p
+-[r_c]_\times^\top K_p
 &
 K_R+[r_c]_\times^\top K_p[r_c]_\times
 \end{bmatrix}.
@@ -1431,9 +1431,9 @@ D_c
 \begin{bmatrix}
 D_p
 &
-D_p[r_c]_\times
+-D_p[r_c]_\times
 \\[4pt]
-[r_c]_\times^\top D_p
+-[r_c]_\times^\top D_p
 &
 D_R+[r_c]_\times^\top D_p[r_c]_\times
 \end{bmatrix}.
@@ -1457,9 +1457,9 @@ the elastic moment at the TCP is
 \begin{equation}
 m_{c,K}
 =
-[r_c]_\times^\top f_K
+-[r_c]_\times^\top f_K
 =
--r_c\times f_K.
+r_c\times f_K.
 \label{eq:pole_translation_moment_sign_check}
 \end{equation}
 
