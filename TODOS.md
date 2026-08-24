@@ -12,13 +12,18 @@ no other agent — repeats work that is already in the document.
 
 ## The campaign archive, and what it now supports
 
-The \(57\) reported settings each carry three repetitions. The Case-D run that
+The \(55\) reported settings each carry three repetitions. The two
+`B_combined_{t1,t2}` settings were removed from the report on 2026-08-24,
+taking the campaign from \(57\) settings and \(171\) runs to \(55\) and
+\(165\); their run directories stay in the archive and are simply not
+reported. The Case-D run that
 Section 4.3.4 once recorded as excluded was re-recorded on 2026-08-19 under a
-byte-identical parameter set, so the count is \(171\) of \(171\) and the chapter
+byte-identical parameter set, so the count is \(165\) of \(165\) and the chapter
 says so. **Do not reintroduce an excluded-run sentence.**
 
 The archive lives on the lab machine at
-`Thesis_Final_Control/experiments/results/`, \(171\) run directories each with
+`Thesis_Final_Control/experiments/results/`, \(171\) archived run directories
+(the \(165\) reported plus the six no longer reported) each with
 `logs/surface_grinding_controller_log.csv`, and
 `experiments/derived/metrics.csv` carries the \(100\) `P2_` rows the contact
 figure scripts read. **A clone shows neither**, because that repository's
@@ -33,7 +38,7 @@ The mapping from case letters to directories, which should not be re-derived:
 |---|---|---|
 | A | 5 | `S1_none_00deg`, `P2_{t1,t2}_{pos,neg}_p000` |
 | B | 4 | `A_rot_{t1,t2}_{15,50}` |
-| C | 6 | `B_trans_{t1,t2}_{0300,0800}`, `B_combined_{t1,t2}` |
+| C | 4 | `B_trans_{t1,t2}_{0300,0800}` |
 | D | 24 | `P2_{t1,t2}_{pos,neg}_{m010,m020,m040,p010,p020,p040}` |
 | E | 3 | `S3_surface_00deg`, `S3_surface_t1_10deg`, `S2_tool_00deg` |
 | F | 6 | `P3_axis_{m010,m020,m040,p010,p020,p040}` |
@@ -42,7 +47,7 @@ The mapping from case letters to directories, which should not be re-derived:
 
 The `P2_*_{m080,p080}` directories and the `V_*`, `S4_*`, `S5_*`, `P4_*`,
 `P6_*`, `P_*`, `AXS*`, `REVS2_*` and `PROBE60_*` series are exploratory and
-outside the reported \(57\).
+outside the reported \(55\).
 
 The aborted first attempt at `P2_t1_pos_m040/r02` was moved to
 `experiments/results_aborted/P2_t1_pos_m040_r02_20260817/` so no analysis script
@@ -55,7 +60,7 @@ Chapter 5 states that the median within-setting standard deviation of the
 signed set-up rotation was approximately \(0.04^\circ\) about \(t_1\) and
 \(0.14^\circ\) about \(t_2\), and treats differences below about
 \(0.1^\circ\) as scatter. **No definition tried on 2026-08-19 reproduces those
-two values** from `metrics.csv`: medians over the \(57\) reported settings give
+two values** from `metrics.csv`: medians over the reported settings give
 \(0.015\) and \(0.058\), over the \(28\) `P2_` settings \(0.041\) and
 \(0.157\), and over every archived setting \(0.016\) and \(0.054\). The
 \(0.041\) is close enough to be suggestive and its partner is not.

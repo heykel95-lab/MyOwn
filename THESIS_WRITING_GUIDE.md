@@ -1486,8 +1486,12 @@ The principal experimental conclusions of the calibrated-plane campaign are:
    the tested range. Because the tangent entries were varied separately, report
    this per axis and not as a common paired setting.
 3. Reducing the translational stiffness perpendicular to the commanded rotation axis
-   improves alignment about \(t_2\) only, and a high rotational stiffness
-   removes that benefit.
+   improves alignment about \(t_2\) only. The condition that varied the
+   translational and rotational entries together was removed from the reported
+   campaign on 2026-08-24: varying one entry at a time is the controlled
+   comparison, and the paired setting added no separable finding. **Do not
+   reinstate it**, and do not restore the claim that a high rotational
+   stiffness removes the benefit, which rested on it.
 4. The alignment response increased with the normal compliance-centre
    coordinate across the whole sampled range, and continued to increase up to
    the largest tested magnitude. The coupling model predicts no first-order
