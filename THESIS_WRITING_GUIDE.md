@@ -194,6 +194,36 @@ Explain a concept authoritatively once. In particular, avoid repeating
 Cartesian impedance, point-shift derivations, gain transformations, damping,
 null-space projection, or energy/passivity arguments across chapters.
 
+### Settled compression and evidence hierarchy
+
+The main contact argument contains Cases A--D only: the TCP-centred baseline,
+rotational stiffness, cross-axis translational stiffness, and tangential
+compliance-centre position. The orientation-offset-magnitude comparison is a
+supporting appendix check together with the definition-frame, tool-axis, and
+intermediate-direction checks. The main study therefore contains 37 settings
+and 111 runs; the four supporting checks contain 18 settings and 54 runs. The
+complete surface-contact total remains 55 settings and 165 runs.
+
+Chapter 5 carries one comparison figure for each main case and retains the
+Case-D commanded-wrench mechanism figure. It does not repeat those plots as
+numeric tables. The complete numeric means and Case-D sample standard
+deviations belong in Appendix D. Uncertainty for Case D is shown directly on
+the main comparison figure, so the separate appendix spread plot is removed.
+
+The main contact evaluation uses the signed set-up rotation
+\(\Delta\theta_i\). The commanded normal force \(F_n\) and commanded TCP
+moment \(M_{t_i}\) appear only in the Case-D mechanism plot. Selected-tool-point
+and TCP displacement metrics and the fully blocked spring-force scale are not
+reported quantities and are not defined. A quantity used in one local appendix
+equation remains local and does not receive a List-of-Symbols entry.
+
+Chapter 3 explains the controller signal path. It contains no subsystem,
+gain-frame, null-space-mode, or logged-signal table and no `robot.control`
+syntax listing. The code appendix retains only the compliance-centre point
+shift and core torque assembly. Chapter 4 states the calibration principle and
+the values needed to interpret the experiments; the exact calibration record
+and fitting relations belong in Appendix C.
+
 ## Style
 
 Sentence-level voice is in [THESIS_VOICE.md](THESIS_VOICE.md): the machine-prose
@@ -475,13 +505,15 @@ circulation, the settled choices are:
   reads as the contact, as a transpose, or as a homogeneous transformation
   before it reads as the tool. One name now: \(p_{\mathrm{Tool}}\) in every
   chapter, the symbol list, and every figure, with
-  \(r_{\mathrm{Tool,EE}}\) for its end-effector-frame offset and
-  \(\Delta p_{\mathrm{Tool}}\), \(s_{\mathrm{Tool}}\) for its
-  displacement. The two levers were at one point \(r_c\) and \(r_C\),
+  \(r_{\mathrm{Tool,EE}}\) for its end-effector-frame offset. The two levers
+  were at one point \(r_c\) and \(r_C\),
   distinguished only by the case of one letter, which no reader can hold across
   a page and which a printed index does not reliably show;
   \(r_{\mathrm{Tool}}\) against \(r_c\) is the replacement and must not
-  drift back.
+  drift back. The earlier displacement metrics
+  \(\Delta p_{\mathrm{Tool}}\), \(s_{\mathrm{Tool}}\),
+  \(\Delta p_{\mathrm{TCP}}\), and \(s_{\mathrm{TCP}}\) are withdrawn because
+  they are not reported in the results.
 
   The wording is settled with the symbol: it is the **selected tool point** in
   every chapter, never a `tool feature` and never a bare `edge`. `edge`
@@ -1762,7 +1794,7 @@ per misalignment.
 
 The narrative is therefore **not** "a displaced centre improves alignment, so
 find the best displaced lever". Chapter 1 introduces the question without
-answering it. Chapter 4 separates the main A--E matrix from the supporting
+answering it. Chapter 4 separates the main A--D matrix from the supporting
 checks. Chapter 5 reports the main cases, Appendix D reports the supporting
 checks, and Chapter 6 states the result.
 
@@ -1774,19 +1806,19 @@ The purposes of the main cases are settled and are stated in this order:
 | B | Whether rotational stiffness can control the direction-dependent response. It changes the magnitude, chiefly about \(t_1\), and does not produce the missing alignment-directed \(t_2\) response at zero lever. |
 | C | Whether cross-axis translational stiffness resolves the direction dependence. Its influence is smaller over the tested range. |
 | D | Whether one fixed non-zero tangential centre can assist different misalignment signs and both principal directions. It cannot: the assisting side reverses with the sign, and the required lever differs between \(t_1\) and \(t_2\). This is the central experiment. |
-| E | Whether one displaced centre gives a simply scaled response as the commanded offset magnitude changes. No proportional scaling was established. |
 
 Appendix D carries three supporting checks without case letters:
 
 | Supporting check | What it establishes |
 |---|---|
+| Orientation-offset magnitude | The displaced-centre response is not a simple proportional scaling of the commanded angular magnitude. |
 | Definition frame | A displacement is not defined by magnitude and nominal coordinates alone; the frame holding it changes the response. |
 | Tool-axis displacement | The tangential component produces the press-induced moment; the tool-axis response spans \(0.34^\circ\) against \(7.73^\circ\) for the tangential displacement. |
 | Intermediate tangent directions | One fixed non-zero tangential displacement does not reproduce the direction-selected rule across the four tested directions; the \(t_2\) comparison, \(+4.43\) against \(-1.61^\circ\), is the decisive separation. |
 
-The run hierarchy is fixed. The main A--E study contains 41 settings and 123
-runs. The three supporting checks contain 14 independently counted settings
-and 42 runs. Together they retain the complete 55-setting, 165-run
+The run hierarchy is fixed. The main A--D study contains 37 settings and 111
+runs. The four supporting checks contain 18 independently counted settings
+and 54 runs. Together they retain the complete 55-setting, 165-run
 surface-contact data set; that total already excludes the discarded combined
 stiffness condition and must not be reduced again. The null-space pose-hold
 study adds four settings and 12 runs, giving 177 recorded experimental runs in

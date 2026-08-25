@@ -3,14 +3,15 @@
 \ReviewMark{green}{The listings are abridged to the mathematical paths used by
 the thesis and connect each important equation to an implementation excerpt.}
 
-This appendix contains abridged source excerpts from the controller
-implementation described in \Cref{ch:implementation}. Only the paths needed to
-connect the equations to the implementation are shown. The excerpts use
+This appendix retains the two source paths that are non-obvious from the
+controller equations: the compliance-centre point shift and the final torque
+assembly. The excerpts use
 fixed-size Eigen aliases such as \texttt{Vec3}, \texttt{Vec7}, \texttt{Mat3},
 \texttt{Mat6x6}, and \texttt{Mat6x7}. The identifier
 \texttt{R\_base\_surface} denotes the surface-frame orientation used in the
 chapters.
 
+\iffalse
 \section{Surface Task Frame and Spatial Gains}
 \label{app:surface_gains}
 
@@ -237,6 +238,7 @@ clearance height, and re-testing that comparison every cycle released the gate
 for single cycles on measurement noise; on each release the descent clock
 advanced and commanded the tool further down, so a longer wait produced a
 harder press. Latching removes that dependence on waiting time.
+\fi
 
 \section{Centre of Compliance and the Offset Adjoint}
 \label{app:center_compliance}
@@ -303,6 +305,7 @@ const Mat6x6 D_tcp =
 return K_tcp * dx + D_tcp * dv;
 \end{lstlisting}
 
+\iffalse
 \section{Task-Inertia Damping}
 \label{app:auto_damping}
 
@@ -458,6 +461,7 @@ It does not multiply the active torque. Singular values at or below the cutoff
 are omitted from the inverse. The routine also fills a diagnostics structure
 that carries the sampled singular values, the selected direction, and the
 projected joint velocity \(\dot q_{\mathrm{null}}\) into the recorded data.
+\fi
 
 \section{Core Control Callback}
 \label{app:callback_core}
@@ -478,9 +482,6 @@ const Vec6 xdot = J * dq;
 Map<const Mat4x4> T_EE(state.O_T_EE.data());
 const Vec3 p_EE = T_EE.block<3, 1>(0, 3);
 const Mat3 R_EE = T_EE.block<3, 3>(0, 0);
-
-Map<const Vec6> external_wrench(
-    state.O_F_ext_hat_K.data());
 \end{lstlisting}
 
 \begin{lstlisting}[style=cppstyle, language=C++, caption={Core impedance, coupled set-up, and torque composition.}, label={lst:implementation_pose_error}]
@@ -502,7 +503,7 @@ const Vec6 wrench =
         dx, dv, R_EE);
 
 const Vec7 tau_nullspace = computeNullspaceTorque(
-    params, model, state, D, dq);
+    params, model, state, J, dq);
 
 AutomaticDisturbance disturbance;
 if (phase == ControlPhase::kPoseHold &&

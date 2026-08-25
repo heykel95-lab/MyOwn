@@ -16,8 +16,8 @@ The \(55\) reported settings each carry three repetitions. The two
 `B_combined_{t1,t2}` settings were removed from the report on 2026-08-24,
 taking the campaign from \(57\) settings and \(171\) runs to \(55\) and
 \(165\); their run directories stay in the archive and are simply not
-reported. The main A--E study contains \(41\) settings and \(123\) runs. The
-three supporting checks in Appendix D contain \(14\) settings and \(42\) runs.
+reported. The main A--D study contains \(37\) settings and \(111\) runs. The
+four supporting checks in Appendix D contain \(18\) settings and \(54\) runs.
 The Case-D run that
 Section 4.3.4 once recorded as excluded was re-recorded on 2026-08-19 under a
 byte-identical parameter set, so the count is \(165\) of \(165\) and the chapter
@@ -43,7 +43,7 @@ not be re-derived:
 | B | 4 | `A_rot_{t1,t2}_{15,50}` |
 | C | 4 | `B_trans_{t1,t2}_{0300,0800}` |
 | D | 24 | `P2_{t1,t2}_{pos,neg}_{m010,m020,m040,p010,p020,p040}` |
-| E | 4 | `P5_mag_{t1,t2}_{p000,p040}` |
+| Supporting orientation-offset magnitude | 4 | `P5_mag_{t1,t2}_{p000,p040}` |
 | Supporting check 1: definition frame | 3 | `S3_surface_00deg`, `S3_surface_t1_10deg`, `S2_tool_00deg` |
 | Supporting check 2: tool-axis displacement | 6 | `P3_axis_{m010,m020,m040,p010,p020,p040}` |
 | Supporting check 3: intermediate tangent directions | 5 | `C_dir_{m45,p45}`, `C_fixed_{m45,p45}`, `C_fixed_t2` |
@@ -60,8 +60,9 @@ back.
 ### Building on the lab machine, and the one thing it cannot check
 
 `texlive-lang-german` is installed, so `ngerman.ldf` resolves and the document
-builds. `Thesis.tex` was built on 2026-08-19 with bibtex and three passes: no
-errors, no undefined references or citations, no overfull boxes, 171 pages.
+builds. `Thesis.tex` and `Professor_Draft.tex` were built on 2026-08-25 after
+the compression pass, with bibtex and three passes: no errors, no undefined
+references or citations, no overfull boxes, 125 pages.
 Judge a build by the final pass; the earlier ones always report undefined
 citations.
 
@@ -165,8 +166,6 @@ from this list rather than annotated, so everything here is still open.
 
 - **4** — keep the three moment concepts separate throughout, and never add
   \(m_{r_T}\) to \(m_0\) or \(m_{\mathrm{cpl},K}\). Spot-check rather than rewrite.
-- **17, 18** — Case-A physical-asymmetry interpretation still needs its causal
-  wording softened to `consistent with`.
 - **48** — Appendix C must state the two configuration branches
   (`compliance_center_offset_ee` in end-effector axes,
   `compliance_lever_surface` in surface axes) rather than calling both "centre
@@ -209,9 +208,13 @@ from this list rather than annotated, so everything here is still open.
   calibration notation, is done: the figure now runs one band per calibration
   and its symbols match Section 4.2, and all four set-up symbols are in the
   symbol list.
-- **31, 33, 34, 37, 38** — the pgfplots figures and their tables: Figures 5.1,
-  5.4, 5.7, 5.8 are `.tex` sources and can be edited directly.
-- **44** — global table-unit audit across Tables 5.1 to 5.8.
+- **31, 33, 34, 37, 38** — the remaining pgfplots figures and their tables:
+  Figures 5.1, 5.4 and the supporting-check figures in Appendix D are `.tex`
+  sources and can be edited directly. Figure 5.4 now carries sample-standard-
+  deviation error bars, and its duplicate appendix spread plot has been
+  removed.
+- **44** — global table-unit audit across the main results and Appendix-D
+  numerical tables.
 - **45, 46** — Table 4.3 caption and one consistent centre convention;
   Table 4.4 component headings.
 - **51, 52, 53** — panel audit for every multi-panel caption, and short
@@ -234,66 +237,6 @@ from this list rather than annotated, so everything here is still open.
   complete read, and the final examiner-question check.
 - **76** — only then may the thesis be called ready for supervisor review.
 
-## Chapter 3 — the last structural work on the chapter
-
-Specified in full in `THESIS_WRITING_GUIDE.md`. The signal path is now correct;
-what remains is software documentation that the chapter does not need:
-
-- delete the functional-subsystems table, the null-space-mode table and the
-  logged-signal table, and simplify or drop the gain-frame table;
-- remove the `robot.control` listing, which shows nothing the prose does not.
-
-The chapter reordering called for in the guide has been carried out and should
-not be reopened.
-
-## Chapter 4 — remaining duplication
-
-Specified in full in `THESIS_WRITING_GUIDE.md`:
-
-- the calibrated-geometry subsection still gives the face centre, half-width
-  and half-length as vector equations, and still repeats
-  \(p_T=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{T,\mathrm{EE}}\) from Chapter 3.
-  One calibrated-geometry table plus a cross-reference replaces both;
-- the null-space configuration is still its own subsection with its own
-  equation, and should fold into the common-gain table as rows plus one
-  sentence saying it was held fixed;
-- the data-recording subsection still lists the logged signals a third time.
-  One sentence pointing at Chapter 3 and the data-format appendix is enough;
-  the run counts and the excluded run stay.
-
-## The surface-plane re-seating check carries no measured values
-
-Section 4.2.1 describes the calibration the code performs: one seated pose of
-the complete tool face, with the plane normal formed from the end-effector axis
-configured at the time — the nominal \(+Z_{\mathrm{EE}}\) for the stored plane —
-and \(p_s=p_{\mathrm{EE}}+R_{\mathrm{EE}}r_{\mathrm{face,EE}}\).
-
-**A repeat measurement is not expected to report a near-zero angle.** With the
-calibrated tool normal now configured, the angle between the measured and the
-stored normal carries the \(1.56^\circ\) between that normal and
-\(+Z_{\mathrm{EE}}\). Record what the tool prints; do not treat that offset as
-a fault in the stored plane, and do not overwrite `surface.conf` with the
-measured values, which would stop the file describing the campaign.
-
-The verification is defined in the text but carries no measured values, because
-none is recorded anywhere in the controller repository. **Do not estimate one.**
-Section 4.2.1 now names the four quantities the tool reports, in its own
-notation: \(\psi_{\mathrm{plane}}\), the angle between the re-seated and the
-stored normal; \(\Delta\alpha_s\) and \(\Delta\beta_s\), the same comparison per
-axis; and \(\varepsilon_{\mathrm{plane}}\), the offset of the re-seated
-tool-face centre from the stored plane. They map onto the tool's printed lines
-as `total mismatch`, the `difference: a(x) | b(y)` row, and
-`configured-plane offset`. Re-run `tools/measure_plane` with the face seated on
-the plate that the stored values describe, read those four, and put them into
-the paragraph after \Cref{eq:surface_plane_validation_residual}.
-Should the plate have moved since the campaign, the check cannot be recovered,
-and the paragraph stays as the definition of the check with that stated.
-
-**The four hand-guided poses are correct and must not be "corrected".** The axis
-in `params/tool_orientation.conf` came from the hand-guided calibration —
-\(T_1\)--\(T_3\) for the fit and \(T_4\) held out — confirmed by the author on
-2026-08-24. Section 4.2.2 and Figure 4.2 stay at four poses.
-
 ## The appendix listings have drifted from the controller source
 
 Checked on 2026-08-25 against
@@ -308,6 +251,10 @@ renamed key and its dropped negation, and the superseded ruling in
 `THESIS_WRITING_GUIDE.md` was replaced rather than annotated. What follows is
 the drift that predates the \(r_c\) work and is still open.
 
+The compiled Appendix A now contains only the CoC point-shift and core callback
+listings. The following archived listings are inside `\iffalse` and reach no
+reader; correct them if they are ever reinstated.
+
 **`backmatter/appendix_code.tex`**
 
 - **Listing `lst:app_desired_motion`, the set-up case.** Calls
@@ -319,9 +266,6 @@ the drift that predates the \(r_c\) work and is still open.
   after the listing is still correct — both gates do latch, and the frozen
   clock it describes is the *descent* clock, `gate_paused_time`, which is still
   there.
-- **Listing `lst:implementation_pose_error`.** Passes `D` as the fourth
-  argument of `computeNullspaceTorque`. That argument is the Jacobian: the call
-  site is `computeNullspaceTorque(params, model, state, J, dq)`.
 - **The paragraph after `lst:implementation_nullspace_projector`** says the
   routine "fills a diagnostics structure that carries the sampled singular
   values, the selected direction, and the projected joint velocity
@@ -365,76 +309,17 @@ Nothing here is blocked. The listings carry no `\Revised{}` wrappers, so no
 frozen text is in the way, but both appendices carry green assessment boxes
 and neither chapter has been declared revised — confirm before editing.
 
-## The supervisor narrative review, and what it still asks for
+## Remaining requests from the supervisor narrative review
 
-A full chapter-by-chapter narrative review arrived on 2026-08-25. Its remaining
-items are below in the order the review set.
-
-### Priority 3 — a roadmap before the Section 2.8 SVD derivation
-
-The null-space section is technically sound and the \(v_7\) against
-\(\sigma_6\) distinction is correctly made. The fault is that the reader meets
-several pages of decomposition before seeing the complete control idea. **Add
-a short roadmap before 2.8.1 rather than deleting theory**, running: the
-\(\mathrm{SVD}\) of \(J\) gives \(v_7\) as the redundant direction and
-\(\sigma_{\min}\) as the conditioning indicator; \(J^+\) gives \(N_q\) and
-\(N_\tau\); \(\dot q_{\mathrm{null}}=N_q\dot q\) gives \(\tau_d\);
-\(q\pm\alpha_{\mathrm{probe}}v_7\) gives \(\sigma_\pm\), then \(s_\sigma\),
-then \(\tau_\sigma\); and \(\tau_{\mathrm{null}}=\tau_d+\tau_\sigma\).
-
-Two smaller items inside it. In 2.8.3, state the purpose before either matrix
-appears — \(N_q\) extracts redundant joint velocity, \(N_\tau\) projects a
-secondary joint torque — and give the power-conjugacy argument after that. In
-2.8.5, make the four-step probe idea impossible to miss: sample at
-\(q\pm\alpha v_7\), evaluate \(\sigma_{\min}\) at both, choose the larger,
-command torque that way.
-
-### Priority 4 — smaller narrative edits
-
-**Chapter 1.** Section 1.4 carries one level of numerical detail too many —
-\(+4.43^\circ\), the supporting intermediate-direction \(0.07^\circ\) and
-\(0.05^\circ\) differences — and
-is starting to read as a miniature results chapter. Keep the major findings and
-drop one level of detail. Nothing there is wrong.
-
-**Chapter 3.** Shorten the operator and tool-handling material in 3.7. The tool
-collection and return details are valid implementation content but peripheral
-to the evaluated contribution; most of it can go to Appendix A.
+The compression pass completed the requested Chapter-1 numerical reduction,
+the Chapter-2 null-space roadmap and derivation compression, the Chapter-3
+operator/tool-handling reduction, the Chapter-6 wording changes, and the
+Appendix-A reduction. The following narrower requests remain:
 
 **Chapter 4.**
 
-- Remove `…Section 4.5 uses it for the alignment angle` from the calibration
-  introduction. Section 4.2 should say what each calibration produces and stop.
-  Leave: only \(n_{\mathrm{Tool,EE}}\) is a calibration result, and
-  Section 3.2.2 carries it into the base frame.
-- **The validation results are promised and never given.** The flowchart marks
-  a re-seated check and a held-out \(T_4\) check, and \(\psi_{\mathrm{plane}}\),
-  \(\varepsilon_{\mathrm{plane}}\), \(\Delta\alpha_s\) and \(\Delta\beta_s\)
-  are defined, but no numerical outcome appears for either. Either report the
-  measured values or stop calling them validation and call them repeated and
-  held-out consistency captures, so no numerical result is implied. The
-  surface-plane half of this is already specified under *The surface-plane
-  re-seating check carries no measured values* above and needs the lab machine;
-  the \(T_4\) half does not.
-- Split 4.5.2 into two paragraphs, one for the pose-based alignment quantity
-  and one for the TCP-height flatness classification, since they are
-  deliberately different measurements.
 - Say whether \(v_{\mathrm{ref}}\) in 4.6 comes from one nominated repetition
   of the no-null-space-torque condition or from all three. One sentence.
-
-**Chapter 6.** Soften three phrases to match the limitations: `confirmed the
-geometric rule` → `the same geometric relation was observed at the tested
-intermediate directions`; `tool-axis displacement produced almost no change` →
-`produced only weak variation over the tested range`; `singular-value
-conditioning nearly eliminated` → `strongly suppressed`.
-
-**Appendix A.** Shorten the A.3 paragraph explaining that re-testing the gate
-released it for single cycles, that the clock advanced, and that a longer wait
-produced a harder press. It reads as development history. One sentence carries
-what the thesis needs: the operator gates latch once armed, so waiting time
-does not advance the reference trajectory. **This overlaps the separate
-`setUpPush` correction recorded above** — do both in one pass, since the
-listing and its paragraph describe the same mechanism.
 
 ## Two retired appendices still carry `\approx`
 
@@ -447,6 +332,48 @@ standalone experiment appendices and reach no reader while they stay commented
 out. **If any of `appendix_a` to `appendix_f` is ever reinstated, clear its
 `\approx` first**, by the four routes recorded under the ban in
 `THESIS_WRITING_GUIDE.md`.
+
+## Finish the figure-label convention and redesign the appendix tables
+
+The axis and legend convention is recorded in `FIGURE_STYLE.md` and was applied
+on 2026-08-25 to the four pgfplots figures and to the five plots written by
+`make_coc_figures.py` and `plot_coc_case.py`, which were regenerated and
+installed. Three things remain.
+
+- **Figures 5.2 and 5.3 need condition-specific legends.** They currently read
+  `Commanded Offset, \(\theta_{t_i}=+10^\circ\)` for both series, from the
+  shared `command_label()` in `make_coc_figures.py`. The stiffness figures need
+  the varied component instead — `Rotation About \(t_1\), \(K_{R,t_1}\)`
+  and `Rotation About \(t_2\), \(K_{R,t_2}\)` for Figure 5.2, and
+  `Rotation About \(t_1\), \(K_{p,t_2}\)` and `Rotation About \(t_2\),
+  \(K_{p,t_1}\)` for Figure 5.3, so the perpendicular relation is visible in
+  the legend. That needs a separate label function for the two stiffness
+  sweeps rather than a change to `command_label()`, which the other sweeps use
+  correctly.
+- **The null-space figure and the metric comparison are not converted.**
+  `MAIN_NS_nullspace_automatic.pdf` needs
+  `Time After Disturbance Onset, \(t_d\) [s]` and
+  `Cumulative Projected Null-Space Motion, \(E_N\) [°]`, with legends
+  `No Null-Space Damping, \(d_{\mathrm{null}}=0\)` and
+  `Projected Damping, \(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\)`; its
+  second panel needs
+  `Change in Minimum Singular Value, \(\Delta\sigma_{\min,\mathrm{dist}}\) [-]`
+  and `Peak Cartesian Position Error, \(\lVert e_p\rVert_{\max}\) [mm]`.
+  **Its generator reads `MyController` logs**, so it can only be regenerated
+  beside that repository. `MAIN_DQ_metric_comparison.pdf` needs the same pass.
+- **Redesign the appendix results tables**, which is where the author chose to
+  keep them on 2026-08-25 rather than restoring them to Chapter 5. Every table
+  in `backmatter/appendix_additional_plots.tex` should answer, without the
+  reader going back to Chapter 4: what was varied, what was held fixed, what
+  the reference condition is, and what was measured. Concretely: name the
+  varied parameter in its column heading rather than `Varied entry`, mark the
+  reference condition in the table itself (`Case-A reference`, or the
+  TCP-centred column), and give the measured response as
+  `Measured Set-Up Rotation, \(\Delta\theta_i\) [°]`. Precede each table
+  with one prose sentence naming varied, fixed, reference and response. The
+  Case-D table additionally drops the \(\theta_{\mathrm{dev,before}}\)
+  column and marks its TCP column, and the offset-magnitude table gains a
+  TCP-versus-selected-CoC comparison column.
 
 ## The other drawn diagrams still open their boxes in lower case
 
@@ -521,8 +448,12 @@ future work, and both summaries. The null-space material was then reinterpreted
 in the same way: the trial timeline and a second motion metric in Section 4.6,
 the sigma result in Section 5.2, and the corresponding passages in Chapter 6 and
 the two summaries. The null-space figure was regenerated from the logs, so its
-panel (a) is a few points taller than the file it replaces. Page breaks moved with all of it, and the compiled pages have
-not been read on screen. Two specific things to look at:
+panel (a) is a few points taller than the file it replaces. The compressed
+kinematics and null-space theory, the symbol list, the main Case-D figures, and
+all Appendix-D tables and figures have been inspected on screen. The remaining
+changed Chapter-1, Chapter-4, Chapter-6, summary, and null-space-result pages
+still need the complete page-by-page read. Two specific things to retain in
+that pass:
 
 - **The Abstract and the Kurzfassung now run to two pages each** (Abstract on
   pages V--VI, Kurzfassung on VII--VIII). The one-page limit is suspended in
@@ -533,9 +464,10 @@ not been read on screen. Two specific things to look at:
 - No heading was left stranded by an automated scan of the compiled document,
   which is a weaker check than reading the pages.
 
-The three documents build clean here — `Thesis.tex`, `Professor_Draft.tex` and
-`Review_Draft.tex`, with bibtex and three passes each, no undefined references
-or citations and no overfull boxes. **The local build needed
+The current `Thesis.tex` and `Professor_Draft.tex` build clean here with bibtex
+and three passes each, no undefined references or citations and no overfull
+boxes. `Review_Draft.tex` has not been rebuilt after the compression pass.
+**The local builds needed
 `compat=1.16`**, because the TeX Live 2019 on this machine predates the
 `compat=1.18` the sources set; the file was restored afterwards and the plots
 were therefore not rendered at the compat level the author's MiKTeX uses.

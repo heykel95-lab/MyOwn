@@ -55,6 +55,38 @@ Feature tie tolerance &
 \end{tabular}
 \end{table}
 
+\subsection{Calibration Relations}
+
+For the seated surface pose, the nominal end-effector axis and the tool-face
+centre offset supplied the stored plane quantities,
+
+\begin{equation}
+n_s=R_{\mathrm{EE}}[0,0,1]^\top,
+\qquad
+p_s=p_{\mathrm{EE}}+R_{\mathrm{EE}}r_{\mathrm{face,EE}}.
+\label{eq:appendix_surface_calibration}
+\end{equation}
+
+The first tangent was the normalised projection of the base-frame
+\mbox{\(x\)} direction onto the plane, and
+\mbox{\(t_2=n_s\times t_1\)} completed the surface frame. For the tool-normal
+calibration, the fitted direction was
+
+\begin{equation}
+n_{\mathrm{Tool,EE}}
+=
+\operatorname*{arg\,min}_{\lVert n\rVert=1}
+\sum_{i<j}
+\left\lVert(R_{\mathrm{cal},i}-R_{\mathrm{cal},j})n\right\rVert^2.
+\label{eq:appendix_tool_normal_fit}
+\end{equation}
+
+The first three seated yaw captures entered the fit. A fourth capture was held
+out as a consistency check. The sign of the fitted eigenvector was selected
+towards nominal \mbox{\(+Z_{\mathrm{EE}}\)}.
+
+\subsection{Initial Joint Configuration}
+
 The initial joint configuration used in the reported experiments is
 \[
 \begin{aligned}

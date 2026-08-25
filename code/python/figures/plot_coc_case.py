@@ -116,10 +116,10 @@ def main():
               f"Fn_cmd {fn_cmd[-1]:7.1f} N | M_cmd {m_cmd[-1]:+6.2f} N m")
 
     sub = AXIS_SUBSCRIPT[args.axis]
-    labels = [rf"Measured set-up rotation about ${sub}$," "\n"
+    labels = [rf"Set-Up Rotation About ${sub}$," "\n"
               rf"$\Delta\theta_{{{args.axis[-1]}}}$ [$^\circ$]",
-              "Commanded normal force,\n" r"$F_n$ [N]",
-              rf"Commanded TCP moment about ${sub}$," "\n"
+              "Commanded Normal Force,\n" r"$F_n$ [N]",
+              rf"Commanded TCP Moment About ${sub}$," "\n"
               rf"$M_{{{sub}}}$ [N m]"]
     # The deviation panel keeps the upper right corner, which its curves leave
     # free and which the start-value annotations at the left edge do not reach.
@@ -138,7 +138,7 @@ def main():
         # A legend printed over the data is worse than one in a different
         # corner of the same panel.
         ax.legend(loc=corner, fontsize=7, labelspacing=0.3)
-    axes[-1].set_xlabel("Set-up time [s]")
+    axes[-1].set_xlabel(r"Time, $t$ [s]")
     fig.tight_layout()
     out = os.path.join(args.out_dir, f"{args.out}.pdf")
     fig.savefig(out)

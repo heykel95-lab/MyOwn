@@ -116,8 +116,10 @@ of text, and never let a label sit inside a node's bounding box.
 ### Scale the picture, do not resize it
 
 **A tikz diagram is sized by `scale=` inside `egin{tikzpicture}[...]`, not by
-wrapping the `\input` in `esizebox`.** `scale=` moves the coordinates and
-leaves node text at the size it was declared; `esizebox` magnifies the text
+wrapping the `\input` in `
+esizebox`.** `scale=` moves the coordinates and
+leaves node text at the size it was declared; `
+esizebox` magnifies the text
 along with the drawing, so a diagram drawn at 7 cm and stretched to the text
 width comes out with labels about twice the size of the body text. It also
 multiplies every clearance, which is how a label that looked separated in the
@@ -129,7 +131,8 @@ picture at whatever size is convenient, then pick the `scale=` that brings it to
 the width it should occupy, and include it with a plain `\input`.
 
 The rule holds in the other direction too. A wide diagram shrunk to fit by
-`esizebox` has labels *smaller* than the body text, which is the same fault
+`
+esizebox` has labels *smaller* than the body text, which is the same fault
 and is easier to miss.
 
 **Explanatory sentences do not go inside the picture.** A two-line note added
@@ -229,6 +232,58 @@ the output has to be renamed on the way into `figures/` here, and a script run
 straight into `figures/` will leave the old names behind rather than replacing
 the figure it was meant to update.
 
+### How to regenerate a plot, in practice
+
+Every step below was needed to regenerate a figure on this machine, and each
+one failed the first time it was skipped.
+
+**A script runs from a directory that has the data beside it, not from
+`code/python/figures/`.** Each generator resolves its input relative to its own
+location — `HERE/../experiments/derived/metrics.csv` for the
+compliance-centre plots, `HERE/../experiments/results/` for the ones that read
+logged runs. Copy the script into a scratch directory whose parent holds an
+`experiments` symlink to the right repository, and run it there. Running it in
+place finds nothing.
+
+**Take the helper modules with it.** The generators import `figure_style`, and
+several also import `extract_metrics`; `make_nullspace_figure.py` additionally
+imports `make_figures`. A `ModuleNotFoundError` here means a helper was left
+behind, not that the script is broken.
+
+**Which repository each script needs:**
+
+| Script | Data it reads |
+| --- | --- |
+| `make_coc_figures.py` | `Thesis_Final_Control/experiments/derived/metrics.csv` |
+| `plot_coc_case.py`, `plot_setup_diagnostics.py` | `Thesis_Final_Control/experiments/results/` |
+| `compare_angle_metrics.py` | `Thesis_Final_Control/experiments/results/` |
+| `make_nullspace_figure.py` | `MyController/experiments/`, in that repository's own `analysis/` + `experiments/` layout |
+
+`make_nullspace_figure.py` detects which layout it is sitting in, so give it
+`<root>/analysis/` for the script and `<root>/experiments/` for the data.
+
+**`--out-dir` is not obeyed by every script.** `make_nullspace_figure.py`
+writes to `figures/` and `derived/` beside its resolved data root regardless.
+Find the file it actually wrote before copying anything.
+
+**`plot_coc_case.py` takes its trials on the command line**, and the three the
+reported figure uses are listed in `code/python/figures/README.md`. Its legend
+text comes from those arguments, so the legend convention is applied at the
+call, not in the script.
+
+**Rename on the way in.** The scripts still write the old case letters; the map
+is in `code/python/figures/README.md`. Copying a fresh output into `figures/`
+under its generated name leaves the figure the thesis includes untouched and
+adds an orphan.
+
+**Check the result before trusting it.** `pdftotext` on the output shows the
+axis and legend strings, which is the fastest way to confirm a label change
+landed — a `sub` that silently matched nothing is the usual failure. Then
+`pdffonts` should show `LMRoman*` and `Cmr/Cmmi/Cmsy`, and the numbers printed
+by the script should match the values the thesis reports. A regenerated figure
+that differs from the committed one in anything but the intended label is a
+signal to stop, not to install it.
+
 ### Result figures may be drawn from the reported means
 
 A figure whose content is already tabulated in the thesis does not need a
@@ -236,17 +291,17 @@ generator at all. Four result figures were redrawn directly in `pgfplots`
 from the means in their own tables: the Case-A bars, the two-panel Case-D
 variation, the Case-D comparison with the supporting tool-axis check, and the
 two-panel Case-E plot. They are `\input` as `.tex`, so they take the document font and
-need no `esizebox`.
+need no `
+esizebox`.
 
 This is not a licence to invent data. **The only numbers a redrawn figure may
 contain are ones already reported in the thesis**, and where the table carries
 standard deviations they are drawn as error bars, as in the supporting
 tool-axis series.
 
-Where the original plot carried information the table does not, redrawing loses
-it, and the original is kept rather than discarded. `MAIN_D_sign.pdf` showed
-the per-setting spread of the Case-D sweep, which appears in no table, so it
-moved to the supporting-plots appendix instead of being deleted.
+The main Case-D plot carries the sample standard deviation at every setting as
+an error bar. The earlier `MAIN_D_sign.pdf` appendix plot duplicated that
+information and is not included in the thesis.
 
 **Check every legend against the data in the compiled figure.** Three of the
 four redrawn figures first placed a legend on top of a curve, in a corner that
@@ -302,7 +357,7 @@ form. Say what it *shows*.
 ### Naming
 
 `MAIN_<INDEX>_<subject>.pdf`, uppercase prefix, uppercase index, lower-case
-subject. Main-study figures use their current A--E case letter. Supporting
+subject. Main-study figures use their current A--D case letter. Supporting
 figures use a descriptive subject in the thesis even where a retained binary
 file name still carries its acquisition-campaign identifier:
 
@@ -312,7 +367,7 @@ file name still carries its acquisition-campaign identifier:
 | `MAIN_B_KR.pdf` | Case B |
 | `MAIN_C_KP.pdf` | Case C |
 | `MAIN_D_sign.pdf`, `MAIN_D_wrench.pdf`, `MAIN_D_diagnostics.pdf` | Case D |
-| `MAIN_G_magnitude.pdf` | Case E; retained file identifier |
+| `MAIN_G_magnitude.pdf` | Supporting orientation-offset-magnitude check; retained file identifier |
 | `MAIN_E_frame.pdf` | Supporting definition-frame check; retained file identifier |
 | `MAIN_F_toolaxis.pdf` | Supporting tool-axis check; retained file identifier |
 | `MAIN_H_direction.pdf` | Supporting intermediate-direction check; retained file identifier |
@@ -405,6 +460,41 @@ writes a generated file names it, so regeneration must preserve this mapping.
   alignment angle obtained two different ways, so the label left the reader to
   guess. It now reads `Pose-based alignment error [°]` and the legend separates the two
   routes to it.
+- **Every numerical axis reads `Descriptive Name, Symbol [Unit]`, in Title
+  Case.** The English description comes first so a reader who does not remember
+  the symbol list can still read the figure; the symbol follows so the figure
+  ties back to the notation; the unit closes it in square brackets. Settled
+  examples: `Set-Up Rotation About \(t_1\), \(\Delta\theta_1\) [°]`,
+  `Rotational Stiffness, \(K_{R,t_i}\) [N m/rad]`,
+  `Cross-Axis Translational Stiffness, \(K_{p,t_j}\) [N/m]`,
+  `Tangential CoC Position, \(r_{c,t_2}\) [mm]`,
+  `Signed Tangential CoC Position, \(-r_{c,t_1}\) [mm]`,
+  `Commanded Orientation Offset, \(\theta_{t_i}\) [°]`,
+  `Commanded Normal Force, \(F_n\) [N]`,
+  `Commanded TCP Moment About \(t_i\), \(M_{t_i}\) [N m]`.
+
+  **Mathematical symbols keep their own casing.** Title Case applies to the
+  English words only: \(t_1\), \(r_{c,t_2}\), \(K_{R,t_1}\) and \(F_n\)
+  are never recased to match the surrounding capitals.
+
+  **Time is singular and carries its symbol:** `Time, \(t\) [s]` for an
+  ordinary controller or contact history, and
+  `Time After Disturbance Onset, \(t_d\) [s]` wherever time is shifted so the
+  disturbance begins at zero. Never `Times [s]`, and do not invent a third time
+  symbol for one plot.
+
+  Where no symbol is assigned to what the axis means, the words stay and the
+  unit still closes the label — the Case-F comparison axis and the categorical
+  axes are the standing examples.
+- **A legend names the experimental condition, and gives its symbol and value
+  where one exists:** `Descriptive Condition, Symbol = Value`. It never repeats
+  the \(y\)-axis quantity and never carries a unit already on the axis.
+  Settled forms: `Commanded Offset, \(\theta_{t_1}=+10^\circ\)` for a
+  commanded condition; `Projected Damping, \(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\)`
+  for a controller parameter; `CoC Position, \(r_{c,t_2}=+40\,\mathrm{mm}\)`
+  and `CoC at TCP, \(r_{c,t_2}=0\)` for a compliance-centre position. A bare
+  `+10°` or `40 mm` entry does not say what the number is, and is what this rule
+  replaces.
 - **An axis carries the symbol the symbol list assigns to the quantity.** A
   reader who has met \(r_{c,t_2}\) in the text should not have to work out that
   `Centre position along t_2` is the same thing. Where a symbol exists, the

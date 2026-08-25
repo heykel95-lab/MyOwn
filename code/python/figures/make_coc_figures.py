@@ -38,7 +38,7 @@ from figure_style import (apply_style, reference_line,  # noqa: E402
 
 apply_style()
 
-ROTATION_LABEL = ("Measured set-up rotation about the\ncommanded tangent,\n"
+ROTATION_LABEL = ("Set-Up Rotation,\n"
                   r"$\Delta\theta_i$ [$^\circ$]")
 
 # Every bar chart in the thesis takes the palette blue, the same one the line
@@ -104,8 +104,22 @@ def command_label(groups, runs, axis, linebreak=False):
     tangent = "t_1" if axis == "t1" else "t_2"
     sign = "-" if any("_neg_" in run for run in runs) else "+"
     magnitude = 5 if all(run.startswith("P5_mag_") for run in runs) else 10
-    return (f"commanded{separator}${sign}{magnitude}^\\circ$ "
-            f"about ${tangent}$")
+    return (f"Commanded Offset,{separator}"
+            f"$\\theta_{{{tangent}}}={sign}{magnitude}^\\circ$")
+
+
+def stiffness_label(case, axis):
+    """Name a stiffness series by its rotation axis and the varied component.
+
+    The component that is varied is perpendicular to the commanded rotation
+    axis, so naming both in the legend is what makes that relation visible.
+    """
+    tangent = "t_1" if axis == "t1" else "t_2"
+    if case == "A":
+        entry = f"K_{{R,{tangent}}}"
+    else:
+        entry = "K_{p,t_2}" if axis == "t1" else "K_{p,t_1}"
+    return f"Rotation About ${tangent}$, ${entry}$"
 
 
 def sweep(groups, prefix, positions, key):
@@ -170,16 +184,16 @@ def main():
     width = 0.34
     fig, ax = plt.subplots(figsize=(5.8, 3.3))
     ax.bar(x - width / 2, selected, width, color=SERIES_COLOURS[0],
-           edgecolor="#1a1a1a", linewidth=0.8, label="selected lever")
+           edgecolor="#1a1a1a", linewidth=0.8, label="Selected Displacement")
     # Bar charts skip the red the line plots take second: a filled red bar
     # carries far more ink than a red curve and reads as a warning against
     # the black beside it.
     ax.bar(x + width / 2, fixed, width, color=BAR_FILL_BLUE,
-           edgecolor="#1a1a1a", linewidth=0.8, label=r"fixed $t_1$ lever")
+           edgecolor="#1a1a1a", linewidth=0.8, label=r"Fixed $t_1$ Displacement")
     reference_line(ax)
     ax.set_xticks(x)
     ax.set_xticklabels(directions)
-    ax.set_xlabel(r"Commanded rotation direction [$^\circ$]")
+    ax.set_xlabel(r"Commanded Rotation Direction [$^\circ$]")
     ax.set_ylabel(ROTATION_LABEL)
     ax.legend(loc="upper right")
     fig.tight_layout()
@@ -214,10 +228,8 @@ def main():
 
     # A -- the rotational entry, drawn as the rotation the robot made.
     for case, key, xlabel, values, name in (
-            ("A", "A_rot", r"Rotational stiffness about the investigated tangent, "
-             r"$K_{R,t_i}$ [N m/rad]", [5, 15, 50], "MAIN_A_KR.pdf"),
-            ("B", "B_trans", r"Perpendicular translational stiffness, "
-             r"$K_{p,t_j}$ [N/m]", [300, 800, 2000], "MAIN_B_KP.pdf")):
+            ("A", "A_rot", r"Rotational Stiffness, $K_{R,t_i}$ [N m/rad]", [5, 15, 50], "MAIN_A_KR.pdf"),
+            ("B", "B_trans", r"Cross-Axis Translational Stiffness, $K_{p,t_j}$ [N/m]", [300, 800, 2000], "MAIN_B_KP.pdf")):
         entries = []
         for axis in ("t1", "t2"):
             x, y, err, runs = [], [], [], []
@@ -235,7 +247,7 @@ def main():
                 runs.append(run)
             if x:
                 entries.append((np.array(x), np.array(y), np.array(err),
-                                command_label(groups, runs, axis)))
+                                stiffness_label(case, axis)))
         if entries:
             draw_sweep(entries, xlabel, out(name),
                        ylabel=ROTATION_LABEL)
@@ -270,8 +282,8 @@ def main():
     reference_line(ax)
     ax.set_xticks(x)
     ax.set_xticklabels(commands)
-    ax.set_xlabel(r"Commanded orientation offset, $\theta_{t_1}$ [$^\circ$]")
-    ax.set_ylabel("Measured set-up rotation about $t_1$,\n"
+    ax.set_xlabel(r"Commanded Orientation Offset, $\theta_{t_1}$ [$^\circ$]")
+    ax.set_ylabel("Set-Up Rotation About $t_1$,\n"
                   r"$\Delta\theta_1$ [$^\circ$]")
     ax.legend(loc="upper left")
     fig.tight_layout()
@@ -325,7 +337,7 @@ def main():
         if x:
             entries.append((np.array(x), np.array(y), np.array(err),
                             command_label(groups, runs, axis)))
-    draw_sweep(entries, r"$r_c$ along the assisting tangent [mm]",
+    draw_sweep(entries, r"Tangential CoC Position, $r_{c,t}$ [mm]",
                out("MAIN_H_magnitude.pdf"), figsize=(5.8, 3.8), headroom=0.75)
 
 

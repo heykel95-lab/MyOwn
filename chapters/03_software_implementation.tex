@@ -34,26 +34,6 @@ real-time callback then receives only the prepared configuration, preallocated
 state, robot-model interface, and non-blocking operator requests. File output
 and run evaluation are performed after torque control has stopped.
 
-\mbox{\Cref{tab:software_modules}} summarises the main functional subsystems.
-
-\begin{table}[H]
-\centering
-\caption{Functional subsystems of the surface-grinding controller.}
-\label{tab:software_modules}
-\begin{tabular}{p{0.29\textwidth}p{0.63\textwidth}}
-\hline
-\textbf{Subsystem} & \textbf{Responsibility} \\
-\hline
-Configuration & Validates the parameter set and constructs the typed controller configuration. \\[1mm]
-Task geometry & Constructs the surface frame, tool orientation target, tool geometry, and geometric clearance quantities. \\[1mm]
-Real-time controller & Updates the active phase and Cartesian reference and evaluates the \(1\,\mathrm{kHz}\) joint-torque callback. \\[1mm]
-Impedance and null-space control & Constructs the active Cartesian gains, optional compliance-centre shift, Cartesian wrench, and secondary null-space torque. \\[1mm]
-Operator and robot interface & Manages mode selection, manual guidance, robot preparation, gripper actions, and tool handling. \\[1mm]
-Recording and evaluation & Buffers controller signals during torque control and performs file output and run-summary calculations afterwards. \\
-\hline
-\end{tabular}
-\end{table}
-
 The main operating path is a phase sequence for tool orientation, surface
 approach, contact set-up, and grinding. Additional modes provide standard
 Cartesian pose hold, pose hold with the set-up impedance, and manual guidance.
@@ -315,23 +295,8 @@ then registers a joint-torque callback with libfranka. Before torque control
 begins, the current robot state is read once to initialise the desired pose,
 phase state, external-wrench reference, and preallocated recording buffer.
 
-The callback receives the current \mbox{\texttt{RobotState}} and the elapsed
-cycle duration and returns the seven commanded joint torques
-\mbox{\(\tau_{\mathrm{cmd}}\)}:
-
-\begin{lstlisting}[style=cppstyle,
-  caption={Registration of the joint-torque callback through
-           \texttt{libfranka}.},
-  label={lst:libfranka_torque_callback}]
-robot.control(
-    [&](const franka::RobotState& state,
-        franka::Duration period) -> franka::Torques {
-
-      // Real-time state and torque calculations
-
-      return franka::Torques(tau_array);
-    });
-\end{lstlisting}
+The callback receives the current robot state and elapsed cycle duration and
+returns the seven commanded joint torques \mbox{\(\tau_{\mathrm{cmd}}\)}.
 
 Within each callback, the measured joint state, end-effector pose, end-effector
 Jacobian, robot-model quantities, and model-estimated external wrench are read
@@ -496,35 +461,9 @@ R_{\mathrm{surface}}^\top.
 \end{equation}
 
 The base-frame matrix can then be applied directly to the base-frame Cartesian
-errors used by the control law. The implemented frame policy is summarised in
-\mbox{\Cref{tab:implemented_gain_frames}}.
-
-\begin{table}[H]
-\centering
-\caption{Coordinate frames used for the phase-dependent Cartesian gains.}
-\label{tab:implemented_gain_frames}
-\begin{tabular}{p{0.25\textwidth}p{0.31\textwidth}p{0.31\textwidth}}
-\hline
-\textbf{Controller mode} & \textbf{Translational gains} & \textbf{Rotational gains} \\
-\hline
-Tool orientation and surface approach
-& Surface frame \([t_1,t_2,n_s]\)
-& Surface frame \([t_1,t_2,n_s]\) \\[1mm]
-Set-up and grinding
-& Selectable between base frame and surface frame
-& Surface frame \([t_1,t_2,n_s]\) \\[1mm]
-Cartesian pose hold
-& Base frame \([x,y,z]\)
-& Base frame \([x,y,z]\) \\[1mm]
-Set-up-impedance hold
-& Same construction as set-up
-& Same construction as set-up \\[1mm]
-Phase-gate hold
-& Configurable hold frame
-& Configurable hold frame \\
-\hline
-\end{tabular}
-\end{table}
+errors used by the control law. Surface-related phases use the calibrated
+surface frame, while Cartesian pose hold uses the base frame. The set-up
+translational frame remains configurable.
 
 The set-up phase is the central case for the contact experiments. Its
 translational and rotational gains can be aligned with the surface frame so
@@ -751,10 +690,9 @@ smallest geometric clearance to the surface.
 The transition to set-up occurs when the foremost-face clearance reaches the
 configured geometric threshold. This is not a force-detected contact event.
 
-At the clearance transition, the selected tool point is
-selected and held constant, and the controller stores its projected surface
-point, the current TCP pose, the orientation reference, and the external-wrench
-reference. If the optional pre-set-up gate is enabled, the controller first
+At the clearance transition, the selected tool point is held constant, and the
+controller stores its projected surface point, the current TCP pose, and the
+orientation reference. If the optional pre-set-up gate is enabled, the controller first
 holds the captured pose until operator confirmation and then captures the
 set-up references from the current measured state. Reaching the maximum
 permitted approach distance before the geometric clearance is satisfied
@@ -858,16 +796,8 @@ behaviour observed in the reported experiments are documented in
 \label{subsec:implementation_grinding_phase}
 
 The grinding phase maintains the normal set-up reference and can superimpose a
-tangential sweep along a selected surface tangent. The sweep uses a smooth
-fifth-order trajectory with zero velocity at its reversal points. When the
-sweep is disabled, only the normal contact reference is maintained.
-
-Grinding uses the same source stiffness and damping blocks as set-up, but the
-implemented wrench calculation returns to the decoupled impedance branch after
-the phase change. The reported contact measurements in this thesis ended at the
-pre-grinding gate; no reported run entered the grinding sweep. The grinding
-phase is therefore included here as implemented controller functionality rather
-than as part of the evaluated contact data.
+smooth tangential motion along a selected surface tangent. Its impedance
+returns to the decoupled branch. No reported run entered this phase.
 
 
 \subsection{Pose Hold, Manual Guidance, and Run Termination}
@@ -875,24 +805,10 @@ than as part of the evaluated contact data.
 \label{subsec:implementation_run_termination}
 
 Standard Cartesian pose hold regulates a captured pose with the dedicated hold
-impedance. Set-up-impedance hold uses the set-up gain construction and can retain
-the virtual \abbr{CoC}. These hold modes are also used for dedicated
-controller checks outside the main contact sequence.
-
-Manual guidance can be entered from an impedance-controlled state. The
-controller then returns the Coriolis contribution together with joint-space
-damping,
-
-\begin{equation}
-\tau_{\mathrm{guide}}
-=
-\tau_c(q,\dot q)-d_{\mathrm{guide}}\dot q,
-\label{eq:implementation_manual_guidance_torque}
-\end{equation}
-
-where \mbox{\(d_{\mathrm{guide}}\)} is the configured guidance damping. After
-operator confirmation, the measured pose, joint configuration, and required
-references are recaptured before the selected sequence or hold mode resumes.
+impedance. Set-up-impedance hold uses the set-up gain construction and can
+retain the virtual \abbr{CoC}. Manual guidance applies joint damping together
+with the model Coriolis contribution before the required references are
+captured again.
 
 A controller session ends when the configured duration expires, an operator
 stop is requested, the maximum approach distance is exceeded, or libfranka
@@ -934,24 +850,8 @@ secondary torque and for the recorded projected joint velocity. The two symbols
 are kept apart in \mbox{\Cref{sec:nullspace_svd}} only to distinguish the
 quantity the projector acts on.
 
-The controller provides the four secondary-torque modes listed in
-\mbox{\Cref{tab:implementation_nullspace_modes}}.
-
-\begin{table}[H]
-\centering
-\caption{Selectable null-space torque contributions.}
-\label{tab:implementation_nullspace_modes}
-\begin{tabular}{ll}
-\hline
-\textbf{Mode} & \textbf{Returned secondary torque} \\
-\hline
-Disabled & \(0\) \\
-Damping only & \(\tau_d\) \\
-Sigma only & \(\tau_\sigma\) \\
-Combined & \(\tau_d+\tau_\sigma\) \\
-\hline
-\end{tabular}
-\end{table}
+The selectable secondary-torque modes are disabled, projected damping alone,
+singular-value conditioning alone, and their sum.
 
 For singular-value conditioning, the current redundant right-singular direction
 \mbox{\(v_7\)} is sampled in both signs. Two nearby joint configurations are
@@ -1011,29 +911,9 @@ motion-generation, or torque-control error exits the callback through
 \mbox{\texttt{franka::Exception}}. Configuration, file, and numerical errors are
 handled separately through standard exceptions.
 
-\paragraph{Gripper verification and tool handling.}
-\label{subsec:gripper_verification}
-\label{subsec:tool_transfer}
-The start-up interface also supports opening, grasping, and recalibrating the
-Franka Hand. Gripper state is checked before and after an action so that an
-incorrectly calibrated finger stroke or an unsuccessful grasp can be detected
-before torque control begins. An optional tool-transfer routine moves between
-the configured initial posture, a calculated stand-off posture, and the stored
-holder posture. The stand-off pose is obtained from damped least-squares inverse
-kinematics and is accepted only when the resulting joint configuration satisfies
-the configured joint-limit margins. The tool-transfer sequence is shown in
-\mbox{\Cref{fig:tool_transfer_flow}}.
-
-\begin{figure}[H]
-  \centering
-  \resizebox{0.72\textwidth}{!}{\input{figures/tool_transfer_flow.tex}}
-  \caption{Tool collection and return sequence.}
-  \label{fig:tool_transfer_flow}
-\end{figure}
-
 \label{subsec:controller_exception_handling}
-These preparation functions support robot operation while leaving the Cartesian
-control law and experimental parameter definitions unchanged.
+Gripper preparation and tool handling are completed before torque control and
+do not alter the Cartesian law or the experimental parameters.
 
 
 \subsection{Real-Time-Safe Data Recording}
@@ -1046,41 +926,10 @@ dynamically. Each sampled row contains the measured state, active reference,
 calculated error and wrench, controller phase, secondary-controller state, and
 returned joint torque.
 
-\mbox{\Cref{tab:recorded_controller_signals}} groups the principal recorded
-signals. The complete column-level description used for the experimental
-evaluation is given in \mbox{\Cref{app:recorded_data}}.
-
-\begin{table}[H]
-\centering
-\caption{Signal groups stored during the real-time control loop.}
-\label{tab:recorded_controller_signals}
-\begin{tabular}{p{0.27\textwidth}p{0.65\textwidth}}
-\hline
-\textbf{Signal group} & \textbf{Recorded quantities} \\
-\hline
-Time and controller state
-& Run time, active control phase, and null-space mode. \\[1mm]
-TCP state and reference
-& Measured and desired TCP pose quantities, Cartesian errors, and linear and angular velocities. \\[1mm]
-Tool and surface geometry
-& Controlled tool point, stored clearance geometry, desired contact target, and set-up coordinate. \\[1mm]
-Cartesian wrench
-& Commanded wrench and model-estimated external wrench, including the clearance-transition reference. \\[1mm]
-Null-space controller
-& Active null-space parameters, projected motion quantities, singular-value data, and secondary torque. \\[1mm]
-Disturbance study
-& Disturbance waveform, application point, equivalent force, and joint-torque contribution. \\[1mm]
-Joint-torque command
-& The seven final commanded joint torques returned to libfranka. \\
-\hline
-\end{tabular}
-\end{table}
-
-The values captured at the clearance transition refer to the geometric event
-described in \mbox{\Cref{subsec:implementation_surface_approach_phase}}; they do
-not denote a force-detected first-contact event. Each sampled row holds the measured state, the
-active reference, the Cartesian error, the commanded wrench, the controller
-phase, and the returned joint torque.
+The complete column-level description is given in
+\mbox{\Cref{app:recorded_data}}. Values captured at the clearance transition
+refer to the geometric event of
+\mbox{\Cref{subsec:implementation_surface_approach_phase}}.
 
 When the allocated capacity is reached, the write index wraps and new samples
 replace the oldest rows. This keeps the memory use bounded during real-time
@@ -1091,20 +940,10 @@ control.
 \label{subsec:chronological_log_output}
 \label{subsec:setup_run_evaluation}
 
-After the torque callback ends, the ring-buffer contents are reconstructed in
-chronological order. The ordered samples are then written to the
-\mbox{\abbr{CSV}} file and reduced to the run summary, both outside the
-real-time control path.
-
-The output preserves the commanded Cartesian wrench and the model-estimated
-external wrench as separate quantities. It also stores the geometric
-clearance-transition references needed to calculate subsequent force and moment
-changes. The implementation produces a set-up summary containing the final
-pose, selected tool point, external-wrench change, phase termination condition,
-and active controller settings. Detailed experimental metrics are defined in
-\mbox{\Cref{ch:methodology}} and \mbox{\Cref{app:recorded_data}}. This chapter
-therefore remains focused on the generation and recording of the controller
-signals.
+After the torque callback ends, the ring-buffer contents are written in
+chronological order to the \mbox{\abbr{CSV}} file. Detailed experimental
+metrics are defined in \mbox{\Cref{ch:methodology}} and
+\mbox{\Cref{app:recorded_data}}.
 
 The controller structure described in this chapter is used throughout the
 reported experiments. \mbox{\Cref{ch:methodology}} next specifies the physical

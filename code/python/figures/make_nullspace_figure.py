@@ -227,16 +227,24 @@ def damping_panel(ax, groups):
         mean = np.mean(curves, axis=0)
         sd = (np.std(curves, axis=0, ddof=1)
               if curves.shape[0] > 1 else np.zeros_like(mean))
-        label = rf"$d_{{\mathrm{{null}}}}={group['gain']:g}$"
+        # Legend: descriptive condition, then symbol = value.
+        gain = group["gain"]
+        if gain == 0.0:
+            label = (r"No Null-Space Damping, "
+                     r"$d_{\mathrm{null}}=0$")
+        else:
+            label = (r"Projected Damping, "
+                     rf"$d_{{\mathrm{{null}}}}={gain:g}"
+                     r"\,\mathrm{N\,m\,s/rad}$")
         ax.plot(common_t, mean, color=colour, marker="o", markevery=40,
                 linewidth=1.25,
                 markerfacecolor="white", markeredgecolor=colour,
                 markeredgewidth=1.1, label=label)
         ax.fill_between(common_t, mean - sd, mean + sd, color=colour,
                         alpha=0.10, linewidth=0)
-    ax.set_xlabel(r"Time after disturbance onset $t_d$ [s]")
+    ax.set_xlabel(r"Time After Disturbance Onset, $t_d$ [s]")
     ax.set_ylabel(
-        r"Cumulative projected null-space motion $E_N$ [$^\circ$]"
+        r"Cumulative Projected Null-Space Motion, $E_N$ [$^\circ$]"
     )
     ax.text(0.01, 0.97, "(a)", transform=ax.transAxes,
             ha="left", va="top")
@@ -271,13 +279,16 @@ def sigma_panel(ax, groups):
         markerfacecolor="white", markeredgecolor=SERIES_BLACK,
         markeredgewidth=1.1, linewidth=1.25, elinewidth=1.0,
         capthick=1.0, capsize=3,
-        label=r"$\Delta\sigma_{\min,\mathrm{dist}}$ (mean $\pm$ SD)")
+        label=r"Singular-Value Change, "
+              r"$\Delta\sigma_{\min,\mathrm{dist}}$")
     ax.plot(gains[screening], sigma_means[screening], color=SERIES_BLACK,
             marker="D", markerfacecolor="white", markeredgewidth=1.1,
             linestyle="none")
     ax.axhline(0.0, color="0.45", linewidth=1.0)
-    ax.set_xlabel(r"Conditioning torque $k_\sigma$ [N m]")
-    ax.set_ylabel(r"$\Delta\sigma_{\min,\mathrm{dist}}$ [-]")
+    ax.set_xlabel(r"Conditioning Torque Magnitude, $k_\sigma$ [N m]")
+    ax.set_ylabel(
+        r"Change in Minimum Singular Value, "
+        r"$\Delta\sigma_{\min,\mathrm{dist}}$ [-]")
     ax.set_xticks(gains)
     ax.ticklabel_format(axis="y", style="sci", scilimits=(0, 0),
                         useMathText=True)
@@ -299,15 +310,15 @@ def sigma_panel(ax, groups):
         markerfacecolor="white", markeredgecolor=SERIES_RED,
         markeredgewidth=1.1, linewidth=1.25, elinewidth=1.0,
         capthick=1.0, capsize=3,
-        label="Peak Cartesian position error (mean $\pm$ SD)")
+        label=r"Peak Position Error, $\|e_p\|_{\max}$")
     task_ax.plot(gains[screening], task_means[screening], color=SERIES_RED,
                  marker="D", markerfacecolor="white", markeredgewidth=1.1,
                  linestyle="none")
     criterion_handle = task_ax.axhline(
         2.0, color="0.45", linewidth=1.0,
-        label="2 mm peak Cartesian position error limit")
+        label=r"Position-Error Limit, $\|e_p\|_{\max}=2\,\mathrm{mm}$")
     task_ax.set_ylabel(
-        r"Peak Cartesian position error $\|e_p\|_{\max}$ [mm]",
+        r"Peak Cartesian Position Error, $\|e_p\|_{\max}$ [mm]",
         color=SERIES_RED,
     )
     task_ax.tick_params(axis="y", colors=SERIES_RED)
@@ -315,9 +326,9 @@ def sigma_panel(ax, groups):
 
     return (
         [sigma_handle, task_handle, criterion_handle],
-        [r"$\Delta\sigma_{\min,\mathrm{dist}}$ (mean $\pm$ SD)",
-         "Peak Cartesian position error (mean $\pm$ SD)",
-         "2 mm peak Cartesian position error limit"],
+        [r"Singular-Value Change, $\Delta\sigma_{\min,\mathrm{dist}}$",
+         r"Peak Position Error, $\|e_p\|_{\max}$",
+         r"Position-Error Limit, $\|e_p\|_{\max}=2\,\mathrm{mm}$"],
     )
 
 

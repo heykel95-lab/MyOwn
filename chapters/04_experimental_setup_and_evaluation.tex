@@ -14,8 +14,8 @@ The main data set consists of surface-contact measurements in which the
 commanded tool orientation offset, directional Cartesian stiffness, and virtual
 \abbr{CoC} \(p_c\) were varied under otherwise matched conditions.
 The primary controller-response quantity is the signed end-effector rotation
-during set-up. The TCP-height flatness classification, displacement, and
-commanded wrench are retained as supporting quantities. A second, independent
+during set-up. The TCP-height flatness classification is retained as an
+appendix check, while the commanded wrench supports the Case-D mechanism plot. A second, independent
 experiment evaluates the null-space terms under a repeatable internally
 commanded disturbance.
 
@@ -150,6 +150,32 @@ calibrated \(n_{\mathrm{Tool,EE}}\) later differed from nominal
   \label{fig:calibration_flow}
 \end{figure}
 
+\subsection{Surface-Plane Calibration}
+\label{subsec:plane_calibration_protocol}
+
+The complete tool face was seated on the plane and one end-effector pose was
+recorded. Its nominal \mbox{\(+Z_{\mathrm{EE}}\)} direction supplied the
+surface normal \mbox{\(n_s\)}, and the tool-face centre supplied the plane
+point \mbox{\(p_s\)}. Projecting the base-frame \mbox{\(x\)} direction onto
+the plane gave \mbox{\(t_1\)}; \mbox{\(t_2=n_s\times t_1\)} completed
+\mbox{\(R_{\mathrm{surface}}=[t_1\ t_2\ n_s]\)}. The stored surface tilts
+were \mbox{\(-1.585^\circ\)} about base \mbox{\(x\)} and
+\mbox{\(+0.988^\circ\)} about base \mbox{\(y\)}. The calibrated values and
+their construction are collected in \mbox{\Cref{app:controller_parameters}}.
+
+\subsection{Tool Normal Calibration}
+\label{subsec:grinding_face_calibration}
+
+The complete tool face was seated at four yaw orientations. The direction in
+end-effector coordinates that remained most nearly invariant in the base frame
+was fitted from the first three captures; the fourth was retained as a
+consistency capture. The resulting tool normal
+\mbox{\(n_{\mathrm{Tool,EE}}\)} differed from nominal
+\mbox{\(+Z_{\mathrm{EE}}\)} by approximately \mbox{\(1.56^\circ\)}. Its
+value and the minimisation used for the fit are given in
+\mbox{\Cref{app:controller_parameters}}.
+
+\iffalse
 
 \subsection{Surface-Plane Calibration}
 \label{subsec:plane_calibration_protocol}
@@ -446,11 +472,35 @@ with the \(t_2\) line.
   \caption{Calibrated tool face and mounting axes in the surface plane.}
   \label{fig:tool_face_plan_view}
 \end{figure}
+\fi
 
 
 \subsection{Calibrated Experimental Geometry}
 \label{subsec:calibrated_contact_geometry}
 
+The rectangular face geometry used by the controller is listed in
+\mbox{\Cref{tab:calibrated_tool_geometry}}. The leading-point selection and
+the reconstruction of the TCP target are described in
+\mbox{\Cref{sec:tool_contact_geometry}}.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Calibrated tool geometry.}
+\label{tab:calibrated_tool_geometry}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Quantity & Value in end-effector coordinates \\
+\midrule
+Tool-face centre & \([0,0,0.020]^\top\,\mathrm{m}\) \\
+Half-width & \([0.020,0,0]^\top\,\mathrm{m}\) \\
+Half-length & \([0,0.060,0]^\top\,\mathrm{m}\) \\
+Feature-selection tolerance & \(0.1\,\mathrm{mm}\) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\iffalse
 The calibrated tool face is represented in end-effector coordinates by
 its centre offset
 
@@ -495,6 +545,7 @@ described in \Cref{sec:tool_contact_geometry}. Corners whose
 heights differ by no more than that tolerance are treated as one edge or face
 and averaged. The present chapter records the calibrated geometry; the
 selection algorithm that consumes it belongs to \Cref{ch:implementation}.
+\fi
 
 
 % ============================================================================
@@ -633,41 +684,15 @@ the moment-change threshold was reached in none of them. The pre-grind gate
 then held the reached pose. No run entered the configured grinding sweep, so
 the recorded data cover orientation, approach, and set-up only.
 
-The set-up stiffness and commanded press range also define a virtual elastic
-command scale. For a completely blocked \(0.260\,\mathrm{m}\) reference change
-along the calibrated normal,
-
-\begin{equation}
-F_{n,\mathrm{block}}
-=
-0.260\,n_s^\top K_{p,\mathrm{set}}n_s
-=
-91.0\,\mathrm{N}.
-\label{eq:experimental_blocked_normal_force_scale}
-\end{equation}
-
-This value is a command-scale bound for a fully blocked virtual spring and not
-a measured contact load.
-
-
-\subsection{Common Null-Space Configuration}
+\paragraph{Fixed null-space configuration.}
 \label{subsec:nullspace_parameter_rationale}
 
 Projected null-space damping and singular-value conditioning were active
 together throughout the surface-contact measurements. Keeping this secondary
 controller fixed prevents changes in the null-space policy from becoming an
 additional variable across the surface-contact experiments. The gains were
-
-\begin{equation}
-d_{\mathrm{null}}
-=
-2\,\mathrm{N\,m\,s/rad},
-\qquad
-k_\sigma
-=
-1\,\mathrm{N\,m}.
-\label{eq:experimental_contact_nullspace_gains}
-\end{equation}
+\mbox{\(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\)} and
+\mbox{\(k_\sigma=1\,\mathrm{N\,m}\)}.
 
 This is the combined secondary-torque mode of the implementation described in
 \Cref{sec:nullspace_conditioning_implementation}. The contact measurements
@@ -679,17 +704,13 @@ experiment of \Cref{sec:nullspace_hold_study}.
 \subsection{Repetitions and Data Recording}
 \label{subsec:experimental_recorded_quantities}
 
-The real-time logging buffer recorded the measured robot state, Cartesian
-reference and error, selected tool point, active control phase,
-commanded Cartesian wrench, final commanded joint torque, null-space mode, and
-libfranka model-estimated external wrench. The complete signal list and CSV
-structure are given in \Cref{sec:recorded_signals} and
-\Cref{app:recorded_data}.
+The recorded signals and \abbr{CSV} structure are documented in
+\Cref{sec:recorded_signals,app:recorded_data}.
 
-Three repetitions were recorded for each parameter setting. The main
-surface-contact study comprises \(123\) runs across \(41\) settings. A further
-\(42\) runs across \(14\) settings were performed as supporting checks of the
-compliance-centre geometry and are reported in
+Three repetitions were recorded for each parameter setting. Results are
+reported as the arithmetic mean and sample standard deviation. The main
+surface-contact study comprises \(111\) runs across \(37\) settings. A further
+\(54\) runs across \(18\) settings were performed as supporting checks and are reported in
 \Cref{app:supporting_contact_checks}. In total, \(165\) surface-contact runs
 across \(55\) settings were recorded. No run was discarded. Together with the
 \(12\) pose-hold runs of \Cref{sec:nullspace_hold_study}, the complete
@@ -711,12 +732,11 @@ controller parameters. Case~A establishes the TCP-centred reference, where
 independently so that each gain could be evaluated without changing the other
 simultaneously. In Case~D the tangential compliance-centre position was varied
 across both principal surface tangents and both signs of the commanded
-orientation offset. Case~E evaluates the response at two commanded
-orientation-offset magnitudes.
+orientation offset.
 
-Additional experiments concerning the \abbr{CoC} definition frame,
+The orientation-offset-magnitude comparison, the \abbr{CoC} definition frame,
 displacement along the tool axis, and intermediate tangent-plane directions
-are treated as supporting checks of the geometric formulation in
+are treated as supporting checks in
 \Cref{app:supporting_contact_checks}.
 
 Table~\ref{tab:experimental_test_cases} summarises the parameter variations of
@@ -767,12 +787,6 @@ D & Tangential \abbr{CoC} position &
 \(\pm10^\circ\) about \(t_1\) or \(t_2\) & \(-40\), \(-20\), \(-10\),
 \(+10\), \(+20\), \(+40\,\mathrm{mm}\) along the tangent perpendicular to the
 commanded rotation. & 72 & Direction and sign dependence.\\
-\addlinespace
-
-E & Commanded orientation-offset magnitude & \(+5^\circ\) and \(+10^\circ\)
-about \(t_1\) or
-\(t_2\) & \(0\) and \(+40\,\mathrm{mm}\) along the assisting tangent. & 12 &
-Dependence on the commanded orientation-offset magnitude.\\
 
 \end{longtable}
 \endgroup
@@ -793,11 +807,9 @@ Table~\ref{tab:experimental_common_gains}.
 % ============================================================================
 
 The primary response quantity for the surface-contact experiments is the signed
-end-effector rotation during set-up. It directly measures how much the robot
-rotated under contact after the orientation reference was fixed at the
-clearance transition. The TCP-height flatness classification, selected
-tool-point and TCP displacements, and commanded Cartesian wrench provide the
-supporting quantities used in the main comparisons.
+end-effector rotation during set-up. It measures how much the end effector
+rotated after the orientation reference was fixed at the clearance transition.
+The commanded Cartesian wrench is retained for the Case-D mechanism plot.
 
 
 \subsection{Signed End-Effector Set-Up Rotation}
@@ -860,32 +872,7 @@ classification is therefore reported separately from the primary end-effector
 set-up rotation.
 
 
-\subsection{Displacement and Wrench Quantities}
-
-Let \(p_{\mathrm{Tool}}\) denote the tool point selected at the clearance transition. Its displacement and magnitude are
-
-\begin{equation}
-\Delta p_{\mathrm{Tool}}
-=
-p_{\mathrm{Tool,after}}-p_{\mathrm{Tool,before}},
-\qquad
-s_{\mathrm{Tool}}=\lVert\Delta p_{\mathrm{Tool}}\rVert.
-\label{eq:contact_feature_displacement}
-\end{equation}
-
-The TCP displacement is evaluated in the same form:
-
-\begin{equation}
-\Delta p_{\mathrm{TCP}}
-=
-p_{\mathrm{TCP,after}}-p_{\mathrm{TCP,before}},
-\qquad
-s_{\mathrm{TCP}}=\lVert\Delta p_{\mathrm{TCP}}\rVert.
-\label{eq:tcp_displacement_metric}
-\end{equation}
-
-Both displacement vectors were additionally resolved in the surface frame to
-separate tangential and normal motion.
+\subsection{Commanded Wrench Quantities}
 
 The commanded normal force and commanded TCP moment used in the
 controller-response plots are obtained from \(F=[f^\top,m^\top]^\top\):
@@ -901,19 +888,6 @@ M_{t_i}=t_i^\top m.
 surface. Both quantities are controller commands, and the plotted moment is
 therefore the complete TCP moment generated by the point-shifted
 spring--damper law.
-
-
-\subsection{Treatment of Repeated Runs}
-\label{subsec:experimental_repeated_run_treatment}
-\label{sec:evaluation_criteria_contact}
-
-Repeated settings are reported using the arithmetic mean and the sample
-standard deviation over their usable repetitions.
-
-The within-setting standard deviations are reported with the corresponding
-results in \Cref{ch:results_discussion}. Comparisons are restricted to settings
-with the same calibrated geometry, common phase timing, fixed gain entries, and
-null-space configuration.
 
 
 % ============================================================================

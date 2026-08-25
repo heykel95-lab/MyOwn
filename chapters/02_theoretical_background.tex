@@ -112,6 +112,25 @@ The positions and orientations of the frames introduced in
 \mbox{\Cref{sec:reference_frames}} are related through rotation matrices and
 homogeneous transformations.
 
+The pose of frame \mbox{\(\{a\}\)} in frame \mbox{\(\{b\}\)} is represented by
+
+\begin{equation}
+{}^bT_a=
+\begin{bmatrix}
+{}^bR_a & {}^bp_a\\
+0^\top & 1
+\end{bmatrix},
+\qquad
+{}^bv={}^bR_a{}^av.
+\label{eq:homogeneous_transformation}
+\end{equation}
+
+The controller obtains the end-effector pose
+\mbox{\(T_{\mathrm{EE}}=[R_{\mathrm{EE}},p_{\mathrm{EE}}]\)} directly from
+the libfranka robot state. Rotation matrices are used throughout; the pose is
+not converted to Euler angles.
+
+\iffalse
 
 \subsection{Rotation Matrices}
 \label{sec:rotation_matrices}
@@ -243,6 +262,7 @@ R_{\mathrm{EE}} & p_{\mathrm{EE}}\\
 In the implementation, \mbox{\(T_{\mathrm{EE}}\)} is obtained directly from the
 reported robot state, and the orientation is not converted to an Euler-angle
 representation.
+\fi
 
 
 \subsection{Cartesian Pose Error}
@@ -443,6 +463,13 @@ e_R
 Having defined the end-effector pose as the controlled variable, its relation
 to the joint configuration is introduced next.
 
+For the joint configuration \mbox{\(q\in\mathbb{R}^7\)}, forward kinematics
+defines the end-effector pose \mbox{\(T_{\mathrm{EE}}(q)\)}. The
+Denavit--Hartenberg convention fixes the joint and frame indexing
+\mbox{\cite{Denavit1955,Craig2005}}, but the real-time controller obtains the
+pose and geometric Jacobian from the libfranka model interface.
+
+\iffalse
 \subsection{Forward Kinematics}
 \label{subsec:forward_kinematics}
 
@@ -507,10 +534,28 @@ read from the libfranka robot state, while the Jacobian is obtained from the
 libfranka model interface. The Denavit--Hartenberg formulation is therefore
 used here as the theoretical kinematic basis rather than as a second
 real-time kinematic implementation.
+\fi
 
 \ifProfessorStopAfterForwardKinematics
 \else
 
+The geometric Jacobian \mbox{\(J(q)\in\mathbb{R}^{6\times7}\)} maps joint
+velocity to the base-frame end-effector twist,
+
+\begin{equation}
+\begin{bmatrix}
+\dot p_{\mathrm{EE}}\\
+\omega_{\mathrm{EE}}
+\end{bmatrix}
+=J(q)\dot q.
+\label{eq:differential_kinematics}
+\end{equation}
+
+Its transpose maps the commanded Cartesian wrench to joint torque. These two
+mappings are the kinematic relations required by the impedance and null-space
+controllers.
+
+\iffalse
 
 
 
@@ -592,6 +637,7 @@ the corresponding angular velocity
 Because the joint axes and their positions depend on the current configuration,
 the Jacobian also depends on \mbox{\(q\)}. In the implemented controller,
 \mbox{\(J(q)\)} is obtained directly from the libfranka model interface.
+\fi
 
 
 \section{Cartesian Impedance Control}
@@ -1467,6 +1513,170 @@ constraint, friction, the robot configuration, and tool-mount compliance.
 \section{Null-Space Torque}
 \label{sec:nullspace_svd}
 
+The Panda has one redundant joint direction when its
+\mbox{\(6\times7\)} geometric Jacobian \mbox{\(J(q)\)} has full row rank. The
+singular value decomposition (\mbox{\abbr{SVD}}) supplies two different
+quantities: \mbox{\(v_7\)} spans the redundant direction, while
+\mbox{\(\sigma_{\min}=\sigma_6\)} indicates the weakest task-producing
+mapping. A thresholded pseudoinverse gives the velocity and torque projectors.
+The controller then combines projected joint damping with a two-probe
+conditioning torque.
+
+\subsection{SVD and Null-Space Direction}
+\label{subsec:svd_nullspace_characterisation}
+
+The decomposition of the current Jacobian is
+
+\begin{equation}
+J(q)=U_J\Sigma_JV_J^\top,
+\label{eq:jacobian_svd}
+\end{equation}
+
+where the six task-producing singular values satisfy
+\mbox{\(\sigma_1\geq\cdots\geq\sigma_6\geq0\)}. At full row rank, the
+seventh right-singular vector satisfies
+
+\begin{equation}
+Jv_7=0,
+\label{eq:nullspace_search_direction}
+\end{equation}
+
+and spans the one-dimensional kinematic null space. The conditioning indicator
+is
+
+\begin{equation}
+\sigma_{\min}=\sigma_6.
+\label{eq:min_singular_value}
+\end{equation}
+
+The vector \mbox{\(v_7\)} and scalar \mbox{\(\sigma_6\)} therefore have
+different roles. The first defines redundant motion; the second describes the
+weakest of the six task mappings. Because the geometric Jacobian mixes linear
+and angular rows, \mbox{\(\sigma_{\min}\)} is used only as a relative indicator
+under one fixed Jacobian convention.
+
+\subsection{Pseudoinverse and Projectors}
+\label{subsec:svd_pseudoinverse}
+\label{subsec:nullspace_projectors}
+
+A relative tolerance \mbox{\(\rho\)} defines the retained singular values by
+\mbox{\(\sigma_i>\rho\sigma_1\)}. The corresponding Moore--Penrose
+pseudoinverse is
+
+\begin{equation}
+J^+=
+\sum_{\sigma_i>\rho\sigma_1}^{6}
+\frac{1}{\sigma_i}v_i u_i^\top.
+\label{eq:svd_pseudoinverse}
+\end{equation}
+
+The joint-velocity projector extracts redundant motion,
+
+\begin{equation}
+N_q=I_7-J^+J,
+\qquad
+\dot q_{\mathrm{null}}=N_q\dot q,
+\label{eq:nullspace_velocity_projector}
+\end{equation}
+
+while the transpose projector applies a secondary joint torque without a
+first-order task component,
+
+\begin{equation}
+N_\tau=N_q^\top=I_7-J^\top J^{+\top}.
+\label{eq:nullspace_torque_projector}
+\end{equation}
+
+With the thresholded \mbox{\abbr{SVD}} construction, the projector is
+orthogonal and symmetric. At full row rank it reduces to
+\mbox{\(N_q=N_\tau=v_7v_7^\top\)}. The implemented separation is kinematic
+rather than inertia weighted; Cartesian task retention is therefore checked in
+the pose-hold experiment.
+
+\subsection{Projected Damping and Conditioning}
+\label{subsec:nullspace_damping_torque}
+\label{subsec:singular_value_conditioning_torque}
+
+Projected null-space damping opposes the redundant joint velocity,
+
+\begin{equation}
+\tau_d=-d_{\mathrm{null}}N_\tau\dot q.
+\label{eq:nullspace_damping_torque}
+\end{equation}
+
+The conditioning term samples two configurations along the current redundant
+direction. For the probe angle \mbox{\(\alpha_{\mathrm{probe}}\)}, these are
+
+\begin{equation}
+q_+=q+\alpha_{\mathrm{probe}}v_7,
+\qquad
+q_-=q-\alpha_{\mathrm{probe}}v_7.
+\label{eq:nullspace_candidates}
+\end{equation}
+
+Their minimum singular values are
+
+\begin{equation}
+\sigma_+=\sigma_{\min}(J(q_+)),
+\qquad
+\sigma_-=\sigma_{\min}(J(q_-)),
+\label{eq:nullspace_sampled_singular_values}
+\end{equation}
+
+with the sampled difference
+
+\begin{equation}
+\Delta_\sigma=\sigma_+-\sigma_-.
+\label{eq:nullspace_singular_value_difference}
+\end{equation}
+
+The direction selector applies a deadband \mbox{\(\delta_\sigma\)},
+
+\begin{equation}
+s_\sigma=
+\begin{cases}
++1,&\Delta_\sigma>\delta_\sigma,\\
+-1,&\Delta_\sigma<-\delta_\sigma,\\
+0,&|\Delta_\sigma|\leq\delta_\sigma,
+\end{cases}
+\label{eq:nullspace_direction_selection}
+\end{equation}
+
+and the conditioning torque is
+
+\begin{equation}
+\tau_\sigma=k_\sigma N_\tau(s_\sigma v_7).
+\label{eq:nullspace_sigma_torque}
+\end{equation}
+
+Sampling \mbox{\(q_+\)} and \mbox{\(q_-\)} selects the neighbouring
+configuration with the larger \mbox{\(\sigma_{\min}\)}. The finite probes are
+local tangent approximations to the nonlinear self-motion. The commanded
+magnitude \mbox{\(k_\sigma\)} is independent of the probe angle.
+
+\subsection{Complete Null-Space Torque}
+\label{subsec:complete_nullspace_torque}
+
+The complete secondary torque is
+
+\begin{equation}
+\tau_{\mathrm{null}}
+=\tau_d+\tau_\sigma
+=-d_{\mathrm{null}}N_\tau\dot q
++k_\sigma N_\tau(s_\sigma v_7).
+\label{eq:nullspace_torque}
+\end{equation}
+
+The damping term acts only while redundant motion is present. The conditioning
+term is an active configuration objective and can act at zero joint velocity.
+Its direction is invariant to the arbitrary sign returned for \mbox{\(v_7\)},
+because reversing \mbox{\(v_7\)} also exchanges the two probes and reverses
+\mbox{\(s_\sigma\)}.
+
+\iffalse
+\section{Null-Space Torque}
+\label{sec:nullspace_svd}
+
 The Franka Emika Panda has seven joints, while the controlled end-effector task
 contains six components: three translational and three rotational. The robot is
 therefore kinematically redundant. The Cartesian impedance behaviour at the
@@ -2055,6 +2265,7 @@ The activation of the damping and conditioning contributions is a controller
 configuration choice. The available combinations and the configuration used
 in the reported experiments are described in
 \mbox{\Cref{sec:nullspace_conditioning_implementation}}.
+\fi
 
 \section{Complete Joint-Torque Command}
 \label{sec:complete_joint_torque_command}
