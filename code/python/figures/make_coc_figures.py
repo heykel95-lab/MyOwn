@@ -184,16 +184,16 @@ def main():
     width = 0.34
     fig, ax = plt.subplots(figsize=(5.8, 3.3))
     ax.bar(x - width / 2, selected, width, color=SERIES_COLOURS[0],
-           edgecolor="#1a1a1a", linewidth=0.8, label="Selected Displacement")
+           edgecolor="#1a1a1a", linewidth=0.8, label=r"Selected Displacement, $r_{c,t}$")
     # Bar charts skip the red the line plots take second: a filled red bar
     # carries far more ink than a red curve and reads as a warning against
     # the black beside it.
     ax.bar(x + width / 2, fixed, width, color=BAR_FILL_BLUE,
-           edgecolor="#1a1a1a", linewidth=0.8, label=r"Fixed $t_1$ Displacement")
+           edgecolor="#1a1a1a", linewidth=0.8, label=r"Fixed $t_1$-Selected Displacement, $r_{c,t}$")
     reference_line(ax)
     ax.set_xticks(x)
     ax.set_xticklabels(directions)
-    ax.set_xlabel(r"Commanded Rotation Direction [$^\circ$]")
+    ax.set_xlabel(r"Commanded Rotation Direction, $\theta_{\mathrm{tilt}}$ [$^\circ$]")
     ax.set_ylabel(ROTATION_LABEL)
     ax.legend(loc="upper right")
     fig.tight_layout()
@@ -275,10 +275,10 @@ def main():
     fig, ax = plt.subplots(figsize=(5.6, 3.2))
     ax.bar(x - width / 2, tool, width, yerr=tool_sd, capsize=3,
            color=SERIES_COLOURS[0], edgecolor="#1a1a1a", linewidth=0.8,
-           label="tool frame")
+           label=r"Tool-Fixed CoC, $r_c$")
     ax.bar(x + width / 2, surface, width, yerr=surface_sd, capsize=3,
            color=BAR_FILL_BLUE, edgecolor="#1a1a1a", linewidth=0.8,
-           label="surface frame")
+           label=r"Surface-Fixed CoC, $r_c$")
     reference_line(ax)
     ax.set_xticks(x)
     ax.set_xticklabels(commands)

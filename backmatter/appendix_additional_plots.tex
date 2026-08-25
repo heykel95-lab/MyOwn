@@ -21,17 +21,21 @@ sample standard deviation over the three repetitions.
 \begin{table}[H]
 \centering
 \small
-\caption{Set-up rotation with the CoC at the TCP.}
+\caption[Case-A baseline response]{Baseline contact response with the
+compliance centre at the TCP. Nothing is varied: every setting holds
+\(r_c=0\) and the common Cartesian gains, so the measured rotation is the
+natural contact response against which Cases B to D are read.}
 \label{tab:results_case_a}
-\begin{tabular}{@{}lr@{}}
+\begin{tabular}{@{}llr@{}}
 \toprule
-Initial commanded orientation & \(\Delta\theta_i\) \([{}^\circ]\) \\
+Commanded Initial Orientation & CoC Position &
+\shortstack[r]{Measured Set-Up\\Rotation \(\Delta\theta_i\) \([{}^\circ]\)} \\
 \midrule
-No orientation offset & \(-0.97\) \\
-\(+10^\circ\) about \(t_1\) & \(+7.57\) \\
-\(-10^\circ\) about \(t_1\) & \(-10.83\) \\
-\(+10^\circ\) about \(t_2\) & \(-1.63\) \\
-\(-10^\circ\) about \(t_2\) & \(-1.25\) \\
+No orientation offset & TCP & \(-0.97\) \\
+\(+10^\circ\) about \(t_1\) & TCP & \(+7.57\) \\
+\(-10^\circ\) about \(t_1\) & TCP & \(-10.83\) \\
+\(+10^\circ\) about \(t_2\) & TCP & \(-1.63\) \\
+\(-10^\circ\) about \(t_2\) & TCP & \(-1.25\) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -39,20 +43,26 @@ No orientation offset & \(-0.97\) \\
 \begin{table}[H]
 \centering
 \small
-\caption{Set-up rotation by rotational stiffness.}
+\caption[Case-B rotational-stiffness response]{Effect of rotational stiffness
+on the set-up rotation. Varied: \(K_{R,t_i}\) about the commanded tangent.
+Held fixed: the compliance centre at the TCP, the commanded offset, and all
+other Cartesian gains. The \(5\,\mathrm{N\,m/rad}\) row is the Case-A
+reference.}
 \label{tab:results_case_b}
-\begin{tabular}{@{}lrr@{}}
+\begin{tabular}{@{}llrlr@{}}
 \toprule
-Initial commanded orientation & \(K_{R,t_i}\) \([\mathrm{N\,m/rad}]\) &
-\(\Delta\theta_i\) \([{}^\circ]\) \\
+\shortstack[l]{Commanded Initial\\Orientation} & \shortstack[l]{CoC\\Position} &
+\shortstack[r]{Varied Rotational\\Stiffness \(K_{R,t_i}\)\\\([\mathrm{N\,m/rad}]\)} &
+Reference &
+\shortstack[r]{Measured Set-Up\\Rotation \(\Delta\theta_i\)\\\([{}^\circ]\)} \\
 \midrule
-\(+10^\circ\) about \(t_1\) & 5 & \(+7.57\) \\
- & 15 & \(+7.29\) \\
- & 50 & \(+2.73\) \\
+\(+10^\circ\) about \(t_1\) & TCP & 5 & Case-A reference & \(+7.57\) \\
+ & & 15 & --- & \(+7.29\) \\
+ & & 50 & --- & \(+2.73\) \\
 \addlinespace
-\(+10^\circ\) about \(t_2\) & 5 & \(-1.63\) \\
- & 15 & \(-1.52\) \\
- & 50 & \(-0.48\) \\
+\(+10^\circ\) about \(t_2\) & TCP & 5 & Case-A reference & \(-1.63\) \\
+ & & 15 & --- & \(-1.52\) \\
+ & & 50 & --- & \(-0.48\) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -60,20 +70,26 @@ Initial commanded orientation & \(K_{R,t_i}\) \([\mathrm{N\,m/rad}]\) &
 \begin{table}[H]
 \centering
 \small
-\caption{Set-up rotation by cross-axis translational stiffness.}
+\caption[Case-C translational-stiffness response]{Effect of cross-axis
+translational stiffness on the set-up rotation. Varied: the translational
+entry perpendicular to the commanded rotation axis. Held fixed: the compliance
+centre at the TCP, \(K_{R,t_i}=5\,\mathrm{N\,m/rad}\), and the commanded
+offset. The \(2000\,\mathrm{N/m}\) row is the Case-A reference.}
 \label{tab:results_case_c}
-\begin{tabular}{@{}lrr@{}}
+\begin{tabular}{@{}lllrlr@{}}
 \toprule
-Initial commanded orientation & Perpendicular \(K_p\) \([\mathrm{N/m}]\) &
-\(\Delta\theta_i\) \([{}^\circ]\) \\
+\shortstack[l]{Commanded Initial\\Orientation} & \shortstack[l]{CoC\\Position} &
+\shortstack[l]{Varied\\Entry} &
+\shortstack[r]{\(K_p\)\\\([\mathrm{N/m}]\)} & Reference &
+\shortstack[r]{Measured Set-Up\\Rotation \(\Delta\theta_i\)\\\([{}^\circ]\)} \\
 \midrule
-\(+10^\circ\) about \(t_1\) & 300 & \(+7.59\) \\
- & 800 & \(+7.56\) \\
- & 2000 & \(+7.57\) \\
+\(+10^\circ\) about \(t_1\) & TCP & \(K_{p,t_2}\) & 300 & --- & \(+7.59\) \\
+ & & \(K_{p,t_2}\) & 800 & --- & \(+7.56\) \\
+ & & \(K_{p,t_2}\) & 2000 & Case-A reference & \(+7.57\) \\
 \addlinespace
-\(+10^\circ\) about \(t_2\) & 300 & \(-2.24\) \\
- & 800 & \(-1.78\) \\
- & 2000 & \(-1.63\) \\
+\(+10^\circ\) about \(t_2\) & TCP & \(K_{p,t_1}\) & 300 & --- & \(-2.24\) \\
+ & & \(K_{p,t_1}\) & 800 & --- & \(-1.78\) \\
+ & & \(K_{p,t_1}\) & 2000 & Case-A reference & \(-1.63\) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -82,12 +98,18 @@ Initial commanded orientation & Perpendicular \(K_p\) \([\mathrm{N/m}]\) &
 \centering
 \scriptsize
 \setlength{\tabcolsep}{2.4pt}
-\caption{Case-D set-up rotation by tangential CoC position (mean \(\pm\) SD).}
+\caption[Case-D tangential-position response]{Effect of tangential
+compliance-centre position on the set-up rotation, mean \(\pm\) SD over three
+repetitions. Varied: the tangential CoC position. Held fixed: the Cartesian
+gains and the \(10^\circ\) commanded offset magnitude. The TCP column is the
+zero-position reference. The reported coordinate is \(r_{c,t_2}\) for
+commands about \(t_1\) and \(-r_{c,t_1}\) for commands about \(t_2\), so
+positive values denote the direction selected for a positive offset.}
 \label{tab:results_case_d}
 \begin{tabular}{@{}lrrrrrrr@{}}
 \toprule
-\multicolumn{8}{c}{Commanded rotation about \(t_1\)}\\
-Command & \(-40\) & \(-20\) & \(-10\) & TCP & \(+10\) & \(+20\) & \(+40\,\mathrm{mm}\) \\
+\multicolumn{8}{c}{Commanded rotation about \(t_1\); coordinate \(r_{c,t_2}\)}\\
+Offset & \(-40\) & \(-20\) & \(-10\) & \textbf{TCP} & \(+10\) & \(+20\) & \(+40\,\mathrm{mm}\) \\
 \midrule
 \(+10^\circ\) & \(0.18\pm0.07\) & \(0.99\pm0.44\) & \(7.45\pm0.02\)
 & \(7.57\pm0.01\) & \(7.67\pm0.01\) & \(7.73\pm0.01\) & \(7.87\pm0.01\) \\
@@ -100,8 +122,8 @@ Command & \(-40\) & \(-20\) & \(-10\) & TCP & \(+10\) & \(+20\) & \(+40\,\mathrm
 
 \begin{tabular}{@{}lrrrrrrr@{}}
 \toprule
-\multicolumn{8}{c}{Commanded rotation about \(t_2\)}\\
-Command & \(-40\) & \(-20\) & \(-10\) & TCP & \(+10\) & \(+20\) & \(+40\,\mathrm{mm}\) \\
+\multicolumn{8}{c}{Commanded rotation about \(t_2\); coordinate \(-r_{c,t_1}\)}\\
+Offset & \(-40\) & \(-20\) & \(-10\) & \textbf{TCP} & \(+10\) & \(+20\) & \(+40\,\mathrm{mm}\) \\
 \midrule
 \(+10^\circ\) & \(-4.51\pm2.36\) & \(-1.95\pm0.47\) & \(-1.85\pm0.36\)
 & \(-1.63\pm0.17\) & \(-1.31\pm0.13\) & \(-1.12\pm0.09\) & \(4.43\pm0.07\) \\
@@ -111,7 +133,7 @@ Command & \(-40\) & \(-20\) & \(-10\) & TCP & \(+10\) & \(+20\) & \(+40\,\mathrm
 \end{tabular}
 \end{table}
 
-\section{Supporting Check: Offset Magnitude}
+\section{Orientation-Offset Magnitude}
 \label{sec:results_case_e}
 
 The \mbox{\(5^\circ\)} and \mbox{\(10^\circ\)} commanded offsets were
@@ -122,18 +144,23 @@ counted settings gave \mbox{\(12\)} runs.
 \begin{table}[H]
 \centering
 \small
-\caption{Set-up rotation by commanded orientation-offset magnitude.}
+\caption[Offset-magnitude response]{Effect of the commanded
+orientation-offset magnitude. Varied: the offset magnitude. Held fixed: the
+Cartesian gains. Reference: the TCP-centred condition of each pair. The last
+column gives the change the selected displacement produced.}
 \label{tab:results_case_e}
-\begin{tabular}{@{}lrrrr@{}}
+\begin{tabular}{@{}llrrr@{}}
 \toprule
-Commanded offset magnitude &
-\shortstack{\(t_1\), CoC\\at TCP} &
-\shortstack{\(t_1\), selected\\\(40\,\mathrm{mm}\) CoC} &
-\shortstack{\(t_2\), CoC\\at TCP} &
-\shortstack{\(t_2\), selected\\\(40\,\mathrm{mm}\) CoC} \\
+\shortstack[l]{Rotation\\Direction} & \shortstack[l]{Varied Commanded\\Offset} &
+\shortstack{TCP-Centred\\\(\Delta\theta_i\) \([{}^\circ]\)} &
+\shortstack{Selected \(40\,\mathrm{mm}\) CoC\\\(\Delta\theta_i\) \([{}^\circ]\)} &
+\shortstack{Effect of\\the CoC \([{}^\circ]\)} \\
 \midrule
-\(5^\circ\)  & \(+2.55\) & \(+2.70\) & \(-1.40\) & \(+5.91\) \\
-\(10^\circ\) & \(+7.57\) & \(+7.87\) & \(-1.63\) & \(+4.43\) \\
+About \(t_1\) & \(5^\circ\)  & \(+2.55\) & \(+2.70\) & \(+0.15\) \\
+About \(t_1\) & \(10^\circ\) & \(+7.57\) & \(+7.87\) & \(+0.30\) \\
+\addlinespace
+About \(t_2\) & \(5^\circ\)  & \(-1.40\) & \(+5.91\) & \(+7.31\) \\
+About \(t_2\) & \(10^\circ\) & \(-1.63\) & \(+4.43\) & \(+6.06\) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -151,7 +178,7 @@ The response did not scale proportionally with the commanded offset. About
 shown in \mbox{\Cref{fig:results_case_e}}. The response therefore depends on
 the complete contact condition rather than on the offset magnitude alone.
 
-\section{Check 1: Compliance-Centre Definition Frame}
+\section{Compliance-Centre Definition Frame}
 \label{sec:supporting_definition_frame}
 
 This check compared tool-fixed and surface-fixed definitions of the same
@@ -170,14 +197,18 @@ counted with the \mbox{\(+40\,\mathrm{mm}\)} reference of Case~D.
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Response by compliance-centre definition frame.}
+\caption[Definition-frame response]{Effect of the frame in which the
+displacement is held constant. Varied: the definition frame, at the same
+nominal \(40\,\mathrm{mm}\) tangential magnitude. Held fixed: the Cartesian
+gains and the commanded offset. Reference: the tool-fixed column, which is the
+Case-D \(+40\,\mathrm{mm}\) condition.}
 \label{tab:supporting_definition_frame}
 \setlength{\tabcolsep}{5pt}
 \begin{tabular}{@{}lcc@{}}
 \toprule
-Commanded offset \([{}^\circ]\) &
-\(\Delta\theta_1\), tool-fixed \([{}^\circ]\) &
-\(\Delta\theta_1\), surface-fixed \([{}^\circ]\) \\
+Commanded Initial Orientation &
+\shortstack{Tool-Fixed Definition\\\(\Delta\theta_1\) \([{}^\circ]\)} &
+\shortstack{Surface-Fixed Definition\\\(\Delta\theta_1\) \([{}^\circ]\)} \\
 \midrule
 None & \(-0.06\pm0.01\) & \(-1.05\pm0.02\) \\
 \(+10^\circ\) about \(t_1\) & \(+7.87\pm0.01\)
@@ -208,7 +239,7 @@ how the vector moves relative to the contact geometry. Returning the centre to
 the TCP removes that direction and definition-frame dependence together with
 the point-shift coupling.
 
-\section{Check 2: Tool-Axis Displacement}
+\section{Tool-Axis Displacement}
 \label{sec:supporting_tool_axis}
 
 This check separated the distance between the \abbr{CoC} and TCP from the
@@ -222,11 +253,14 @@ the Case-A reference.
 \begin{table}[H]
 \centering
 \small
-\caption{Response by tool-axis compliance-centre position.}
+\caption[Tool-axis displacement response]{Effect of displacing the
+compliance centre along the tool axis. Varied: the tool-axis position. Held
+fixed: the Cartesian gains and the \(+10^\circ\) command about \(t_1\).
+The \(0\,\mathrm{mm}\) column is the Case-A reference.}
 \label{tab:supporting_tool_axis}
 \begin{tabular}{@{}lrrrrrrr@{}}
 \toprule
-Position & \(-40\) & \(-20\) & \(-10\) & \(0\) & \(+10\) & \(+20\)
+Measured Response & \(-40\) & \(-20\) & \(-10\) & \textbf{0} & \(+10\) & \(+20\)
 & \(+40\,\mathrm{mm}\) \\
 \midrule
 \(\Delta\theta_1\) & \(+7.26\) & \(+7.49\) & \(+7.58\)
@@ -291,7 +325,7 @@ variation in \mbox{\Cref{fig:supporting_tool_axis}}. Tangential force
 components, finite rotation, changing contact geometry, and tool-mount
 compliance were not isolated by this check.
 
-\section{Check 3: Intermediate Tangent Directions}
+\section{Intermediate Tangent-Plane Directions}
 \label{sec:supporting_intermediate_directions}
 
 This check examined whether the direction rule of Case~D also held between the
@@ -315,12 +349,15 @@ comparison retained the vector selected for the \mbox{\(t_1\)} command.
 \begin{table}[H]
 \centering
 \small
-\caption{Orientation commands and tangential compliance-centre vectors.}
+\caption[Direction-check settings]{Commanded directions and the tangential
+compliance-centre vectors tested against them. Every setting was configured
+tool-fixed in end-effector coordinates; the vectors given are the surface-frame
+components they realise in the flat target orientation.}
 \label{tab:supporting_direction_vectors}
 \begin{tabular}{@{}llrr@{}}
 \toprule
-Commanded direction & Displacement setting &
-\([\theta_{t_1},\theta_{t_2}]\) (deg) &
+\shortstack[l]{Commanded Rotation\\Direction} & \shortstack[l]{Displacement\\Setting} &
+\shortstack[r]{\([\theta_{t_1},\theta_{t_2}]\)\\(deg)} &
 \([r_{c,t_1},r_{c,t_2},r_{c,n}]\) (mm)\\
 \midrule
 About \(t_1\) & selected & \([+10.0,0.0]\) & \([0,+40.0,0]\)\\
@@ -353,14 +390,18 @@ settings were held tool-fixed in end-effector coordinates.
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Direction-rule comparison at the common \(40\,\mathrm{mm}\) displacement magnitude.}
+\caption[Direction-rule comparison]{Direction-rule comparison at the common
+magnitude \(\lVert r_{c,t}\rVert=40\,\mathrm{mm}\). Varied: the commanded
+rotation direction. Held fixed: the Cartesian gains and the displacement
+magnitude. Reference: the fixed \(t_1\) selection, retained across all four
+directions.}
 \label{tab:supporting_direction_results}
 \begin{tabular}{@{}p{0.23\textwidth}p{0.22\textwidth}p{0.19\textwidth}p{0.20\textwidth}@{}}
 \toprule
-Commanded rotation direction \([{}^\circ]\) &
-Selected \([r_{c,t_1},r_{c,t_2}]\) \([\mathrm{mm}]\) &
-Set-up rotation, selected \([{}^\circ]\) &
-Set-up rotation, fixed at \(t_1\) \([{}^\circ]\) \\
+\shortstack[l]{Commanded Rotation\\Direction \([{}^\circ]\)} &
+\shortstack{Selected Displacement\\\([r_{c,t_1},r_{c,t_2}]\)\\\([\mathrm{mm}]\)} &
+\shortstack{Selected\\\(\Delta\theta_i\) \([{}^\circ]\)} &
+\shortstack{Fixed at \(t_1\)\\\(\Delta\theta_i\) \([{}^\circ]\)} \\
 \midrule
 About \(t_1\) & \([0,+40.0]\) & \(+7.87\) & \(+7.87\) \\
 \(-45^\circ\) from \(t_1\) & \([+28.3,+28.3]\) & \(+4.46\) & \(+4.39\) \\
@@ -400,7 +441,7 @@ them, and compare the primary response metric with the supporting one.
 \label{app:not_flat}
 
 The TCP-height criterion is retained here as a supporting geometric check and
-does not enter the primary response tables of Chapter~5. All five Case-A
+does not enter the primary response comparisons of Chapter~5. All five Case-A
 settings, including the zero-orientation-offset condition, satisfied this
 criterion. This classification is not a direct measurement of the physical
 tool-face orientation. The mounting play was characterised in the unloaded
@@ -425,7 +466,7 @@ Case~D, \(-20\,\mathrm{mm}\) at \(+10^\circ\) about \(t_1\) & \(5.3\) & \(+0.99\
 Case~D, \(-40\,\mathrm{mm}\) at \(+10^\circ\) about \(t_1\) & \(6.1\) & \(+0.18\) \\
 Case~D, \(+20\,\mathrm{mm}\) at \(-10^\circ\) about \(t_1\) & \(5.2\) & \(-5.01\) \\
 Case~D, \(+40\,\mathrm{mm}\) at \(-10^\circ\) about \(t_1\) & \(9.3\) & \(-0.09\) \\
-Check 1, surface-fixed at \(+10^\circ\) about \(t_1\) & \(5.9\) & \(+0.13\) \\
+Definition-frame check, surface-fixed at \(+10^\circ\) about \(t_1\) & \(5.9\) & \(+0.13\) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -460,9 +501,18 @@ n_{\mathrm{Tool},0}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}.
 \end{equation}
 
 It is unsigned and depends on the assumed fixed relation between the tool and
-end effector. Its reduction over set-up is the value before set-up minus the
-value afterwards. This change and \(\Delta\theta_i\) are defined differently
-and are not interchangeable.
+end effector. Its reduction over set-up is written
+
+\begin{equation}
+\Delta\theta_{\mathrm{align}}
+=
+\theta_{\mathrm{align,before}}-\theta_{\mathrm{align,after}},
+\label{eq:appendix_alignment_reduction}
+\end{equation}
+
+which is used in this appendix only and does not enter the notation of the
+main chapters. It and \(\Delta\theta_i\) are defined differently and are not
+interchangeable.
 
 Panel~(a) plots the pose-based error for one representative trial and the value
 reconstructed from the measured rotation since the start of set-up. Panel~(b)

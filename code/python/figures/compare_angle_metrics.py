@@ -123,15 +123,16 @@ def main():
     # Left: both descriptions of the same trial, on one absolute scale.
     t, alignment, deviation = thin(t, alignment, deviation)
     axes[0].plot(t, alignment, color=SERIES_BLACK,
-                 label="Pose-based alignment error")
+                 label=r"Pose-Based Alignment Error, $\theta_{\mathrm{align}}$")
     axes[0].plot(t, alignment[0] - deviation, color=SERIES_RED,
-                 label=(r"initial pose-based error $-$ "
-                        r"measured set-up rotation"))
+                 label=(r"Reconstructed From Set-Up Rotation, "
+                        r"$\theta_{\mathrm{align},0}-\Delta\theta_i$"))
     reference_line(axes[0])
-    axes[0].set_xlabel("Set-up time [s]")
+    axes[0].set_xlabel(r"Set-Up Time, $t$ [s]")
     # Both curves are the alignment angle, obtained two ways; a bare "Angle"
     # leaves the reader to guess which angle is plotted.
-    axes[0].set_ylabel(r"Pose-based alignment error [$^\circ$]")
+    axes[0].set_ylabel(
+        r"Pose-Based Alignment Error, $\theta_{\mathrm{align}}$ [$^\circ$]")
     axes[0].set_title("(a)")
 
     # Right: the same comparison reduced to one point per archived trial. The
@@ -143,13 +144,16 @@ def main():
     improved = gain >= 0.0
     axes[1].plot(deviation_final[improved], gain[improved], linestyle="none",
                  marker="o", color=SERIES_BLUE, markerfacecolor="white",
-                 markeredgewidth=1.0, label="pose-based error reduced")
+                 markeredgewidth=1.0,
+                 label=r"Error Reduced, $\Delta\theta_{\mathrm{align}}\geq0$")
     axes[1].plot(deviation_final[~improved], gain[~improved], linestyle="none",
                  marker="s", color=SERIES_RED, markerfacecolor="white",
-                 markeredgewidth=1.0, label="pose-based error increased")
-    axes[1].set_xlabel(r"Measured set-up rotation magnitude [$^\circ$]")
-    axes[1].set_ylabel("Reduction of pose-based\n"
-                       r"alignment error [$^\circ$]")
+                 markeredgewidth=1.0,
+                 label=r"Error Increased, $\Delta\theta_{\mathrm{align}}<0$")
+    axes[1].set_xlabel(
+        r"Measured Set-Up Rotation Magnitude, $|\Delta\theta_i|$ [$^\circ$]")
+    axes[1].set_ylabel("Reduction in Pose-Based Alignment Error,\n"
+                       r"$\Delta\theta_{\mathrm{align}}$ [$^\circ$]")
     axes[1].set_title("(b)")
 
 
