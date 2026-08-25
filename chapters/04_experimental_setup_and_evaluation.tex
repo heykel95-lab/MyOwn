@@ -818,8 +818,11 @@ The commanded Cartesian wrench is retained for the Case-D mechanism plot.
 Set-up holds the orientation captured at the clearance transition as its
 rotational reference, so the logged base-frame orientation error \(e_R\) is
 the rotation from the current end-effector orientation back to that reference.
-Its value at the end of set-up therefore measures how far the end effector has
-rotated away from the held reference, and the reported rotation vector is
+Since that reference is captured at the beginning of set-up,
+\(e_R=\mathbf{0}\) at set-up entry. Its magnitude at the end of set-up
+therefore gives the angular change relative to the held reference, while its
+sign follows the current-to-reference orientation-error convention. The
+reported rotation vector is
 
 \begin{equation}
 \Delta\theta
@@ -828,11 +831,11 @@ e_R\big|_{\mathrm{end\ of\ set\text{-}up}} .
 \label{eq:contact_induced_rotation}
 \end{equation}
 
-This quantity comes from the joint angles alone. Neither the calibrated tool
-axis nor the plane zero enters it, which matters because the tool axis is known
-only to within a degree or two and shifts as the tool settles in the gripper.
-The surface frame enters solely as the directions the rotation is resolved
-along:
+This quantity is obtained from the measured end-effector orientation alone.
+Neither the calibrated tool axis nor the plane-zero alignment enters its
+calculation, which matters because the tool axis is known only to within a
+degree or two and shifts as the tool settles in the gripper. The surface frame
+enters solely as the directions the rotation is resolved along:
 
 \begin{equation}
 \Delta\theta^{S}
@@ -847,20 +850,19 @@ t_i^\top\Delta\theta,
 \end{equation}
 
 The reported quantity \(\Delta\theta_i\) is the signed end-effector set-up
-rotation about surface tangent \(t_i\). Because \(e_R\) points from the
-current orientation back to the held reference, it carries the opposite sign to
-the motion the end effector made, and a positive commanded offset therefore
-makes a positive \(\Delta\theta_i\) denote rotation in the intended alignment
-direction. A negative value denotes rotation in the opposite direction, and
-reversing the command reverses the sign of the intended direction. The
+rotation about surface tangent \(t_i\). At the end of set-up \(e_R\)
+represents the accumulated orientation change, with the sign convention chosen
+such that a positive \(\Delta\theta_i\) denotes alignment-directed rotation
+for a positive commanded offset. A negative value denotes rotation in the
+opposite direction, and reversing the command reverses the sign of the intended
+direction. The
 measurements confirm the correspondence: for the \(+10^\circ\) command about
 \(t_1\) at the TCP, \(\Delta\theta_1=+7.57^\circ\) accompanies a fall in
 the pose-based alignment angle from \(9.32^\circ\) to \(3.38^\circ\),
 whereas the \(+10^\circ\) command about \(t_2\) gives
 \(\Delta\theta_2=-1.63^\circ\) with that angle rising from
 \(10.07^\circ\) to \(11.81^\circ\). This quantity is used for all main
-comparisons in \Cref{ch:results_discussion} because it is signed and is
-calculated from the measured end-effector orientation alone.
+comparisons in \Cref{ch:results_discussion}.
 
 
 \subsection{Supporting Geometric Checks}
