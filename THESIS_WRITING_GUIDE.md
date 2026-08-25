@@ -1557,17 +1557,30 @@ instantaneous opposing torque at identical joint configurations.
   constant in end-effector coordinates and its base-frame vector rotates with
   the end effector. Supporting check 1 examines exactly this property, so it
   has to exist in the theory before the check appears.
-- **The Case-D horizontal coordinate is a selected-direction coordinate, and
-  the caption says so.** It is \(r_{c,t_2}\) for commands about \(t_1\) and
-  \(-r_{c,t_1}\) for commands about \(t_2\), so that positive values denote
-  the direction selected for a positive orientation offset. **Labelling the
-  second panel \(r_{c,t_1}\) is wrong** and contradicts the supporting
-  intermediate-direction table,
-  which gives \([-40,0,0]\,\mathrm{mm}\) for the selected \(t_2\)
-  condition that Case D reports at \(+40\,\mathrm{mm}\). The run
-  configuration settles it: `P2_t2_pos_p040` sets
-  `compliance_center_offset_ee_x = -0.040`, which is \(r_{c,t_1}=-40\,
-  \mathrm{mm}\). Do not "fix" this by changing the reported values.
+- **Plots and tables carry the actual surface-frame components
+  \(r_{c,t_1}\) and \(r_{c,t_2}\), never a sign-flipped stand-in.**
+  Case D reports \(r_{c,t_2}\) for commands about \(t_1\) and
+  \(r_{c,t_1}\) for commands about \(t_2\), so the selected displacement
+  appears at \(+40\,\mathrm{mm}\) in the first comparison and at
+  \(-40\,\mathrm{mm}\) in the second.
+
+  **`-r_{c,t_1}` is withdrawn**, written here as a literal string so a rename
+  cannot revive it. It was introduced so that the selected side would read
+  positive in both panels, which made the reader learn an artificial
+  convention and hid the result it was meant to present. The sign difference
+  between \(+\theta_{t_1}\Rightarrow r_{c,t_2}>0\) and
+  \(+\theta_{t_2}\Rightarrow r_{c,t_1}<0\) is exactly what the
+  lever-selection rule predicts, so the figures show it rather than conceal
+  it.
+
+  **Changing that axis means mirroring the series, not relabelling it.** The
+  \(t_2\) data were plotted against the negated coordinate, so moving to
+  \(r_{c,t_1}\) negates every \(x\) value while the measured responses stay
+  where they are. Done on 2026-08-25 for Figure 5.4(b), the Case-D table and
+  the offset-magnitude legends. The run configuration remains the anchor:
+  `P2_t2_pos_p040` sets `compliance_center_offset_ee_x = -0.040`, which is
+  \(r_{c,t_1}=-40\,\mathrm{mm}\). Never adjust a reported value to make a
+  coordinate look tidy.
 - **Every reported non-zero displacement except the surface-fixed conditions
   of supporting check 1 was configured tool-fixed, in end-effector
   coordinates**, and the surface-frame vectors in the supporting

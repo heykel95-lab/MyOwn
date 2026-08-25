@@ -468,7 +468,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
   `Rotational Stiffness, \(K_{R,t_i}\) [N m/rad]`,
   `Cross-Axis Translational Stiffness, \(K_{p,t_j}\) [N/m]`,
   `Tangential CoC Position, \(r_{c,t_2}\) [mm]`,
-  `Signed Tangential CoC Position, \(-r_{c,t_1}\) [mm]`,
+  `Tangential CoC Position, \(r_{c,t_1}\) [mm]`,
   `Commanded Orientation Offset, \(\theta_{t_i}\) [°]`,
   `Commanded Normal Force, \(F_n\) [N]`,
   `Commanded TCP Moment About \(t_i\), \(M_{t_i}\) [N m]`.

@@ -142,32 +142,11 @@ combined into the rotation vector
 \label{eq:implementation_tilt_rotation_vector}
 \end{equation}
 
-Its magnitude gives the total commanded tilt angle,
-
-\begin{equation}
-\phi_{\mathrm{tilt}}
-=
-\left\|\theta_{\mathrm{tilt}}\right\|
-=
-\sqrt{\theta_{t_1}^{2}+\theta_{t_2}^{2}}.
-\label{eq:implementation_tilt_angle}
-\end{equation}
-
-For \mbox{\(\phi_{\mathrm{tilt}}>0\)}, the corresponding unit rotation axis is
-
-\begin{equation}
-u_{\mathrm{tilt}}
-=
-\frac{\theta_{\mathrm{tilt}}}{\phi_{\mathrm{tilt}}}
-=
-\frac{\theta_{t_1}t_1+\theta_{t_2}t_2}
-{\sqrt{\theta_{t_1}^{2}+\theta_{t_2}^{2}}}.
-\label{eq:implementation_tilt_axis}
-\end{equation}
-
-Using Rodrigues' relation of \mbox{\Cref{eq:rodrigues_formula}}, the pair
-\mbox{\((u_{\mathrm{tilt}},\phi_{\mathrm{tilt}})\)} defines the rotation matrix
-\mbox{\(R_{\mathrm{tilt}}\)}. Seating the tool face against the surface
+The vector \mbox{\(\theta_{\mathrm{tilt}}\)} specifies the commanded
+inclination relative to the surface. Its magnitude is the commanded tilt angle
+and its direction is the corresponding rotation axis, so the axis-angle
+relation of \mbox{\Cref{eq:rodrigues_formula}} turns it directly into the
+rotation matrix \mbox{\(R_{\mathrm{tilt}}\)}. Seating the tool face against the surface
 requires the tool normal to point into the plane, so the flat target is the
 inward surface normal,
 

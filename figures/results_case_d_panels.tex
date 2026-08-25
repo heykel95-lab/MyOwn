@@ -5,8 +5,11 @@
 \begin{tikzpicture}
 \pgfplotsset{
   every axis/.append style={
-    width=7.1cm, height=6.0cm,
-    xmin=-48, xmax=48, ymin=-13, ymax=10,
+    width=6.2cm, height=6.0cm,
+    % Headroom above the data so the two-line legend sits clear of the
+    % curves: the highest measured point is +7.87 deg, and the legend then
+    % occupies the empty band above 9 deg in both panels.
+    xmin=-48, xmax=48, ymin=-13, ymax=16,
     xtick={-40,-20,0,20,40},
     ytick={-12,-9,-6,-3,0,3,6,9},
     ymajorgrids=true,
@@ -14,13 +17,17 @@
     grid style={gray!25, very thin},
     tick label style={font=\footnotesize},
     label style={font=\footnotesize},
-    legend style={font=\footnotesize, draw=gray!50, fill=white,
-                  cells={anchor=west}, inner sep=2pt},
+    % \scriptsize keeps the two-line legend inside its own panel; at
+    % \footnotesize it reached across into the neighbouring y-label.
+    legend style={font=\scriptsize, draw=gray!50, fill=white,
+                  cells={anchor=west}, inner sep=1.6pt},
     every axis plot/.append style={thick, mark size=2.1pt},
   },
 }
 \begin{groupplot}[
-    group style={group size=2 by 1, horizontal sep=1.5cm},
+    % The two-line y-label of the right panel sits in this gap, so it has to
+    % clear the legend of the left one.
+    group style={group size=2 by 1, horizontal sep=2.4cm},
   ]
 
 \nextgroupplot[
@@ -43,22 +50,22 @@
 \addlegendentry{Commanded Offset, \(\theta_{t_1}=-10^\circ\)}
 
 \nextgroupplot[
-    xlabel={\shortstack{Signed Tangential CoC\\Position, \(-r_{c,t_1}\) [mm]}},
+    xlabel={\shortstack{Tangential CoC Position,\\\(r_{c,t_1}\) [mm]}},
     ylabel={\shortstack{Set-Up Rotation About \(t_2\),\\\(\Delta\theta_2\) [\(^\circ\)]}},
     title={\footnotesize (b) commanded about \(t_2\)},
     legend pos=north west,
   ]
 \addplot[black, mark=o, error bars/.cd, y dir=both, y explicit] coordinates {
-  (-40,-4.51) +- (0,2.36) (-20,-1.95) +- (0,0.47)
-  (-10,-1.85) +- (0,0.36) (0,-1.63) +- (0,0.17)
-  (10,-1.31) +- (0,0.13) (20,-1.12) +- (0,0.09)
-  (40,4.43) +- (0,0.07)};
+  (-40,4.43) +- (0,0.07) (-20,-1.12) +- (0,0.09)
+  (-10,-1.31) +- (0,0.13) (0,-1.63) +- (0,0.17)
+  (10,-1.85) +- (0,0.36) (20,-1.95) +- (0,0.47)
+  (40,-4.51) +- (0,2.36)};
 \addlegendentry{Commanded Offset, \(\theta_{t_2}=+10^\circ\)}
 \addplot[blue!55!black, mark=square, error bars/.cd, y dir=both, y explicit] coordinates {
-  (-40,-10.51) +- (0,0.71) (-20,-1.51) +- (0,0.25)
-  (-10,-1.29) +- (0,0.14) (0,-1.25) +- (0,0.19)
-  (10,-1.29) +- (0,0.01) (20,-1.28) +- (0,0.05)
-  (40,4.68) +- (0,0.05)};
+  (-40,4.68) +- (0,0.05) (-20,-1.28) +- (0,0.05)
+  (-10,-1.29) +- (0,0.01) (0,-1.25) +- (0,0.19)
+  (10,-1.29) +- (0,0.14) (20,-1.51) +- (0,0.25)
+  (40,-10.51) +- (0,0.71)};
 \addlegendentry{Commanded Offset, \(\theta_{t_2}=-10^\circ\)}
 
 \end{groupplot}
