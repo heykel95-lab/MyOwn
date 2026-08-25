@@ -244,11 +244,17 @@ def damping_panel(ax, groups):
                         alpha=0.10, linewidth=0)
     ax.set_xlabel(r"Time After Disturbance Onset, $t_d$ [s]")
     ax.set_ylabel(
-        r"Cumulative Projected Null-Space Motion, $E_N$ [$^\circ$]"
+        "Cumulative Projected\n"
+        r"Null-Space Motion, $E_N$ [$^\circ$]"
     )
-    ax.text(0.01, 0.97, "(a)", transform=ax.transAxes,
-            ha="left", va="top")
-    axis_legend(ax, ncol=2, loc="upper left", bbox_to_anchor=(0.0, 0.89))
+    # Bottom right: the legend now occupies the upper left, and the curves
+    # rise from the lower left, so this is the one corner nothing reaches.
+    ax.text(0.99, 0.03, "(a)", transform=ax.transAxes,
+            ha="right", va="bottom")
+    # One column: the stacked layout is half the old width, so a two-column
+    # legend reached across the curves it sits above.
+    ax.margins(y=0.34)
+    axis_legend(ax, ncol=1, loc="upper left", bbox_to_anchor=(0.0, 0.99))
 
 
 def sigma_panel(ax, groups):
@@ -287,8 +293,8 @@ def sigma_panel(ax, groups):
     ax.axhline(0.0, color="0.45", linewidth=1.0)
     ax.set_xlabel(r"Conditioning Torque Magnitude, $k_\sigma$ [N m]")
     ax.set_ylabel(
-        r"Change in Minimum Singular Value, "
-        r"$\Delta\sigma_{\min,\mathrm{dist}}$ [-]")
+        "Change in Minimum Singular\n"
+        r"Value, $\Delta\sigma_{\min,\mathrm{dist}}$ [-]")
     ax.set_xticks(gains)
     ax.ticklabel_format(axis="y", style="sci", scilimits=(0, 0),
                         useMathText=True)
@@ -318,7 +324,8 @@ def sigma_panel(ax, groups):
         2.0, color="0.45", linewidth=1.0,
         label=r"Position-Error Limit, $\|e_p\|_{\max}=2\,\mathrm{mm}$")
     task_ax.set_ylabel(
-        r"Peak Cartesian Position Error, $\|e_p\|_{\max}$ [mm]",
+        "Peak Cartesian Position\n"
+        r"Error, $\|e_p\|_{\max}$ [mm]",
         color=SERIES_RED,
     )
     task_ax.tick_params(axis="y", colors=SERIES_RED)
@@ -333,12 +340,15 @@ def sigma_panel(ax, groups):
 
 
 def make_figure(groups):
-    fig, axes = plt.subplots(1, 2, figsize=(8.4, 3.65))
+    # Stacked rather than side by side: both panels carry long descriptive
+    # axis labels, and at text width two columns left the data area too small
+    # to read the curves against.
+    fig, axes = plt.subplots(2, 1, figsize=(5.9, 6.4))
     damping_panel(axes[0], groups)
     handles, labels = sigma_panel(axes[1], groups)
-    fig.legend(handles, labels, loc="lower center", ncol=3,
+    fig.legend(handles, labels, loc="lower center", ncol=2,
                bbox_to_anchor=(0.5, 0.01), fontsize=7)
-    fig._thesis_legend_bottom = 0.16
+    fig._thesis_legend_bottom = 0.12
     return save(fig, "MAIN_NS_nullspace_automatic.pdf")
 
 

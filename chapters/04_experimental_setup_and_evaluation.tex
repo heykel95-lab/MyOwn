@@ -815,23 +815,24 @@ The commanded Cartesian wrench is retained for the Case-D mechanism plot.
 \subsection{Signed End-Effector Set-Up Rotation}
 \label{subsec:experimental_supporting_metrics}
 
-The orientations at the beginning and end of set-up are denoted by
-\(R_{\mathrm{before}}\) and \(R_{\mathrm{after}}\). Their finite relative
-rotation and its base-frame rotation vector are
+Set-up holds the orientation captured at the clearance transition as its
+rotational reference, so the logged base-frame orientation error \(e_R\) is
+the rotation from the current end-effector orientation back to that reference.
+Its value at the end of set-up therefore measures how far the end effector has
+rotated away from the held reference, and the reported rotation vector is
 
 \begin{equation}
-R_\Delta
-=
-R_{\mathrm{after}}R_{\mathrm{before}}^\top,
-\qquad
 \Delta\theta
 =
-\operatorname{Log}(R_\Delta)^\vee .
+e_R\big|_{\mathrm{end\ of\ set\text{-}up}} .
 \label{eq:contact_induced_rotation}
 \end{equation}
 
-Here, \(\operatorname{Log}(\cdot)^\vee\) maps the finite rotation matrix to its
-rotation vector. Resolving that vector in the surface frame gives
+This quantity comes from the joint angles alone. Neither the calibrated tool
+axis nor the plane zero enters it, which matters because the tool axis is known
+only to within a degree or two and shifts as the tool settles in the gripper.
+The surface frame enters solely as the directions the rotation is resolved
+along:
 
 \begin{equation}
 \Delta\theta^{S}
@@ -846,12 +847,20 @@ t_i^\top\Delta\theta,
 \end{equation}
 
 The reported quantity \(\Delta\theta_i\) is the signed end-effector set-up
-rotation about surface tangent \(t_i\). For a positive commanded offset, a
-positive value denotes rotation in the intended alignment direction and a
-negative value denotes rotation in the opposite direction. Reversing the
-command reverses the sign of the intended direction. This quantity is used for
-all main comparisons in \Cref{ch:results_discussion} because it is signed and
-is calculated directly from the measured end-effector orientations.
+rotation about surface tangent \(t_i\). Because \(e_R\) points from the
+current orientation back to the held reference, it carries the opposite sign to
+the motion the end effector made, and a positive commanded offset therefore
+makes a positive \(\Delta\theta_i\) denote rotation in the intended alignment
+direction. A negative value denotes rotation in the opposite direction, and
+reversing the command reverses the sign of the intended direction. The
+measurements confirm the correspondence: for the \(+10^\circ\) command about
+\(t_1\) at the TCP, \(\Delta\theta_1=+7.57^\circ\) accompanies a fall in
+the pose-based alignment angle from \(9.32^\circ\) to \(3.38^\circ\),
+whereas the \(+10^\circ\) command about \(t_2\) gives
+\(\Delta\theta_2=-1.63^\circ\) with that angle rising from
+\(10.07^\circ\) to \(11.81^\circ\). This quantity is used for all main
+comparisons in \Cref{ch:results_discussion} because it is signed and is
+calculated from the measured end-effector orientation alone.
 
 
 \subsection{Supporting Geometric Checks}
