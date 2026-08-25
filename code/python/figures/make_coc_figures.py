@@ -193,6 +193,9 @@ def main():
     reference_line(ax)
     ax.set_xticks(x)
     ax.set_xticklabels(directions)
+    # Every axis in the thesis reads "Descriptive Name, Symbol [Unit]", and this
+    # one keeps that form even though its ticks are named directions: a single
+    # axis in a different format is the more visible inconsistency.
     ax.set_xlabel(r"Commanded Rotation Direction, $\theta_{\mathrm{tilt}}$ [$^\circ$]")
     ax.set_ylabel(ROTATION_LABEL)
     ax.legend(loc="upper right")

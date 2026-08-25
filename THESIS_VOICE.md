@@ -316,10 +316,29 @@ improvement was measured**.
 | no tested setting improved on the most compliant baseline | the largest improvement was obtained with the lowest tested rotational stiffness |
 | displacement along the normal produced no change | moving the centre along the surface normal produced no measurable change above the interpretation threshold |
 | the favourable sign is opposite on the two tangents | opposite favourable lever directions were observed for tilts about \(t_1\) and \(t_2\) |
+| the tool axis is known only to within a degree or two | the calibrated tool normal does not enter this quantity |
+| and shifts as the tool settles in the gripper | the relative tool--gripper rotation was not tracked during the contact experiments |
 
 The pattern: a verb implying an action on a quantity (`removed`, `cancelled`,
 `destroyed`, `beat`) where the log holds only a number near zero. Replace it
-with what the measurement says. `observed` and `measured` are the right verbs
+with what the measurement says.
+
+The last two rows are a second form of the same fault, and it hides inside a
+hedge. `known only to within a degree or two` sounds careful and is an invented
+bound: the thesis has no calibrated uncertainty on the tool axis, only
+\(\pm2^\circ\) of mechanical clearance measured unloaded, which
+THESIS_WRITING_GUIDE.md forbids restating as a measurement uncertainty. `shifts
+as the tool settles` asserts a motion during contact that was never tracked. A
+hedge is not exempt from the evidence rules — a number softened by `only` or
+`a degree or two` is still a claim, and a vaguer one is harder to check.
+
+**Do not coin an informal name for a defined quantity.** The same sentence
+carried `the plane-zero alignment`, which names nothing the thesis defines and
+appears nowhere else in it. Where a sentence needs a quantity that has no name,
+that is a sign the sentence is reaching for something the thesis does not have.
+Name the chain instead — `the calibrated tool normal`, `the surface frame`,
+`the measured end-effector orientation` — and say what each does or does not
+contribute. `observed` and `measured` are the right verbs
 when reporting a campaign, and the negative form is `no measurable change above
 the interpretation threshold`, never a bare `no change`.
 
@@ -1039,6 +1058,20 @@ Attribution and evidence, per the register section:
 - `discuss`, `describes`, `presents`, `provides`, `shows the importance of`
   attached to a cited author
 - a factor, ratio, or percentage with no sample size anywhere near it
+- a hedged bound with nothing behind it: `to within a degree or two`, `known
+  only approximately`, `on the order of a degree`, where no calibration or
+  repeatability figure supports the number
+- a quantity named informally rather than by the name the thesis defines:
+  `the plane zero`, `the flat reference`, `the nominal angle`. Search a
+  suspicious noun phrase across the chapters; one hit means it was invented for
+  that sentence
+- a convention named for when it was adopted rather than for what fixes it:
+  `the current convention`, `the current-to-reference convention`, `the present
+  sign convention`, `the convention now used`. Each implies a superseded one and
+  sends the reader looking for it. State the relation the convention *is*; a
+  convention named for its frame, its object or its source — `the surface-frame
+  rotation convention`, `the selected lever convention`, `the
+  Denavit--Hartenberg convention` — is not an instance of this
 - `optimum`, `best`, `dominant` without `model-predicted`, `within the tested
   range`, or an equivalent bound
 - a parameter value with no reason given, where the reason is "it worked"

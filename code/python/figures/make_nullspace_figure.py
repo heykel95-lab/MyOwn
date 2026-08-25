@@ -339,16 +339,81 @@ def sigma_panel(ax, groups):
     )
 
 
+NET_LABELS = (
+    "No Null-Space\nTorque",
+    "Projected\nDamping",
+    "Conditioning\n$k_\\sigma=1.5$",
+    "Conditioning\n$k_\\sigma=2.0$",
+)
+
+
+def _net_value_label(value):
+    """Print a net displacement at a precision that shows what it is.
+
+    The four values span more than two orders of magnitude, so one format
+    either rounds both conditioning settings to zero or gives the two large
+    ones three digits they do not carry. The sign takes the typographic minus
+    the tick labels use, so a printed value and an axis tick agree.
+    """
+    text = f"{value:.3f}" if abs(value) >= 0.01 else f"{value:.4f}"
+    return text.replace("-", "\N{MINUS SIGN}")
+
+
+def net_displacement_panel(ax, groups):
+    """Draw the net redundant displacement of all four settings.
+
+    The suppression by more than two orders of magnitude is the strongest
+    result of the conditioning experiment and the other two panels do not carry
+    it: panel (a) plots the cumulative motion, which is a path length, and
+    panel (b) plots the singular value and the task error. The bars are printed
+    with their values, as the Case-A bars are, because at a scale set by
+    0.131 rad the two conditioning bars are the height of the axis line, and a
+    reader has no way to tell a suppressed value from a missing one.
+    """
+    order = {run_id: rank for rank, (run_id, _, _) in enumerate(CONDITIONS)}
+    ordered = sorted(groups, key=lambda group: order[group["run_id"]])
+    means, sds = [], []
+    for group in ordered:
+        values = [run["net_displacement_rad"] for run in group["runs"]]
+        means.append(float(np.mean(values)))
+        sds.append(sample_sd(values))
+    positions = np.arange(len(ordered))
+
+    ax.bar(positions, means, width=0.55, color=SERIES_BLUE,
+           edgecolor="#1a1a1a", linewidth=0.8,
+           yerr=sds, capsize=3, error_kw={"elinewidth": 1.0,
+                                          "capthick": 1.0,
+                                          "ecolor": "#1a1a1a"})
+    ax.axhline(0.0, color="0.45", linewidth=1.0)
+    ax.set_xticks(positions)
+    ax.set_xticklabels(NET_LABELS[:len(ordered)])
+    ax.set_ylabel(
+        "Net Redundant Displacement,\n"
+        r"$\Delta\eta_{\mathrm{dist}}$ [rad]")
+    ax.margins(y=0.28)
+    for position, mean, sd in zip(positions, means, sds):
+        offset = sd if np.isfinite(sd) else 0.0
+        ax.annotate(_net_value_label(mean),
+                    xy=(position, mean + offset),
+                    xytext=(0, 3), textcoords="offset points",
+                    ha="center", va="bottom", fontsize=7.5)
+    ax.text(0.99, 0.92, "(c)", transform=ax.transAxes,
+            ha="right", va="top")
+
+
 def make_figure(groups):
-    # Stacked rather than side by side: both panels carry long descriptive
-    # axis labels, and at text width two columns left the data area too small
-    # to read the curves against.
-    fig, axes = plt.subplots(2, 1, figsize=(5.9, 6.4))
+    # Stacked rather than side by side: every panel carries a long descriptive
+    # axis label, and at text width two columns left the data area too small
+    # to read the curves against. The third panel is shorter than the other
+    # two: it holds four bars and needs no room for a legend.
+    fig, axes = plt.subplots(3, 1, figsize=(5.9, 8.4),
+                             gridspec_kw={"height_ratios": [1.0, 1.0, 0.8]})
     damping_panel(axes[0], groups)
     handles, labels = sigma_panel(axes[1], groups)
+    net_displacement_panel(axes[2], groups)
     fig.legend(handles, labels, loc="lower center", ncol=2,
                bbox_to_anchor=(0.5, 0.01), fontsize=7)
-    fig._thesis_legend_bottom = 0.12
+    fig._thesis_legend_bottom = 0.09
     return save(fig, "MAIN_NS_nullspace_automatic.pdf")
 
 

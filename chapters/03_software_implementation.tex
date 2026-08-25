@@ -897,6 +897,8 @@ do not alter the Cartesian law or the experimental parameters.
 
 \subsection{Real-Time-Safe Data Recording}
 \label{sec:recorded_signals}
+\label{subsec:chronological_log_output}
+\label{subsec:setup_run_evaluation}
 
 The controller stores the signals required for post-run analysis in a bounded
 in-memory ring buffer. The buffer memory is allocated before
@@ -912,17 +914,9 @@ refer to the geometric event of
 
 When the allocated capacity is reached, the write index wraps and new samples
 replace the oldest rows. This keeps the memory use bounded during real-time
-control.
-
-
-\subsection{Post-Run Output and Evaluation Support}
-\label{subsec:chronological_log_output}
-\label{subsec:setup_run_evaluation}
-
-After the torque callback ends, the ring-buffer contents are written in
-chronological order to the \mbox{\abbr{CSV}} file. Detailed experimental
-metrics are defined in \mbox{\Cref{ch:methodology}} and
-\mbox{\Cref{app:recorded_data}}.
+control. After the torque callback ends, the ring-buffer contents are written
+in chronological order to the \mbox{\abbr{CSV}} file. The experimental metrics
+calculated from them are defined in \mbox{\Cref{ch:methodology}}.
 
 The controller structure described in this chapter is used throughout the
 reported experiments. \mbox{\Cref{ch:methodology}} next specifies the physical

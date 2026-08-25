@@ -143,6 +143,15 @@ yaw poses, and no value of \(n_s\). That separation matters, because the
 calibrated \(n_{\mathrm{Tool,EE}}\) later differed from nominal
 \(+Z_{\mathrm{EE}}\) by approximately \(1.56^\circ\).
 
+Consequently the surface frame used by the controller is a configured geometric
+reference rather than an independent measurement of the physical plane normal.
+It was taken from the nominal end-effector axis at one seated pose. The
+\(1.56^\circ\) is the difference between those two orientation references, and
+it applies equally to every reported run. Since it limits an absolute
+interpretation of the physical tool--surface angle, the main comparisons report
+the signed end-effector set-up rotation of
+\Cref{subsec:experimental_supporting_metrics}.
+
 \begin{figure}[H]
   \centering
   \resizebox{\textwidth}{!}{\input{figures/calibration_flow.tex}}
@@ -708,7 +717,8 @@ The recorded signals and \abbr{CSV} structure are documented in
 \Cref{sec:recorded_signals,app:recorded_data}.
 
 Three repetitions were recorded for each parameter setting. Results are
-reported as the arithmetic mean and sample standard deviation. The main
+reported as arithmetic means, with sample standard deviations given for the
+main comparisons and where relevant in the supporting checks. The main
 surface-contact study comprises \(111\) runs across \(37\) settings. A further
 \(54\) runs across \(18\) settings were performed as supporting checks and are reported in
 \Cref{app:supporting_contact_checks}. In total, \(165\) surface-contact runs
@@ -733,6 +743,13 @@ independently so that each gain could be evaluated without changing the other
 simultaneously. In Case~D the tangential compliance-centre position was varied
 across both principal surface tangents and both signs of the commanded
 orientation offset.
+
+Unless stated otherwise, the non-zero compliance-centre displacements of the
+main study were configured tool-fixed, in end-effector coordinates. The
+tangential coordinates reported for Case~D are the surface-frame directions
+those settings realise in the flat target orientation. The definition frame
+itself is examined in the supporting check of
+\Cref{sec:supporting_definition_frame}.
 
 The orientation-offset-magnitude comparison, the \abbr{CoC} definition frame,
 displacement along the tool axis, and intermediate tangent-plane directions
@@ -820,8 +837,7 @@ rotational reference, so the logged base-frame orientation error \(e_R\) is
 the rotation from the current end-effector orientation back to that reference.
 Since that reference is captured at the beginning of set-up,
 \(e_R=\mathbf{0}\) at set-up entry. Its magnitude at the end of set-up
-therefore gives the angular change relative to the held reference, while its
-sign follows the current-to-reference orientation-error convention. The
+therefore gives the angular change relative to the held reference. The
 reported rotation vector is
 
 \begin{equation}
@@ -831,11 +847,12 @@ e_R\big|_{\mathrm{end\ of\ set\text{-}up}} .
 \label{eq:contact_induced_rotation}
 \end{equation}
 
-This quantity is obtained from the measured end-effector orientation alone.
-Neither the calibrated tool axis nor the plane-zero alignment enters its
-calculation, which matters because the tool axis is known only to within a
-degree or two and shifts as the tool settles in the gripper. The surface frame
-enters solely as the directions the rotation is resolved along:
+This quantity is obtained from the measured end-effector orientation alone, and
+the calibrated tool normal does not enter it. It is therefore independent of
+the relative rotation between the tool and the gripper described in
+\Cref{subsec:experimental_robot_tool_surface}, which was not tracked during the
+contact experiments. The surface frame enters solely as the directions the
+rotation is resolved along:
 
 \begin{equation}
 \Delta\theta^{S}
@@ -850,10 +867,11 @@ t_i^\top\Delta\theta,
 \end{equation}
 
 The reported quantity \(\Delta\theta_i\) is the signed end-effector set-up
-rotation about surface tangent \(t_i\). At the end of set-up \(e_R\)
-represents the accumulated orientation change, with the sign convention chosen
-such that a positive \(\Delta\theta_i\) denotes alignment-directed rotation
-for a positive commanded offset. A negative value denotes rotation in the
+rotation about surface tangent \(t_i\). Because \(e_R\) is the rotation from
+the measured end-effector orientation back to the held reference, its sign is
+opposite to that of the physical end-effector motion. A positive
+\(\Delta\theta_i\) therefore denotes alignment-directed rotation for a positive
+commanded offset. A negative value denotes rotation in the
 opposite direction, and reversing the command reverses the sign of the intended
 direction. The
 measurements confirm the correspondence: for the \(+10^\circ\) command about

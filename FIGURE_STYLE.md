@@ -408,6 +408,25 @@ writes a generated file names it, so regeneration must preserve this mapping.
   `BAR_FILL_BLUE`, and the Case-A bars, which name it with
   `\definecolor{barblue}{HTML}{0057B8}`.
 
+  **A single bar series is blue, not black.** The curve rule starts at black
+  and the bar rule starts at blue, and a lone bar series follows the bar rule:
+  the Case-A bars set the precedent, and the net-displacement panel of the
+  null-space figure follows it. A filled black bar prints as a block of ink
+  where a black curve prints as a line.
+
+- **Print the value above each bar where the series spans orders of
+  magnitude.** The net redundant displacement runs from \(0.131\) rad down to
+  about \(10^{-4}\), so on a linear axis the two conditioning bars are the
+  height of the axis line — which is the finding, but leaves a reader unable to
+  tell a suppressed value from a missing one. The printed value resolves it
+  without a second axis. A log axis does not: one of the four values is
+  negative, and taking magnitudes would discard the sign the quantity exists to
+  carry. The Case-A bars print their values for the same reason, so the two bar
+  figures agree. Choose the precision from the values rather than fixing one
+  format — three decimals above \(0.01\) and four below it keeps `0.131` and
+  `0.0003` both readable — and write the sign with the typographic minus the
+  tick labels use, not an ASCII hyphen.
+
   **In `pgfplots`, put a bar fill on the `\addplot`, never on
   `every axis plot`.** The `ybar` cycle list sets its own fill at thirty per
   cent of the plot colour and is applied *after* an axis-level append style, so
@@ -428,6 +447,15 @@ writes a generated file names it, so regeneration must preserve this mapping.
   about five thousand samples and a panel is a few centimetres wide, so the
   full rate paints a band rather than a curve. Around nine hundred points keeps
   a curve legible at printed width.
+- **A time-history figure says whether a trace is one repetition or an
+  average**, in the body text where the figure is introduced. Every other
+  figure in the thesis plots a mean over three repetitions, so a reader meeting
+  a time history assumes the same unless told otherwise. `plot_coc_case.py`
+  takes named trials on the command line and the reported Case-D mechanism
+  figure passes `r01` of each condition, so its three curves are one recorded
+  repetition each, and Chapter 5 states that. This is provenance rather than
+  uncertainty: it goes in the text, not in the caption, which stays a short noun
+  phrase.
 - **Grid is horizontal only.** It exists to compare values across panels.
 - **Every plot has a legend, in its own upper right corner.** Each panel names
   the series it shows, so a panel can be read without looking away from it.
@@ -486,6 +514,18 @@ writes a generated file names it, so regeneration must preserve this mapping.
   Where no symbol is assigned to what the axis means, the words stay and the
   unit still closes the label — the Case-F comparison axis and the categorical
   axes are the standing examples.
+
+  **A categorical axis keeps the full form where a symbol and a unit exist for
+  what its ticks name.** The direction comparison reads
+  `Commanded Rotation Direction, \(\theta_{\mathrm{tilt}}\) [°]` over ticks
+  reading `about t1`, `-45°`, `+45°` and `about t2`. A briefer
+  `Commanded Rotation Direction` was tried on 2026-08-25, on the grounds that
+  the ticks are named conditions rather than values of one quantity, and it was
+  **reverted the same day**: one axis in a format of its own is a more visible
+  inconsistency than a symbol standing over categorical ticks, and the reader
+  meets `Set-Up Rotation, \(\Delta\theta_i\) [°]` on the other axis of the same
+  figure. Uniformity of the axis format wins. Drop the symbol and the unit only
+  where none exists, per the rule below.
 - **A legend names the experimental condition, and gives its symbol and value
   where one exists:** `Descriptive Condition, Symbol = Value`. It never repeats
   the \(y\)-axis quantity and never carries a unit already on the axis.
@@ -518,10 +558,16 @@ writes a generated file names it, so regeneration must preserve this mapping.
   **Where no symbol is assigned to what the axis means, the words stay.** Three
   axes kept their prose for that reason: the supporting tool-axis comparison, whose \(x\)
   carries a tangential displacement on one series and a tool-axis displacement
-  on the other, so no single component symbol covers it; the categorical axes of
-  the Case-A bars and the direction comparison, which list conditions rather
-  than plot a quantity; and the time axes, which the author prefers as they
+  on the other, so no single component symbol covers it; the categorical axis of
+  the Case-A bars, whose ticks name five different commanded conditions that no
+  one symbol spans; and the time
+  axes, which the author prefers as they
   read. Do not invent a symbol to satisfy this rule.
+
+  The direction comparison is **not** one of them, though its axis is equally
+  categorical: its four ticks are all directions of the same commanded
+  rotation, so \(\theta_{\mathrm{tilt}}\) and the degree do cover them, and the
+  axis carries both.
 
 ## Checking a figure
 

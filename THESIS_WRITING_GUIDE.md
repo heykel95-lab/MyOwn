@@ -100,16 +100,25 @@ The Abstract carries the general shape of the work and nothing more:
 3. what was found, in general terms;
 4. what limits the generality.
 
-**Keep measured values out of the Abstract, with one exception.** No degrees, no
+**Keep measured values out of the Abstract, without exception.** No degrees, no
 stiffness values, no distances. State the direction, the ordering, and the sign
 of an effect instead: `reduced the measured alignment response`, `no tested
 setting improved on the most compliant baseline`, `differed between the two
 surface tangent directions`.
 
-The one exception is the **magnitude of the strongest measured effect**:
-`approximately 6 degrees of improvement` gives the reader the scale of the
-headline result. Everything else — stiffness values, per-condition means,
-standard deviations — stays out.
+**The exception for the strongest measured effect is withdrawn.** This rule
+once admitted one magnitude — `approximately 6 degrees of improvement` — so the
+reader had the scale of the headline result. The Abstract carried it as
+`a selected 40 mm displacement changed the measured set-up rotation from
+\(-1.63^\circ\) to \(+4.43^\circ\)`, and that sentence was removed on
+2026-08-25 along with its Kurzfassung counterpart. The reason is that a pair of
+per-condition means makes one experimental condition look more important than
+the finding the Abstract exists to state, and those values belong in Chapter 5
+where the condition that produced them is on the page. The qualitative finding
+is what the Abstract needs: the compliance-centre position produced the largest
+response variation, an assisting tangential displacement lies perpendicular to
+the required rotation direction, and reversing the sign of the initial angular
+deviation requires the displacement on the opposite side of the TCP.
 
 **The run count does not go in the Abstract.** A supervisor pass briefly asked
 for it, and it was added; the author then removed it as repetitive, which it
@@ -206,9 +215,45 @@ complete surface-contact total remains 55 settings and 165 runs.
 
 Chapter 5 carries one comparison figure for each main case and retains the
 Case-D commanded-wrench mechanism figure. It does not repeat those plots as
-numeric tables. The complete numeric means and Case-D sample standard
-deviations belong in Appendix D. Uncertainty for Case D is shown directly on
-the main comparison figure, so the separate appendix spread plot is removed.
+numeric tables. The complete numeric values belong in Appendix D. Uncertainty
+for Case D is shown directly on the main comparison figure, so the separate
+appendix spread plot is removed.
+
+**Every setting of the main Cases A--D carries its sample standard deviation,
+in its Appendix-D table.** The earlier arrangement gave means alone for Cases A
+to C and mean \(\pm\) SD for Case D only, while Section 4.3.3 said results were
+reported as the arithmetic mean and sample standard deviation. The Case A, B
+and C tables were completed on 2026-08-25 from
+`Thesis_Final_Control/experiments/derived/metrics.csv`, using the same
+`contact_rotation_t{1,2}_deg` column and the same sample standard deviation
+over three repetitions that `make_coc_figures.py` computes, and every mean
+already in those tables was reproduced before any spread was added.
+
+The division of labour is then: **the tables carry the spread, the figures
+carry the means.** Only the Case-D comparison also draws error bars, because
+the two high-variance transition conditions are part of what that figure
+shows. Do not add error bars to the other comparison figures to make them
+match; a figure whose spread is invisible at plotted scale gains nothing from
+the marks. Chapter 5 says once, in its opening, where the standard deviations
+are to be found.
+
+**The supporting checks report means, and the methodology sentence says so.**
+The offset-magnitude, tool-axis and intermediate-direction tables give the
+response alone; the definition-frame table gives mean \(\pm\) SD because the
+comparison it makes is between two close values. Section 4.3.3 was therefore
+reworded on 2026-08-25 to `Results are reported as arithmetic means, with
+sample standard deviations given for the main comparisons and where relevant in
+the supporting checks`, which is what the appendix actually does. **Do not
+restore the unqualified wording**, and do not recompute the supporting tables
+to justify it: the main argument rests on Cases A--D, the supporting checks are
+read as separations rather than as measurements to be compared within their own
+scatter, and the author declined the work as disproportionate.
+
+A standard deviation that rounds to \(0.00^\circ\) at the reported two
+decimals is written `\(\pm0.00\)`. It is the correctly rounded sample standard
+deviation at the precision the rest of the table uses, and switching that one
+entry to a third decimal or to an inequality would break the column for no
+gain.
 
 The main contact evaluation uses the signed set-up rotation
 \(\Delta\theta_i\). The commanded normal force \(F_n\) and commanded TCP
@@ -342,6 +387,18 @@ is scientifically necessary:
 ```
 
 The List of Figures and List of Tables must always contain concise entries.
+
+**A table column heading takes the same form as a plot axis: descriptive name,
+symbol, then the unit in square brackets.** The thesis uses square brackets for
+a unit everywhere else — every axis, every symbol-list row — so a heading
+reading `\([\theta_{t_1},\theta_{t_2}]\) (deg)` was inconsistent twice over, in
+its brackets and in spelling out the degree where the rest of the document sets
+the symbol. The direction-check table was corrected on 2026-08-25 to
+`Commanded Rotation Components, \([\theta_{t_1},\theta_{t_2}]\) \([{}^\circ]\)`
+and `CoC Components, \([r_{c,t_1},r_{c,t_2},r_{c,n}]\) \([\mathrm{mm}]\)`.
+A bare symbol vector as a heading also leaves the reader to work out what the
+components are of; naming them costs two words. Grep for a unit in round
+brackets before submitting.
 
 Never use “tangential stiffness” for a parameter sweep without naming the
 axis. State \(t_1\), \(t_2\), or explicitly state that both entries were
@@ -730,6 +787,34 @@ ef{...}`, which takes its number from `\@currentlabel` and is right
 in both respects. Check the rendered words in the PDF, not the source — neither
 failure raises a warning.
 
+**An unnumbered chapter's contents entry goes before the chapter, never after
+it.** `\addcontentsline` records `\thepage` where it stands, so the line
+
+```tex
+\bibliography{config/literature}
+\addcontentsline{toc}{chapter}{Bibliography}
+```
+
+wrote the page current *after* the reference list had been typeset: the
+contents named the bibliography's last page, four pages past where it starts.
+Nothing warns, and the number is plausible enough to survive several reads. The
+correct order is the one the two front-matter lists already use, and the
+bibliography was brought into line with it on 2026-08-25 in `Thesis.tex`,
+`Professor_Draft.tex` and `Review_Draft.tex`:
+
+```tex
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{Bibliography}
+\bibliography{config/literature}
+```
+
+`\phantomsection` gives hyperref an anchor on the right page, and the
+`\cleardoublepage` before it is what keeps the entry from landing on the
+previous chapter's last page. Verify by reading the page number off the
+compiled bibliography and comparing it with the contents; a `.toc` file cannot
+be checked against itself.
+
 **Never normalise notation with a bulk regex.** A backslash-stripping
 substitution across the `.tex` files silently produced 190 undefined macros and
 four merged control sequences (`\times\e_R` collapsing into `\timese_R`), none
@@ -755,6 +840,18 @@ separable in print.
 
 Dimensionless entries are `[-]`. A quantity whose rows carry different units,
 such as a Jacobian, lists them in the order the rows appear: `[m/rad], [-]`.
+
+**That form belongs to the matrix, not to a scalar computed from it.** A
+singular value of the geometric Jacobian is one number, so `[m/rad], [-]` says
+it carries two units at once, which it does not. The rows the \abbr{SVD}
+combines have different units, and the consequence is that the scalar's value
+depends on the Jacobian representation and the length unit rather than that it
+has two units. \(\sigma_i\), \(\sigma_{\min}\) and
+\(\Delta\sigma_{\min,\mathrm{dist}}\) therefore take `[-]`, and the
+representation dependence is stated in the description column, where the rule
+above already sends every qualification. Corrected on 2026-08-25. The same
+applies to any other scalar formed from a mixed-unit matrix: give the units
+column one entry, and explain the dependence in words beside it.
 
 The units column holds units and nothing else. Words such as `linear`,
 `angular`, `scale dependent` or `mixed` are not units, and a reader scanning
@@ -891,6 +988,23 @@ visible from inside any single chapter:
   no calibration routine at all — the calibration tools are separate
   executables — so any sentence implying the controller measured the surface is
   wrong by construction.
+
+  **Section 4.2 states the consequence of that, not only the fact.** Saying the
+  two calibrations were kept independent, and quoting the \(1.56^\circ\)
+  between the calibrated tool normal and nominal \(+Z_{\mathrm{EE}}\), leaves
+  the obvious examiner question unanswered: if the tool is seated flat, why is
+  the physical tool normal not used to define the surface normal? Four
+  sentences added on 2026-08-25 answer it. The surface frame the controller
+  holds is a configured geometric reference rather than an independent
+  measurement of the physical plane normal; it was taken from the nominal
+  end-effector axis at one seated pose; the \(1.56^\circ\) is the difference
+  between those two orientation references and applies equally to every
+  reported run; and because it limits an absolute interpretation of the
+  physical tool--surface angle, the main comparisons report the signed
+  end-effector set-up rotation instead. That last clause is the point of the
+  passage — the calibration limitation is the reason the primary metric is what
+  it is, so stating it strengthens the metric choice rather than conceding a
+  weakness.
 
 **Rule.** A number or configuration fact has one home — the methodology chapter
 or the parameter appendix — and every other mention cross-references it rather
@@ -1129,6 +1243,60 @@ orientation offset about surface tangent \(t_i\), and \(\Delta\theta_i\) is
 the measured signed end-effector rotation about that tangent from the beginning
 to the end of set-up. Do not restore `set` in the reported subscript, and do not
 introduce a second signed deviation vector for the set-up-entry orientation.
+
+**The sign relation is restated wherever it is used to read a number, not only
+where it is defined.** \(\Delta\theta_i\) is \(e_R\) at the end of set-up, and
+\(e_R\) is the rotation from the measured end-effector orientation back to the
+held reference, so its sign is opposite to that of the physical end-effector
+motion. Section 4.5.1 derives that and says what follows from it: a positive
+\(\Delta\theta_i\) denotes alignment-directed rotation for a positive commanded
+offset. A reader meeting the first results figure is by then a chapter away
+from the derivation, so two restatements were added on 2026-08-25 and both
+stay:
+
+- the opening of Chapter 5, immediately before the main results, giving the
+  reading rule alone — positive is the alignment direction for a positive
+  commanded offset, negative is the opposite direction;
+- the Case-D mechanism figure, where the commanded moment and the reported
+  rotation carry opposite signs on the same time axis. Without a bridge
+  sentence the figure looks as though a negative commanded moment produced a
+  positive rotation. Say what \(\Delta\theta_1\) is, cross-reference
+  Section 4.5.1, and say that the alignment-directed response therefore appears
+  as a positive \(\Delta\theta_1\) against a negative \(M_{t_1}\).
+
+Restating this is not the internal repetition the guide bans elsewhere: what is
+repeated is a reading rule of three lines, not an explanation or a derivation,
+and it is placed where a misreading would otherwise happen.
+
+**Say what the quantity is; do not give the sign rule a convention name.** Both
+restatements first read `\(\Delta\theta_1\) follows the current-to-reference
+orientation-error convention of Section 4.5.1`, and Section 4.5.1 itself
+carried `its sign follows the current-to-reference orientation-error
+convention`. All three were rewritten on 2026-08-25. Naming a convention `the
+current-to-reference convention` reads as *the convention currently in use*,
+which invites a reader to look for the superseded one — and development history
+is banned from the thesis under *Repository and software language*. The name
+was also redundant: the sentence before it already said that \(e_R\) is the
+rotation from the measured end-effector orientation back to the held reference,
+which is the whole of the convention. Write that relation instead, in the
+words the definition uses, and let the sign follow from it. The general rule:
+**a sign convention is stated, not christened.** `the surface-frame rotation
+convention`, `the selected lever convention` and `the Denavit--Hartenberg
+convention` are unaffected — each names the frame, the object or the source
+that fixes it, not the moment at which it was adopted.
+
+**Do not coin an informal name for a defined quantity to carry a sign
+argument.** Section 4.5.1 said the metric was independent of `the plane-zero
+alignment`, which names nothing the thesis defines, and justified that
+independence by saying the tool axis `is known only to within a degree or two
+and shifts as the tool settles in the gripper`. Both were removed on
+2026-08-25. The second states a mechanical clearance as though it were a
+calibrated knowledge bound, which the \(\pm2^\circ\) rule below forbids, and
+asserts a motion during contact that was not tracked. The defensible statement
+names the chain instead: the quantity comes from the measured end-effector
+orientation, the calibrated tool normal does not enter it, it is therefore
+independent of the relative tool--gripper rotation of Section 4.1.1, and the
+surface frame enters only as the directions the rotation is resolved along.
 
 The pose-based alignment error is appendix-only. It is unsigned and depends on
 the assumed fixed tool-to-end-effector relation, so neither it nor its
@@ -1535,16 +1703,29 @@ instantaneous opposing torque at identical joint configurations.
   \(\lVert r_c\rVert\) and \(\lVert r_{c,t}\rVert\).
 
   **The tool-axis supporting check introduces the projection geometry before
-  using the sine.** Define \(\alpha_{\mathrm{axis}}\) as the angle between the
-  tool axis and the surface normal, and
-  state that a tool-axis displacement contains normal and tangential
-  components. Then use
-  \(\lVert r_{c,t}\rVert=\lVert r_c\rVert\sin\alpha_{\mathrm{axis}}\). At the outer
-  setting, \(40\,\mathrm{mm}\) is the configured total tool-axis displacement
-  \(\lVert r_c\rVert\), whereas \(6.95\,\mathrm{mm}\) is its tangential
-  projection for an inclination of approximately \(10^\circ\), stated to two
-  decimal places. Never present the projection as a second configured CoC
-  magnitude.
+  using the sine.** Define \(\alpha_{\mathrm{axis}}\) as the **acute
+  inclination of the tool axis relative to the inward surface-normal direction
+  \(-n_s\)**, and say that this is the direction the tool axis takes when the
+  face lies flat. Then state that a tool-axis displacement contains normal and
+  tangential components, and use
+  \(\lVert r_{c,t}\rVert=\lVert r_c\rVert\sin\alpha_{\mathrm{axis}}\). At the
+  outer setting, \(40\,\mathrm{mm}\) is the configured total tool-axis
+  displacement \(\lVert r_c\rVert\), whereas \(6.95\,\mathrm{mm}\) is its
+  tangential projection at the nominal \(10^\circ\), stated to two decimal
+  places. Never present the projection as a second configured CoC magnitude.
+
+  **The reference direction is \(-n_s\), not \(n_s\)**, and the earlier wording
+  `the angle between the tool axis and \(n_s\)` was corrected on 2026-08-25.
+  A flat tool axis points into the surface, so measured from \(n_s\) the
+  nominal inclination is \(170^\circ\) rather than \(10^\circ\). The arithmetic
+  survives the error, since \(\sin170^\circ=\sin10^\circ\), which is exactly
+  why it went unnoticed: the reported \(6.95\,\mathrm{mm}\) is right under
+  either reading. State the geometry the flat-axis convention already fixes —
+  \(n_{\mathrm{flat}}=-n_s\), further up this list — rather than one that
+  happens to give the same number. Say which commanded offset set the
+  inclination, and call it *nominal*, because the orientation phase reached
+  approximately \(9.3^\circ\) about \(t_1\) rather than the commanded
+  \(10^\circ\).
 
   **\(r_c\times f_n=r_{c,t}\times f_n\) is the load-bearing result.** The
   normal component of the displacement drops out of the normal-press moment,
@@ -1591,6 +1772,21 @@ instantaneous opposing torque at identical joint configurations.
   \([r_{c,t_1},r_{c,t_2},r_{c,n}]\) whose values were configured in another
   frame needs that sentence or it reads as a contradiction of supporting
   check 1.
+
+  **Chapter 4 says this where Case D is introduced, not only in the
+  appendix.** The theory distinguishes a surface-fixed displacement from a
+  tool-fixed one whose base-frame vector rotates with the end effector, and
+  Appendix C records which the campaign used; Section 4.4 said only that the
+  tangential position was varied along the tangent perpendicular to the
+  commanded rotation. A reader therefore had every reason to take
+  \(r_{c,t_1}\) and \(r_{c,t_2}\) for surface-frame coordinates held constant
+  through the run, which is not what the implementation does. Three sentences
+  were added on 2026-08-25: unless stated otherwise the non-zero displacements
+  of the main study were configured tool-fixed in end-effector coordinates; the
+  tangential coordinates reported for Case~D are the surface-frame directions
+  those settings realise in the flat target orientation; and the definition
+  frame itself is examined in the supporting check. This is a cross-reference
+  and a statement of what was configured, not a second derivation.
 - **The model-estimated external wrench is not theory, and Chapter 2 does not
   carry it.** The former Section 2.4.4 and the commanded-versus-model-estimated
   half of Section 2.7 are deleted, and Figure 2.2 is a commanded-wrench figure
@@ -2221,7 +2417,16 @@ Before accepting a revision:
 - check that every running-text use of a defined quantity name is followed
   immediately by its symbol;
 - search the symbol list for `mixed` and for units written without a space;
+- search the tables for a unit in round brackets, and for `(deg)` in place of
+  the degree symbol;
 - check that the contents lists the figures, tables and symbols;
+- check the contents page number of every unnumbered chapter against the page
+  that chapter actually starts on in the compiled PDF;
+- check that every setting of Cases A--D carries its sample standard deviation
+  in its Appendix-D table, and that Section 4.3.3 still describes what the
+  tables do rather than what they might;
+- check that any time-history figure says in the text whether its traces are
+  single repetitions or averages;
 - check that no heading sits at the foot of a page without what it introduces;
 - inspect every changed figure in the compiled document, per FIGURE_STYLE.md;
 - check that list items begin with a capital letter;
@@ -2233,7 +2438,9 @@ Before accepting a revision:
 - check `estimated` versus `measured` force/wrench terminology;
 - check experiment counts, repetitions, units, and parameter values;
 - check predicted versus experimentally confirmed results;
-- check Abstract and Kurzfassung each still fit one page in the compiled PDF;
+- grep the Abstract and the Kurzfassung for digits; a measured value in either
+  is a fault, and the only permitted numbers name a thing rather than measure
+  one, such as the robot's degrees of freedom;
 - check Abstract, Kurzfassung, Results, and Conclusion for identical certainty;
 - remove duplicated theory and unsupported causal claims;
 - compile both `Thesis.tex` and `Professor_Draft.tex`;

@@ -60,9 +60,12 @@ back.
 ### Building on the lab machine, and the one thing it cannot check
 
 `texlive-lang-german` is installed, so `ngerman.ldf` resolves and the document
-builds. `Thesis.tex` and `Professor_Draft.tex` were built on 2026-08-25 after
-the compression pass, with bibtex and three passes: no errors, no undefined
-references or citations, no overfull boxes, 125 pages.
+builds. All three drivers were built on 2026-08-25 after the review
+corrections, with bibtex and three passes each: no errors, no undefined
+references or citations, no overfull boxes. `Thesis.pdf` and
+`Professor_Draft.pdf` are 128 pages and `Review_Draft.pdf` is 132. The fifty
+underfull hboxes in the final pass are loose lines in the narrow description
+column of the symbol list and predate this work.
 Judge a build by the final pass; the earlier ones always report undefined
 citations.
 
@@ -185,20 +188,6 @@ from this list rather than annotated, so everything here is still open.
 
 **Figures, tables and captions (review pass 2)**
 
-- **A.5 — the second null-space figure.** Item 29 asks for the net redundant
-  displacement and the \(\Delta\sigma_{\min,\mathrm{dist}}\)/peak-error
-  comparison, which the present figure does not show. **This needs no logged
-  data.** Every value is already in Section 5.2 with its standard deviation:
-  \(\Delta\eta_{\mathrm{dist}}\) of \(0.131\pm0.016\),
-  \(0.098\pm0.004\), \((0.3\pm0.3)\times10^{-3}\) and
-  \((-0.1\pm0.2)\times10^{-3}\,\mathrm{rad}\);
-  \(\Delta\sigma_{\min,\mathrm{dist}}\) of \((-2.13\pm0.47)\times10^{-3}\),
-  \((-1.26\pm0.10)\times10^{-3}\), \((1.95\pm0.07)\times10^{-5}\) and
-  \((1.93\pm0.03)\times10^{-5}\); peak Cartesian error \(0.889\pm0.024\) and
-  \(0.983\pm0.053\,\mathrm{mm}\). Draw it in `pgfplots` as a new figure
-  beside the existing one, per item 29's instruction to split rather than
-  crowd three panels. Read `FIGURE_STYLE.md` first. Keep the
-  \(2\,\mathrm{mm}\) acceptance line on the error panel.
 - **A.4** — Figure 3.1 still shows `spring wrench`, `tau_task` and `c(q,qdot)`.
   Correct to the Cartesian impedance wrench, \(\tau_{\mathrm{cart}}=J^\top F\)
   and \(\tau_c\). It is a TikZ source and needs no data.
@@ -340,27 +329,6 @@ on 2026-08-25 to the four pgfplots figures and to the five plots written by
 `make_coc_figures.py` and `plot_coc_case.py`, which were regenerated and
 installed. Three things remain.
 
-- **Figures 5.2 and 5.3 need condition-specific legends.** They currently read
-  `Commanded Offset, \(\theta_{t_i}=+10^\circ\)` for both series, from the
-  shared `command_label()` in `make_coc_figures.py`. The stiffness figures need
-  the varied component instead — `Rotation About \(t_1\), \(K_{R,t_1}\)`
-  and `Rotation About \(t_2\), \(K_{R,t_2}\)` for Figure 5.2, and
-  `Rotation About \(t_1\), \(K_{p,t_2}\)` and `Rotation About \(t_2\),
-  \(K_{p,t_1}\)` for Figure 5.3, so the perpendicular relation is visible in
-  the legend. That needs a separate label function for the two stiffness
-  sweeps rather than a change to `command_label()`, which the other sweeps use
-  correctly.
-- **The null-space figure and the metric comparison are not converted.**
-  `MAIN_NS_nullspace_automatic.pdf` needs
-  `Time After Disturbance Onset, \(t_d\) [s]` and
-  `Cumulative Projected Null-Space Motion, \(E_N\) [°]`, with legends
-  `No Null-Space Damping, \(d_{\mathrm{null}}=0\)` and
-  `Projected Damping, \(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\)`; its
-  second panel needs
-  `Change in Minimum Singular Value, \(\Delta\sigma_{\min,\mathrm{dist}}\) [-]`
-  and `Peak Cartesian Position Error, \(\lVert e_p\rVert_{\max}\) [mm]`.
-  **Its generator reads `MyController` logs**, so it can only be regenerated
-  beside that repository. `MAIN_DQ_metric_comparison.pdf` needs the same pass.
 - **Redesign the appendix results tables**, which is where the author chose to
   keep them on 2026-08-25 rather than restoring them to Chapter 5. Every table
   in `backmatter/appendix_additional_plots.tex` should answer, without the
@@ -374,6 +342,67 @@ installed. Three things remain.
   Case-D table additionally drops the \(\theta_{\mathrm{dev,before}}\)
   column and marks its TCP column, and the offset-magnitude table gains a
   TCP-versus-selected-CoC comparison column.
+
+## Deferred figure work from the narrative reviews
+
+The reviews of 2026-08-25 called these improvements rather than blockers, and
+each was left as the reviewer framed it. The prose corrections they asked for
+are done and are not listed here.
+
+**The null-space generator can be run on this machine**, which an earlier note
+here denied. `make_nullspace_figure.py` resolves its data from the directory
+above its own, so it finds nothing under `code/python/figures/`. Stage it
+instead: make a scratch directory holding `analysis/` and `experiments/`, copy
+`make_nullspace_figure.py`, `make_figures.py`, `figure_style.py` and
+`extract_metrics.py` into `analysis/`, and symlink `experiments/results` to
+`MyController/experiments/results`. Run it from `analysis/`; it writes the
+figure to `figures/` and the derived summary to `experiments/derived/`
+alongside. Two checks confirm the pipeline before trusting an output: it prints
+the recovered redundant axis, which must match the \(v_7\) recorded further
+down this file, and `MAIN_NS_automatic_summary.csv` must reproduce the
+\(\Delta\eta_{\mathrm{dist}}\) and \(\Delta\sigma_{\min,\mathrm{dist}}\)
+values already in Section 5.2. Both held on 2026-08-25.
+
+- **Figure 5.5 repeats its three-entry legend in all three panels.** One shared
+  legend above the panels would return the plotting area the three copies take.
+  The generator is `plot_coc_case.py`, which draws a legend per panel by
+  design — its docstring says so — so this is a change to that design and not a
+  parameter. It reads the run logs under
+  `Thesis_Final_Control/experiments/results`, which are present on the lab
+  machine, and the three trials are the ones in
+  `code/python/figures/README.md`. Regeneration on this machine reproduces the
+  installed files faithfully: the toolchain here is the one that made them,
+  `usetex` is off in `figure_style.py`, and a regenerated file differs from its
+  installed copy only in the PDF creation date. Check the result at printed
+  width before installing it.
+- **Figure 3.3 is the densest main-text diagram.** The suggestion is to let the
+  central path dominate — orient, approach, set-up, pre-grinding gate,
+  grinding — and to collect pose hold, set-up hold and manual guidance into one
+  side box labelled as operator modes. It is a TikZ source and needs no data.
+- **Figures 3.1 and 2.2 are small for what they carry.** Figure 3.1 would take
+  about ten to fifteen per cent more width if the page allows, and Figure 2.2
+  draws \(r_c\), \(f\) and \(m\) smaller than their importance to the argument.
+  Appendix Figures D.4 and D.6 are the same case. Both reviews raised the
+  sizing and neither called it a fault. The `\resizebox` section below governs
+  how to make the change.
+- **A final language and proofreading pass over the whole document**, which the
+  second review put after the targeted corrections and before submission. It is
+  the last two items of the review work list further up, not a separate task.
+
+The second review also asked for the Chapter 5 null-space section to be split
+into subsections, the Case-D definition frame to be stated in Chapter 4, the
+calibration consequence to be spelled out in Section 4.2, the singular-value
+units to be corrected, the Figure 5.5 sign bridge, and the Section 4.5.1
+rewrite. All six are done, and the rulings behind them are in
+`THESIS_WRITING_GUIDE.md` and `FIGURE_STYLE.md`.
+
+**One decision was made and then reversed, and the reversal stands.** The
+direction-comparison axis was briefly shortened to `Commanded Rotation
+Direction` on the grounds that its ticks are categorical, then restored to
+`Commanded Rotation Direction, \(\theta_{\mathrm{tilt}}\) [°]` the same day:
+uniformity of the `Descriptive Name, Symbol [Unit]` format across every axis
+matters more than the categorical exception. `FIGURE_STYLE.md` carries the
+reasoning on both sides so it is not re-argued.
 
 ## The other drawn diagrams still open their boxes in lower case
 
@@ -463,10 +492,28 @@ that pass:
   paragraph are the material that has to displace something older.
 - No heading was left stranded by an automated scan of the compiled document,
   which is a weaker check than reading the pages.
+- **The review corrections of 2026-08-25 moved a further set of pages**, and
+  none has had the page-by-page read. They are: the end of Section 2.4.1, which
+  gained the bridge to the compliance-centre section; Section 4.2, which gained
+  the calibration-consequence paragraph; Section 4.4, which gained the
+  tool-fixed definition-frame statement; Section 4.5.1, whose provenance and
+  sign paragraphs were rewritten; the opening of Chapter 5 and its Case-A and
+  Case-D commentary; the null-space results, now split into three subsections
+  and therefore repaginated from Section 5.2 onward; the three Appendix-D
+  tables that gained standard deviations; and both summaries, which lost the
+  sentence carrying their only measured values. Figure D.5 was regenerated with
+  a categorical \(x\)-axis label and should be looked at on the page. The
+  bibliography's contents entry now names the page it starts on, so the
+  contents and the appendix page numbers after it moved by one.
+- **The null-space figure gained a third panel** carrying the net redundant
+  displacement of all four settings, so Section 5.2 onward repaginated again
+  and the document is 128 pages. The page was rendered and read at 100 dpi
+  when the panel was added; the rest of the moved pages were not.
 
-The current `Thesis.tex` and `Professor_Draft.tex` build clean here with bibtex
+All three drivers build clean here with bibtex
 and three passes each, no undefined references or citations and no overfull
-boxes. `Review_Draft.tex` has not been rebuilt after the compression pass.
+boxes; `Review_Draft.tex` was rebuilt on 2026-08-25 and its soul spans still
+reconstruct.
 **The local builds needed
 `compat=1.16`**, because the TeX Live 2019 on this machine predates the
 `compat=1.18` the sources set; the file was restored afterwards and the plots
