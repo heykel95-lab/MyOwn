@@ -304,7 +304,9 @@ def main():
     runs = [f"P3_axis_{tag(position)}" for position in POSITIONS if position]
     runs.append("P2_t1_pos_p000")
     draw_sweep([(x, y, err, command_label(groups, runs, "t1"))],
-               "Centre position along the tool axis [mm]",
+               # No surface-frame component symbol applies here: the
+               # displacement is along the tool axis, so the words stay.
+               "Tool-Axis CoC Position [mm]",
                out("MAIN_G_toolaxis.pdf"))
 
     # H -- the same two positions at both commanded magnitudes.
