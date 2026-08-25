@@ -48,21 +48,28 @@ means already tabulated in the thesis.
 
 ## Running them
 
-`make_coc_figures.py` needs no data. Its values are the means reported in
-Chapter 5, written into the file, so it runs anywhere:
+`make_coc_figures.py` reads the campaign metrics. On the lab machine, pass the
+authoritative derived file explicitly:
 
-    python3 make_coc_figures.py --out-dir /path/to/output
+    python3 make_coc_figures.py \
+        --metrics /path/to/Thesis_Final_Control/experiments/derived/metrics.csv \
+        --out-dir /path/to/output
 
 The other four read logged CSV from `experiments/results/` in the repository
 they came from, and only run beside that data:
 
     python3 plot_setup_diagnostics.py --out-dir OUT
-    python3 compare_angle_metrics.py --out-dir OUT
+    python3 compare_angle_metrics.py \
+        --results /path/to/Thesis_Final_Control/experiments/results \
+        --metrics /path/to/Thesis_Final_Control/experiments/derived/metrics.csv \
+        --out-dir OUT
     python3 plot_coc_case.py \
         "P2_t1_pos_m040/r01=centre -40 mm" \
         "P2_t1_pos_p000/r01=centre 0 mm" \
         "P2_t1_pos_p040/r01=centre +40 mm" \
-        --axis t1 --out MAIN_E_wrench --out-dir OUT
+        --axis t1 --out MAIN_E_wrench \
+        --results /path/to/Thesis_Final_Control/experiments/results \
+        --out-dir OUT
     python3 make_nullspace_figure.py
 
 `plot_coc_case.py` takes its trials on the command line; the three above are

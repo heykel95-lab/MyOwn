@@ -68,20 +68,19 @@ Cartesian errors and velocities. During set-up, \texttt{e\_R} is measured
 relative to the clearance orientation selected at the transition and held
 constant during set-up.\\
 \texttt{angular\_deviation\_deg} &
-The alignment angle of
-\mbox{\Cref{eq:contact_alignment_error_cross}},
+The pose-based alignment error retained for the consistency check of
+\mbox{\Cref{app:metric_agreement}},
 \mbox{\(\theta_{\mathrm{align}}=\cos^{-1}(-n_{\mathrm{Tool},0}^\top n_s)\)}, between the
 pose-based tool axis \mbox{\(n_{\mathrm{Tool},0}\)} and the flat target
 \mbox{\(-n_s\)}, with \mbox{\(n_s\)} the calibrated physical-plane normal
 stored in the controller configuration [\(^{\circ}\)]. It is zero for a tool
-face parallel to the surface. This recorded quantity produced the deviation
-values reported in the result tables.\\
+face parallel to the surface.\\
 {\small\texttt{angular\_deviation\_t1\_deg}},\newline
 {\small\texttt{angular\_deviation\_t2\_deg}},\newline
 \texttt{angular\_deviation\_}\newline\texttt{normal\_deg} &
 The same angular deviation resolved on \(t_1\), \(t_2\), and \(n_s\)
-[\(^{\circ}\)]. These supply the per-tangent decomposition reported in the
-results.\\
+[\(^{\circ}\)]. These recorded controller fields are not main evaluation
+quantities.\\
 \texttt{p\_CoC}, \texttt{r\_eff} &
 \abbr{CoC} \(p_{\mathrm{TCP}}+r_c\) and the offset from it to the
 selected tool point, \(p_{\mathrm{Tool}}-p_c\), both in the base
@@ -102,8 +101,7 @@ orientation and referenced to stiffness frame \(K\).\\
 External-wrench values captured at the clearance transition.\\
 \texttt{force\_after\_contact},\newline
 \texttt{moment\_after\_contact} &
-The model-estimated wrench with those reference values already subtracted. The
-reported normal load is taken from this group.\\
+The model-estimated wrench with those reference values already subtracted.\\
 \texttt{push} &
 Set-up penetration reference or grind preload retained after set-up [m].\\
 \texttt{nullspace\_mode}, \texttt{sigma\_current} &
@@ -136,14 +134,15 @@ Final commanded joint torque [N\,m].\\
 \ReviewMark{green}{The short summary routes each reported metric to its recorded
 source without reintroducing unused fields.}
 
-The contact-alignment angle \mbox{\(\theta_{\mathrm{align}}\)} was calculated
-from the measured end-effector orientation and the calibrated surface normal
+The pose-based alignment error \mbox{\(\theta_{\mathrm{align}}\)} was calculated
+from the measured end-effector orientation, the calibrated tool normal
+\mbox{\(n_{\mathrm{Tool,EE}}\)}, and the calibrated surface normal
 \mbox{\(n_s\)}. Its before value was taken at the start of set-up, and its
-after value from the settled set-up interval. No other plane normal was
-substituted in the analysis. Selected contact-point displacement was
-calculated from \mbox{\texttt{tool\_contact}}. The reported normal load
-\mbox{\(F_n\)} was the model-estimated force change since the clearance
-transition.
+after value from the settled set-up interval. It is retained only for the
+appendix consistency check. No other plane normal was substituted in the
+analysis. The main signed set-up rotation was calculated from
+\mbox{\texttt{e\_R}} and resolved on the surface tangents. Selected
+contact-point displacement was calculated from \mbox{\texttt{tool\_contact}}.
 
 Three markers of that same angle are written once into the set-up report
 rather than into every row. All three read \mbox{\(\theta_{\mathrm{align}}\)}

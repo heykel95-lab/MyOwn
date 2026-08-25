@@ -93,7 +93,7 @@ Pre-set-up gate rotation &
   \([5,5,50]\,\mathrm{N\,m/rad}\), surface \([t_1,t_2,n_s]\) &
   \([10.01,10.01,10]\,\mathrm{N\,m\,s/rad}\) \\
 Set-up translation (compliance-centre source) &
-  \([2000,2000,350]\,\mathrm{N/m}\) in all Cases~A to~H, surface
+  \([2000,2000,350]\,\mathrm{N/m}\) in all surface-contact experiments, surface
   \([t_1,t_2,n_s]\) &
   \([10,10,175]\,\mathrm{N\,s/m}\) \\
 Set-up rotation (compliance-centre source) &
@@ -155,7 +155,7 @@ Set-up moment-change threshold &
   \texttt{setup\_moment\_threshold} & \(150\,\mathrm{N\,m}\) \\
 Set-up push speed / endpoint &
   \texttt{setup\_push\_speed}, \texttt{setup\_push\_end} &
-  \(0.080\,\mathrm{m/s}\), \(0.240\,\mathrm{m}\) in all Cases~A to~H \\
+  \(0.080\,\mathrm{m/s}\), \(0.240\,\mathrm{m}\) in all surface-contact experiments \\
 Configured grinding sweep & \texttt{grind\_sweep\_enabled} &
   enabled along \(t_2\), \(0.030\,\mathrm{m}\), \(0.2\,\mathrm{Hz}\); not entered in the reported runs \\
 Pre-set-up / pre-grind gates &
@@ -193,16 +193,19 @@ preserves symmetry and positive
 semidefiniteness. The factor \(\zeta=1\) is the directional coefficient used by
 the online damping calculation.
 
-The coupled \(6\times6\) law is enabled only during set-up, and only in
-Cases~D to~H. Case~E used the surface-frame lever definition. The other shifted
-cases used tool-fixed centre displacements configured in end-effector coordinates. For the
-surface-fixed definition,
+The coupled \(6\times6\) law is enabled only during set-up and only for
+conditions with a displaced \abbr{CoC}. The surface-fixed conditions of
+supporting check~1 used a displacement defined in the calibrated surface frame.
+The other shifted conditions used tool-fixed displacements configured in
+end-effector coordinates. For the surface-fixed definition,
 \[
 r_c=R_{\mathrm{surface}}\,r_c^{S},
 \qquad
-r_c^{S}=[\,r_{c,t_1},\ r_{c,t_2},\ r_{c,n}\,]^\top ,
+r_c^{S}=[\,r_{c,t_1},\ r_{c,t_2},\ r_{c,n}\,]^\top .
 \]
-with the tested components listed in table~\ref{tab:experimental_test_cases}. A
+The tested definitions and components are listed in
+Table~\ref{tab:experimental_test_cases} and
+\Cref{app:supporting_contact_checks}. A
 tool-fixed lever remains constant in end-effector coordinates and rotates in
 the base frame with the end effector; a surface-fixed lever remains constant
 in surface coordinates. The controller transforms the selected definition to

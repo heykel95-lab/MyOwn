@@ -1,26 +1,21 @@
-% The two sides of the interaction, drawn on the same three points. Panel (a)
-% is the commanded side: the rotational impedance gives m_{r_c,0} whatever the
-% centre of compliance is, and a non-zero r_c adds the coupling term m_{r_c}. Panel (b) is the
-% observed side: the model-estimated external force, represented at the selected
-% tool point, contributes m_{r_{\mathrm{Tool}}} to the estimated external moment.
-% Each lever keeps one colour in both panels, blue for r_c and green for r_{\mathrm{Tool}},
-% and the lever that plays no part in a panel is drawn thin rather than broken:
-% every line here is solid, and no line is grey or white.
+% The commanded wrench at the TCP when the impedance is defined about a
+% displaced centre of compliance. The complete commanded force f acts at the
+% TCP, the virtual centre sits at p_c, and the displacement r_c between them is
+% what turns part of that force into the coupling contribution r_c x f. Only
+% commanded quantities appear: the model-estimated external wrench is an
+% implementation signal and is not part of this derivation.
+% Colours follow the drawn palette: blue for the virtual displacement, red for
+% a force, black for the moment. Every line is solid, and none is grey or white.
 \begin{tikzpicture}[
     font=\small,
     tool/.style={draw=black, thick},
     levc/.style={-{Latex[length=2mm]}, blue, very thick},
-    levt/.style={-{Latex[length=2mm]}, green!60!black, very thick},
-    levcoff/.style={-{Latex[length=1.6mm]}, blue, thin},
-    levtoff/.style={-{Latex[length=1.6mm]}, green!60!black, thin},
     frc/.style={-{Latex[length=2.2mm]}, red, very thick},
     mom/.style={-{Latex[length=2mm]}, black, thick},
     lbl/.style={font=\small, inner sep=2pt},
     sub/.style={font=\footnotesize, inner sep=2pt},
   ]
 
-% =================== (a) commanded side ====================================
-\begin{scope}
   \draw[black] (0.3,0) -- (5.7,0);
   \node[sub, anchor=west] at (4.75,-0.34) {surface};
 
@@ -28,79 +23,23 @@
     \draw[tool] (1.50,0.55) rectangle (4.30,1.15);
   \end{scope}
 
-  \fill (1.50,0.55) circle (1.7pt);
-  \node[lbl, left] at (1.38,0.50) {$p_{\mathrm{Tool}}$};
   \fill (2.83,1.09) circle (1.7pt);
   \node[lbl, below] at (3.05,0.70) {$p_{\mathrm{TCP}}$};
   \fill (5.30,2.25) circle (1.7pt);
   \node[lbl, right] at (5.42,2.25) {$p_c$};
 
-  % r_c acts here; r_{\mathrm{Tool}} does not
-  \draw[levtoff] (2.83,1.09) -- (1.50,0.55);
-  \node[sub, green!60!black] at (2.05,1.02) {$r_{\mathrm{Tool}}$};
+  % the virtual shift of the impedance reference point
   \draw[levc] (2.83,1.09) -- (5.30,2.25);
   \node[sub, anchor=south, blue] at (4.55,2.00) {$r_c$};
 
-  % the commanded translational force, applied at the TCP
+  % the complete commanded force, applied at the TCP
   \draw[frc] (2.83,2.30) -- (2.83,1.26);
   \node[lbl, left, red] at (2.72,2.10) {$f$};
 
-  % the coupling moment the shifted impedance adds; m_{r_c,0} needs no lever and
-  % is therefore named in the annotation rather than drawn
+  % the complete commanded moment
   \draw[mom] (3.05,2.10) arc (165:15:0.45);
-  \node[sub, above] at (3.49,2.54) {$m_{r_c}$};
+  \node[sub, above] at (3.49,2.54) {$m$};
 
-  \node[sub, anchor=west] at (6.40,1.84) {commanded:};
-  \node[sub, anchor=west] at (6.40,1.42)
-    {$m\approx m_{r_c,0}+m_{r_c}$};
-  \node[sub, anchor=west] at (6.40,1.00)
-    {$m_{r_c,0}$: rotational impedance, $r_c=0$};
-  \node[sub, anchor=west] at (6.40,0.58)
-    {$m_{r_c}=r_c\times f$,\quad $f=f_K+f_D$};
-  \node[lbl, anchor=west] at (0.30,-0.95) {(a) commanded side};
-\end{scope}
-
-% =================== (b) observed side =====================================
-\begin{scope}[yshift=-4.3cm]
-  \draw[black] (0.3,0) -- (5.7,0);
-  \node[sub, anchor=west] at (4.75,-0.34) {surface};
-
-  \begin{scope}[rotate around={10:(1.50,0.55)}]
-    \draw[tool] (1.50,0.55) rectangle (4.30,1.15);
-  \end{scope}
-
-  \fill (1.50,0.55) circle (1.7pt);
-  \node[lbl, left] at (1.38,0.50) {$p_{\mathrm{Tool}}$};
-  \fill (2.83,1.09) circle (1.7pt);
-  \node[lbl, below] at (3.05,0.70) {$p_{\mathrm{TCP}}$};
-  \fill (5.30,2.25) circle (1.7pt);
-  \node[lbl, right] at (5.42,2.25) {$p_c$};
-
-  % r_{\mathrm{Tool}} acts here; r_c does not
-  \draw[levt] (2.83,1.09) -- (1.50,0.55);
-  \node[sub, green!60!black] at (2.05,1.02) {$r_{\mathrm{Tool}}$};
-  \draw[levcoff] (2.83,1.09) -- (5.30,2.25);
-  \node[sub, anchor=south, blue] at (4.55,2.00) {$r_c$};
-
-  % the model-estimated external force, represented at the tool point. It acts
-  % out of the surface, along +n_s: Section 4.5 states that the signed
-  % commanded normal force and this estimated change carry opposite signs, and a
-  % press makes the commanded one negative. Drawn the other way the panel would
-  % also give m_{r_{\mathrm{Tool}}} the opposite sense to m_{r_c} in panel (a), which is
-  % not what the two moments do.
-  \draw[frc] (1.50,0.55) -- (1.22,1.85);
-  \node[lbl, above, red] at (1.18,1.88) {$\Delta\hat f_{\mathrm{ext}}$};
-
-  \draw[mom] (2.55,1.95) arc (135:25:0.60);
-  \node[sub, above] at (3.08,2.20) {$m_{r_{\mathrm{Tool}}}$};
-
-  \node[sub, anchor=west] at (6.40,1.56) {observed:};
-  \node[sub, anchor=west] at (6.40,1.14)
-    {$\Delta\hat m_{\mathrm{ext}}$, model-estimated};
-  \node[sub, anchor=west] at (6.40,0.72)
-    {$m_{r_{\mathrm{Tool}}}=r_{\mathrm{Tool}}\times\Delta\hat f_{\mathrm{ext}}$,
-     from the tool geometry};
-  \node[lbl, anchor=west] at (0.30,-0.95) {(b) observed side};
-\end{scope}
+  \node[lbl] at (2.90,-1.05) {$m = m_R + r_c\times f$};
 
 \end{tikzpicture}

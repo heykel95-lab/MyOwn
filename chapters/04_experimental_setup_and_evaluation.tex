@@ -5,19 +5,19 @@ This chapter describes how the controller developed in \Cref{ch:implementation}
 was evaluated experimentally. The methodology is organised in the order in
 which the experiments can be reproduced: the physical system is introduced
 first, followed by the surface and tool calibration, the common contact-test
-configuration and procedure, the parameter matrix for Cases~A to~H, the
-quantities used for evaluation, and the separate Cartesian pose-hold study for
-the null-space controller.
+configuration and procedure, the main surface-contact matrix, the quantities
+used for evaluation, and the separate Cartesian pose-hold study for the
+null-space controller. Supporting checks of the compliance-centre geometry are
+reported in \Cref{app:supporting_contact_checks}.
 
 The main data set consists of surface-contact measurements in which the
 commanded tool orientation offset, directional Cartesian stiffness, and virtual
 \abbr{CoC} \(p_c\) were varied under otherwise matched conditions.
 The primary controller-response quantity is the signed end-effector rotation
-during set-up. The alignment angle calculated from the end-effector pose,
-TCP-height flatness classification, displacement, commanded wrench, and
-model-estimated external load are retained as supporting quantities. A second,
-independent experiment evaluates the null-space terms under a repeatable
-internally commanded disturbance.
+during set-up. The TCP-height flatness classification, displacement, and
+commanded wrench are retained as supporting quantities. A second, independent
+experiment evaluates the null-space terms under a repeatable internally
+commanded disturbance.
 
 
 % ============================================================================
@@ -132,9 +132,8 @@ Each symbol carries the frame it is expressed in.
 \(n_{\mathrm{Tool,EE}}\) is the tool-face normal in end-effector coordinates,
 and \(n_{\mathrm{Tool},0}\) is the same physical direction in the base frame.
 Only the first is calibrated. The second follows from it during operation, as
-\Cref{sec:tool_orientation_given_surface} sets out, and
-\Cref{sec:alignment_evaluation} uses it for the alignment angle
-\(\theta_{\mathrm{align}}\).
+\Cref{sec:tool_orientation_given_surface} sets out. It is used only for the
+pose-based consistency check reported in \Cref{app:metric_agreement}.
 
 Neither calibration entered the other. The surface reference was obtained
 first, from one seated pose, using the nominal \(+Z_{\mathrm{EE}}\) direction;
@@ -245,11 +244,11 @@ The calibrated angles were
 \label{eq:calibrated_surface_tilt_angles}
 \end{equation}
 
-which give
+which give, to six decimal places,
 
 \begin{equation}
 n_s
-\approx
+=
 \begin{bmatrix}
 0.017245\\
 0.027663\\
@@ -318,11 +317,11 @@ t_2=n_s\times t_1.
 \label{eq:calibrated_second_surface_tangent}
 \end{equation}
 
-For the calibrated plane,
+For the calibrated plane, to six decimal places,
 
 \begin{equation}
 t_1
-\approx
+=
 \begin{bmatrix}
  0.999851\\
 -0.000477\\
@@ -330,7 +329,7 @@ t_1
 \end{bmatrix},
 \qquad
 t_2
-\approx
+=
 \begin{bmatrix}
  0.000000\\
  0.999618\\
@@ -339,7 +338,8 @@ t_2
 \label{eq:calibrated_surface_tangent_values}
 \end{equation}
 
-The surface frame used throughout the contact measurements is therefore
+The surface frame used throughout the contact measurements is therefore, to
+six decimal places,
 
 \begin{equation}
 R_{\mathrm{surface}}
@@ -347,7 +347,7 @@ R_{\mathrm{surface}}
 \begin{bmatrix}
 t_1 & t_2 & n_s
 \end{bmatrix}
-\approx
+=
 \begin{bmatrix}
  0.999851 & 0.000000 & 0.017245\\
 -0.000477 & 0.999618 & 0.027663\\
@@ -385,9 +385,9 @@ base-frame direction \(\bar n_B\) in all three,
 
 \begin{equation}
 R_{\mathrm{cal},1}n_{\mathrm{Tool,EE}}
-\approx
+=
 R_{\mathrm{cal},2}n_{\mathrm{Tool,EE}}
-\approx
+=
 R_{\mathrm{cal},3}n_{\mathrm{Tool,EE}}
 =
 \bar n_B.
@@ -564,20 +564,20 @@ applied, are provided in \Cref{app:controller_parameters}.
 \label{sec:experimental_procedure_contact}
 
 The common trajectory and transition parameters are collected in
-Table~\ref{tab:experimental_phase_parameters}. The table is the single reference
-for the fixed contact-test sequence used by Cases~A to~H.
+Table~\ref{tab:experimental_phase_parameters}. These settings were used
+throughout the surface-contact experiments unless explicitly stated otherwise.
 
 \begingroup
 \small
 \begin{longtable}{@{}p{0.43\textwidth}p{0.20\textwidth}p{0.27\textwidth}@{}}
-\caption{Common phase-transition and trajectory parameters for Cases~A to~H.}
+\caption{Common phase-transition and trajectory parameters for the surface-contact experiments.}
 \label{tab:experimental_phase_parameters}
 \label{tab:experimental_case_dh_parameters}\\
 \toprule
 \textbf{Quantity} & \textbf{Value} & \textbf{Role}\\
 \midrule
 \endfirsthead
-\caption[]{Common phase-transition and trajectory parameters for Cases~A to~H (continued).}\\
+\caption[]{Common phase-transition and trajectory parameters for the surface-contact experiments (continued).}\\
 \toprule
 \textbf{Quantity} & \textbf{Value} & \textbf{Role}\\
 \midrule
@@ -609,13 +609,13 @@ the configured initial joint posture. The calibrated geometry, the phase gains
 and damping, and the compliance-centre definition were prepared before the
 torque callback started.
 
-Approach ended when the selected tool point reached \(20\,\mathrm{mm}\)
-above the calibrated plane. That transition was
-defined by geometry rather than by a force threshold. At the same instant the
-controller stored the TCP pose, the orientation reference, the selected tool
-point and its projection onto the plane, and the
-model-estimated external wrench, which serve as the references for the
-evaluation quantities of \Cref{sec:experimental_evaluation}.
+Approach ended when the selected tool point reached \(20\,\mathrm{mm}\) above
+the calibrated plane. This transition was defined geometrically rather than by
+a force threshold. At the same instant, the controller stored the TCP pose, the
+orientation reference, the selected tool point, and its projection onto the
+plane. The model-estimated external wrench was additionally stored for the
+optional wrench-change termination condition described in
+\Cref{subsec:implementation_setup_phase}.
 
 The set-up press endpoint of \(+0.240\,\mathrm{m}\) is a Cartesian spring
 reference beyond the calibrated plane and is not interpreted as a physical
@@ -623,10 +623,10 @@ penetration of the same magnitude. The reference reached it after approximately
 \(3.25\,\mathrm{s}\) and was then held. Throughout set-up the rotational
 reference remained the orientation captured at the clearance transition, so the
 measured alignment rotation is a response to contact rather than the tracking
-of a time-varying orientation command. In Cases~A, B, and~C the decoupled
-Cartesian impedance was active during set-up, and in Cases~D to~H the
-point-shifted \(6\times6\) impedance associated with the selected centre of
-compliance.
+of a time-varying orientation command. The TCP-centred and stiffness-variation
+conditions used the decoupled Cartesian impedance during set-up. Conditions
+with a displaced \abbr{CoC} used the point-shifted \(6\times6\) impedance
+associated with the selected compliance-centre position.
 
 Every reported contact run ended at the \(5\,\mathrm{s}\) set-up timeout, and
 the moment-change threshold was reached in none of them. The pre-grind gate
@@ -656,7 +656,7 @@ a measured contact load.
 Projected null-space damping and singular-value conditioning were active
 together throughout the surface-contact measurements. Keeping this secondary
 controller fixed prevents changes in the null-space policy from becoming an
-additional variable across Cases~A to~H. The gains were
+additional variable across the surface-contact experiments. The gains were
 
 \begin{equation}
 d_{\mathrm{null}}
@@ -686,36 +686,42 @@ libfranka model-estimated external wrench. The complete signal list and CSV
 structure are given in \Cref{sec:recorded_signals} and
 \Cref{app:recorded_data}.
 
-Three repetitions were recorded for each parameter setting, giving \(165\)
-surface-contact runs across \(55\) settings. No run was discarded, and the
-quantitative evaluation uses all \(165\). Within each controlled comparison,
-the calibrated geometry, common phase parameters, fixed gains, and null-space
-settings remained unchanged. Only the parameter assigned to the corresponding
-case was varied.
+Three repetitions were recorded for each parameter setting. The main
+surface-contact study comprises \(123\) runs across \(41\) settings. A further
+\(42\) runs across \(14\) settings were performed as supporting checks of the
+compliance-centre geometry and are reported in
+\Cref{app:supporting_contact_checks}. In total, \(165\) surface-contact runs
+across \(55\) settings were recorded. No run was discarded. Together with the
+\(12\) pose-hold runs of \Cref{sec:nullspace_hold_study}, the complete
+experimental data set contains \(177\) recorded runs.
+
+Within each controlled comparison, the calibrated geometry, common phase
+parameters, fixed gains, and null-space settings remained unchanged. Only the
+parameter assigned to the corresponding comparison was varied.
 
 
 % ============================================================================
-\section{Surface-Contact Experimental Matrix}
+\section{Main Surface-Contact Experimental Matrix}
 \label{sec:experimental_design}
 % ============================================================================
 
-The surface-contact experiments compare the TCP-centred condition with
-stiffness variations and displaced centres of compliance across a controlled
-set of initial angular misalignments. Case~A establishes the TCP-centred
-reference, where \(r_c=0\) and the point shift contributes no coupling moment.
-Cases~B and~C quantify the influence of rotational and cross-axis translational
-stiffness. Case~D evaluates the sign and direction dependence of a non-zero
-tangential centre across both principal surface tangents. Cases~E to~G examine
-the lever-definition frame, the displacement direction, and the commanded
-orientation-offset magnitude. Case~H extends the comparison to intermediate
-tangent-plane rotation directions and contrasts a direction-selected lever with
-one fixed lever.
+The main surface-contact study separates the effects of the principal
+controller parameters. Case~A establishes the TCP-centred reference, where
+\(r_c=0\). In Cases~B and~C, rotational and translational stiffness were varied
+independently so that each gain could be evaluated without changing the other
+simultaneously. In Case~D the tangential compliance-centre position was varied
+across both principal surface tangents and both signs of the commanded
+orientation offset. Case~E evaluates the response at two commanded
+orientation-offset magnitudes.
 
-Table~\ref{tab:experimental_test_cases} lists the complete parameter variations and
-the shared reference conditions. The case letters are retained throughout
-\Cref{ch:results_discussion} so that each experimental setting maps directly to
-its reported result. Two cases need a geometric explanation that the table
-cannot carry, and both are treated after it.
+Additional experiments concerning the \abbr{CoC} definition frame,
+displacement along the tool axis, and intermediate tangent-plane directions
+are treated as supporting checks of the geometric formulation in
+\Cref{app:supporting_contact_checks}.
+
+Table~\ref{tab:experimental_test_cases} summarises the parameter variations of
+the main study. Each listed setting was repeated three times unless it is a
+reference condition counted with an earlier case.
 
 \begingroup
 \scriptsize
@@ -727,13 +733,13 @@ cannot carry, and both are treated after it.
 >{\raggedright\arraybackslash}p{0.27\textwidth}
 >{\centering\arraybackslash}p{0.06\textwidth}
 >{\raggedright\arraybackslash}p{0.17\textwidth}@{}}
-\caption{Experimental cases and parameter variations.}
+\caption{Main surface-contact cases and parameter variations.}
 \label{tab:experimental_test_cases}\\
 \toprule
 \textbf{Case} & \textbf{Varied quantity} & \textbf{Commanded tool orientation offset} & \textbf{Tested values} & \textbf{Runs} & \textbf{Evaluated effect}\\
 \midrule
 \endfirsthead
-\caption[]{Experimental cases and parameter variations (continued).}\\
+\caption[]{Main surface-contact cases and parameter variations (continued).}\\
 \toprule
 \textbf{Case} & \textbf{Varied quantity} & \textbf{Commanded tool orientation offset} & \textbf{Tested values} & \textbf{Runs} & \textbf{Evaluated effect}\\
 \midrule
@@ -742,52 +748,31 @@ cannot carry, and both are treated after it.
 \endfoot
 \bottomrule
 \endlastfoot
-A & Zero lever; \abbr{CoC} at the TCP & None and
-\(\pm10^\circ\) about \(t_1\) or \(t_2\) & No lever. & 15 & Contact response
-without lever coupling; the reference for the other cases.\\
+A & \abbr{CoC} at the TCP & None and
+\(\pm10^\circ\) about \(t_1\) or \(t_2\) & \(r_c=0\). & 15 & Contact response
+without \abbr{CoC} coupling.\\
 \addlinespace
 
 B & Rotational stiffness & \(+10^\circ\) about \(t_1\) or \(t_2\) &
-Command-axis \(K_R=15\) and \(50\,\mathrm{N\,m/rad}\), orthogonal tangent at
-\(5\,\mathrm{N\,m/rad}\). & 12 & Command-axis rotational
-stiffness on the direction-dependent response.\\
+Command-axis \(K_R=15\) and \(50\,\mathrm{N\,m/rad}\). & 12 & Influence of
+rotational stiffness.\\
 \addlinespace
 
 C & Translational stiffness & \(+10^\circ\) about \(t_1\) or \(t_2\) &
-Cross-axis \(K_p=300\) and \(800\,\mathrm{N/m}\). & 12 & Cross-axis
-translational stiffness on the direction-dependent response.\\
+Cross-axis \(K_p=300\) and \(800\,\mathrm{N/m}\). & 12 & Influence of
+translational stiffness.\\
 \addlinespace
 
-D & Tangential compliance-centre lever, direction and sign &
+D & Tangential \abbr{CoC} position &
 \(\pm10^\circ\) about \(t_1\) or \(t_2\) & \(-40\), \(-20\), \(-10\),
 \(+10\), \(+20\), \(+40\,\mathrm{mm}\) along the tangent perpendicular to the
-commanded rotation. & 72 & Direction and
-sign dependence across both principal tangents.\\
+commanded rotation. & 72 & Direction and sign dependence.\\
 \addlinespace
 
-E & Compliance-centre lever-definition frame & None and \(+10^\circ\) about
-\(t_1\) & The same nominal \(40\,\mathrm{mm}\) lever: end-effector frame at no
-offset, surface frame at both offsets. & 9 & Dependence on the frame holding the
-displacement, not on its magnitude alone.\\
-\addlinespace
-
-F & Compliance-centre position along the tool axis & \(+10^\circ\) about
-\(t_1\) & \(-40\), \(-20\), \(-10\), \(+10\), \(+20\),
-\(+40\,\mathrm{mm}\) along the tool axis. & 18 & Tangential against tool-axis
-displacement; the axial moment contribution is small at the tested
-inclination.\\
-\addlinespace
-
-G & Commanded orientation-offset magnitude & \(+5^\circ\) about \(t_1\) or
+E & Commanded orientation-offset magnitude & \(+5^\circ\) and \(+10^\circ\)
+about \(t_1\) or
 \(t_2\) & \(0\) and \(+40\,\mathrm{mm}\) along the assisting tangent. & 12 &
-Response against the commanded orientation-offset magnitude at a fixed
-centre.\\
-\addlinespace
-
-H & Commanded rotation direction and lever selection & \(+10^\circ\) in four
-tangent-plane directions & A \(40\,\mathrm{mm}\) lever, direction-selected and
-fixed at the \(t_1\) selection. & 15 & Agreement between a fixed lever and the
-direction-selected rule.\\
+Dependence on the commanded orientation-offset magnitude.\\
 
 \end{longtable}
 \endgroup
@@ -796,87 +781,9 @@ The run counts in Table~\ref{tab:experimental_test_cases} give the three
 scheduled repetitions of each setting. A condition that a case shares with an
 earlier one is counted with that earlier case.
 
-In Case~F the \abbr{CoC} was displaced along the tool axis. An axial
-displacement produces no tangential lever component when the tool axis is
-exactly parallel to the normal press direction. At finite inclination a small
-tangential component remains. Case~F therefore
-quantifies the residual influence of this nominally weak displacement
-direction.
-
-
-\subsection{Case-H Direction and Lever Definition}
-\label{subsec:case_h_lever_definition}
-
-The compliance-centre lever follows the convention
-
-\begin{equation}
-r_c=p_c-p_{\mathrm{TCP}}.
-\label{eq:experimental_compliance_lever}
-\end{equation}
-
-This quantity defines the shift of the impedance reference point. The
-selected tool-point offset \(p_{\mathrm{Tool}}-p_{\mathrm{TCP}}\) follows from the physical
-tool geometry and is treated separately, as defined in
-\Cref{subsec:calibrated_contact_geometry} and
-\Cref{sec:centre_of_compliance}.
-
-A tool-fixed lever is constant in end-effector coordinates and therefore
-rotates in the base frame with the end effector. A surface-fixed lever is
-constant in the surface frame \([t_1,t_2,n_s]\). In both cases, the active
-lever is transformed to base coordinates during each control cycle before the
-stiffness and damping matrices are shifted to the TCP.
-
-For a commanded rotation represented by surface components
-\((\theta_{t_1},\theta_{t_2})\), the direction-selected tangential lever is
-
-\begin{equation}
-r_{c,t}
-=
-\frac{\rho_c}{\sqrt{\theta_{t_1}^{2}+\theta_{t_2}^{2}}}
-\left(\theta_{t_1}t_2-\theta_{t_2}t_1\right),
-\label{eq:experimental_general_lever_rule}
-\end{equation}
-
-where \(\rho_c>0\) is the selected lever magnitude. Case~H used
-\(\rho_c=40\,\mathrm{mm}\). The selected lever lies perpendicular to the
-commanded rotation direction in the tangent plane, and its sign is chosen so
-that the press-induced coupling moment acts in the required alignment
-direction. It therefore changes with the commanded rotation direction, whereas
-the fixed comparison retains the lever selected for the \(t_1\) command.
-
-\begin{table}[H]
-\centering
-\small
-\caption{Case-H orientation commands and lever vectors.}
-\label{tab:experimental_case_c_vectors}
-\begin{tabular}{@{}llrr@{}}
-\toprule
-Commanded direction & Lever setting &
-\([\theta_{t_1},\theta_{t_2}]\) (deg) &
-\([r_{c,t_1},r_{c,t_2},r_{c,n}]\) (mm)\\
-\midrule
-About \(t_1\) & selected & \([+10.0,0.0]\) & \([0,+40.0,0]\)\\
-\(-45^\circ\) from \(t_1\) & selected & \([+7.1,-7.1]\) & \([+28.3,+28.3,0]\)\\
-\(+45^\circ\) from \(t_1\) & selected & \([+7.1,+7.1]\) & \([-28.3,+28.3,0]\)\\
-About \(t_2\) & selected & \([0.0,+10.0]\) & \([-40.0,0,0]\)\\
-\addlinespace
-\(-45^\circ\) from \(t_1\) & fixed at the \(t_1\) selection & \([+7.1,-7.1]\) & \([0,+40.0,0]\)\\
-\(+45^\circ\) from \(t_1\) & fixed at the \(t_1\) selection & \([+7.1,+7.1]\) & \([0,+40.0,0]\)\\
-About \(t_2\) & fixed at the \(t_1\) selection & \([0.0,+10.0]\) & \([0,+40.0,0]\)\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{figure}[H]
-  \centering
-  \input{figures/case_c_direction_rule.tex}
-  \caption{Selected tangential lever for each commanded rotation direction.}
-  \label{fig:case_c_direction_rule}
-\end{figure}
-
-The principal-axis selected conditions are shared with Case~D. The five Case-H
-settings are the two diagonal directions with both lever definitions and the
-\(t_2\) direction with the fixed lever; each was repeated three times.
+In Cases~B and~C, only one Cartesian stiffness entry was varied within each
+comparison. The remaining gain entries were kept at the common values of
+Table~\ref{tab:experimental_common_gains}.
 
 
 % ============================================================================
@@ -885,147 +792,72 @@ settings are the two diagonal directions with both lever definitions and the
 \label{sec:alignment_evaluation}
 % ============================================================================
 
-The evaluation separates the controller response from geometric quantities
-that depend on the calibrated tool model. The primary comparison quantity for
-Cases~A to~H is the signed end-effector rotation during set-up,
-\(\Delta\theta_{\mathrm{set}}\). Supporting quantities are the alignment
-angle \(\theta_{\mathrm{align}}\), the TCP-height flatness classification,
-the selected tool-point displacement \(\Delta p_{\mathrm{Tool}}\) and its magnitude
-\(s_{\mathrm{Tool}}\), the TCP displacement \(\Delta p_{\mathrm{TCP}}\) and its magnitude
-\(s_{\mathrm{TCP}}\), the commanded Cartesian wrench
-\(F=[f^\top,m^\top]^\top\), and the model-estimated external normal-load
-magnitude \(F_n\). These quantities describe different aspects of the
-response and are not treated as interchangeable measurements of the same
-physical quantity.
+The primary response quantity for the surface-contact experiments is the signed
+end-effector rotation during set-up. It directly measures how much the robot
+rotated under contact after the orientation reference was fixed at the
+clearance transition. The TCP-height flatness classification, selected
+tool-point and TCP displacements, and commanded Cartesian wrench provide the
+supporting quantities used in the main comparisons.
 
 
-\subsection{Signed Set-Up Rotation}
+\subsection{Signed End-Effector Set-Up Rotation}
 \label{subsec:experimental_supporting_metrics}
 
-The primary response quantity measures how the end effector actually rotated
-between the clearance transition and the end of set-up. The relative
-end-effector rotation is
-\(R_{\mathrm{after}}R_{\mathrm{before}}^\top\). Using the finite-rotation
-relations introduced in \Cref{eq:angle_from_trace,eq:rotation_axis_from_matrix},
-its angle \(\phi_{\mathrm{set}}\) and unit axis \(u_{\mathrm{set}}\) define
-the rotation vector
+The orientations at the beginning and end of set-up are denoted by
+\(R_{\mathrm{before}}\) and \(R_{\mathrm{after}}\). Their finite relative
+rotation and its base-frame rotation vector are
 
 \begin{equation}
-\Delta\theta_{\mathrm{set}}
+R_\Delta
 =
-\phi_{\mathrm{set}}u_{\mathrm{set}}.
+R_{\mathrm{after}}R_{\mathrm{before}}^\top,
+\qquad
+\Delta\theta
+=
+\operatorname{Log}(R_\Delta)^\vee .
 \label{eq:contact_induced_rotation}
 \end{equation}
 
-The vector \(\Delta\theta_{\mathrm{set}}\) is expressed in the robot base
-frame and contains both the magnitude and direction of the finite end-effector
-rotation during set-up. For comparison with the commanded surface directions,
-it is resolved in the surface frame:
+Here, \(\operatorname{Log}(\cdot)^\vee\) maps the finite rotation matrix to its
+rotation vector. Resolving that vector in the surface frame gives
 
 \begin{equation}
-\Delta\theta_{\mathrm{set}}^{S}
+\Delta\theta^{S}
 =
-R_{\mathrm{surface}}^\top\Delta\theta_{\mathrm{set}}.
+R_{\mathrm{surface}}^\top\Delta\theta,
+\qquad
+\Delta\theta_i
+=
+t_i^\top\Delta\theta,
+\quad i\in\{1,2\}.
 \label{eq:surface_resolved_setup_rotation}
 \end{equation}
 
-The signed component along the commanded rotation direction is the primary
-controller-response metric. A positive value denotes end-effector rotation in
-the intended alignment direction. This quantity is calculated directly from
-the measured end-effector orientations and does not require the calibrated tool
-normal \(n_{\mathrm{Tool,EE}}\).
+The reported quantity \(\Delta\theta_i\) is the signed end-effector set-up
+rotation about surface tangent \(t_i\). For a positive commanded offset, a
+positive value denotes rotation in the intended alignment direction and a
+negative value denotes rotation in the opposite direction. Reversing the
+command reverses the sign of the intended direction. This quantity is used for
+all main comparisons in \Cref{ch:results_discussion} because it is signed and
+is calculated directly from the measured end-effector orientations.
 
 
-\subsection{Alignment Angle and Flatness Classification}
+\subsection{Supporting Geometric Checks}
 \label{subsec:experimental_alignment_change}
 
-The tool normal used for the alignment calculation is obtained
-from the measured end-effector orientation and the calibrated direction in the
-end-effector frame:
-
-\begin{equation}
-n_{\mathrm{Tool},0}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}.
-\label{eq:evaluation_grinding_face_direction}
-\end{equation}
-
-The alignment angle is
-
-\begin{equation}
-\theta_{\mathrm{align}}(t)
-=
-\cos^{-1}\!\left(-n_{\mathrm{Tool},0}(t)^\top n_s\right).
-\label{eq:contact_alignment_error_cross}
-\end{equation}
-
-The negative sign follows the experimental flat target
-\(R_dn_{\mathrm{Tool,EE}}=-n_s\). The quantity
-\(\theta_{\mathrm{align}}(t)\geq0\) is an unsigned instantaneous geometric
-error: it states how far the reconstructed tool normal is from the flat target
-at time \(t\). It is calculated from the end-effector pose and the calibrated
-tool normal and therefore assumes that the calibrated relation between the tool
-and end effector remains fixed. Relative motion in the tool mounting is not
-captured by this calculation.
-
-The reduction of this unsigned alignment error over set-up is reported as
-
-\begin{equation}
-\Delta\theta_{\mathrm{align}}
-=
-\theta_{\mathrm{align,before}}
--
-\theta_{\mathrm{align,after}},
-\label{eq:alignment_error_improvement}
-\end{equation}
-
-where the before value is taken at the clearance transition and the after value
-at the end of set-up. A positive \(\Delta\theta_{\mathrm{align}}\) therefore
-means that the reconstructed angular difference from the flat target decreased.
-This quantity is a change of two unsigned alignment-error magnitudes; it is not
-the finite end-effector rotation itself. The latter is measured separately by
-\(\Delta\theta_{\mathrm{set}}\) in
-\Cref{eq:contact_induced_rotation}.
-
-The alignment angle carries no direction, and the case comparisons need one.
-The same geometric relation therefore also supplies a signed decomposition. Let
-\(\theta_{\mathrm{dev}}\) be the rotation vector of the shortest rotation
-taking the pose-based tool axis \(n_{\mathrm{Tool},0}\) onto the flat target direction
-\(-n_s\). Resolved on the surface axes it gives
-
-\begin{equation}
-\theta_{\mathrm{dev}}^{S}
-=
-R_{\mathrm{surface}}^\top\theta_{\mathrm{dev}}
-=
-[\,\theta_{\mathrm{dev},t_1},\ \theta_{\mathrm{dev},t_2},
-\ \theta_{\mathrm{dev},n}\,]^\top ,
-\label{eq:signed_deviation_components}
-\end{equation}
-
-whose components are reported in degrees and whose norm is the alignment angle
-itself, \(\lVert\theta_{\mathrm{dev}}^{S}\rVert=\theta_{\mathrm{align}}\).
-The two quantities are the magnitude and the signed components of one vector,
-not independent measurements.
-
-Two properties of the sign convention matter when the values are read.
-\(\theta_{\mathrm{dev}}^{S}\) is the rotation still required to reach the flat
-target, so its sign is opposite to that of the commanded tool orientation
-offset that produced the deviation: a commanded \(+10^\circ\) about \(t_1\)
-appears as a negative \(t_1\) component. Its magnitude is also somewhat below
-the commanded value, because the orientation phase exits on an angular
-tolerance rather than driving the offset to completion. The value at set-up
-entry is written \(\theta_{\mathrm{dev},t_i,\mathrm{before}}\), and it is
-distinct from \(\theta_{\mathrm{align,before}}\), which is unsigned.
+A separate pose-based alignment angle calculated from the calibrated tool
+normal is retained only as a supporting consistency check in
+\Cref{app:metric_agreement}. It is not used for the main comparisons because it
+is unsigned and depends on an assumed fixed relation between the tool and end
+effector.
 
 A separate geometry-based flatness classification is obtained from the final
 TCP height relative to the calibrated plane and the height expected from the
 calibrated rectangular tool geometry when the tool face is flat. This
 classification uses the end-effector position and calibrated geometry; it is
-not a direct angular measurement of the physical tool face. The alignment
-angle and the TCP-height classification are therefore reported separately from
-the primary end-effector set-up rotation.
-\Cref{app:metric_agreement} compares \(\Delta\theta_{\mathrm{align}}\) and
-\(\Delta\theta_{\mathrm{set}}\) against each other, as a check on the choice of
-primary quantity.
+not a direct angular measurement of the physical tool face. The TCP-height
+classification is therefore reported separately from the primary end-effector
+set-up rotation.
 
 
 \subsection{Displacement and Wrench Quantities}
@@ -1055,35 +887,20 @@ s_{\mathrm{TCP}}=\lVert\Delta p_{\mathrm{TCP}}\rVert.
 Both displacement vectors were additionally resolved in the surface frame to
 separate tangential and normal motion.
 
-The supporting normal-load quantity is derived from the change in the
-libfranka model-estimated external force relative to the value stored at the
-clearance transition:
+The commanded normal force and commanded TCP moment used in the
+controller-response plots are obtained from \(F=[f^\top,m^\top]^\top\):
 
 \begin{equation}
-F_n
-=
-\left|
-n_s^\top\left(\hat f_{\mathrm{ext}}-\hat f_{\mathrm{ref}}\right)
-\right|.
-\label{eq:model_estimated_normal_load}
-\end{equation}
-
-This is a model-estimated force change, not an independently measured contact
-force. The commanded normal force and commanded TCP moment used in the
-controller-response plots are instead obtained from
-\(F=[f^\top,m^\top]^\top\):
-
-\begin{equation}
-F_{n,\mathrm{cmd}}=n_s^\top f,
+F_n=n_s^\top f,
 \qquad
-M_{t_i,\mathrm{cmd}}=t_i^\top m.
+M_{t_i}=t_i^\top m.
 \label{eq:commanded_surface_wrench_components}
 \end{equation}
 
-Thus \(F_{n,\mathrm{cmd}}\) is a signed command, while \(F_n\) is the positive
-magnitude of a model-estimated change. During a quasi-static press the two are
-expected to have approximately opposite magnitude under the chosen sign
-convention, but they remain distinct controller signals.
+\(F_n\) is signed, and it is negative while the tool presses into the
+surface. Both quantities are controller commands, and the plotted moment is
+therefore the complete TCP moment generated by the point-shifted
+spring--damper law.
 
 
 \subsection{Treatment of Repeated Runs}

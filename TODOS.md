@@ -16,7 +16,9 @@ The \(55\) reported settings each carry three repetitions. The two
 `B_combined_{t1,t2}` settings were removed from the report on 2026-08-24,
 taking the campaign from \(57\) settings and \(171\) runs to \(55\) and
 \(165\); their run directories stay in the archive and are simply not
-reported. The Case-D run that
+reported. The main A--E study contains \(41\) settings and \(123\) runs. The
+three supporting checks in Appendix D contain \(14\) settings and \(42\) runs.
+The Case-D run that
 Section 4.3.4 once recorded as excluded was re-recorded on 2026-08-19 under a
 byte-identical parameter set, so the count is \(165\) of \(165\) and the chapter
 says so. **Do not reintroduce an excluded-run sentence.**
@@ -32,18 +34,19 @@ figure scripts read. **A clone shows neither**, because that repository's
 repository as `MyController/experiments/results/MAIN_NS{7,8}_*`, three
 repetitions each, all ending at \(18.001\,\mathrm{s}\).
 
-The mapping from case letters to directories, which should not be re-derived:
+The mapping from main cases and supporting checks to directories, which should
+not be re-derived:
 
-| Case | Settings | Run directories |
+| Study item | Settings | Run directories |
 |---|---|---|
 | A | 5 | `S1_none_00deg`, `P2_{t1,t2}_{pos,neg}_p000` |
 | B | 4 | `A_rot_{t1,t2}_{15,50}` |
 | C | 4 | `B_trans_{t1,t2}_{0300,0800}` |
 | D | 24 | `P2_{t1,t2}_{pos,neg}_{m010,m020,m040,p010,p020,p040}` |
-| E | 3 | `S3_surface_00deg`, `S3_surface_t1_10deg`, `S2_tool_00deg` |
-| F | 6 | `P3_axis_{m010,m020,m040,p010,p020,p040}` |
-| G | 4 | `P5_mag_{t1,t2}_{p000,p040}` |
-| H | 5 | `C_dir_{m45,p45}`, `C_fixed_{m45,p45}`, `C_fixed_t2` |
+| E | 4 | `P5_mag_{t1,t2}_{p000,p040}` |
+| Supporting check 1: definition frame | 3 | `S3_surface_00deg`, `S3_surface_t1_10deg`, `S2_tool_00deg` |
+| Supporting check 2: tool-axis displacement | 6 | `P3_axis_{m010,m020,m040,p010,p020,p040}` |
+| Supporting check 3: intermediate tangent directions | 5 | `C_dir_{m45,p45}`, `C_fixed_{m45,p45}`, `C_fixed_t2` |
 
 The `P2_*_{m080,p080}` directories and the `V_*`, `S4_*`, `S5_*`, `P4_*`,
 `P6_*`, `P_*`, `AXS*`, `REVS2_*` and `PROBE60_*` series are exploratory and
@@ -53,24 +56,6 @@ The aborted first attempt at `P2_t1_pos_m040/r02` was moved to
 `experiments/results_aborted/P2_t1_pos_m040_r02_20260817/` so no analysis script
 counts it. Its `README.md` says what it was. Do not delete it and do not move it
 back.
-
-### The repeatability sentence in Chapter 5 cannot be reproduced
-
-Chapter 5 states that the median within-setting standard deviation of the
-signed set-up rotation was approximately \(0.04^\circ\) about \(t_1\) and
-\(0.14^\circ\) about \(t_2\), and treats differences below about
-\(0.1^\circ\) as scatter. **No definition tried on 2026-08-19 reproduces those
-two values** from `metrics.csv`: medians over the reported settings give
-\(0.015\) and \(0.058\), over the \(28\) `P2_` settings \(0.041\) and
-\(0.157\), and over every archived setting \(0.016\) and \(0.054\). The
-\(0.041\) is close enough to be suggestive and its partner is not.
-
-This matters because the third repetition of `P2_t1_pos_m040` widened that
-setting's own scatter, so whatever the sentence was computed from has moved a
-little. **The number was left unchanged**, since changing a statistic that
-cannot be reproduced would be worse than leaving it. To close it: state which
-set of settings and which column the two medians came from, then recompute both
-and the \(0.1^\circ\) interpretation threshold with them.
 
 ### Building on the lab machine, and the one thing it cannot check
 
@@ -115,56 +100,6 @@ coordinates are not to be published. `MyOwn/.gitignore` blocks no CSV, so this
 repository is also a possible home, but then the scripts' `HERE/../experiments`
 resolution means the data has to sit at `code/python/experiments/`.
 
-### One figure-label edit, still open
-
-Its input is on this machine. `make_coc_figures.py` resolves its data as
-`HERE/../experiments`, so run it beside `Thesis_Final_Control/experiments/`
-rather than copying the archive into this repository.
-
-Two entries that stood here are gone. The `plot_setup_diagnostics.py` axis
-labels went with the appendix section that included their figure, and the
-Figure 5.10 y-axis was corrected in the pass that put the thesis symbols on
-every plot axis; that figure now reads
-\(\Delta\sigma_{\min,\mathrm{dist}}\) and \(E_N\).
-
-**Make the source edits below first, then regenerate and copy the PDF back.**
-Line numbers were checked on 2026-08-19.
-
-**Editing warning.** Editing these `.tex` and `.py` files through an inline
-shell script **silently corrupts backslashes**. Both of these failed here:
-`python - <<'PY' ... PY`, where a quoted heredoc still stripped one backslash
-level; and `sed -i 's/\\cref{/\\Cref{/g'`, which **reported success and changed
-nothing**. Use a file-based script written by an editor, or an editing tool,
-and verify by re-reading the file.
-
-#### The remaining item: legends of Figures 5.2, 5.3 and D.1 — `code/python/figures/make_coc_figures.py`
-
-These read `initial $-9.31^\circ$ about $t_1$` and similar. They are no longer
-wrong, because the signed set-up-entry deviation is now defined in Section 4.5,
-but four such labels crowd a legend and the exact values belong in the tables.
-This is polish, not a correction.
-
-The labels are built by `initial_label()` at line 96 and used at lines 183, 222,
-233, 274, 293 and 307. Shorten to the condition alone — `+10^\circ\ t_1`,
-`-10^\circ\ t_1`, `+10^\circ\ t_2`, `-10^\circ\ t_2` — by rewriting
-`initial_label()` to name the commanded offset instead of the measured
-deviation, rather than editing six call sites.
-
-**Do not delete the measured value from the thesis**: it is what
-Table 5.4's \(\theta_{\mathrm{dev,before}}\) column carries, and the point of
-`initial_label()` was to avoid substituting the nominal command for the
-orientation actually reached. Say once in the surrounding text that the
-commanded offset and the measured entry deviation differ, and that the measured
-values are tabulated.
-
-### Correct the README claim about `make_coc_figures.py`
-
-`code/python/figures/README.md` line 43 says the script "needs no data ... so it
-runs anywhere". That is wrong: `main()` calls `load()`, which reads
-`experiments/derived/metrics.csv` and raises `FileNotFoundError`. Either
-correct the claim or give the script the hardcoded-means path the README
-describes.
-
 ## Final examiner-level review: the standing work list
 
 A complete final review was requested before supervisor submission, in two
@@ -178,16 +113,9 @@ outstanding from the author on that front.
 
 ### Verified during the review and needing no change
 
-- **Figure D.3 is present and renders.** It was reported as a heading, caption
-  and paragraph with no visible graphic. Built from current source it renders
-  correctly, `figures/MAIN_DQ_metric_comparison.pdf` is a valid two-panel
-  matplotlib PDF, it appears in the build log, and both panels are visible on
-  the page. The reported fault belongs to the PDF it was seen in, not to the
-  source. Do not attempt to restore it. Its legend and caption still need the
-  work listed under the figure items.
 - **`p_CoC` and `r_eff` in Appendix B are consistent** with
-  \(r_c=p_{\mathrm{TCP}}-p_c\): the appendix gives
-  \(p_c=p_{\mathrm{TCP}}-r_c\) and \(r_{\mathrm{eff}}=p_T-p_c\). `r_eff` is a
+  \(r_c=p_c-p_{\mathrm{TCP}}\): the appendix gives
+  \(p_c=p_{\mathrm{TCP}}+r_c\) and \(r_{\mathrm{eff}}=p_{\mathrm{Tool}}-p_c\). `r_eff` is a
   CSV column only and stays a data identifier, per item 49.
 
 ### Settled at source, and binding on the remaining figure work
@@ -195,7 +123,8 @@ outstanding from the author on that front.
 - **The lever and the plotted centre position are now one signed quantity.**
   \(r_c\) was redefined on 2026-08-24 as \(p_c-p_{\mathrm{TCP}}\), \(d_c\)
   was removed from the thesis, and the coupling moment became
-  \(m_{c,K}=r_c\times f_K\). The Case-H lever vectors flipped sign with the
+  \(m_{\mathrm{cpl},K}=r_c\times f_K\). The supporting intermediate-direction
+  vectors flipped sign with the
   definition; the Case-D columns did not, because they already reported
   \(p_c-p_{\mathrm{TCP}}\). Both now read \(+40\,\mathrm{mm}\) for the
   selected \(+10^\circ\) condition about \(t_1\), which they did not before.
@@ -208,23 +137,24 @@ outstanding from the author on that front.
   govern the reported campaign. See `code/AGENTS.md` for which repository is
   authoritative for what.
 
-- **The two configuration branches are opposite in sign.** Confirmed in
+- **The two configuration branches now carry the same sign.** Both define
+  \(r_c=p_c-p_{\mathrm{TCP}}\). Confirmed in
   `Thesis_Final_Control/surface_grinding_controller`:
   `src/control/cartesian_impedance.cpp` forms
-  \(r_c=-(R_{\mathrm{EE}}\,\texttt{compliance\_center\_offset\_ee})\) on the
+  \(r_c=R_{\mathrm{EE}}\,\texttt{compliance\_center\_offset\_ee}\) on the
   tool-frame branch and
-  \(r_c=R_{\mathrm{base,surface}}\,\texttt{r\_tcp\_from\_compliance\_center\_surface}\)
+  \(r_c=R_{\mathrm{base,surface}}\,\texttt{compliance\_lever\_surface}\)
   on the surface-frame branch, and `params/setup.conf` documents both in the
-  same words. Writing this into Appendix C is item 48 below and is not blocked.
+  same words.
 
-- **The signed set-up-entry deviation is defined and applied.**
-  \(\theta_{\mathrm{dev}}\) is the rotation vector taking \(n_T\) onto the flat
-  target \(-n_s\); \(\theta_{\mathrm{align}}\) is its norm, so the two are the
-  magnitude and the signed components of one vector. Its sign is opposite to
-  the commanded orientation offset because it is the rotation still required to
-  reach flat, and its magnitude falls short of the command because the
-  orientation phase exits on a tolerance. Source:
-  `toolSurfaceAlignmentErrorBase` and `setup_evaluation.cpp`.
+  **The earlier "opposite in sign" reading is withdrawn**, and so is the
+  parameter name it quoted. The tool-frame negation went on 2026-08-24 with
+  `Define the compliance lever from the TCP to the centre`, and the
+  surface-frame key was renamed from `r_tcp_from_compliance_center_surface` to
+  `compliance_lever_surface` on 2026-08-25 with `Command the surface-frame
+  lever as r_c`, which dropped its negation at all four read sites and negated
+  the value in every setup overlay to leave the same physical lever. The old
+  key is no longer read; a missing key falls back to zero.
 
 ### Remaining work that can be done on this machine
 
@@ -234,14 +164,16 @@ from this list rather than annotated, so everything here is still open.
 **Prose and technical (review pass 1)**
 
 - **4** — keep the three moment concepts separate throughout, and never add
-  \(m_{r_T}\) to \(m_0\) or \(m_{c,K}\). Spot-check rather than rewrite.
+  \(m_{r_T}\) to \(m_0\) or \(m_{\mathrm{cpl},K}\). Spot-check rather than rewrite.
 - **17, 18** — Case-A physical-asymmetry interpretation still needs its causal
   wording softened to `consistent with`.
-- **48** — Appendix C must state the two opposite-sign configuration branches
-  (`compliance_center_offset_ee` defines \(p_c-p_{\mathrm{TCP}}\);
-  `r_tcp_from_compliance_center_surface` defines \(r_c\)) rather than calling
-  both "centre displacement". The rule is already recorded in
-  `THESIS_WRITING_GUIDE.md`; only the appendix wording remains.
+- **48** — Appendix C must state the two configuration branches
+  (`compliance_center_offset_ee` in end-effector axes,
+  `compliance_lever_surface` in surface axes) rather than calling both "centre
+  displacement". Both now define \(r_c=p_c-p_{\mathrm{TCP}}\), so the wording
+  no longer has a sign difference to explain, only a frame difference. The rule
+  is already recorded in `THESIS_WRITING_GUIDE.md`; only the appendix wording
+  remains.
 - **57** — \(\tau_{\mathrm{cmd}}\) carries two definitions in Section 2.4.3.
   Reserve it for the implemented command and rename the generic form.
 - **59** — Introduction citation-support audit. Check each literature-supported
@@ -271,12 +203,6 @@ from this list rather than annotated, so everything here is still open.
 - **A.4** — Figure 3.1 still shows `spring wrench`, `tau_task` and `c(q,qdot)`.
   Correct to the Cartesian impedance wrench, \(\tau_{\mathrm{cart}}=J^\top F\)
   and \(\tau_c\). It is a TikZ source and needs no data.
-- **Rename the plotted centre coordinate to \(r_{c}\).** Figure 5.4's axes read
-  `Centre position along t_2 [mm]`, which is correct in value but not in
-  notation. The same applies to Table 4.3 and the Case-F, Case-G and Case-H
-  tables. **The values and signs do not change**: under the redefined
-  \(r_c=p_c-p_{\mathrm{TCP}}\) the plotted coordinate already is
-  \(r_{c,t_i}\).
 - **22, 23** — Figure 4.1 labels and caption, and the Figure 3.5 set-up
   symbols \(p_{\mathrm{Tool},0}\), \(p_{\mathrm{Tool},d}\),
   \(s_{\mathrm{set}}\), \(R_{\mathrm{clr}}\). Item 21, the Figure 4.2
@@ -368,6 +294,160 @@ in `params/tool_orientation.conf` came from the hand-guided calibration —
 \(T_1\)--\(T_3\) for the fit and \(T_4\) held out — confirmed by the author on
 2026-08-24. Section 4.2.2 and Figure 4.2 stay at four poses.
 
+## The appendix listings have drifted from the controller source
+
+Checked on 2026-08-25 against
+`Thesis_Final_Control/surface_grinding_controller`. Only the four appendices
+`Thesis.tex` still inputs were checked; `appendix_a` to `appendix_f` are
+commented out and were left alone. Each item below is a place where the
+document states something the source no longer does.
+
+The \(r_c\) items are done and have been removed from this list: the
+`lst:app_spring_wrench` listing and the paragraph above it now match the
+renamed key and its dropped negation, and the superseded ruling in
+`THESIS_WRITING_GUIDE.md` was replaced rather than annotated. What follows is
+the drift that predates the \(r_c\) work and is still open.
+
+**`backmatter/appendix_code.tex`**
+
+- **Listing `lst:app_desired_motion`, the set-up case.** Calls
+  `setUpPush(params, phase_time - gate_grind_paused_time, ...)`. The function
+  is `setupPush` and it takes `phase_time`; `gate_grind_paused_time` was
+  deleted on 2026-08-13 with `Keep pressing through the grinding gate`, so the
+  set-up ramp deliberately runs on the live phase clock and keeps pressing to
+  the configured final penetration while the grinding gate waits. The prose
+  after the listing is still correct — both gates do latch, and the frozen
+  clock it describes is the *descent* clock, `gate_paused_time`, which is still
+  there.
+- **Listing `lst:implementation_pose_error`.** Passes `D` as the fourth
+  argument of `computeNullspaceTorque`. That argument is the Jacobian: the call
+  site is `computeNullspaceTorque(params, model, state, J, dq)`.
+- **The paragraph after `lst:implementation_nullspace_projector`** says the
+  routine "fills a diagnostics structure that carries the sampled singular
+  values, the selected direction, and the projected joint velocity
+  \(\dot q_{\mathrm{null}}\) into the recorded data". The present
+  `computeNullspaceTorque` in `src/control/robot_support.cpp` returns a `Vec7`
+  and takes no diagnostics argument, so the sentence does not describe the
+  source as it now stands. **It does describe the build that recorded the
+  reported null-space runs**, whose logs carry every one of those signals, so
+  this is a question of which state the appendix documents and not a plain
+  error. Settle that before editing it.
+
+**`backmatter/appendix_data_logging_format.tex` documents two generations of
+the log format at once, and this needs a decision rather than a correction.**
+An earlier note here claimed the sigma columns had never existed and should be
+deleted. **That was wrong and is withdrawn**: it came from reading the current
+writer instead of the archived logs. The header of
+`MAIN_NS7_baseline_20N_200mm/r01/logs/surface_grinding_controller_log.csv`
+carries `sigma_current`, `sigma_plus`, `sigma_minus`, `sigma_difference`,
+`sigma_direction`, `nullspace_dq_1..7`, `tau_sigma_1..7` and `tau_sigma_norm`,
+which is where the reported redundant-motion and \(\sigma_{\min}\) values come
+from. Those runs also spell the angular columns `alignment_error_*_deg` and
+`alignment_angle_deg`.
+
+The current `src/report/csv_logging.cpp` writes a different 99-column set: no
+sigma group, the angular columns spelled `angular_deviation_*_deg`, and
+`p_CoC`, `r_eff` and `t_align` added. The appendix table is the union of the
+two and says so nowhere. `disturbance_torque_scale` is in the current writer
+and in the null-space logs, and is documented in neither the appendix nor this
+note's earlier version.
+
+**Two things are still unverified.** Whether the archived contact runs carry
+the current spelling or the older one was not checked, and neither was the
+claim at the sigma row that those columns are "recorded in every mode,
+including when no torque is commanded". Check both against a contact-run
+header before rewriting the table.
+
+**`backmatter/appendix_controller_parameters.tex` line 162** gives
+`pause_before_set_up`. The key is `pause_before_setup`.
+
+Nothing here is blocked. The listings carry no `\Revised{}` wrappers, so no
+frozen text is in the way, but both appendices carry green assessment boxes
+and neither chapter has been declared revised — confirm before editing.
+
+## The supervisor narrative review, and what it still asks for
+
+A full chapter-by-chapter narrative review arrived on 2026-08-25. Its remaining
+items are below in the order the review set.
+
+### Priority 3 — a roadmap before the Section 2.8 SVD derivation
+
+The null-space section is technically sound and the \(v_7\) against
+\(\sigma_6\) distinction is correctly made. The fault is that the reader meets
+several pages of decomposition before seeing the complete control idea. **Add
+a short roadmap before 2.8.1 rather than deleting theory**, running: the
+\(\mathrm{SVD}\) of \(J\) gives \(v_7\) as the redundant direction and
+\(\sigma_{\min}\) as the conditioning indicator; \(J^+\) gives \(N_q\) and
+\(N_\tau\); \(\dot q_{\mathrm{null}}=N_q\dot q\) gives \(\tau_d\);
+\(q\pm\alpha_{\mathrm{probe}}v_7\) gives \(\sigma_\pm\), then \(s_\sigma\),
+then \(\tau_\sigma\); and \(\tau_{\mathrm{null}}=\tau_d+\tau_\sigma\).
+
+Two smaller items inside it. In 2.8.3, state the purpose before either matrix
+appears — \(N_q\) extracts redundant joint velocity, \(N_\tau\) projects a
+secondary joint torque — and give the power-conjugacy argument after that. In
+2.8.5, make the four-step probe idea impossible to miss: sample at
+\(q\pm\alpha v_7\), evaluate \(\sigma_{\min}\) at both, choose the larger,
+command torque that way.
+
+### Priority 4 — smaller narrative edits
+
+**Chapter 1.** Section 1.4 carries one level of numerical detail too many —
+\(+4.43^\circ\), the supporting intermediate-direction \(0.07^\circ\) and
+\(0.05^\circ\) differences — and
+is starting to read as a miniature results chapter. Keep the major findings and
+drop one level of detail. Nothing there is wrong.
+
+**Chapter 3.** Shorten the operator and tool-handling material in 3.7. The tool
+collection and return details are valid implementation content but peripheral
+to the evaluated contribution; most of it can go to Appendix A.
+
+**Chapter 4.**
+
+- Remove `…Section 4.5 uses it for the alignment angle` from the calibration
+  introduction. Section 4.2 should say what each calibration produces and stop.
+  Leave: only \(n_{\mathrm{Tool,EE}}\) is a calibration result, and
+  Section 3.2.2 carries it into the base frame.
+- **The validation results are promised and never given.** The flowchart marks
+  a re-seated check and a held-out \(T_4\) check, and \(\psi_{\mathrm{plane}}\),
+  \(\varepsilon_{\mathrm{plane}}\), \(\Delta\alpha_s\) and \(\Delta\beta_s\)
+  are defined, but no numerical outcome appears for either. Either report the
+  measured values or stop calling them validation and call them repeated and
+  held-out consistency captures, so no numerical result is implied. The
+  surface-plane half of this is already specified under *The surface-plane
+  re-seating check carries no measured values* above and needs the lab machine;
+  the \(T_4\) half does not.
+- Split 4.5.2 into two paragraphs, one for the pose-based alignment quantity
+  and one for the TCP-height flatness classification, since they are
+  deliberately different measurements.
+- Say whether \(v_{\mathrm{ref}}\) in 4.6 comes from one nominated repetition
+  of the no-null-space-torque condition or from all three. One sentence.
+
+**Chapter 6.** Soften three phrases to match the limitations: `confirmed the
+geometric rule` → `the same geometric relation was observed at the tested
+intermediate directions`; `tool-axis displacement produced almost no change` →
+`produced only weak variation over the tested range`; `singular-value
+conditioning nearly eliminated` → `strongly suppressed`.
+
+**Appendix A.** Shorten the A.3 paragraph explaining that re-testing the gate
+released it for single cycles, that the clock advanced, and that a longer wait
+produced a harder press. It reads as development history. One sentence carries
+what the thesis needs: the operator gates latch once armed, so waiting time
+does not advance the reference trajectory. **This overlaps the separate
+`setUpPush` correction recorded above** — do both in one pass, since the
+listing and its paragraph describe the same mechanism.
+
+## Two retired appendices still carry `\approx`
+
+`\approx` is banned document-wide and the compiled thesis now contains none —
+verified by extracting the text of `Thesis.pdf` and finding zero of the glyph.
+Two files are outside that count because `Thesis.tex` does not input them:
+`backmatter/appendix_a_panda_example.tex` (four) and
+`backmatter/appendix_c_exp1_rotated_tracking.tex` (two). They are the retired
+standalone experiment appendices and reach no reader while they stay commented
+out. **If any of `appendix_a` to `appendix_f` is ever reinstated, clear its
+`\approx` first**, by the four routes recorded under the ban in
+`THESIS_WRITING_GUIDE.md`.
+
 ## The other drawn diagrams still open their boxes in lower case
 
 `FIGURE_STYLE.md` now requires every line of node text in a drawn diagram to
@@ -376,7 +456,7 @@ rule was applied to `calibration_flow` when it was set, and the remaining TikZ
 diagrams have not been through it: `controller_block_diagram` (`robot state`,
 `phase machine`, `model`), `setup_schematic` (`compliance`), and any box text in
 `phase_flow_chart`, `tool_transfer_flow`, `reference_frames`,
-`compliance_lever_moment`, `moment_bookkeeping`, `three_points`,
+`compliance_lever_moment`, `moment_bookkeeping`,
 `face_feature_selection`, `tool_face_plan_view` and `case_c_direction_rule`.
 
 Capitalising a line widens its box, which can close the gap its arrows need —
@@ -413,7 +493,8 @@ distinction — commanded torque against the value libfranka actually applies, a
 transient against a configured threshold, or rated against peak torque — but
 the text did not state it.
 
-The logs to check are on the lab machine after all. Case F is `P3_axis_*`,
+The logs to check are on the lab machine after all. Supporting check 2 is
+`P3_axis_*`,
 which stops at \(40\,\mathrm{mm}\), so the exploratory run is one of the
 out-of-campaign series — `S5_normal_*` reaches \(90\,\mathrm{mm}\) and
 `MyController` holds `B2_pole_normal_p120` and `MAIN_I3_rcn_p120`. Identify
@@ -423,7 +504,7 @@ that `MyController` is the superseded controller.
 The paragraph has been removed from Chapter 5. The Limitations section of
 Chapter 6 now carries the defensible part without the numbers: the lever
 magnitude is bounded by the joint-torque limits, and an exploratory
-displacement beyond the reported Case-F range was stopped by one.
+displacement beyond the reported supporting-check range was stopped by one.
 
 To close it: confirm what the \(12\,\mathrm{N\,m}\) figure refers to and
 whether the \(15.1\,\mathrm{N\,m}\) value is a commanded or an applied

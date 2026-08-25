@@ -1,74 +1,74 @@
-% Elevation sketch of the moment produced by the compliance-centre lever.
-% The view is taken in the surface tangent plane, with n_s up, so the two
-% panels differ only in the sign of the tangential lever. The symbols f_press
-% and m_{c,K} are introduced in the text; their relation is
-% eq:pole_translation_moment_sign_check.
+% Elevation sketch of the contribution the normal component of the commanded
+% force makes through a tangential compliance-centre displacement. The view is
+% taken in the surface tangent plane, with n_s up, so the two panels differ only
+% in the sign of r_{c,t}: the tool inclination and the force are identical, and
+% the moment contribution therefore reverses with the displacement.
 % Uses only tikz + arrows.meta/calc, which config/packages.tex loads.
 %
-% Colour follows the established meaning: orange for what a parameter selects
-% (the compliance centre and its lever), blue for what enters from outside
-% (the contact force), grey for what follows from them (the moment, the axes).
+% Colour follows the drawn palette and matches the moment-bookkeeping figure:
+% blue for the virtual displacement r_{c,t}, red for a force, black for the
+% moment and the axes. No line is grey or white, and every line is solid.
 %
 % Layout note. Each panel is kept to about 5.2 cm wide and 2.7 cm tall so the
 % pair sits near \textwidth without being scaled down; an earlier wider version
 % was shrunk by \resizebox until its labels collided. Three heights are used and
-% nothing else may be placed on them: the lever at the TCP height, the force
-% tail above it, and the moment arc above that.
+% nothing else may be placed on them: the displacement at the TCP height, the
+% force tail above it, and the moment arc above that.
 \begin{tikzpicture}[
     font=\small,
-    surf/.style={draw=gray!70!black, fill=gray!12},
-    tool/.style={draw=gray!70!black, fill=gray!8},
-    frc/.style={-{Latex[length=2.2mm]}, thick, blue!55!black},
-    lev/.style={-{Latex[length=2.2mm]}, thick, orange!75!black},
-    mom/.style={-{Latex[length=2.2mm]}, thick, gray!55!black},
-    ax/.style={-{Latex[length=1.8mm]}, gray!60!black},
+    surf/.style={draw=black, fill=black!8},
+    tool/.style={draw=black, fill=black!4},
+    frc/.style={-{Latex[length=2.2mm]}, thick, red},
+    lev/.style={-{Latex[length=2.2mm]}, thick, blue},
+    mom/.style={-{Latex[length=2.2mm]}, thick, black},
+    ax/.style={-{Latex[length=1.8mm]}, black},
     lbl/.style={font=\footnotesize, inner sep=1.8pt},
-    pt/.style={circle, fill=gray!70!black, inner sep=0pt, minimum size=3.4pt},
-    cpt/.style={circle, fill=orange!75!black, inner sep=0pt, minimum size=3.4pt},
+    pt/.style={circle, fill=black, inner sep=0pt, minimum size=3.4pt},
+    cpt/.style={circle, fill=blue, inner sep=0pt, minimum size=3.4pt},
   ]
 
-% ===================== (a) lever selected from the tilt ===================
+% ============ (a) displacement selected from the orientation offset =========
 \begin{scope}
 
   % ---- surface plane ----------------------------------------------------
   \fill[surf] (-2.6,-0.34) rectangle (2.6,0);
-  \draw[gray!70!black] (-2.6,0) -- (2.6,0);
+  \draw[black] (-2.6,0) -- (2.6,0);
 
   % ---- surface normal ----------------------------------------------------
   \draw[ax] (-2.45,0) -- (-2.45,0.80) node[lbl, above] {$n_s$};
 
-  % ---- tool face, tilted about u_tilt and contacting at its lower edge ---
+  % ---- tool face, inclined and contacting at its lower edge --------------
   \begin{scope}[shift={(0,0.125)}, rotate=-10]
     \draw[tool] (-0.72,0) rectangle (0.72,0.30);
     \coordinate (T) at (0,0.30);
   \end{scope}
 
-  % ---- compliance centre and its lever, at the TCP height ---------------
+  % ---- compliance centre and its tangential displacement, at TCP height --
   \coordinate (P) at ($(T)+(-2.0,0)$);
   \draw[lev] (T) -- (P);
-  \node[lbl, above, orange!65!black] at ($(P)!0.32!(T)+(0,0.04)$) {$r_c$};
+  \node[lbl, above, blue] at ($(P)!0.32!(T)+(0,0.04)$) {$r_{c,t}$};
   \node[cpt] at (P) {};
-  \node[lbl, left, orange!65!black] at (P) {$p_c$};
+  \node[lbl, left, blue] at (P) {$p_c$};
   \node[pt] at (T) {};
   \node[lbl, anchor=south east] at ($(T)+(-0.07,0.05)$) {TCP};
 
-  % ---- contact force, pressed along the inward normal --------------------
+  % ---- normal component of the commanded force, pressing into the plane --
   \draw[frc] ($(T)+(0,1.05)$) -- ($(T)+(0,0.14)$);
-  \node[lbl, right, blue!50!black] at ($(T)+(0.72,0.60)$) {$f_K$};
+  \node[lbl, right, red] at ($(T)+(0.72,0.60)$) {$f_n$};
 
-  % ---- induced moment, opposite to the signed tilt -----------------------
+  % ---- the contribution it makes through the displacement ----------------
   \coordinate (M) at ($(T)+(0,0.30)$);
   \draw[mom] ([shift=(30:0.95)]M) arc (30:150:0.95);
-  \node[lbl, gray!50!black] at ($(T)+(0,1.80)$) {$m_{c,K}$};
+  \node[lbl] at ($(T)+(0,1.80)$) {$r_{c,t}\times f_n$};
 
-  \node at (0,-0.92) {(a) lever selected from the tilt};
+  \node at (0,-0.92) {(a) selected displacement};
 \end{scope}
 
-% ===================== (b) lever with the opposite sign ===================
+% ============ (b) displacement with the opposite sign =======================
 \begin{scope}[xshift=6.0cm]
 
   \fill[surf] (-2.6,-0.34) rectangle (2.6,0);
-  \draw[gray!70!black] (-2.6,0) -- (2.6,0);
+  \draw[black] (-2.6,0) -- (2.6,0);
 
   \draw[ax] (-2.45,0) -- (-2.45,0.80) node[lbl, above] {$n_s$};
 
@@ -77,23 +77,27 @@
     \coordinate (T2) at (0,0.30);
   \end{scope}
 
-  % ---- the lever is reversed; everything else is unchanged --------------
+  % ---- the displacement is reversed; everything else is unchanged --------
   \coordinate (P2) at ($(T2)+(2.0,0)$);
   \draw[lev] (T2) -- (P2);
-  \node[lbl, above, orange!65!black] at ($(P2)!0.32!(T2)+(0,0.04)$) {$r_c$};
+  \node[lbl, above, blue] at ($(P2)!0.32!(T2)+(0,0.04)$) {$r_{c,t}$};
   \node[cpt] at (P2) {};
-  \node[lbl, right, orange!65!black] at (P2) {$p_c$};
+  \node[lbl, right, blue] at (P2) {$p_c$};
   \node[pt] at (T2) {};
   \node[lbl, anchor=south east] at ($(T2)+(-0.07,0.05)$) {TCP};
 
   \draw[frc] ($(T2)+(0,1.05)$) -- ($(T2)+(0,0.14)$);
-  \node[lbl, right, blue!50!black] at ($(T2)+(0.72,0.60)$) {$f_K$};
+  \node[lbl, right, red] at ($(T2)+(0.72,0.60)$) {$f_n$};
 
   \coordinate (M2) at ($(T2)+(0,0.30)$);
   \draw[mom] ([shift=(150:0.95)]M2) arc (150:30:0.95);
-  \node[lbl, gray!50!black] at ($(T2)+(0,1.80)$) {$m_{c,K}$};
+  \node[lbl] at ($(T2)+(0,1.80)$) {$r_{c,t}\times f_n$};
 
-  \node at (0,-0.92) {(b) lever with the opposite sign};
+  \node at (0,-0.92) {(b) reversed displacement};
 \end{scope}
+
+% ---- the complete commanded moment, stated once under the pair -----------
+\node[lbl] at (3.0,-1.50)
+  {$f_n=F_n n_s$,\qquad $m=m_R+r_c\times f$};
 
 \end{tikzpicture}

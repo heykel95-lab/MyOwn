@@ -787,39 +787,6 @@ which follows the official libfranka Cartesian impedance example
 added to this expression to obtain the complete commanded torque in
 \mbox{\Cref{eq:nullspace_complete_torque_command}}.
 
-\subsection{Commanded and Estimated Wrench}
-\label{sec:commanded_versus_estimated_wrench}
-
-The commanded wrench \mbox{\(F\)} and the model-estimated external
-wrench are distinct controller signals. The commanded wrench follows from
-\mbox{\Cref{eq:cartesian_force_moment_vector}} and is mapped to the joints by
-\mbox{\(J^\top\)}. By contrast, the robot estimates the external wrench from the
-measured joint torques and its dynamic model. Its translational part is denoted
-by \mbox{\(\hat f_{\mathrm{ext}}\)}.
-
-Contact evaluation uses the force change from the value stored at the
-clearance transition,
-
-\begin{equation}
-\Delta\hat f_{\mathrm{ext}}
-=
-\hat f_{\mathrm{ext}}-\hat f_{\mathrm{ref}}.
-\label{eq:estimated_external_force_change}
-\end{equation}
-
-Both \mbox{\(f\)} and \mbox{\(\Delta\hat f_{\mathrm{ext}}\)} are expressed in the
-base frame. Their signed components along the surface normal \mbox{\(n_s\)} are
-therefore obtained by projection. The commanded normal force is
-\mbox{\(F_{n,\mathrm{cmd}}=n_s^\top f\)}, whereas the estimated normal-load
-magnitude is \mbox{\(F_n=|n_s^\top\Delta\hat f_{\mathrm{ext}}|\)}.
-
-During a quasi-static press, the selected sign convention gives
-\mbox{\(n_s^\top\Delta\hat f_{\mathrm{ext}}\approx
-F_{n,\mathrm{cmd}}<0\)} and hence
-\mbox{\(F_n\approx-F_{n,\mathrm{cmd}}\)}. This relation expresses approximate
-force balance; it does not identify the two signals. Model error, friction,
-transient motion, and motion within the tool mount can produce differences.
-
 \section{Surface Task Frame}
 \label{subsec:surface_task_frame}
 The contact experiment uses a task frame tied to the surface geometry. This
@@ -1070,247 +1037,24 @@ were not rotated with the current end-effector orientation
 \label{sec:centre_of_compliance}
 
 The task-frame transformation of
-\mbox{\Cref{eq:full_task_frame_gain_transform}} rotates the principal stiffness
-directions while leaving the impedance reference point at the end-effector
-origin, identified here with the tool centre point (TCP). Independently of this
-orientation choice, the virtual spring can be centred at a different point.
-Shifting the impedance reference from the TCP to a \abbr{CoC}
-\mbox{\(p_c\)} transforms a block-diagonal impedance at \mbox{\(p_c\)} into a coupled
-impedance at the TCP
+\mbox{\Cref{eq:full_task_frame_gain_transform}} changes the directions along
+which the Cartesian stiffness and damping act, while leaving their reference
+point at the tool centre point (TCP). Independently of that orientation choice,
+the Cartesian impedance can be defined about a virtual \abbr{CoC}
+\mbox{\(p_c\)}. Shifting this point away from the TCP introduces
+translation--rotation coupling into the Cartesian impedance
 \mbox{\cite{Murray1994,Fasse1997SpatialImpedance,Stramigioli2000IPC,LynchPark2017}}.
-This construction is applied during contact set-up to generate
-translation--rotation coupling that supports tool alignment.
-Its physical purpose is to use the normal pressing action not only to produce a
-translational contact load, but also to generate a rotational moment. The
-selected offset between \mbox{\(p_c\)} and the TCP defines the lever through
-which this moment is produced.
-
-Two transformations used by the controller must therefore be distinguished. A
-task-frame rotation changes the directions along which the impedance acts,
-whereas the point shift changes the point about which the impedance is defined.
-
-\mbox{\Cref{fig:compliance_lever_moment}} shows this geometry for the two signs
-of the tangential lever.
-
-Three points must be distinguished. The selected tool point
-\mbox{\(p_{\mathrm{Tool}}\)} is the point of the tool face that contacts the surface, or is
-predicted to contact it. Depending on the tool orientation it is a leading
-corner, the midpoint of a leading edge, or the centre of the face. The tool centre point \mbox{\(p_{\mathrm{TCP}}\)} is the
-Cartesian control point of the robot, while \mbox{\(p_c\)} is the virtual
-centre of compliance.
-
-The selected tool point is chosen at the clearance transition and then held
-constant relative to the tool for the whole of set-up. Once the tool begins to
-rotate under contact, it is therefore a geometric contact reference rather than
-the exact point at which the surface force acts at every instant.
-
-The choice follows from the face geometry and the current tool orientation. Of
-the four corners of the rectangular tool face, the one lying furthest along the
-descent direction leads, and corners that lead within a tolerance are averaged.
-That point then enters the commanded motion. During set-up the reference is
-generated on it, and the TCP target is reconstructed from that reference, so
-the press is prescribed where the tool meets the surface.
-\mbox{\Cref{sec:tool_contact_geometry}} and
-\mbox{\Cref{subsec:implementation_setup_phase}} carry both constructions.
-
-Moving \mbox{\(p_c\)} moves neither the selected tool point nor the physical
-contact force. The surface force still acts where the tool touches. The point about which the Cartesian impedance is defined changes, and with
-it the translation--rotation coupling. The same normal pressing action can then
-produce a different rotational response.
-
-The geometric consequence follows from where \mbox{\(p_c\)} sits relative to
-the press. A centre lying on the line of action of the press contributes little
-or no moment. Displacing it sideways gives the compliant response an effective
-lever: to one side the induced moment assists the required alignment, and to
-the other side it opposes or reverses it.
-
-The selected tool point \mbox{\(p_{\mathrm{Tool}}\)} and the centre of compliance
-\mbox{\(p_c\)} are each reached from the TCP by their own offset,
-
-\begin{equation}
-r_{\mathrm{Tool}}=p_{\mathrm{Tool}}-p_{\mathrm{TCP}},
-\qquad
-r_c=p_c-p_{\mathrm{TCP}},
-\label{eq:pole_lever_definitions}
-\end{equation}
-
-and therefore
-
-\begin{equation}
-p_{\mathrm{Tool}}-p_c=r_{\mathrm{Tool}}-r_c.
-\label{eq:pole_lever_sum}
-\end{equation}
-
-The two vectors have different mechanical roles. The vector \mbox{\(r_{\mathrm{Tool}}\)}
-describes the physical tool geometry between the TCP and the selected tool
-point, whereas \mbox{\(r_c\)} describes the virtual shift of the Cartesian
-impedance.
-
-The contact interaction is considered from a commanded and a model-estimated
-viewpoint. The controller generates the Cartesian wrench of
-\mbox{\Cref{eq:cartesian_force_moment_vector}}, whose translational part
-separates into an elastic and a damping contribution,
-
-\begin{equation}
-f=f_K+f_D,
-\qquad
-f_K=K_pe_p,
-\qquad
-f_D=D_p\left(\dot p_d-\dot p_{\mathrm{EE}}\right),
-\label{eq:commanded_force_split}
-\end{equation}
-
-where \mbox{\(f_K\)} is the elastic commanded force component and
-\mbox{\(f_D\)} the damping component. The name matters here: \mbox{\(f_K\)} is
-the spring contribution alone and not the complete force pressing against the
-surface, which is \mbox{\(f\)}.
-
-Independently, the robot model provides an estimate of the external wrench.
-Relative to the value stored at the clearance transition, its change is
-
-\begin{equation}
-\Delta\hat F_{\mathrm{ext}}
-=
-\begin{bmatrix}
-\Delta\hat f_{\mathrm{ext}}\\
-\Delta\hat m_{\mathrm{ext}}
-\end{bmatrix}.
-\label{eq:estimated_external_wrench_change}
-\end{equation}
-
-Thus \mbox{\(F\)} describes the controller command, whereas
-\mbox{\(\Delta\hat F_{\mathrm{ext}}\)} provides a model-based observation of
-the resulting external loading.
-
-On the commanded side, the rotational impedance of
-\mbox{\Cref{eq:rotational_impedance_moment}} already produces a moment at the
-TCP whatever the \abbr{CoC} is. For \mbox{\(r_c=0\)} that moment is the
-complete commanded moment,
-
-\begin{equation}
-m_{r_c,0}=K_Re_R-D_R\omega_{\mathrm{EE}},
-\label{eq:zero_lever_commanded_moment}
-\end{equation}
-
-and the shifted impedance adds a coupling contribution when
-\mbox{\(r_c\neq0\)}.
-Both the stiffness and the damping matrices are shifted, so both commanded
-force components acquire the same lever,
-
-\begin{equation}
-m_{c,K}=r_c\times f_K,
-\qquad
-m_{c,D}=r_c\times f_D,
-\label{eq:pole_coupling_moment_parts}
-\end{equation}
-
-and their sum is the complete translational coupling moment
-
-\begin{equation}
-m_{r_c}=m_{c,K}+m_{c,D}=r_c\times f.
-\label{eq:pole_coupling_moment_translational}
-\end{equation}
-
-The commanded moment is therefore \mbox{\(m\approx m_{r_c,0}+
-m_{r_c}\)} in this simplified picture, with \mbox{\(m\)} the
-moment part of the commanded wrench \mbox{\(F=[f^\top,\ m^\top]^\top\)}. The approximation is
-deliberate: when \mbox{\(e_R\neq0\)} the shifted law of
-\mbox{\Cref{eq:coupled_tcp_stiffness,eq:coupled_tcp_damping}} carries further
-\mbox{\(r_c\)}-dependent terms in its lower-right block, so the sum explains
-the translational coupling mechanism rather than expanding every term of the
-shifted law.
-
-The two contributions act over different time scales. The damping term is
-velocity dependent, so as the commanded reference stops advancing and the robot
-settles, \mbox{\(\dot p_d-\dot p_{\mathrm{EE}}\to\mathbf{0}\)} and
-\mbox{\(f_D\to\mathbf{0}\)}, leaving
-\mbox{\(m_{r_c}\to r_c\times f_K\)}. The elastic contribution
-therefore carries the steady alignment tendency, while the damping
-contribution shapes the transient. The sign analysis below uses the elastic
-contribution alone, written
-
-\[
-m_{c,K}=r_c\times f_K,
-\]
-
-which \mbox{\Cref{eq:pole_translation_moment_sign_check}} obtains from the
-point-shifted stiffness blocks.
-
-On the observed side, the surface interaction produces an external wrench whose
-change the robot model estimates as \mbox{\(\Delta\hat m_{\mathrm{ext}}\)}. The
-tool-geometry lever explains how an external force acting away from the TCP
-contributes to that moment. Representing the estimated resultant as acting at
-the selected tool point gives the force-lever contribution
-
-\begin{equation}
-m_{r_{\mathrm{Tool}}}=r_{\mathrm{Tool}}\times\Delta\hat f_{\mathrm{ext}}.
-\label{eq:contact_moment_about_tcp}
-\end{equation}
-
-Because the selected tool point is a geometric contact reference and the exact
-instantaneous force-application point is not measured, \mbox{\(m_{r_{\mathrm{Tool}}}\)} is a
-geometry-based reconstruction and not an independently measured moment. It is
-compared with \mbox{\(\Delta\hat m_{\mathrm{ext}}\)} and never equated to it,
-and it is not added to \mbox{\(m_{r_c,0}\)} or \mbox{\(m_{c,K}\)}: those belong to the
-command, and \mbox{\(\Delta\hat F_{\mathrm{ext}}\)} is the observation of the
-resulting interaction. About the \abbr{CoC} the same
-reconstruction would take the complete lever of
-\mbox{\Cref{eq:pole_lever_sum}},
-\mbox{\(\left(r_{\mathrm{Tool}}-r_c\right)\times\Delta\hat f_{\mathrm{ext}}\)}, which the
-controller never forms.
-
-The zero-lever condition is therefore not a zero-moment condition. Setting
-\mbox{\(r_c=0\)} makes \mbox{\(\mathrm{Ad}(r_c)\)} the identity, so it removes
-the complete additional coupling introduced by the virtual point shift: the
-elastic and damping coupling moments \mbox{\(m_{c,K}\)} and
-\mbox{\(m_{c,D}\)}, their sum \mbox{\(m_{r_c}\)}, and the
-remaining \mbox{\(r_c\)}-dependent terms of \mbox{\(K_{\mathrm{TCP}}\)} and
-\mbox{\(D_{\mathrm{TCP}}\)}, including the off-diagonal blocks and the added
-rotational entries \mbox{\([r_c]_\times^\top K_p[r_c]_\times\)} and
-\mbox{\([r_c]_\times^\top D_p[r_c]_\times\)}. The ordinary rotational impedance
-and the physical tool and contact geometry are untouched by it. The commanded
-rotational moment \mbox{\(m_{r_c,0}\)} remains, the rotational compliance stays
-finite, and because \mbox{\(r_{\mathrm{Tool}}\neq0\)} the external force can still contribute
-\mbox{\(m_{r_{\mathrm{Tool}}}\)}, so contact-induced rotation is possible with the centre of
-compliance at the TCP. Shifting the \abbr{CoC}
-adds \mbox{\(m_{c,K}\)} to the command, which changes the interaction and with it
-the estimated \mbox{\(\Delta\hat f_{\mathrm{ext}}\)} and
-\mbox{\(\Delta\hat m_{\mathrm{ext}}\)}. The external moment is the result of
-that closed-loop interaction rather than an algebraic sum of the commanded and
-reconstructed terms.
-
-\mbox{\Cref{fig:moment_bookkeeping}} places the two sides side by side. The
-model-estimated external wrench, and the form it takes during the experiment,
-is treated in \mbox{\Cref{sec:results_case_d}}.
-
-\begin{figure}[H]
-  \centering
-  \input{figures/moment_bookkeeping.tex}
-  \caption[Commanded and observed moment relations]{Commanded and observed
-  moment relations: (a) the translation-induced coupling carried by the
-  commanded wrench; (b) the model-estimated external interaction with the
-  geometry-based force-lever moment.}
-  \label{fig:moment_bookkeeping}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \input{figures/compliance_lever_moment.tex}
-  \caption[Elastic coupling moment for both lever signs]{Elastic
-  compliance-centre coupling moment for the two tangential lever signs:
-  (a) the lever selected from the orientation offset; (b) the lever with the
-  opposite sign.}
-  \label{fig:compliance_lever_moment}
-\end{figure}
+The construction is applied during contact set-up, where it lets the normal
+pressing action generate a rotational moment as well as a translational contact
+load.
 
 For a dual-arm assembly task, Suomalainen \mbox{et al.\ }experimentally
 showed that compliance-centre placement and compliant-axis selection affect the
-alignment response \mbox{\citep{Suomalainen2019DualArmCompliance}}. This task-level
-result motivates the placement study in this thesis. The point-shift adjoint
-below remains derived from the spatial-transformation formulation.
+alignment response \mbox{\citep{Suomalainen2019DualArmCompliance}}. This
+task-level result motivates the placement study in this thesis. The point-shift
+adjoint below remains derived from the spatial-transformation formulation.
 
-The compliance-centre shift \mbox{\(r_c\)} from the TCP to the \abbr{CoC}
-\mbox{\(p_c\)}, expressed in the base frame, is
+The displacement from the TCP to the \abbr{CoC} is
 
 \begin{equation}
 r_c
@@ -1322,9 +1066,12 @@ p_{\mathrm{TCP}}=p_{\mathrm{EE}}.
 \label{eq:pole_to_tcp_lever}
 \end{equation}
 
+The vector \mbox{\(r_c\)} describes only the virtual shift of the impedance
+reference point.
+
 Let \mbox{\([r_c]_\times\)} denote the skew-symmetric matrix satisfying
-\mbox{\([r_c]_\times a=r_c\times a\)}. Under the small-angle approximation, the
-compliance-centre position error \mbox{\(e_{p,c}\)} is
+\mbox{\([r_c]_\times a=r_c\times a\)}. Under the local small-angle
+formulation, the translational error referred to the \abbr{CoC} is
 
 \begin{equation}
 e_{p,c}
@@ -1334,7 +1081,7 @@ e_p-[r_c]_\times e_R.
 \end{equation}
 
 The negative sign follows from the selected lever convention. The vector from
-the TCP to the \abbr{CoC} \mbox{\(p_c\)} is \mbox{\(r_c\)} itself, and therefore
+the TCP to \mbox{\(p_c\)} is \mbox{\(r_c\)} itself, and therefore
 
 \[
 e_R\times r_c
@@ -1342,10 +1089,9 @@ e_R\times r_c
 -[r_c]_\times e_R.
 \]
 
-The compliance-centre error \mbox{\(e_c\)} stacks the translational error
-\mbox{\(e_{p,c}\)} and the rotational error \mbox{\(e_R\)}. The point-shift
-adjoint \mbox{\(\mathrm{Ad}(r_c)\)} maps the corresponding TCP error to this
-stacked error:
+The stacked error at the \abbr{CoC} collects \mbox{\(e_{p,c}\)} and the
+rotational error \mbox{\(e_R\)}. The point-shift adjoint
+\mbox{\(\mathrm{Ad}(r_c)\)} maps the corresponding TCP error onto it:
 
 \begin{equation}
 e_c
@@ -1370,13 +1116,14 @@ I_3 & -[r_c]_\times\\[2pt]
 \label{eq:offset_adjoint}
 \end{equation}
 
-The point-shift adjoint \mbox{\(\mathrm{Ad}(r_c)\)} changes the reference point of the
-impedance. By contrast,
-\mbox{\(T_R=\operatorname{diag}(R_{\mathrm{task}},R_{\mathrm{task}})\)} in
-\mbox{\Cref{eq:full_task_frame_gain_transform}} changes its principal directions.
+The task-frame rotation and the point shift have different functions. The
+block rotation \mbox{\(T_R\)} of
+\mbox{\Cref{eq:full_task_frame_gain_transform}} changes the principal
+directions of the impedance, whereas \mbox{\(\mathrm{Ad}(r_c)\)} changes the
+point about which the impedance is defined.
 
-After any required task-frame rotation, the decoupled centre-of-compliance
-stiffness \mbox{\(K_c\)} and damping \mbox{\(D_c\)} are
+After any required task-frame rotation, the translational and rotational
+stiffness and damping matrices are assembled at the \abbr{CoC} as
 
 \begin{equation}
 K_c
@@ -1396,22 +1143,10 @@ D_p & 0\\
 \end{equation}
 
 All blocks in \mbox{\Cref{eq:pole_block_gains}} are expressed in the base-frame
-orientation. The compliance-centre wrench \mbox{\(F_c\)} is
-
-\[
-F_c=K_ce_c.
-\]
-
-Transforming this power-conjugate wrench gives the corresponding TCP wrench
-\mbox{\(F_{\mathrm{TCP}}\)}:
-
-\[
-F_{\mathrm{TCP}}
-=
-\mathrm{Ad}(r_c)^\top F_c.
-\]
-
-The resulting TCP stiffness \mbox{\(K_{\mathrm{TCP}}\)} is therefore
+orientation. The compliance-centre wrench is \mbox{\(F_c=K_ce_c\)}, and
+transforming this power-conjugate wrench gives the corresponding TCP wrench
+\mbox{\(F_{\mathrm{TCP}}=\mathrm{Ad}(r_c)^\top F_c\)}. The matrices at the TCP
+therefore follow from the congruence transformations
 
 \begin{equation}
 K_{\mathrm{TCP}}
@@ -1428,11 +1163,11 @@ K_p
 -[r_c]_\times^\top K_p
 &
 K_R+[r_c]_\times^\top K_p[r_c]_\times
-\end{bmatrix}.
+\end{bmatrix}
 \label{eq:coupled_tcp_stiffness}
 \end{equation}
 
-The TCP damping \mbox{\(D_{\mathrm{TCP}}\)} uses the same point shift:
+and
 
 \begin{equation}
 D_{\mathrm{TCP}}
@@ -1454,96 +1189,204 @@ D_R+[r_c]_\times^\top D_p[r_c]_\times
 \end{equation}
 
 The off-diagonal blocks introduce translation--rotation coupling. A
-translational error can therefore generate a restoring moment, while a
-rotational error can generate a restoring force. This coupling is absent from
-the block-diagonal impedance defined directly at the TCP.
+translational position or velocity error can therefore contribute to the
+commanded moment, while a rotational error or velocity can contribute to the
+commanded force. For \mbox{\(r_c=0\)} the point shift disappears and the
+block-diagonal impedance at the TCP is recovered.
 
-For a purely translational error, \mbox{\(e_R=0\)}, the coupling
-reduces to a single term. With
+\subsection{Commanded Moment}
+\label{subsec:coc_commanded_moment}
 
-\[
-f_K=K_pe_p,
-\]
+The Cartesian wrench generated by the impedance controller is
+\mbox{\(F=[f^\top,\ m^\top]^\top\)}, where \mbox{\(f\)} and \mbox{\(m\)}
+denote the complete commanded force and moment at the TCP.
 
-the elastic moment at the TCP is
+Without a \abbr{CoC} displacement, the commanded moment is given by the
+ordinary rotational impedance,
 
 \begin{equation}
-m_{c,K}
-=
--[r_c]_\times^\top f_K
-=
-r_c\times f_K.
-\label{eq:pole_translation_moment_sign_check}
+m_R=K_Re_R-D_R\omega_{\mathrm{EE}}.
+\label{eq:zero_lever_commanded_moment}
 \end{equation}
 
-A commanded tool orientation offset turns the tool about one of the
-surface tangents. The lever is chosen perpendicular to that tangent within the
-tangent plane, so that the moment the press generates opposes the commanded
-rotation. Reversing the commanded orientation offset reverses the lever with it.
+A non-zero \abbr{CoC} displacement adds the translation--rotation coupling
+generated by the complete commanded force,
+
+\begin{equation}
+m_{\mathrm{CoC}}=r_c\times f.
+\label{eq:pole_coupling_moment_translational}
+\end{equation}
+
+The complete commanded TCP moment is therefore
+
+\begin{equation}
+m=m_R+r_c\times f.
+\label{eq:commanded_moment_decomposition}
+\end{equation}
+
+This relation is exact for the point-shifted stiffness and damping matrices
+above. The controller evaluates the complete shifted spring--damper wrench and
+does not separately command an elastic or a damping coupling moment.
+
+For \mbox{\(r_c=0\)} the coupling contribution vanishes and
+\mbox{\(m=m_R\)}. The TCP-centred condition is therefore a zero-coupling
+condition rather than a zero-moment condition. The rotational compliance
+remains finite and the commanded rotational impedance remains active.
+
+\begin{figure}[H]
+  \centering
+  \input{figures/moment_bookkeeping.tex}
+  \caption[Compliance-centre displacement and commanded TCP moment]{
+  Centre-of-compliance displacement and commanded TCP moment. Shifting the
+  virtual centre from the TCP by \mbox{\(r_c\)} introduces the coupling
+  contribution \mbox{\(r_c\times f\)}.}
+  \label{fig:moment_bookkeeping}
+\end{figure}
+
+
+\subsection{Surface-Frame and Tangential Compliance-Centre Displacement}
+\label{subsec:coc_tangential_displacement}
+
+For the surface-contact task the \abbr{CoC} displacement is resolved in the
+surface frame \mbox{\([t_1,t_2,n_s]\)}. Its surface-frame components are
+defined by
+
+\begin{equation}
+r_c
+=
+r_{c,t_1}t_1+r_{c,t_2}t_2+r_{c,n}n_s.
+\label{eq:coc_surface_components}
+\end{equation}
+
+The tangential part collects the two in-plane components,
+
+\begin{equation}
+r_{c,t}
+=
+r_{c,t_1}t_1+r_{c,t_2}t_2,
+\label{eq:coc_tangential_component}
+\end{equation}
+
+while \mbox{\(r_{c,n}n_s\)} is the part along the surface normal. The
+quantities have to be kept apart: \mbox{\(r_{c,t_1}\)} and
+\mbox{\(r_{c,t_2}\)} are signed scalar coordinates, \mbox{\(r_{c,t}\)} is
+the tangential vector they form, and its magnitude is written
+\mbox{\(\lVert r_{c,t}\rVert\)}. For a purely tangential displacement
+\mbox{\(r_{c,n}=0\)}, and therefore
+\mbox{\(\lVert r_c\rVert=\lVert r_{c,t}\rVert\)}.
+
+A non-zero displacement is specified by the frame in which its components are
+held constant as well as by its magnitude and direction. For a surface-fixed
+definition,
+
+\begin{equation}
+r_c=R_{\mathrm{surface}}r_c^{S},
+\qquad
+r_c^{S}=
+\begin{bmatrix}
+r_{c,t_1}\\
+r_{c,t_2}\\
+r_{c,n}
+\end{bmatrix},
+\label{eq:coc_surface_fixed_definition}
+\end{equation}
+
+and \mbox{\(r_c^{S}\)} remains constant. For a tool-fixed definition the
+configured displacement remains constant in end-effector coordinates, and its
+base-frame representation rotates with the end effector.
+\mbox{\Cref{sec:self_alignment_virtual_center}} describes both.
+
+The commanded force enters through \mbox{\(m_{\mathrm{CoC}}=r_c\times f\)}, and
+it decomposes exactly into a normal and a tangential component,
+
+\begin{equation}
+f=f_n+f_t,
+\qquad
+f_n=F_n n_s,
+\qquad
+f_t=f-f_n,
+\label{eq:commanded_force_normal_split}
+\end{equation}
+
+with \mbox{\(F_n=n_s^\top f\)} the signed commanded normal force. The normal
+component is the projection of \mbox{\(f\)} onto \mbox{\(n_s\)}, and the
+tangential component is what remains of \mbox{\(f\)} in the surface plane. The
+complete \abbr{CoC} contribution is therefore
+
+\begin{equation}
+m_{\mathrm{CoC}}
+=
+r_c\times f_n
++
+r_c\times f_t.
+\label{eq:coc_moment_normal_tangential}
+\end{equation}
+
+Both terms remain part of the complete commanded moment \mbox{\(m\)}.
+
+The normal-press term simplifies. Substituting
+\mbox{\(r_c=r_{c,t}+r_{c,n}n_s\)} and using
+\mbox{\(f_n\parallel n_s\)}, the normal component of the displacement drops
+out, \mbox{\(r_{c,n}n_s\times f_n=\mathbf{0}\)}, which leaves
+
+\begin{equation}
+r_c\times f_n
+=
+r_{c,t}\times f_n.
+\label{eq:coc_normal_press_tangential_only}
+\end{equation}
+
+Only the tangential part of the displacement produces a moment from the
+commanded normal press. A displacement along the surface normal contributes
+nothing to this term. Consequently, the moment generated by the normal press
+depends on the tangential projection \mbox{\(r_{c,t}\)}, not on the total
+distance \mbox{\(\lVert r_c\rVert\)} between the TCP and the \abbr{CoC}.
 
 The right-handed surface frame satisfies
 
 \begin{equation}
 t_1\times t_2=n_s,
 \qquad
-n_s\times t_1=t_2,
+t_2\times n_s=t_1,
 \qquad
-n_s\times t_2=-t_1.
+t_1\times n_s=-t_2.
 \label{eq:surface_frame_cross_product_relations}
 \end{equation}
 
-Let the commanded orientation offset in the surface plane have components
-\mbox{\(\theta_{t_1}\)} and \mbox{\(\theta_{t_2}\)}. For a non-zero offset and a
-selected tangential lever magnitude \mbox{\(\rho_c>0\)}, the lever direction can
-be written directly from these two components as
+Let the commanded orientation offset in the surface plane be
+
+\begin{equation}
+\theta_{\mathrm{tilt}}
+=
+\theta_{t_1}t_1+\theta_{t_2}t_2.
+\label{eq:commanded_offset_surface_components}
+\end{equation}
+
+For a prescribed tangential magnitude \mbox{\(\lVert r_{c,t}\rVert\)}, the
+displacement used to assist the commanded alignment rotation is chosen
+perpendicular to the orientation-offset direction,
 
 \begin{equation}
 r_{c,t}
 =
-\rho_c
+\lVert r_{c,t}\rVert
 \frac{
-\theta_{t_2}t_1-\theta_{t_1}t_2
+\theta_{t_1}t_2-\theta_{t_2}t_1
 }{
 \sqrt{\theta_{t_1}^2+\theta_{t_2}^2}
 }.
 \label{eq:general_compliance_lever_selection}
 \end{equation}
 
-The selected lever is therefore perpendicular to the commanded
-orientation-offset direction in the surface plane. Its sign changes when the
-commanded offset is reversed. For the two principal
-surface tangents, \Cref{eq:general_compliance_lever_selection} reduces to
-
-\[
-r_{c,t}=-\rho_c t_2
-\quad\text{for a positive }t_1\text{ offset},
-\qquad
-r_{c,t}=+\rho_c t_1
-\quad\text{for a positive }t_2\text{ offset}.
-\]
-
-Because the set-up motion is commanded primarily along the surface normal, the
-elastic press is approximated for this sign analysis as
+The choice fixes the direction; the magnitude remains a free parameter of the
+configuration. Using
+\mbox{\Cref{eq:surface_frame_cross_product_relations}}, the normal-press
+contribution becomes
 
 \begin{equation}
-f_K
-\approx
--F_{K,n} n_s,
-\qquad
-F_{K,n}>0,
-\label{eq:general_compliance_normal_force}
-\end{equation}
-
-where \mbox{\(F_{K,n}=-n_s^\top f_K>0\)} is the magnitude of the commanded
-elastic normal component. It is a commanded quantity and is not the
-model-estimated external normal-load magnitude \mbox{\(F_n\)}. Tangential force components caused by pose error, friction, or the
-evolving contact geometry are not represented in this first-order argument.
-Substitution into \mbox{\Cref{eq:pole_translation_moment_sign_check}} gives
-
-\begin{equation}
-m_{c,K}
-\approx
--F_{K,n}\rho_c
+r_{c,t}\times f_n
+=
+\lVert r_{c,t}\rVert F_n
 \frac{
 \theta_{t_1}t_1+\theta_{t_2}t_2
 }{
@@ -1552,16 +1395,44 @@ m_{c,K}
 \label{eq:general_compliance_lever_moment}
 \end{equation}
 
-Thus, the press-induced moment is directed opposite to the commanded
-orientation offset. For a positive command about \mbox{\(t_1\)} it reduces to
-\mbox{\(m_{c,K}\approx-F_{K,n}\rho_c t_1\)}, and for a positive command
-about \mbox{\(t_2\)} it reduces to
-\mbox{\(m_{c,K}\approx-F_{K,n}\rho_c t_2\)}. Reversing the orientation offset
-reverses both the selected lever and the generated moment.
+During the set-up press \mbox{\(F_n<0\)}, so this contribution acts opposite to
+\mbox{\(\theta_{\mathrm{tilt}}\)}. For the two principal directions the rule
+reduces to
 
-The coupling vanishes for \mbox{\(r_c=0\)}. Conversely, if \mbox{\(K_p\)} is nonsingular,
-zero coupling implies \mbox{\(r_c=0\)}. Since \mbox{\(\mathrm{Ad}(r_c)\)} is invertible, the
-congruence transformation also preserves definiteness:
+\begin{equation}
+r_{c,t}=+\lVert r_{c,t}\rVert t_2
+\quad\text{for }+\theta_{t_1},
+\qquad
+r_{c,t}=-\lVert r_{c,t}\rVert t_1
+\quad\text{for }+\theta_{t_2},
+\label{eq:principal_lever_selection}
+\end{equation}
+
+giving \mbox{\(r_{c,t}\times f_n=\lVert r_{c,t}\rVert F_nt_1\)} and
+\mbox{\(r_{c,t}\times f_n=\lVert r_{c,t}\rVert F_nt_2\)} respectively.
+Reversing the orientation offset reverses \mbox{\(r_{c,t}\)} and therefore
+reverses this contribution.
+\mbox{\Cref{fig:compliance_lever_moment}} shows the geometry for the two signs.
+
+\begin{figure}[H]
+  \centering
+  \input{figures/compliance_lever_moment.tex}
+  \caption[Normal-force contribution for opposite tangential displacements]{
+  Normal-force contribution to the compliance-centre coupling moment for
+  opposite tangential displacements: (a) the displacement selected from the
+  orientation offset; (b) the displacement with the opposite sign.}
+  \label{fig:compliance_lever_moment}
+\end{figure}
+
+The complete commanded moment remains \mbox{\(m=m_R+r_c\times f\)}. The
+normal-force decomposition is used only to explain the directional effect of
+the \abbr{CoC} displacement. Tangential commanded-force components and damping
+effects remain contained in the complete wrench generated by the controller.
+
+The coupling vanishes for \mbox{\(r_c=0\)}. Conversely, if \mbox{\(K_p\)} is
+nonsingular, zero coupling implies \mbox{\(r_c=0\)}. Since
+\mbox{\(\mathrm{Ad}(r_c)\)} is invertible, the congruence transformation also
+preserves definiteness:
 
 \begin{equation}
 K_c\succeq0
@@ -1574,30 +1445,24 @@ K_{\mathrm{TCP}}\succ0.
 \label{eq:pole_gain_definiteness}
 \end{equation}
 
-The same statements apply to \mbox{\(D_c\)} and \mbox{\(D_{\mathrm{TCP}}\)}. Negative
-off-diagonal entries therefore represent coupling terms rather than negative
-stiffness directions.
-
-The congruence transformation preserves the symmetry and definiteness of
-the source gain matrices. Closed-loop robot--controller--contact behaviour with
-phase switching was assessed experimentally under the operating conditions
+The same statements apply to \mbox{\(D_c\)} and \mbox{\(D_{\mathrm{TCP}}\)}.
+Negative off-diagonal entries therefore represent coupling terms rather than
+negative stiffness directions. Closed-loop robot--controller--contact behaviour
+with phase switching was assessed experimentally under the operating conditions
 reported in \mbox{\Cref{ch:methodology}}.
 
-This formulation is a local small-motion model in which \mbox{\(r_c\)} is treated as
-fixed during one controller evaluation. For a surface-fixed lever, its
-components remain constant in the surface frame and therefore its base-frame
-vector remains constant during set-up. For a tool-fixed lever, its components
-remain constant in the end-effector frame, but its base-frame vector changes as
-the end effector rotates. The controller therefore updates the base-frame lever
-and the corresponding shifted gain matrices during each control cycle for the
-tool-fixed definition.
+This formulation is a local small-motion model in which \mbox{\(r_c\)} is
+treated as fixed during one controller evaluation. A surface-fixed
+\mbox{\(r_c^{S}\)} therefore keeps its base-frame vector constant during
+set-up, whereas a tool-fixed displacement does not, and the controller updates
+the base-frame vector and the shifted gain matrices during each control cycle
+in that case.
 
-The local linearised \abbr{CoC} \mbox{\(p_c\)} is consequently a
-selected point rather than a measured physical pivot. It need not coincide with
-the physical contact location. The observed motion also depends on the
-finite rotational stiffness, the lever direction, the environmental
-constraint, friction, and the additional active controller terms introduced
-later.
+The virtual \abbr{CoC} \mbox{\(p_c\)} is consequently a selected impedance
+reference point and is not interpreted as a measured physical pivot. It need
+not coincide with the physical contact location. The resulting contact response
+additionally depends on the finite rotational stiffness, the contact
+constraint, friction, the robot configuration, and tool-mount compliance.
 
 \section{Null-Space Torque}
 \label{sec:nullspace_svd}

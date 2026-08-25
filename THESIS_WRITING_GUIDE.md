@@ -39,8 +39,8 @@ may end with a question mark.** Grep for those openers across `\caption{`,
 `\caption[`, `\chapter{`, `\section{` and `\subsection{` before submitting.
 
 **The ban now extends to the running text as well.** The earlier version of this
-rule allowed `Case F asks whether displacing the centre of compliance in any
-direction produces alignment` as a useful section opener. A supervisor pass
+rule allowed `One experiment asks whether displacing the centre of compliance
+in any direction produces alignment` as a useful section opener. A supervisor pass
 overturned that: the thesis does not need to keep telling the reader it is
 answering questions, and the construction was the largest remaining source of
 an AI-written impression after the repetition. State what a case *evaluates* or
@@ -48,8 +48,8 @@ an AI-written impression after the repetition. State what a case *evaluates* or
 
 | Was | Now |
 |---|---|
-| Case F asks whether displacing the centre in any direction produces alignment | Case F separates the contribution of the tangential displacement component from that of a displacement along the tool axis |
-| Case G asks whether the lever effect persists when the commanded misalignment changes | Case G evaluates the dependence of the lever effect on the commanded misalignment magnitude |
+| The supporting check asks whether displacing the centre in any direction produces alignment | The tool-axis supporting check separates the contribution of the tangential displacement component from that of a displacement along the tool axis |
+| Case E asks whether the lever effect persists when the commanded misalignment changes | Case E evaluates the dependence of the lever effect on the commanded misalignment magnitude |
 | Two matters were investigated experimentally: whether … and whether … | The experimental investigation addressed contact-induced rotational alignment and the selection of a fixed centre of compliance |
 | This thesis investigates whether … It also asks whether … | This thesis investigates contact-induced alignment … and evaluates whether a fixed centre can be selected independently of … |
 | The cases are reported in the order in which they narrow one question | The cases are reported in the order in which they progressively constrain … |
@@ -356,16 +356,17 @@ circulation, the settled choices are:
   `centre position` axis \(r_{c,t_2}\) is now correct rather than a sign
   error.
 
-  The change removes a real contradiction. Under the old convention the Case-H
-  table gave \(r_c=[0,-40,0]\,\mathrm{mm}\) for the selected
+  The change removes a real contradiction. Under the old convention the
+  supporting intermediate-direction table gave
+  \(r_c=[0,-40,0]\,\mathrm{mm}\) for the selected
   \(+10^\circ\) condition about \(t_1\) while the Case-D results showed the
   assisting centre for that same condition at \(+40\,\mathrm{mm}\) along
   \(t_2\). Both now read \(+40\,\mathrm{mm}\).
 
-  **The coupling moment is positive: \(m_{c,K}=r_c\times f_K\).** Every
+  **The coupling moment is positive: \(m_{\mathrm{cpl},K}=r_c\times f_K\).** Every
   moment built on the lever follows the same sign —
-  \(m_{c,D}=r_c\times f_D\) and
-  \(m_{r_c}=r_c\times f\) — and the point-shift blocks carry
+  \(m_{\mathrm{cpl},D}=r_c\times f_D\) and
+  \(m_{\mathrm{cpl}}=r_c\times f\) — and the point-shift blocks carry
   \(-[r_c]_\times\) where they once carried \(+[r_c]_\times\). Terms
   quadratic in the lever, \([r_c]_\times^\top K_p[r_c]_\times\) and its
   damping counterpart, are unchanged, because the sign cancels.
@@ -378,16 +379,24 @@ circulation, the settled choices are:
   there.
 
   The lever \(r_c\) does stay in Chapter 1, because the chapter uses it at
-  \(r_c=0\) and in \(m_{c,K}=r_c\times f_K\). It is introduced there
+  \(r_c=0\) and in \(m_{\mathrm{cpl},K}=r_c\times f_K\). It is introduced there
   without \(p_c\), as the displacement from the TCP to the virtual CoC.
 
-  **The implementation stores the opposite vector, and the appendix says so.**
-  The tool-frame `compliance_center_offset_ee` defines \(p_c-p_{\mathrm{TCP}}\),
-  which is now \(r_c\) itself, while the surface-frame
-  `r_tcp_from_compliance_center_surface` defines \(-r_c\). The source forms
-  `r_c = -(R_EE * offset)`, so the variable named `r_c` in the listings is
-  \(-r_c\) in the thesis convention. The listings are not edited to match;
-  Appendix C and the code appendix state the relation instead.
+  **The implementation stores \(r_c\) itself, in both definitions.** The
+  tool-frame `compliance_center_offset_ee` and the surface-frame
+  `compliance_lever_surface` both define \(p_c-p_{\mathrm{TCP}}\). Neither
+  branch negates: the source forms `r_c = R_EE * offset` and
+  `r_c = R_base_surface * lever`, so the variable named `r_c` in the listings
+  is \(r_c\) in the thesis convention, and the two branches differ only in the
+  frame the stored vector is expressed in.
+
+  **The opposite-vector convention is withdrawn.** The surface-frame parameter
+  was once named `r_tcp_from_compliance_center_surface` and stored \(-r_c\),
+  and the rule was that the listings were not edited to match while the code
+  appendix stated the sign relation instead. Both halves are gone: the key was
+  renamed and its negation dropped at all four read sites on 2026-08-25, and
+  the code appendix now reproduces the source as it stands, with no sign
+  correction in the prose around it.
 - **surface** for the flat object the tool is pressed against, and **surface
   plane** where the plane itself is meant. Not `workpiece`: the only property
   that matters is the plane the tool contacts, and `surface` already carries
@@ -503,16 +512,16 @@ circulation, the settled choices are:
   input signal rather than a commanded orientation, and not `mismatch`, which
   implies an unwanted discrepancy where the angle is deliberate.
 
-  **In a table column heading or an axis label the short form is
-  `Commanded offset`.** The full name is for running prose, where there is room
-  to be exact; a heading has to be scanned, and the four Chapter 5 tables that
-  wrote `Commanded orientation offset` against one that wrote `Commanded
-  offset` made the same column look like two different quantities. Every table
-  heading and every axis naming that quantity now reads `Commanded offset`.
-  This is a shortening, not a new name: nothing else changes, and the full form
-  stays wherever the quantity is introduced or defined.
+  **In the Chapter 5 comparison tables the condition column is `Initial
+  commanded orientation`.** It identifies the input condition without adding
+  a second measured entry angle. A quantitative plot axis uses `Commanded
+  orientation offset` followed by \(\theta_{t_i}\) and its unit. The shorter
+  `Commanded offset` remains available in compact methodology tables where the
+  condition has already been introduced. These are presentation forms of the
+  same commanded tool orientation offset, not separate quantities.
 
-  The Case-H table heading is **not** an instance of it. That column holds
+  The supporting intermediate-direction table heading is **not** an instance
+  of it. That column holds
   `Commanded rotation direction` — the tangent-plane direction of the command,
   with rows `about t1`, `-45 deg from t1` and so on, at a common offset
   magnitude. It names a different component and keeps its own heading.
@@ -602,7 +611,7 @@ or say nothing about recording at all:
 
 | Was | Now |
 |---|---|
-| the five newly recorded Case-H settings | the five Case-H settings |
+| the five newly recorded intermediate-direction settings | the five supporting intermediate-direction settings |
 | the three scheduled repetitions for each newly recorded setting | the three scheduled repetitions of each setting |
 | the \(5\,\mathrm{N\,m/rad}\) condition … is not a separate measurement | the \(5\,\mathrm{N\,m/rad}\) condition is the corresponding zero-lever reference of Case~A |
 
@@ -952,13 +961,6 @@ hold uses the base frame, and the set-up translational frame is configurable.
 
 The chapter should come out shorter and stronger, not longer.
 
-Figures to add, in priority order: grinding-face geometry and leading-feature
-selection (four vertices, tie tolerance, the corner/edge/face-centre outcomes);
-the three points \(p_{\mathrm{Tool}}\), \(p_{\mathrm{TCP}}\) and \(p_c\) with the two offsets
-and their sum; and set-up reference generation, showing the press coordinate
-advancing past the surface so the endpoint reads as a spring reference rather
-than a commanded penetration.
-
 ### Chapter 4 restructure, agreed and not yet carried out
 
 The division of labour is: **Chapter 3 is mechanism and implementation,
@@ -1031,8 +1033,8 @@ each procedure supplies —
 \(p_s\), \(n_s\) and \(R_{\mathrm{surface}}\) from the surface calibration,
 \(n_{\mathrm{Tool,EE}}\) from the tool calibration — and leave the combination
 to the chapters that use it. The transformation into the base frame belongs to
-Chapter 3 and \(\theta_{\mathrm{align}}\) to the evaluation section; Section 4.2
-cross-references both rather than deriving either.
+Chapter 3 and the pose-based alignment estimate to its appendix consistency
+check; Section 4.2 cross-references both rather than deriving either.
 
 **The figure carries the same division.** Each band runs input, method, result,
 and the checks hang below the result box feeding nothing. Giving `Re-seated
@@ -1074,36 +1076,51 @@ Distinguish:
 2. model-based interpretation;
 3. hypothesis requiring another experiment.
 
-Trace every geometric metric through its measurement chain. The controller
-reconstructs the tool axis from the EE pose and a nominal tool-to-EE transform.
-Because the mounted tool can rotate approximately ±2° about \(y_{EE}\), this
+Trace every geometric metric through its measurement chain. The primary angular
+result is the signed end-effector rotation and does not require the calibrated
+tool normal. The appendix reconstructs a separate pose-based tool axis from the
+end-effector pose and a calibrated tool-to-end-effector transform. Because the
+mounted tool can rotate approximately ±2° about \(y_{EE}\), that secondary
 quantity is not a directly measured physical tool-face axis. Do not rename
 \(y_{EE}\) as \(t_2\) without transforming it into the calibrated surface
-frame. State that the current angular results describe the combined
-robot–gripper–tool response and cannot separate controller compliance from
-gripper compliance.
+frame.
 
 **The word `inferred` is not used for it, and neither is `EE-inferred`.** Both
 were removed. Name the chain instead: `alignment angle calculated from the
 end-effector pose`, `end-effector-based alignment angle`, or `pose-based
 alignment angle`.
 
-### Keep the three alignment quantities separate
+### Use one measured angle in the main results
 
-They are complementary and are never presented as interchangeable measurements
-of one thing:
+The command/response chain has two symbols. \(\theta_{t_i}\) is the commanded
+orientation offset about surface tangent \(t_i\), and \(\Delta\theta_i\) is
+the measured signed end-effector rotation about that tangent from the beginning
+to the end of set-up. Do not restore `set` in the reported subscript, and do not
+introduce a second signed deviation vector for the set-up-entry orientation.
 
-- **Signed set-up rotation** — answers *how far, and in which direction, did
-  the end effector rotate during contact?* This is the primary metric for
-  comparing controller settings, and it does not depend on the calibrated
-  grinding-face direction.
-- **Alignment angle calculated from the end-effector pose** — answers *given
-  the measured end-effector orientation and the calibrated rigid tool
-  direction, how large is the reconstructed tool–surface angular difference?*
-  Useful, but it carries the tool-mount assumption, so it is a supporting
-  quantity and never independent proof of the physical grinding-face
-  orientation.
-- **TCP-height flatness criterion** — answers *is the final measured TCP
+The pose-based alignment error is appendix-only. It is unsigned and depends on
+the assumed fixed tool-to-end-effector relation, so neither it nor its
+before--after reduction appears in Chapter 5 tables, figures, or comparisons.
+The appendix may define \(\theta_{\mathrm{align}}\) locally for the consistency
+check, but \(\Delta\theta_{\mathrm{align}}\), \(\theta_{\mathrm{dev}}\),
+\(\Delta\theta_{\mathrm{set}}\), and their resolved variants are not
+thesis-wide reported symbols.
+
+**Each main surface-contact comparison changes one input and reports one
+response.** The response is the measured set-up rotation
+\(\Delta\theta_i\). Chapter 5 table headings name the changed input directly
+and call the output `Measured set-up rotation`; generic columns such as
+`Varied entry` and `Value` are not used. Subsection titles, captions, axes and
+the surrounding prose use the same input--response vocabulary. The commanded
+wrench time history in Case D is the mechanism figure and remains the one
+exception to a response-only comparison plot.
+
+The TCP-height flatness classification is appendix-only supporting evidence.
+It does not appear as a column in the Chapter 5 comparison tables or as a
+second outcome in their narratives. Appendix D retains the classified
+conditions, the geometric interpretation and the tool-mount qualification.
+
+The **TCP-height flatness criterion** answers *is the final measured TCP
   position geometrically consistent with the calibrated rectangular face lying
   flat on the surface?* This is the right quantity for calling a condition
   flat, as long as the wording stays explicit that it is geometry-based rather
@@ -1181,7 +1198,7 @@ The physical surface force still acts at the actual contact point. What changes
 is the point about which the compliance is defined, and therefore the
 translation–rotation coupling: the same normal press produces a different
 rotational response as \(p_c\) moves. Give that explanation before introducing
-\(r_c=p_c-p_{\mathrm{TCP}}\) and \(m_{c,K}=r_c\times f_K\), not
+\(r_c=p_c-p_{\mathrm{TCP}}\) and \(m_{\mathrm{cpl},K}=r_c\times f_K\), not
 after. If \(p_c\) lies on the relevant line of action the moment contribution
 becomes small or zero; displacing it to one side produces a moment that assists
 the required alignment, and to the other side one that opposes or reverses it.
@@ -1322,60 +1339,131 @@ instantaneous opposing torque at identical joint configurations.
   compliance relative to the TCP. They never appear in the same expression.
   \(r_c\) shapes the **commanded** wrench through \(\mathrm{Ad}(r_c)\);
   \(r_{\mathrm{Tool}}\) belongs to the physical contact geometry.
-- **There is no \(f_C\).** A symbol for an abstract environment-on-tool contact
-  force was introduced and then removed, because the thesis already has the two
-  viewpoints it needs and inventing a third force blurred them. Build every
-  moment statement on the existing quantities: the **commanded** side is
-  \(F=[f;m]\) with \(f=f_K+f_D\), and the **model-estimated**
-  side is \(\Delta\hat F_{\mathrm{ext}}=[\Delta\hat f_{\mathrm{ext}};
-  \Delta\hat m_{\mathrm{ext}}]\) relative to the clearance transition.
-- **Each lever pairs with one of those two viewpoints, and the pairing is the
-  point.** \(r_{\mathrm{Tool}}\) goes with the estimated force,
-  \(m_{r_{\mathrm{Tool}}}=r_{\mathrm{Tool}}\times\Delta\hat f_{\mathrm{ext}}\); \(r_c\)
-  goes with the commanded force, \(m_{r_c}=r_c\times f\). Show
-  them together — the figure in the compliance-centre section draws the same
-  geometry twice and fades out whichever lever does not act.
-- **\(m_{r_{\mathrm{Tool}}}\) is a reconstruction, not a measurement.** It is
-  what the moment would be if the estimated resultant acted at \(p_{\mathrm{Tool}}\), and
-  \(p_{\mathrm{Tool}}\) is a geometric reference rather than the instantaneous
-  force-application point. It is therefore compared with the directly estimated
-  \(\Delta\hat m_{\mathrm{ext}}\) and never equated to it. **Do not call it
-  \(m_{\mathrm{contact}}\)** — that name reads as the complete contact moment,
-  which it is not.
+- **The direction-selected lever rule has one sign, and it is
+  \(r_{c,t}=\rho_c(\theta_{t_1}t_2-\theta_{t_2}t_1)/\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}\).**
+  It reduces to \(r_{c,t}=+\rho_c t_2\) for a positive \(t_1\) offset and
+  \(r_{c,t}=-\rho_c t_1\) for a positive \(t_2\) offset. Three independent
+  things fix it and must agree: the supporting intermediate-direction table,
+  whose four selected rows read
+  \([0,+40,0]\), \([+28.3,+28.3,0]\), \([-28.3,+28.3,0]\) and \([-40,0,0]\,\mathrm{mm}\);
+  the Case-D measurements, where the \(+10^\circ\) command about \(t_1\) is
+  assisted at positive \(r_{c,t_2}\); and the moment that follows it,
+  \(m_{\mathrm{cpl},K}\approx-F_{K,n}\rho_c(\theta_{t_1}t_1+\theta_{t_2}t_2)/
+  \sqrt{\theta_{t_1}^2+\theta_{t_2}^2}\), which is opposite to the commanded
+  offset.
 
-  **The word `reconstructed` does not appear in the figure.** It reads as a
-  procedure the reader is expected to follow rather than as a statement of
-  where a quantity came from, and a figure has no room to explain it. Name the
-  origin instead: \(\Delta\hat m_{\mathrm{ext}}\) is labelled `model-estimated`
-  and \(m_{r_{\mathrm{Tool}}}\) `from the tool geometry`. The running text and
-  the symbol list keep the full statement, because that is where the
-  distinction between a geometry-based moment and a measured one has to be
-  made in full.
-- **The moments do not add across the two sides.** There are not three terms to
-  sum. The commanded side carries \(m_{r_c,0}=K_Re_R-D_R\omega_{\mathrm{EE}}\), the
-  ordinary rotational impedance, plus the coupling \(m_{c,K}\) when \(r_c\neq0\);
-  the observed side carries \(\Delta\hat m_{\mathrm{ext}}\), with \(m_{r_{\mathrm{Tool}}}\)
-  as a reconstruction of the force-lever contribution to it. **Never add
-  \(m_{r_{\mathrm{Tool}}}\) to \(m_{r_c,0}\) or \(m_{c,K}\).** One interaction, seen from two sides:
-  the command produces motion and press, and the external moment is the result
-  of the closed-loop interaction rather than an algebraic sum.
-- **\(m\approx m_{r_c,0}+m_{r_c}\) is a mechanism explanation, not an
-  identity.** When \(e_R\neq0\) the shifted \(6\times6\) law carries further
-  \(r_c\)-dependent terms in its lower-right block, so say "approximately" and
-  say why.
+  **The reversed numerator \(\theta_{t_2}t_1-\theta_{t_1}t_2\) is wrong and was
+  removed** from Chapter 2 and Chapter 5 on 2026-08-25. It survived the \(r_c\)
+  redefinition because it sits two equations away from the moment it feeds, and
+  in both chapters it contradicted the moment printed immediately below it.
+  Any future change to the lever convention is checked against all three
+  anchors above, not against the formula alone.
+- **The flat tool-axis target is the inward surface normal,
+  \(n_{\mathrm{flat}}=s_an_s\) with \(s_a=-1\), and the commanded rotation is
+  applied to it: \(n_d=R_{\mathrm{tilt}}n_{\mathrm{flat}}\).** For zero
+  commanded offset \(n_d=-n_s\), never \(+n_s\). The two-step form matches the
+  implementation, which builds the signed flat axis first and rotates it
+  afterwards, and it matches the parameter appendix, where the tool-axis target
+  sign is negative. Writing \(n_d=R_{\mathrm{tilt}}n_s\) drops \(s_a\) and
+  makes the zero-offset target point out of the surface instead of into it.
+- **There is no \(f_C\).** A symbol for an abstract environment-on-tool contact
+  force was introduced and then removed. Build every moment statement on the
+  commanded wrench \(F=[f^\top,m^\top]^\top\). The model-estimated external
+  wrench is an implementation signal used only by the optional set-up
+  termination condition and is assigned no thesis-wide mathematical symbol.
+  Figure 2.2 draws the commanded side only.
+- **\(m_{r_{\mathrm{Tool}}}=r_{\mathrm{Tool}}\times\Delta\hat f_{\mathrm{ext}}\)
+  does not appear anywhere in the thesis.** The symbol is deleted from the
+  symbol list, from Section 2.7, and from Figure 2.2. The earlier rules that
+  paired each lever with a viewpoint, that called the quantity a reconstruction
+  rather than a measurement, and that forbade adding it to the commanded terms,
+  are all withdrawn along with it — they existed to manage a quantity that is
+  no longer there.
+
+  The reason is that it put an assumed contact lever on the observed side of a
+  figure whose only job is to separate command from observation. The
+  model-estimated wrench already carries its own force and moment estimates, so
+  nothing has to be reconstructed from \(r_{\mathrm{Tool}}\). Drawing the tool lever
+  beside the virtual one also invited the reading that \(r_{\mathrm{Tool}}\)
+  and \(r_c\) are two versions of the same thing.
+- **\(r_{\mathrm{Tool}}\) belongs to the tool geometry and to reference
+  generation, and to nothing else.** It is introduced where the physical tool
+  face is introduced, because the face geometry is what determines it, and it
+  is used to convert the selected tool-point reference into \(p_d\). It does
+  not enter the compliance-centre point shift, it does not appear in
+  Section 2.7, and it is never crossed with a commanded force.
+- **The commanded and model-estimated quantities are never equated.** Changing
+  \(r_c\) changes the commanded impedance and therefore the closed-loop
+  interaction, which can in turn change the model-estimated external wrench.
+  The estimated external moment is the result of that interaction, not an
+  algebraic sum of commanded terms.
+- **`\approx` does not appear in the thesis, in any chapter, appendix, or
+  figure.** Every displayed and inline relation is written with an equals sign.
+  This is not a licence to assert equalities that are false: a relation that
+  was approximate is made exact before the symbol changes, by naming the
+  quantity the relation actually holds for. The four routes used, in order of
+  preference:
+
+  1. **Name the component the relation is exact for.** The press-direction
+     rule was \(m_{c,K}\approx-F_{K,n}\rho_ct_1\) because \(f_K\) carries
+     tangential components. Defining the normal component
+     \(f_{K,n}=-F_{K,n}n_s\) and the moment it alone produces,
+     \(m_{\mathrm{cpl},K,n}=r_{c,t}\times f_{K,n}\), makes it an identity, and
+     one sentence then says that tangential components add further terms to
+     \(m_{\mathrm{cpl},K}\).
+  2. **State the rounding in the prose.** The calibrated \(n_s\), \(t_1\),
+     \(t_2\) and \(R_{\mathrm{surface}}\) are quoted to six decimals; the
+     lead-in says `to six decimal places` and the equation takes `=`.
+  3. **Write the ideal condition as an equality and put the residual in the
+     next sentence.** The tool-normal invariance is an equality under perfect
+     seating, and the sentence after it says seating scatter leaves no
+     direction that satisfies it exactly.
+  4. **Replace the relation with a bound or a statement in words.** A
+     quasi-static force balance is `both are negative and track one another in
+     magnitude`, not `\(F_n\approx-F_{n,\mathrm{cmd}}\)`;
+     \(40\sin10^\circ\) is `under \(7\,\mathrm{mm}\)`, not `\(\approx
+     6.9\,\mathrm{mm}\)`.
+
+  The hedging words stay: `approximately`, `about`, and `of the order of` are
+  required by *Hedge to the evidence* in
+  [THESIS_VOICE.md](THESIS_VOICE.md) and are unaffected by this rule, which
+  governs the symbol alone. Grep for `\approx` across `chapters/`,
+  `frontmatter/`, `backmatter/` and `figures/` before submitting; the expected
+  count is zero.
+- **\(m=m_R+m_{\mathrm{cpl}}\) is an identity, and is written with an equals
+  sign.** It holds exactly for the shifted \(6\times6\) law, provided \(f\) is
+  the translational part of the same commanded wrench \(F=[f^\top,m^\top]^\top\)
+  rather than the \(r_c=0\) expression. Writing \(m=[r_c]_\times f+K_Re_R-D_R
+  \omega_{\mathrm{EE}}\) out of \(\mathrm{Ad}(r_c)^\top K_c\mathrm{Ad}(r_c)\)
+  leaves no remainder: the lower-right block's
+  \([r_c]_\times^\top K_p[r_c]_\times e_R\) is what the lever produces from the
+  \(-K_p[r_c]_\times e_R\) part of the force the same shift creates, and the
+  damping block follows identically. Verified numerically against the
+  implemented `shiftGainToTcp` on 2026-08-25.
+
+  **The earlier "mechanism explanation, not an identity" ruling is withdrawn.**
+  It required "approximately" on the grounds that the lower-right block carries
+  further \(r_c\)-dependent terms, which is true of the block and false of the
+  sum — those terms are inside \(r_c\times f\). What the approximation actually
+  concealed is narrower and is now stated where it belongs: the expressions
+  \(f_K=K_pe_p\) and \(f_D=D_p(\dot p_d-\dot p_{\mathrm{EE}})\) of
+  `eq:commanded_force_split` are the \(r_c=0\) forms, and under the shift the
+  elastic and damping split applies to the shifted force instead. The sign
+  analysis continues to use \(m_{\mathrm{cpl},K}=r_c\times f_K\) at \(e_R=0\), where the
+  two coincide.
 - **\(r_c=0\) is not a zero-moment condition, and it does not remove
-  \(m_{c,K}\) alone.** The earlier wording of this rule said "it removes
-  \(m_{c,K}\) alone", which is too narrow and has been replaced. Setting
+  \(m_{\mathrm{cpl},K}\) alone.** The earlier wording of this rule said "it removes
+  \(m_{\mathrm{cpl},K}\) alone", which is too narrow and has been replaced. Setting
   \(r_c=0\) makes \(\mathrm{Ad}(r_c)\) the identity, so it removes the
   **complete** additional coupling the virtual point shift introduces:
-  \(m_{c,K}\), \(m_{c,D}\), \(m_{r_c}\), and every remaining
+  \(m_{\mathrm{cpl},K}\), \(m_{\mathrm{cpl},D}\), \(m_{\mathrm{cpl}}\), and every remaining
   \(r_c\)-dependent term of the shifted \(K_{\mathrm{TCP}}\) and
   \(D_{\mathrm{TCP}}\) — both the off-diagonal blocks and the added rotational
   entries \([r_c]_\times^\top K_p[r_c]_\times\) and
   \([r_c]_\times^\top D_p[r_c]_\times\).
 
   What it does **not** remove: the ordinary decoupled rotational impedance
-  \(m_{r_c,0}\), the finite rotational compliance, the tool geometry \(r_{\mathrm{Tool}}\), the
+  \(m_R\), the finite rotational compliance, the tool geometry \(r_{\mathrm{Tool}}\), the
   physical contact interaction, the external contact moment, and therefore
   contact-induced robot rotation. \(r_{\mathrm{Tool}}\neq0\) means contact can still
   contribute \(m_{r_{\mathrm{Tool}}}\). This is what makes the strong zero-lever \(t_1\)
@@ -1386,26 +1474,112 @@ instantaneous opposing torque at identical joint configurations.
   translation--rotation coupling introduced by the virtual point shift; the
   ordinary rotational impedance and the physical tool and contact geometry
   remain.* **Never write that a zero lever gives a zero moment.**
-- **Never write \(r_{\mathrm{Tool}}\times f_K\).** \(f_K\) is a
-  commanded elastic force; the contact-side reconstruction takes the estimated
-  force, \(r_{\mathrm{Tool}}\times\Delta\hat f_{\mathrm{ext}}\). Crossing a lever from one
-  side with a force from the other is the error this whole section exists to
-  prevent.
+- **Never cross a lever from one side with a force from the other.** With
+  \(m_{r_{\mathrm{Tool}}}\) gone the commonest form of this error is gone with
+  it, but the principle stands: \(r_c\) is crossed with the commanded force
+  \(f\), and nothing is crossed with the model-estimated external force.
 - The complete translational command carries a moment, not only its elastic
-  part: \(m_{r_c}=r_c\times f\). The sign analysis then retains
-  \(f_K\) alone, giving \(m_{c,K}=r_c\times f_K\),
+  part: \(m_{\mathrm{cpl}}=r_c\times f\). The sign analysis then retains
+  \(f_K\) alone, giving \(m_{\mathrm{cpl},K}=r_c\times f_K\),
   and says that it is doing so — otherwise \(f_K\) appears to
   enter arbitrarily. The damping coupling follows from the shifted damping
   matrix in the same way.
-- About the centre of compliance the same reconstruction would take
-  \((r_{\mathrm{Tool}}-r_c)\times\Delta\hat f_{\mathrm{ext}}\). **Mention this once.** The
-  controller never forms it: the congruence transformation receives \(r_c\), as
-  the appendix source listing shows.
-- **The commanded elastic normal magnitude is \(F_{K,n}=-n_s^\top f_K\), never
-  \(F_n\).** \(F_n\) is reserved for the positive normal magnitude of the
-  model-estimated external-force change. Writing \(f_K\approx-F_n n_s\) put a
-  measured symbol inside a commanded quantity; it is
-  \(f_K\approx-F_{K,n}n_s\).
+- **The compliance-centre hierarchy is stated once, in Section 2.7.3, and
+  applied everywhere else.** The order is
+  \(r_c\to(r_{c,t_1},r_{c,t_2},r_{c,n})\to r_{c,t}\), then
+  \(\theta_{\mathrm{tilt}}\to\) the selected direction, then
+  \(m=m_R+r_c\times f\). \(r_{c,t_1}\) and \(r_{c,t_2}\) are signed
+  scalars and \(r_{c,t}\) is the tangential vector they form. Chapters 4
+  and 5 must not re-derive any of it.
+
+  **The complete list of compliance-centre symbols is \(r_c\),
+  \(r_{c,t_1}\), \(r_{c,t_2}\), \(r_{c,n}\), \(r_{c,t}\) and
+  \(\lVert r_{c,t}\rVert\).** `\rho_c` is withdrawn: a vector already has a
+  norm, and a second magnitude symbol only had to be kept in step with it. A
+  superscript `sel` for the selected displacement was tried and withdrawn too;
+  the selection rule prescribes the magnitude and fixes the direction, so one
+  \(r_{c,t}\) carries both. The distinction that matters in the tool-axis
+  supporting check is between
+  \(\lVert r_c\rVert\) and \(\lVert r_{c,t}\rVert\).
+
+  **The tool-axis supporting check introduces the projection geometry before
+  using the sine.** Define \(\alpha_{\mathrm{axis}}\) as the angle between the
+  tool axis and the surface normal, and
+  state that a tool-axis displacement contains normal and tangential
+  components. Then use
+  \(\lVert r_{c,t}\rVert=\lVert r_c\rVert\sin\alpha_{\mathrm{axis}}\). At the outer
+  setting, \(40\,\mathrm{mm}\) is the configured total tool-axis displacement
+  \(\lVert r_c\rVert\), whereas \(6.95\,\mathrm{mm}\) is its tangential
+  projection for an inclination of approximately \(10^\circ\), stated to two
+  decimal places. Never present the projection as a second configured CoC
+  magnitude.
+
+  **\(r_c\times f_n=r_{c,t}\times f_n\) is the load-bearing result.** The
+  normal component of the displacement drops out of the normal-press moment,
+  so only the tangential part acts. State it in the theory and cite it in
+  the tool-axis supporting check rather than re-arguing the cross product there.
+- **The definition frame belongs with the components, not at the end of the
+  section.** A surface-fixed displacement holds
+  \(r_c^{S}=[r_{c,t_1},r_{c,t_2},r_{c,n}]^\top\) constant with
+  \(r_c=R_{\mathrm{surface}}r_c^{S}\); a tool-fixed one holds its components
+  constant in end-effector coordinates and its base-frame vector rotates with
+  the end effector. Supporting check 1 examines exactly this property, so it
+  has to exist in the theory before the check appears.
+- **The Case-D horizontal coordinate is a selected-direction coordinate, and
+  the caption says so.** It is \(r_{c,t_2}\) for commands about \(t_1\) and
+  \(-r_{c,t_1}\) for commands about \(t_2\), so that positive values denote
+  the direction selected for a positive orientation offset. **Labelling the
+  second panel \(r_{c,t_1}\) is wrong** and contradicts the supporting
+  intermediate-direction table,
+  which gives \([-40,0,0]\,\mathrm{mm}\) for the selected \(t_2\)
+  condition that Case D reports at \(+40\,\mathrm{mm}\). The run
+  configuration settles it: `P2_t2_pos_p040` sets
+  `compliance_center_offset_ee_x = -0.040`, which is \(r_{c,t_1}=-40\,
+  \mathrm{mm}\). Do not "fix" this by changing the reported values.
+- **Every reported non-zero displacement except the surface-fixed conditions
+  of supporting check 1 was configured tool-fixed, in end-effector
+  coordinates**, and the surface-frame vectors in the supporting
+  intermediate-direction table are what those settings realise in the flat target
+  orientation. The mapping is \(r_{c,t_1}=\) `offset_ee_x` and
+  \(r_{c,t_2}=-\) `offset_ee_y`, checked against the run overlays on
+  2026-08-25. Say which frame a tabulated vector is in; a table headed
+  \([r_{c,t_1},r_{c,t_2},r_{c,n}]\) whose values were configured in another
+  frame needs that sentence or it reads as a contradiction of supporting
+  check 1.
+- **The model-estimated external wrench is not theory, and Chapter 2 does not
+  carry it.** The former Section 2.4.4 and the commanded-versus-model-estimated
+  half of Section 2.7 are deleted, and Figure 2.2 is a commanded-wrench figure
+  only. Neither was needed to derive the impedance law or the compliance-centre
+  mechanism, and both interrupted the one narrative the chapter has to carry:
+  \(r_c\to\mathrm{Ad}(r_c)\to K_{\mathrm{TCP}},D_{\mathrm{TCP}}\to
+  m=m_R+r_c\times f\to\) the tangential direction rule.
+
+  **It survives as an implementation signal only.** Section 3.5.3 says in one
+  short passage that libfranka supplies it, that it is stored at the clearance
+  transition, and that the estimated external moment change can trigger the
+  optional termination condition. This explanation is written in words and
+  introduces no mathematical symbol. Every reported run terminated through the
+  timeout instead. The data-format appendix retains the literal recorded field
+  names and bias columns. That is the whole of it.
+
+  **`F_{n,\mathrm{ext}}` is withdrawn**, with the symbol-list rows for
+  \(\hat f_{\mathrm{ext}}\), \(\hat f_{\mathrm{ref}}\) and
+  \(\Delta\hat F_{\mathrm{ext}}\). One steady-state sentence was all that
+  used it, and that sentence now rests on the alignment angle alone. Do not
+  reintroduce a second normal-force quantity to support a claim that does not
+  need one.
+- **No index means commanded.** This thesis-wide rule replaces carrying `cmd`
+  through every equation, figure and axis label. The commanded quantities are
+  \(f\), \(f_n\), \(f_t\), \(F_n=n_s^\top f\), \(m\) and
+  \(M_{t_i}=t_i^\top m\). The model-estimated external wrench has no
+  thesis-wide mathematical symbols and is referred to in words only in
+  Section 3.5.3. `F_{n,\mathrm{cmd}}`, `M_{t_i,\mathrm{cmd}}`,
+  `F_{K,n}` and `f_{K,n}` are withdrawn. \(\tau_{\mathrm{cmd}}\) keeps its
+  index because it is a joint torque rather than a Cartesian wrench component.
+
+  \(F_n\) is the signed scalar commanded normal force, and \(f_n=F_nn_s\) is
+  the corresponding vector. Say so once where both first appear rather than
+  leaving the reader to infer it.
 - **The settled force and moment names.** `press` as a symbol name was
   withdrawn, because \(f_{\mathrm{press}}\) read as the complete force pressing
   against the surface when it was only the spring term. The subscript now says
@@ -1413,38 +1587,55 @@ instantaneous opposing torque at identical joint configurations.
 
   | Symbol | Is | Name |
   |---|---|---|
-  | \(f_K=K_pe_p\) | commanded | elastic commanded force |
-  | \(f_D=D_p(\dot p_d-\dot p_{\mathrm{EE}})\) | commanded | damping commanded force |
-  | \(f=f_K+f_D\) | commanded | total commanded force |
-  | \(m_{r_c,0}=K_Re_R-D_R\omega_{\mathrm{EE}}\) | commanded | commanded moment at \(r_c=0\) |
-  | \(m_{c,K}=r_c\times f_K\) | commanded | elastic coupling moment |
-  | \(m_{c,D}=r_c\times f_D\) | commanded | damping coupling moment |
-  | \(m_{r_c}=r_c\times f\) | commanded | total translational coupling |
-  | \(\Delta\hat f_{\mathrm{ext}}\) | estimated | external-force change |
+  | \(f\) | commanded | complete commanded force |
+  | \(m\) | commanded | complete commanded TCP moment |
+  | \(f_n=F_nn_s\) | commanded | normal component of \(f\) |
+  | \(f_t=(I_3-n_sn_s^\top)f\) | commanded | tangential component of \(f\) |
+  | \(m_R=K_Re_R-D_R\omega_{\mathrm{EE}}\) | commanded | rotational-impedance contribution |
+  | \(m_{\mathrm{CoC}}=r_c\times f\) | commanded | compliance-centre contribution |
+  | \(M_{t_i}=t_i^\top m\) | commanded | the moment the plots carry |
 
-  **The point shift acts on both matrices**, so the damping force acquires the
-  same lever as the elastic one; say so rather than leaving the reader to
-  assume only stiffness couples. The sign analysis then uses \(m_{c,K}\) alone,
-  **and says why**: \(f_D\to\mathbf{0}\) as the reference stops advancing, so
-  the elastic term is what carries the steady alignment tendency while the
-  damping term shapes the transient.
+  **The whole thesis turns on \(m=m_R+r_c\times f\)**, and the same language
+  is used in the theory, the figures, the methodology and the results. The
+  controller evaluates the complete shifted wrench; it never forms an isolated
+  coupling moment. Where the directional effect of a displaced centre has to be
+  explained, decompose the **complete** force as \(f=f_n+f_t\) and use
+  \(r_c\times f_n\); do not switch to an elastic force for the occasion.
 
-  **`trans` is retired, and the commanded pair is named for the lever.**
-  \(m_{c,\mathrm{trans}}\) is now \(m_{r_c}\), the moment the lever \(r_c\)
-  produces, and \(m_0\) is now \(m_{r_c,0}\), the commanded moment obtained at
-  \(r_c=0\). Two things follow from writing it that way. The decomposition
-  \(m\approx m_{r_c,0}+m_{r_c}\) shows on its face which part exists without a
-  lever and which the lever adds, where \(m_0\) said only that something was
-  zero. And it matches the observed side, where
-  \(m_{r_{\mathrm{Tool}}}=r_{\mathrm{Tool}}\times\Delta\hat f_{\mathrm{ext}}\)
-  is already named for its own lever, so one convention now covers both sides
-  of the moment-bookkeeping figure. `trans` named the source of the coupling,
-  the translational command, which is not recoverable from the four letters.
+  **`f_K`, `f_D`, `m_{c,K}`, `m_{c,D}`, `m_{r_c}`, `m_{r_c,0}`,
+  `m_{\mathrm{cpl},K}`, `m_{\mathrm{cpl},D}`, `m_{\mathrm{cpl}}` and
+  `m_{\mathrm{cpl},K,n}` are all withdrawn**, and are written here as literal
+  strings so a bulk rename cannot revive them. They split the commanded force
+  into an elastic and a damping part in order to name a coupling moment the
+  controller does not command, and the results chapter then re-derived the sign
+  in that split notation while its own figure plotted
+  \(F_{n,\mathrm{cmd}}\) and \(M_{t_i,\mathrm{cmd}}\) from the complete
+  wrench. That mismatch is the confusion this convention exists to remove.
 
-  The elastic and damping parts keep \(m_{c,K}\) and \(m_{c,D}\). Those follow
-  the one-point-one-index convention under *Naming a technical quantity*,
-  alongside \(p_c\), \(r_c\), \(K_c\) and \(D_c\), and they carry the sign
-  analysis in Chapter 2 and the rules above.
+  **Four spellings are banned outright**, and are written here as literal
+  strings so that a bulk rename cannot quietly revive them: `m_{r_c,0}`,
+  `m_{r_c}`, `m_{c,K}` and `m_{c,D}`. The earlier ruling that produced them —
+  `trans` retired, the commanded pair named for the lever — is withdrawn.
+
+  The fatal objection is to the first. It names a quantity by a condition the
+  quantity does not require: the rotational impedance is present at every lever
+  setting, and an index reading "at \(r_c=0\)" tells the reader it exists only
+  there. \(m_R\) says what it is. The first two were also
+  near-indistinguishable in print while naming different contributions, and the
+  elastic and damping parts shared their index with \(p_c\), \(r_c\), \(K_c\)
+  and \(D_c\), which name the centre rather than the coupling.
+
+  **\(m_{r_{\mathrm{Tool}}}\) is unchanged.** It is the observed side and
+  keeps its lever name.
+
+  **Say which quantity is commanded.** \(m\) is what the controller computes
+  and what the experiments report, through
+  \(M_{t_i,\mathrm{cmd}}=t_i^\top m\); the implementation forms
+  \(K_{\mathrm{TCP}}\) and \(D_{\mathrm{TCP}}\) and returns the complete
+  wrench. \(m_{\mathrm{cpl}}\) and \(m_{\mathrm{cpl},K}\) are analytical
+  components, used to explain the mechanism and to derive the lever direction.
+  Chapter 2 states this once, where the decomposition is introduced. Do not
+  write that the controller commands, adds, or sends \(m_{\mathrm{cpl},K}\).
 
   This is a rule about **symbols only**. Ordinary prose such as `the press`,
   `the normal press` or `press-induced moment` describes the physical action
@@ -1571,10 +1762,11 @@ per misalignment.
 
 The narrative is therefore **not** "a displaced centre improves alignment, so
 find the best displaced lever". Chapter 1 introduces the question without
-answering it, Chapter 4 states the progression of Cases A to H before the case
-table, Chapter 5 answers case by case, and Chapter 6 states the result.
+answering it. Chapter 4 separates the main A--E matrix from the supporting
+checks. Chapter 5 reports the main cases, Appendix D reports the supporting
+checks, and Chapter 6 states the result.
 
-The purposes of the cases are settled and are stated in this order:
+The purposes of the main cases are settled and are stated in this order:
 
 | Case | What it establishes |
 |---|---|
@@ -1582,16 +1774,31 @@ The purposes of the cases are settled and are stated in this order:
 | B | Whether rotational stiffness can control the direction-dependent response. It changes the magnitude, chiefly about \(t_1\), and does not produce the missing alignment-directed \(t_2\) response at zero lever. |
 | C | Whether cross-axis translational stiffness resolves the direction dependence. Its influence is smaller over the tested range. |
 | D | Whether one fixed non-zero tangential centre can assist different misalignment signs and both principal directions. It cannot: the assisting side reverses with the sign, and the required lever differs between \(t_1\) and \(t_2\). This is the central experiment. |
-| E | Whether a displaced centre is defined by a magnitude and nominal coordinates alone. It is not: the definition frame changes the response. |
-| F | Whether any displacement produces the effect. The tangential component does; the tool-axis sweep spans \(0.34^\circ\) against \(7.73^\circ\). |
-| G | Whether one displaced centre gives a simply scaled response as the commanded offset magnitude changes. No proportional scaling was established. |
-| H | Whether one fixed non-zero tangential lever represents the direction-selected rule across tangent-plane directions. It does not; the \(t_2\) comparison, \(+4.43\) against \(-1.61^\circ\), is the decisive separation. |
+| E | Whether one displaced centre gives a simply scaled response as the commanded offset magnitude changes. No proportional scaling was established. |
+
+Appendix D carries three supporting checks without case letters:
+
+| Supporting check | What it establishes |
+|---|---|
+| Definition frame | A displacement is not defined by magnitude and nominal coordinates alone; the frame holding it changes the response. |
+| Tool-axis displacement | The tangential component produces the press-induced moment; the tool-axis response spans \(0.34^\circ\) against \(7.73^\circ\) for the tangential displacement. |
+| Intermediate tangent directions | One fixed non-zero tangential displacement does not reproduce the direction-selected rule across the four tested directions; the \(t_2\) comparison, \(+4.43\) against \(-1.61^\circ\), is the decisive separation. |
+
+The run hierarchy is fixed. The main A--E study contains 41 settings and 123
+runs. The three supporting checks contain 14 independently counted settings
+and 42 runs. Together they retain the complete 55-setting, 165-run
+surface-contact data set; that total already excludes the discarded combined
+stiffness condition and must not be reduced again. The null-space pose-hold
+study adds four settings and 12 runs, giving 177 recorded experimental runs in
+the complete data set. Shared reference conditions are counted with the main
+case in which they first appear.
 
 The synthesis is that no tested non-zero tangential centre is
 direction-independent, so \(p_c=p_{\mathrm{TCP}}\) is the fixed default
 centre for the investigated task, and a displaced centre is a
 condition-dependent means of adding rotational alignment authority. The
-Case-H diagonal similarity is **not** evidence that a fixed lever is universal:
+The diagonal similarity in the intermediate-direction check is **not** evidence
+that a fixed lever is universal:
 the fixed \(t_1\) lever retains a substantial projection along the selected
 direction there, and the thesis says so where the numbers appear.
 
@@ -1606,7 +1813,7 @@ completed adaptive functionality.
 
 **Do not summarise the compliance-centre result as "find the best non-zero
 lever and use it."** That reading does not survive the model. The coupling
-moment \(m_{c,K}=r_c\times f_K\) does not vanish when the tool reaches a flat
+moment \(m_{\mathrm{cpl},K}=r_c\times f_K\) does not vanish when the tool reaches a flat
 orientation: as long as a normal press is present and \(r_c\neq0\), a fixed
 tangential lever keeps commanding rotation in one direction, whether or not
 alignment has already been achieved. A lever that assists one initial
@@ -1618,7 +1825,7 @@ The defensible summary separates two regimes:
 - **Transient alignment.** A tangential displacement supplies a corrective
   moment while the natural contact response is weak or opposed. The \(t_2\)
   measurements demonstrate this.
-- **Sustained contact.** \(r_c=0\) gives \(m_{c,K}=0\), so the TCP is the
+- **Sustained contact.** \(r_c=0\) gives \(m_{\mathrm{cpl},K}=0\), so the TCP is the
   neutral centre: no preferred tangential direction, and the tool responds to
   the actual contact geometry.
 
@@ -1672,8 +1879,8 @@ tangent-plane direction of the initial misalignment.** `fixed centre` and
 
 **`universally optimal centre` remains banned, as does `best` and `optimal` for
 any centre.** So does any statement extending the result to every robot, tool,
-contact geometry, surface, grinding process, or impedance controller. The A--H
-campaign did not test a displacement held through sustained grinding, and did
+contact geometry, surface, grinding process, or impedance controller. The
+surface-contact campaign did not test a displacement held through sustained grinding, and did
 not vary the surface orientation during contact; say that where the claim is
 made.
 
@@ -1694,8 +1901,8 @@ from Chapter 5. The reason for the change is that a hand-applied check carries
 no controlled condition and no recorded quantity, so a reader cannot separate
 it from the measured cases however carefully it is labelled. The
 sustained-contact argument does not need it: it rests on the mechanism, that
-\(m_{c,K}=r_c\times f_K\) persists while the press is present, and on the
-Case-D and Case-E measurements.
+\(m_{\mathrm{cpl},K}=r_c\times f_K\) persists while the press is present, and on the
+Case-D measurements and supporting definition-frame check.
 
 ### Why the two tangents behaved differently, and what may be concluded from it
 
@@ -1830,10 +2037,10 @@ appears:
 |---|---|
 | Relative influence of the parameters | Case C, closing the stiffness pair |
 | Physical role of the compliance-centre lever | Case D, under the lever sweep |
-| Weak tool-axis sensitivity | Case F |
+| Weak tool-axis sensitivity | Supporting tool-axis check in Appendix D |
 | Axis-dependent response | Case A, where the asymmetry first shows |
 | Measurement interpretation | Case A, and the flatness summary |
-| Implications for parameter selection | Case H, after the direction rule |
+| Implications for parameter selection | Main-results synthesis after Case E, supported by the intermediate-direction check in Appendix D |
 | Scope of interpretation | deleted; Chapter 6 *Limitations* already carried it |
 
 The editorial unit is **question, then figure or table, then observation, then
@@ -1856,7 +2063,7 @@ earn their place, and the reason each does:
 |---|---|
 | Conditions classified as tilted by TCP height | The seven settings behind the flatness count, which the chapter states only as a total |
 | Per-setting spread of the Case-D lever positions | The standard deviation of each setting; the chapter figure plots the means alone |
-| Consistency of the two angular quantities | A check on the choice of response metric, comparing \(\Delta\theta_{\mathrm{set}}\) against \(\Delta\theta_{\mathrm{align}}\) |
+| Comparison with the pose-based alignment estimate | An appendix consistency check between the direct measured set-up rotation \(\Delta\theta_i\) and the secondary estimate reconstructed from the calibrated tool normal |
 
 A surface-frame component plot of the two outer Case-D positions was removed on
 this test. Its own text conceded that it reached the same conclusion as the

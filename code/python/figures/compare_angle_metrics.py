@@ -1,27 +1,25 @@
 #!/usr/bin/env python3
-"""Compare the two ways of reporting how far the tool aligned.
+"""Compare measured set-up rotation with a pose-based alignment estimate.
 
   python3 analysis/compare_angle_metrics.py [--trial DIR] [--out-dir DIR]
 
-Two quantities describe the same event and are measured from different data.
+Two quantities describe the same event and are obtained from different data.
 
   alignment  the angle between the tool axis and the calibrated plane. It has
              an absolute zero, so a curve can be read as "flat" or "not flat",
              but it carries the tool-axis and plane calibration with it.
 
-  angular    the deviation from the orientation held at the start of set-up. It
-  deviation  comes from joint angles alone, so no calibration enters, but it
-             only says how far the tool turned, not where it ended up.
+  rotation   the motion from the orientation held at the start of set-up. It
+             comes from joint angles alone, so no tool-normal calibration
+             enters, but it only says how far the end effector turned.
 
 The left panel overlays them for one trial, with the deviation subtracted from
 the alignment at the beginning of set-up so both start at the same value. The right panel puts
 the magnitude of the alignment gain against the deviation for every archived
 trial, split by whether the trial improved or worsened the alignment.
 
-The magnitudes agree, which shows the calibration does not corrupt the reported
-effect. Only the alignment carries the sign, because the deviation is the
-length of a rotation and cannot tell a tool turning onto the plane from one
-turning off it.
+The comparison is an internal consistency check rather than an independent
+measurement of the physical tool orientation.
 """
 
 import argparse
@@ -95,10 +93,10 @@ def load_trial(trial_dir):
     return t - t[0], alignment, deviation
 
 
-def load_metrics():
+def load_metrics(metrics_path):
     """Return the gain and angular deviation of every trial with both."""
     gain, deviation, label = [], [], []
-    with open(METRICS) as f:
+    with open(metrics_path) as f:
         for row in csv.DictReader(f):
             if not row.get("deviation_gain_deg") or not row.get("end_effector_deviation_deg"):
                 continue
@@ -110,45 +108,48 @@ def load_metrics():
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--trial",
-                   default=os.path.join(RESULTS, "V_best_check", "r02"))
+    p.add_argument("--trial", default=os.path.join("V_best_check", "r02"))
+    p.add_argument("--results", default=RESULTS)
+    p.add_argument("--metrics", default=METRICS)
     p.add_argument("--out-dir", default=os.path.join(HERE, "..", "figures"))
     args = p.parse_args()
     os.makedirs(args.out_dir, exist_ok=True)
 
-    t, alignment, deviation = load_trial(args.trial)
-    gain, deviation_final, _ = load_metrics()
+    t, alignment, deviation = load_trial(os.path.join(args.results, args.trial))
+    gain, deviation_final, _ = load_metrics(args.metrics)
 
     fig, axes = plt.subplots(1, 2, figsize=(6.9, 3.0))
 
     # Left: both descriptions of the same trial, on one absolute scale.
     t, alignment, deviation = thin(t, alignment, deviation)
     axes[0].plot(t, alignment, color=SERIES_BLACK,
-                 label="Alignment angle from end-effector pose")
+                 label="Pose-based alignment error")
     axes[0].plot(t, alignment[0] - deviation, color=SERIES_RED,
-                 label=(r"deviation at start of set-up $-$ "
-                        r"end-effector rotation"))
+                 label=(r"initial pose-based error $-$ "
+                        r"measured set-up rotation"))
     reference_line(axes[0])
-    axes[0].set_xlabel("Time [s]")
+    axes[0].set_xlabel("Set-up time [s]")
     # Both curves are the alignment angle, obtained two ways; a bare "Angle"
     # leaves the reader to guess which angle is plotted.
-    axes[0].set_ylabel(r"Alignment angle $\theta_{\mathrm{align}}$ [$^\circ$]")
+    axes[0].set_ylabel(r"Pose-based alignment error [$^\circ$]")
     axes[0].set_title("(a)")
 
     # Right: the same comparison reduced to one point per archived trial. The
-    # gain is a magnitude here, because the deviation carries no sign.
+    # The direct rotation is a magnitude here; the pose-based reduction keeps
+    # its sign so trials in which the error increased remain below zero.
     limit = max(np.abs(gain).max(), deviation_final.max()) * 1.05
     axes[1].plot([0.0, limit], [0.0, limit], color="#888888",
                  linewidth=0.8, zorder=0)
     improved = gain >= 0.0
     axes[1].plot(deviation_final[improved], gain[improved], linestyle="none",
                  marker="o", color=SERIES_BLUE, markerfacecolor="white",
-                 markeredgewidth=1.0, label="deviation reduced")
-    axes[1].plot(deviation_final[~improved], -gain[~improved], linestyle="none",
+                 markeredgewidth=1.0, label="pose-based error reduced")
+    axes[1].plot(deviation_final[~improved], gain[~improved], linestyle="none",
                  marker="s", color=SERIES_RED, markerfacecolor="white",
-                 markeredgewidth=1.0, label="deviation increased")
-    axes[1].set_xlabel(r"Set-up rotation angle $\phi_{\mathrm{set}}$ [$^\circ$]")
-    axes[1].set_ylabel(r"$|\Delta\theta_{\mathrm{align}}|$ [$^\circ$]")
+                 markeredgewidth=1.0, label="pose-based error increased")
+    axes[1].set_xlabel(r"Measured set-up rotation magnitude [$^\circ$]")
+    axes[1].set_ylabel("Reduction of pose-based\n"
+                       r"alignment error [$^\circ$]")
     axes[1].set_title("(b)")
 
 

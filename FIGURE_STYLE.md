@@ -232,15 +232,16 @@ the figure it was meant to update.
 ### Result figures may be drawn from the reported means
 
 A figure whose content is already tabulated in the thesis does not need a
-generator at all. Four Chapter 5 figures were redrawn directly in `pgfplots`
-from the means in their own tables: the Case-A bars, the
-two-panel Case-D sweep, the Case-D-against-Case-F comparison, and the two-panel
-Case-G plot. They are `\input` as `.tex`, so they take the document font and
+generator at all. Four result figures were redrawn directly in `pgfplots`
+from the means in their own tables: the Case-A bars, the two-panel Case-D
+variation, the Case-D comparison with the supporting tool-axis check, and the
+two-panel Case-E plot. They are `\input` as `.tex`, so they take the document font and
 need no `esizebox`.
 
 This is not a licence to invent data. **The only numbers a redrawn figure may
 contain are ones already reported in the thesis**, and where the table carries
-standard deviations they are drawn as error bars, as in the Case-F series.
+standard deviations they are drawn as error bars, as in the supporting
+tool-axis series.
 
 Where the original plot carried information the table does not, redrawing loses
 it, and the original is kept rather than discarded. `MAIN_D_sign.pdf` showed
@@ -301,28 +302,29 @@ form. Say what it *shows*.
 ### Naming
 
 `MAIN_<INDEX>_<subject>.pdf`, uppercase prefix, uppercase index, lower-case
-subject. The index is the case letter the figure belongs to, so the file name
-sorts next to the section that discusses it and a figure whose case is dropped
-is found by its name alone:
+subject. Main-study figures use their current A--E case letter. Supporting
+figures use a descriptive subject in the thesis even where a retained binary
+file name still carries its acquisition-campaign identifier:
 
 | File | Belongs to |
 | --- | --- |
-| `MAIN_A_KR.pdf` | Case A |
-| `MAIN_B_KP.pdf` | Case B |
-| `MAIN_C_general_pole.pdf` | Case C |
-| `MAIN_D_contact.pdf` | Case D |
-| `MAIN_E_sign.pdf`, `MAIN_E_wrench.pdf`, `MAIN_E_diagnostics.pdf` | Case E |
-| `MAIN_G_toolaxis.pdf` | Case G |
-| `MAIN_H_magnitude.pdf` | Case H |
+| `MAIN_A_contact.pdf` | Case A |
+| `MAIN_B_KR.pdf` | Case B |
+| `MAIN_C_KP.pdf` | Case C |
+| `MAIN_D_sign.pdf`, `MAIN_D_wrench.pdf`, `MAIN_D_diagnostics.pdf` | Case D |
+| `MAIN_G_magnitude.pdf` | Case E; retained file identifier |
+| `MAIN_E_frame.pdf` | Supporting definition-frame check; retained file identifier |
+| `MAIN_F_toolaxis.pdf` | Supporting tool-axis check; retained file identifier |
+| `MAIN_H_direction.pdf` | Supporting intermediate-direction check; retained file identifier |
 | `MAIN_DQ_descent.pdf`, `MAIN_DQ_metric_comparison.pdf` | Data quality |
 | `MAIN_NS_nullspace_automatic.pdf` | Null-space results |
 
-A figure spanning several cases carries their letters in order. A
-figure that serves a section rather than a case carries a two-letter tag for
-that section (`DQ`, `NS`). The label follows the file:
-`\label{fig:results_case_<letter>}`, or `\label{fig:results_<subject>}` for a
-section figure. The script that writes the file names it, so regenerating the
-plots cannot reintroduce an old name.
+A figure spanning several main cases carries their letters in order. A figure
+that serves a section rather than a case carries a two-letter tag for that
+section (`DQ`, `NS`). Main-case labels use
+`\label{fig:results_case_<letter>}`. Supporting-check and section labels use a
+descriptive subject and never retain a former case letter. The script that
+writes a generated file names it, so regeneration must preserve this mapping.
 
 - **Fonts match the document.** `FONT_STYLE = "latex"` selects Latin Modern
   with Computer Modern maths. Verify in the output, not the configuration:
@@ -396,12 +398,12 @@ plots cannot reintroduce an old name.
   `pgfplots`, where the Case-D panels already carry a short description after
   the letter. The caption then names what the figure shows and stops; what each
   panel carries is a sentence in the text, not a second caption paragraph.
-  Figure D.2 was rewritten this way — its caption had grown to four lines
+  The metric-comparison figure was rewritten this way — its caption had grown to four lines
   describing both panels, which is exactly the material the body text is for.
 - **An axis label names which quantity is plotted, not its kind.** `Angle [°]`
-  was the y-axis of Figure D.2's first panel, where both curves are the
+  was the y-axis of the metric-comparison figure's first panel, where both curves are the
   alignment angle obtained two different ways, so the label left the reader to
-  guess. It now reads `Alignment angle [°]` and the legend separates the two
+  guess. It now reads `Pose-based alignment error [°]` and the legend separates the two
   routes to it.
 - **An axis carries the symbol the symbol list assigns to the quantity.** A
   reader who has met \(r_{c,t_2}\) in the text should not have to work out that
@@ -410,13 +412,21 @@ plots cannot reintroduce an old name.
   where the symbol alone would be cryptic, as in
   `Cumulative projected null-space motion \(E_N\) [°]`. The pass that applied
   this set the axes to \(r_{c,t_1}\), \(r_{c,t_2}\),
-  \(\Delta\theta_{\mathrm{set},t_i}\), \(\phi_{\mathrm{tilt}}\),
-  \(\theta_{\mathrm{align}}\), \(\phi_{\mathrm{set}}\),
-  \(|\Delta\theta_{\mathrm{align}}|\), \(E_N\) and
-  \(\Delta\sigma_{\min,\mathrm{dist}}\).
+  \(\Delta\theta_i\), \(\theta_{t_i}\), \(E_N\) and
+  \(\Delta\sigma_{\min,\mathrm{dist}}\). The pose-based appendix comparison
+  uses descriptive labels instead of promoting its local quantities to the
+  thesis-wide symbol list.
+
+  **Response axes pair words with the symbol.** Write `Measured set-up rotation
+  about \(t_1\), \(\Delta\theta_1\) [°]`, not a bare symbol. A parameter axis
+  likewise names the varied quantity before its symbol, for example
+  `Rotational stiffness about the investigated tangent, \(K_{R,t_i}\)` or
+  `Tangential CoC position along \(t_2\), \(r_{c,t_2}\)`. Wrench panels follow
+  the same pattern: `Commanded normal force, \(F_n\) [N]` and `Commanded TCP
+  moment about \(t_1\), \(M_{t_1}\) [N m]`.
 
   **Where no symbol is assigned to what the axis means, the words stay.** Three
-  axes kept their prose for that reason: the Case-F comparison, whose \(x\)
+  axes kept their prose for that reason: the supporting tool-axis comparison, whose \(x\)
   carries a tangential displacement on one series and a tool-axis displacement
   on the other, so no single component symbol covers it; the categorical axes of
   the Case-A bars and the direction comparison, which list conditions rather

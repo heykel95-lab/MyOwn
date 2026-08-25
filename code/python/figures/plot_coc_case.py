@@ -25,9 +25,8 @@ No model-estimated wrench is mixed into this controller-response comparison.
 The normal force is negative while the tool presses. n_s points out of the
 plate, so the commanded press runs along -n_s.
 
-Each panel carries its own legend. The legend states the measured attitude at
-the start of set-up, so the figure does not substitute the nominal commanded offset
-for the orientation the robot actually reached.
+Each panel carries its own legend, which identifies the compliance-centre
+position of each curve.
 """
 
 import argparse
@@ -41,7 +40,7 @@ import matplotlib.pyplot as plt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from extract_metrics import parse_report, surface_frame, read_params  # noqa: E402
+from extract_metrics import surface_frame, read_params  # noqa: E402
 from figure_style import (apply_style, reference_line,  # noqa: E402
                           thin, SERIES_COLOURS)
 
@@ -54,7 +53,8 @@ SETUP_PHASE = 2  # ControlPhase::kSetup
 AXIS_COLUMN = {"t1": 0, "t2": 1, "n": 2}
 AXIS_LABEL = {"t1": r"$t_1$", "t2": r"$t_2$", "n": r"$n$"}
 # The axis rides in the subscript, so a panel names the component it carries
-# rather than describing it: M_{t1,cmd} instead of "M_cmd about t1".
+# rather than describing it: M_{t1} instead of "M_cmd about t1". A quantity
+# without an index is a commanded one; 'ext' marks a model-estimated one.
 AXIS_SUBSCRIPT = {"t1": "t_1", "t2": "t_2", "n": "n"}
 
 
@@ -62,22 +62,14 @@ def vec(row, prefix):
     return np.array([float(row[f"{prefix}_{a}"]) for a in "xyz"])
 
 
-def initial_label(directory, axis, detail):
-    """Name a curve by its measured signed orientation before set-up."""
-    report = parse_report(os.path.join(directory, "terminal.log"))
-    key = f"deviation_before_{axis}"
-    try:
-        angle = float(report[key])
-    except (KeyError, ValueError):
-        raise SystemExit(f"no {key} in the set-up report under {directory}")
-    tangent = "t_1" if axis == "t1" else "t_2"
-    suffix = f", {detail}" if detail else ""
-    return rf"initial ${angle:+.2f}^\circ$ about ${tangent}${suffix}"
+def curve_label(detail):
+    """Name a curve by its compliance-centre position."""
+    return detail or "centre position not specified"
 
 
-def load(trial, axis):
+def load(results, trial, axis):
     """Return time, set-up rotation, commanded force and commanded moment."""
-    directory = os.path.join(RESULTS, trial)
+    directory = os.path.join(results, trial)
     logs = glob.glob(os.path.join(directory, "logs", "*.csv"))
     if not logs:
         raise SystemExit(f"no log csv under {trial}")
@@ -108,6 +100,7 @@ def main():
     p.add_argument("--axis", default="t1", choices=sorted(AXIS_COLUMN))
     p.add_argument("--out", default="COC_case")
     p.add_argument("--out-dir", default=os.path.join(HERE, "..", "figures"))
+    p.add_argument("--results", default=RESULTS)
     args = p.parse_args()
     os.makedirs(args.out_dir, exist_ok=True)
 
@@ -115,18 +108,19 @@ def main():
     fig, axes = plt.subplots(3, 1, figsize=(5.8, 6.2), sharex=True)
 
     for (trial, detail), colour in zip(selected, SERIES_COLOURS):
-        directory = os.path.join(RESULTS, trial)
-        label = initial_label(directory, args.axis, detail)
-        t, rotation, fn_cmd, m_cmd = thin(*load(trial, args.axis))
+        label = curve_label(detail)
+        t, rotation, fn_cmd, m_cmd = thin(*load(args.results, trial, args.axis))
         for ax, series in zip(axes, (rotation, fn_cmd, m_cmd)):
             ax.plot(t, series, color=colour, label=label)
-        print(f"{trial:26s} Delta_theta_set {rotation[-1]:+6.2f} deg | "
+        print(f"{trial:26s} Delta_theta_{args.axis[-1]} {rotation[-1]:+6.2f} deg | "
               f"Fn_cmd {fn_cmd[-1]:7.1f} N | M_cmd {m_cmd[-1]:+6.2f} N m")
 
     sub = AXIS_SUBSCRIPT[args.axis]
-    labels = [rf"$\Delta\theta_{{\mathrm{{set}},{sub}}}$ [$^\circ$]",
-              r"$F_{n,\mathrm{cmd}}$ [N]",
-              rf"$M_{{{sub},\mathrm{{cmd}}}}$ [N m]"]
+    labels = [rf"Measured set-up rotation about ${sub}$," "\n"
+              rf"$\Delta\theta_{{{args.axis[-1]}}}$ [$^\circ$]",
+              "Commanded normal force,\n" r"$F_n$ [N]",
+              rf"Commanded TCP moment about ${sub}$," "\n"
+              rf"$M_{{{sub}}}$ [N m]"]
     # The deviation panel keeps the upper right corner, which its curves leave
     # free and which the start-value annotations at the left edge do not reach.
     # The rest take whichever corner is clearest.
@@ -144,7 +138,7 @@ def main():
         # A legend printed over the data is worse than one in a different
         # corner of the same panel.
         ax.legend(loc=corner, fontsize=7, labelspacing=0.3)
-    axes[-1].set_xlabel("Time [s]")
+    axes[-1].set_xlabel("Set-up time [s]")
     fig.tight_layout()
     out = os.path.join(args.out_dir, f"{args.out}.pdf")
     fig.savefig(out)

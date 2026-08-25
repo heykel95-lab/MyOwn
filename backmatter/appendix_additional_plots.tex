@@ -1,12 +1,270 @@
-\chapter{Supporting Results}
+\chapter{Supporting Contact Checks and Results}
 \label{app:additional_plots}
+\label{app:supporting_contact_checks}
 
-Two of the items here resolve a summary statement of
+This appendix reports three supporting checks of the compliance-centre
+geometry. Together they comprise \mbox{\(42\)} runs across \mbox{\(14\)}
+independently counted settings, with three repetitions per setting. The
+calibrated geometry, phase sequence, Cartesian gains, null-space settings, and
+evaluation quantities were those of
+\mbox{\Cref{sec:surface_tool_calibration,sec:experimental_controller_parameters}}
+unless a changed condition is stated below.
+
+\section{Check 1: Compliance-Centre Definition Frame}
+\label{sec:supporting_definition_frame}
+
+This check compared tool-fixed and surface-fixed definitions of the same
+nominal \mbox{\(40\,\mathrm{mm}\)} tangential displacement. The tool-fixed
+vector rotated with the end effector. The surface-fixed vector remained
+constant in the calibrated frame \mbox{\([t_1,t_2,n_s]\)}. Both vectors were
+transformed to the base frame during each control cycle before the stiffness
+and damping matrices were shifted to the TCP.
+
+The supporting-check settings were the tool-fixed displacement without an
+orientation offset and the surface-fixed displacement with no offset or with a
+\mbox{\(+10^\circ\)} offset about \mbox{\(t_1\)}. These three settings gave
+\mbox{\(9\)} runs. The shared tool-fixed \mbox{\(+10^\circ\)} condition is
+counted with the \mbox{\(+40\,\mathrm{mm}\)} reference of Case~D.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Response by compliance-centre definition frame.}
+\label{tab:supporting_definition_frame}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Commanded offset \([{}^\circ]\) &
+\(\Delta\theta_1\), tool-fixed \([{}^\circ]\) &
+\(\Delta\theta_1\), surface-fixed \([{}^\circ]\) \\
+\midrule
+None & \(-0.06\pm0.01\) & \(-1.05\pm0.02\) \\
+\(+10^\circ\) about \(t_1\) & \(+7.87\pm0.01\)
+& \(+0.13\pm0.01\) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/MAIN_E_frame.pdf}
+\caption{Set-up rotation for tool- and surface-fixed displacement definitions.}
+\label{fig:supporting_definition_frame}
+\end{figure}
+
+The two definitions produced markedly different responses.
+\mbox{\Cref{tab:supporting_definition_frame}} pairs them at each command, and
+\mbox{\Cref{fig:supporting_definition_frame}} shows the separation. For the
+\mbox{\(+10^\circ\)} command about \mbox{\(t_1\)}, the tool-fixed definition
+gave \mbox{\(+7.87\pm0.01^\circ\)} of set-up rotation. The surface-fixed
+definition gave \mbox{\(+0.13\pm0.01^\circ\)} and was classified as tilted by
+TCP height. At zero commanded offset, the two definitions produced
+\mbox{\(-0.06\pm0.01^\circ\)} and \mbox{\(-1.05\pm0.02^\circ\)}.
+
+A non-zero \abbr{CoC} displacement is therefore not fully characterised by its
+magnitude alone. The displacement direction and the frame holding it determine
+how the vector moves relative to the contact geometry. Returning the centre to
+the TCP removes that direction and definition-frame dependence together with
+the point-shift coupling.
+
+\section{Check 2: Tool-Axis Displacement}
+\label{sec:supporting_tool_axis}
+
+This check separated the distance between the \abbr{CoC} and TCP from the
+direction of the displacement. The centre was moved by \mbox{\(-40\)},
+\mbox{\(-20\)}, \mbox{\(-10\)}, \mbox{\(+10\)}, \mbox{\(+20\)}, and
+\mbox{\(+40\,\mathrm{mm}\)} along the tool axis at a fixed
+\mbox{\(+10^\circ\)} command about \mbox{\(t_1\)}. These six settings gave
+\mbox{\(18\)} runs. The shared zero-displacement condition is counted with
+the Case-A reference.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Response by tool-axis compliance-centre position.}
+\label{tab:supporting_tool_axis}
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+Position & \(-40\) & \(-20\) & \(-10\) & \(0\) & \(+10\) & \(+20\)
+& \(+40\,\mathrm{mm}\) \\
+\midrule
+\(\Delta\theta_1\) & \(+7.26\) & \(+7.49\) & \(+7.58\)
+& \(+7.57\) & \(+7.58\) & \(+7.55\) & \(+7.60\) \\
+Standard deviation & \(0.13\) & \(0.01\) & \(0.01\) & \(0.01\) & \(0.01\)
+& \(0.03\) & \(0.04\) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\input{figures/results_case_f_comparison.tex}
+\caption{Tangential and tool-axis centre displacement at the same command.}
+\label{fig:supporting_tool_axis}
+\end{figure}
+
+The tool-axis response varied weakly across the tested range.
+\mbox{\Cref{tab:supporting_tool_axis}} lists the seven positions, including the
+shared zero-displacement reference. The signed set-up rotation changed from
+\mbox{\(+7.26\)} to \mbox{\(+7.60^\circ\)} between \mbox{\(-40\)} and
+\mbox{\(+40\,\mathrm{mm}\)}, a span of \mbox{\(0.34^\circ\)}. The purely
+tangential displacement spanned \mbox{\(7.73^\circ\)} over the same interval
+in Case~D, as shown in \mbox{\Cref{fig:supporting_tool_axis}}. Every tool-axis
+position was classified as flat, and the response was not strictly monotonic.
+
+As \mbox{\Cref{eq:coc_normal_press_tangential_only}} shows, only the tangential
+component of the \abbr{CoC} displacement contributes to the moment generated
+by the commanded normal force. Here the displacement was defined along the
+tool axis rather than along a surface tangent. Because the tool was inclined
+relative to the surface normal \mbox{\(n_s\)}, that displacement contained a
+normal component and a smaller component in the surface plane.
+
+Let \mbox{\(\alpha_{\mathrm{axis}}\)} denote the angle between the tool axis
+and \mbox{\(n_s\)}. The tangential magnitude was
+
+\begin{equation}
+\lVert r_{c,t}\rVert
+=
+\lVert r_c\rVert\sin\alpha_{\mathrm{axis}}.
+\label{eq:supporting_tool_axis_projection}
+\end{equation}
+
+At the maximum tested displacement,
+\mbox{\(\lVert r_c\rVert=40\,\mathrm{mm}\)}. The tool axis was inclined by
+approximately \mbox{\(10^\circ\)}. The corresponding projection was
+
+\[
+\lVert r_{c,t}\rVert
+=
+(40\,\mathrm{mm})\sin(10^\circ)
+=
+6.95\,\mathrm{mm}.
+\]
+
+The \mbox{\(40\,\mathrm{mm}\)} value is the total configured \abbr{CoC}
+displacement along the tool axis. The \mbox{\(6.95\,\mathrm{mm}\)} value is
+only its projection onto the surface tangent plane. This effective tangential
+lever is considerably smaller than the \mbox{\(40\,\mathrm{mm}\)} purely
+tangential displacement of Case~D. The difference is consistent with the weak
+variation in \mbox{\Cref{fig:supporting_tool_axis}}. Tangential force
+components, finite rotation, changing contact geometry, and tool-mount
+compliance were not isolated by this check.
+
+\section{Check 3: Intermediate Tangent Directions}
+\label{sec:supporting_intermediate_directions}
+
+This check examined whether the direction rule of Case~D also held between the
+principal surface tangents. For a commanded rotation with surface components
+\mbox{\((\theta_{t_1},\theta_{t_2})\)}, the selected tangential displacement
+was
+
+\begin{equation}
+r_{c,t}
+=
+\frac{\lVert r_{c,t}\rVert}{\sqrt{\theta_{t_1}^{2}+\theta_{t_2}^{2}}}
+\left(\theta_{t_1}t_2-\theta_{t_2}t_1\right),
+\label{eq:supporting_general_lever_rule}
+\end{equation}
+
+where \mbox{\(\lVert r_{c,t}\rVert=40\,\mathrm{mm}\)}. The selected vector was
+perpendicular to the commanded rotation in the tangent plane. Its sign made
+the press-induced moment act in the required alignment direction. The fixed
+comparison retained the vector selected for the \mbox{\(t_1\)} command.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Orientation commands and tangential compliance-centre vectors.}
+\label{tab:supporting_direction_vectors}
+\begin{tabular}{@{}llrr@{}}
+\toprule
+Commanded direction & Displacement setting &
+\([\theta_{t_1},\theta_{t_2}]\) (deg) &
+\([r_{c,t_1},r_{c,t_2},r_{c,n}]\) (mm)\\
+\midrule
+About \(t_1\) & selected & \([+10.0,0.0]\) & \([0,+40.0,0]\)\\
+\(-45^\circ\) from \(t_1\) & selected & \([+7.1,-7.1]\) & \([+28.3,+28.3,0]\)\\
+\(+45^\circ\) from \(t_1\) & selected & \([+7.1,+7.1]\) & \([-28.3,+28.3,0]\)\\
+About \(t_2\) & selected & \([0.0,+10.0]\) & \([-40.0,0,0]\)\\
+\addlinespace
+\(-45^\circ\) from \(t_1\) & fixed at the \(t_1\) selection & \([+7.1,-7.1]\) & \([0,+40.0,0]\)\\
+\(+45^\circ\) from \(t_1\) & fixed at the \(t_1\) selection & \([+7.1,+7.1]\) & \([0,+40.0,0]\)\\
+About \(t_2\) & fixed at the \(t_1\) selection & \([0.0,+10.0]\) & \([0,+40.0,0]\)\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\input{figures/case_c_direction_rule.tex}
+\caption{Selected tangential displacement for each commanded rotation direction.}
+\label{fig:supporting_direction_rule}
+\end{figure}
+
+The principal-axis selected conditions are counted with Case~D. The five
+supporting-check settings were both displacement definitions at each diagonal
+direction and the fixed displacement for the \mbox{\(t_2\)} command. Each was
+repeated three times, giving \mbox{\(15\)} runs. The vectors in
+\mbox{\Cref{tab:supporting_direction_vectors}} are expressed in the surface
+frame at the flat target orientation. The corresponding non-zero controller
+settings were held tool-fixed in end-effector coordinates.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Direction-rule comparison at the common \(40\,\mathrm{mm}\) displacement magnitude.}
+\label{tab:supporting_direction_results}
+\begin{tabular}{@{}p{0.23\textwidth}p{0.22\textwidth}p{0.19\textwidth}p{0.20\textwidth}@{}}
+\toprule
+Commanded rotation direction \([{}^\circ]\) &
+Selected \([r_{c,t_1},r_{c,t_2}]\) \([\mathrm{mm}]\) &
+Set-up rotation, selected \([{}^\circ]\) &
+Set-up rotation, fixed at \(t_1\) \([{}^\circ]\) \\
+\midrule
+About \(t_1\) & \([0,+40.0]\) & \(+7.87\) & \(+7.87\) \\
+\(-45^\circ\) from \(t_1\) & \([+28.3,+28.3]\) & \(+4.46\) & \(+4.39\) \\
+\(+45^\circ\) from \(t_1\) & \([-28.3,+28.3]\) & \(+4.85\) & \(+4.80\) \\
+About \(t_2\) & \([-40.0,0]\) & \(+4.43\) & \(-1.61\) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/MAIN_H_direction.pdf}
+\caption{Set-up rotation with the direction-selected and fixed displacements.}
+\label{fig:supporting_direction_results}
+\end{figure}
+
+At the two diagonal directions, the selected and fixed displacements differed
+by only \mbox{\(0.07^\circ\)} and \mbox{\(0.05^\circ\)}, within the observed
+scatter. The fixed displacement retained a substantial projection along the
+selected direction in both conditions. The clearest separation occurred about
+\mbox{\(t_2\)}, where the selected displacement gave
+\mbox{\(+4.43^\circ\)} and the fixed displacement gave
+\mbox{\(-1.61^\circ\)}.
+
+The measurements support the direction rule of
+\mbox{\Cref{subsec:coc_tangential_displacement}} over the four tested
+tangent-plane directions. They do not establish a single non-zero displacement
+that suits all directions. Where the projection of the fixed displacement onto
+the selected direction vanished, the responses differed by
+\mbox{\(6.04^\circ\)}.
+
+The remaining sections resolve summary statements of
 \mbox{\Cref{ch:results_discussion}} into the settings and repetitions behind
-it. The third compares the primary response metric with the supporting one.
+them, and compare the primary response metric with the supporting one.
 
 \section{Conditions Classified as Tilted by TCP Height}
 \label{app:not_flat}
+
+The TCP-height criterion is retained here as a supporting geometric check and
+does not enter the primary response tables of Chapter~5. All five Case-A
+settings, including the zero-orientation-offset condition, satisfied this
+criterion. This classification is not a direct measurement of the physical
+tool-face orientation. The mounting play was characterised in the unloaded
+condition, and the instantaneous relative tool--gripper rotation was not
+tracked separately during the contact runs.
 
 Of the \mbox{\(55\)} tested parameter settings, \mbox{\(49\)} satisfied the
 TCP-height flatness criterion. \mbox{\Cref{tab:results_not_flat}} lists the
@@ -17,29 +275,24 @@ six that did not, with the excess TCP height above the flat-tool height.
 \small
 \caption{Conditions classified as tilted by TCP height.}
 \label{tab:results_not_flat}
-\begin{tabular}{@{}lrrr@{}}
+\begin{tabular}{@{}lrr@{}}
 \toprule
-Condition & Excess height [mm] & \(\Delta\theta_{\mathrm{align}}\) [deg] &
-\(\Delta\theta_{\mathrm{set}}\) [deg] \\
+Condition & Excess height [mm] & \(\Delta\theta_1\) [deg] \\
 \midrule
-Case~B, \(50\,\mathrm{N\,m/rad}\) about \(t_1\) & \(3.6\) & \(+2.38\) & \(+2.73\) \\
-Case~D, \(-20\,\mathrm{mm}\) at \(+10^\circ\) about \(t_1\) & \(5.3\) & \(+0.70\) & \(+0.99\) \\
-Case~D, \(-40\,\mathrm{mm}\) at \(+10^\circ\) about \(t_1\) & \(6.1\) & \(-0.06\) & \(+0.18\) \\
-Case~D, \(+20\,\mathrm{mm}\) at \(-10^\circ\) about \(t_1\) & \(5.2\) & \(+4.43\) & \(-5.01\) \\
-Case~D, \(+40\,\mathrm{mm}\) at \(-10^\circ\) about \(t_1\) & \(9.3\) & \(-0.13\) & \(-0.09\) \\
-Case~E, surface frame at \(+10^\circ\) about \(t_1\) & \(5.9\) & \(-0.13\) & \(+0.13\) \\
+Case~B, \(50\,\mathrm{N\,m/rad}\) about \(t_1\) & \(3.6\) & \(+2.73\) \\
+Case~D, \(-20\,\mathrm{mm}\) at \(+10^\circ\) about \(t_1\) & \(5.3\) & \(+0.99\) \\
+Case~D, \(-40\,\mathrm{mm}\) at \(+10^\circ\) about \(t_1\) & \(6.1\) & \(+0.18\) \\
+Case~D, \(+20\,\mathrm{mm}\) at \(-10^\circ\) about \(t_1\) & \(5.2\) & \(-5.01\) \\
+Case~D, \(+40\,\mathrm{mm}\) at \(-10^\circ\) about \(t_1\) & \(9.3\) & \(-0.09\) \\
+Check 1, surface-fixed at \(+10^\circ\) about \(t_1\) & \(5.9\) & \(+0.13\) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The alignment angle can carry a common offset from the calibrated tool normal.
-Because the same calibration is used for all runs, this offset is common to the
-evaluation chain, but it does not necessarily appear as an identical additive
-angular offset in every orientation. The primary signed set-up rotation does
-not use the calibrated tool normal; it is obtained from the measured
-end-effector motion and then resolved in the surface frame, which makes it the
-more direct quantity for comparing the controller-induced rotation between
-settings.
+The signed set-up rotation does not use the calibrated tool normal. It is
+obtained from the measured end-effector motion and resolved in the surface
+frame, which makes it the direct quantity for comparing controller-induced
+rotation between settings.
 
 \section{Per-Setting Spread of the Case-D Lever Positions}
 \label{app:case_d_spread}
@@ -58,34 +311,48 @@ only place the per-setting spread of these lever positions is shown.
 \label{fig:results_case_d_spread}
 \end{figure}
 
-\section{Consistency of the Two Angular Quantities}
+\section{Comparison with the Pose-Based Alignment Estimate}
 \label{app:metric_agreement}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figures/MAIN_DQ_metric_comparison.pdf}
-\caption{Alignment angle against end-effector rotation.}
+\caption{Pose-based alignment estimate against measured set-up rotation.}
 \label{fig:results_metric_agreement}
 \end{figure}
 
-\mbox{\Cref{fig:results_metric_agreement}} is a check on the choice of response
-metric. The signed set-up rotation
-\mbox{\(\Delta\theta_{\mathrm{set}}\)} is the quantity reported throughout
-\mbox{\Cref{ch:results_discussion}}, and the change in the pose-based alignment
-angle \mbox{\(\Delta\theta_{\mathrm{align}}\)} supports it. Defined differently,
-the two are not interchangeable.
+The main results use the signed end-effector set-up rotation
+\mbox{\(\Delta\theta_i\)}. This appendix compares that direct motion
+measurement with a secondary alignment estimate reconstructed from the
+calibrated tool normal. The pose-based alignment error is
 
-Panel~(a) plots both quantities for one representative trial. One is the
-alignment angle calculated from the end-effector pose; the other reconstructs
-that angle from the end-effector rotation since the start of set-up.
-Panel~(b) reduces the comparison to one point per evaluated trial. Each point
-carries the magnitude of the change, and the marker distinguishes whether the
-calculated alignment angle decreased or increased during set-up. Across those
-trials the two magnitudes are broadly consistent, and the larger disagreements
-are confined to a small number of conditions.
+\begin{equation}
+\theta_{\mathrm{align}}(t)
+=
+\cos^{-1}\!\left(-n_{\mathrm{Tool},0}(t)^\top n_s\right),
+\qquad
+n_{\mathrm{Tool},0}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}.
+\label{eq:contact_alignment_error_cross}
+\end{equation}
 
-Both quantities rest on the same assumed tool-to-gripper relation, so their
-agreement is internal to that assumption rather than an independent measurement
-of physical tool orientation. The approximately \mbox{\(\pm2^\circ\)} of
+It is unsigned and depends on the assumed fixed relation between the tool and
+end effector. Its reduction over set-up is the value before set-up minus the
+value afterwards. This change and \(\Delta\theta_i\) are defined differently
+and are not interchangeable.
+
+Panel~(a) plots the pose-based error for one representative trial and the value
+reconstructed from the measured rotation since the start of set-up. Panel~(b)
+reduces the comparison to one point per evaluated trial. Each point carries the
+magnitude of the measured set-up rotation and the signed reduction of the
+pose-based error. Where the pose-based error decreased, its reduction followed
+the same scale as the measured rotation for most trials. Conditions in which
+the pose-based error increased appear below zero and show why the two quantities
+are not interchangeable.
+
+The pose-based alignment quantity depends on the assumed tool-to-gripper
+relation, whereas the set-up rotation is obtained directly from the measured
+end-effector motion. Their agreement therefore provides an internal consistency
+check but does not constitute an independent measurement of the physical tool
+orientation. The approximately \mbox{\(\pm2^\circ\)} of
 mounting play was measured unloaded and was not characterised as an uncertainty
 bound under contact load.
