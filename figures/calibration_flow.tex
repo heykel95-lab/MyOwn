@@ -1,43 +1,43 @@
 \begin{tikzpicture}[
-  src/.style={draw=gray!60, fill=white, rounded corners=2pt,
-    minimum width=3.6cm, minimum height=1.05cm, align=center},
-  blk/.style={draw=gray!70!black, fill=white, rounded corners=2pt,
-    minimum width=3.6cm, minimum height=1.05cm, align=center},
-  res/.style={draw=gray!70!black, line width=0.9pt, fill=white,
-    rounded corners=2pt, minimum width=3.6cm, minimum height=1.05cm,
-    align=center},
-  chk/.style={draw=gray!60, fill=white, rounded corners=2pt,
-    minimum width=3.6cm, minimum height=1.05cm, align=center},
-  sig/.style={-{Latex[length=2mm]}, thick, gray!55!black},
-  % Band headings, centred over the first box of each band.
-  row/.style={font=\footnotesize, anchor=south},
-  % What a band delivers into the operation band.
-  carry/.style={font=\footnotesize, inner sep=2pt}
+  % Every row reads: physical pose(s) -> calculation -> quantity obtained.
+  % text width fixes the box width, so no line can overflow its frame.
+  stg/.style={draw=black, line width=0.5pt, rounded corners=2pt,
+    text width=3.15cm, minimum height=1.7cm, align=center,
+    font=\footnotesize, inner sep=3pt},
+  res/.style={stg, line width=1.0pt},
+  sig/.style={-{Latex[length=2mm]}, thick, black},
+  % Row headings, centred over the first box of each row.
+  row/.style={font=\footnotesize, anchor=south}
 ]
-  % ---- Band A: surface calibration, ending in its stored reference ----------
-  \node[row] at (0,5.45) {Surface calibration};
-  \node[src] (a-in)  at (0,4.6)    {One seated pose\\Complete tool face flat};
-  \node[blk] (a-fit) at (5.2,4.6)  {Plane from nominal $+Z_{\mathrm{EE}}$};
-  \node[res] (a-out) at (10.4,4.6) {Surface reference\\$p_s,\ n_s,\ R_{\mathrm{surface}}$};
-  \node[chk] (a-chk) at (10.4,2.9) {Re-seated check\\Consistency only};
+  % ---- Row A: surface-reference construction ------------------------------
+  \node[row] at (0,5.85) {Surface-reference construction};
+  \node[stg] (a-in)  at (0,4.6)
+    {Tool face seated flat\\Record one EE pose};
+  \node[stg] (a-geo) at (3.9,4.6)
+    {Determine $p_s$, $n_s$\\[1pt]
+     {\scriptsize$n_s=R_{\mathrm{EE}}e_{z_0}$}\\[1pt]
+     {\scriptsize$p_s=p_{\mathrm{EE}}+R_{\mathrm{EE}}r_{\mathrm{face,EE}}$}};
+  \node[stg] (a-frm) at (7.8,4.6)
+    {Construct $t_1$, $t_2$ and\\[1pt]
+     {\scriptsize$R_{\mathrm{surface}}=[\,t_1\;t_2\;n_s\,]$}};
+  \node[res] (a-out) at (11.7,4.6)
+    {Surface reference\\in base frame\\[1pt]
+     {\scriptsize$p_s,\ n_s,\ R_{\mathrm{surface}}$}};
 
-  % ---- Band B: tool calibration, ending in the tool normal -----------------
-  \node[row] at (0,1.45) {Tool calibration};
-  \node[src] (b-in)  at (0,0.6)    {$T_1$--$T_4$\\Flat-face yaw poses};
-  \node[blk] (b-fit) at (5.2,0.6)  {Invariant-direction fit\\$T_1$--$T_3$};
-  \node[res] (b-out) at (10.4,0.6) {Tool normal\\$n_{\mathrm{Tool,EE}}$};
-  \node[chk] (b-chk) at (10.4,-1.1) {Held-out check\\$T_4$, consistency only};
+  % ---- Row B: tool-normal calibration -------------------------------------
+  \node[row] at (0,2.55) {Tool-normal calibration};
+  \node[stg] (b-in)  at (0,1.3)
+    {Tool face seated flat\\at three yaw poses\\$T_1$--$T_3$};
+  \node[stg] (b-fit) at (3.9,1.3)
+    {Estimate the\\tool-face normal};
+  \node[res] (b-out) at (7.8,1.3)
+    {Tool normal\\$n_{\mathrm{Tool,EE}}$\\in the EE frame};
 
-  % Routing. Each band runs left to right and stops at its output box, and the
-  % check hangs below that box and feeds nothing. That is the point of the
-  % layout: the reader sees what each calibration produces before meeting the
-  % checks, and the checks are visibly not a third result. Where the two
-  % outputs are combined is Chapter 3 and the evaluation section, not here.
-  \draw[sig] (a-in) -- (a-fit);
-  \draw[sig] (a-fit) -- (a-out);
-  \draw[sig] (a-out) -- (a-chk);
+  % ---- Routing. One horizontal run per height: y=4.6 and y=1.3. ---------
+  \draw[sig] (a-in)  -- (a-geo);
+  \draw[sig] (a-geo) -- (a-frm);
+  \draw[sig] (a-frm) -- (a-out);
 
-  \draw[sig] (b-in) -- (b-fit);
+  \draw[sig] (b-in)  -- (b-fit);
   \draw[sig] (b-fit) -- (b-out);
-  \draw[sig] (b-out) -- (b-chk);
 \end{tikzpicture}

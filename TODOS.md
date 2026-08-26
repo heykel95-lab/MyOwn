@@ -63,7 +63,7 @@ back.
 builds. All three drivers were built on 2026-08-25 after the review
 corrections, with bibtex and three passes each: no errors, no undefined
 references or citations, no overfull boxes. `Thesis.pdf` and
-`Professor_Draft.pdf` are 128 pages and `Review_Draft.pdf` is 132. The fifty
+`Professor_Draft.pdf` are 125 pages and `Review_Draft.pdf` is 129. The fifty
 underfull hboxes in the final pass are loose lines in the narrow description
 column of the symbol list and predate this work.
 Judge a build by the final pass; the earlier ones always report undefined
@@ -298,17 +298,16 @@ Nothing here is blocked. The listings carry no `\Revised{}` wrappers, so no
 frozen text is in the way, but both appendices carry green assessment boxes
 and neither chapter has been declared revised — confirm before editing.
 
-## Remaining requests from the supervisor narrative review
+## Figure 3.4 does not follow FIGURE_STYLE
 
-The compression pass completed the requested Chapter-1 numerical reduction,
-the Chapter-2 null-space roadmap and derivation compression, the Chapter-3
-operator/tool-handling reduction, the Chapter-6 wording changes, and the
-Appendix-A reduction. The following narrower requests remain:
-
-**Chapter 4.**
-
-- Say whether \(v_{\mathrm{ref}}\) in 4.6 comes from one nominated repetition
-  of the no-null-space-torque condition or from all three. One sentence.
+`figures/setup_reference.tex` draws in grey, uses a `densely dotted` projection
+line, and opens its node text in lower case — `surface`, `selected point at
+clearance`, `commanded endpoint`. All three are ruled against: grey is not a
+drawing colour, every line is solid, and node text begins with a capital. It
+was left alone during the 2026-08-26 Chapter 3 restructure because that pass
+was about text, and the figure is correct in content. Fix it with the other
+diagrams listed under the lower-case and `\resizebox` entries below, not on its
+own.
 
 ## Two retired appendices still carry `\approx`
 
@@ -337,7 +336,7 @@ installed. Three things remain.
   varied parameter in its column heading rather than `Varied entry`, mark the
   reference condition in the table itself (`Case-A reference`, or the
   TCP-centred column), and give the measured response as
-  `Measured Set-Up Rotation, \(\Delta\theta_i\) [°]`. Precede each table
+  `Measured Set-Up Rotation, \(\gamma_{t_i}\) [°]`. Precede each table
   with one prose sentence naming varied, fixed, reference and response. The
   Case-D table additionally drops the \(\theta_{\mathrm{dev,before}}\)
   column and marks its TCP column, and the offset-magnitude table gains a
@@ -509,6 +508,12 @@ that pass:
   displacement of all four settings, so Section 5.2 onward repaginated again
   and the document is 128 pages. The page was rendered and read at 100 dpi
   when the panel was added; the rest of the moved pages were not.
+- **The Chapter 2, 3 and 5 revisions of 2026-08-26 repaginated again**, and the
+  document is now 125 pages. In Section 3.4.2 the lead-in sentence ends one
+  page on its colon while the set-up press-coordinate equation opens the next.
+  The heading still has its paragraph under it, so this is not a stranded
+  heading, but it should be looked at in the final page-by-page pass, after the
+  figure work has stopped moving the breaks.
 
 All three drivers build clean here with bibtex
 and three passes each, no undefined references or citations and no overfull
@@ -545,6 +550,10 @@ both respects. Any new `longtable` needs the same treatment.
 Wanted, agreed, and deliberately not done yet. Nothing here blocks submission.
 
 ### Name the joints that carry the redundant motion, in Section 4.6
+
+Requested on 2026-08-26 and still unwritten: one sentence in Section 4.6
+naming the joints that carry the redundant motion. The values it needs are
+below, so nothing blocks it.
 
 The chapter states that the commanded disturbance is a point force on link~3 at
 \(r_p=[0,0,0.200]\,\mathrm{m}\), which is correct and matches every archived

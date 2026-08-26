@@ -151,10 +151,16 @@ spacing between runs is what creates room for their labels.
 
 ### Node text begins with a capital
 
-Every line of text inside a box starts with an uppercase letter — `One seated
-pose`, `Complete tool face flat`, `Re-seated check`, `Invariant-direction fit`.
-This applies to the second line of a two-line node as well, because the two
-lines read as parallel labels rather than as a sentence running on.
+Every line of text inside a box starts with an uppercase letter — `Tool face
+seated flat`, `Record one EE pose`, `Estimate the tool-face normal`. This applies to the
+second line of a two-line node as well, because the two lines read as parallel
+labels rather than as a sentence running on.
+
+**Write the lines as parallel labels, not as one sentence broken across
+them.** `Tool face seated flat on the surface; record one EE pose` forces the
+second line to open in lower case or to be recased into nonsense. Two label
+lines, `Tool face seated flat` and `Record one EE pose`, satisfy the rule and
+read better.
 
 **A line that begins with a symbol keeps the symbol**, unchanged and
 uncapitalised: `$T_1$--$T_3$`, `$p_s,\ R_{\mathrm{surface}}$`,
@@ -170,6 +176,20 @@ arrows need. The calibration flow lost almost all of the first run in its top
 row this way. Move the columns apart rather than shortening the text, and check
 the arrow runs in the compiled figure afterwards.
 
+### Fixing a box width: use `text width`, not `minimum width`
+
+`minimum width` sets a floor and lets a long line push past the frame, so the
+text overflows the rounded rectangle and adjacent boxes collide. The
+calibration flow did exactly that on its first redraw: two boxes in the lower
+row overlapped and their connecting arrowheads were squeezed to nothing.
+
+Set `text width` instead. It fixes the box width and wraps the content inside
+the frame, so a box can only grow downwards, which the row spacing can absorb.
+Then check the line count of every box in the row: a box with one more line
+than its neighbours is taller, and it is what reaches the row heading above it.
+Where an equation is too wide for the column, set that line in `\scriptsize`
+rather than widening one box out of line with the others.
+
 ### A diagram of parallel chains names each chain
 
 Where a diagram runs two or more chains as separate rows, each row carries a
@@ -179,10 +199,27 @@ calibration until it was labelled; the reader could not tell which row was
 which.
 
 **The heading is capitalised and centred over its row's first box** —
-`Surface plane`, `Tool normal` — set in `\footnotesize` with `anchor=south`, a
-third of a line above the box. Centring over the first box rather than
-left-aligning at its edge is what makes the heading read as belonging to the
-row rather than floating beside it.
+`Surface-reference construction`, `Tool-normal calibration` — set in
+`\footnotesize` with `anchor=south`, a third of a line above the box. Centring
+over the first box rather than left-aligning at its edge is what makes the
+heading read as belonging to the row rather than floating beside it.
+
+**A box that supports no claim is deleted, not reworded.** The calibration
+flow carried a held-out fourth pose, boxed first as `Consistency check` and
+then as `Additional capture`. No residual for it appears anywhere in the
+thesis, it entered no equation, and nothing downstream read it — so the box was
+removed altogether on 2026-08-26, together with its branch arrow and its
+colour. Rewording a box to be honest about a thing that supports nothing still
+leaves the reader carrying it; *Anything not discussed in the text* below is the
+rule that settles it. Deleting the box also let the row's remaining three boxes
+sit on one straight run.
+
+**The heading names what the row produces, not the category it belongs to.**
+Both rows of the calibration flow were once headed as calibrations, which was
+wrong about the upper one: it constructs a surface reference from one seated
+pose and the nominal \(+Z_{\mathrm{EE}}\) axis rather than measuring the
+physical plane normal. A heading that overstates what a row establishes is
+worse than no heading, because the figure then contradicts the prose.
 
 Put the headings above the rows, not to the left of them. A label column widens
 the picture, and `\resizebox{\textwidth}` then shrinks every other label to buy
@@ -492,7 +529,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
   Case.** The English description comes first so a reader who does not remember
   the symbol list can still read the figure; the symbol follows so the figure
   ties back to the notation; the unit closes it in square brackets. Settled
-  examples: `Set-Up Rotation About \(t_1\), \(\Delta\theta_1\) [°]`,
+  examples: `Set-Up Rotation About \(t_1\), \(\gamma_{t_1}\) [°]`,
   `Rotational Stiffness, \(K_{R,t_i}\) [N m/rad]`,
   `Cross-Axis Translational Stiffness, \(K_{p,t_j}\) [N/m]`,
   `Tangential CoC Position, \(r_{c,t_2}\) [mm]`,
@@ -523,7 +560,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
   the ticks are named conditions rather than values of one quantity, and it was
   **reverted the same day**: one axis in a format of its own is a more visible
   inconsistency than a symbol standing over categorical ticks, and the reader
-  meets `Set-Up Rotation, \(\Delta\theta_i\) [°]` on the other axis of the same
+  meets `Set-Up Rotation, \(\gamma_{t_i}\) [°]` on the other axis of the same
   figure. Uniformity of the axis format wins. Drop the symbol and the unit only
   where none exists, per the rule below.
 - **A legend names the experimental condition, and gives its symbol and value
@@ -542,13 +579,13 @@ writes a generated file names it, so regeneration must preserve this mapping.
   where the symbol alone would be cryptic, as in
   `Cumulative projected null-space motion \(E_N\) [°]`. The pass that applied
   this set the axes to \(r_{c,t_1}\), \(r_{c,t_2}\),
-  \(\Delta\theta_i\), \(\theta_{t_i}\), \(E_N\) and
+  \(\gamma_{t_i}\), \(\theta_{t_i}\), \(E_N\) and
   \(\Delta\sigma_{\min,\mathrm{dist}}\). The pose-based appendix comparison
   uses descriptive labels instead of promoting its local quantities to the
   thesis-wide symbol list.
 
   **Response axes pair words with the symbol.** Write `Measured set-up rotation
-  about \(t_1\), \(\Delta\theta_1\) [°]`, not a bare symbol. A parameter axis
+  about \(t_1\), \(\gamma_{t_1}\) [°]`, not a bare symbol. A parameter axis
   likewise names the varied quantity before its symbol, for example
   `Rotational stiffness about the investigated tangent, \(K_{R,t_i}\)` or
   `Tangential CoC position along \(t_2\), \(r_{c,t_2}\)`. Wrench panels follow

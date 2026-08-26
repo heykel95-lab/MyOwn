@@ -15,7 +15,7 @@ with their exact keys and units.}
 The plane satisfies
 \[
  n_s^\top(p-p_s)=0,\qquad
- n_s=R_y(\beta_s)R_x(\alpha_s)e_z ,
+ n_s=R_y(\beta_s)R_x(\alpha_s)e_{z_0} ,
 \]
 and the surface-frame column order is \([t_1,t_2,n_s]\).
 \mbox{\Cref{tab:active_surface_tool_parameters}} collects the corresponding
@@ -81,9 +81,8 @@ n_{\mathrm{Tool,EE}}
 \label{eq:appendix_tool_normal_fit}
 \end{equation}
 
-The first three seated yaw captures entered the fit. A fourth capture was held
-out as a consistency check. The sign of the fitted eigenvector was selected
-towards nominal \mbox{\(+Z_{\mathrm{EE}}\)}.
+Three seated yaw captures entered the fit. The sign of the fitted eigenvector
+was selected towards nominal \mbox{\(+Z_{\mathrm{EE}}\)}.
 
 \subsection{Initial Joint Configuration}
 
@@ -200,9 +199,29 @@ disabled, enabled \\
 
 \section{Inertia-Scaled Damping and Centre of Compliance}
 
-Inertia-scaled damping follows \Cref{eq:implementation_cartesian_inertia,eq:implementation_inertia_scaled_damping}.
-It is enabled for approach, set-up, the configured grinding phase, and the
-pause gate. The approach factor is \(\zeta=1.9\), while set-up and grinding use
+Inertia-scaled damping follows \Cref{eq:implementation_inertia_scaled_damping},
+whose directional inertia \(\lambda_i(q)\) is the corresponding diagonal entry
+of the operational-space inertia resolved along the axes of the active gain
+block. In the base frame that matrix is
+
+\begin{equation}
+\Lambda_0(q)
+=
+\left(
+J(q)M(q)^{-1}J^\top(q)+\varepsilon I_6
+\right)^{-1},
+\qquad
+\varepsilon=10^{-9}.
+\label{eq:appendix_cartesian_inertia}
+\end{equation}
+
+The implementation never forms \(M(q)^{-1}\). An \abbr{LDLT} factorisation of
+\(M(q)\) solves \(M(q)Y(q)=J^\top(q)\), and \(\Lambda_0(q)\) is then evaluated
+as \((J(q)Y(q)+\varepsilon I_6)^{-1}\); the regularisation term
+\(\varepsilon\) keeps that inversion conditioned.
+
+Inertia-scaled damping is enabled for approach, set-up, the configured grinding
+phase, and the pause gate. The approach factor is \(\zeta=1.9\), while set-up and grinding use
 \(\zeta=1.0\). The pause gate fits separate translational and rotational
 factors to its two configured damping targets. The configured maximum
 coefficient \texttt{auto\_damping\_max} is \(400\). The configured values in
@@ -232,9 +251,9 @@ used a displacement defined in the calibrated surface frame.
 The other shifted conditions used tool-fixed displacements configured in
 end-effector coordinates. For the surface-fixed definition,
 \[
-r_c=R_{\mathrm{surface}}\,r_c^{S},
+r_{c,0}=R_{\mathrm{surface}}\,r_{c,S},
 \qquad
-r_c^{S}=[\,r_{c,t_1},\ r_{c,t_2},\ r_{c,n}\,]^\top .
+r_{c,S}=[\,r_{c,t_1},\ r_{c,t_2},\ r_{c,n}\,]^\top .
 \]
 The tested definitions and components are listed in
 Table~\ref{tab:experimental_test_cases} and

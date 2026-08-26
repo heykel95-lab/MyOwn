@@ -126,7 +126,7 @@ def main():
                  label=r"Pose-Based Alignment Error, $\theta_{\mathrm{align}}$")
     axes[0].plot(t, alignment[0] - deviation, color=SERIES_RED,
                  label=(r"Reconstructed From Set-Up Rotation, "
-                        r"$\theta_{\mathrm{align},0}-\Delta\theta_i$"))
+                        r"$\theta_{\mathrm{align},0}-\gamma_{t_i}$"))
     reference_line(axes[0])
     axes[0].set_xlabel(r"Set-Up Time, $t$ [s]")
     # Both curves are the alignment angle, obtained two ways; a bare "Angle"
@@ -151,7 +151,7 @@ def main():
                  markeredgewidth=1.0,
                  label=r"Error Increased, $\Delta\theta_{\mathrm{align}}<0$")
     axes[1].set_xlabel(
-        r"Measured Set-Up Rotation Magnitude, $|\Delta\theta_i|$ [$^\circ$]")
+        r"Measured Set-Up Rotation Magnitude, $|\gamma_{t_i}|$ [$^\circ$]")
     axes[1].set_ylabel("Reduction in Pose-Based Alignment Error,\n"
                        r"$\Delta\theta_{\mathrm{align}}$ [$^\circ$]")
     axes[1].set_title("(b)")

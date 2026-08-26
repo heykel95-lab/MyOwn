@@ -4,7 +4,8 @@
 This chapter describes how the controller developed in \Cref{ch:implementation}
 was evaluated experimentally. The methodology is organised in the order in
 which the experiments can be reproduced: the physical system is introduced
-first, followed by the surface and tool calibration, the common contact-test
+first, followed by the surface reference and tool calibration, the common
+contact-test
 configuration and procedure, the main surface-contact matrix, the quantities
 used for evaluation, and the separate Cartesian pose-hold study for the
 null-space controller. Supporting checks of the compliance-centre geometry are
@@ -13,8 +14,7 @@ reported in \Cref{app:supporting_contact_checks}.
 The main data set consists of surface-contact measurements in which the
 commanded tool orientation offset, directional Cartesian stiffness, and virtual
 \abbr{CoC} \(p_c\) were varied under otherwise matched conditions.
-The primary controller-response quantity is the signed end-effector rotation
-during set-up. The TCP-height flatness classification is retained as an
+The primary controller-response quantity is the signed set-up response. The TCP-height flatness classification is retained as an
 appendix check, while the commanded wrench supports the Case-D mechanism plot. A second, independent
 experiment evaluates the null-space terms under a repeatable internally
 commanded disturbance.
@@ -108,7 +108,7 @@ The complete run-specific controller configuration is given in
 
 
 % ============================================================================
-\section{Surface and Tool Calibration}
+\section{Surface Reference and Tool Calibration}
 \label{sec:surface_tool_calibration}
 \label{sec:contact_geometry}
 % ============================================================================
@@ -118,15 +118,14 @@ performed: a surface reference expressed in the robot base frame, and the
 normal direction of the physical tool face expressed in the end-effector frame.
 Each came from its own calibration procedure.
 
-The surface-plane calibration of \Cref{subsec:plane_calibration_protocol}
-supplies a point \(p_s\) on the plate and its outward normal \(n_s\), both in
-the base frame. The two tangent directions \(t_1\) and \(t_2\) are constructed
-from \(n_s\), which completes the surface frame
-\(R_{\mathrm{surface}}=[\,t_1\;\;t_2\;\;n_s\,]\). The tool-normal calibration
-of \Cref{subsec:grinding_face_calibration} supplies \(n_{\mathrm{Tool,EE}}\), the
-direction normal to the physical tool face in end-effector coordinates. That
-second calibration is needed because the physical face is not exactly
-perpendicular to the nominal \(+Z_{\mathrm{EE}}\) axis.
+\Cref{fig:calibration_flow} sets out both procedures. The surface-reference
+construction of \Cref{subsec:plane_calibration_protocol} supplies the surface
+reference \(p_s\), \(n_s\) and
+\(R_{\mathrm{surface}}=[\,t_1\;\;t_2\;\;n_s\,]\) in the base frame, and the
+tool-normal calibration of \Cref{subsec:grinding_face_calibration} supplies
+\(n_{\mathrm{Tool,EE}}\) in end-effector coordinates. The second calibration is
+needed because the physical face is not exactly perpendicular to the nominal
+\(+Z_{\mathrm{EE}}\) axis.
 
 Each symbol carries the frame it is expressed in.
 \(n_{\mathrm{Tool,EE}}\) is the tool-face normal in end-effector coordinates,
@@ -135,13 +134,12 @@ Only the first is calibrated. The second follows from it during operation, as
 \Cref{sec:tool_orientation_given_surface} sets out. It is used only for the
 pose-based consistency check reported in \Cref{app:metric_agreement}.
 
-Neither calibration entered the other. The surface reference was obtained
-first, from one seated pose, using the nominal \(+Z_{\mathrm{EE}}\) direction;
-the tool normal calibrated afterwards was not used to revise it. Determining
-\(n_{\mathrm{Tool,EE}}\) in turn used only the relative orientations of four seated
-yaw poses, and no value of \(n_s\). That separation matters, because the
-calibrated \(n_{\mathrm{Tool,EE}}\) later differed from nominal
-\(+Z_{\mathrm{EE}}\) by approximately \(1.56^\circ\).
+Neither calibration entered the other. The tool normal calibrated afterwards
+was not used to revise the surface reference, and determining
+\(n_{\mathrm{Tool,EE}}\) used the relative orientations of the seated yaw poses
+alone, with no value of \(n_s\). That separation matters, because the calibrated
+\(n_{\mathrm{Tool,EE}}\) later differed from nominal \(+Z_{\mathrm{EE}}\) by
+approximately \(1.56^\circ\).
 
 Consequently the surface frame used by the controller is a configured geometric
 reference rather than an independent measurement of the physical plane normal.
@@ -149,17 +147,17 @@ It was taken from the nominal end-effector axis at one seated pose. The
 \(1.56^\circ\) is the difference between those two orientation references, and
 it applies equally to every reported run. Since it limits an absolute
 interpretation of the physical tool--surface angle, the main comparisons report
-the signed end-effector set-up rotation of
+the signed set-up response of
 \Cref{subsec:experimental_supporting_metrics}.
 
 \begin{figure}[H]
   \centering
-  \resizebox{\textwidth}{!}{\input{figures/calibration_flow.tex}}
-  \caption{The two independent calibrations and the result each produces.}
+  \input{figures/calibration_flow.tex}
+  \caption{Surface-reference construction and tool-normal calibration.}
   \label{fig:calibration_flow}
 \end{figure}
 
-\subsection{Surface-Plane Calibration}
+\subsection{Surface-Reference Construction}
 \label{subsec:plane_calibration_protocol}
 
 The complete tool face was seated on the plane and one end-effector pose was
@@ -175,10 +173,9 @@ their construction are collected in \mbox{\Cref{app:controller_parameters}}.
 \subsection{Tool Normal Calibration}
 \label{subsec:grinding_face_calibration}
 
-The complete tool face was seated at four yaw orientations. The direction in
+The complete tool face was seated at three yaw orientations. The direction in
 end-effector coordinates that remained most nearly invariant in the base frame
-was fitted from the first three captures; the fourth was retained as a
-consistency capture. The resulting tool normal
+was fitted from those three captures. The resulting tool normal
 \mbox{\(n_{\mathrm{Tool,EE}}\)} differed from nominal
 \mbox{\(+Z_{\mathrm{EE}}\)} by approximately \mbox{\(1.56^\circ\)}. Its
 value and the minimisation used for the fit are given in
@@ -245,13 +242,13 @@ p_s
 \end{equation}
 
 The controller stores the plane orientation through rotations \(\alpha_s\) about
-the base \(x\)-axis and \(\beta_s\) about the base \(y\)-axis. With \(e_z\)
+the base \(x\)-axis and \(\beta_s\) about the base \(y\)-axis. With \(e_{z_0}\)
 the base-frame \(z\)-axis,
 
 \begin{equation}
 n_s
 =
-R_y(\beta_s)R_x(\alpha_s)e_z
+R_y(\beta_s)R_x(\alpha_s)e_{z_0}
 =
 \begin{bmatrix}
 \sin(\beta_s)\cos(\alpha_s)\\
@@ -334,14 +331,14 @@ additionally carries any difference between the axis configured for the repeat
 measurement and the nominal axis of \Cref{eq:plane_seated_normal}. An
 orientation of the plate measured independently of the tool was not recorded.
 
-The in-plane orientation was fixed by projecting the base-frame reference
-direction \(a_s=e_x\) onto the calibrated plane:
+The in-plane orientation was fixed by projecting the base-frame \(x\)-axis
+\(e_{x_0}\) onto the calibrated plane:
 
 \begin{equation}
 t_1
 =
-\frac{(I-n_sn_s^\top)a_s}
-{\left\|(I-n_sn_s^\top)a_s\right\|}.
+\frac{(I-n_sn_s^\top)e_{x_0}}
+{\left\|(I-n_sn_s^\top)e_{x_0}\right\|}.
 \label{eq:calibrated_first_surface_tangent}
 \end{equation}
 
@@ -413,8 +410,8 @@ the recorded orientations enter that search, so no value of the calibrated
 plane of \Cref{subsec:plane_calibration_protocol} reaches
 \(n_{\mathrm{Tool,EE}}\).
 
-The first three captured rotations were used for the estimate, and the fourth
-was retained for validation. With \(R_{\mathrm{cal},i}\) the rotational part of
+The three captured rotations were used for the estimate. With
+\(R_{\mathrm{cal},i}\) the rotational part of
 the captured pose, perfect seating would carry the tool normal onto one
 base-frame direction \(\bar n_B\) in all three,
 
@@ -823,25 +820,45 @@ Table~\ref{tab:experimental_common_gains}.
 \label{sec:alignment_evaluation}
 % ============================================================================
 
-The primary response quantity for the surface-contact experiments is the signed
-end-effector rotation during set-up. It measures how much the end effector
-rotated after the orientation reference was fixed at the clearance transition.
-The commanded Cartesian wrench is retained for the Case-D mechanism plot.
+The primary response quantity for the surface-contact experiments is the
+signed set-up response \(\gamma_{t_i}\). It is calculated from the measured
+end-effector orientation at the end of set-up and the orientation reference
+held through that phase. The commanded
+Cartesian wrench is retained for the Case-D mechanism plot.
 
 
-\subsection{Signed End-Effector Set-Up Rotation}
+\subsection{Signed Set-Up Response}
 \label{subsec:experimental_supporting_metrics}
 
-Set-up holds the orientation captured at the clearance transition as its
-rotational reference, so the logged base-frame orientation error \(e_R\) is
-the rotation from the current end-effector orientation back to that reference.
-Since that reference is captured at the beginning of set-up,
-\(e_R=\mathbf{0}\) at set-up entry. Its magnitude at the end of set-up
-therefore gives the angular change relative to the held reference. The
-reported rotation vector is
+Let \(t_{\mathrm{set,start}}\) and \(t_{\mathrm{set,end}}\) denote the
+measurement instants at the beginning and end of set-up. The corresponding
+measured end-effector orientations relative to the robot base frame are
 
 \begin{equation}
-\Delta\theta
+R_{\mathrm{set,start}}=R_{\mathrm{EE}}(t_{\mathrm{set,start}}),
+\qquad
+R_{\mathrm{set,end}}=R_{\mathrm{EE}}(t_{\mathrm{set,end}}).
+\end{equation}
+
+Set-up holds the orientation captured at the clearance transition as its
+rotational reference, and the measured orientation coincides with it at the
+start of the phase, so \(R_{\mathrm{set,start}}\) is that held reference. The
+relative rotation from the measured end orientation back to it is therefore
+
+\begin{equation}
+R_{\mathrm{set}}
+=
+R_{\mathrm{set,start}}R_{\mathrm{set,end}}^\top.
+\end{equation}
+
+Writing this relative rotation in axis--angle form as
+\(R_{\mathrm{set}}=R(u_{\mathrm{set}},\phi_{\mathrm{set}})\) gives the
+measured set-up rotation vector \(\gamma_0\) in base coordinates:
+
+\begin{equation}
+\gamma_0
+=
+\phi_{\mathrm{set}}u_{\mathrm{set}}
 =
 e_R\big|_{\mathrm{end\ of\ set\text{-}up}} .
 \label{eq:contact_induced_rotation}
@@ -855,30 +872,32 @@ contact experiments. The surface frame enters solely as the directions the
 rotation is resolved along:
 
 \begin{equation}
-\Delta\theta^{S}
+\gamma_S
 =
-R_{\mathrm{surface}}^\top\Delta\theta,
+R_{\mathrm{surface}}^\top\gamma_0
+=
+\begin{bmatrix}
+\gamma_{t_1} & \gamma_{t_2} & \gamma_n
+\end{bmatrix}^\top,
 \qquad
-\Delta\theta_i
-=
-t_i^\top\Delta\theta,
+\gamma_{t_i}=t_i^\top\gamma_0,
 \quad i\in\{1,2\}.
 \label{eq:surface_resolved_setup_rotation}
 \end{equation}
 
-The reported quantity \(\Delta\theta_i\) is the signed end-effector set-up
-rotation about surface tangent \(t_i\). Because \(e_R\) is the rotation from
-the measured end-effector orientation back to the held reference, its sign is
-opposite to that of the physical end-effector motion. A positive
-\(\Delta\theta_i\) therefore denotes alignment-directed rotation for a positive
-commanded offset. A negative value denotes rotation in the
-opposite direction, and reversing the command reverses the sign of the intended
-direction. The
+The reported quantity \(\gamma_{t_i}\) is the signed set-up response about
+surface tangent \(t_i\). It represents the end-of-set-up orientation change
+relative to the held set-up reference, resolved along that tangent. Its sign is
+chosen such that a response reducing a commanded offset carries the same sign
+as that offset: a correcting response is positive for a positive offset and
+negative for a negative one, and its magnitude is the size of the correction.
+Reading the sign alone is therefore not enough, since the sign of the commanded
+offset fixes which direction counts as correcting. The
 measurements confirm the correspondence: for the \(+10^\circ\) command about
-\(t_1\) at the TCP, \(\Delta\theta_1=+7.57^\circ\) accompanies a fall in
+\(t_1\) at the TCP, \(\gamma_{t_1}=+7.57^\circ\) accompanies a fall in
 the pose-based alignment angle from \(9.32^\circ\) to \(3.38^\circ\),
 whereas the \(+10^\circ\) command about \(t_2\) gives
-\(\Delta\theta_2=-1.63^\circ\) with that angle rising from
+\(\gamma_{t_2}=-1.63^\circ\) with that angle rising from
 \(10.07^\circ\) to \(11.81^\circ\). This quantity is used for all main
 comparisons in \Cref{ch:results_discussion}.
 
@@ -1045,6 +1064,14 @@ until \(8\,\mathrm{s}\), and decreased smoothly to zero by
 The disturbance is internal to the controller and therefore provides a
 repeatable comparison input; it is not a separately applied physical force.
 
+The equivalent torque is formed from the point Jacobian alone and carries no
+null-space projector, so it is a joint-torque excitation rather than a
+null-space command. Its image therefore has a component along the six Cartesian
+directions as well as along the redundant direction, and the Cartesian
+impedance resists that component while the disturbance acts. Whether the
+commanded pose was in fact retained is consequently checked by
+\Cref{eq:nullspace_cartesian_retention_criterion} rather than assumed.
+
 In every trial the selected null-space law was active from the start of the
 pose-hold phase. The first \(5\,\mathrm{s}\) therefore formed a
 pre-disturbance settling interval, during which the conditioning torque of the
@@ -1062,7 +1089,8 @@ All quantities in this subsection are evaluated over the interval in which the
 internally commanded virtual disturbance acts,
 \(t\in[5,9]\,\mathrm{s}\). The first criterion checks whether the primary
 Cartesian pose-hold task remains approximately unchanged while the disturbance
-and the selected null-space law act. The predefined task-retention criterion is
+and the selected null-space law act. The predefined position-retention
+criterion is
 
 \begin{equation}
 \max_{5\,\mathrm{s}\leq t\leq9\,\mathrm{s}}
@@ -1132,8 +1160,8 @@ torque: the integrated quantity is joint velocity.
 
 A common direction is introduced to express this seven-dimensional net
 displacement by one signed scalar. Let \(\Delta q_{\mathrm{null},0}\) denote
-the reference net projected displacement obtained from the condition without
-null-space torque. The corresponding unit direction is
+the arithmetic mean of the three net projected displacement vectors recorded in
+the condition without null-space torque. The corresponding unit direction is
 
 \begin{equation}
 v_{\mathrm{ref}}
@@ -1176,6 +1204,6 @@ redundant configuration and therefore having a small
 \(\Delta\eta_{\mathrm{dist}}\).
 
 Singular-value conditioning was evaluated from the change in
-\(\sigma_{\min}\) across the same disturbance interval, and Cartesian task
+\(\sigma_{\min}\) across the same disturbance interval, and Cartesian position
 retention from the peak position-error norm. The corresponding results are
 presented in \Cref{ch:results_discussion}.

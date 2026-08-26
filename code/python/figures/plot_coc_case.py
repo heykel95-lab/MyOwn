@@ -5,8 +5,8 @@
 
 Every case is read the same way, top to bottom:
 
-  1  set-up rotation   the signed rotation since the start of set-up about the
-                       commanded surface tangent.
+  1  set-up rotation   the signed current-to-reference rotation over set-up
+                       about the commanded surface tangent.
   2  normal force      the controller-commanded press along n_s.
   3  alignment moment  the controller-commanded moment about the commanded
                        surface tangent.
@@ -112,12 +112,12 @@ def main():
         t, rotation, fn_cmd, m_cmd = thin(*load(args.results, trial, args.axis))
         for ax, series in zip(axes, (rotation, fn_cmd, m_cmd)):
             ax.plot(t, series, color=colour, label=label)
-        print(f"{trial:26s} Delta_theta_{args.axis[-1]} {rotation[-1]:+6.2f} deg | "
+        print(f"{trial:26s} gamma_{args.axis} {rotation[-1]:+6.2f} deg | "
               f"Fn_cmd {fn_cmd[-1]:7.1f} N | M_cmd {m_cmd[-1]:+6.2f} N m")
 
     sub = AXIS_SUBSCRIPT[args.axis]
     labels = [rf"Set-Up Rotation About ${sub}$," "\n"
-              rf"$\Delta\theta_{{{args.axis[-1]}}}$ [$^\circ$]",
+              rf"$\gamma_{{{sub}}}$ [$^\circ$]",
               "Commanded Normal Force,\n" r"$F_n$ [N]",
               rf"Commanded TCP Moment About ${sub}$," "\n"
               rf"$M_{{{sub}}}$ [N m]"]

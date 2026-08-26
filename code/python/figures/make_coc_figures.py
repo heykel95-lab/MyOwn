@@ -39,7 +39,7 @@ from figure_style import (apply_style, reference_line,  # noqa: E402
 apply_style()
 
 ROTATION_LABEL = ("Set-Up Rotation,\n"
-                  r"$\Delta\theta_i$ [$^\circ$]")
+                  r"$\gamma_{t_i}$ [$^\circ$]")
 
 # Every bar chart in the thesis takes the palette blue, the same one the line
 # plots use for their third series. The Case-A bars in pgfplots carry it too, so
@@ -287,7 +287,7 @@ def main():
     ax.set_xticklabels(commands)
     ax.set_xlabel(r"Commanded Orientation Offset, $\theta_{t_1}$ [$^\circ$]")
     ax.set_ylabel("Set-Up Rotation About $t_1$,\n"
-                  r"$\Delta\theta_1$ [$^\circ$]")
+                  r"$\gamma_{t_1}$ [$^\circ$]")
     ax.legend(loc="upper left")
     fig.tight_layout()
     fig.savefig(out("MAIN_F_frame.pdf"))

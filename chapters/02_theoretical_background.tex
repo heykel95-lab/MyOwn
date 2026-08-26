@@ -33,13 +33,10 @@ formulation and the controller
 
   \item \mbox{\textbf{Joint frames
         \mbox{\(\{1\},\{2\},\ldots,\{n\}\)}:}}
-        These frames are attached to the successive links of the kinematic
-        chain according to the Denavit--Hartenberg convention
-        \mbox{\cite{Denavit1955,Craig2005}}. Joint \mbox{\(i\)} rotates about
-        \mbox{\(z_{i-1}\)}, and \mbox{\(p_{i-1}\)} denotes a point on this axis. The joint
-        frames define the transformations between consecutive links and the
-        indexing used in the forward kinematics and geometric Jacobian
-        \mbox{\(J(q)\)}.
+        The joint frames follow the robot kinematic convention and are required
+        for forward kinematics and Jacobian construction; the real-time
+        controller obtains the corresponding quantities from the libfranka
+        model.
 
   \item \mbox{\textbf{End-effector frame
         \mbox{\(\{\mathrm{EE}\}\)}:}}
@@ -64,8 +61,8 @@ formulation and the controller
         end-effector frames provides the translational and rotational errors
         used by the impedance controller.
 
-  \item \mbox{\textbf{Surface task frame \mbox{\(\{S\}\)}:}}
-        The surface task frame is tied to the configured surface rather than
+  \item \mbox{\textbf{Surface frame \mbox{\(\{S\}\)}:}}
+        The surface frame is tied to the configured surface rather than
         to the moving tool. Its origin is placed at the configured surface
         point \mbox{\(p_s\)}. Its orientation \mbox{\(R_{\mathrm{surface}}\)} is
         defined by the two surface tangents \mbox{\(t_1\)} and \mbox{\(t_2\)} and
@@ -87,12 +84,7 @@ formulation and the controller
         towards the surface is along \mbox{\(-n_s\)}. The surface frame is used to
         describe the commanded tool orientation offset and to assign stiffness
         and damping values according to the two tangential directions and the
-        normal direction. For the contact task, the task-frame orientation
-        \mbox{\(R_{\mathrm{task}}\)} equals the surface-frame orientation:
-
-        \begin{equation}
-        R_{\mathrm{task}}=R_{\mathrm{surface}}.
-        \end{equation}
+        normal direction.
 \end{itemize}
 
 \mbox{\Cref{fig:reference_frames}} shows these frames together with the pose
@@ -105,30 +97,38 @@ error between the current and the desired end-effector frame.
   \label{fig:reference_frames}
 \end{figure}
 
-\section{Rigid-Body Transformations}
+\section{Rigid-Body Pose and Pose Error}
 \label{sec:rigid_transformations}
 
-The positions and orientations of the frames introduced in
-\mbox{\Cref{sec:reference_frames}} are related through rotation matrices and
-homogeneous transformations.
-
-The pose of frame \mbox{\(\{a\}\)} in frame \mbox{\(\{b\}\)} is represented by
+Unless stated otherwise, Cartesian quantities are expressed in the robot base
+frame. A Cartesian pose consists of a position \mbox{\(p\in\mathbb{R}^3\)} and
+an orientation \mbox{\(R\in SO(3)\)}, collected in the homogeneous
+transformation \mbox{\(T\)}:
 
 \begin{equation}
-{}^bT_a=
+T=
 \begin{bmatrix}
-{}^bR_a & {}^bp_a\\
+R & p\\
 0^\top & 1
-\end{bmatrix},
-\qquad
-{}^bv={}^bR_a{}^av.
+\end{bmatrix}.
 \label{eq:homogeneous_transformation}
 \end{equation}
 
-The controller obtains the end-effector pose
-\mbox{\(T_{\mathrm{EE}}=[R_{\mathrm{EE}},p_{\mathrm{EE}}]\)} directly from
-the libfranka robot state. Rotation matrices are used throughout; the pose is
-not converted to Euler angles.
+The measured end-effector pose is therefore
+
+\begin{equation}
+T_{\mathrm{EE}}
+=
+\begin{bmatrix}
+R_{\mathrm{EE}} & p_{\mathrm{EE}}\\
+0^\top & 1
+\end{bmatrix}.
+\label{eq:end_effector_pose}
+\end{equation}
+
+The controller obtains \mbox{\(T_{\mathrm{EE}}\)} directly from the libfranka
+robot state. Rotation matrices are used throughout; the pose is not converted
+to Euler angles.
 
 \iffalse
 
@@ -655,7 +655,7 @@ restoring wrench through the stiffness matrix \mbox{\(K\)}, while the Cartesian
 velocity \mbox{\(\dot{x}\)} produces an opposing wrench through the damping matrix
 \mbox{\(D\)}. Their
 entries determine the translational and rotational compliance in the selected
-task directions \mbox{\cite{Pollayil2023ImpedancePlanning}}. Physically, the
+compliance directions \mbox{\cite{Pollayil2023ImpedancePlanning}}. Physically, the
 stiffness terms determine how strongly a pose error generates a restoring force
 or moment, while the damping terms oppose the corresponding Cartesian motion.
 
@@ -672,9 +672,9 @@ translational stiffness and damping matrices are
 \mbox{\(K_{p,0},D_{p,0}\in\mathbb{R}^{3\times3}\)}, while the rotational matrices are
 \mbox{\(K_{R,0},D_{R,0}\in\mathbb{R}^{3\times3}\)}. These matrices are not generally
 diagonal in the base frame because the direction-dependent gains are defined
-relative to the task frame. Their base-frame representation therefore changes
-with the task-frame orientation, even when the local gain values remain
-unchanged.
+relative to the surface frame. Their base-frame representation therefore
+changes with the surface-frame orientation, even when the local gain values
+remain unchanged.
 
 The commanded Cartesian force \mbox{\(f\)} is given by the translational spring--damper law
 \mbox{\cite{Hogan1985,Mayr2024CartesianImpedance}}
@@ -784,9 +784,10 @@ D_{R,0}\omega_{\mathrm{EE}}
 \end{equation}
 
 The gain matrices in this expression are the base-frame matrices obtained from
-the selected task-frame gains. A change in the surface-frame orientation
-therefore changes the Cartesian wrench \mbox{\(F\)} and the resulting joint-torque
-contribution \mbox{\(\tau_{\mathrm{cart}}\)}, even when the local gain values remain unchanged.
+the selected surface-coordinate gains. A change in the surface-frame
+orientation therefore changes the Cartesian wrench \mbox{\(F\)} and the
+resulting joint-torque contribution \mbox{\(\tau_{\mathrm{cart}}\)}, even when
+the local gain values remain unchanged.
 
 \subsection{Coriolis and Gravity Compensation in libfranka}
 \label{subsec:coriolis_gravity_compensation}
@@ -838,71 +839,49 @@ which follows the official libfranka Cartesian impedance example
 added to this expression to obtain the complete commanded torque in
 \mbox{\Cref{eq:nullspace_complete_torque_command}}.
 
-\section{Surface Task Frame}
+\section{Surface Frame}
 \label{subsec:surface_task_frame}
-The contact experiment uses a task frame tied to the surface geometry. This
-frame is defined before the stiffness and damping matrices are introduced, so
-that the local gain entries can later be interpreted as normal and tangential
-values instead of as abstract base-frame directions.
 
-Let the unit surface normal \mbox{\(n_s\in\mathbb{R}^3\)}, with
-\mbox{\(\|n_s\|=1\)}, be expressed in the robot base frame. Its sign is chosen
-such that \mbox{\(n_s\)} points outward from the surface towards the free-space
-region above the plate. Consequently, the approach and set-up direction towards
-the surface is \mbox{\(-n_s\)}. The normal alone does not determine the frame.
-One rotational freedom about \mbox{\(n_s\)} remains, so the two tangent
-directions follow from a separate choice rather than from the surface geometry.
+The surface frame provides the tangential and normal directions used for the
+Cartesian controller quantities. Its orientation is constructed from the unit
+surface normal \mbox{\(n_s\)}, expressed in the robot base frame. The sign of
+\mbox{\(n_s\)} is chosen so that it points outward from the surface towards the
+free-space region above the plate, which makes \mbox{\(-n_s\)} the approach and
+set-up direction.
 
-That choice is the surface-frame reference direction
-\mbox{\(a_s\in\mathbb{R}^3\)}, also expressed in the base frame. It is a
-configured direction and not a measured property of the surface. It need not
-lie in the surface plane, because only its component in the plane is used, and
-the single requirement is that it must not be parallel to \mbox{\(n_s\)}: a
-direction parallel to the normal leaves nothing to project. Two reference
-directions differing only by a multiple of \mbox{\(n_s\)} therefore define
-the same frame, whereas rotating \mbox{\(a_s\)} within the plane rotates
-\mbox{\(t_1\)} and \mbox{\(t_2\)} with it.
-
-The first tangent vector is obtained by projecting \mbox{\(a_s\)} onto the plane
-orthogonal to \mbox{\(n_s\)}, and the second tangent vector is then obtained by a cross
-product. With \mbox{\(\tilde{t}_1\)} denoting the unnormalised projected tangent, the
-construction is a Gram--Schmidt orthonormalisation step applied to the surface
-normal \mbox{\(n_s\)} and the surface-frame reference direction
-\mbox{\cite{Siciliano2009,Craig2005}}:
+The first surface tangent is chosen to follow the base-frame
+\mbox{\(x_0\)}-direction as closely as possible while remaining in the surface
+plane. Since the surface is not exactly parallel to the base
+\mbox{\(x_0y_0\)}-plane, \mbox{\(e_{x_0}\)} is projected onto the surface plane
+and normalised:
 
 \begin{equation}
-\begin{aligned}
-\tilde{t}_1
-&=
-a_s - n_s\left(n_s^\top a_s\right),\\
 t_1
-&=
-\frac{\tilde{t}_1}{\|\tilde{t}_1\|},\\
-t_2
-&=
-n_s\times t_1 .
-\end{aligned}
+=
+\frac{e_{x_0}-n_s\left(n_s^\top e_{x_0}\right)}
+{\left\|e_{x_0}-n_s\left(n_s^\top e_{x_0}\right)\right\|}.
 \label{eq:surface_frame_tangents}
 \end{equation}
 
-Here, \mbox{\(t_1\)} and \mbox{\(t_2\)} are unit tangent vectors lying in the surface plane.
-This frame makes the gain directions physically meaningful: separate
-translational and rotational compliance can be assigned along the two surface
-tangents and along or about the surface normal instead of along arbitrary
-base-frame axes. Since the plane and its normal do not depend on
-\mbox{\(a_s\)}, a different reference direction changes which in-plane
-direction carries the name \mbox{\(t_1\)} without changing the surface
-geometry. An axis-specific result therefore holds with respect to the
-configured reference direction, which for the reported experiments was the
-base-frame \mbox{\(x\)}-axis; the resulting tangents are given in
-\mbox{\Cref{sec:surface_tool_calibration}}.
+The second tangent completes the right-handed frame,
 
-The construction requires \mbox{\(\|\tilde{t}_1\|\neq0\)}, and the
-behaviour of the implementation when the configured direction is close to the
-normal is described in
-\mbox{\Cref{subsec:implemented_surface_task_frame}}. To
-match the implemented controller and its parameter order, the surface task
-frame collects the two tangents first and the normal last,
+\begin{equation}
+t_2=n_s\times t_1 .
+\label{eq:surface_frame_second_tangent}
+\end{equation}
+
+The construction requires \mbox{\(e_{x_0}\)} not to be parallel to
+\mbox{\(n_s\)}, and \mbox{\(t_1\)} and \mbox{\(t_2\)} are then orthogonal unit
+vectors in the surface plane. Because the plane and its normal do not depend on
+that reference direction, a different in-plane reference would rotate
+\mbox{\(t_1\)} and \mbox{\(t_2\)} within the surface without changing the
+surface geometry, so an axis-specific result holds with respect to the
+direction that was configured, the first-tangent hint recorded in
+\mbox{\Cref{app:controller_parameters}}. The tangents obtained for the reported
+experiments are given in \mbox{\Cref{sec:surface_tool_calibration}}.
+
+The orientation of the surface frame relative to the robot base frame is
+
 \begin{equation}
 R_{\mathrm{surface}}
 =
@@ -912,183 +891,138 @@ t_1 & t_2 & n_s
 \label{eq:surface_task_frame_matrix}
 \end{equation}
 
-The column order is fixed: every surface-frame three-vector in the
-implementation uses
-\mbox{\([\,\text{tangent 1},\text{tangent 2},\text{normal}\,]^\top\)}.
-In the gain representation below, the contact task uses this frame by setting
-\mbox{\(R_{\mathrm{task}}=R_{\mathrm{surface}}\)}. This makes stiffness values such as
-\mbox{\(K_{p,t_1}\)}, \mbox{\(K_{p,t_2}\)}, and \mbox{\(K_{p,n}\)} local surface-frame quantities in that
-same order.
+Surface-frame quantities therefore use the coordinate order
+
+\[
+\begin{bmatrix}
+t_1 & t_2 & n_s
+\end{bmatrix}^\top .
+\]
+
+This convention is used consistently for the directional Cartesian quantities.
+For example, \mbox{\(K_{p,t_1}\)}, \mbox{\(K_{p,t_2}\)}, and
+\mbox{\(K_{p,n}\)} denote the translational stiffness entries along the two
+surface tangents and the surface normal, respectively. The same ordering is
+used for the rotational gains and for surface-frame components of the
+compliance-centre displacement.
 
 
 \section{Stiffness and Damping Representation}
 \label{sec:stiffness_damping_representation}
 
-Direction-dependent stiffness and damping gains are most conveniently defined
-in a task frame whose axes coincide with the desired principal compliance
-directions. The corresponding matrices are diagonal in that frame but are not
-generally diagonal when expressed in the robot base frame.
+The Cartesian impedance law of \mbox{\Cref{sec:cartesian_impedance_control}} is
+evaluated in the robot base frame. The directional stiffness and damping values
+are specified relative to the calibrated surface, because the relevant
+directions for the contact problem are the two surface tangents
+\mbox{\(t_1\)} and \mbox{\(t_2\)} and the surface normal \mbox{\(n_s\)}.
 
-Let \mbox{\(R_{\mathrm{task}}\in SO(3)\)} denote the orientation of the task frame
-relative to the base frame. Its columns contain the task-frame axes expressed
-in the base frame. The local gains \mbox{\(K_{p,\mathrm{task}}\)},
-\mbox{\(D_{p,\mathrm{task}}\)}, \mbox{\(K_{R,\mathrm{task}}\)}, and
-\mbox{\(D_{R,\mathrm{task}}\)} are rotated into the corresponding base-frame
-gain matrices:
+The translational and rotational stiffness and damping matrices are first
+defined in surface coordinates as
+
+\begin{align}
+K_{p,S}
+&=
+\begin{bmatrix}
+K_{p,t_1} & 0 & 0\\
+0 & K_{p,t_2} & 0\\
+0 & 0 & K_{p,n}
+\end{bmatrix},
+&
+D_{p,S}
+&=
+\begin{bmatrix}
+D_{p,t_1} & 0 & 0\\
+0 & D_{p,t_2} & 0\\
+0 & 0 & D_{p,n}
+\end{bmatrix},
+\label{eq:surface_gain_blocks_translational}
+\\[1.2ex]
+K_{R,S}
+&=
+\begin{bmatrix}
+K_{R,t_1} & 0 & 0\\
+0 & K_{R,t_2} & 0\\
+0 & 0 & K_{R,n}
+\end{bmatrix},
+&
+D_{R,S}
+&=
+\begin{bmatrix}
+D_{R,t_1} & 0 & 0\\
+0 & D_{R,t_2} & 0\\
+0 & 0 & D_{R,n}
+\end{bmatrix}.
+\label{eq:full_task_frame_gain_blocks}
+\end{align}
+
+The common axis order is \mbox{\([t_1,t_2,n_s]\)}.
+
+For use in the base-frame impedance law, these matrices are rotated into the
+robot base frame:
 
 \begin{equation}
-\begin{aligned}
 K_{p,0}
-&=
-R_{\mathrm{task}}
-K_{p,\mathrm{task}}
-R_{\mathrm{task}}^\top,
-&
+=
+R_{\mathrm{surface}}K_{p,S}R_{\mathrm{surface}}^\top,
+\qquad
 D_{p,0}
-&=
-R_{\mathrm{task}}
-D_{p,\mathrm{task}}
-R_{\mathrm{task}}^\top,
-\\
+=
+R_{\mathrm{surface}}D_{p,S}R_{\mathrm{surface}}^\top,
+\label{eq:spatial_gain_matrix}
+\end{equation}
+\begin{equation}
 K_{R,0}
-&=
-R_{\mathrm{task}}
-K_{R,\mathrm{task}}
-R_{\mathrm{task}}^\top,
-&
+=
+R_{\mathrm{surface}}K_{R,S}R_{\mathrm{surface}}^\top,
+\qquad
 D_{R,0}
-&=
-R_{\mathrm{task}}
-D_{R,\mathrm{task}}
-R_{\mathrm{task}}^\top.
-\end{aligned}
+=
+R_{\mathrm{surface}}D_{R,S}R_{\mathrm{surface}}^\top.
 \label{eq:general_task_frame_gain_transform}
 \end{equation}
 
-For an impedance without translation--rotation coupling in the task frame, the
-full task-frame stiffness \mbox{\(K_{\mathrm{task}}\)} and damping
-\mbox{\(D_{\mathrm{task}}\)} are
-
-\begin{equation}
-K_{\mathrm{task}}
-=
-\begin{bmatrix}
-K_{p,\mathrm{task}} & 0\\
-0 & K_{R,\mathrm{task}}
-\end{bmatrix},
-\qquad
-D_{\mathrm{task}}
-=
-\begin{bmatrix}
-D_{p,\mathrm{task}} & 0\\
-0 & D_{R,\mathrm{task}}
-\end{bmatrix}.
-\label{eq:full_task_frame_gain_blocks}
-\end{equation}
-
-The block rotation matrix \mbox{\(T_R\)} applies the task-frame rotation to
-the translational and rotational blocks:
-
-\begin{equation}
-T_R
-=
-\operatorname{diag}
-\left(
-R_{\mathrm{task}},
-R_{\mathrm{task}}
-\right),
-\end{equation}
-
-The corresponding full base-frame stiffness \mbox{\(K_0\)} and damping
-\mbox{\(D_0\)} are
+The complete base-frame stiffness and damping matrices are then
 
 \begin{equation}
 K_0
 =
-T_R K_{\mathrm{task}}T_R^\top,
+\begin{bmatrix}
+K_{p,0} & 0\\
+0 & K_{R,0}
+\end{bmatrix},
 \qquad
 D_0
 =
-T_R D_{\mathrm{task}}T_R^\top.
+\begin{bmatrix}
+D_{p,0} & 0\\
+0 & D_{R,0}
+\end{bmatrix}.
 \label{eq:full_task_frame_gain_transform}
 \end{equation}
 
-The task-frame rotation changes the matrix representation without changing the
-physical directions assigned to the gains. For example, \mbox{\(K_{p,n}\)}
-acts along the calibrated surface normal even when that normal is not aligned
-with a base-frame axis.
+At this stage translation and rotation remain decoupled. The
+centre-of-compliance transformation introduced in
+\mbox{\Cref{sec:centre_of_compliance}} can subsequently introduce coupling
+between the two blocks.
 
-For the contact task, the task frame is the surface frame, whose orientation is
+The transformation changes only the coordinate representation of the gain
+matrices. The physical directions associated with the gains remain tied to the
+calibrated surface. For example, \mbox{\(K_{p,n}\)} acts along \mbox{\(n_s\)},
+even when the surface normal is not aligned with a robot-base axis.
 
-\begin{equation}
-R_{\mathrm{task}}
-=
-R_{\mathrm{surface}}
-=
-\begin{bmatrix}
-t_1 & t_2 & n_s
-\end{bmatrix}.
-\end{equation}
-
-For example, the local translational stiffness is defined as
-
-\begin{equation}
-K_{p,\mathrm{task}}
-=
-\operatorname{diag}
-\left(
-K_{p,t_1},
-K_{p,t_2},
-K_{p,n}
-\right),
-\end{equation}
-
-and its base-frame representation is
-
-\begin{equation}
-K_{p,0}
-=
-R_{\mathrm{surface}}\,
-\operatorname{diag}
-\left(
-K_{p,t_1},
-K_{p,t_2},
-K_{p,n}
-\right)
-R_{\mathrm{surface}}^\top.
-\label{eq:spatial_gain_matrix}
-\end{equation}
-
-The local rotational-stiffness entries \mbox{\(K_{R,t_1}\)},
-\mbox{\(K_{R,t_2}\)}, and \mbox{\(K_{R,n}\)} follow the same axis order:
-
-\begin{equation}
-K_{R,\mathrm{task}}
-=
-\operatorname{diag}
-\left(
-K_{R,t_1},
-K_{R,t_2},
-K_{R,n}
-\right),
-\end{equation}
-
-and the damping matrices are constructed analogously. A change in the
-configured surface orientation therefore changes the corresponding base-frame
-gain matrices even when the local gain values remain unchanged.
-During approach, contact set-up, and grinding, the reported contact runs
-used this surface-frame construction for both translational and rotational gain
-blocks. In the reported experiments, the phase-indexed numerical entries of
-\mbox{\Cref{tab:experimental_common_gains}} were assigned to
-\mbox{\([t_1,t_2,n_s]\)} before transformation to the base frame. The active gain matrices were based on the calibrated surface frame and
-were not rotated with the current end-effector orientation
-\mbox{\(R_{\mathrm{EE}}\)}.
+For the reported contact experiments, the directional gain values were assigned
+along \mbox{\([t_1,t_2,n_s]\)} and then transformed to the base frame before
+evaluating the Cartesian impedance law. The gains therefore remained fixed
+relative to the calibrated surface and did not rotate with the current
+end-effector orientation \mbox{\(R_{\mathrm{EE}}\)}. The phase-indexed numerical
+entries are given in \mbox{\Cref{tab:experimental_common_gains}}.
 
 \section{Centre of Compliance}
 \label{sec:centre_of_compliance}
 
-The task-frame transformation of
-\mbox{\Cref{eq:full_task_frame_gain_transform}} changes the directions along
+The surface-frame transformations of
+\mbox{\Cref{eq:spatial_gain_matrix,eq:general_task_frame_gain_transform}}
+change the directions along
 which the Cartesian stiffness and damping act, while leaving their reference
 point at the tool centre point (TCP). Independently of that orientation choice,
 the Cartesian impedance can be defined about a virtual \abbr{CoC}
@@ -1102,7 +1036,7 @@ load.
 For a dual-arm assembly task, Suomalainen \mbox{et al.\ }experimentally
 showed that compliance-centre placement and compliant-axis selection affect the
 alignment response \mbox{\citep{Suomalainen2019DualArmCompliance}}. This
-task-level result motivates the placement study in this thesis. The point-shift
+experimental result motivates the placement study in this thesis. The point-shift
 adjoint below remains derived from the spatial-transformation formulation.
 
 The displacement from the TCP to the \abbr{CoC} is
@@ -1167,14 +1101,15 @@ I_3 & -[r_c]_\times\\[2pt]
 \label{eq:offset_adjoint}
 \end{equation}
 
-The task-frame rotation and the point shift have different functions. The
-block rotation \mbox{\(T_R\)} of
-\mbox{\Cref{eq:full_task_frame_gain_transform}} changes the principal
-directions of the impedance, whereas \mbox{\(\mathrm{Ad}(r_c)\)} changes the
-point about which the impedance is defined.
+The surface-frame rotation and the point shift have different functions.
+The transformations in
+\mbox{\Cref{eq:spatial_gain_matrix,eq:general_task_frame_gain_transform}}
+change the principal directions of the impedance. The point-shift adjoint
+\mbox{\(\mathrm{Ad}(r_c)\)} changes the point about which the impedance is
+defined.
 
-After any required task-frame rotation, the translational and rotational
-stiffness and damping matrices are assembled at the \abbr{CoC} as
+After the gains have been expressed in the base frame, the translational and
+rotational stiffness and damping matrices are assembled at the \abbr{CoC} as
 
 \begin{equation}
 K_c
@@ -1292,18 +1227,37 @@ remains finite and the commanded rotational impedance remains active.
 \subsection{Surface-Frame and Tangential Compliance-Centre Displacement}
 \label{subsec:coc_tangential_displacement}
 
-For the surface-contact task the \abbr{CoC} displacement is resolved in the
-surface frame \mbox{\([t_1,t_2,n_s]\)}. Its surface-frame components are
-defined by
+For the surface-contact task the \abbr{CoC} displacement is resolved along the
+two surface tangents and the surface normal. Its coordinates in the surface
+frame are
 
 \begin{equation}
-r_c
+r_{c,S}
 =
-r_{c,t_1}t_1+r_{c,t_2}t_2+r_{c,n}n_s.
+\begin{bmatrix}
+r_{c,t_1}\\
+r_{c,t_2}\\
+r_{c,n}
+\end{bmatrix}.
 \label{eq:coc_surface_components}
 \end{equation}
 
-The tangential part collects the two in-plane components,
+Since \mbox{\(R_{\mathrm{surface}}=[\,t_1\;\;t_2\;\;n_s\,]\)} holds those
+surface axes expressed in the base frame, the same physical displacement in
+base coordinates is
+
+\begin{equation}
+r_{c,0}
+=
+R_{\mathrm{surface}}r_{c,S}
+=
+r_{c,t_1}t_1+r_{c,t_2}t_2+r_{c,n}n_s,
+\label{eq:coc_surface_to_base}
+\end{equation}
+
+with the inverse relation
+\mbox{\(r_{c,S}=R_{\mathrm{surface}}^\top r_{c,0}\)}. The tangential part
+collects the two in-plane components,
 
 \begin{equation}
 r_{c,t}
@@ -1321,25 +1275,24 @@ the tangential vector they form, and its magnitude is written
 \mbox{\(\lVert r_c\rVert=\lVert r_{c,t}\rVert\)}.
 
 A non-zero displacement is specified by the frame in which its components are
-held constant as well as by its magnitude and direction. For a surface-fixed
-definition,
+held constant as well as by its magnitude and direction. The two definitions
+follow the same pattern and differ only in the rotation that carries the
+configured vector into the base frame:
 
 \begin{equation}
-r_c=R_{\mathrm{surface}}r_c^{S},
+r_{c,0}=R_{\mathrm{surface}}r_{c,S},
 \qquad
-r_c^{S}=
-\begin{bmatrix}
-r_{c,t_1}\\
-r_{c,t_2}\\
-r_{c,n}
-\end{bmatrix},
+r_{c,0}=R_{\mathrm{EE}}r_{c,\mathrm{EE}}.
 \label{eq:coc_surface_fixed_definition}
 \end{equation}
 
-and \mbox{\(r_c^{S}\)} remains constant. For a tool-fixed definition the
-configured displacement remains constant in end-effector coordinates, and its
-base-frame representation rotates with the end effector.
-\mbox{\Cref{sec:self_alignment_virtual_center}} describes both.
+For a surface-fixed definition \mbox{\(r_{c,S}\)} remains constant, and
+because the surface frame is fixed for one controller session the base-frame
+displacement is constant during set-up. For a tool-fixed definition
+\mbox{\(r_{c,\mathrm{EE}}\)} remains constant instead, so
+\mbox{\(r_{c,0}\)} rotates with the end effector.
+\mbox{\Cref{sec:self_alignment_virtual_center}} describes both
+implementations.
 
 The commanded force enters through \mbox{\(r_c\times f\)}, and
 it decomposes exactly into a normal and a tangential component,
@@ -1496,9 +1449,9 @@ negative stiffness directions. Closed-loop robot--controller--contact behaviour
 with phase switching was assessed experimentally under the operating conditions
 reported in \mbox{\Cref{ch:methodology}}.
 
-This formulation is a local small-motion model in which \mbox{\(r_c\)} is
+This formulation is a local small-motion model in which the displacement is
 treated as fixed during one controller evaluation. A surface-fixed
-\mbox{\(r_c^{S}\)} therefore keeps its base-frame vector constant during
+\mbox{\(r_{c,S}\)} therefore keeps \mbox{\(r_{c,0}\)} constant during
 set-up, whereas a tool-fixed displacement does not, and the controller updates
 the base-frame vector and the shifted gain matrices during each control cycle
 in that case.
@@ -1589,8 +1542,8 @@ N_\tau=N_q^\top=I_7-J^\top J^{+\top}.
 With the thresholded \mbox{\abbr{SVD}} construction, the projector is
 orthogonal and symmetric. At full row rank it reduces to
 \mbox{\(N_q=N_\tau=v_7v_7^\top\)}. The implemented separation is kinematic
-rather than inertia weighted; Cartesian task retention is therefore checked in
-the pose-hold experiment.
+rather than inertia weighted; Cartesian position retention is therefore checked
+in the pose-hold experiment.
 
 \subsection{Projected Damping and Conditioning}
 \label{subsec:nullspace_damping_torque}
@@ -2066,8 +2019,8 @@ The transpose relation follows from the mechanical power
 The projector provides an orthogonal kinematic separation with respect to the
 Jacobian and the Moore--Penrose pseudoinverse. It is not the inertia-weighted
 dynamically consistent null-space projector used in some operational-space
-formulations. Cartesian task retention under the implemented secondary torques
-is therefore also evaluated experimentally.
+formulations. Cartesian position retention under the implemented secondary
+torques is therefore also evaluated experimentally.
 
 For the \mbox{\abbr{SVD}}-based pseudoinverse, \mbox{\(J^+J\)} is an orthogonal and
 symmetric projector. Hence,

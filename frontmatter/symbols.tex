@@ -24,7 +24,7 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$\{0\}$}{Robot base frame}{[-]}
 \symrow{$\{\mathrm{EE}\}$}{End-effector frame used by the robot model}{[-]}
 \symrow{$\{d\}$}{Desired end-effector and TCP reference frame}{[-]}
-\symrow{$\{S\}$}{Surface task frame, with axes $t_1$, $t_2$ and $n_s$}{[-]}
+\symrow{$\{S\}$}{Surface frame, with axes $t_1$, $t_2$ and $n_s$}{[-]}
 \symrow{$n$}{Number of joints ($n=7$)}{[-]}
 \symrow{$q,\ \dot{q}$}{Joint position / velocity vector}{[rad], [rad/s]}
 \symrow{$p$}{Position / translation vector}{[m]}
@@ -36,6 +36,9 @@ column makes the mixed translational and rotational quantities traceable.}
 \symgroup{Pose and Error}{
 \symrow{$p_{\mathrm{EE}},\ p_{\mathrm{TCP}}$}{End-effector / tool-centre-point position; $p_{\mathrm{TCP}}=p_{\mathrm{EE}}$ in the implemented model}{[m]}
 \symrow{$R_{\mathrm{EE}},\ T_{\mathrm{EE}}$}{End-effector orientation / transformation}{[-]}
+\symrow{$R_{\mathrm{set,start}},\ R_{\mathrm{set,end}}$}{Measured end-effector orientations at the beginning / end of set-up}{[-]}
+\symrow{$R_{\mathrm{set}}$}{Current-to-reference relative rotation over set-up, $R_{\mathrm{set,start}}R_{\mathrm{set,end}}^\top$}{[-]}
+\symrow{$u_{\mathrm{set}},\ \phi_{\mathrm{set}}$}{Axis / angle of $R_{\mathrm{set}}$}{[-], [rad]}
 \symrow{$p_d,\ R_d,\ T_d$}{Desired position / orientation / transformation}{[m], [-]}
 \symrow{$\Delta R$}{Current-to-desired relative rotation, $R_{\mathrm{EE}}^\top R_d$}{[-]}
 \symrow{$\phi$}{Orientation-error angle}{[rad]}
@@ -50,6 +53,9 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$K_R,\ D_R$}{Generic rotational stiffness / damping block; a frame or phase index is added when needed}{[N\,m/rad], [N\,m\,s/rad]}
 \symrow{$K_{p,t_1},\ K_{p,t_2},\ K_{p,n}$}{Translational stiffness entries along $t_1$, $t_2$, and $n_s$}{[N/m]}
 \symrow{$K_{R,t_1},\ K_{R,t_2},\ K_{R,n}$}{Rotational stiffness entries about $t_1$, $t_2$, and $n_s$}{[N\,m/rad]}
+\symrow{$D_{p,t_1},\ D_{p,t_2},\ D_{p,n}$}{Translational damping entries along $t_1$, $t_2$, and $n_s$}{[N\,s/m]}
+\symrow{$D_{R,t_1},\ D_{R,t_2},\ D_{R,n}$}{Rotational damping entries about $t_1$, $t_2$, and $n_s$}{[N\,m\,s/rad]}
+\symrow{$K_0,\ D_0$}{Complete base-frame Cartesian stiffness / damping, assembled block diagonal from the rotated translational and rotational blocks}{[N/m], [N\,m/rad]; [N\,s/m], [N\,m\,s/rad]}
 }
 
 \symgroup{Dynamics and Torques}{
@@ -66,15 +72,19 @@ column makes the mixed translational and rotational quantities traceable.}
 \symgroup{Surface and Contact Geometry}{
 \symrow{$n_s$}{Calibrated surface-plane normal copied into the controller and used in the evaluation}{[-]}
 \symrow{$t_1,\ t_2$}{Surface tangent directions (unit)}{[-]}
-\symrow{$R_{\mathrm{surface}}$}{Surface task frame $[\,t_1\;\;t_2\;\;n_s\,]$ in the base frame}{[-]}
+\symrow{$R_{\mathrm{surface}}$}{Surface-frame orientation $[\,t_1\;\;t_2\;\;n_s\,]$ in the base frame}{[-]}
 \symrow{$n_{\mathrm{Tool,EE}},\ n_{\mathrm{Tool},0},\ n_d$}{Tool-face normal expressed in the EE frame, fixed by calibration / the same direction expressed in the base frame, $n_{\mathrm{Tool},0}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}$ / signed controller target direction}{[-]}
 \symrow{$\theta_{\mathrm{tilt}}$}{Commanded orientation-offset rotation vector, $\theta_{\mathrm{tilt}}=\theta_{t_1}t_1+\theta_{t_2}t_2$}{[rad]}
 \symrow{$p_s$}{Point on the configured surface}{[m]}
+\symrow{$e_{x_0},\ e_{y_0},\ e_{z_0}$}{Unit vectors along the base-frame axes $x_0$, $y_0$ and $z_0$}{[-]}
 \symrow{$p_c$}{Centre of compliance}{[m]}
-\symrow{$r_c$}{TCP-to-compliance-centre lever, $p_c-p_{\mathrm{TCP}}$, as it enters the point-shift transformation and as the experimental plots and tables report it}{[m]}
+\symrow{$r_c$}{TCP-to-compliance-centre displacement, $p_c-p_{\mathrm{TCP}}$, as the point-shift transformation and the experimental plots and tables use it; where no frame index is shown, the base-frame representation is implied}{[m]}
+\symrow{$r_{c,0},\ r_{c,S},\ r_{c,\mathrm{EE}}$}{Representations of the same displacement in the base, surface and end-effector frames, with $r_{c,0}=R_{\mathrm{surface}}r_{c,S}=R_{\mathrm{EE}}r_{c,\mathrm{EE}}$}{[m]}
 \symrow{$r_{c,t_1},\ r_{c,t_2},\ r_{c,n}$}{Surface-frame components of $r_c$ along $t_1$, $t_2$ and $n_s$}{[m]}
 \symrow{$r_{\mathrm{Tool,EE}},\ p_{\mathrm{Tool}}$}{Selected tool-point offset from the TCP, expressed in the EE frame / selected tool-point position in the base frame}{[m]}
 \symrow{$r_{\mathrm{Tool}}$}{Selected tool-point offset from the TCP, $p_{\mathrm{Tool}}-p_{\mathrm{TCP}}$}{[m]}
+\symrow{$s_{\mathrm{set}},\ v_{\mathrm{set}},\ s_{\mathrm{set,max}}$}{Commanded set-up press coordinate of the selected tool point along $-n_s$ / its configured rate / its configured endpoint}{[m], [m/s], [m]}
+\symrow{$t_{\mathrm{set},0},\ t_{\mathrm{set,max}}$}{Instant of the clearance transition / instant at which $s_{\mathrm{set}}$ reaches $s_{\mathrm{set,max}}$}{[s], [s]}
 \symrow{$m_R$}{Rotational-impedance contribution to the commanded moment, $K_Re_R-D_R\omega_{\mathrm{EE}}$, present at every lever setting}{[N\,m]}
 }
 
@@ -84,7 +94,8 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$F_c,\ F_{\mathrm{TCP}}$}{Cartesian wrench at the centre of compliance / corresponding wrench at the TCP}{[N], [N\,m]}
 \symrow{$K_{\mathrm{TCP}},D_{\mathrm{TCP}}$}{Centre-of-compliance gains mapped by congruence to the TCP}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
 \symrow{$\theta_{t_1},\ \theta_{t_2}$}{Surface-frame components of the commanded tool orientation offset}{[rad]}
-\symrow{$\Delta\theta_i$}{Measured signed end-effector rotation about surface tangent $t_i$ from the beginning to the end of set-up}{[rad]}
+\symrow{$\gamma_0,\ \gamma_S$}{Signed set-up response vector in base / surface coordinates: the end-of-set-up orientation change relative to the held set-up reference}{[rad], [rad]}
+\symrow{$\gamma_{t_1},\ \gamma_{t_2},\ \gamma_n$}{Surface-frame components of the signed set-up response; a component reducing a commanded offset carries the same sign as that offset}{[rad]}
 \symrow{$r_{c,t}$}{Tangential part of the compliance-centre displacement, $r_{c,t_1}t_1+r_{c,t_2}t_2$; its magnitude is written $\lVert r_{c,t}\rVert$}{[m]}
 \symrow{$F_n,\ M_{t_i}$}{Signed commanded normal force / commanded TCP moment about surface tangent $t_i$}{[N], [N\,m]}
 }

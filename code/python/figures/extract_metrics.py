@@ -175,14 +175,12 @@ def surface_frame(tilt_x_deg, tilt_y_deg):
 
 
 def contact_rotation(trial, params):
-    """Return the set-up rotation since the start of set-up in surface axes [deg].
+    """Return the current-to-reference set-up rotation in surface axes [deg].
 
-    The set-up phase holds the orientation captured at the clearance transition as its
-    reference, so the logged orientation error is the rotation away from it.
-    That comes from joint angles alone: no tool axis and no plane zero enter
-    it, which matters because the tool axis is only known to a degree or two
-    and drifts as the tool settles in the gripper. The plane enters solely as
-    the direction of the axes the rotation is resolved along.
+    The set-up phase holds the orientation captured at the clearance transition
+    as its reference. The logged orientation error is the rotation from the
+    measured end orientation back to that held start orientation. The surface
+    frame enters as the directions on which the rotation is resolved.
     """
     logs = glob.glob(os.path.join(trial, "logs", "*.csv"))
     if not logs:
