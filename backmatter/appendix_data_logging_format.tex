@@ -27,16 +27,17 @@ The integer \texttt{phase} identifies the active part of the experiment:
 \end{array}
 \]
 
-\section{Signals Used in the Evaluation}
+\section{Recorded Signals}
 \ReviewMark{green}{The table is a useful reproducibility record and keeps units,
 frames, and model-estimated quantities explicit.}
 
-Table~\ref{tab:csv_column_groups} lists the groups used to calculate the reported
-quantities. A suffix \texttt{\_x,\_y,\_z} denotes base-frame components, and
-\texttt{\_1..\_7} denotes joint components.
+Table~\ref{tab:csv_column_groups} lists the recorded signal groups relevant to
+the experiments and subsequent evaluation. A suffix
+\texttt{\_x,\_y,\_z} denotes base-frame components, and \texttt{\_1..\_7}
+denotes joint components.
 
 \begin{longtable}{@{}p{0.32\textwidth}p{0.61\textwidth}@{}}
-\caption{Recorded signal groups used in the evaluation.}
+\caption{Recorded signal groups.}
 \label{tab:csv_column_groups}\\
 \toprule
 Column group & Meaning \\
@@ -60,37 +61,30 @@ Selected contact point and its reference [m].\\
 \texttt{tool\_contact\_offset\_ee} &
 Offset of the selected contact point from the TCP, in EE coordinates [m].\\
 \texttt{first\_contact\_tcp}, \texttt{first\_contact} &
-TCP position and projected surface reference captured at the geometric
-clearance transition; the transition is not force triggered.\\
+TCP position and projected surface reference captured at the clearance
+transition [m].\\
 \texttt{e\_p}, \texttt{e\_R}, \texttt{pdot},
 \texttt{pdot\_d}, \texttt{omega} &
-Cartesian errors and velocities. During set-up, \texttt{e\_R} is measured
-relative to the clearance orientation selected at the transition and held
-constant during set-up.\\
+Cartesian errors and velocities; during set-up \texttt{e\_R} is referred to
+the orientation held from the clearance transition.\\
 \texttt{angular\_deviation\_deg} &
-The pose-based alignment error retained for the consistency check of
-\mbox{\Cref{app:metric_agreement}},
-\mbox{\(\theta_{\mathrm{align}}=\cos^{-1}(-n_{\mathrm{Tool},0}^\top n_s)\)}, between the
-pose-based tool axis \mbox{\(n_{\mathrm{Tool},0}\)} and the flat target
-\mbox{\(-n_s\)}, with \mbox{\(n_s\)} the calibrated physical-plane normal
-stored in the controller configuration [\(^{\circ}\)]. It is zero for a tool
-face parallel to the surface.\\
+Pose-based alignment error
+\mbox{\(\theta_{\mathrm{align}}=\cos^{-1}(-n_{\mathrm{Tool},0}^\top n_s)\)},
+used in the consistency check of \mbox{\Cref{app:metric_agreement}}
+[\(^{\circ}\)].\\
 {\small\texttt{angular\_deviation\_t1\_deg}},\newline
 {\small\texttt{angular\_deviation\_t2\_deg}},\newline
 \texttt{angular\_deviation\_}\newline\texttt{normal\_deg} &
-The same angular deviation resolved on \(t_1\), \(t_2\), and \(n_s\)
-[\(^{\circ}\)]. These recorded controller fields are not main evaluation
-quantities.\\
+The same angular deviation resolved on \(t_1\), \(t_2\) and \(n_s\)
+[\(^{\circ}\)]. Not evaluation quantities.\\
 \texttt{p\_CoC}, \texttt{r\_eff} &
-\abbr{CoC} \(p_{\mathrm{TCP}}+r_c\) and the offset from it to the
-selected tool point, \(p_{\mathrm{Tool}}-p_c\), both in the base
-frame [m]. A zero lever leaves the centre on the TCP, so the pair is written
-for every run and no case has to be separated.\\
+\abbr{CoC} \(p_{\mathrm{TCP}}+r_c\) and the offset from it to the selected
+tool point, \(p_{\mathrm{Tool}}-p_c\), in the base frame [m]. Written for
+every run, including \(r_c=0\).\\
 \texttt{t\_align} &
-Time from the start of set-up at which the deviation first fell inside the
-configured tolerance and stayed there [s]; negative until that happens, and
-negative throughout for a run that never does. Observed only: reaching it does
-not end the phase.\\
+Time from the start of set-up at which the deviation first settled inside the
+configured tolerance [s], negative until then. Observed only; it does not end
+the phase.\\
 \texttt{f}, \texttt{m} &
 Commanded Cartesian force [N] and moment [N\,m].\\
 \texttt{external\_force}, \texttt{external\_moment} &
@@ -108,9 +102,9 @@ Set-up penetration reference or grind preload retained after set-up [m].\\
 Selected null-space law and current smallest singular value \(\sigma_{\min}\).\\
 \texttt{sigma\_plus}, \texttt{sigma\_minus},\newline
 \texttt{sigma\_difference}, \texttt{sigma\_direction} &
-Smallest singular value \(\sigma_{\min}\) at the two sampled configurations
-\(q\pm\alpha_{\mathrm{probe}}v_7\), their difference, and the selected sign.
-Recorded in every mode, including when no torque is commanded.\\
+\(\sigma_{\min}\) at the two sampled configurations
+\(q\pm\alpha_{\mathrm{probe}}v_7\), their difference and the selected sign.
+Recorded in every mode.\\
 \texttt{nullspace\_dq\_1..7} &
 Projected joint velocity \(\dot q_{\mathrm{null}}\) [rad/s].\\
 \texttt{tau\_sigma\_1..7}, \texttt{tau\_sigma\_norm},
@@ -122,55 +116,10 @@ Active projected damping gain [N\,m\,s/rad].\\
 \texttt{disturbance\_scale},
 \texttt{disturbance\_force\_}\newline\texttt{base\_x..z},
 \texttt{disturbance\_}\newline\texttt{point\_base\_x..z} &
-Commanded hold-disturbance waveform, point force [N], and the base-frame
+Commanded hold-disturbance waveform, point force [N] and the base-frame
 position of the link point it acts at [m].\\
 \texttt{tau\_disturbance\_1..7} &
 Equivalent joint torque \(J_p^\top f_d\) in the internally commanded hold study [N\,m].\\
 \texttt{tau\_cmd\_1..7} &
 Final commanded joint torque [N\,m].\\
 \end{longtable}
-
-\section{Evaluation Quantities}
-\ReviewMark{green}{The short summary routes each reported metric to its recorded
-source without reintroducing unused fields.}
-
-The pose-based alignment error \mbox{\(\theta_{\mathrm{align}}\)} was calculated
-from the measured end-effector orientation, the calibrated tool normal
-\mbox{\(n_{\mathrm{Tool,EE}}\)}, and the calibrated surface normal
-\mbox{\(n_s\)}. Its before value was taken at the start of set-up, and its
-after value from the settled set-up interval. It is retained only for the
-appendix consistency check. No other plane normal was substituted in the
-analysis. The main signed set-up rotation \mbox{\(\gamma_{t_i}\)} was
-calculated from \mbox{\texttt{e\_R}} at the end of set-up and resolved on the surface
-tangents, as \mbox{\Cref{eq:contact_induced_rotation}} and
-\mbox{\Cref{eq:surface_resolved_setup_rotation}} define it.
-
-Three markers of that same angle are written once into the set-up report
-rather than into every row. All three read \mbox{\(\theta_{\mathrm{align}}\)}
-and the clock alone. None feeds the phase exit or the command.
-\texttt{t\_align\_fraction} is the time at which
-\mbox{\(\theta_{\mathrm{align}}\)} first fell below a configured fraction of
-its value at first contact. Being a relative threshold, it is reached by
-conditions that end far from flat, which the absolute tolerance is not.
-\texttt{deviation\_min} is the smallest \mbox{\(\theta_{\mathrm{align}}\)} the
-run reached, together with the time at which it was reached. Both are defined
-for every run, so a condition that never aligned still records how close it
-came. \texttt{align\_status} reads \texttt{aligned} where
-\mbox{\(\theta_{\mathrm{align}}\)} settled inside the tolerance for the
-required hold time, and \texttt{not\_aligned} otherwise. Runs that never
-settled are identified rather than discarded.
-
-None of these determines whether the tool itself ended flat. That is
-calculated afterwards from the height of the TCP above the calibrated plane,
-\(n_s^\top(p_{\mathrm{EE}}-p_s)\), against the height a flatly seated tool
-face would give. The classification uses the measured end-effector position
-\mbox{\(p_{\mathrm{EE}}\)}, the stored surface plane, and the calibrated tool
-geometry that fixes the expected flat height.
-Unlike \mbox{\(\theta_{\mathrm{align}}\)}, it therefore carries no assumption
-about the rotation of the tool within the gripper.
-
-For the internally commanded hold study, redundant motion is calculated by integrating the
-norm of the recorded projected joint velocity \(\dot q_{\mathrm{null}}\) over the disturbance interval.
-The conditioning response is the final change in
-\(\sigma_{\min}\), and Cartesian task retention is represented by the peak
-position-error norm \(\lVert e_p\rVert\).

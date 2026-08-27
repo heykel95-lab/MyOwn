@@ -48,9 +48,9 @@ Tool-face centre in EE & \texttt{tool\_contact\_face\_center\_ee} &
   \([0,0,0.020]\,\mathrm{m}\) \\
 Tool face size & width \(\times\) length &
   \(0.040\times0.120\,\mathrm{m}\) \\
-Feature tie tolerance &
+Tool-point selection tolerance, \(\varepsilon_{\mathrm{sel}}\) &
   \texttt{tool\_contact\_feature\_}\newline\texttt{tie\_tolerance} &
-  \(10^{-4}\,\mathrm{m}\) \\
+  \(0.1\,\mathrm{mm}\) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -117,23 +117,10 @@ Approach translation &
 Approach rotation &
   \([180,180,90]\,\mathrm{N\,m/rad}\), surface \([t_1,t_2,n_s]\) &
   \([15,15,12]\,\mathrm{N\,m\,s/rad}\) \\
-Pre-set-up gate translation &
+Set-up translation &
   \([2000,2000,350]\,\mathrm{N/m}\), surface \([t_1,t_2,n_s]\) &
   \([10,10,175]\,\mathrm{N\,s/m}\) \\
-Pre-set-up gate rotation &
-  \([5,5,50]\,\mathrm{N\,m/rad}\), surface \([t_1,t_2,n_s]\) &
-  \([10.01,10.01,10]\,\mathrm{N\,m\,s/rad}\) \\
-Set-up translation (compliance-centre source) &
-  \([2000,2000,350]\,\mathrm{N/m}\) in all surface-contact experiments, surface
-  \([t_1,t_2,n_s]\) &
-  \([10,10,175]\,\mathrm{N\,s/m}\) \\
-Set-up rotation (compliance-centre source) &
-  \([5,5,50]\,\mathrm{N\,m/rad}\), surface \([t_1,t_2,n_s]\) &
-  \([10.01,10.01,10]\,\mathrm{N\,m\,s/rad}\) \\
-Grind translation (decoupled) &
-  as the set-up entry above, surface \([t_1,t_2,n_s]\) &
-  \([10,10,175]\,\mathrm{N\,s/m}\) \\
-Grind rotation (decoupled) &
+Set-up rotation &
   \([5,5,50]\,\mathrm{N\,m/rad}\), surface \([t_1,t_2,n_s]\) &
   \([10.01,10.01,10]\,\mathrm{N\,m\,s/rad}\) \\
 Hold translation &
@@ -149,13 +136,8 @@ Manual guidance &
 \end{tabular}
 \end{table}
 
-The pre-set-up gate was disabled in all reported contact runs, so its defined
-gains were inactive. The enabled pre-grind gate remains in set-up and keeps the
-coupled pressed law rather than using the pre-set-up gate gains.
-
-The reported experiments used the surface-frame translational gains listed
-above. The active timing and trajectory values are
-listed in \mbox{\Cref{tab:active_phase_timing}}.
+The active timing and trajectory values are listed in
+\mbox{\Cref{tab:active_phase_timing}}.
 
 \begin{table}[H]
 \centering
@@ -177,8 +159,8 @@ Orient timeout / maximum rate &
 Descent speed / maximum distance &
   \texttt{descend\_speed}, \texttt{descend\_max\_distance} &
   \(0.1\,\mathrm{m/s}\), \(0.640\,\mathrm{m}\) \\
-Surface clearance & \texttt{descend\_surface\_clearance} &
-  \(0.020\,\mathrm{m}\) \\
+Tool clearance, \(h_{\mathrm{clearance}}\) &
+  \texttt{descend\_surface\_clearance} & \(0.020\,\mathrm{m}\) \\
 Set-up minimum time / timeout &
   \texttt{setup\_min\_time}, \texttt{setup\_timeout} &
   \(2.0\,\mathrm{s}\), \(5.0\,\mathrm{s}\) \\
@@ -187,11 +169,7 @@ Set-up moment-change threshold &
 Set-up push speed / endpoint &
   \texttt{setup\_push\_speed}, \texttt{setup\_push\_end} &
   \(0.080\,\mathrm{m/s}\), \(0.240\,\mathrm{m}\) in all surface-contact experiments \\
-Configured grinding sweep & \texttt{grind\_sweep\_enabled} &
-  enabled along \(t_2\), \(0.030\,\mathrm{m}\), \(0.2\,\mathrm{Hz}\); not entered in the reported runs \\
-Pre-set-up / pre-grind gates &
-  \texttt{pause\_before\_set\_up}, \texttt{pause\_before\_grind} &
-disabled, enabled \\
+Pre-grind gate & \texttt{pause\_before\_grind} & enabled \\
 \bottomrule
 \end{tabular}
 }
@@ -199,69 +177,55 @@ disabled, enabled \\
 
 \section{Inertia-Scaled Damping and Centre of Compliance}
 
-Inertia-scaled damping follows \Cref{eq:implementation_inertia_scaled_damping},
-whose directional inertia \(\lambda_i(q)\) is the corresponding diagonal entry
-of the operational-space inertia resolved along the axes of the active gain
-block. In the base frame that matrix is
+\begin{table}[H]
+\centering
+\caption{Damping and compliance-centre parameters.}
+\label{tab:active_damping_coc}
+\small
+\begin{tabular}{@{}
+>{\raggedright\arraybackslash}p{0.27\textwidth}
+>{\raggedright\arraybackslash}p{0.34\textwidth}
+>{\raggedright\arraybackslash}p{0.30\textwidth}@{}}
+\toprule
+Quantity & Symbol / key & Value \\
+\midrule
+Approach damping factor & \(\zeta\) & \(1.9\) \\
+Set-up damping factor & \(\zeta\) & \(1.0\) \\
+Task-inertia regularisation & added to \(J(q)M(q)^{-1}J^\top(q)\) &
+  \(10^{-9}\) \\
+Maximum damping coefficient & \texttt{auto\_damping\_max} & \(400\) \\
+Lower bound from the configured matrices &
+  \texttt{auto\_damping\_}\newline\texttt{min\_from\_manual} &
+  \(0\); those matrices act as fallback only \\
+Reported contact phases using inertia-scaled damping & --- &
+  approach and set-up \\
+Pose-hold inertia-scaled damping & \texttt{hold\_auto\_damping} &
+  \(0\) in all twelve reported runs \\
+Pose-hold translational damping & \(D_p\) &
+  \(50I_3\,\mathrm{N\,s/m}\) \\
+Pose-hold rotational damping & \(D_R\) &
+  \(8I_3\,\mathrm{N\,m\,s/rad}\) \\
+Coupled \(6\times6\) law & \texttt{use\_virtual\_}\newline\texttt{compliance\_center} &
+  set-up only, and only for displaced-centre conditions \\
+Displacement definition frame &
+  \texttt{compliance\_center\_}\newline\texttt{in\_tool\_frame} &
+  tool-fixed, except the surface-fixed conditions of
+  \mbox{\Cref{sec:supporting_definition_frame}} \\
+Tool-fixed displacement & \texttt{compliance\_center\_}\newline\texttt{offset\_ee} &
+  in end-effector axes \\
+Surface-fixed displacement & \texttt{compliance\_lever\_surface} &
+  in surface axes \([t_1,t_2,n_s]\) \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\begin{equation}
-\Lambda_0(q)
-=
-\left(
-J(q)M(q)^{-1}J^\top(q)+\varepsilon I_6
-\right)^{-1},
-\qquad
-\varepsilon=10^{-9}.
-\label{eq:appendix_cartesian_inertia}
-\end{equation}
+Both configured displacements define \(r_c=p_c-p_{\mathrm{TCP}}\) and differ
+only in the frame their components are held constant in. The damping
+calculation and the compliance-centre transformation are described in
+\mbox{\Cref{subsec:implementation_setup_phase}}, and the tested displacement
+components are listed in \mbox{Table~\ref{tab:experimental_test_cases}} and
+\mbox{\Cref{app:supporting_contact_checks}}.
 
-The implementation never forms \(M(q)^{-1}\). An \abbr{LDLT} factorisation of
-\(M(q)\) solves \(M(q)Y(q)=J^\top(q)\), and \(\Lambda_0(q)\) is then evaluated
-as \((J(q)Y(q)+\varepsilon I_6)^{-1}\); the regularisation term
-\(\varepsilon\) keeps that inversion conditioned.
-
-Inertia-scaled damping is enabled for approach, set-up, the configured grinding
-phase, and the pause gate. The approach factor is \(\zeta=1.9\), while set-up and grinding use
-\(\zeta=1.0\). The pause gate fits separate translational and rotational
-factors to its two configured damping targets. The configured maximum
-coefficient \texttt{auto\_damping\_max} is \(400\). The configured values in
-\Cref{tab:active_phase_gains} provide fallback damping for the phases using
-inertia-scaled damping. With
-\texttt{auto\_damping\_min\_from\_manual} left at zero, those manual values act
-only as that fallback and impose no lower bound on a calculated coefficient.
-
-Standard Cartesian pose hold instead used its configured matrices directly.
-All twelve reported null-space runs recorded
-\texttt{hold\_auto\_damping=0}, with
-\(D_p=50I_3\,\mathrm{N\,s/m}\) and
-\(D_R=8I_3\,\mathrm{N\,m\,s/rad}\). The hold-damping values in
-\Cref{tab:active_phase_gains} are therefore active values rather than
-fallbacks.
-
-For set-up, the source damping blocks are calculated from TCP task inertia
-\(\Lambda\) and then shifted to the selected \abbr{CoC} \(p_c\). This
-preserves symmetry and positive
-semidefiniteness. The factor \(\zeta=1\) is the directional coefficient used by
-the online damping calculation.
-
-The coupled \(6\times6\) law is enabled only during set-up and only for
-conditions with a displaced \abbr{CoC}. The surface-fixed conditions of
-the definition-frame check in \mbox{\Cref{sec:supporting_definition_frame}}
-used a displacement defined in the calibrated surface frame.
-The other shifted conditions used tool-fixed displacements configured in
-end-effector coordinates. For the surface-fixed definition,
-\[
-r_{c,0}=R_{\mathrm{surface}}\,r_{c,S},
-\qquad
-r_{c,S}=[\,r_{c,t_1},\ r_{c,t_2},\ r_{c,n}\,]^\top .
-\]
-The tested definitions and components are listed in
-Table~\ref{tab:experimental_test_cases} and
-\Cref{app:supporting_contact_checks}. A
-tool-fixed lever remains constant in end-effector coordinates and rotates in
-the base frame with the end effector; a surface-fixed lever remains constant
-in surface coordinates. The controller transforms the selected definition to
-base coordinates during each set-up cycle.
 
 \section{Null-Space and Operating Parameters}
 \ReviewMark{green}{The selected mode, gains, probe settings, logging capacity,

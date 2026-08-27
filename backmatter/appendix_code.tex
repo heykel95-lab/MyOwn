@@ -3,13 +3,11 @@
 \ReviewMark{green}{The listings are abridged to the mathematical paths used by
 the thesis and connect each important equation to an implementation excerpt.}
 
-This appendix retains the two source paths that are non-obvious from the
-controller equations: the compliance-centre point shift and the final torque
-assembly. The excerpts use
-fixed-size Eigen aliases such as \texttt{Vec3}, \texttt{Vec7}, \texttt{Mat3},
-\texttt{Mat6x6}, and \texttt{Mat6x7}. The identifier
-\texttt{R\_base\_surface} denotes the surface-frame orientation used in the
-chapters.
+The following listings show the implementation of the compliance-centre
+transformation and the final torque assembly. They use fixed-size Eigen aliases
+such as \texttt{Vec3}, \texttt{Vec7}, \texttt{Mat3}, \texttt{Mat6x6} and
+\texttt{Mat6x7}, and \texttt{R\_base\_surface} denotes the surface-frame
+orientation used in the chapters.
 
 \iffalse
 \section{Surface Frame and Spatial Gains}
@@ -148,12 +146,13 @@ return Eigen::AngleAxisd(twist, tool_axis_target) * R_axis;
 \section{Geometric Clearance and Phase Targets}
 \label{app:desired_motion}
 
-The leading point, edge, or face of the rectangular tool is selected along the
-descent direction. The transition into set-up is based on the exact
-most-leading corner height; the average of corners tied within
-\(0.1\,\mathrm{mm}\) supplies the controlled contact point and projected reference.
-The transition depends on this height; the external-force estimate does not
-enter the decision. The following excerpt is abridged from the phase switch.
+The selected tool point is constructed from the rectangular tool-face corners
+closest to the surface along the descent direction. The transition into set-up
+is based on the minimum of the four corner clearances. Corners whose clearances
+differ from that minimum by no more than \(0.1\,\mathrm{mm}\) are averaged to
+form the selected tool point and its projected reference. The external-force
+estimate does not enter the transition decision. The following excerpt is
+abridged from the phase switch.
 
 \begin{lstlisting}[style=cppstyle, language=C++, caption={Phase-dependent tool-feature targets (abridged).}, label={lst:app_desired_motion}]
 const Vec3 descend_direction = -R_base_surface.col(2);
@@ -244,8 +243,8 @@ harder press. Latching removes that dependence on waiting time.
 \label{app:center_compliance}
 
 The lever \(r_c=p_c-p_{\mathrm{TCP}}\) points from the TCP to the selected
-centre of compliance, and the implementation uses the same convention. The
-same congruence is applied to stiffness and damping.
+centre of compliance, and the same congruence is applied to stiffness and
+damping.
 
 \begin{lstlisting}[style=cppstyle, language=C++, caption={TCP-to-compliance-centre adjoint and congruence transform.}, label={lst:app_compliance_adjoint}]
 Mat3 skewMatrix(const Vec3& v) {
@@ -271,11 +270,8 @@ Mat6x6 shiftGainToTcp(
 }
 \end{lstlisting}
 
-The wrench routine selects between the decoupled and the coupled law and
-constructs the lever. The centre can be defined relative to the TCP in
-end-effector coordinates, or the lever can be given directly in surface
-coordinates. Both definitions store \(r_c\) itself, so the two branches differ
-only in the frame it is expressed in.
+Both configured definitions store \(r_c\) itself, so the two branches of the
+wrench routine differ only in the frame it is expressed in.
 
 \begin{lstlisting}[style=cppstyle, language=C++, caption={Selection of the decoupled or coupled spring wrench (abridged).}, label={lst:app_spring_wrench}]
 const bool coupled =
@@ -466,9 +462,8 @@ projected joint velocity \(\dot q_{\mathrm{null}}\) into the recorded data.
 \section{Core Control Callback}
 \label{app:callback_core}
 
-The following excerpt shows the state and model quantities acquired at the
-start of each torque callback. The remaining listing then shows how these
-quantities enter the torque command.
+The two listings below show the state and model quantities acquired at the
+start of each torque callback and how they enter the torque command.
 
 \begin{lstlisting}[style=cppstyle, language=C++, caption={Robot-state and model quantities acquired by the torque callback.}, label={lst:callback_state_acquisition}]
 Map<const Vec7> q_current(state.q.data());
@@ -520,7 +515,5 @@ const Vec7 tau_cmd =
     tau_task + tau_nullspace + disturbance.tau + coriolis;
 \end{lstlisting}
 
-The null-space function is called in every non-manual phase. Manual guidance
-uses its separate Coriolis-plus-joint-damping branch. The disturbance term is
-non-zero only in the Cartesian pose-hold study of
-\Cref{sec:nullspace_hold_study}; it is zero in every surface-contact run.
+The disturbance term is non-zero only in the Cartesian pose-hold study of
+\Cref{sec:nullspace_hold_study} and is zero in every surface-contact run.

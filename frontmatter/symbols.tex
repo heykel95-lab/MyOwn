@@ -36,6 +36,7 @@ column makes the mixed translational and rotational quantities traceable.}
 \symgroup{Pose and Error}{
 \symrow{$p_{\mathrm{EE}},\ p_{\mathrm{TCP}}$}{End-effector / tool-centre-point position; $p_{\mathrm{TCP}}=p_{\mathrm{EE}}$ in the implemented model}{[m]}
 \symrow{$R_{\mathrm{EE}},\ T_{\mathrm{EE}}$}{End-effector orientation / transformation}{[-]}
+\symrow{$R_{\mathrm{EE,clearance}}$, $p_{\mathrm{TCP,clearance}}$}{End-effector orientation captured at the clearance transition and held as the set-up orientation reference / TCP position captured at the same instant}{[-], [m]}
 \symrow{$R_{\mathrm{set,start}},\ R_{\mathrm{set,end}}$}{Measured end-effector orientations at the beginning / end of set-up}{[-]}
 \symrow{$R_{\mathrm{set}}$}{Current-to-reference relative rotation over set-up, $R_{\mathrm{set,start}}R_{\mathrm{set,end}}^\top$}{[-]}
 \symrow{$u_{\mathrm{set}},\ \phi_{\mathrm{set}}$}{Axis / angle of $R_{\mathrm{set}}$}{[-], [rad]}
@@ -73,8 +74,8 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$n_s$}{Calibrated surface-plane normal copied into the controller and used in the evaluation}{[-]}
 \symrow{$t_1,\ t_2$}{Surface tangent directions (unit)}{[-]}
 \symrow{$R_{\mathrm{surface}}$}{Surface-frame orientation $[\,t_1\;\;t_2\;\;n_s\,]$ in the base frame}{[-]}
-\symrow{$n_{\mathrm{Tool,EE}},\ n_{\mathrm{Tool},0},\ n_d$}{Tool-face normal expressed in the EE frame, fixed by calibration / the same direction expressed in the base frame, $n_{\mathrm{Tool},0}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}$ / signed controller target direction}{[-]}
-\symrow{$\theta_{\mathrm{tilt}}$}{Commanded orientation-offset rotation vector, $\theta_{\mathrm{tilt}}=\theta_{t_1}t_1+\theta_{t_2}t_2$}{[rad]}
+\symrow{$n_{\mathrm{Tool,EE}},\ n_{\mathrm{Tool},0},\ n_d$}{Tool-face normal expressed in the EE frame, fixed by calibration / the same direction expressed in the base frame, $n_{\mathrm{Tool},0}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}$ / desired tool-normal direction used by the controller}{[-]}
+\symrow{$\theta_{\mathrm{cmd}},\ u_{\mathrm{cmd}},\ R_{\mathrm{cmd}}$}{Commanded orientation-offset rotation vector, $\theta_{\mathrm{cmd}}=\theta_{t_1}t_1+\theta_{t_2}t_2$ / its unit rotation axis / the rotation matrix it produces through $R(u,\phi)$}{[rad], [-], [-]}
 \symrow{$p_s$}{Point on the configured surface}{[m]}
 \symrow{$e_{x_0},\ e_{y_0},\ e_{z_0}$}{Unit vectors along the base-frame axes $x_0$, $y_0$ and $z_0$}{[-]}
 \symrow{$p_c$}{Centre of compliance}{[m]}
@@ -83,6 +84,13 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$r_{c,t_1},\ r_{c,t_2},\ r_{c,n}$}{Surface-frame components of $r_c$ along $t_1$, $t_2$ and $n_s$}{[m]}
 \symrow{$r_{\mathrm{Tool,EE}},\ p_{\mathrm{Tool}}$}{Selected tool-point offset from the TCP, expressed in the EE frame / selected tool-point position in the base frame}{[m]}
 \symrow{$r_{\mathrm{Tool}}$}{Selected tool-point offset from the TCP, $p_{\mathrm{Tool}}-p_{\mathrm{TCP}}$}{[m]}
+\symrow{$p_{\mathrm{Tool,clearance}}$, $p_{\mathrm{Tool},0}$, $p_{\mathrm{Tool},d}$}{Selected tool point at the clearance transition / its projection onto the calibrated surface / its desired set-up position}{[m]}
+\symrow{$s_{\mathrm{app}},\ v_{\mathrm{app}},\ s_{\mathrm{app,max}}$}{Commanded approach travel of the TCP along $-n_s$ / its configured rate / its configured maximum}{[m], [m/s], [m]}
+\symrow{$p_{\mathrm{TCP,start}}$, $t_{\mathrm{app},0}$, $t_{\mathrm{app,max}}$}{TCP position captured when surface approach begins / that instant / the instant at which $s_{\mathrm{app}}$ reaches $s_{\mathrm{app,max}}$}{[m], [s], [s]}
+\symrow{$h_i$}{Signed clearance of tool-face corner $i$ from the calibrated surface}{[m]}
+\symrow{$h_{\mathrm{Tool}}$}{Minimum clearance of the rectangular tool face from the calibrated surface, $h_{\mathrm{Tool}}=\min_i h_i$}{[m]}
+\symrow{$h_{\mathrm{clearance}}$}{Configured tool clearance at which the transition from approach to set-up occurs}{[m]}
+\symrow{$\varepsilon_{\mathrm{sel}}$}{Tool-point selection tolerance}{[m]}
 \symrow{$s_{\mathrm{set}},\ v_{\mathrm{set}},\ s_{\mathrm{set,max}}$}{Commanded set-up press coordinate of the selected tool point along $-n_s$ / its configured rate / its configured endpoint}{[m], [m/s], [m]}
 \symrow{$t_{\mathrm{set},0},\ t_{\mathrm{set,max}}$}{Instant of the clearance transition / instant at which $s_{\mathrm{set}}$ reaches $s_{\mathrm{set,max}}$}{[s], [s]}
 \symrow{$m_R$}{Rotational-impedance contribution to the commanded moment, $K_Re_R-D_R\omega_{\mathrm{EE}}$, present at every lever setting}{[N\,m]}

@@ -169,13 +169,6 @@ from this list rather than annotated, so everything here is still open.
 
 - **4** — keep the three moment concepts separate throughout, and never add
   \(m_{r_T}\) to \(m_0\) or \(m_{\mathrm{cpl},K}\). Spot-check rather than rewrite.
-- **48** — Appendix C must state the two configuration branches
-  (`compliance_center_offset_ee` in end-effector axes,
-  `compliance_lever_surface` in surface axes) rather than calling both "centre
-  displacement". Both now define \(r_c=p_c-p_{\mathrm{TCP}}\), so the wording
-  no longer has a sign difference to explain, only a frame difference. The rule
-  is already recorded in `THESIS_WRITING_GUIDE.md`; only the appendix wording
-  remains.
 - **57** — \(\tau_{\mathrm{cmd}}\) carries two definitions in Section 2.4.3.
   Reserve it for the implemented command and rename the generic form.
 - **59** — Introduction citation-support audit. Check each literature-supported
@@ -191,9 +184,10 @@ from this list rather than annotated, so everything here is still open.
 - **A.4** — Figure 3.1 still shows `spring wrench`, `tau_task` and `c(q,qdot)`.
   Correct to the Cartesian impedance wrench, \(\tau_{\mathrm{cart}}=J^\top F\)
   and \(\tau_c\). It is a TikZ source and needs no data.
-- **22, 23** — Figure 4.1 labels and caption, and the Figure 3.5 set-up
-  symbols \(p_{\mathrm{Tool},0}\), \(p_{\mathrm{Tool},d}\),
-  \(s_{\mathrm{set}}\), \(R_{\mathrm{clr}}\). Item 21, the Figure 4.2
+- **22** — Figure 4.1 labels and caption. Item 23, the set-up figure, is done:
+  it now carries \(p_{\mathrm{Tool,clearance}}\), \(p_{\mathrm{Tool},0}\),
+  \(s_{\mathrm{set}}\), \(p_d\) and the TCP with its rigid offset. Item 21,
+  the Figure 4.2
   calibration notation, is done: the figure now runs one band per calibration
   and its symbols match Section 4.2, and all four set-up symbols are in the
   symbol list.
@@ -291,14 +285,11 @@ claim at the sigma row that those columns are "recorded in every mode,
 including when no torque is commanded". Check both against a contact-run
 header before rewriting the table.
 
-**`backmatter/appendix_controller_parameters.tex` line 162** gives
-`pause_before_set_up`. The key is `pause_before_setup`.
-
 Nothing here is blocked. The listings carry no `\Revised{}` wrappers, so no
 frozen text is in the way, but both appendices carry green assessment boxes
 and neither chapter has been declared revised — confirm before editing.
 
-## Figure 3.4 does not follow FIGURE_STYLE
+## The set-up-reference figure does not follow FIGURE_STYLE
 
 `figures/setup_reference.tex` draws in grey, uses a `densely dotted` projection
 line, and opens its node text in lower case — `surface`, `selected point at
@@ -328,19 +319,17 @@ on 2026-08-25 to the four pgfplots figures and to the five plots written by
 `make_coc_figures.py` and `plot_coc_case.py`, which were regenerated and
 installed. Three things remain.
 
-- **Redesign the appendix results tables**, which is where the author chose to
-  keep them on 2026-08-25 rather than restoring them to Chapter 5. Every table
-  in `backmatter/appendix_additional_plots.tex` should answer, without the
-  reader going back to Chapter 4: what was varied, what was held fixed, what
-  the reference condition is, and what was measured. Concretely: name the
-  varied parameter in its column heading rather than `Varied entry`, mark the
-  reference condition in the table itself (`Case-A reference`, or the
-  TCP-centred column), and give the measured response as
-  `Measured Set-Up Rotation, \(\gamma_{t_i}\) [°]`. Precede each table
-  with one prose sentence naming varied, fixed, reference and response. The
-  Case-D table additionally drops the \(\theta_{\mathrm{dev,before}}\)
-  column and marks its TCP column, and the offset-magnitude table gains a
-  TCP-versus-selected-CoC comparison column.
+- **The appendix results tables are done, and the caption half of that item is
+  superseded.** The column headings, the marked reference conditions, the
+  dropped \(\theta_{\mathrm{dev,before}}\) column and the offset-magnitude
+  comparison column are all in place, and the last generic heading,
+  `Varied Entry`, became `Varied Translational Entry` on 2026-08-27. The part of
+  the item that asked for a prose sentence naming varied, fixed, reference and
+  response before every table **is withdrawn**: the author's appendix pass of
+  2026-08-27 requires short noun-phrase captions and only the minimum
+  observation, and the tables already show the reference condition in a column
+  or a bold heading. The replacement rule is under *The appendices: document and
+  support* in `THESIS_WRITING_GUIDE.md`.
 
 ## Deferred figure work from the narrative reviews
 
@@ -374,10 +363,6 @@ values already in Section 5.2. Both held on 2026-08-25.
   `usetex` is off in `figure_style.py`, and a regenerated file differs from its
   installed copy only in the PDF creation date. Check the result at printed
   width before installing it.
-- **Figure 3.3 is the densest main-text diagram.** The suggestion is to let the
-  central path dominate — orient, approach, set-up, pre-grinding gate,
-  grinding — and to collect pose hold, set-up hold and manual guidance into one
-  side box labelled as operator modes. It is a TikZ source and needs no data.
 - **Figures 3.1 and 2.2 are small for what they carry.** Figure 3.1 would take
   about ten to fifteen per cent more width if the page allows, and Figure 2.2
   draws \(r_c\), \(f\) and \(m\) smaller than their importance to the argument.
@@ -398,7 +383,7 @@ rewrite. All six are done, and the rulings behind them are in
 **One decision was made and then reversed, and the reversal stands.** The
 direction-comparison axis was briefly shortened to `Commanded Rotation
 Direction` on the grounds that its ticks are categorical, then restored to
-`Commanded Rotation Direction, \(\theta_{\mathrm{tilt}}\) [°]` the same day:
+`Commanded Rotation Direction, \(\theta_{\mathrm{cmd}}\) [°]` the same day:
 uniformity of the `Descriptive Name, Symbol [Unit]` format across every axis
 matters more than the categorical exception. `FIGURE_STYLE.md` carries the
 reasoning on both sides so it is not re-argued.
@@ -407,12 +392,12 @@ reasoning on both sides so it is not re-argued.
 
 `FIGURE_STYLE.md` now requires every line of node text in a drawn diagram to
 begin with a capital, with lines that start with a symbol left as notation. The
-rule was applied to `calibration_flow` when it was set, and the remaining TikZ
-diagrams have not been through it: `controller_block_diagram` (`robot state`,
-`phase machine`, `model`), `setup_schematic` (`compliance`), and any box text in
-`phase_flow_chart`, `tool_transfer_flow`, `reference_frames`,
-`compliance_lever_moment`, `moment_bookkeeping`,
-`face_feature_selection`, `tool_face_plan_view` and `case_c_direction_rule`.
+rule was applied to `calibration_flow` and the revised `phase_flow_chart`. The
+remaining TikZ diagrams have not been through it: `controller_block_diagram`
+(`robot state`, `phase machine`, `model`), `setup_schematic` (`compliance`),
+and any box text in `tool_transfer_flow`, `reference_frames`,
+`compliance_lever_moment`, `moment_bookkeeping`, `tool_face_plan_view` and
+`case_c_direction_rule`.
 
 Capitalising a line widens its box, which can close the gap its arrows need —
 that happened in `calibration_flow` and cost a column-spacing adjustment. Do
@@ -428,9 +413,9 @@ collided with each other. They now carry a `scale=` inside the picture and are
 included without `\resizebox`, so the labels keep the size they were declared
 at.
 
-The same wrapper is still on `controller_block_diagram`, `phase_flow_chart`,
-`tool_transfer_flow`, `setup_schematic`, `calibration_flow`, and the two
-appendix parameter tables. A diagram that is *shrunk* by the wrapper has the
+The same wrapper is still on `controller_block_diagram`, `tool_transfer_flow`,
+`setup_schematic`, `calibration_flow`, and the two appendix parameter tables.
+A diagram that is *shrunk* by the wrapper has the
 opposite fault and is equally wrong. Each needs looking at in the compiled
 document, and the scale factor moving inside the picture wherever the label
 size is off. This is judged by eye on the page, not from the source.
@@ -507,14 +492,8 @@ that pass:
 - **The null-space figure gained a third panel** carrying the net redundant
   displacement of all four settings, so Section 5.2 onward repaginated again
   and the document is 128 pages. The page was rendered and read at 100 dpi
-  when the panel was added; the rest of the moved pages were not.
-- **The Chapter 2, 3 and 5 revisions of 2026-08-26 repaginated again**, and the
-  document is now 125 pages. In Section 3.4.2 the lead-in sentence ends one
-  page on its colon while the set-up press-coordinate equation opens the next.
-  The heading still has its paragraph under it, so this is not a stranded
-  heading, but it should be looked at in the final page-by-page pass, after the
-  figure work has stopped moving the breaks.
-
+  when the panel was added; the rest of the moved pages were not. After the appendix
+compression of 2026-08-27 the document is 126 pages.
 All three drivers build clean here with bibtex
 and three passes each, no undefined references or citations and no overfull
 boxes; `Review_Draft.tex` was rebuilt on 2026-08-25 and its soul spans still
@@ -524,6 +503,93 @@ reconstruct.
 `compat=1.18` the sources set; the file was restored afterwards and the plots
 were therefore not rendered at the compat level the author's MiKTeX uses.
 Rebuild there before judging any figure.
+
+## What the Abstract-to-Conclusion consistency pass checked, and what it found
+
+Run on 2026-08-27 over the whole document. Nine checks were made and the
+findings are listed so the pass is not repeated blind.
+
+**Clean, and needing no change.** The clearance family \(h_i\),
+\(h_{\mathrm{Tool}}\), \(h_{\mathrm{clearance}}\) and
+\(\varepsilon_{\mathrm{sel}}\) is used consistently and carries four
+symbol-list rows; no withdrawn spelling survives anywhere
+(`\varepsilon_{\mathrm{tie}}`, `\ell_i`, `h_{\mathrm{face}}`,
+`n_{\mathrm{flat}}`, `\rho_c`, `R_{\mathrm{task}}`, `f_K`, `d_c`, `clr`,
+`vertex` all return zero). \(p_{\mathrm{Tool}}\), \(p_{\mathrm{TCP}}\)
+and \(p_c\) are never crossed, and nothing says the compliance centre moves
+the force. The external wrench is `model-estimated` at all three of its
+mentions and is never called measured. Grinding reads as implemented but not
+entered in Chapters 1, 3, 4, 5 and 6. The run counts reconcile: \(37+18=55\)
+settings, \(111+54=165\) runs, \(4+3+6+5=18\) supporting settings and
+\(12+9+18+15=54\) supporting runs, plus twelve pose-hold runs for \(177\).
+The three `longtable` references all use literal `Table~\ref`, and no `\ref`
+key in the compiled document is undefined. The only digit in the summaries is
+`7-achsigen`, which names the degrees of freedom rather than measuring
+anything.
+
+**Four defects were found and fixed.** Chapter 3 pointed the reader at
+Section 3.3 for the definition of \(\tau_{\mathrm{null}}\), which is
+Cartesian pose hold; it now points at Section 2.8.4, where the complete torque
+is derived. Chapter 5's opening named the primary quantity twice, three lines
+apart, and defined it as the `current-to-reference relative rotation formed
+from the measured orientations at the beginning and end of set-up` — both the
+christened convention and the second measured pose that the guide rules
+against. Chapter 4 said `the measured alignment rotation`. Appendix C wrote the
+selection tolerance as \(10^{-4}\,\mathrm{m}\) where its home in Chapter 4
+writes \(0.1\,\mathrm{mm}\). All four are corrected and the rulings are in
+`THESIS_WRITING_GUIDE.md`.
+
+**One thing was deliberately left.** `Measured Set-Up Rotation` remains the
+Chapter 5 table heading and `signed set-up rotation` remains in the Appendix-D
+sentences that report a value, while `signed set-up response` is the name used
+wherever the quantity is defined or introduced. That split is what the guide
+prescribes; it is recorded here so a later pass does not read it as an
+inconsistency and unify it in the wrong direction.
+
+## Two things the appendix compression left open
+
+The appendix pass of 2026-08-27 cut Appendix A to its listings, deleted
+Appendix B's `Evaluation Quantities` section, replaced Appendix C's damping and
+compliance-centre prose with one table, and reduced each Appendix D section to
+its table, figure and equations plus one observation. The rulings are in
+`THESIS_WRITING_GUIDE.md` under *The appendices: document and support*. Two
+items were seen during that pass and not fixed.
+
+- **Figure D.6's panel (b) has a clipped \(y\)-axis label.** The compiled page
+  reads `Reduction in Pose-Based Alignment Errc`, cut mid-word at the top of
+  the axis. It is in `figures/MAIN_DQ_metric_comparison.pdf`, a generated file,
+  and predates this pass. The generator is `compare_angle_metrics.py`; the
+  label needs either more figure height or a shorter string, and
+  `FIGURE_STYLE.md` governs which. Check the regenerated file against the
+  installed one before replacing it, as the font-set note further down this file
+  records.
+- **The manual-guidance rows in Appendix C were left in.** Under the principle
+  that Appendix C holds only what reproduces the reported runs, the
+  `Manual guidance` gain row and the `manual_guidance_damping` operating row
+  are candidates for removal: every reported run started from the configured
+  initial joint posture rather than from a guided pose. They were kept because
+  whether manual guidance was used to seat the tool before a run could not be
+  verified from this repository, and the author did not list them among the
+  removals. Decide and remove or keep in one step.
+- **Appendix A does not attribute its listings.** *Originality* in
+  `THESIS_VOICE.md` requires an appendix listing that descends from the
+  libfranka examples to say so, and `libfrankaCartesianExample` is cited only in
+  Section 2.4.3. Decide whether the compliance-shift and callback excerpts
+  descend from that example before adding a clause; if they do, one sentence in
+  the chapter lead is the whole fix.
+
+## The phase figure carries annotations the Chapter 3 rules now forbid
+
+`THESIS_WRITING_GUIDE.md` states under *Chapter 3: the settled structure* that
+the phase figure's boxed nodes are tool orientation, surface approach, contact
+set-up and grinding, with the unboxed clearance transition between approach and
+set-up, and that operator gates, hold modes and gain-group annotations do not
+appear in it. `figures/phase_flow_chart.tex` still draws a `Pre-grinding hold`
+box, an `Operator continuation` transition condition, and the two gain-group
+brackets on the right. Either the figure or the rule is out of date; the rule
+was written last, so the figure is the likely fix, but removing the gain groups
+loses the only place the two gain sets are shown against the phases they belong
+to. Settle which before editing.
 
 ## Before the next prose session
 
@@ -598,3 +664,40 @@ concession where the logic already carried them, but did not touch the
 consequence links themselves. Reducing them is what would most improve the
 monotony the author described; it means rewriting on the order of a hundred
 sentences, so it was not started.
+
+### Decide whether the leading-feature cases carry worked numbers
+
+Section 3.2.3 now states the corner-clearance criterion
+\(h_i-h_{\mathrm{Tool}}\le\varepsilon_{\mathrm{sel}}\), the averaging, and the
+principal one-, two- and four-corner outcomes, with
+\Cref{fig:leading_feature_cases} drawing one panel per outcome. It does not
+claim that these cases are exhaustive, because the non-zero tolerance can also
+admit a three-corner group. The worked projection values that came with the
+request — four corner clearances per case, such as
+\(15.0\), \(13.0\), \(10.0\) and \(8.0\,\mathrm{mm}\) for the leading-corner
+case — were **not** written in, because no such clearances were recorded and
+*State the levels actually tested, never an illustrative sweep* rules against a
+hypothetical set of numbers in the running text.
+
+If the author wants them anyway, the defensible routes are to compute them from
+the calibrated face geometry at a stated commanded orientation offset, which
+makes them derived rather than invented, or to place them in the code appendix
+as a worked example labelled as such. Blocked on that decision.
+
+### The direction figure was regenerated on this machine, and its embedded font changed
+
+`figures/MAIN_H_direction.pdf` carried the axis symbol in its glyphs, so the
+\(\theta_{\mathrm{tilt}}\to\theta_{\mathrm{cmd}}\) rename could not be made in
+the `.tex` alone. `make_coc_figures.py` needs no data for that figure — its four
+pairs of values are written into the script — so the label was corrected at
+line 199 and the figure regenerated here.
+
+The extracted text of the new file matches the old one apart from the symbol,
+and the rendered bars, ticks, legend and axes are unchanged. **One thing does
+differ**: the embedded font set moved from `LMRoman7-Regular` to
+`LMRoman8-Regular`, because this machine's matplotlib resolves a different
+optical size for the small text. `FIGURE_STYLE.md` says a regenerated figure
+differing in anything but the intended label is a signal to stop, so the
+decision to install it anyway is recorded here rather than left silent. The
+previous binary was kept only in this session's scratch directory; regenerate
+from the script on the original machine if the older font set is wanted back.

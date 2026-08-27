@@ -1,30 +1,50 @@
-% Set-up reference generation: the commanded tool point advances past
-% the surface, so the endpoint is a spring reference and not a commanded travel.
+% Set-up reference generation, seen along a surface tangent with the tool face
+% parallel to the surface. The face is flat here, so the selected tool point is
+% the face centre and lies on the end-effector axis below the TCP. The
+% commanded point advances past the surface, so the endpoint is a spring
+% reference rather than an expected travel.
+% Blue carries the selected-tool-point chain, black the TCP quantities.
+% Uses only tikz + arrows.meta, which config/packages.tex loads.
 \begin{tikzpicture}[
     scale=1.55,
     font=\footnotesize,
-    tool/.style={draw=gray!70!black, fill=white},
-    cmd/.style={-{Latex[length=1.9mm]}, gray!55!black, thick},
+    tool/.style={draw=black, thick},
+    off/.style={draw=black},
+    cmd/.style={-{Latex[length=1.9mm]}, blue, thick},
+    proj/.style={draw=blue, densely dotted},
     lbl/.style={font=\footnotesize, inner sep=1.8pt},
   ]
 
   % ---- surface
-  \draw[gray!70!black] (0,0) -- (7.0,0);
-  \node[lbl, right] at (7.0,0) {surface};
+  \draw[black] (0.6,0) -- (4.6,0);
+  \node[lbl, right] at (4.6,0) {Surface};
 
-  % ---- selected point at the clearance transition, and its projection
-  \draw[tool] (1.1,1.05) rectangle (3.3,1.5);
-  \fill (1.5,1.05) circle (1.6pt);
-  \node[lbl, left] at (1.35,0.72) {selected point at clearance};
-  \draw[gray!55, densely dotted] (1.5,1.05) -- (1.5,0);
-  \fill (1.5,0) circle (1.6pt);
-  \node[lbl, below left] at (1.42,-0.12) {$p_{\mathrm{Tool},0}$};
+  % ---- tool face at the clearance transition, drawn parallel to the surface
+  \draw[tool] (1.4,1.05) rectangle (3.6,1.5);
+
+  % ---- TCP, and the rigid offset to the selected tool point
+  \fill (2.5,2.05) circle (1.6pt);
+  \node[lbl, right] at (2.62,2.05) {$p_{\mathrm{TCP,clearance}}$};
+  \draw[off] (2.5,2.05) -- (2.5,1.05);
+  \node[lbl, left] at (2.38,1.78) {$R_{\mathrm{EE,clearance}}r_{\mathrm{Tool,EE}}$};
+
+  % ---- the selected tool point is the face centre while the face is flat
+  \fill[blue] (2.5,1.05) circle (1.7pt);
+  \node[lbl, left, blue] at (2.38,0.84) {$p_{\mathrm{Tool,clearance}}$};
+
+  % ---- its projection onto the calibrated surface
+  \draw[proj] (2.5,1.05) -- (2.5,0);
+  \fill[blue] (2.5,0) circle (1.7pt);
+  \node[lbl, above left, blue] at (2.40,0.04) {$p_{\mathrm{Tool},0}$};
 
   % ---- commanded motion of that point, continuing past the surface
-  \draw[cmd] (1.5,0) -- (1.5,-1.35);
-  \node[lbl, right] at (1.64,-0.72) {$s_{\mathrm{set}}(t)\,(-n_s)$};
-  \fill (1.5,-1.35) circle (1.6pt);
-  \node[lbl, below] at (1.5,-1.5) {commanded endpoint};
+  \draw[cmd] (2.5,0) -- (2.5,-1.35);
+  \node[lbl, right, blue] at (2.64,-0.70) {$s_{\mathrm{set}}(t)\,(-n_s)$};
+  \fill[blue] (2.5,-1.35) circle (1.7pt);
+  \node[lbl, below, blue] at (2.5,-1.5) {Commanded endpoint};
 
+  % ---- the TCP target that realises it, one rigid offset above
+  \fill (2.5,-0.35) circle (1.6pt);
+  \node[lbl, left] at (2.38,-0.35) {$p_d(t)$};
 
 \end{tikzpicture}

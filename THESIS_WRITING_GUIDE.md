@@ -81,6 +81,20 @@ carry the sentence:
 \(J(q)\) has full row rank, the null space is one-dimensional` is normal
 technical prose and stays.
 
+**The construction survives in four more places than the table above lists**,
+and the 2026-08-27 consistency pass found them by grepping for a sentence- or
+clause-initial `What`, `Whether` or `Which` followed by a lower-case word.
+What it caught, and what replaced it: `what the phase transition changes is the
+generated Cartesian reference` became `the phase transition changes the
+generated Cartesian reference`; `Which definition holds a displacement is
+examined experimentally in …` became `The two definitions are compared
+experimentally in …`; `What varies inside this configuration is the secondary
+torque` became `Only the secondary torque varies inside this configuration`;
+and `Whether the commanded pose was in fact retained is consequently checked by
+\Cref{…} rather than assumed` became `\Cref{…} therefore checks that the
+commanded pose was retained rather than assuming it`. Run that grep over the
+chapters and the appendices before submitting; the expected count is zero.
+
 State the investigated dependencies directly. For example:
 
 > The experimental study evaluates the influence of the paired surface-tangent
@@ -516,17 +530,19 @@ circulation, the settled choices are:
   their spelling for the same reason the `automatic` ban exempts them: they
   reach no reader.
 
-  Chapter 3's section over the surface frame, the tool orientation and the
-  tool geometry is **Surface-Relative Geometry**, not `Surface-Relative Task
-  Representation`, which named those three constructions more abstractly than
-  they are.
+  Chapter 3's subsection over the surface frame and the static tool geometry
+  is **Surface and Tool Reference**. The former
+  `Surface-Relative Geometry and Tool Representation` placed the selected-point
+  algorithm beside the static rectangle before the phase sequence had given
+  that algorithm a purpose.
 
-  **The generic uses of `task` were thinned on 2026-08-26, selectively.** What
-  survives is what genuinely names the controlled objective or a standard
-  quantity: `the Cartesian task`, `the primary task`, `the task Jacobian`,
-  `task-producing singular values`, `task-related component`, `the investigated
-  task`, and an `assembly task` or `insertion task` credited to a cited source.
-  What went, and what replaced it:
+  **The generic uses of `task` were thinned on 2026-08-26 and again on
+  2026-08-27, selectively.** What survives is only what names a standard
+  quantity of redundancy resolution or is credited to a cited source:
+  `the task Jacobian`, `\(\Lambda_{\mathrm{task}}\)` and `task-inertia`,
+  `task-producing singular values` and `task mappings`, `task-related
+  component` and `first-order task component`, and an `assembly task` or
+  `insertion task` attributed to a source. What went, and what replaced it:
 
   | Was | Now |
   |---|---|
@@ -534,6 +550,33 @@ circulation, the settled choices are:
   | the intended surface task | the intended surface-contact sequence |
   | This task-level result | This experimental result |
   | Cartesian task retention, task-retention criterion | Cartesian position retention, position-retention criterion |
+  | the investigated task | the investigated contact configuration |
+  | without changing the commanded Cartesian task | without changing the commanded Cartesian motion |
+  | the Cartesian task stays primary | neither contributes a first-order Cartesian wrench |
+  | the primary Cartesian pose-hold task | the primary Cartesian pose-hold objective |
+  | For the surface-contact task | For surface contact |
+
+  **`the investigated task` and `the Cartesian task` were permitted by the
+  earlier version of this rule and are now withdrawn**, written here as literal
+  strings so a rename cannot revive them. `the investigated task` was the bound
+  on the direction-independence claim in the Abstract, the Kurzfassung
+  (`die untersuchte Aufgabe`), Chapter 1 and Chapter 6, and it named the least
+  checkable thing in a sentence whose whole job is to say what the claim is
+  limited to: one robot, one tool, one calibrated plane, one press trajectory.
+  `the investigated contact configuration` names that, and matches
+  `in the investigated configuration` under *Calibrate the certainty to the
+  evidence* in [THESIS_VOICE.md](THESIS_VOICE.md). `the Cartesian task` went
+  because in both places it stood for something the thesis can state exactly —
+  the commanded Cartesian motion in Chapter 1, and the absence of a first-order
+  Cartesian wrench in Chapter 5, which is what the null-space projector
+  actually guarantees.
+
+  **Do not run this as a bulk substitution.** Every surviving hit above is a
+  standard term or a citation, and replacing one of those with `configuration`
+  or `motion` would trade a term of art for a vaguer synonym, which
+  *What must never be done to sound less generated* rules against. The check is
+  per occurrence: if the word names the six singular directions of \(J\), the
+  operational-space inertia, or a cited author's application, it stays.
 
   **`Cartesian position retention` is the accurate name, not `pose
   retention`.** The criterion is
@@ -879,6 +922,97 @@ are axis specific — the \(t_1\)-against-\(t_2\) asymmetry, the opposite
 assisting lever directions — and that sentence is what bounds them. It is a
 scientific commitment, not filler, and it is not dropped when the section is
 shortened.
+
+**The tool clearance is defined from physical corner positions.** For each
+tool-face corner, Chapter 3 defines
+\(p_i(t)=p_{\mathrm{TCP}}(t)+R_{\mathrm{EE}}(t)r_{i,\mathrm{EE}}\) and its
+signed clearance \(h_i(t)=n_s^\top(p_i(t)-p_s)\). The minimum
+\(h_{\mathrm{Tool}}(t)=\min_i h_i(t)\) is the signed clearance between the
+rectangular tool face and the calibrated surface. Smaller values place a
+corner closer to the surface. Do not interpose a separate projection or
+extent notation between the corner position and this physical clearance.
+
+The controller source compares the rotated corner offsets along the descent
+direction. Chapter 3 states that this is equivalent to comparing \(h_i\),
+because \(p_{\mathrm{TCP}}\) and \(p_s\) are common to all four corners. The
+implementation bridge stays in prose; the discarded projection construction
+is not shown as a second set of equations.
+
+**The minimum clearance and the selected-point average have different jobs.**
+The transition condition is
+\(h_{\mathrm{Tool}}(t)\leq h_{\mathrm{clearance}}\), so
+\(h_{\mathrm{Tool}}\) determines when approach ends. The selected index set
+\(\mathcal I_{\mathrm{sel}}\) contains the corners satisfying
+\(h_i-h_{\mathrm{Tool}}\leq\varepsilon_{\mathrm{sel}}\), where
+\(\varepsilon_{\mathrm{sel}}\) is the **tool-point selection tolerance** and
+\(N=\lvert\mathcal I_{\mathrm{sel}}\rvert\). Its mean
+\(r_{\mathrm{Tool,EE}}=N^{-1}\sum_{i\in\mathcal I_{\mathrm{sel}}}
+r_{i,\mathrm{EE}}\) determines which physical tool point the set-up reference
+uses. Never use the normal coordinate of that averaged point as the minimum
+tool clearance.
+
+The List of Symbols carries separate rows for \(h_i\),
+\(h_{\mathrm{Tool}}\), \(h_{\mathrm{clearance}}\) and
+\(\varepsilon_{\mathrm{sel}}\). The calibrated-geometry table in Chapter 4
+records the selection-tolerance value, and the phase-parameter table records
+the tool-clearance value. Chapter 3 may repeat the reported
+\(h_{\mathrm{clearance}}=0.020\,\mathrm{m}\) beside its physical
+interpretation, with the table cross-reference: the closest part of the tool
+face, rather than the TCP, is \(20\,\mathrm{mm}\) above the plane at the
+transition.
+
+**The one-, two- and four-corner outcomes are principal geometric cases, not an
+exhaustive list for the implemented selector.** The finite selection tolerance
+can place three corners in \(\mathcal I_{\mathrm{sel}}\) while excluding the
+fourth. Chapter 3 therefore does not claim that a three-corner set is impossible
+and does not derive an auxiliary three-scalar rectangular construction. It
+presents the leading corner, leading-edge midpoint and tool-face centre as the
+principal outcomes shown in the figure.
+
+**The clearance index is spelled out, and `clr` is withdrawn** — written here
+as a literal string so a rename cannot revive it. The compact form was tried
+first and replaced on the author's instruction, for the reason that already
+spelled out \(p_{\mathrm{Tool}}\) over \(p_T\): an abbreviated index costs
+the reader a lookup on every equation it appears in, and these symbols appear
+in six. At \(t_{\mathrm{set},0}\), the controller retains
+\(R_{\mathrm{EE,clearance}}=R_{\mathrm{EE}}(t_{\mathrm{set},0})\),
+\(p_{\mathrm{TCP,clearance}}=p_{\mathrm{TCP}}(t_{\mathrm{set},0})\), and
+\(r_{\mathrm{Tool,EE}}\). The selected tool point at that instant is
+\(p_{\mathrm{Tool,clearance}}=p_{\mathrm{TCP,clearance}}
++R_{\mathrm{EE,clearance}}r_{\mathrm{Tool,EE}}\).
+Its projection onto the calibrated surface is \(p_{\mathrm{Tool},0}\), from
+which the set-up reference is generated. During set-up the orientation
+reference is \(R_d(t)=R_{\mathrm{EE,clearance}}\).
+
+**\(p_{\mathrm{Tool},0}\) is the surface reference point, not a starting
+reference.** `starting reference` is withdrawn, written here as a literal
+string so a rename cannot revive it: the first commanded set-up position is
+\(p_{\mathrm{Tool,clearance}}\), which the initial value of
+\(s_{\mathrm{set}}\) is chosen to reproduce, so calling the projected point
+the starting reference contradicts the equation two lines below it. The settled
+sentence is that the orthogonal projection *defines the surface reference
+point* \(p_{\mathrm{Tool},0}\), followed by the statement that it is the
+point on the calibrated plane directly below the selected tool point at the
+clearance transition. The symbol-list row says the same in fewer words: its
+projection onto the calibrated surface.
+
+**The clearance criterion is explained once, after
+\(h_{\mathrm{Tool}}(t)\leq h_{\mathrm{clearance}}\), in four sentences.**
+The approach trajectory is generated for the TCP whereas the transition is
+determined from the physical tool geometry; because
+\(h_{\mathrm{Tool}}\) is the minimum clearance of the four corners,
+\(h_{\mathrm{clearance}}\) refers to the part of the face closest to the
+plane rather than to the TCP; at the reported
+\(0.020\,\mathrm{m}\) that part of the face is \(20\,\mathrm{mm}\)
+above the plane at the transition; and the criterion therefore gives the same
+specified clearance for different tool orientations and is purely geometric.
+The passage before the corner equations no longer repeats the TCP contrast —
+it states only that a corner can lie well below the TCP when the face is not
+parallel to the surface, which is why the four corners are evaluated. The orientation symbol
+carries the frame as well as the instant, matching
+\(p_{\mathrm{TCP,clearance}}\) beside it. Subsequent prose says that the
+offset is retained or held constant; it does not build a name from the state of
+the quantity.
 
 **The base-frame unit axes are \(e_{x_0}\), \(e_{y_0}\), \(e_{z_0}\).**
 Section 2.1 names the base axes \(x_0\), \(y_0\), \(z_0\), so their unit
@@ -1274,19 +1408,82 @@ earlier seven-point plan in this guide is superseded by the structure below.
 
 ```tex
 \section{Controller Architecture and Real-Time Control Cycle}
-\section{Surface-Relative Geometry and Tool Representation}
-  \subsection{Surface Frame and Tool Orientation}
-  \subsection{Tool Geometry and Selected Contact Point}
-\section{Phase-Dependent Cartesian Impedance}
-  \subsection{Directional Stiffness and Damping}
-  \subsection{Virtual Centre of Compliance}
-\section{Contact Sequence and Reference Generation}
-  \subsection{Orientation and Surface Approach}
+\section{Surface-Contact Sequence}
+  \subsection{Surface and Tool Reference}
+  \subsection{Tool Orientation}
+  \subsection{Surface Approach, Clearance and Tool-Point Selection}
   \subsection{Contact Set-Up}
-  \subsection{Auxiliary and Post-Set-Up Modes}
-\section{SVD-Based Null-Space Implementation}
-\section{Real-Time Operation, Safety, and Data Recording}
+  \subsection{Grinding}
+\section{Cartesian Pose Hold}
+\section{Robot-Side Safety and Command Handling}
+\section{Real-Time Data Recording}
 ```
+
+**The chapter follows one controller into its two configurations.** Section 3.1
+ends by naming the surface-contact sequence and Cartesian pose hold as two
+configurations of the same callback. Section 3.2 then completes the entire
+surface-contact account in execution order before Section 3.3 introduces pose
+hold. Common safety and recording follow both. Do not introduce both
+configurations and then leave them while geometry or phase machinery is
+explained elsewhere.
+
+**Phase-dependent impedance is not an independent section ahead of the
+sequence.** The contact reference is generated first in `Contact Set-Up`.
+Directional stiffness, inertia-scaled damping and the virtual-centre point shift
+then state which impedance acts on it. The pose-hold gain facts belong only in
+`Cartesian Pose Hold`.
+
+**The sequence overview comes before any equation, in `Surface-Contact
+Sequence`.** The reader meets the four phases as a list of what each one does:
+tool orientation, surface approach, contact set-up and grinding. The statement
+that a phase is a generated Cartesian reference together with an active
+impedance configuration follows that list. The trajectories appear in the
+subsections that realise them.
+
+**The clearance transition is a transition, not a fifth phase.** It is the
+instant at which \(h_{\mathrm{Tool}}\) reaches \(h_{\mathrm{clearance}}\)
+and the set-up initialisation is captured, and the prose and the figure both say
+so — the figure draws it unboxed, between the two boxed phases it separates.
+The four phases are what the sequence list enumerates; the transition is the
+step between two of them.
+
+**The phase figure shows only the surface-contact sequence.** Its boxed nodes
+are tool orientation, surface approach, contact set-up and grinding, with the
+unboxed clearance transition between approach and set-up. Source identifiers,
+keyboard commands, operator gates, hold modes, gain-group annotations and the
+separate pose-hold study do not appear in this figure.
+
+**Static definitions precede one chronological runtime account.** `Surface and
+Tool Reference` defines the surface frame, the commanded tool orientation and
+the four rectangular tool-face corners, and stops there. Use `corner` and
+`corners`, never `vertex` or `vertices`, for that rectangle in visible prose and
+figures. The corner positions, signed clearances, minimum tool clearance,
+selected index set and selected tool point belong together in `Surface Approach, Clearance and
+Tool-Point Selection`. `Contact Set-Up` then carries the clearance capture,
+surface projection, initial signed set-up coordinate, set-up trajectory,
+retained orientation, TCP reconstruction and active impedance, in that order.
+
+**Approach and set-up are written in the same shape.** Each phase carries a
+scalar coordinate: \(s_{\mathrm{app}}(t)\) advances the TCP from the captured
+\(p_{\mathrm{TCP,start}}\), and \(s_{\mathrm{set}}(t)\) advances the
+selected tool point from \(p_{\mathrm{Tool},0}\). Each is followed by the
+position reference it produces —
+\(p_d(t)=p_{\mathrm{TCP,start}}-s_{\mathrm{app}}(t)n_s\), and
+\(p_{\mathrm{Tool},d}(t)\) with its reconstructed \(p_d(t)\). The parallel
+is deliberate: the approach motion was previously described in words while
+set-up carried a trajectory, which left the tool-point selection reading as
+geometry that appeared from nowhere.
+
+**The approach coordinate uses the same piecewise presentation as the set-up
+coordinate.** It advances at \(v_{\mathrm{app}}\) from
+\(t_{\mathrm{app},0}\) until \(t_{\mathrm{app,max}}\), the instant at which
+the configured distance \(s_{\mathrm{app,max}}\) is reached, and then remains
+at that distance. The distance is the configured limit; the instant is the
+derived endpoint of its ramp. The desired velocity
+\(\dot p_d=-v_{\mathrm{app}}n_s\) applies only during the linear approach.
+Reaching \(s_{\mathrm{app,max}}\) before the clearance criterion terminates the
+approach as unsuccessful; do not describe the descent velocity as active for
+the whole phase.
 
 The chapter introduction is short and says why the equations are not repeated:
 the relations of Chapter 2 are referenced rather than restated, and the
@@ -1314,12 +1511,12 @@ Section 4.6 alone, where \(\tau_{\mathrm{dist}}(t)=J_p(q(t))^\top f_d(t)\)
 already stands. Chapter 3 carries one sentence saying an experiment-specific
 disturbance torque is added only for the null-space pose-hold experiment and is
 therefore not part of the nominal formulation. It does not appear in the
-null-space section either.
+Cartesian pose-hold account either.
 
 **What Chapter 3 must keep**, because these are what was designed rather than
 what was derived: the architecture figure; the commanded surface-relative
-offset \(\theta_{\mathrm{tilt}}=\theta_{t_1}t_1+\theta_{t_2}t_2\) and the
-flat-axis target it rotates; the tool geometry and the selection of
+offset \(\theta_{\mathrm{cmd}}=\theta_{t_1}t_1+\theta_{t_2}t_2\) and the
+inward normal it rotates; the tool geometry and the selection of
 \(p_{\mathrm{Tool}}\); the tool-fixed against surface-fixed compliance-centre
 definition; the set-up reference generation, with
 \(p_{\mathrm{Tool},d}(t)\) and the reconstructed \(p_d(t)\); the statement that
@@ -1335,10 +1532,10 @@ point-shifted impedance lets the commanded normal press contribute to the
 rotational response, and sends the measurement to Chapter 5. Do not re-argue
 the cross terms there.
 
-**The grinding phase gets a short paragraph and no more.** No reported run
-entered it, so the chapter states that it maintains the normal set-up reference
-while superimposing a tangential motion, that it returns to the decoupled
-impedance, and that it was not entered in the reported experiments.
+**The grinding phase gets two sentences and no more.** No reported run entered
+it, so the chapter states that it maintains the normal set-up reference while
+superimposing tangential motion with the decoupled impedance, and that the
+experimental evaluation ends at the pre-grinding gate.
 
 **The set-up subsection stays detailed.** It is the one place that explains
 something Chapter 2 does not: how the reference is generated during contact.
@@ -1347,12 +1544,49 @@ compliance permits contact-induced end-effector rotation is the load-bearing
 one, because it establishes that the measured rotation was not commanded by an
 orientation trajectory.
 
-**The real-time section is short.** What it must carry is the
-\(1\,\mathrm{kHz}\) callback, the absence of blocking file input or output
-inside it, the preallocated logging buffer, the write after control stops, and
-the active robot-side monitoring. Connection order, error recovery, collision
-setup, model loading, the keyboard thread and the individual exception types
-are compressed into one paragraph.
+**Scope the start of set-up to the gate configuration.** In the reported
+surface-contact runs the pre-set-up gate was disabled, so
+\(t_{\mathrm{set},0}\) is the clearance-transition instant and set-up begins
+there directly. State that scope before the clearance-capture equations. The
+generic optional-gate behaviour remains one later sentence: with the gate
+enabled, the pose is held until operator confirmation and the set-up references
+are captured from the current measured state.
+
+**There is no standalone null-space implementation section.** Cartesian pose
+hold states its fixed pose reference and hold impedance, names the four
+selectable secondary-torque modes, and says which settings the experiment
+compared. It then keeps only the bridge the theory does not fix: the relative
+tolerance scaled by the largest current singular value, numerical
+symmetrisation of the projector, reuse of that matrix for the recorded
+\(\dot q_{\mathrm{null}}\), and the sign selection from
+\(q\pm\alpha_{\mathrm{probe}}v_7\) with its deadband. Do not restore the
+null-space torque equation. Keep the four-configuration diagram inside
+`Cartesian Pose Hold`: the captured pose and Cartesian hold form its common
+path, followed by alternative branches for no null-space torque,
+singular-value conditioning, projected damping, and both terms together. The
+branches are selectable configurations rather than a temporal sequence. The
+surface-contact sequence held one combined setting, so the secondary controller
+was not a variable there.
+
+**Safety and data recording are two sections, not one miscellany.** The former
+`Real-Time Operation, Safety, and Data Recording` covered connection setup,
+error recovery, collision configuration, validation, the gripper, buffer
+allocation, operator input, the start posture, exception handling, saturation
+and logging, which is why it read as a list rather than a section.
+
+`Robot-Side Safety and Command Handling` now carries only what bears on
+commanding torque to a physical robot: the command is returned directly, no
+application-side saturation or torque-rate limiter follows the assembly, the
+robot-side collision and reflex monitoring is therefore the independent
+protection layer, its thresholds live in Chapter 4, and a libfranka exception
+ends the session. Everything the robot needs before torque control is one
+sentence, and the keyboard thread is not described again — Section 3.1 has the
+architecture.
+
+`Real-Time Data Recording` carries the implementation claim the results depend
+on: a preallocated in-memory ring buffer, no file access inside the callback,
+bounded memory when the capacity wraps, and the chronological write after
+control stops. The column-level description stays in the data-format appendix.
 
 **Delete Table 3.1** (functional subsystems — software documentation the
 architecture figure already carries), **Table 3.3** (four null-space modes, one
@@ -1499,6 +1733,127 @@ matrices whose diagonal entries are all equal spent most of a page saying four
 numbers. They are one small table with a sentence saying every entry was
 isotropic.
 
+**Chapter 4 documents the reported runs, so grinding leaves its tables.** No
+run entered the grinding phase, and the chapter said so four times: a
+`Set-up and grinding` gain row, a sentence that the configured grinding phase
+carried the set-up entries unchanged, a `Configured grinding sweep` row giving
+an amplitude and a frequency nothing used, and a closing sentence repeating
+that no run entered it. All four were reduced on 2026-08-27 to the gain row
+`Set-up`, a `Pre-grind gate` row saying that it holds the reached pose at the
+end of the reported set-up sequence, and one closing sentence: every run ended
+at the \(5\,\mathrm{s}\) timeout, the enabled pre-grind gate then held the
+reached pose, and the recorded data cover orientation, approach and set-up
+only. **Section 3.2.5 keeps its two sentences**, because Chapter 3 documents
+the implemented sequence rather than the reported campaign, and Chapter 6 keeps
+the sentence placing sustained grinding outside the evaluation.
+
+**\(\gamma_{t_i}\) is what Chapter 4 says was measured.** The set-up
+procedure once ended `so the measured alignment rotation is a response to
+contact`, which names a physical tool alignment the thesis does not measure.
+The settled wording is `the measured set-up response results from the contact
+interaction rather than from tracking a time-varying orientation command`.
+
+## The appendices: document and support
+
+**The main chapters explain and interpret; the appendices document and
+support.** An appendix carries the exact code, the logged quantities, the exact
+parameters, and the supporting numerical results. It does not re-teach the
+compliance-centre mechanism, the null-space law, the set-up trajectory, or the
+experimental narrative: each of those has one home in Chapters 2 to 5, and an
+appendix that needs one cross-references it. Applied on 2026-08-27, this
+removed roughly two pages of restated theory without losing a value, a key, or
+a measurement.
+
+**Appendix A is the listings, with one sentence per block.** The chapter opens
+by saying what the listings show — the compliance-centre transformation and the
+final torque assembly — and names the Eigen aliases a reader needs to follow
+them. Each block then carries at most one sentence, for something the code does
+not say by itself: the direction of \(r_c\), that both configured definitions
+store \(r_c\) and differ only in the frame it is expressed in, and that the
+disturbance term is non-zero only in the pose-hold study. Do not re-explain the
+point shift, the tool-fixed against surface-fixed distinction, or the torque
+assembly in prose beside the code that performs them.
+
+**Appendix B is the phase mapping and the signal table, and nothing else.**
+The sections are `Control Phases` and `Recorded Signals`, and the table is
+`Recorded signal groups`. `Signals Used in the Evaluation` is withdrawn,
+written here as a literal string so a rename cannot revive it: the table
+carries fields the thesis marks `Not evaluation quantities` and observational
+fields such as `t_align`, so a heading promising evaluation signals described
+something narrower than what the table holds. A
+table cell is a definition, not a paragraph: name the quantity, its frame and
+its unit, and send anything longer to the section that owns it. The former
+`Evaluation Quantities` section was deleted on 2026-08-27 and **must not be
+restored**, because every quantity in it already had a better home —
+\(\gamma_{t_i}\) in Section 4.5.1, the TCP-height classification in
+`Supporting Geometric Checks` and Appendix D.6, the pose-based alignment angle
+in Appendix D.7, and \(E_N\), \(\Delta\eta_{\mathrm{dist}}\) and the
+position-retention criterion in Section 4.6. The set-up-report markers
+`t_align_fraction`, `deviation_min` and `align_status` went with it: none feeds
+a phase exit, a command, or a reported result, which is the rule under *What
+belongs in the thesis at all*.
+
+**Appendix C holds the parameters needed to reproduce the reported runs.**
+It is the reproducibility record, so a parameter, its configuration key and its
+value belong there and an explanation of what the parameter does does not — and
+a parameter that was configured but never acted on does not belong either. The
+pre-set-up gate was disabled in every reported run and no run entered grinding,
+so their gain rows, the grinding-sweep row, the grinding damping factor and the
+paragraph explaining that the gate gains were inactive were all removed on
+2026-08-27. What remains of both is the `Pre-grind gate` row, because it is
+where every reported run ended. The phase list for inertia-scaled damping is
+scoped the same way: `Reported contact phases using inertia-scaled damping —
+approach and set-up`.
+
+**The tool clearance carries its thesis name in Appendix C too.**
+`Surface clearance` is withdrawn as a row label, written here as a literal
+string so a rename cannot revive it; the row reads
+`Tool clearance, \(h_{\mathrm{clearance}}\)` against the unchanged key
+`descend_surface_clearance`, matching Chapter 3, the symbol list and the
+Chapter 4 phase-parameter table. The selection-tolerance value is written the
+way its home in the Chapter 4 calibrated-geometry table writes it,
+\(0.1\,\mathrm{mm}\), rather than as \(10^{-4}\,\mathrm{m}\). The damping and compliance-centre section was one page
+of prose re-deriving the operational-space inertia, the \abbr{LDLT} solve, the
+fallback rule and the two definition frames; it is now one table plus two
+sentences pointing at `Contact Set-Up` for the damping calculation and the
+point shift, and at the case table and Appendix D for the tested displacement
+components. \(\Lambda_0(q)\) and its regularisation are named in a table row
+rather than set as an equation, since neither carries a symbol-list entry and
+neither is referred to from anywhere else.
+
+**The Appendix C row for the selection tolerance names the thesis quantity and
+the source key side by side:** `Tool-point selection tolerance,
+\(\varepsilon_{\mathrm{sel}}\)` against
+`tool_contact_feature_tie_tolerance`. The thesis-facing terminology follows the
+`tie` withdrawal under *Mathematical notation*; the literal key keeps its
+spelling, per the rule that source identifiers are reproduced rather than
+renamed to match the prose.
+
+**Appendix D is its tables, figures and equations, plus the minimum observation
+needed to read them.** Each supporting section states what was compared and how
+many settings and runs it contributed, gives its table and figure, and then
+carries one short paragraph of result with a `\cref` to the evidence. What was
+cut on 2026-08-27, and must not come back: repeated definitions of tool-fixed
+and surface-fixed, of the leading-feature rule, and of the general
+compliance-centre direction rule; second paragraphs generalising a result the
+sentence above already stated; and the mounting-play qualification, which
+Chapter 6 carries. What stays because the appendix is the only place it exists:
+the \(\sin\alpha_{\mathrm{axis}}\) projection that explains why a
+\(40\,\mathrm{mm}\) tool-axis displacement gives under \(7\,\mathrm{mm}\) of
+tangential lever, the lever-selection equation of the direction check, and the
+two \(\theta_{\mathrm{align}}\) equations of the consistency check.
+
+**An appendix table caption is a short noun phrase, like every other caption.**
+The Appendix D captions had grown to four and five lines carrying
+`Varied: …  Held fixed: …  Reference: …`, which is the procedure the rule
+under *Figures and tables* keeps out of captions. Where the table itself
+already shows that information — a `Reference` column naming the Case-A row, a
+bold `TCP` column heading, a spanning header naming the coordinate — the
+caption says nothing about it. Where it does not, one sentence of body text
+before the table carries it. The optional short caption was dropped from these
+tables at the same time: once the caption is a noun phrase, a second shorter
+form for the list of tables has nothing left to shorten.
+
 ## Evidence and claims
 
 Never invent measurements, repetitions, fitted values, confidence intervals,
@@ -1577,7 +1932,15 @@ derivation, so two restatements were added on 2026-08-25 and both stay:
 - the opening of Chapter 5, immediately before the main results, giving the
   reading rule alone — \(\gamma_{t_i}\) carries the same sign as the
   commanded offset when the response reduces it, and its magnitude is the size
-  of the correction;
+  of the correction. That opening was corrected on 2026-08-27: it had named the
+  quantity `the signed set-up rotation` three lines above calling it `the
+  signed set-up response`, and described it as `the current-to-reference
+  relative rotation formed from the measured orientations at the beginning and
+  end of set-up`, which both christens the convention and asserts a second
+  measured pose the log does not carry. It now names the quantity once, states
+  that it is the end-of-set-up orientation change relative to the orientation
+  reference held through set-up, and gives the sign rule with the magnitude
+  clause;
 - the Case-D mechanism figure, where the commanded moment and the reported
   rotation carry opposite signs on the same time axis. Without a bridge
   sentence the figure looks as though a negative commanded moment produced a
@@ -1674,7 +2037,7 @@ relative to the tool** for the whole of set-up. Say so where it is introduced.
 three outcomes without the rule that produces them left a reader unable to see
 where the point comes from, and unable to tell whether it serves the command or
 only the evaluation. Both belong in the compliance-centre section, in two
-clauses: the leading corner along the descent direction, with tied corners
+clauses: the leading corner along the descent direction, with selected corners
 averaged, and the fact that the set-up reference is generated on the point
 while the TCP target is reconstructed from it. The algorithm itself stays in
 Chapter 3, which the theory chapter cross-references rather than repeats.
@@ -1703,7 +2066,7 @@ The contact sequence therefore originates at the selected tool point, not at
 the TCP and not at the centre of compliance: the face geometry gives \(p_{\mathrm{Tool}}\),
 the set-up trajectory moves it as \(p_{\mathrm{Tool},d}(t)=p_{\mathrm{Tool},0}+s_{\mathrm{set}}(t)(-n_s)\),
 and the TCP target is reconstructed from it as
-\(p_d(t)=p_{\mathrm{Tool},d}(t)-R_{\mathrm{clr}}r_{\mathrm{Tool,EE}}\), which produces the
+\(p_d(t)=p_{\mathrm{Tool},d}(t)-R_{\mathrm{EE,clearance}}r_{\mathrm{Tool,EE}}\), which produces the
 press. The centre of compliance is a separate mechanism acting through
 \(r_c\) on the force–moment coupling. Do not merge the two chains.
 
@@ -1909,14 +2272,26 @@ instantaneous opposing torque at identical joint configurations.
   in both chapters it contradicted the moment printed immediately below it.
   Any future change to the lever convention is checked against all three
   anchors above, not against the formula alone.
-- **The flat tool-axis target is the inward surface normal,
-  \(n_{\mathrm{flat}}=s_an_s\) with \(s_a=-1\), and the commanded rotation is
-  applied to it: \(n_d=R_{\mathrm{tilt}}n_{\mathrm{flat}}\).** For zero
-  commanded offset \(n_d=-n_s\), never \(+n_s\). The two-step form matches the
-  implementation, which builds the signed flat axis first and rotates it
-  afterwards, and it matches the parameter appendix, where the tool-axis target
-  sign is negative. Writing \(n_d=R_{\mathrm{tilt}}n_s\) drops \(s_a\) and
-  makes the zero-offset target point out of the surface instead of into it.
+- **The desired tool-normal direction is \(n_d=R_{\mathrm{cmd}}(-n_s)\), and
+  for zero commanded offset \(n_d=-n_s\), never \(+n_s\).** A tool face
+  parallel to the surface requires the tool normal to point into the plane, so
+  the direction the commanded rotation is applied to is the inward normal
+  \(-n_s\). Writing \(n_d=R_{\mathrm{cmd}}n_s\) makes the zero-offset
+  target point out of the surface instead of into it.
+
+  **\(n_{\mathrm{flat}}\) and \(s_a\) are withdrawn**, written here as
+  literal strings so a rename cannot revive them. The earlier two-step form
+  \(n_{\mathrm{flat}}=s_an_s\) with \(s_a=-1\) named an intermediate
+  direction that is neither measured nor calibrated, and it put a third symbol
+  beside a notation that already separates the two things that matter: the
+  calibrated tool geometry, \(n_{\mathrm{Tool,EE}}\) with its base-frame
+  representation \(n_{\mathrm{Tool},0}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}\),
+  and the controller reference \(n_d\). Naming the intermediate direction
+  \(n_{\mathrm{Tool},\dots}\) instead was considered and rejected for the same
+  reason. The sign is fixed at \(-1\) for every reported run, so it needs no
+  symbol in the chapters; the parameter appendix records it as
+  `tool_axis_target_sign` \(=-n_s\), which is where a reader checks the
+  configured value.
 - **There is no \(f_C\).** A symbol for an abstract environment-on-tool contact
   force was introduced and then removed. Build every moment statement on the
   commanded wrench \(F=[f^\top,m^\top]^\top\). The model-estimated external
@@ -2038,7 +2413,7 @@ instantaneous opposing torque at identical joint configurations.
 - **The compliance-centre hierarchy is stated once, in Section 2.7.3, and
   applied everywhere else.** The order is
   \(r_c\to(r_{c,t_1},r_{c,t_2},r_{c,n})\to r_{c,t}\), then
-  \(\theta_{\mathrm{tilt}}\to\) the selected direction, then
+  \(\theta_{\mathrm{cmd}}\to\) the selected direction, then
   \(m=m_R+r_c\times f\). \(r_{c,t_1}\) and \(r_{c,t_2}\) are signed
   scalars and \(r_{c,t}\) is the tangential vector they form. Chapters 4
   and 5 must not re-derive any of it.
@@ -2071,8 +2446,8 @@ instantaneous opposing torque at identical joint configurations.
   nominal inclination is \(170^\circ\) rather than \(10^\circ\). The arithmetic
   survives the error, since \(\sin170^\circ=\sin10^\circ\), which is exactly
   why it went unnoticed: the reported \(6.95\,\mathrm{mm}\) is right under
-  either reading. State the geometry the flat-axis convention already fixes —
-  \(n_{\mathrm{flat}}=-n_s\), further up this list — rather than one that
+  either reading. State the geometry the zero-offset target already fixes —
+  \(n_d=-n_s\), further up this list — rather than one that
   happens to give the same number. Say which commanded offset set the
   inclination, and call it *nominal*, because the orientation phase reached
   approximately \(9.3^\circ\) about \(t_1\) rather than the commanded
@@ -2149,13 +2524,14 @@ instantaneous opposing torque at identical joint configurations.
   \(r_c\to\mathrm{Ad}(r_c)\to K_{\mathrm{TCP}},D_{\mathrm{TCP}}\to
   m=m_R+r_c\times f\to\) the tangential direction rule.
 
-  **It survives as an implementation signal only.** Section 3.5.3 says in one
-  short passage that libfranka supplies it, that it is stored at the clearance
-  transition, and that the estimated external moment change can trigger the
-  optional termination condition. This explanation is written in words and
-  introduces no mathematical symbol. Every reported run terminated through the
-  timeout instead. The data-format appendix retains the literal recorded field
-  names and bias columns. That is the whole of it.
+  **It survives as an implementation signal only.** The `Contact Set-Up`
+  subsection says in one short passage that libfranka
+  supplies it, that it is stored at the clearance transition, and that the
+  estimated external moment change can trigger the optional termination
+  condition. This explanation is written in words and introduces no
+  mathematical symbol. Every reported run terminated through the timeout
+  instead. The data-format appendix retains the literal recorded field names
+  and bias columns. That is the whole of it.
 
   **`F_{n,\mathrm{ext}}` is withdrawn**, with the symbol-list rows for
   \(\hat f_{\mathrm{ext}}\), \(\hat f_{\mathrm{ref}}\) and
@@ -2167,14 +2543,38 @@ instantaneous opposing torque at identical joint configurations.
   through every equation, figure and axis label. The commanded quantities are
   \(f\), \(f_n\), \(f_t\), \(F_n=n_s^\top f\), \(m\) and
   \(M_{t_i}=t_i^\top m\). The model-estimated external wrench has no
-  thesis-wide mathematical symbols and is referred to in words only in
-  Section 3.5.3. `F_{n,\mathrm{cmd}}`, `M_{t_i,\mathrm{cmd}}`,
+  thesis-wide mathematical symbols and is referred to in words only in the
+  `Contact Set-Up` subsection of Chapter 3.
+  `F_{n,\mathrm{cmd}}`, `M_{t_i,\mathrm{cmd}}`,
   `F_{K,n}` and `f_{K,n}` are withdrawn. \(\tau_{\mathrm{cmd}}\) keeps its
   index because it is a joint torque rather than a Cartesian wrench component.
 
   \(F_n\) is the signed scalar commanded normal force, and \(f_n=F_nn_s\) is
   the corresponding vector. Say so once where both first appear rather than
   leaving the reader to infer it.
+
+  **The orientation-offset family is the stated exception, and carries `cmd`.**
+  `\theta_{\mathrm{tilt}}` and `R_{\mathrm{tilt}}` are withdrawn, written here
+  as literal strings so a rename cannot revive them. `tilt` was the last place
+  in the notation where the word survived, and it named three different things
+  at once — the physical tool tilt, the commanded offset, and the measured
+  response — while the prose ban on `tilt` under *Naming a technical quantity*
+  had already removed it everywhere else. The settled chain is
+  \(\theta_{\mathrm{cmd}}=\theta_{t_1}t_1+\theta_{t_2}t_2\), its magnitude
+  \(\lVert\theta_{\mathrm{cmd}}\rVert\) as the commanded offset angle, the
+  unit axis \(u_{\mathrm{cmd}}=\theta_{\mathrm{cmd}}/
+  \lVert\theta_{\mathrm{cmd}}\rVert\), and
+  \(R_{\mathrm{cmd}}=R(u_{\mathrm{cmd}},\lVert\theta_{\mathrm{cmd}}\rVert)\)
+  through the Rodrigues relation of Section 2.3.
+
+  The index is what separates the command from the response \(\gamma_{t_i}\)
+  and from the physical tool orientation, neither of which the thesis measures
+  in the same frame, so it distinguishes rather than decorates. That is the
+  difference from the withdrawn wrench indices: nothing was ever going to be
+  confused with `F_{n,\mathrm{cmd}}`, because no estimated normal force is
+  reported at all. The scalar components keep their tangent index and take no
+  `cmd`, since \(\theta_{t_1}\) and \(\theta_{t_2}\) are already the
+  components of the commanded vector.
 - **The settled force and moment names.** `press` as a symbol name was
   withdrawn, because \(f_{\mathrm{press}}\) read as the complete force pressing
   against the surface when it was only the spring term. The subscript now says
@@ -2656,7 +3056,7 @@ earn their place, and the reason each does:
 
 | Supporting item | What it carries that the chapter does not |
 |---|---|
-| Conditions classified as tilted by TCP height | The seven settings behind the flatness count, which the chapter states only as a total |
+| Conditions classified as tilted by TCP height | The six settings behind the flatness count, which the chapter states only as a total |
 | Per-setting spread of the Case-D lever positions | The standard deviation of each setting; the chapter figure plots the means alone |
 | Comparison with the pose-based alignment estimate | An appendix consistency check between the direct measured set-up rotation \(\gamma_{t_i}\) and the secondary estimate reconstructed from the calibrated tool normal |
 
@@ -2765,9 +3165,12 @@ Before accepting a revision:
   `\label{}` keys, and figure filenames may keep them;
 - search for `tilt`, `excitation`, and `mismatch` where a commanded tool
   orientation offset is meant;
-- search for `task frame` and for `R_{\mathrm{task}}`; the expected count in
-  running text, headings and the symbol list is zero, and the surviving `task`
-  hits must all be the generic ones or `\Lambda_{\mathrm{task}}`;
+- search for `task`; `task frame` and `R_{\mathrm{task}}` must return zero in
+  running text, headings and the symbol list, and every surviving hit must be a
+  standard redundancy-resolution term, `\Lambda_{\mathrm{task}}`, a literal
+  source identifier, a `\label{}` key, or an application credited to a cited
+  source. `the investigated task` and `the Cartesian task` must also return
+  zero;
 - check that one quantity carries one name and one symbol throughout;
 - check that every new equation symbol is introduced by quantity name, symbol,
   and short role at its first use;

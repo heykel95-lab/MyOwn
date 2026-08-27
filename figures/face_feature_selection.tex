@@ -1,12 +1,11 @@
-% Rectangular tool face in the end-effector frame, and the three outcomes of
-% the leading-feature comparison along the descent direction.
+% Rectangular tool face in the end-effector frame: the calibrated centre
+% offset, the half-width and half-length vectors, and the four corners.
 % Uses only tikz + arrows.meta/calc/positioning, which config/packages.tex loads.
 \begin{tikzpicture}[
     scale=1.30,
     font=\footnotesize,
-    face/.style={draw=gray!70!black, fill=white},
-    vec/.style={-{Latex[length=1.8mm]}, gray!55!black},
-    sel/.style={draw=gray!70!black, fill=gray!25},
+    face/.style={draw=black},
+    vec/.style={-{Latex[length=1.8mm]}, black},
     lbl/.style={font=\footnotesize, inner sep=1.6pt},
   ]
 
@@ -21,24 +20,5 @@
   \node[lbl, right] at (1.70,1.30) {$r_{\mathrm{length,EE}}$};
 
   \foreach \x/\y in {0/0, 3.2/0, 0/1.6, 3.2/1.6} {\fill (\x,\y) circle (1.4pt);}
-  \node[lbl, below] at (1.6,-0.15) {calibrated tool face};
-
-  % ---- the three outcomes of the comparison along the descent direction
-  \begin{scope}[xshift=4.6cm]
-    \draw[face] (0,0) rectangle (1.5,0.75);
-    \fill[sel] (1.5,0) circle (2.2pt);
-    \node[lbl, below] at (0.75,-0.15) {leading corner};
-  \end{scope}
-
-  \begin{scope}[xshift=6.6cm]
-    \draw[face] (0,0) rectangle (1.5,0.75);
-    \draw[sel, line width=1.1pt] (0,0) -- (1.5,0);
-    \node[lbl, below] at (0.75,-0.15) {leading edge};
-  \end{scope}
-
-  \begin{scope}[xshift=8.6cm]
-    \draw[sel] (0,0) rectangle (1.5,0.75);
-    \node[lbl, below] at (0.75,-0.15) {face centre};
-  \end{scope}
 
 \end{tikzpicture}

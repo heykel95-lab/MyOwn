@@ -76,6 +76,24 @@ if a fifth colour is ever needed.
 moment exists but not which one, and the reader cannot match it to the relation
 in the annotation. Label the arc with the symbol the surrounding text uses.
 
+**A right-angle marker spans the two things it marks, and the rotation that
+places it is the first of them.** The direction-rule figure drew its square
+inside `\begin{scope}[rotate=\ra]`, where `\ra` is the *lever* direction, so
+the square occupied the quadrant beyond \(r_{c,t}\) instead of the one
+between \(\theta_{\mathrm{cmd}}\) and \(r_{c,t}\) — in the `about t_1`
+panel it sat between \(+t_2\) and \(-t_1\), where nothing is
+perpendicular to anything. Rotating by the *first* of the two directions,
+`\ua`, puts the local \(x\) axis on one vector and the local \(y\) axis on
+the other, so the square lands between them. Corrected on 2026-08-27.
+
+Where a third ray lies inside the marked angle — a surface tangent in the two
+diagonal panels — it passes through the square. That is the geometry and is
+left alone: the square is read against the two thick coloured vectors it spans,
+and moving or shrinking it to dodge the axis would misplace the thing it
+marks. Check the placement panel by panel in the compiled document, since a
+marker drawn from a rotated scope is correct in three panels and wrong in the
+fourth without anything warning.
+
 ### Routing
 
 **Orthogonal only.** A diagonal line in a block diagram reads as a different
@@ -237,6 +255,30 @@ without describing the whole drawing.
 - A legend inside a narrow panel, where it lands on the data or an axis label.
 - Anything not discussed in the text.
 
+**The Chapter 3 selected-tool-point figure shows principal outcomes rather than
+an exhaustive case set.** Its three panels are the leading corner,
+leading-edge midpoint and tool-face centre. The tolerance-based selector can
+also admit a three-corner group, so neither the drawing nor its caption claims
+that these are the only possible groups. The visible caption is `Principal
+selected tool points for the rectangular tool face: leading corner,
+leading-edge midpoint, and tool-face centre.`; the shorter List-of-Figures entry
+ends after `tool face`.
+
+**The Chapter 3 surface-contact sequence is a phase overview, not a state
+machine.** It contains four boxed phases — tool orientation, surface approach,
+contact set-up and grinding — and the clearance transition is unboxed between
+approach and set-up. Operator gates, hold modes, menu keys, source identifiers,
+transition-condition annotations, gain groups and the separate Cartesian
+pose-hold study stay out of this figure.
+
+**The Chapter 3 Cartesian pose-hold diagram branches after the common hold
+path.** It shows capture of the current pose followed by Cartesian pose hold,
+then four boxed alternatives: no null-space torque, singular-value
+conditioning, projected damping, and both terms together. All four alternatives
+sit at the same level, because they are selectable configurations rather than a
+temporal sequence. Keep the same plain black boxes and arrows as the
+surface-contact phase overview.
+
 ## Generated plots (matplotlib)
 
 Plots come from the scripts in `analysis/` in the controller repository, are
@@ -344,6 +386,26 @@ information and is not included in the thesis.
 four redrawn figures first placed a legend on top of a curve, in a corner that
 looked empty when the coordinates were written. `legend pos` is chosen per
 panel from where that panel's data actually are, not once for the figure.
+
+**A legend also has to fit inside the axis frame, and in `pgfplots` that is a
+question of the axis box, not of `width`.** `width` counts the axis labels and
+tick labels as well, so a panel set to `width=6.6cm` with a two-line
+\(y\)-label leaves an axis box nearer \(5.3\,\mathrm{cm}\), and a legend
+written to fit `width` overhangs it. Two figures were corrected on 2026-08-27.
+The offset-magnitude panels had legends wider than their own axes at
+`\footnotesize`, sitting across the plotted lines; the tool-axis comparison had
+a `south east` legend whose box reached back far enough for the rising
+tangential series to run through it. The fix in both was `\scriptsize` with
+`inner sep=1.6pt` and `row sep=-1pt`, plus, for the two-panel figure, more
+headroom above the data and slightly wider panels traded against the group
+separation.
+
+Prefer that order — shrink the legend, then add headroom, then widen the panel
+— and do not shorten a legend entry to make it fit: the entry format
+`Descriptive Condition, Symbol = Value` further down this file is what the
+entry has to say, and a legend that only fits once it stops naming its
+condition has been solved the wrong way. Measure the result in the compiled
+thesis, not in the standalone figure.
 
 ### Correcting a label in a plot that has no generator
 
@@ -554,7 +616,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
 
   **A categorical axis keeps the full form where a symbol and a unit exist for
   what its ticks name.** The direction comparison reads
-  `Commanded Rotation Direction, \(\theta_{\mathrm{tilt}}\) [°]` over ticks
+  `Commanded Rotation Direction, \(\theta_{\mathrm{cmd}}\) [°]` over ticks
   reading `about t1`, `-45°`, `+45°` and `about t2`. A briefer
   `Commanded Rotation Direction` was tried on 2026-08-25, on the grounds that
   the ticks are named conditions rather than values of one quantity, and it was
@@ -603,7 +665,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
 
   The direction comparison is **not** one of them, though its axis is equally
   categorical: its four ticks are all directions of the same commanded
-  rotation, so \(\theta_{\mathrm{tilt}}\) and the degree do cover them, and the
+  rotation, so \(\theta_{\mathrm{cmd}}\) and the degree do cover them, and the
   axis carries both.
 
 ## Checking a figure

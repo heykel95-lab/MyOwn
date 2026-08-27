@@ -208,20 +208,16 @@ statement of use over the abstract statement of property.
 
 ### Separate an algorithm from its limitations
 
-Chapter 3's null-space section attached a disclaimer to almost every sentence of
-the algorithm — the probes are tangent approximations, they are not checked
-against joint limits, the magnitude is fixed, the projector is kinematic, the
-Jacobian is unscaled. Each is true and each must stay. Interleaved, they make
-the algorithm hard to follow and make every sentence read as generated together
-with its own caveat.
+An implementation account becomes difficult to follow when almost every step
+of an algorithm carries its own disclaimer. State the implemented operation
+first, then place the limits together where the chapter assigns them. Chapter
+3 now keeps only the implementation-specific bridge from the null-space theory
+to Cartesian pose hold; the experimental bounds and unresolved limitations are
+collected in Chapter 6 rather than interleaved with that bridge.
 
-**Rule.** State the implemented algorithm first, without qualification. Collect
-the limits into their own subsection afterwards. Chapter 3 now does this at
-*Limits of the Implemented Null-Space Law*; Chapter 4 cross-references that
-subsection instead of repeating the list.
-
-The same applies to theory: assumptions belong in Chapter 2, but
-implementation-specific shortcomings belong in Chapters 3, 4, or 6.
+The same applies to theory: assumptions belong in Chapter 2, while
+implementation-specific shortcomings belong in Chapters 3, 4, or 6 according
+to the role of the chapter.
 
 ### Do not explain the same structure three times
 
@@ -233,6 +229,11 @@ reduced to prose that points forward to the authoritative one.
 **Rule.** One authoritative statement of any sequence. A chapter does not need a
 summary section when the next chapter follows immediately from it — a
 transition sentence is enough.
+
+**Do not describe a subsection's editorial boundary from inside the thesis.**
+Phrases such as `this subsection defines those three and nothing else` comment
+on how the material was organised rather than stating the technical content.
+Name the quantities the subsection defines, then proceed to their definitions.
 
 ### Avoid the repeated contrast pattern
 

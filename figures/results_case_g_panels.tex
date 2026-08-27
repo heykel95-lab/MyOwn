@@ -4,8 +4,8 @@
 \begin{tikzpicture}
 \pgfplotsset{
   every axis/.append style={
-    width=6.6cm, height=6.0cm,
-    xmin=3.5, xmax=11.5, ymin=-3.5, ymax=10,
+    width=7.1cm, height=6.0cm,
+    xmin=3.5, xmax=11.5, ymin=-3.5, ymax=11.5,
     xtick={5,10},
     xticklabels={\(5^\circ\), \(10^\circ\)},
     ytick={-3,0,3,6,9},
@@ -13,22 +13,26 @@
     grid style={gray!25, very thin},
     tick label style={font=\footnotesize},
     label style={font=\footnotesize},
-    legend style={font=\footnotesize, draw=gray!50, fill=white,
-                  cells={anchor=west}, inner sep=2pt},
+    % The legend entries are wider than the panel at \footnotesize, so they
+    % overhung the axis and landed on the data. \scriptsize with the extra
+    % headroom above keeps both legends clear of the curves.
+    legend style={font=\scriptsize, draw=gray!50, fill=white,
+                  cells={anchor=west}, inner sep=1.6pt, row sep=-1pt},
     every axis plot/.append style={thick, mark size=2.1pt},
   },
 }
 \begin{groupplot}[
-    % The right panel's two-line y-label occupies this gap. The wider
-    % separation keeps it clear of the left axis and its legend.
-    group style={group size=2 by 1, horizontal sep=2.4cm},
+    % The right panel's two-line y-label occupies this gap. The panels are
+    % wide enough that the legend fits inside the axis frame at this
+    % separation.
+    group style={group size=2 by 1, horizontal sep=2.0cm},
   ]
 
 \nextgroupplot[
     xlabel={\shortstack{Commanded Orientation Offset,\\\(\theta_{t_1}\) [\(^\circ\)]}},
     ylabel={\shortstack{Set-Up Rotation About \(t_1\),\\\(\gamma_{t_1}\) [\(^\circ\)]}},
     title={\footnotesize (a) commanded about \(t_1\)},
-    legend pos=south east,
+    legend pos=north west,
   ]
 \addplot[black, mark=o] coordinates {(5,2.55) (10,7.57)};
 \addlegendentry{CoC at TCP, \(r_{c,t_2}=0\,\mathrm{mm}\)}
@@ -39,7 +43,7 @@
     xlabel={\shortstack{Commanded Orientation Offset,\\\(\theta_{t_2}\) [\(^\circ\)]}},
     ylabel={\shortstack{Set-Up Rotation About \(t_2\),\\\(\gamma_{t_2}\) [\(^\circ\)]}},
     title={\footnotesize (b) commanded about \(t_2\)},
-    legend pos=north east,
+    legend pos=north west,
   ]
 \addplot[black, mark=o] coordinates {(5,-1.40) (10,-1.63)};
 \addlegendentry{CoC at TCP, \(r_{c,t_1}=0\,\mathrm{mm}\)}

@@ -1,85 +1,27 @@
-% Flow chart of the run phase machine: the phases, the condition that ends
-% each one, and the two gates that wait for the operator.
-% Uses only tikz + arrows.meta/calc/positioning.
+% Surface-contact phase sequence: the four phases and the unboxed clearance
+% transition between approach and set-up. Operator gates, hold modes, source
+% identifiers and gain groups are deliberately left out of this overview.
+% Uses only tikz + arrows.meta, which config/packages.tex loads.
 \begin{tikzpicture}[
-    font=\small,
-    ph/.style={draw=gray!70!black, fill=white, rounded corners=2pt,
-               minimum width=34mm, minimum height=8.5mm, align=center},
-    dec/.style={draw=gray!70!black, fill=white, align=center,
-                minimum width=34mm, inner ysep=1.8mm, rounded corners=1pt},
-    gate/.style={draw=gray!70!black, fill=white, align=center,
-                 minimum width=34mm, inner ysep=1.8mm, rounded corners=1pt},
-    side/.style={draw=gray!55, fill=white, align=center, rounded corners=2pt,
-                 minimum width=32mm, minimum height=8mm},
-    flow/.style={-{Latex[length=2mm]}, thick, gray!55!black},
-    lbl/.style={font=\footnotesize, inner sep=1.6pt},
+    scale=1.0,
+    font=\footnotesize,
+    phase/.style={draw=black, thick, text width=4.0cm, align=center,
+                  inner sep=4pt, minimum height=1.0cm},
+    evt/.style={align=center, inner sep=3pt},
+    flow/.style={-{Latex[length=2mm]}, thick, black},
   ]
 
-% --------------------------------------------------------------- entry keys
-\node[lbl] (ins) at (0,1.0)    {menu \texttt{s}};
-\node[lbl] (inh) at (6.6,1.0)  {menu \texttt{h}};
+  % ---- the chain, top to bottom on x = 0
+  \node[phase] (orient) at (0, 0.00) {Tool orientation};
+  \node[phase] (appr)   at (0,-1.80) {Surface approach};
+  \node[evt]   (clear)  at (0,-3.45) {Clearance transition};
+  \node[phase] (setup)  at (0,-5.10) {Contact set-up};
+  \node[phase] (grind)  at (0,-6.90) {Grinding};
 
-% ------------------------------------------------------------- main sequence
-\node[ph]   (orient) at (0, 0.0)  {\texttt{approach\_orient}};
-\node[dec]  (d1)     at (0,-1.45) {\footnotesize axis and spin inside the gate,\\[-2pt]
-                                   \footnotesize or the orient timeout};
-\node[ph]   (desc)   at (0,-2.9)  {\texttt{approach\_descend}};
-\node[gate] (g1)     at (0,-4.35) {\footnotesize clearance reached, then Enter};
-\node[ph]   (setup)  at (0,-5.8)  {\texttt{set\_up}};
-\node[dec]  (d2)     at (0,-7.25) {\footnotesize contact-moment jump,\\[-2pt]
-                                   \footnotesize or the set-up timeout};
-\node[gate] (g2)     at (0,-8.7)  {\footnotesize set-up result printed, then Enter};
-\node[ph]   (grind)  at (0,-10.15){\texttt{grind}};
-
-% ------------------------------------------------------------- side branches
-% The hold entered from the menu, which holds with the hold impedance.
-\node[ph] (hold)  at (6.6, 0.0)  {\texttt{hold}\\[-2pt]
-      \footnotesize hold impedance};
-% The hold the run returns to after grinding, which keeps the set-up impedance
-% so the tool stays pressed. Pressing s starts the sequence again from its
-% first phase, which is what closes the loop.
-\node[ph] (holdset) at (-4.6,-5.0) {\texttt{hold}\\[-2pt]
-      \footnotesize set-up impedance};
-\node[ph] (guide) at (6.6,-2.9)  {\texttt{manual\_guide}};
-\node[side, draw=red!45] (stop) at (6.6,-10.15)
-      {\footnotesize \texttt{e} stops any phase};
-
-% --------------------------------------------------------------------- flow
-\draw[flow] (ins) -- (orient);
-\draw[flow] (inh) -- (hold);
-
-% The loop. Grinding ends in a hold that keeps the set-up impedance, and the
-% run starts again from the first phase on the same key that started it.
-\draw[flow] (grind.west) -- (-4.6,-10.15) -- (holdset.south);
-\draw[flow] (holdset.north) -- (-4.6,0.0)
-      -- node[lbl, above, pos=0.6] {\texttt{s}}
-      (orient.west);
-
-\draw[flow] (orient) -- (d1);
-\draw[flow] (d1)     -- (desc);
-\draw[flow] (desc)   -- (g1);
-\draw[flow] (g1)     -- (setup);
-\draw[flow] (setup)  -- (d2);
-\draw[flow] (d2)     -- (g2);
-\draw[flow] (g2)     -- (grind);
-
-% Hand guiding and back. The recapture returns to the phase the run started
-% in, so a hold that was guided resumes holding at the new pose rather than
-% entering the sequence, and a guided run resumes at its first phase.
-\draw[flow] (hold) -- node[lbl, left] {\texttt{g}} (guide);
-\draw[flow] (guide.east) -- (9.6,-2.9)
-      -- node[lbl, right, pos=0.55] {\texttt{p} recaptures}
-      (9.6,0.0) -- (hold.east);
-
-% The same pair for the run sequence, drawn from one phase in the way the
-% stop box is, since guidance is entered from whichever phase is active.
-\draw[flow] (setup.east)
-      -- node[lbl, above, pos=0.45] {\texttt{g} from any phase}
-      (6.6,-5.8) -- (guide.south);
-\draw[flow] (guide.west) -- (3.3,-2.9) -- (3.3,1.65)
-      -- node[lbl, above, pos=0.45] {\texttt{p} recaptures}
-      (-2.5,1.65) -- (-2.5,0.425) -- (orient.north west);
-
-\draw[flow, red!45!black] (grind) -- (stop);
+  % ---- flow
+  \draw[flow] (orient) -- (appr);
+  \draw[flow] (appr)   -- (clear);
+  \draw[flow] (clear)  -- (setup);
+  \draw[flow] (setup)  -- (grind);
 
 \end{tikzpicture}

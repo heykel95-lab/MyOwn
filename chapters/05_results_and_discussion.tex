@@ -3,16 +3,18 @@
 
 The surface-contact experiments evaluate how the controller parameters
 influence the end-effector rotation generated during contact set-up. The
-primary response quantity is the signed set-up rotation
+primary response quantity is the signed set-up response
 \mbox{\(\gamma_{t_i}\)} about the investigated surface tangent
-\mbox{\(t_i\)}. It is the current-to-reference relative rotation formed from
-the measured orientations at the beginning and end of set-up. Its sign follows
-the surface-frame rotation convention of
-\mbox{\Cref{sec:experimental_evaluation}}.
+\mbox{\(t_i\)}, defined in
+\mbox{\Cref{sec:experimental_evaluation}}. It represents the
+end-of-set-up orientation change relative to the orientation reference held
+through set-up. Its sign is chosen so that a response reducing a commanded
+offset carries the same sign as that offset, and
+\mbox{\(\lvert\gamma_{t_i}\rvert\)} is then the size of the correction.
 
 The commanded tool orientation offset \mbox{\(\theta_{t_i}\)} defines the
-initial experimental condition, whereas the measured response is the signed
-set-up response \mbox{\(\gamma_{t_i}\)}. The main response
+initial experimental condition, whereas \mbox{\(\gamma_{t_i}\)} is the
+measured response. The main response
 figures therefore report \mbox{\(\gamma_{t_i}\)}, while the corresponding
 numerical values are provided in \mbox{\Cref{app:additional_plots}}. The
 pose-based alignment estimate and the TCP-height flatness classification are
@@ -359,8 +361,8 @@ such motion is present. The conditioning law is not dissipative: a disturbance
 acting towards larger \mbox{\(\sigma_{\min}\)} would move the
 configuration in the same direction as \mbox{\(\tau_\sigma\)} rather than
 against it, so the rejection observed here is specific to the tested
-disturbance direction. Both terms act through the null-space projector, so the
-Cartesian task stays primary.
+disturbance direction. Both terms act through the null-space projector, so neither
+contributes a first-order Cartesian wrench.
 
 Several bounds apply to these results. Because the conditioning torque was
 active before the disturbance, the sigma-only trials entered it from a redundant

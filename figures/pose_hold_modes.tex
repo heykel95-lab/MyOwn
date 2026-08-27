@@ -1,0 +1,36 @@
+% Cartesian pose hold and its four alternative null-space configurations.
+% The common reference path is vertical; the four configurations branch at
+% one level so that the drawing does not imply a temporal sequence.
+% Uses only tikz + arrows.meta, which config/packages.tex loads.
+\begin{tikzpicture}[
+    scale=1.0,
+    font=\footnotesize,
+    stage/.style={draw=black, thick, text width=4.0cm, align=center,
+                  inner sep=4pt, minimum height=1.0cm},
+    mode/.style={draw=black, thick, text width=2.7cm, align=center,
+                 inner sep=4pt, minimum height=1.2cm},
+    flow/.style={-{Latex[length=2mm]}, thick, black},
+    branch/.style={thick, black},
+  ]
+
+  % ---- common pose-hold path
+  \node[stage] (capture) at (0, 0.00) {Capture current pose};
+  \node[stage] (hold)    at (0,-1.80) {Cartesian pose hold};
+  \coordinate (split) at (0,-3.00);
+
+  % ---- four alternative null-space configurations
+  \node[mode] (none) at (-5.10,-4.20) {No null-space\\torque};
+  \node[mode] (cond) at (-1.70,-4.20) {Singular-value\\conditioning};
+  \node[mode] (damp) at ( 1.70,-4.20) {Projected\\damping};
+  \node[mode] (both) at ( 5.10,-4.20) {Conditioning and\\damping};
+
+  % ---- flow and alternative branch
+  \draw[flow] (capture) -- (hold);
+  \draw[branch] (hold.south) -- (split);
+  \draw[branch] (-5.10,-3.00) -- (5.10,-3.00);
+  \draw[flow] (-5.10,-3.00) -- (none.north);
+  \draw[flow] (-1.70,-3.00) -- (cond.north);
+  \draw[flow] ( 1.70,-3.00) -- (damp.north);
+  \draw[flow] ( 5.10,-3.00) -- (both.north);
+
+\end{tikzpicture}

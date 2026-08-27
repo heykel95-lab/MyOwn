@@ -466,8 +466,7 @@ offset.
 \(n_{\mathrm{Tool,EE}}\) is the output of this calibration, and
 \Cref{sec:tool_orientation_given_surface} carries it into the base frame during
 operation. Flat contact requires that base-frame direction to coincide with the
-inward surface normal, so the target sign is
-\(s_a=-1\). The commanded spin about the desired
+inward surface normal \(-n_s\). The commanded spin about the desired
 tool axis, measured from \(t_1\), was \(90^\circ\) for all reported
 runs. In the flat target orientation the projected long face axis is aligned
 with the \(t_2\) line.
@@ -485,9 +484,10 @@ with the \(t_2\) line.
 \label{subsec:calibrated_contact_geometry}
 
 The rectangular face geometry used by the controller is listed in
-\mbox{\Cref{tab:calibrated_tool_geometry}}. The leading-point selection and
-the reconstruction of the TCP target are described in
-\mbox{\Cref{sec:tool_contact_geometry}}.
+\mbox{\Cref{tab:calibrated_tool_geometry}}. The selected-tool-point
+construction and the reconstruction of the TCP target are described in
+\mbox{\Cref{subsec:implementation_surface_approach_phase}} and
+\mbox{\Cref{subsec:implementation_setup_phase}}, respectively.
 
 \begin{table}[H]
 \centering
@@ -501,7 +501,7 @@ Quantity & Value in end-effector coordinates \\
 Tool-face centre & \([0,0,0.020]^\top\,\mathrm{m}\) \\
 Half-width & \([0.020,0,0]^\top\,\mathrm{m}\) \\
 Half-length & \([0,0.060,0]^\top\,\mathrm{m}\) \\
-Feature-selection tolerance & \(0.1\,\mathrm{mm}\) \\
+Tool-point selection tolerance, \(\varepsilon_{\mathrm{sel}}\) & \(0.1\,\mathrm{mm}\) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -545,8 +545,8 @@ r_{\mathrm{length,EE}}
 \label{eq:grinding_face_half_dimensions}
 \end{equation}
 
-These calibrated offsets, together with a feature-selection tolerance of
-\(\varepsilon_g=0.1\,\mathrm{mm}\), were used by the tool-point selection
+These calibrated offsets, together with a tool-point selection tolerance of
+\(\varepsilon_{\mathrm{sel}}=0.1\,\mathrm{mm}\), were used by the tool-point selection
 described in \Cref{sec:tool_contact_geometry}. Corners whose
 heights differ by no more than that tolerance are treated as one edge or face
 and averaged. The present chapter records the calibrated geometry; the
@@ -575,9 +575,8 @@ The phase-dependent gains are diagonal in the calibrated surface frame
 \([t_1,t_2,n_s]\) before any compliance-centre shift.
 \Cref{tab:experimental_common_gains} gives the entries used by every reported
 contact run, together with the damping ratio \(\zeta\) of the corresponding
-phase. The configured grinding phase carried the set-up entries unchanged. The
-pre-set-up gate was configured with the same stiffness as set-up and was
-disabled in the reported runs, so it did not act as a separate phase.
+phase. The pre-set-up gate was configured with the same stiffness as set-up and
+was disabled in the reported runs, so it did not act as a separate phase.
 
 \begin{table}[H]
 \centering
@@ -591,7 +590,7 @@ disabled in the reported runs, so it did not act as a separate phase.
 \textbf{Phase} & \(t_1\) & \(t_2\) & \(n_s\) & \(t_1\) & \(t_2\) & \(n_s\) & \(\zeta\)\\
 \midrule
 Orientation and approach & 150 & 150 & 150 & 180 & 180 & 90 & 1.9\\
-Set-up and grinding & 2000 & 2000 & 350 & 5 & 5 & 50 & 1.0\\
+Set-up & 2000 & 2000 & 350 & 5 & 5 & 50 & 1.0\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -649,15 +648,14 @@ Spin transition tolerance & \(0.009\,\mathrm{rad}\) & Maximum remaining normal-a
 Orientation timeout / maximum rate & \(8.0\,\mathrm{s}\) / \(20^\circ\!/\mathrm{s}\) & Bounds the orientation phase.\\
 Descent speed & \(0.1\,\mathrm{m/s}\) & Reference speed along the descent direction.\\
 Maximum descent distance & \(0.640\,\mathrm{m}\) & Terminates an unsuccessful approach.\\
-Surface clearance & \(0.020\,\mathrm{m}\) & Geometric transition from approach to set-up.\\
+Tool clearance, \(h_{\mathrm{clearance}}\) & \(0.020\,\mathrm{m}\) & Minimum tool-face clearance at the transition to set-up.\\
 Minimum set-up time & \(2.0\,\mathrm{s}\) & Earliest activation of the moment-based exit condition.\\
 Set-up timeout & \(5.0\,\mathrm{s}\) & Time-based set-up termination.\\
 Moment-change threshold & \(150\,\mathrm{N\,m}\) & Alternative set-up termination based on the model-estimated external moment.\\
 Set-up push speed & \(0.080\,\mathrm{m/s}\) & Rate of the signed press coordinate.\\
 Set-up push endpoint & \(+0.240\,\mathrm{m}\) & Final signed Cartesian spring reference.\\
 Pre-set-up gate & disabled & Approach transfers directly to set-up.\\
-Pre-grind gate & enabled & Holds the reached pose before the optional grinding transition.\\
-Configured grinding sweep & \(t_2\), \(0.030\,\mathrm{m}\), \(0.2\,\mathrm{Hz}\) & Implemented but not entered in the reported runs.\\
+Pre-grind gate & enabled & Holds the reached pose at the end of the reported set-up sequence.\\
 \end{longtable}
 \endgroup
 
@@ -666,12 +664,13 @@ the configured initial joint posture. The calibrated geometry, the phase gains
 and damping, and the compliance-centre definition were prepared before the
 torque callback started.
 
-Approach ended when the selected tool point reached \(20\,\mathrm{mm}\) above
-the calibrated plane. This transition was defined geometrically rather than by
-a force threshold. At the same instant, the controller stored the TCP pose, the
-orientation reference, the selected tool point, and its projection onto the
-plane. The model-estimated external wrench was additionally stored for the
-optional wrench-change termination condition described in
+Approach ended when the part of the rectangular tool face closest to the
+calibrated plane reached the tool-clearance threshold in
+Table~\ref{tab:experimental_phase_parameters}. This transition was defined
+geometrically rather than by a force threshold. At the same instant, the
+controller stored the TCP pose, the orientation reference, the selected tool
+point, and its projection onto the plane. The model-estimated external wrench
+was additionally stored for the optional wrench-change termination condition described in
 \Cref{subsec:implementation_setup_phase}.
 
 The set-up press endpoint of \(+0.240\,\mathrm{m}\) is a Cartesian spring
@@ -679,16 +678,16 @@ reference beyond the calibrated plane and is not interpreted as a physical
 penetration of the same magnitude. The reference reached it after approximately
 \(3.25\,\mathrm{s}\) and was then held. Throughout set-up the rotational
 reference remained the orientation captured at the clearance transition, so the
-measured alignment rotation is a response to contact rather than the tracking
-of a time-varying orientation command. The TCP-centred and stiffness-variation
+measured set-up response results from the contact interaction rather than from
+tracking a time-varying orientation command. The TCP-centred and stiffness-variation
 conditions used the decoupled Cartesian impedance during set-up. Conditions
 with a displaced \abbr{CoC} used the point-shifted \(6\times6\) impedance
 associated with the selected compliance-centre position.
 
 Every reported contact run ended at the \(5\,\mathrm{s}\) set-up timeout, and
-the moment-change threshold was reached in none of them. The pre-grind gate
-then held the reached pose. No run entered the configured grinding sweep, so
-the recorded data cover orientation, approach, and set-up only.
+the moment-change threshold was reached in none of them. The enabled pre-grind
+gate then held the reached pose, so the recorded data cover orientation,
+approach, and set-up only.
 
 \paragraph{Fixed null-space configuration.}
 \label{subsec:nullspace_parameter_rationale}
@@ -1068,9 +1067,9 @@ The equivalent torque is formed from the point Jacobian alone and carries no
 null-space projector, so it is a joint-torque excitation rather than a
 null-space command. Its image therefore has a component along the six Cartesian
 directions as well as along the redundant direction, and the Cartesian
-impedance resists that component while the disturbance acts. Whether the
-commanded pose was in fact retained is consequently checked by
-\Cref{eq:nullspace_cartesian_retention_criterion} rather than assumed.
+impedance resists that component while the disturbance acts.
+\Cref{eq:nullspace_cartesian_retention_criterion} therefore checks that the
+commanded pose was retained rather than assuming it.
 
 In every trial the selected null-space law was active from the start of the
 pose-hold phase. The first \(5\,\mathrm{s}\) therefore formed a
@@ -1088,8 +1087,8 @@ disturbance had been removed.
 All quantities in this subsection are evaluated over the interval in which the
 internally commanded virtual disturbance acts,
 \(t\in[5,9]\,\mathrm{s}\). The first criterion checks whether the primary
-Cartesian pose-hold task remains approximately unchanged while the disturbance
-and the selected null-space law act. The predefined position-retention
+Cartesian pose-hold objective is maintained while the disturbance and the
+selected null-space law act. The predefined position-retention
 criterion is
 
 \begin{equation}
