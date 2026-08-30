@@ -109,29 +109,29 @@ reconcile the values stated across Chapters 3 and 4.}
 >{\raggedright\arraybackslash}p{0.40\textwidth}
 >{\raggedright\arraybackslash}p{0.28\textwidth}@{}}
 \toprule
-State / quantity & Active stiffness and frame & Configured damping \\
+State / quantity & Active stiffness and frame & Damping role and value \\
 \midrule
 Approach translation &
   \([150,150,150]\,\mathrm{N/m}\), surface \([t_1,t_2,n_s]\) &
-  \([20,20,20]\,\mathrm{N\,s/m}\) \\
+  Fallback: \([20,20,20]\,\mathrm{N\,s/m}\) \\
 Approach rotation &
   \([180,180,90]\,\mathrm{N\,m/rad}\), surface \([t_1,t_2,n_s]\) &
-  \([15,15,12]\,\mathrm{N\,m\,s/rad}\) \\
+  Fallback: \([15,15,12]\,\mathrm{N\,m\,s/rad}\) \\
 Contact Establishment translation &
   \([2000,2000,350]\,\mathrm{N/m}\), surface \([t_1,t_2,n_s]\) &
-  \([10,10,175]\,\mathrm{N\,s/m}\) \\
+  Fallback: \([10,10,175]\,\mathrm{N\,s/m}\) \\
 Contact-Establishment rotation &
   \([5,5,50]\,\mathrm{N\,m/rad}\), surface \([t_1,t_2,n_s]\) &
-  \([10.01,10.01,10]\,\mathrm{N\,m\,s/rad}\) \\
+  Fallback: \([10.01,10.01,10]\,\mathrm{N\,m\,s/rad}\) \\
 Hold translation &
   \(2000\,\mathrm{N/m}\), isotropic base &
-  \(50\,\mathrm{N\,s/m}\) \\
+  Fixed: \(50\,\mathrm{N\,s/m}\) \\
 Hold rotation &
   \(50\,\mathrm{N\,m/rad}\), isotropic base &
-  \(8\,\mathrm{N\,m\,s/rad}\) \\
+  Fixed: \(8\,\mathrm{N\,m\,s/rad}\) \\
 Manual guidance &
   no Cartesian stiffness; joint coordinates &
-  \(0.5\,\mathrm{N\,m\,s/rad}\) joint damping \\
+  Fixed joint damping: \(0.5\,\mathrm{N\,m\,s/rad}\) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -233,8 +233,10 @@ components are listed in \mbox{Table~\ref{tab:experimental_test_cases}} and
 \ReviewMark{green}{The selected mode, gains, probe settings, logging capacity,
 gripper state, and robot-side thresholds are stated explicitly.}
 
-The null-space settings are explained in
-\Cref{subsec:nullspace_parameter_rationale}. The final two rows of
+The fixed null-space configuration of the surface-contact experiments is
+described in \Cref{subsec:nullspace_parameter_rationale}, while the separately
+tested pose-hold settings are described in
+\Cref{subsec:nullspace_pose_hold_configuration}. The final two rows of
 \Cref{tab:nullspace_safety_parameters} are Franka collision/reflex
 thresholds configured through the libfranka collision-behaviour interface.
 Robot-side monitoring applied these thresholds throughout the reported experiments.

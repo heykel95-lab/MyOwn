@@ -1288,6 +1288,13 @@ above already sends every qualification. Corrected on 2026-08-25. The same
 applies to any other scalar formed from a mixed-unit matrix: give the units
 column one entry, and explain the dependence in words beside it.
 
+The block rotation
+\(T_R=\operatorname{diag}(R_{\mathrm{surface}},R_{\mathrm{surface}})\)
+remains local to the inertia-scaled-damping derivation and has no global
+symbol-list entry. The normal response component \(\gamma_n\) remains in the
+surface-frame response vector where that vector is defined, but the global
+list names only the two tangent components evaluated in the thesis.
+
 The units column holds units and nothing else. Words such as `linear`,
 `angular`, `scale dependent` or `mixed` are not units, and a reader scanning
 the column for a unit has to stop and parse them. Where a unit needs
@@ -1993,6 +2000,12 @@ paragraph explaining that the gate gains were inactive were all removed on
 where every reported experiment ended. The state list for inertia-scaled damping is
 scoped the same way: `Reported contact states using inertia-scaled damping —
 Surface Approach and Contact Establishment`.
+
+**Appendix C distinguishes fallback damping from active fixed damping.** In
+the state-and-configuration table, the matrices listed for Surface Approach
+and Contact Establishment are labelled as fallbacks because inertia-scaled
+damping is active in those states. The pose-hold values are labelled as fixed
+damping because those matrices remain active there.
 
 **The tool clearance carries its thesis name in Appendix C too.**
 `Surface clearance` is withdrawn as a row label, written here as a literal
