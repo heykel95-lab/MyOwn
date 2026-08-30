@@ -10,14 +10,6 @@ referenced from here rather than repeated.
 completes it removes the entry in the same turn, so that no later session — and
 no other agent — repeats work that is already in the document.
 
-## Publish the two local thesis commits
-
-`main` is two commits ahead of `origin/main`: `e13b01d` includes the
-`professoremail/` helper files and `ab16fe8` contains the latest thesis and
-figure revisions. The push to `https://github.com/heykel95-lab/MyOwn.git` was
-blocked pending explicit authorisation to publish both commits, including the
-`professoremail/` files and thesis material, to that destination.
-
 ## The campaign archive, and what it now supports
 
 The \(52\) reported settings each carry three repetitions. The two

@@ -6,8 +6,9 @@ controller developed in \mbox{\Cref{ch:theory}}. The implementation combines
 surface-relative geometry, state-dependent reference generation, a selectable
 virtual \abbr{CoC}, null-space control, and real-time data handling.
 Mathematical relations already established in \mbox{\Cref{ch:theory}} are
-referenced here rather than restated, so that this chapter carries only what
-the controller adds to them. The controller is written in C++ using libfranka
+referenced rather than repeated. This chapter focuses on their real-time
+implementation and the additional controller logic. The controller is written
+in C++ using libfranka
 and Eigen and is executed through the Franka Control Interface
 (\mbox{\abbr{FCI}}) at a nominal control period of \mbox{\(1\,\mathrm{ms}\)}.
 Numerical settings used in the experiments are given in
@@ -19,24 +20,24 @@ Numerical settings used in the experiments are given in
 \label{sec:real_time_control_loop}
 
 The software separates configuration and operator interaction from the
-real-time control calculation and from post-run data processing. The complete
+real-time control calculation and from subsequent data processing. The complete
 parameter set is read and validated before a controller session starts, so the
 real-time callback receives only the prepared configuration, preallocated
 state, the robot-model interface, and non-blocking operator requests. File
-output and run evaluation are performed after torque control has stopped.
+output and experiment evaluation are performed after torque control has stopped.
 
 At program start the \mbox{\abbr{FCI}} connection is established, error
 recovery is requested, the selected collision behaviour is applied, and the
 robot model is loaded. A separate keyboard thread receives operator requests
 and transfers them through atomic variables, which keeps terminal input outside
 the real-time callback. Reading and validating the configuration again before
-each session permits settings to be changed between runs without recompiling.
+each session permits settings to be changed between experiments without recompiling.
 
 The operating-state flow begins with robot recovery and controller selection,
 as shown in \mbox{\Cref{fig:controller_state_flow}}. A successful recovery
 opens the selection state. The operator can then select the surface-contact
 sequence, Cartesian pose hold, or manual guidance. An unsuccessful recovery
-ends the program. Operator stop, a configured run-duration limit, a robot-side
+ends the program. Operator stop, a configured experiment-duration limit, a robot-side
 error or reflex, and a communication or control exception provide the common
 transition from any active controller state to Stop.
 
@@ -89,7 +90,7 @@ than to the impedance law. A rotational mask can be applied by resolving
 \mbox{\(e_R\)} in the surface frame, retaining the enabled components, and
 transforming the result back to the base frame; the mask acts on the
 rotational spring error alone, while the damping term continues to use the
-measured angular velocity. The controller also carries two impedance branches,
+measured angular velocity. The controller contains two impedance branches,
 one decoupled and one shifted to a virtual \abbr{CoC}, and the active state
 selects between them.
 
@@ -109,9 +110,9 @@ not part of the nominal controller formulation.
 The implemented controller is used in two configurations in this thesis. The
 surface-contact configuration generates a state-dependent Cartesian reference
 for tool orientation, surface approach, contact establishment and the
-subsequent grinding state. The Cartesian pose-hold configuration instead captures and
-maintains a fixed Cartesian pose, and it carries the separate null-space
-investigation of \mbox{\Cref{sec:nullspace_hold_study}}. Both run the callback
+subsequent grinding state. The Cartesian pose-hold configuration is used for
+the separate null-space investigation of \mbox{\Cref{sec:nullspace_hold_study}}.
+Both execute the callback
 above, and they differ in the reference they generate and in the impedance they
 activate. Each is described in full before the other begins.
 
@@ -121,7 +122,7 @@ activate. Each is described in full before the other begins.
 \label{subsec:implementation_contact_sequence}
 \label{sec:control_phases}
 
-A surface-contact run passes through the controller states drawn in
+A surface-contact experiment passes through the controller states drawn in
 \mbox{\Cref{fig:phase_flow_chart}}. The robot may first move to the stored
 initial joint configuration \mbox{\(q_{\mathrm{init}}\)}. Alternatively,
 operator input \texttt{g} enters Guidance Mode, and input \texttt{s} starts
@@ -133,12 +134,12 @@ resumes that state. Tool Orientation advances to Surface
 Approach after its minimum duration and either satisfaction of the configured
 orientation criteria or the orientation timeout. Surface Approach advances to
 Pre-Contact Hold when the tool clearance reaches its threshold. Reaching the
-maximum approach distance first instead terminates the run. The optional holds
+maximum approach distance first instead terminates the experiment. The optional holds
 remain on the main path in the chart. A disabled hold advances
 without waiting, while operator confirmation releases an enabled hold. Contact
 Establishment advances after the moment-change criterion and minimum duration,
 or through its independent timeout. Pre-Grinding Hold then precedes Grinding.
-The reported runs ended in the enabled hold before Grinding. In the
+The reported experiments ended in the enabled hold before Grinding. In the
 experiment-oriented loop shown, operator input \texttt{t} after Grinding opens
 Test Mode for the next selection of
 \mbox{\(K_p\)}, \mbox{\(K_R\)}, or \mbox{\(r_c\)}. Operator input
@@ -168,7 +169,7 @@ be entered directly from Controller Selection or from Guidance Mode.
   \item Operator-Controlled Hold Before Grinding is optional. It retains the
         reached contact reference while the controller waits for confirmation.
   \item Grinding retains the normal press and superimposes a tangential
-        motion. No reported run entered it.
+        motion. No reported experiment entered it.
 \end{itemize}
 
 A controller state combines a generated Cartesian reference, an active
@@ -484,7 +485,7 @@ its base-frame offset
 \mbox{\(r_{\mathrm{Tool}}=R_{\mathrm{EE}}r_{\mathrm{Tool,EE}}=p_{\mathrm{Tool}}-p_{\mathrm{TCP}}\)}
 changes with the tool orientation. The virtual \abbr{CoC} \mbox{\(p_c\)} of
 \mbox{\Cref{sec:centre_of_compliance}} is a software-defined impedance
-reference and carries no tool geometry.
+reference and is independent of the tool geometry.
 
 \subsection{Operator-Controlled Hold Before Contact Establishment}
 \label{subsec:implementation_pre_contact_hold}
@@ -498,7 +499,7 @@ the current measured state.
 \label{sec:surface_frame_gains}
 \label{subsec:phase_dependent_gain_construction}
 
-In the reported surface-contact runs, contact establishment begins directly at the clearance
+In the reported surface-contact experiments, contact establishment begins directly at the clearance
 transition. Its Cartesian reference is constructed from the selected tool
 point and end-effector pose captured at that instant. The captured orientation
 \mbox{\(R_{\mathrm{EE,clearance}}\)} and TCP position
@@ -640,7 +641,7 @@ The model-estimated external wrench supplied by libfranka is stored at the
 clearance transition for the optional termination condition. After the
 configured minimum duration, contact establishment can terminate when the estimated external
 moment change exceeds the configured threshold, or through the independent
-timeout. Every reported contact run terminated through the timeout, so that
+timeout. Every reported contact experiment terminated through the timeout, so that
 threshold did not affect the reported results. During the operator-controlled
 hold before grinding, the controller remains in the contact-establishment branch while waiting
 for confirmation. The coupled impedance stays active where it was selected.
@@ -722,7 +723,7 @@ are specified in \mbox{\Cref{ch:methodology}} and
 The hold state begins when Contact Establishment satisfies its moment-change
 condition after the minimum duration, or when its timeout is reached. The
 controller retains the reached contact-establishment reference and waits for
-operator confirmation. Every reported surface-contact run ended in this state,
+operator confirmation. Every reported surface-contact experiment ended in this state,
 and Grinding was not entered.
 
 \subsection{Grinding}
@@ -731,7 +732,7 @@ and Grinding was not entered.
 
 After operator confirmation, the Grinding state retains the normal press and
 superimposes a smooth tangential motion using the decoupled impedance. No
-reported run entered this state.
+reported experiment entered this state.
 
 
 \section{Cartesian Pose Hold}
@@ -807,7 +808,7 @@ Everything the robot needs before torque control is completed before it starts:
 the connection, error recovery, the collision configuration, the configuration
 validation, the gripper action and the logging-buffer allocation. A libfranka
 joint-motion generator then brings the robot to a configured initial joint
-posture, or the run starts from a pose captured after manual guidance, with the
+posture, or the experiment starts from a pose captured after manual guidance, with the
 posture used in the reported experiments recorded in
 \mbox{\Cref{app:controller_parameters}}. Operator input and file writing are
 handled outside the real-time thread, so neither adds a blocking operation to

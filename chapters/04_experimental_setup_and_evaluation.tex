@@ -102,7 +102,7 @@ thresholds of \(240\,\mathrm{N}\) or \(240\,\mathrm{N\,m}\), according to the
 component type. These thresholds supplied the Franka reflex mechanism and were
 kept unchanged throughout the reported measurements.
 
-The complete run-specific controller configuration is given in
+The complete experiment-specific controller configuration is given in
 \Cref{app:controller_parameters}.
 
 
@@ -425,7 +425,7 @@ whose minimiser is the eigenvector of
 \(\sum_{i<j}(R_{\mathrm{cal},i}-R_{\mathrm{cal},j})^\top
 (R_{\mathrm{cal},i}-R_{\mathrm{cal},j})\) belonging to the smallest eigenvalue.
 The sign was chosen toward nominal \(+Z_{\mathrm{EE}}\). The final value used in
-every reported run was
+every reported experiment was
 
 \begin{equation}
 n_{\mathrm{Tool,EE}}
@@ -450,7 +450,7 @@ offset.
 operation. Flat contact requires that base-frame direction to coincide with the
 inward surface normal \(-n_s\). The commanded spin about the desired
 tool axis, measured from \(t_1\), was \(90^\circ\) for all reported
-runs. In the flat target orientation the projected long face axis is aligned
+experiments. In the flat target orientation the projected long face axis is aligned
 with the \(t_2\) line.
 
 \begin{figure}[H]
@@ -556,9 +556,9 @@ common experimental basis before the individual cases are introduced in
 The state-dependent stiffness and damping matrices are diagonal in the configured surface frame
 \([t_1,t_2,n_s]\) before any compliance-centre shift.
 \Cref{tab:experimental_common_gains} gives the entries used by every reported
-contact run, together with the damping ratio \(\zeta\) of the corresponding
+contact experiment, together with the damping ratio \(\zeta\) of the corresponding
 state. The optional operator-controlled hold before Contact Establishment used the same
-stiffness as Contact Establishment. It was disabled in the reported runs and
+stiffness as Contact Establishment. It was disabled in the reported experiments and
 therefore was not entered.
 
 \begin{table}[H]
@@ -597,45 +597,45 @@ throughout the surface-contact experiments unless explicitly stated otherwise.
 
 \begingroup
 \small
-\begin{longtable}{@{}p{0.43\textwidth}p{0.20\textwidth}p{0.27\textwidth}@{}}
+\begin{longtable}{@{}p{0.68\textwidth}p{0.25\textwidth}@{}}
 \caption{Common state-transition and trajectory parameters.}
 \label{tab:experimental_phase_parameters}
 \label{tab:experimental_case_dh_parameters}\\
 \toprule
-\textbf{Quantity} & \textbf{Value} & \textbf{Role}\\
+\textbf{Quantity} & \textbf{Value}\\
 \midrule
 \endfirsthead
 \caption[]{Common state-transition and trajectory parameters (continued).}\\
 \toprule
-\textbf{Quantity} & \textbf{Value} & \textbf{Role}\\
+\textbf{Quantity} & \textbf{Value}\\
 \midrule
 \endhead
 \midrule
 \endfoot
 \bottomrule
 \endlastfoot
-Minimum orientation time & \(1.0\,\mathrm{s}\) & Prevents an immediate state transition.\\
-Tool-axis transition tolerance & \(0.016\,\mathrm{rad}\) & Maximum remaining tool-axis error before descent.\\
-Spin transition tolerance & \(0.009\,\mathrm{rad}\) & Maximum remaining normal-axis spin error.\\
-Orientation timeout / maximum rate & \(8.0\,\mathrm{s}\) / \(20^\circ\!/\mathrm{s}\) & Bounds Tool Orientation.\\
-Descent speed & \(0.1\,\mathrm{m/s}\) & Reference speed along the descent direction.\\
-Maximum descent distance & \(0.640\,\mathrm{m}\) & Terminates an unsuccessful approach.\\
-Tool clearance, \(h_{\mathrm{clearance}}\) & \(0.020\,\mathrm{m}\) & Minimum tool-face clearance at the transition to Contact Establishment.\\
-Minimum contact-establishment time & \(2.0\,\mathrm{s}\) & Earliest activation of the moment-based exit condition.\\
-Contact-establishment timeout & \(5.0\,\mathrm{s}\) & Time-based contact establishment termination.\\
-Moment-change threshold & \(150\,\mathrm{N\,m}\) & Alternative contact establishment termination based on the model-estimated external moment.\\
-Contact-establishment push speed & \(0.080\,\mathrm{m/s}\) & Rate of the signed press coordinate.\\
-Contact-establishment push endpoint & \(+0.240\,\mathrm{m}\) & Final signed Cartesian spring reference.\\
-Operator-controlled hold before Contact Establishment & disabled & Surface Approach transfers directly to Contact Establishment.\\
-Operator-controlled hold before Grinding & enabled & Holds the reached pose after Contact Establishment.\\
+Minimum orientation time & \(1.0\,\mathrm{s}\)\\
+Tool-axis transition tolerance & \(0.016\,\mathrm{rad}\)\\
+Spin transition tolerance & \(0.009\,\mathrm{rad}\)\\
+Orientation timeout / maximum rate & \(8.0\,\mathrm{s}\) / \(20^\circ\!/\mathrm{s}\)\\
+Descent speed & \(0.1\,\mathrm{m/s}\)\\
+Maximum descent distance & \(0.640\,\mathrm{m}\)\\
+Tool clearance, \(h_{\mathrm{clearance}}\) & \(0.020\,\mathrm{m}\)\\
+Minimum Contact Establishment time & \(2.0\,\mathrm{s}\)\\
+Contact Establishment timeout & \(5.0\,\mathrm{s}\)\\
+Moment-change threshold & \(150\,\mathrm{N\,m}\)\\
+Press speed & \(0.080\,\mathrm{m/s}\)\\
+Press endpoint & \(+0.240\,\mathrm{m}\)\\
+Hold before Contact Establishment & disabled\\
+Hold before Grinding & enabled\\
 \end{longtable}
 \endgroup
 
-\Added{Before each run, the active parameter set was loaded and the robot was
+\Added{Before each experiment, the active parameter set was loaded and the robot was
 moved to the configured initial posture. Surface Approach ended when the minimum
 rectangular-tool clearance reached \mbox{\(h_{\mathrm{clearance}}\)}. Contact
 Establishment then advanced the Cartesian spring reference while retaining the
-orientation captured at the clearance transition. Every reported run ended at
+orientation captured at the clearance transition. Every reported contact experiment ended at
 the \mbox{\(5\,\mathrm{s}\)} timeout and subsequently entered the
 operator-controlled hold before Grinding.}
 
@@ -652,15 +652,15 @@ active together throughout these measurements, with
 The recorded signals and \abbr{CSV} structure are documented in
 \Cref{sec:recorded_signals} and \Cref{app:recorded_data}.
 
-Three repetitions were recorded for each parameter setting. Results are
+Each parameter setting was evaluated in three repeated trials. Results are
 reported as arithmetic means, with sample standard deviations given for the
 main comparisons and where relevant in the supporting checks. The main
-surface-contact study comprises \(111\) runs across \(37\) settings. A further
-\(45\) runs across \(15\) settings were performed as supporting checks and are reported in
-\Cref{app:supporting_contact_checks}. In total, \(156\) surface-contact runs
-across \(52\) settings were recorded. No run was discarded. Together with the
-\(12\) pose-hold runs of \Cref{sec:nullspace_hold_study}, the complete
-experimental data set contains \(168\) recorded runs.
+surface-contact study comprises \(111\) measurements across \(37\) parameter settings. A further
+\(45\) measurements across \(15\) parameter settings were recorded as supporting checks and are reported in
+\Cref{app:supporting_contact_checks}. In total, \(156\) surface-contact measurements
+were recorded across \(52\) parameter settings. No experiment was discarded. Together with the
+\(12\) pose-hold trials of \Cref{sec:nullspace_hold_study}, the complete
+experimental data set contains \(168\) recorded measurements.
 
 Within each controlled comparison, the calibrated geometry, common state
 parameters, fixed stiffness and damping, and null-space settings remained unchanged. Only the
@@ -691,28 +691,27 @@ are treated as supporting checks in
 \Cref{app:supporting_contact_checks}.
 
 Table~\ref{tab:experimental_test_cases} summarises the parameter variations of
-the main study. Each listed setting was repeated three times unless it is a
+the main study. Each listed setting was evaluated in three trials unless it is a
 reference condition counted with an earlier case.
 
 \begingroup
-\scriptsize
-\setlength{\tabcolsep}{4pt}
+\small
+\setlength{\tabcolsep}{3.5pt}
 \begin{longtable}{@{}
->{\centering\arraybackslash}p{0.075\textwidth}
->{\raggedright\arraybackslash}p{0.145\textwidth}
->{\raggedright\arraybackslash}p{0.17\textwidth}
->{\raggedright\arraybackslash}p{0.22\textwidth}
->{\centering\arraybackslash}p{0.06\textwidth}
->{\raggedright\arraybackslash}p{0.17\textwidth}@{}}
+>{\centering\arraybackslash}p{0.07\textwidth}
+>{\raggedright\arraybackslash}p{0.15\textwidth}
+>{\raggedright\arraybackslash}p{0.23\textwidth}
+>{\raggedright\arraybackslash}p{0.31\textwidth}
+>{\centering\arraybackslash}p{0.07\textwidth}@{}}
 \caption{Main surface-contact cases and parameter variations.}
 \label{tab:experimental_test_cases}\\
 \toprule
-\textbf{Case} & \textbf{Varied quantity} & \textbf{Pose-based initial angular deviation} & \textbf{Tested values} & \textbf{Runs} & \textbf{Evaluated effect}\\
+\textbf{Case} & \textbf{Varied quantity} & \textbf{Pose-based initial angular deviation} & \textbf{Tested values} & \textbf{Trials}\\
 \midrule
 \endfirsthead
 \caption[]{Main surface-contact cases and parameter variations (continued).}\\
 \toprule
-\textbf{Case} & \textbf{Varied quantity} & \textbf{Pose-based initial angular deviation} & \textbf{Tested values} & \textbf{Runs} & \textbf{Evaluated effect}\\
+\textbf{Case} & \textbf{Varied quantity} & \textbf{Pose-based initial angular deviation} & \textbf{Tested values} & \textbf{Trials}\\
 \midrule
 \endhead
 \midrule
@@ -721,33 +720,30 @@ reference condition counted with an earlier case.
 \endlastfoot
 A & \abbr{CoC} at the TCP & \(0.74^\circ\); \(+9.31^\circ\) and
 \(-9.41^\circ\) about \(t_1\); \(+10.05^\circ\) and \(-9.55^\circ\) about
-\(t_2\) & \(r_c=0\). & 15 & Contact response
-without \abbr{CoC} coupling.\\
+\(t_2\) & \(r_c=0\). & 15\\
 \addlinespace
 
 B & Rotational stiffness & \(+9.31^\circ\) to \(+9.32^\circ\) about
 \(t_1\); \(+10.02^\circ\) to \(+10.05^\circ\) about \(t_2\) &
-Command-axis \(K_R=15\) and \(50\,\mathrm{N\,m/rad}\). & 12 & Influence of
-rotational stiffness.\\
+Command-axis \(K_R=15\) and \(50\,\mathrm{N\,m/rad}\). & 12\\
 \addlinespace
 
 C & Translational stiffness & \(+9.24^\circ\) to \(+9.31^\circ\) about
 \(t_1\); \(+10.02^\circ\) to \(+10.05^\circ\) about \(t_2\) &
-Cross-axis \(K_p=300\) and \(800\,\mathrm{N/m}\). & 12 & Influence of
-translational stiffness.\\
+Cross-axis \(K_p=300\) and \(800\,\mathrm{N/m}\). & 12\\
 \addlinespace
 
 D & Tangential \abbr{CoC} position & About \(+9.32^\circ\) and
 \(-9.36^\circ\) about \(t_1\); about \(+10.03^\circ\) and
 \(-9.56^\circ\) about \(t_2\) & \(-40\), \(-20\), \(-10\),
 \(+10\), \(+20\), \(+40\,\mathrm{mm}\) along the tangent perpendicular to the
-commanded rotation. & 72 & Direction and sign dependence.\\
+commanded rotation. & 72\\
 
 \end{longtable}
 \endgroup
 
-The run counts in Table~\ref{tab:experimental_test_cases} give the three
-scheduled repetitions of each setting. A condition that a case shares with an
+The trial counts in Table~\ref{tab:experimental_test_cases} include three
+repeated trials for each setting. A condition that a case shares with an
 earlier one is counted with that earlier case.
 
 In Cases~B and~C, only one Cartesian stiffness entry was varied within each
@@ -869,9 +865,7 @@ negative one, and its magnitude is the size of the correction. Reading the sign
 alone is therefore not enough, since \(\theta_{0,t_i}\) fixes which direction
 counts as correcting. The response is primary because it is obtained directly
 from the measured end-effector orientations and requires no independent
-measurement of the physical surface normal or tool orientation. The
-pose-based and geometry-based consistency checks are reported in
-\Cref{app:metric_agreement} and are not used for the main comparisons.
+measurement of the physical surface normal or tool orientation.
 
 
 % ============================================================================
@@ -911,7 +905,7 @@ Rotational damping      & \(D_{R,\mathrm{hold}}\) & \(8\,\mathrm{N\,m\,s/rad}\)\
 \end{tabular}
 \end{table}
 
-Four null-space settings were tested with three repetitions each: no null-space
+Four null-space settings were tested in three trials each: no null-space
 torque, projected damping with
 \(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\), sigma conditioning with
 \(k_\sigma=1.5\,\mathrm{N\,m}\), and sigma conditioning with

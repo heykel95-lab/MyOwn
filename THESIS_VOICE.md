@@ -187,7 +187,7 @@ makes them stand out against the formal text around them.
 | contact-establishment duration deserves confirmation | contact-establishment duration should be verified |
 | which bounds what the present arrangement can resolve | improvements of approximately this magnitude were therefore not interpreted as effects of the commanded tilt |
 | carry the controller / carry the contribution | are used in the controller / present the corresponding results |
-| the experiments probe that coupling | the effects of … were investigated in 75 contact runs |
+| the experiments probe that coupling | the effects of … were investigated in 75 contact experiments |
 | breaks that assumption | the actual surface pose may differ from the programmed pose |
 | that angle has nowhere to go | that angular deviation cannot be absorbed by the commanded motion |
 | Direction is what a contact task needs. | A contact task requires this compliance to be direction dependent. |
@@ -196,11 +196,17 @@ makes them stand out against the formal text around them.
 | whether the trade was struck well | the reported experiments do not evaluate that trade-off |
 | a bounded engineering seed | an initial engineering setting rather than an optimised parameter |
 | quietly averaged | the record was inspected and the discrepancy resolved before analysis |
-| Nothing was discarded. | All 75 runs were retained for analysis. |
+| Nothing was discarded. | All 75 measurements were retained for analysis. |
 | proves nothing about / settles nothing about | does not isolate / is not evaluated for |
 | would invert the story | is therefore not plotted as … unless … is first reconstructed |
 | deserves particular care | requires particular care |
 | Geometric sense in a stiffness matrix does not make it fit for real hardware | A geometrically valid stiffness matrix does not by itself ensure acceptable hardware behaviour |
+
+Use `carries` only where a signal or physical quantity is actually transmitted
+or where a mathematical quantity represents a defined property. Do not use it
+as a generic substitute for `contains`, `uses`, `reports`, `is used for`, or
+`is independent of` when describing chapter contents, controller structure,
+experimental conditions, or the role of a configuration.
 
 Note the last row. `bounds what the arrangement can resolve` is abstract; the
 replacement says what was actually *done* with the baseline. Prefer the concrete
@@ -421,7 +427,7 @@ paragraph that still has an ordinary sentence in it is fine.
 hardware cannot be verified from the code, the logs, or the author, it does not
 go in the thesis at all — not as a hedge, not as a plausible-sounding filler,
 not as a placeholder to firm up later. Leave the gap and say it is a gap.
-Inventing a limitation, an assumption, or a run count to complete a sentence
+Inventing a limitation, an assumption, or a measurement count to complete a sentence
 pattern is a worse fault than the missing sentence.
 
 ## The seven flagged patterns
@@ -652,7 +658,7 @@ real number in:
 > the compliance-centre shift; Chapter~\ref{ch:implementation} gives their
 > real-time realisation on the Panda. The experimental chapters carry the
 > contribution: Chapter~\ref{ch:methodology} documents the calibrated-plane
-> campaign of 75 contact runs over 25 settings, and
+> campaign of 75 contact measurements over 25 settings, and
 > Chapter~\ref{ch:results_discussion} reports and interprets the measurements.
 > Chapter~\ref{ch:conclusion} states what each case showed.
 
@@ -714,11 +720,11 @@ that, and it also removes the author from the page entirely.
 
 **Rule.** Past tense for what was done to the hardware: `The plane was
 determined from one seated pose`, `The controller computer ran Ubuntu 20.04.3`, `The optional
-pre-grind gate stayed disabled for every reported run`. Present tense stays for
+pre-grind gate stayed disabled for every reported experiment`. Present tense stays for
 the controller's standing behaviour, for equations, and for what a table shows.
 
-**The run procedure is the exception.** §4.5 describes the standing sequence
-every run followed, which is closer to an algorithm than to an observation, and
+**The experimental procedure is the exception.** §4.5 describes the standing sequence
+every experiment followed, which is closer to an algorithm than to an observation, and
 the author's preference is the present indicative there: `The active parameter
 set is recorded, and the Panda moves to the configured initial joint pose`. What
 must not appear is the **imperative** — `Record the parameter set`, `Move the
@@ -879,12 +885,12 @@ volunteering the thing that weakens your own number.
 
 ### Report exclusions and carry the denominator
 
-Runs that failed, were aborted, or were discarded are data about the method.
+Experiments that failed, were aborted, or were discarded are data about the method.
 State how many, why, and what the surviving denominator is — then make every
 later percentage use it.
 
-> Of the \(N\) attempted runs, \(M\) were discarded after a reflex stop during
-> the ramp phase. The remaining \(75\) runs are the basis of every value
+> Of the \(N\) attempted experiments, \(M\) were discarded after a reflex stop during
+> the ramp phase. The remaining \(75\) measurements are the basis of every value
 > reported below.
 
 Fill in the real counts or drop the sentence; do not invent a number to make
@@ -893,7 +899,7 @@ information.
 
 ### Label an arbitrary choice as arbitrary
 
-Some settings exist to make the experiment run. Saying so costs nothing and
+Some settings support experimental operation. Saying so costs nothing and
 protects the reader from reading a design intent that was never there.
 
 > The \(12\,\mathrm{s}\) phase duration was chosen to let the contact settle
@@ -1047,7 +1053,7 @@ Search the changed `.tex` files for each of these:
   `another difficulty`
 - `automatic`, `automatically` — banned in prose by
   THESIS_WRITING_GUIDE.md, *Naming a technical quantity*. Name the thing
-  instead: `the run sequence`, `error recovery`, `the gripper action`,
+  instead: `the controller state sequence`, `error recovery`, `the gripper action`,
   `the internally commanded disturbance experiment`. Hits inside a listing,
   a `\label{}`, or a figure filename are the permitted exceptions.
 - `is a right-handed orthogonal system`, and any other sentence that defines a

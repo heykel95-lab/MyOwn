@@ -134,13 +134,13 @@ response variation, an assisting tangential displacement lies perpendicular to
 the required rotation direction, and reversing the sign of the initial angular
 deviation requires the displacement on the opposite side of the TCP.
 
-**The run count does not go in the Abstract.** A supervisor pass briefly asked
+**The measurement count does not go in the Abstract.** A supervisor pass briefly asked
 for it, and it was added; the author then removed it as repetitive, which it
 was — the same figure was appearing in the Abstract, the Kurzfassung, the
 Introduction, twice in the results chapter, and the Conclusion. **State the
-total number of runs once, in the methodology chapter, and nowhere else.**
-Elsewhere write `were evaluated experimentally`, `all reported contact runs`,
-`the worst run`. A count that appears six times reads as padding, not as
+total number of measurements once, in the methodology chapter, and nowhere else.**
+Elsewhere write `were evaluated experimentally`, `all reported contact experiments`,
+or `the largest measured response`. A count that appears six times reads as padding, not as
 evidence.
 
 Write the Abstract in four parts, in order: the engineering problem; the
@@ -229,9 +229,9 @@ The main contact argument contains Cases A--D only: the TCP-centred baseline,
 rotational stiffness, cross-axis translational stiffness, and tangential
 compliance-centre position. The initial angular-deviation magnitude comparison is a
 supporting appendix check together with the tool-axis and intermediate-direction
-checks. The main study therefore contains 37 settings and 111 runs; the three
-supporting checks contain 15 settings and 45 runs. The complete surface-contact
-total is 52 settings and 156 runs.
+checks. The main study therefore contains 37 settings and 111 measurements; the three
+supporting checks contain 15 settings and 45 measurements. The complete surface-contact
+total is 52 settings and 156 measurements.
 
 Chapter 5 carries one comparison figure for each main case and retains the
 Case-D commanded-wrench mechanism figure. It does not repeat those plots as
@@ -533,7 +533,7 @@ circulation, the settled choices are:
   `compliance_center_offset_ee` and held constant in end-effector coordinates.
   The surface-frame branch may be described as an implemented option, but it is
   not an experimental condition. The former definition-frame comparison and
-  its three settings are excluded from the thesis results and run totals.
+  its three settings are excluded from the thesis results and measurement totals.
 
 - **surface frame** for the directional frame \(\{S\}\) the contact
   experiments are resolved in, with
@@ -743,7 +743,7 @@ circulation, the settled choices are:
 
   **The physical tool--surface angle is unmeasured.** Let
   \(n_{\mathrm{phys}}\) denote the physical surface normal. The reported
-  campaign contains no independent run-wise measurement of that normal or of
+  campaign contains no independent per-experiment measurement of that normal or of
   tool motion relative to the gripper. Do not introduce a symbol or equation
   for the resulting physical entry angle. The quantity
   \(\theta_{0,t_i}\) is the achieved pose-based condition relative to the
@@ -804,7 +804,7 @@ information:
 
 | Was | Now |
 |---|---|
-| the automatic sequence | the run sequence |
+| the automatic sequence | the controller state sequence |
 | the automatic disturbance experiment | the internally commanded disturbance experiment |
 | automatic error recovery | error recovery |
 | automatic leading-feature selection | leading-feature selection |
@@ -856,7 +856,20 @@ parameter values, and it is the name the controller parameter carries. Literal
 identifiers such as `grind_sweep_enabled` keep their spelling in listings and
 in the parameter appendix.
 
-**A run is recorded or it is not; it is never `newly recorded`.** The thesis
+**Use `experiment`, `measurement`, or `trial`; `run` is not thesis prose.** Use
+`experiment` for the complete test procedure or one executed contact condition,
+`trial` for one repetition of a parameter setting, and `measurement` when
+counting recorded observations in an experimental data set. Thus write
+`reported experiments`, `contact experiment`, `pose-hold trial`, `before each
+experiment`, and `experiment-specific configuration`. State repeated settings
+as `Each parameter setting was evaluated in three repeated trials` or `Three
+repeated measurements were performed for each parameter setting`. Use `number
+of experiments` or `number of trials`, and write `no experiment was discarded`.
+`Run` remains only where it is part of literal code, a software identifier, a
+command, a filename, or an exact logged field name. In running prose about
+software execution, use `execute`.
+
+**A measurement is recorded or it is not; it is never `newly recorded`.** The thesis
 does not sort its measurements by when they were captured, so `newly recorded`,
 `already recorded`, `previously recorded` and `re-recorded` all invite a reader
 to look for an ordering the thesis never reports, and they read as an account of
@@ -869,11 +882,11 @@ or say nothing about recording at all:
 | the three scheduled repetitions for each newly recorded setting | the three scheduled repetitions of each setting |
 | the \(5\,\mathrm{N\,m/rad}\) condition … is not a separate measurement | the \(5\,\mathrm{N\,m/rad}\) condition is the corresponding zero-lever reference of Case~A |
 
-The same applies to the run-count bookkeeping. Where one case reuses a
+The same applies to the measurement-count bookkeeping. Where one case reuses a
 condition from an earlier case, state the relation between the cases — `a
 condition that a case shares with an earlier one is counted with that earlier
 case` — and not the recording history that produced it. Never write `not
-counted again`, `not recorded twice`, or `an additional run`.
+counted again`, `not recorded twice`, or `an additional measurement`.
 
 Do not build a name out of the state a quantity happens to be in. The term
 `frozen` is not used in thesis prose. State when a quantity is selected and
@@ -886,6 +899,14 @@ Symbols follow the same rule. One point, one subscript: \(p_c\), \(r_c\),
 
 ## Mathematical notation
 
+**The global symbol list contains important recurring quantities, not every
+temporary variable in a derivation.** A local axis--angle pair, an intermediate
+matrix, a one-equation time bound, or a figure-only wrench projection is defined
+beside its use and omitted from the list. Removing such an entry never removes
+the symbol from the mathematics. The list retains the surface geometry,
+input--condition--response chain, compliance-centre quantities, controller
+matrices, and null-space quantities used across chapters.
+
 At the first equation in which a new symbol appears, introduce it in the
 surrounding running text by giving the quantity name, the symbol, and its short
 role in that equation. The definition may appear immediately before or after
@@ -894,8 +915,8 @@ expression alone. Do not repeat a definition that has already been established
 unless the symbol is assigned a different local meaning.
 
 Whenever running text names a defined mathematical quantity, place its symbol
-immediately after that name. For example, write `the alignment angle
-\(\theta_{\mathrm{align}}\)` and `the commanded joint torque
+immediately after that name. For example, write `the commanded orientation
+offset \(\theta_{\mathrm{cmd}}\)` and `the commanded joint torque
 \(\tau_{\mathrm{cmd}}\)`. This rule applies to repeated uses as well as to the
 first definition. It does not apply to generic physical nouns that do not denote
 a specific defined variable, or to an unambiguous pronoun or shortened reference
@@ -955,7 +976,7 @@ stated once.
 
 **\(a_s\) is withdrawn, with \(\tilde t_1\).** Both are written here as
 literal strings so a rename cannot revive them. The first-tangent hint is
-\(e_{x_0}\) in every reported run and Appendix C records it as
+\(e_{x_0}\) in every reported experiment and Appendix C records it as
 `surface_tangent1_hint_base = [1,0,0]`, so a separate theory symbol for it
 added a layer of abstraction over a constant. Section 2.5 now projects
 \(e_{x_0}\) directly. **Chapter 3 keeps the concept, in words**: the hint is
@@ -1085,12 +1106,14 @@ carries the frame as well as the instant, matching
 offset is retained or held constant; it does not build a name from the state of
 the quantity.
 
-**The base-frame unit axes are \(e_{x_0}\), \(e_{y_0}\), \(e_{z_0}\).**
+**The base-frame unit axes carry the base-frame index:** \(e_{x_0}\),
+\(e_{y_0}\), and \(e_{z_0}\).
 Section 2.1 names the base axes \(x_0\), \(y_0\), \(z_0\), so their unit
 vectors carry the same index. Chapter 4 and the parameter appendix used bare
 `e_x` and `e_z` for the same vectors until 2026-08-26; both were harmonised,
 along with the \(n_s=R_{\mathrm{EE}}e_{z_0}\) box in Figure 4.2, and the
-symbol list carries one row for the family.
+symbol list retains only \(e_{x_0}\) and \(e_{z_0}\), which recur in the
+document. The unused \(e_{y_0}\) entry is omitted.
 
 **Section 2.6 is settled, and its shape is deliberate.** Agreed 2026-08-26:
 the section opens by saying *why* the frames differ — the impedance law is
@@ -1333,9 +1356,9 @@ about geometry and measurement. Say what happens and to what: `that direction
 orientation`, `the controller forms`, `during contact establishment`, `while the press
 continues`.
 
-**The elapsed-time sense keeps the words.** The logged `Run time` column and
-its row in the Chapter 3 table name the seconds since the run started, which is
-a physical quantity. Do not sweep those away with the ban.
+Use `elapsed time` for the seconds since an experiment started. Preserve a
+different label only when it is the exact name of a logged field or literal
+software identifier.
 
 ## Repository and software language
 
@@ -1373,14 +1396,14 @@ visible from inside any single chapter:
   congruence transform of a diagonal matrix is not diagonal. Naming the frame
   is not enough — the numbers must reconcile.
 - **Which duration.** A \(4.0\,\mathrm{s}\) contact-establishment timeout was stated in three
-  places in the methodology chapter. Every recorded run of every campaign used
+  places in the methodology chapter. Every recorded experiment used
   \(5.0\,\mathrm{s}\); the \(4.0\,\mathrm{s}\) figure matched no parameter file.
 - **Which plane.** The implementation chapter gave the active baseline surface
   point and tilt angles as \(p_s=(0.526,0.017,0.002)\,\mathrm{m}\),
   \(a=-0.474^\circ\), \(b=2.270^\circ\), which appear in no parameter file,
-  no calibration overlay, and no run record. The configured reference plane is
+  no calibration overlay, and no experiment record. The configured reference plane is
   \(p_s=(0.5153,-0.1072,0.0031)\,\mathrm{m}\), \(a=-1.585^\circ\),
-  \(b=+0.988^\circ\), used by all 193 recorded runs.
+  \(b=+0.988^\circ\), used by all 193 recorded measurements.
 - **Which procedure.** The physical plane comes from **one seated pose of the
   complete tool face**, as `tools/measure_plane.cpp` performs it. The plane
   normal is the *configured* end-effector axis carried into the base frame, and
@@ -1390,7 +1413,7 @@ visible from inside any single chapter:
   \(n_s=R_{\mathrm{EE}}n_{\mathrm{EE}}\), which this guide asserted until
   2026-08-24. The two differ by the \(1.56^\circ\) between the calibrated tool
   normal and \(+Z_{\mathrm{EE}}\), and Section 4.2.1 states that difference as a
-  calibration offset common to every reported run. The plane point is the
+  calibration offset common to every reported experiment. The plane point is the
   tool-face centre of that same pose,
   \(p_s=p_{\mathrm{EE}}+R_{\mathrm{EE}}r_{\mathrm{face,EE}}\). The repository
   contains no plane-fitting routine of any kind. The **tool-normal seatings**
@@ -1411,7 +1434,7 @@ visible from inside any single chapter:
   measurement of the physical plane normal; it was taken from the nominal
   end-effector axis at one seated pose; the \(1.56^\circ\) is the difference
   between those two orientation references and applies equally to every
-  reported run; and because it limits an absolute interpretation of the
+  reported experiment; and because it limits an absolute interpretation of the
   physical tool--surface angle, the main comparisons report the signed
   end-effector contact-establishment rotation instead. That last clause is the point of the
   passage — the calibration limitation is the reason the primary metric is what
@@ -1427,7 +1450,7 @@ chapters and confirm a single answer.
 
 **State the levels actually tested, never an illustrative sweep.** Section 4.4.4
 carried a generic five-level scaling \(\alpha\in\{0.5,0.75,1,1.25,1.5\}\) and
-then spent a paragraph explaining that this was *not* what was run. A
+then spent a paragraph explaining that this was *not* what was executed. A
 hypothetical set up only to be dismissed wastes the reader and invites the
 question of which numbers are real. Give the tested values: \(5\), \(15\) and
 \(50\,\mathrm{N\,m/rad}\); \(300\), \(800\) and \(2000\,\mathrm{N/m}\).
@@ -1445,7 +1468,7 @@ diagnostic log existed to support offline inspection and appeared in three
 chapters and two appendices before being removed. If a facility did not
 contribute to a reported result, it does not need documenting. The same applies
 to exception handling, persistence ordering, and any other detail that matters
-only when debugging a run.
+only when debugging an experiment.
 
 **Do not trim a derivation the reader needs.** An earlier pass reduced the
 orientation-error and forward-kinematics sections to a few lines each, on the
@@ -1469,7 +1492,7 @@ Chapter 3 previously broke this in both directions at once. It numbered a
 configuration condition (`tool-frame definition ⊕ surface-frame definition =
 true`), a start-up order (`FCI connection → error recovery → collision
 configuration → robot model`), a return statement, a ring-buffer row, and a
-post-run output chain — none of which is a mathematical relation — while
+subsequent output chain — none of which is a mathematical relation — while
 leaving genuine implementation relations in prose. All five have been rewritten
 as sentences. Do not reintroduce that form.
 
@@ -1536,7 +1559,7 @@ software entry route.
 
 **A controller flow chart is a state machine with only the required experiment
 orchestration shown around it.** Every black rectangular box is an operating or
-controller state. Blue rounded boxes distinguish run initialisation and Test
+controller state. Blue rounded boxes distinguish controller initialisation and Test
 Mode from those states. Box text stays short and never becomes a sentence or
 paragraph. Every arrow states a compact `if` condition and
 uses the thesis symbols where they are defined. Place that condition beside a
@@ -1547,13 +1570,13 @@ minimum-time and orientation logic. Surface Approach advances at
 \(h_{\mathrm{Tool}}\leq h_{\mathrm{clearance}}\) and stops if
 \(s_{\mathrm{app}}\geq s_{\mathrm{app,max}}\) first. The Contact Establishment
 arrow uses \(t\geq t_{\mathrm{end}}\), while the body text retains the complete
-minimum-time, moment-change and timeout logic. Every reported run ended
+minimum-time, moment-change and timeout logic. Every reported experiment ended
 through the timeout.
 The optional holds remain on the single main path so that the state sequence is
 immediately readable. Do not draw or label separate `hold enabled` and `hold
 disabled` branches. A disabled hold advances without waiting, while operator
 confirmation releases an enabled hold to the following state. The reported
-runs are marked as ending in Pre-Grinding Hold; Grinding is shown because it is
+experiments are marked as ending in Pre-Grinding Hold; Grinding is shown because it is
 implemented, not because it was entered experimentally.
 
 Use the suffix `end`, never `out`, for any visible time variable that marks the
@@ -1573,13 +1596,13 @@ surface-contact experiments, name Surface Approach and Contact Establishment
 as the states that used inertia-scaled damping.
 
 **Termination is shared rather than repeated as prose beside every state.**
-Operator stop, the configured run-duration limit, a robot-side error or reflex,
+Operator stop, the configured experiment-duration limit, a robot-side error or reflex,
 and communication or control exceptions lead from every active state to the
 red Stop state. Recovery failure also leads to Stop before a controller is
 selected.
 
 The shared chart label contains only `stop requested` and `robot error/reflex`.
-The configured run-duration limit and communication or control exceptions stay
+The configured experiment-duration limit and communication or control exceptions stay
 in the body text rather than lengthening the diagram. The program-level stop
 rail descends through the centre into Stop. Its short condition sits beside
 that vertical path and never interrupts it. A robot error or reflex is any
@@ -1678,10 +1701,10 @@ are written as equations in the theory chapter. Later chapters and appendices
 cite those equations and state only the term or consequence needed locally.
 Figures do not repeat the full relations.
 
-**The Grinding state gets two sentences and no more.** No reported run entered
+**The Grinding state gets two sentences and no more.** No reported experiment entered
 it, so the chapter states that it maintains the normal contact-establishment
 reference while superimposing tangential motion with the decoupled impedance.
-The preceding hold subsection states that every reported run ended there.
+The preceding hold subsection states that every reported experiment ended there.
 
 **The Contact Establishment subsection stays detailed.** It is the one place that explains
 something Chapter 2 does not: how the reference is generated during contact.
@@ -1691,7 +1714,7 @@ one, because it establishes that the measured rotation was not commanded by an
 orientation trajectory.
 
 **Scope the start of Contact Establishment to the optional pre-contact hold.** In the reported
-surface-contact runs that hold was disabled, so
+surface-contact experiments that hold was disabled, so
 \(t_{\mathrm{CE},0}\) is the clearance-transition instant and Contact Establishment begins
 there directly. State that scope before the clearance-capture equations. The
 generic optional-hold behaviour remains one later sentence: with the hold
@@ -1776,7 +1799,7 @@ Section by section:
   cross-reference the contact-point construction in Chapter 3 rather than
   repeating \(p_{\mathrm{Tool}}=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{\mathrm{Tool,EE}}\).
 - **Common configuration.** This is the largest duplication. Do not retell the
-  state sequence; state that the runs followed the sequence of Chapter 3, give
+  state sequence; state that the experiments followed the sequence of Chapter 3, give
   the settings in the existing state-parameter table, and add that the
   orientation reached at clearance was retained through Contact Establishment,
   the optional pre-contact hold was disabled and the pre-grinding hold enabled. **A table replaces
@@ -1787,7 +1810,7 @@ Section by section:
   held fixed so it did not become a variable.
 - **Data recording.** Do not list the signals a third time. One sentence
   pointing at Chapter 3 and the data-format appendix. What stays is the data
-  quality: three repetitions, 156 runs over 52 settings, none discarded, all
+  quality: three trials, 156 measurements over 52 settings, none discarded, all
   156 analysed.
 - **Case matrix.** The cases are currently explained three times — a grouping
   table, a prose walk-through, and the master table. **Delete the grouping
@@ -1799,7 +1822,8 @@ Section by section:
   input--condition--response chain: the controller input
   \(\theta_{\mathrm{cmd}}\) produces the achieved pose-based condition
   \(\theta_{0,t_i}\), and Contact Establishment produces the measured response
-  \(\gamma_{t_i}\). The pose- and geometry-based checks belong in Appendix D.
+  \(\gamma_{t_i}\). Appendix D retains only the three supporting parameter
+  checks and their measured response values.
   Define wrench projections locally beside the Case-D mechanism figure rather
   than as a separate methodology subsection. **Remove the mean and sample
   standard-deviation equations** and say instead that repeated settings are
@@ -1872,13 +1896,13 @@ stated in a clause rather than as a numbered equation. The same applies to
 records the calibrated offsets and the selection tolerance and points at
 Chapter 3 for the algorithm that consumes them.
 
-**A run count has one home.** The repetitions, the total and the analysed total
+**The measurement count has one home.** The repetitions, the total and the analysed total
 are stated once, in the data-recording subsection. The
 evaluation section says how repeated settings are reported and where the
 standard deviations appear, and does not restate the counts.
 
 Every setting now carries its three repetitions and nothing was discarded, so
-the subsection states that and stops. Do not reintroduce an excluded-run
+the subsection states that and stops. Do not reintroduce an excluded-experiment
 sentence, and do not describe how the complete set was arrived at: `recorded`
 is the only permitted verb, per the rule against `re-recorded` under *Naming a
 technical quantity*.
@@ -1891,18 +1915,23 @@ isotropic.
 **Tables 4.2 and 4.3 are not restated row by row.** After Table 4.2, retain
 only the experimental role of the rotational stiffness and the reference to
 the inertia-scaled damping formulation. After Table 4.3, give the chronological
-run procedure once, followed by one sentence stating the fixed null-space
+procedure once, followed by one sentence stating the fixed null-space
 configuration. The table remains the home of the individual transition and
 trajectory values.
 
-**Chapter 4 documents the reported runs, so grinding leaves its tables.** No
-run entered the Grinding state, and the chapter said so four times: a
+**Table 4.3 has only `Quantity` and `Value`; Table 4.4 has no `Evaluated
+effect` column.** The removed columns repeated explanations already carried by
+Chapter 3 or by each case name. Retain the achieved \(\theta_{0,t_i}\) values
+in Table 4.4 because they are measured experimental conditions.
+
+**Chapter 4 documents the reported experiments, so grinding leaves its tables.** No
+experiment entered the Grinding state, and the chapter said so four times: a
 `Contact establishment and grinding` gain row, a sentence that the configured Grinding state
 carried the contact-establishment entries unchanged, a `Configured grinding sweep` row giving
 an amplitude and a frequency nothing used, and a closing sentence repeating
-that no run entered it. All four were reduced on 2026-08-27 to the gain row
+that no experiment entered it. All four were reduced on 2026-08-27 to the gain row
 `Contact establishment`, a `Pre-grinding hold` row saying that it holds the reached pose at the
-end of Contact Establishment, and one closing sentence: every run ended
+end of Contact Establishment, and one closing sentence: every experiment ended
 at the \(5\,\mathrm{s}\) timeout, the enabled pre-grinding hold then retained the
 reached pose, and the recorded data cover orientation, approach and contact establishment
 only. **Section 3.2.5 keeps its two sentences**, because Chapter 3 documents
@@ -1936,34 +1965,32 @@ disturbance term is non-zero only in the pose-hold study. Do not re-explain the
 point shift, the tool-fixed against surface-fixed distinction, or the torque
 assembly in prose beside the code that performs them.
 
-**Appendix B is the phase mapping and the signal table, and nothing else.**
-The sections are `Control Phases` and `Recorded Signals`, and the table is
-`Recorded signal groups`. `Signals Used in the Evaluation` is withdrawn,
-written here as a literal string so a rename cannot revive it: the table
-carries fields the thesis marks `Not evaluation quantities` and observational
-fields such as `t_align`, so a heading promising evaluation signals described
-something narrower than what the table holds. A
+**Appendix B is the state mapping and the signal table, and nothing else.**
+The sections are `Control States` and `Recorded Signals`, and the table is
+`Recorded signal groups`. It lists the groups needed to interpret and
+reproduce the reported evaluations. Derived angular-deviation aliases and the
+unused `t_align` field are omitted rather than documented only because the
+logger wrote them. A
 table cell is a definition, not a paragraph: name the quantity, its frame and
 its unit, and send anything longer to the section that owns it. The former
 `Evaluation Quantities` section was deleted on 2026-08-27 and **must not be
-restored**, because every quantity in it already had a better home —
-\(\gamma_{t_i}\) in Section 4.5.2, the TCP-height classification in
-`Supporting Geometric Checks` and Appendix D.6, the pose-based alignment angle
-in Appendix D.7, and \(E_N\), \(\Delta\eta_{\mathrm{dist}}\) and the
-position-retention criterion in Section 4.6. The contact establishment-report markers
+restored**. The reported quantities already have their proper homes:
+\(\gamma_{t_i}\) in Section 4.5.2, and \(E_N\),
+\(\Delta\eta_{\mathrm{dist}}\) and the position-retention criterion in
+Section 4.6. The contact-establishment report markers
 `t_align_fraction`, `deviation_min` and `align_status` went with it: none feeds
-a phase exit, a command, or a reported result, which is the rule under *What
+a state exit, a command, or a reported result, which is the rule under *What
 belongs in the thesis at all*.
 
-**Appendix C holds the parameters needed to reproduce the reported runs.**
+**Appendix C holds the parameters needed to reproduce the reported experiments.**
 It is the reproducibility record, so a parameter, its configuration key and its
 value belong there and an explanation of what the parameter does does not — and
 a parameter that was configured but never acted on does not belong either. The
-pre-contact hold was disabled in every reported run and no run entered Grinding,
+pre-contact hold was disabled in every reported experiment and no experiment entered Grinding,
 so their gain rows, the grinding-sweep row, the grinding damping factor and the
 paragraph explaining that the gate gains were inactive were all removed on
 2026-08-27. What remains of both is the `Pre-grinding hold` row, because it is
-where every reported run ended. The state list for inertia-scaled damping is
+where every reported experiment ended. The state list for inertia-scaled damping is
 scoped the same way: `Reported contact states using inertia-scaled damping —
 Surface Approach and Contact Establishment`.
 
@@ -1991,10 +2018,11 @@ the source key side by side:** `Tool-point selection tolerance,
 spelling, per the rule that source identifiers are reproduced rather than
 renamed to match the prose.
 
-**Appendix D is its tables, figures and equations, plus the minimum observation
-needed to read them.** Each supporting section states what was compared and how
-many settings and runs it contributed, gives its table and figure, and then
-carries one short paragraph of result with a `\cref` to the evidence. What was
+**Appendix D is its tables, one comparison figure, the tool-axis projection,
+and the minimum observation needed to read them.** It retains the four main-case
+tables, the initial-deviation table, the tool-axis table and comparison figure,
+and the two intermediate-direction tables. These three supporting sections
+account for all 45 supporting measurements. What was
 cut on 2026-08-27, and must not come back: repeated definitions of tool-fixed
 and surface-fixed, of the leading-feature rule, and of the general
 compliance-centre direction rule; second paragraphs generalising a result the
@@ -2002,11 +2030,12 @@ sentence above already stated; and the mounting-play qualification, which
 Chapter 6 carries. What stays because the appendix is the only place it exists:
 the \(\sin\alpha_{\mathrm{axis}}\) projection that explains why a
 \(40\,\mathrm{mm}\) tool-axis displacement gives under \(7\,\mathrm{mm}\) of
-tangential lever, the actual vectors used for the direction check, and the
-\(\theta_{\mathrm{align}}\) definition and reduction of the consistency check.
-The direction check cites the canonical lever-selection equation in Chapter 2,
-and the alignment check cites the Chapter 3 tool-normal transformation rather
-than repeating either relation.
+tangential lever and the actual vectors used for the direction check. The
+initial-deviation plot, both direction plots, the TCP-height classification,
+and the pose-based alignment consistency check are withdrawn because they
+duplicate tables or introduce secondary outcomes outside the main
+\(\gamma_{t_i}\) comparison. The direction check cites the canonical
+lever-selection equation in Chapter 2 rather than repeating it.
 
 **An appendix table caption is a short noun phrase, like every other caption.**
 The Appendix D captions had grown to four and five lines carrying
@@ -2072,7 +2101,7 @@ it.** The settled definition, agreed 2026-08-26, is:
 Earlier wording — `the signed measured end-effector rotation about surface
 tangent \(t_i\) from the beginning to the end of contact establishment` — was wrong by a
 sign, because \(\gamma_0\) is \(e_R\) at the end of contact establishment and \(e_R\)
-runs from the measured orientation *back* to the held reference. Verified
+is directed from the measured orientation *back* to the held reference. Verified
 against the logs on 2026-08-26: for the \(+10^\circ\) command about
 \(t_1\) at the TCP, \(\gamma_{t_1}=+7.56^\circ\) while the end effector
 physically rotated \(-7.56^\circ\). Every reported value is correct; only
@@ -2154,13 +2183,11 @@ motion, because that motion can still affect the contact dynamics and measured
 end-effector response. The surface frame enters only as the directions the
 rotation is resolved along.
 
-The pose-based alignment error is appendix-only. It is unsigned and depends on
-the assumed fixed tool-to-end-effector relation, so neither it nor its
-before--after reduction appears in Chapter 5 tables, figures, or comparisons.
-The appendix may define \(\theta_{\mathrm{align}}\) locally for the consistency
-check, but \(\Delta\theta_{\mathrm{align}}\), \(\theta_{\mathrm{dev}}\),
-the retired set-up before--after quantity, and their resolved variants are not
-thesis-wide reported symbols.
+**The pose-based alignment consistency metric is withdrawn.** Its unsigned
+angle depended on the assumed fixed tool-to-end-effector relation and was not
+an independent physical tool-orientation measurement. Do not restore
+\(\theta_{\mathrm{align}}\), its before--after reduction, their scatter plot,
+or their logger-only aliases as reported thesis quantities.
 
 **Each main surface-contact comparison changes one controller parameter and
 reports one response.** The achieved angular condition is recorded as
@@ -2172,30 +2199,18 @@ the surrounding prose use the same input--response vocabulary. The commanded
 wrench time history in Case D is the mechanism figure and remains the one
 exception to a response-only comparison plot.
 
-The TCP-height flatness classification is appendix-only supporting evidence.
-It does not appear as a column in the Chapter 5 comparison tables or as a
-second outcome in their narratives, and it is not repeatedly signposted in the
-openings of Chapters 4 and 5. Appendix D retains the classified conditions, the
-geometric interpretation and the tool-mount qualification.
-
-The **TCP-height flatness criterion** answers *is the final measured TCP
-  position geometrically consistent with the calibrated rectangular face lying
-  flat on the surface?* This is the right quantity for calling a condition
-  flat, as long as the wording stays explicit that it is geometry-based rather
-  than an independent physical orientation measurement. Where it is
-  satisfied, write `classified as flat by the TCP-height criterion` or `the
-  final geometry was consistent with a flatly seated tool face`. Never
-  claim the physical face angle was measured as zero: the tool orientation was
-  not tracked under load.
+**The TCP-height flatness classification is withdrawn from the reported
+results.** It is derived from existing measurements, is not used in the Chapter
+5 comparison, and can be mistaken for a second response criterion. Do not
+restore its table, count, or classification language. The physical face angle
+was not measured under load.
 
 **Do not write that a lever was insufficient to align the tool**, or that it
 `did not remove the full initial deviation`. Both read as claims about the
-physical tool face, whose orientation under load was not tracked. A residual
-pose-based alignment angle is not by itself evidence of residual physical tilt,
-because the instantaneous relative tool--gripper rotation was not tracked
-during the contact runs. Report what was measured — the signed contact-establishment rotation changed from \(-1.63\) to
-\(+4.43^\circ\) about \(t_2\) with the selected \(40\,\mathrm{mm}\) lever, and
-the final configuration satisfied the TCP-height flatness criterion.
+physical tool face, whose orientation under load was not tracked. Report what
+was measured: the signed contact-establishment rotation changed from
+\(-1.63\) to \(+4.43^\circ\) about \(t_2\) with the selected
+\(40\,\mathrm{mm}\) lever. Do not add an inferred final physical alignment.
 
 ### Three distinct points: selected tool point, TCP, compliance centre
 
@@ -2357,7 +2372,7 @@ evidence pointer or the ratio.
 and the earlier wording here —
 `\(\Delta\eta_{\mathrm{dist}}=v_7(q_5)^\top[q(9\,\mathrm{s})-q(5\,\mathrm{s})]\)`
 — was **wrong on both halves** and is withdrawn. Checked against
-`make_nullspace_figure.py` on 2026-08-26: \(v_7\) is absent from the runs
+`make_nullspace_figure.py` on 2026-08-26: \(v_7\) is absent from the experiments
 without null-space torque, because the controller records it only while the
 conditioning term is selecting a sign. The axis is therefore the normalised
 **arithmetic mean of the three net projected displacement vectors of the
@@ -2472,7 +2487,7 @@ instantaneous opposing torque at identical joint configurations.
   representation \(n_{\mathrm{Tool},0}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}\),
   and the controller reference \(n_d\). Naming the intermediate direction
   \(n_{\mathrm{Tool},\dots}\) instead was considered and rejected for the same
-  reason. The sign is fixed at \(-1\) for every reported run, so it needs no
+  reason. The sign is fixed at \(-1\) for every reported experiment, so it needs no
   symbol in the chapters; the parameter appendix records it as
   `tool_axis_target_sign` \(=-n_s\), which is where a reader checks the
   configured value.
@@ -2669,7 +2684,7 @@ instantaneous opposing torque at identical joint configurations.
   \(t_2\) data were plotted against the negated coordinate, so moving to
   \(r_{c,t_1}\) negates every \(x\) value while the measured responses stay
   where they are. Done on 2026-08-25 for Figure 5.4(b), the Case-D table and
-  the offset-magnitude legends. The run configuration remains the anchor:
+  the offset-magnitude legends. The experiment configuration remains the anchor:
   `P2_t2_pos_p040` sets `compliance_center_offset_ee_x = -0.040`, which is
   \(r_{c,t_1}=-40\,\mathrm{mm}\). Never adjust a reported value to make a
   coordinate look tidy.
@@ -2677,7 +2692,7 @@ instantaneous opposing torque at identical joint configurations.
   end-effector coordinates**, and the surface-frame vectors in the supporting
   intermediate-direction table are what those settings realise in the flat target
   orientation. The mapping is \(r_{c,t_1}=\) `offset_ee_x` and
-  \(r_{c,t_2}=-\) `offset_ee_y`, checked against the run overlays on
+  \(r_{c,t_2}=-\) `offset_ee_y`, checked against the experiment overlays on
   2026-08-25. Say which frame a tabulated vector is in; a table headed
   \([r_{c,t_1},r_{c,t_2},r_{c,n}]\) whose values were configured in another
   frame needs that sentence or it reads as a configured surface-frame value.
@@ -2689,7 +2704,7 @@ instantaneous opposing torque at identical joint configurations.
   tangential position was varied along the tangent perpendicular to the
   commanded rotation. A reader therefore had every reason to take
   \(r_{c,t_1}\) and \(r_{c,t_2}\) for surface-frame coordinates held constant
-  through the run, which is not what the implementation does. Three sentences
+  throughout the experiment, which is not what the implementation does. Three sentences
   were added on 2026-08-25 and later simplified: all non-zero displacements
   were configured tool-fixed in end-effector coordinates, and the tangential
   coordinates reported for Case~D are their surface-frame projections in the
@@ -2708,7 +2723,7 @@ instantaneous opposing torque at identical joint configurations.
   supplies it, that it is stored at the clearance transition, and that the
   estimated external moment change can trigger the optional termination
   condition. Describe that optional path in words rather than promoting its
-  values to flow-chart or thesis-wide symbols. Every reported run terminated
+  values to flow-chart or thesis-wide symbols. Every reported experiment terminated
   through the timeout instead. The data-format appendix retains the literal
   recorded field names and bias columns. That is the whole of it.
 
@@ -2856,8 +2871,8 @@ cases briefly in prose or bullets and provide one compact table containing:
 - purpose or principal outcome.
 
 Use the same identifiers in the Results and Discussion headings. Do not assign
-a completed case identifier to an unfinished, exploratory, or diagnostic run.
-The case counts must reconcile with the stated total number of analysed runs.
+a completed case identifier to an unfinished, exploratory, or diagnostic trial.
+The case counts must reconcile with the stated total number of analysed measurements.
 When different cases use different outcomes, include a second compact mapping
 from each case to the metrics actually used in its Results section. Do not
 present a logged diagnostic as a universal primary metric.
@@ -2957,12 +2972,12 @@ Appendix D carries three supporting checks without case letters:
 | Tool-axis displacement | The tangential component produces the press-induced moment; the tool-axis response spans \(0.34^\circ\) against \(7.73^\circ\) for the tangential displacement. |
 | Intermediate tangent directions | One fixed non-zero tangential displacement does not reproduce the direction-selected rule across the four tested directions; the \(t_2\) comparison, \(+4.43\) against \(-1.61^\circ\), is the decisive separation. |
 
-The run hierarchy is fixed. The main A--D study contains 37 settings and 111
-runs. The three supporting checks contain 15 independently counted settings
-and 45 runs. Together they retain the 52-setting, 156-run reported
-surface-contact data set; that total excludes the discarded combined-stiffness
+The measurement hierarchy is fixed. The main A--D study contains 37 settings and 111
+measurements. The three supporting checks contain 15 independently counted settings
+and 45 measurements. Together they retain the reported surface-contact data set
+of 52 settings and 156 measurements; that total excludes the discarded combined-stiffness
 condition and the former definition-frame comparison. The null-space pose-hold
-study adds four settings and 12 runs, giving 168 recorded experimental runs in
+study adds four settings and 12 trials, giving 168 recorded measurements in
 the complete data set. Shared reference conditions are counted with the main
 case in which they first appear.
 
@@ -3005,7 +3020,7 @@ The defensible summary separates two regimes:
 The implemented state structure already embodies this, and the thesis says so:
 the point-shifted impedance is used during Contact Establishment, while the Grinding state
 returns to the decoupled branch. That is **architecture consistency, not
-experimental evidence**: the reported quantitative runs ended at the
+experimental evidence**: the reported quantitative experiments ended at the
 pre-grinding hold.
 
 **This argument is the second reason for the TCP, not the first.** The first is
@@ -3090,12 +3105,10 @@ not show that \(r_{\mathrm{Tool}}\) was sufficient on its own: the contributions
 geometry and mounting compliance were never isolated, and the conclusion must
 not claim they were.
 
-About \(t_2\) the zero-lever condition satisfied the TCP-height criterion while
-the end effector rotated slightly the wrong way. **Do not write that the robot
-became correctly aligned.** The defensible reading is that the tool seated
-against the surface through the mounting compliance while the end-effector
-orientation moved further the other way. The mounting play supports that
-reading rather than proving it, because it was measured unloaded.
+About \(t_2\), the end effector rotated slightly in the opposite direction at
+zero lever. **Do not write that the robot became correctly aligned.** The
+physical tool orientation was not tracked independently under contact load, so
+the end-effector response cannot establish the final tool--surface angle.
 
 **Every rotation claim names the body that rotated.** Because the physical tool
 orientation is never measured independently, a sentence may say the **end
@@ -3128,13 +3141,12 @@ the mounting exhibits approximately \(\pm2^\circ\) of rotational play about
 \(y_{\mathrm{EE}}\), and the thesis reports that value. The precise
 limitation is narrower and must be stated as such — the play was characterised
 **in the unloaded condition**, and the **instantaneous** relative tool--gripper
-rotation was **not tracked separately during the contact runs**. The blanket
+rotation was **not tracked separately during the contact experiments**. The blanket
 phrasing claims the measurement was never made, which is wrong and gives away a
 result the thesis actually has.
 
-The general point is that **satisfying the flatness criterion and producing an
-alignment-directed end-effector rotation are not the same thing**, which is
-precisely where the two tangents differ.
+The general point is that **an alignment-directed end-effector rotation is not
+an independent measurement of physical tool alignment**.
 
 Two claims must not be made from this:
 
@@ -3165,7 +3177,7 @@ repeated Chapter 5 in full and was the single largest source of duplication in
 the thesis. **Do not restore it.**
 
 The conclusion instead states the main findings as continuous prose — the
-controller was implemented and ran in every reported run; compliance-centre
+controller was implemented and active in every reported experiment; compliance-centre
 position had the largest measured influence; the direction that improves
 alignment reversed between the tangents, and so did the magnitude that suits
 them; stiffness effects were smaller and axis dependent; and the response
@@ -3217,7 +3229,7 @@ appears:
 | Physical role of the compliance-centre lever | Case D, under the lever sweep |
 | Weak tool-axis sensitivity | Supporting tool-axis check in Appendix D |
 | Axis-dependent response | Case A, where the asymmetry first shows |
-| Measurement interpretation | Case A, and the flatness summary |
+| Measurement interpretation | Case A and the response definition |
 | Implications for parameter selection | Main-results synthesis after Case E, supported by the intermediate-direction check in Appendix D |
 | Scope of interpretation | deleted; Chapter 6 *Limitations* already carried it |
 
@@ -3230,18 +3242,15 @@ A plot that is an evaluation consistency check rather than a finding does not
 interrupt the argument; it goes to the supporting-plots appendix and is
 referred to from the chapter.
 
-**Every supporting plot must carry something the chapter does not, and its
-section must say what that is in its first two sentences.** The appendix is not
-a place to keep every available plot: a figure that reaches the same conclusion
-as a chapter figure is removed, however correct it is, because an appendix of
-near-duplicates reads as accumulation rather than judgement. The three that
-earn their place, and the reason each does:
+**Every supporting plot must carry something its table does not.** The appendix
+is not a place to keep every available plot: a figure that reaches the same
+conclusion as its table is removed, however correct it is, because an appendix
+of near-duplicates reads as accumulation rather than judgement. One supporting
+figure earns its place:
 
 | Supporting item | What it carries that the chapter does not |
 |---|---|
-| Conditions classified as tilted by TCP height | The six settings behind the flatness count, which the chapter states only as a total |
-| Per-setting spread of the Case-D lever positions | The standard deviation of each setting; the chapter figure plots the means alone |
-| Comparison with the pose-based alignment estimate | An appendix consistency check between the direct measured contact-establishment rotation \(\gamma_{t_i}\) and the secondary estimate reconstructed from the calibrated tool normal |
+| Tool-axis against tangential displacement | A direct visual comparison of the weak tool-axis response with the much larger tangential response over the same displacement interval |
 
 A surface-frame component plot of the two outer Case-D positions was removed on
 this test. Its own text conceded that it reached the same conclusion as the
@@ -3285,15 +3294,15 @@ a tenth of a degree of uncertainty.
 
 When a calibrated pilot is recorded after the main campaign:
 
-- label it as a separate pilot and do not silently add it to the earlier run
+- label it as a separate pilot and do not silently add it to the earlier experiment
   count;
-- state which earlier runs are decoupled controls and which runs activate the
+- state which earlier experiments are decoupled controls and which experiments activate the
   point-shifted law;
 - report the controller lever using
   \(r_c=p_c-p_{\mathrm{TCP}}\), rather than calling its sign simply “left” or
   “right”;
-- retain the pose-based alignment metric and the operator-observed contact
-  state as separate outcomes when tool-to-gripper motion is unmeasured;
+- keep the measured end-effector response separate from any operator-observed
+  contact state when tool-to-gripper motion is unmeasured;
 - report mean and sample standard deviation only for repeated conditions; and
 - call a selected lever provisional until the orthogonal axis and an
   independent physical-angle measurement have been checked.

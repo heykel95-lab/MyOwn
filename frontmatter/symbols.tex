@@ -39,7 +39,6 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$R_{\mathrm{EE,clearance}}$, $p_{\mathrm{TCP,clearance}}$}{End-effector orientation captured at the clearance transition and held as the contact-establishment orientation reference / TCP position captured at the same instant}{[-], [m]}
 \symrow{$R_{\mathrm{CE,start}},\ R_{\mathrm{CE,end}}$}{Measured end-effector orientations at the beginning / end of contact establishment}{[-]}
 \symrow{$R_{\mathrm{CE}}$}{Current-to-reference relative rotation over contact establishment, $R_{\mathrm{CE,start}}R_{\mathrm{CE,end}}^\top$}{[-]}
-\symrow{$u_{\mathrm{CE}},\ \phi_{\mathrm{CE}}$}{Axis / angle of $R_{\mathrm{CE}}$}{[-], [rad]}
 \symrow{$p_d,\ R_d,\ T_d$}{Desired position / orientation / transformation}{[m], [-]}
 \symrow{$\Delta R_0$}{Current-to-desired relative rotation in the base frame, $R_dR_{\mathrm{EE}}^\top$}{[-]}
 \symrow{$\phi$}{Orientation-error angle}{[rad]}
@@ -68,7 +67,7 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$\zeta,\ \varepsilon$}{Selected damping factor / operational-space-inertia regularisation constant}{[-], representation-dependent}
 \symrow{$F$}{Cartesian wrench}{[N], [N\,m]}
 \symrow{$f,\ m$}{Complete commanded Cartesian force / moment at the TCP}{[N], [N\,m]}
-\symrow{$f_n,\ f_t$}{Normal / tangential component of the complete commanded force, $f_n=F_n n_s$ and $f_t=f-f_n$}{[N], [N]}
+\symrow{$f_n,\ f_t$}{Normal / tangential component of the complete commanded force, $f_n=n_s(n_s^\top f)$ and $f_t=f-f_n$}{[N], [N]}
 \symrow{$K,\ D$}{Full Cartesian stiffness / damping matrices}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
 \symrow{$\tau$}{Joint torque vector}{[N\,m]}
 \symrow{$\tau_c,\ \tau_g$}{Coriolis / gravity compensation torque}{[N\,m]}
@@ -82,25 +81,22 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$t_1,\ t_2$}{Surface tangent directions (unit)}{[-]}
 \symrow{$R_{\mathrm{surface}}$}{Surface-frame orientation $[\,t_1\;\;t_2\;\;n_s\,]$ in the base frame}{[-]}
 \symrow{$n_{\mathrm{Tool,EE}},\ n_{\mathrm{Tool},0},\ n_d$}{Tool-face normal expressed in the EE frame, fixed by calibration / the same direction expressed in the base frame, $n_{\mathrm{Tool},0}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}$ / desired tool-normal direction used by the controller}{[-]}
-\symrow{$\theta_{\mathrm{cmd}},\ u_{\mathrm{cmd}},\ R_{\mathrm{cmd}}$}{Commanded tool-orientation offset relative to the configured surface reference, $\theta_{\mathrm{cmd}}=\theta_{t_1}t_1+\theta_{t_2}t_2$ / its unit rotation axis / the rotation matrix it produces through $R(u,\phi)$}{[rad], [-], [-]}
-\symrow{$\theta_a,\ \theta_{a,t_1},\ \theta_{a,t_2}$}{Generic tangent-plane angular deviation used to derive the compliance-centre direction rule / its surface-tangent components}{[rad]}
+\symrow{$\theta_{\mathrm{cmd}}$}{Commanded tool-orientation offset relative to the configured surface reference, $\theta_{\mathrm{cmd}}=\theta_{t_1}t_1+\theta_{t_2}t_2$}{[rad]}
 \symrow{$p_s$}{Point on the configured surface}{[m]}
-\symrow{$e_{x_0},\ e_{y_0},\ e_{z_0}$}{Unit vectors along the base-frame axes $x_0$, $y_0$ and $z_0$}{[-]}
+\symrow{$e_{x_0},\ e_{z_0}$}{Unit vectors along the base-frame axes $x_0$ and $z_0$}{[-]}
 \symrow{$p_c$}{Centre of compliance}{[m]}
 \symrow{$r_c$}{TCP-to-compliance-centre displacement, $p_c-p_{\mathrm{TCP}}$, as the point-shift transformation and the experimental plots and tables use it; where no frame index is shown, the base-frame representation is implied}{[m]}
 \symrow{$r_{c,0},\ r_{c,S},\ r_{c,\mathrm{EE}}$}{Representations of the same displacement in the base, surface and end-effector frames, with $r_{c,0}=R_{\mathrm{surface}}r_{c,S}=R_{\mathrm{EE}}r_{c,\mathrm{EE}}$}{[m]}
 \symrow{$r_{c,t_1},\ r_{c,t_2},\ r_{c,n}$}{Surface-frame components of $r_c$ along $t_1$, $t_2$ and $n_s$}{[m]}
 \symrow{$r_{\mathrm{Tool,EE}},\ p_{\mathrm{Tool}}$}{Selected tool-point offset from the TCP, expressed in the EE frame / selected tool-point position in the base frame}{[m]}
-\symrow{$r_{\mathrm{Tool}}$}{Selected tool-point offset from the TCP, $p_{\mathrm{Tool}}-p_{\mathrm{TCP}}$}{[m]}
 \symrow{$p_{\mathrm{Tool,clearance}}$, $p_{\mathrm{Tool},0}$, $p_{\mathrm{Tool},d}$}{Selected tool point at the clearance transition / its projection onto the configured surface reference / its desired contact-establishment position}{[m]}
 \symrow{$s_{\mathrm{app}},\ v_{\mathrm{app}},\ s_{\mathrm{app,max}}$}{Commanded approach travel of the TCP along $-n_s$ / its configured rate / its configured maximum}{[m], [m/s], [m]}
-\symrow{$p_{\mathrm{TCP,start}}$, $t_{\mathrm{app},0}$, $t_{\mathrm{app,max}}$}{TCP position captured when surface approach begins / that instant / the instant at which $s_{\mathrm{app}}$ reaches $s_{\mathrm{app,max}}$}{[m], [s], [s]}
+\symrow{$p_{\mathrm{TCP,start}}$}{TCP position captured when surface approach begins}{[m]}
 \symrow{$h_i$}{Signed clearance of tool-face corner $i$ from the configured surface reference}{[m]}
 \symrow{$h_{\mathrm{Tool}}$}{Minimum clearance of the rectangular tool face from the configured surface reference, $h_{\mathrm{Tool}}=\min_i h_i$}{[m]}
 \symrow{$h_{\mathrm{clearance}}$}{Configured tool clearance at which the transition from approach to contact establishment occurs}{[m]}
 \symrow{$\varepsilon_{\mathrm{sel}}$}{Tool-point selection tolerance}{[m]}
 \symrow{$s_{\mathrm{CE}},\ v_{\mathrm{CE}},\ s_{\mathrm{CE,max}}$}{Commanded contact-establishment press coordinate of the selected tool point along $-n_s$ / its configured rate / its configured endpoint}{[m], [m/s], [m]}
-\symrow{$t_{\mathrm{CE},0},\ t_{\mathrm{CE,max}}$}{Instant of the clearance transition / instant at which $s_{\mathrm{CE}}$ reaches $s_{\mathrm{CE,max}}$}{[s], [s]}
 \symrow{$t_{\mathrm{CE,start}},\ t_{\mathrm{CE,end}}$}{Measurement instants at the beginning / end of Contact Establishment}{[s]}
 \symrow{$m_R$}{Rotational-impedance contribution to the commanded moment, $K_Re_R-D_R\omega_{\mathrm{EE}}$, present at every compliance-centre position}{[N\,m]}
 }
@@ -108,7 +104,6 @@ column makes the mixed translational and rotational quantities traceable.}
 \symgroup{Compliance and Alignment}{
 \symrow{$\mathrm{Ad}(r_c)$}{TCP-to-compliance-centre point-shift adjoint}{[-]}
 \symrow{$K_c,D_c$}{Block-diagonal stiffness / damping at the centre of compliance}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
-\symrow{$F_c,\ F_{\mathrm{TCP}}$}{Cartesian wrench at the centre of compliance / corresponding wrench at the TCP}{[N], [N\,m]}
 \symrow{$K_{\mathrm{TCP}},D_{\mathrm{TCP}}$}{Centre-of-compliance stiffness and damping mapped by congruence to the TCP}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
 \symrow{$\theta_{t_1},\ \theta_{t_2}$}{Surface-frame components of the commanded tool orientation offset}{[rad]}
 \symrow{$\theta_{0,S}$}{Pose-based initial angular-deviation vector in surface coordinates}{[rad]}
@@ -116,7 +111,6 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$\gamma_0,\ \gamma_S$}{Signed contact-establishment response vector in base / surface coordinates: the end-of-contact-establishment orientation change relative to the held contact-establishment reference}{[rad], [rad]}
 \symrow{$\gamma_{t_1},\ \gamma_{t_2},\ \gamma_n$}{Surface-frame components of the signed contact-establishment response; a component reducing an initial deviation carries the same sign as that deviation}{[rad]}
 \symrow{$r_{c,t}$}{Tangential part of the compliance-centre displacement, $r_{c,t_1}t_1+r_{c,t_2}t_2$; its magnitude is written $\lVert r_{c,t}\rVert$}{[m]}
-\symrow{$F_n,\ M_{t_i}$}{Signed commanded normal force / commanded TCP moment about surface tangent $t_i$}{[N], [N\,m]}
 }
 
 \symgroup{Null-Space and Singular Value Decomposition}{

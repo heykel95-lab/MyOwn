@@ -29,11 +29,10 @@ frames, and model-estimated quantities explicit.}
 
 Table~\ref{tab:csv_column_groups} lists the union of two CSV schemas used for
 the reported experiments. No individual file contains every group in the
-table. The surface-contact logs contain the contact-geometry fields and use the
-current angular-deviation names. The archived Cartesian pose-hold logs contain
-the singular-value probe and projected-motion fields and retain the earlier
-alignment-error names. Command, state, wrench, and disturbance groups common
-to the two schemas are listed once. A suffix
+table. The surface-contact logs contain the contact-geometry fields, whereas
+the archived Cartesian pose-hold logs contain the singular-value probe and
+projected-motion fields. Command, state, wrench, and disturbance groups common
+to both schemas are listed once. A suffix
 \texttt{\_x,\_y,\_z} denotes base-frame components, and \texttt{\_1..\_7}
 denotes joint components.
 
@@ -54,7 +53,7 @@ Column group & Meaning \\
 \bottomrule
 \endlastfoot
 \texttt{time}, \texttt{state} &
-Run time and active control state.\\
+Elapsed time and active control state.\\
 \texttt{p\_EE}, \texttt{p\_d} &
 Measured and desired TCP positions [m].\\
 \texttt{tool\_contact}, \texttt{edge\_target} &
@@ -68,26 +67,10 @@ transition [m].\\
 \texttt{pdot\_d}, \texttt{omega} &
 Cartesian errors and velocities; during Contact Establishment \texttt{e\_R} is referred to
 the orientation held from the clearance transition.\\
-\texttt{angular\_deviation\_deg} &
-Pose-based alignment error
-\mbox{\(\theta_{\mathrm{align}}=\cos^{-1}(-n_{\mathrm{Tool},0}^\top n_s)\)},
-used in the consistency check of \mbox{\Cref{app:metric_agreement}}
-[\(^{\circ}\)]. The archived pose-hold schema names this field
-\texttt{alignment\_angle\_deg}.\\
-{\small\texttt{angular\_deviation\_t1\_deg}},\newline
-{\small\texttt{angular\_deviation\_t2\_deg}},\newline
-\texttt{angular\_deviation\_}\newline\texttt{normal\_deg} &
-The same angular deviation resolved on \(t_1\), \(t_2\) and \(n_s\)
-[\(^{\circ}\)]. The archived pose-hold aliases begin with
-\texttt{alignment\_error\_}. These are not evaluation quantities.\\
 \texttt{p\_CoC}, \texttt{r\_eff} &
 \abbr{CoC} \(p_{\mathrm{TCP}}+r_c\) and the offset from it to the selected
 tool point, \(p_{\mathrm{Tool}}-p_c\), in the base frame [m]. Written for
-each surface-contact run, including \(r_c=0\).\\
-\texttt{t\_align} &
-Time from the start of Contact Establishment at which the deviation first settled inside the
-configured tolerance [s], negative until then. Observed only; it does not end
-the state.\\
+each surface-contact experiment, including \(r_c=0\).\\
 \texttt{f}, \texttt{m} &
 Commanded Cartesian force [N] and moment [N\,m].\\
 \texttt{external\_force}, \texttt{external\_moment} &

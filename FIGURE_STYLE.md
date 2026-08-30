@@ -119,6 +119,13 @@ matrix, the null-space torque, the Coriolis term, and the loop closure last.
 **Route around boxes, not through them.** Check the vertical extent of every
 node the run passes, not just its centre.
 
+**An arrow approaches a box from outside and ends on its boundary.** Never put
+the penultimate routing coordinate inside the destination, since that reverses
+the final segment and makes the arrowhead point back out of the box. Feedback
+paths leave their source at the appropriate corner. Where a side connection
+would otherwise share the exact midpoint, place it slightly above or below the
+midpoint while keeping the endpoint on the box border.
+
 ### Clearance
 
 **Nothing in a figure intersects anything else.** A label, a symbol or a name
