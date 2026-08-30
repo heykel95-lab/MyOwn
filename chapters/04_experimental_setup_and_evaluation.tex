@@ -654,13 +654,18 @@ The recorded signals and \abbr{CSV} structure are documented in
 
 Each parameter setting was evaluated in three repeated trials. Results are
 reported as arithmetic means, with sample standard deviations given for the
-main comparisons and where relevant in the supporting checks. The main
-surface-contact study comprises \(111\) measurements across \(37\) parameter settings. A further
-\(45\) measurements across \(15\) parameter settings were recorded as supporting checks and are reported in
-\Cref{app:supporting_contact_checks}. In total, \(156\) surface-contact measurements
-were recorded across \(52\) parameter settings. No experiment was discarded. Together with the
-\(12\) pose-hold trials of \Cref{sec:nullspace_hold_study}, the complete
-experimental data set contains \(168\) recorded measurements.
+main comparisons and where relevant in the supporting checks. The study reports
+only commanded rotations about \(t_1\), because the \(t_2\) responses were not
+sufficiently repeatable. Tool-mount play about \(y_{\mathrm{EE}}\) was considered
+a likely source of this variability.
+The main study comprises \(57\) measurements across \(19\) parameter settings. A
+further \(24\) measurements across eight parameter settings were recorded as
+supporting checks and are reported in
+\Cref{app:supporting_contact_checks}. In total, the reported surface-contact
+data set contains \(81\) measurements across \(27\) parameter settings. Each
+reported setting includes all three trials. Together with the \(12\)
+pose-hold trials of \Cref{sec:nullspace_hold_study}, the complete reported
+data set contains \(93\) measurements.
 
 Within each controlled comparison, the calibrated geometry, common state
 parameters, fixed stiffness and damping, and null-space settings remained unchanged. Only the
@@ -673,21 +678,20 @@ parameter assigned to the corresponding comparison was varied.
 % ============================================================================
 
 The main surface-contact study separates the effects of the principal
-controller parameters. Case~A establishes the TCP-centred reference, where
-\(r_c=0\). In Cases~B and~C, rotational and translational stiffness were varied
-independently. This allowed the effect of either entry to be evaluated while
-the other remained fixed. In Case~D the tangential compliance-centre position was varied
-across both principal surface tangents and both signs of the pose-based initial
-angular deviation.
+controller parameters for commanded rotation about \(t_1\). Case~A establishes
+the TCP-centred reference, where \(r_c=0\). In Cases~B and~C, rotational and
+translational stiffness were varied independently. This allowed the effect of
+either entry to be evaluated while the other remained fixed. In Case~D the
+tangential compliance-centre position along \(t_2\) was varied for both signs
+of the pose-based initial angular deviation about \(t_1\).
 
 All non-zero compliance-centre displacements were configured and held constant
 in end-effector coordinates. The tangential coordinates reported for Case~D
 are the surface-frame projections of those settings in the flat target
 orientation.
 
-The initial angular-deviation magnitude comparison, displacement along the tool
-axis, and intermediate tangent-plane directions
-are treated as supporting checks in
+The initial angular-deviation magnitude comparison and displacement along the
+tool axis are treated as supporting checks in
 \Cref{app:supporting_contact_checks}.
 
 Table~\ref{tab:experimental_test_cases} summarises the parameter variations of
@@ -719,25 +723,20 @@ reference condition counted with an earlier case.
 \bottomrule
 \endlastfoot
 A & \abbr{CoC} at the TCP & \(0.74^\circ\); \(+9.31^\circ\) and
-\(-9.41^\circ\) about \(t_1\); \(+10.05^\circ\) and \(-9.55^\circ\) about
-\(t_2\) & \(r_c=0\). & 15\\
+\(-9.41^\circ\) about \(t_1\) & \(r_c=0\). & 9\\
 \addlinespace
 
 B & Rotational stiffness & \(+9.31^\circ\) to \(+9.32^\circ\) about
-\(t_1\); \(+10.02^\circ\) to \(+10.05^\circ\) about \(t_2\) &
-Command-axis \(K_R=15\) and \(50\,\mathrm{N\,m/rad}\). & 12\\
+\(t_1\) & \(K_{R,t_1}=15\) and \(50\,\mathrm{N\,m/rad}\). & 6\\
 \addlinespace
 
 C & Translational stiffness & \(+9.24^\circ\) to \(+9.31^\circ\) about
-\(t_1\); \(+10.02^\circ\) to \(+10.05^\circ\) about \(t_2\) &
-Cross-axis \(K_p=300\) and \(800\,\mathrm{N/m}\). & 12\\
+\(t_1\) & \(K_{p,t_2}=300\) and \(800\,\mathrm{N/m}\). & 6\\
 \addlinespace
 
 D & Tangential \abbr{CoC} position & About \(+9.32^\circ\) and
-\(-9.36^\circ\) about \(t_1\); about \(+10.03^\circ\) and
-\(-9.56^\circ\) about \(t_2\) & \(-40\), \(-20\), \(-10\),
-\(+10\), \(+20\), \(+40\,\mathrm{mm}\) along the tangent perpendicular to the
-commanded rotation. & 72\\
+\(-9.36^\circ\) about \(t_1\) & \(r_{c,t_2}=-40\), \(-20\), \(-10\),
+\(+10\), \(+20\), and \(+40\,\mathrm{mm}\). & 36\\
 
 \end{longtable}
 \endgroup
@@ -759,8 +758,8 @@ Table~\ref{tab:experimental_common_gains}.
 
 The commanded tool-orientation offset \(\theta_{\mathrm{cmd}}\) is the
 controller input used to produce the pose-based initial angular deviation
-\(\theta_{0,t_i}\). Contact Establishment then produces the signed response
-\(\gamma_{t_i}\), which is used for the main experimental comparisons.
+\(\theta_{0,t_1}\). Contact Establishment then produces the signed response
+\(\gamma_{t_1}\), which is used for the main experimental comparisons.
 
 
 \subsection{Pose-Based Initial Angular Deviation}
@@ -778,17 +777,10 @@ R(u_0,\phi_0)n_{\mathrm{Tool},0}(t_{\mathrm{CE,start}})
 \label{eq:initial_deviation_rotation}
 \end{equation}
 
-The pose-based initial angular-deviation vector is defined in surface
-coordinates as
+The reported pose-based initial angular deviation about \(t_1\) is
 
 \begin{equation}
-\theta_{0,S}
-=
--R_{\mathrm{surface}}^\top e_0
-=
-\begin{bmatrix}
-\theta_{0,t_1} & \theta_{0,t_2} & \theta_{0,n}
-\end{bmatrix}^\top.
+\theta_{0,t_1}=-t_1^\top e_0.
 \label{eq:pose_based_initial_deviation}
 \end{equation}
 
@@ -838,31 +830,22 @@ e_R\big|_{\mathrm{end\ of\ Contact\ Establishment}} .
 
 The calculation uses only the measured end-effector orientations and therefore
 does not require the instantaneous tool-to-gripper rotation, which was not
-tracked during the contact experiments. The surface frame enters solely as the
-directions the rotation is resolved along:
+tracked during the contact experiments. The reported response is resolved
+about \(t_1\):
 
 \begin{equation}
-\gamma_S
-=
-R_{\mathrm{surface}}^\top\gamma_0
-=
-\begin{bmatrix}
-\gamma_{t_1} & \gamma_{t_2} & \gamma_n
-\end{bmatrix}^\top,
-\qquad
-\gamma_{t_i}=t_i^\top\gamma_0,
-\quad i\in\{1,2\}.
+\gamma_{t_1}=t_1^\top\gamma_0.
 \label{eq:surface_resolved_setup_rotation}
 \end{equation}
 
-The reported quantity \(\gamma_{t_i}\) is the signed contact-establishment response about
-surface tangent \(t_i\). It represents the end-of-contact-establishment orientation change
-relative to the held contact-establishment reference, resolved along that tangent. Its sign is
+The reported quantity \(\gamma_{t_1}\) is the signed contact-establishment response about
+surface tangent \(t_1\). It represents the end-of-contact-establishment orientation change
+relative to the held contact-establishment reference, resolved about that tangent. Its sign is
 chosen such that a response reducing the initial angular deviation
-\(\theta_{0,t_i}\) carries the same sign as that deviation. A correcting
+\(\theta_{0,t_1}\) carries the same sign as that deviation. A correcting
 response is positive for a positive initial deviation and negative for a
 negative one, and its magnitude is the size of the correction. Reading the sign
-alone is therefore not enough, since \(\theta_{0,t_i}\) fixes which direction
+alone is therefore not enough, since \(\theta_{0,t_1}\) fixes which direction
 counts as correcting. The response is primary because it is obtained directly
 from the measured end-effector orientations and requires no independent
 measurement of the physical surface normal or tool orientation.

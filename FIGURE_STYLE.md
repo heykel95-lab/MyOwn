@@ -396,6 +396,14 @@ Plots come from the scripts in `analysis/` in the controller repository, are
 written to its `figures/` directory, and are copied into `figures/` here as
 vector PDF.
 
+**The active contact-result plots report commanded rotations about \(t_1\)
+only.** Remove every \(\gamma_{t_2}\), \(\theta_{0,t_2}\), and commanded-
+rotation-about-\(t_2\) series from figures included by the thesis. The symbol
+\(t_2\) remains on an active plot only when it is the perpendicular input
+coordinate of a \(t_1\) experiment, such as \(K_{p,t_2}\) or
+\(r_{c,t_2}\). Archived, non-included figure files and raw data are not
+deleted by this reporting-scope decision.
+
 ### Every generated plot has a generator, kept in `code/python/figures/`
 
 The scripts are in the repository, with a name map and running instructions in
@@ -477,10 +485,9 @@ signal to stop, not to install it.
 ### Result figures may be drawn from the reported means
 
 A figure whose content is already tabulated in the thesis does not need a
-generator at all. Four result figures were redrawn directly in `pgfplots`
-from the means in their own tables: the Case-A bars, the two-panel Case-D
-variation, the Case-D comparison with the supporting tool-axis check, and the
-two-panel Case-E plot. They are `\input` as `.tex`, so they take the document font and
+generator at all. The active Case-A, Case-B, Case-C and Case-D figures and the
+supporting tool-axis comparison are drawn directly in `pgfplots` from the
+values in their own tables. They are `\input` as `.tex`, so they take the document font and
 need no `
 esizebox`.
 
@@ -579,7 +586,7 @@ file name still carries its acquisition-campaign identifier:
 | `MAIN_D_sign.pdf`, `MAIN_D_wrench.pdf`, `MAIN_D_diagnostics.pdf` | Case D |
 | `MAIN_G_magnitude.pdf` | Supporting initial angular-deviation magnitude check; retained file identifier |
 | `MAIN_F_toolaxis.pdf` | Supporting tool-axis check; retained file identifier |
-| `MAIN_H_direction.pdf` | Supporting intermediate-direction check; retained file identifier |
+| `MAIN_H_direction.pdf` | Withdrawn intermediate-direction check; retained archive identifier |
 | `MAIN_DQ_descent.pdf`, `MAIN_DQ_metric_comparison.pdf`, `MAIN_DQ_metric_summary.pdf` | Data quality |
 | `MAIN_NS_nullspace_automatic.pdf` | Null-space results |
 
@@ -687,8 +694,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
   above bans: a title restates the caption, whereas a panel label is the only
   way the text can point at one half of a figure. Set it with
   `ax.set_title("(a)")` in matplotlib and `title={\footnotesize (a) …}` in
-  `pgfplots`, where the Case-D panels already carry a short description after
-  the letter. The caption then names what the figure shows and stops; what each
+  `pgfplots`. The caption then names what the figure shows and stops; what each
   panel carries is a sentence in the text, not a second caption paragraph.
   The metric-comparison figure was rewritten this way — its caption had grown to four lines
   describing both panels, which is exactly the material the body text is for.
@@ -702,13 +708,12 @@ writes a generated file names it, so regeneration must preserve this mapping.
   the symbol list can still read the figure; the symbol follows so the figure
   ties back to the notation; the unit closes it in square brackets. Settled
   examples: `Contact-Establishment Rotation About \(t_1\), \(\gamma_{t_1}\) [°]`,
-  `Rotational Stiffness, \(K_{R,t_i}\) [N m/rad]`,
-  `Cross-Axis Translational Stiffness, \(K_{p,t_j}\) [N/m]`,
+  `Rotational Stiffness About \(t_1\), \(K_{R,t_1}\) [N m/rad]`,
+  `Cross-Axis Translational Stiffness, \(K_{p,t_2}\) [N/m]`,
   `Tangential CoC Position, \(r_{c,t_2}\) [mm]`,
-  `Tangential CoC Position, \(r_{c,t_1}\) [mm]`,
-  `Pose-Based Initial Angular Deviation, \(\theta_{0,t_i}\) [°]`,
+  `Pose-Based Initial Angular Deviation, \(\theta_{0,t_1}\) [°]`,
   `Commanded Normal Force, \(F_n\) [N]`,
-  `Commanded TCP Moment About \(t_i\), \(M_{t_i}\) [N m]`.
+  `Commanded TCP Moment About \(t_1\), \(M_{t_1}\) [N m]`.
 
   **Figure 5.5 uses the first form exactly on its upper axis.** `Set-Up
   Rotation About \(t_1\)` is withdrawn from the plot; the axis reads
@@ -728,17 +733,6 @@ writes a generated file names it, so regeneration must preserve this mapping.
   unit still closes the label — the Case-F comparison axis and the categorical
   axes are the standing examples.
 
-  **A categorical axis keeps the full form where a symbol and a unit exist for
-  what its ticks name.** The direction comparison reads
-  `Commanded Rotation Direction, \(\theta_{\mathrm{cmd}}\) [°]` over ticks
-  reading `about t1`, `-45°`, `+45°` and `about t2`. A briefer
-  `Commanded Rotation Direction` was tried on 2026-08-25, on the grounds that
-  the ticks are named conditions rather than values of one quantity, and it was
-  **reverted the same day**: one axis in a format of its own is a more visible
-  inconsistency than a symbol standing over categorical ticks, and the reader
-  meets `Contact-Establishment Rotation, \(\gamma_{t_i}\) [°]` on the other axis of the same
-  figure. Uniformity of the axis format wins. Drop the symbol and the unit only
-  where none exists, per the rule below.
 - **A legend names the experimental condition, and gives its symbol and value
   where one exists:** `Descriptive Condition, Symbol = Value`. It never repeats
   the \(y\)-axis quantity and never carries a unit already on the axis.
@@ -754,8 +748,8 @@ writes a generated file names it, so regeneration must preserve this mapping.
   axis is that symbol and its unit; a descriptive phrase may stay in front of it
   where the symbol alone would be cryptic, as in
   `Cumulative projected null-space motion \(E_N\) [°]`. The pass that applied
-  this set the axes to \(r_{c,t_1}\), \(r_{c,t_2}\),
-  \(\gamma_{t_i}\), \(\theta_{t_i}\), \(E_N\) and
+  this set the active contact axes to \(r_{c,t_2}\),
+  \(\gamma_{t_1}\), \(\theta_{0,t_1}\), \(E_N\) and
   \(\Delta\sigma_{\min,\mathrm{dist}}\). The pose-based appendix comparison
   uses descriptive labels instead of promoting its local quantities to the
   thesis-wide symbol list.
@@ -763,7 +757,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
   **Response axes pair words with the symbol.** Write `Measured contact-establishment rotation
   about \(t_1\), \(\gamma_{t_1}\) [°]`, not a bare symbol. A parameter axis
   likewise names the varied quantity before its symbol, for example
-  `Rotational stiffness about the investigated tangent, \(K_{R,t_i}\)` or
+  `Rotational stiffness about \(t_1\), \(K_{R,t_1}\)` or
   `Tangential CoC position along \(t_2\), \(r_{c,t_2}\)`. Wrench panels follow
   the same pattern: `Commanded normal force, \(F_n\) [N]` and `Commanded TCP
   moment about \(t_1\), \(M_{t_1}\) [N m]`.
@@ -772,15 +766,10 @@ writes a generated file names it, so regeneration must preserve this mapping.
   axes kept their prose for that reason: the supporting tool-axis comparison, whose \(x\)
   carries a tangential displacement on one series and a tool-axis displacement
   on the other, so no single component symbol covers it; the categorical axis of
-  the Case-A bars, whose ticks name five different initial conditions that no
+  the Case-A bars, whose ticks name three different initial conditions that no
   one symbol spans; and the time
-  axes, which the author prefers as they
-  read. Do not invent a symbol to satisfy this rule.
-
-  The direction comparison is **not** one of them, though its axis is equally
-  categorical: its four ticks are all directions of the same commanded
-  rotation, so \(\theta_{\mathrm{cmd}}\) and the degree do cover them, and the
-  axis carries both.
+  axes, which the author prefers as they read. Do not invent a symbol to
+  satisfy this rule.
 
 ## Checking a figure
 

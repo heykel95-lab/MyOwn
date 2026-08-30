@@ -12,21 +12,22 @@ no other agent — repeats work that is already in the document.
 
 ## The campaign archive, and what it now supports
 
-The \(52\) reported settings each carry three repetitions. The two
-`B_combined_{t1,t2}` settings and the three surface-fixed definition-frame
-settings were removed from the report. This takes the campaign from \(57\)
-settings and \(171\) runs to \(52\) and \(156\); their run directories stay
-in the archive and are simply not reported. The main A--D study contains
-\(37\) settings and \(111\) runs. The three supporting checks in Appendix D
-contain \(15\) settings and \(45\) runs.
-The Case-D run that
-Section 4.3.4 once recorded as excluded was re-recorded on 2026-08-19 under a
-byte-identical parameter set, so the count is \(156\) of \(156\) and the chapter
-says so. **Do not reintroduce an excluded-run sentence.**
+The reported contact study is restricted to commanded rotations about
+\(t_1\). Its \(27\) settings each carry three repetitions. The main A--D
+study contains \(19\) settings and \(57\) measurements. The two supporting
+checks in Appendix D contain eight settings and \(24\) measurements. Together
+with the twelve pose-hold trials, the complete reported data set contains
+\(93\) measurements. Experiments about \(t_2\), the intermediate-direction
+check, the two `B_combined_{t1,t2}` settings, and the three surface-fixed
+definition-frame settings remain in the archive but are outside the thesis
+results. The \(t_2\) experiments were excluded because their responses were
+not sufficiently repeatable; tool-mount play about \(y_{\mathrm{EE}}\) is
+treated as a likely source of that variability, not as an isolated or proven
+cause.
 
 The archive lives on the lab machine at
-`Thesis_Final_Control/experiments/results/`, \(171\) archived run directories
-(the \(156\) reported plus the fifteen no longer reported) each with
+`Thesis_Final_Control/experiments/results/`, \(171\) archived run directories,
+of which \(81\) measurements are now reported, each with
 `logs/surface_grinding_controller_log.csv`, and
 `experiments/derived/metrics.csv` carries the \(100\) `P2_` rows the contact
 figure scripts read. **A clone shows neither**, because that repository's
@@ -40,18 +41,17 @@ not be re-derived:
 
 | Study item | Settings | Run directories |
 |---|---|---|
-| A | 5 | `S1_none_00deg`, `P2_{t1,t2}_{pos,neg}_p000` |
-| B | 4 | `A_rot_{t1,t2}_{15,50}` |
-| C | 4 | `B_trans_{t1,t2}_{0300,0800}` |
-| D | 24 | `P2_{t1,t2}_{pos,neg}_{m010,m020,m040,p010,p020,p040}` |
-| Supporting initial-deviation magnitude | 4 | `P5_mag_{t1,t2}_{p000,p040}` |
+| A | 3 | `S1_none_00deg`, `P2_t1_{pos,neg}_p000` |
+| B | 2 | `A_rot_t1_{15,50}` |
+| C | 2 | `B_trans_t1_{0300,0800}` |
+| D | 12 | `P2_t1_{pos,neg}_{m010,m020,m040,p010,p020,p040}` |
+| Supporting initial-deviation magnitude | 2 | `P5_mag_t1_{p000,p040}` |
 | Supporting check 1: tool-axis displacement | 6 | `P3_axis_{m010,m020,m040,p010,p020,p040}` |
-| Supporting check 2: intermediate tangent directions | 5 | `C_dir_{m45,p45}`, `C_fixed_{m45,p45}`, `C_fixed_t2` |
 
 The surface-fixed `S3_surface_*` and `S2_tool_00deg` directories, the
 `P2_*_{m080,p080}` directories, and the `V_*`, `S4_*`, `S5_*`, `P4_*`,
 `P6_*`, `P_*`, `AXS*`, `REVS2_*` and `PROBE60_*` series are exploratory and
-outside the reported \(52\).
+outside the reported \(27\).
 
 The aborted first attempt at `P2_t1_pos_m040/r02` was moved to
 `experiments/results_aborted/P2_t1_pos_m040_r02_20260817/` so no analysis script
@@ -84,6 +84,12 @@ for recapture and resumption from an active controller state. Figure 3.3 also
 places the Test Mode box on the left return branch with its `s` and `t`
 conditions beside the box. Figures 3.3 and 3.7 were checked visually in the
 clean and review outputs.
+The Windows MiKTeX clean and professor builds were repeated on 2026-08-31
+after restricting the reported contact study to rotations about \(t_1\).
+Both PDFs contain 122 pages. Their final passes contain no errors, undefined
+references or citations, or overfull boxes. The revised Chapter 5 plots and
+Appendix D tables were checked from rendered pages; the Figure 5.5 crop was
+also corrected so that its numerical tick labels remain complete.
 `Thesis_preview.pdf` has 128 pages and `Review_Draft.pdf` has 132 pages,
 with no undefined references or citations, no overfull boxes and no soul
 reconstruction failures in their final passes.
@@ -148,11 +154,8 @@ outstanding from the author on that front.
 - **The lever and the plotted centre position are now one signed quantity.**
   \(r_c\) was redefined on 2026-08-24 as \(p_c-p_{\mathrm{TCP}}\), \(d_c\)
   was removed from the thesis, and the coupling moment became
-  \(m_{\mathrm{cpl},K}=r_c\times f_K\). The supporting intermediate-direction
-  vectors flipped sign with the
-  definition; the Case-D columns did not, because they already reported
-  \(p_c-p_{\mathrm{TCP}}\). Both now read \(+40\,\mathrm{mm}\) for the
-  selected \(+10^\circ\) condition about \(t_1\), which they did not before.
+  \(m_{\mathrm{cpl},K}=r_c\times f_K\). The retained Case-D comparison reports
+  \(+40\,\mathrm{mm}\) for the selected positive condition about \(t_1\).
   **Labelling a `centre position` axis \(r_{c,t_2}\) is now correct.** The
   rule is recorded in `THESIS_WRITING_GUIDE.md` and the symbol list.
 
@@ -509,9 +512,9 @@ and \(p_c\) are never crossed, and nothing says the compliance centre moves
 the force. The external wrench is `model-estimated` at all three of its
 mentions and is never called measured. Grinding reads as implemented but not
 entered in Chapters 1, 3, 4, 5 and 6. After removal of the definition-frame
-experiment, the run counts reconcile: \(37+15=52\) settings,
-\(111+45=156\) runs, \(4+6+5=15\) supporting settings and
-\(12+18+15=45\) supporting runs, plus twelve pose-hold runs for \(168\).
+experiment, the current counts reconcile: \(19+8=27\) contact settings,
+\(57+24=81\) contact measurements, and twelve pose-hold trials for \(93\)
+reported measurements in total.
 The three `longtable` references all use literal `Table~\ref`, and no `\ref`
 key in the compiled document is undefined. The only digit in the summaries is
 `7-achsigen`, which names the degrees of freedom rather than measuring

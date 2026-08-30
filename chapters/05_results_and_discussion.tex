@@ -4,20 +4,20 @@
 The surface-contact experiments evaluate how the controller parameters
 influence the end-effector rotation generated during Contact Establishment. The
 primary response quantity is the signed contact-establishment response
-\mbox{\(\gamma_{t_i}\)} about the investigated surface tangent
-\mbox{\(t_i\)}, defined in
+\mbox{\(\gamma_{t_1}\)} about surface tangent
+\mbox{\(t_1\)}, defined in
 \mbox{\Cref{sec:experimental_evaluation}}. It represents the
 end-of-contact-establishment orientation change relative to the orientation reference held
 through contact establishment. Its sign is chosen so that a response reducing the initial
 angular deviation carries the same sign as that deviation, and
-\mbox{\(\lvert\gamma_{t_i}\rvert\)} is then the size of the correction.
+\mbox{\(\lvert\gamma_{t_1}\rvert\)} is then the size of the correction.
 
-The pose-based initial angular deviation \mbox{\(\theta_{0,t_i}\)} defines
+The pose-based initial angular deviation \mbox{\(\theta_{0,t_1}\)} defines
 the achieved experimental condition. The commanded tool orientation offset
-\mbox{\(\theta_{t_i}\)} is the controller input that generates it, whereas
-\mbox{\(\gamma_{t_i}\)} is the measured response. The main response figures
-therefore identify each condition by \mbox{\(\theta_{0,t_i}\)} and report
-\mbox{\(\gamma_{t_i}\)}. The corresponding numerical values are provided in
+\mbox{\(\theta_{t_1}\)} is the controller input that generates it, whereas
+\mbox{\(\gamma_{t_1}\)} is the measured response. The main response figures
+therefore identify each condition by \mbox{\(\theta_{0,t_1}\)} and report
+\mbox{\(\gamma_{t_1}\)}. The corresponding numerical values are provided in
 \mbox{\Cref{app:additional_plots}}.
 
 \Added{Each contact parameter setting was repeated three times. The comparative
@@ -28,10 +28,9 @@ each main case below. Within these cases, individual values are discussed only
 where their spread is relevant to the interpretation. The Case-D comparison
 additionally carries error bars.} The preceding Tool Orientation state terminated with a finite tracking
 tolerance, so the initial angular magnitude differed slightly from the
-commanded value. At the TCP, the \mbox{\(+10^\circ\)} input produced mean
-initial deviations of \mbox{\(+9.31^\circ\)} about \mbox{\(t_1\)} and
-\mbox{\(+10.05^\circ\)} about \mbox{\(t_2\)}. The reversed input produced
-\mbox{\(-9.41^\circ\)} and \mbox{\(-9.55^\circ\)}, respectively.
+commanded value. At the TCP, the \mbox{\(+10^\circ\)} input produced a mean
+initial deviation of \mbox{\(+9.31^\circ\)} about \mbox{\(t_1\)}. The
+reversed input produced \mbox{\(-9.41^\circ\)}.
 
 \section{Main Surface-Contact Results}
 \label{sec:results_main_contact_cases}
@@ -39,9 +38,9 @@ initial deviations of \mbox{\(+9.31^\circ\)} about \mbox{\(t_1\)} and
 The cases are reported in the order in which they constrain the choice of
 compliance-centre position. The TCP-centred reference is reported in Case~A,
 followed by the stiffness sensitivities in Cases~B and~C. In Case~D the
-tangential compliance-centre displacement was tested over both surface tangents
-and both signs of the pose-based initial angular deviation. The angular-magnitude,
-tool-axis, and intermediate-direction comparisons are
+tangential compliance-centre displacement was tested for both signs of the
+pose-based initial angular deviation about \mbox{\(t_1\)}. The angular-magnitude
+and tool-axis comparisons are
 reported as supporting checks in
 \mbox{\Cref{app:supporting_contact_checks}}.
 
@@ -54,7 +53,7 @@ translation--rotation coupling introduced by the virtual point shift. The
 ordinary rotational impedance and physical contact geometry remain. The
 measured response therefore provides the baseline for the stiffness and
 compliance-centre-position comparisons.
-\Added{Repetition scatter remained at or below \mbox{\(0.19^\circ\)} across
+\Added{Repetition scatter remained at or below \mbox{\(0.06^\circ\)} across
 all Case-A settings in \mbox{\Cref{tab:results_case_a}}.}
 
 \begin{figure}[H]
@@ -64,15 +63,12 @@ all Case-A settings in \mbox{\Cref{tab:results_case_a}}.}
 \label{fig:results_case_a}
 \end{figure}
 
-With the \abbr{CoC} at the TCP, the measured response differs strongly between
-the two surface tangents. For the positive initial-deviation conditions,
-\Cref{fig:results_case_a} gives \mbox{\(+7.57^\circ\)} about
-\mbox{\(t_1\)} and \mbox{\(-1.63^\circ\)} about \mbox{\(t_2\)}.
-Against these positive initial deviations, the \mbox{\(t_1\)} response was
-correction-directed, whereas the \mbox{\(t_2\)} response had the opposite sign.
-Reversing the initial angular deviation changes the response to
-\mbox{\(-10.83^\circ\)} and \mbox{\(-1.25^\circ\)}, respectively.
-The figure shows all five baseline conditions.
+For the positive initial-deviation condition about \mbox{\(t_1\)},
+\Cref{fig:results_case_a} gives a response of
+\mbox{\(+7.57^\circ\)}. Reversing the initial angular deviation changes the
+response to \mbox{\(-10.83^\circ\)}. Both responses have the same sign as
+their initial deviations and are therefore correction-directed. The figure
+shows the three baseline conditions.
 
 The nominal zero-offset input produced a pose-based initial deviation of
 \mbox{\(0.74^\circ\)} and gave
@@ -91,7 +87,7 @@ In Case~B the rotational stiffness about the investigated tangent was varied
 while the other controller settings remained unchanged. The
 \mbox{\(5\,\mathrm{N\,m/rad}\)} condition is the corresponding TCP-centred
 reference from Case~A.
-\Added{Repetition scatter remained at or below \mbox{\(0.31^\circ\)} across
+\Added{Repetition scatter remained at or below \mbox{\(0.03^\circ\)} across
 all Case-B settings in \mbox{\Cref{tab:results_case_b}}.}
 
 \begin{figure}[H]
@@ -101,14 +97,12 @@ all Case-B settings in \mbox{\Cref{tab:results_case_b}}.}
 \label{fig:results_case_b}
 \end{figure}
 
-Increasing \mbox{\(K_{R,t_i}\)} reduced the measured rotation over the tested
-range. About \mbox{\(t_1\)}, \Cref{fig:results_case_b} shows a decrease from
+Increasing \mbox{\(K_{R,t_1}\)} reduced the measured rotation over the tested
+range. \Cref{fig:results_case_b} shows a decrease from
 \mbox{\(+7.57^\circ\)} at \mbox{\(5\,\mathrm{N\,m/rad}\)} to
-\mbox{\(+2.73^\circ\)} at \mbox{\(50\,\mathrm{N\,m/rad}\)}. About
-\mbox{\(t_2\)}, the response remained small and changed from
-\mbox{\(-1.63^\circ\)} to \mbox{\(-0.48^\circ\)}. Rotational stiffness
-therefore changed the response magnitude without removing the directional
-difference observed in Case~A.
+\mbox{\(+2.73^\circ\)} at \mbox{\(50\,\mathrm{N\,m/rad}\)}. Rotational
+stiffness therefore changed the response magnitude while its sign remained
+correction-directed.
 
 \subsubsection{Cross-Axis Translational Stiffness: Case~C}
 \label{sec:results_case_c}
@@ -117,7 +111,7 @@ In Case~C the translational stiffness perpendicular to the investigated
 rotation axis was varied. The rotational stiffness about that axis was held at
 \mbox{\(5\,\mathrm{N\,m/rad}\)}. The \mbox{\(2000\,\mathrm{N/m}\)}
 condition is the corresponding TCP-centred reference from Case~A.
-\Added{Repetition scatter remained at or below \mbox{\(0.17^\circ\)} across
+\Added{Repetition scatter remained at or below \mbox{\(0.02^\circ\)} across
 all Case-C settings in \mbox{\Cref{tab:results_case_c}}.}
 
 \begin{figure}[H]
@@ -128,20 +122,17 @@ all Case-C settings in \mbox{\Cref{tab:results_case_c}}.}
 \end{figure}
 
 The influence of perpendicular translational stiffness was considerably
-smaller than that of rotational stiffness. About \mbox{\(t_1\)}, the measured
-rotation varied by only \mbox{\(0.03^\circ\)} across the tested range. About
-\mbox{\(t_2\)}, \Cref{fig:results_case_c} shows a change of
-\mbox{\(0.61^\circ\)}, from \mbox{\(-2.24^\circ\)} to
-\mbox{\(-1.63^\circ\)}. Varying this stiffness alone therefore did not account
-for the directional difference in the baseline response.
+smaller than that of rotational stiffness. The measured rotation varied by
+only \mbox{\(0.03^\circ\)} across the tested range in
+\mbox{\Cref{fig:results_case_c}}.
 
 \subsection{Effect of Tangential CoC Position: Case~D}
 \label{sec:results_case_d}
 
-In Case~D the tangential position of the \abbr{CoC} was varied while the
-Cartesian stiffness and damping remained unchanged. For each rotation axis, the centre was
-moved along the surface tangent perpendicular to that axis. The TCP-centred
-condition is included as the zero-position reference.
+In Case~D the tangential position of the \abbr{CoC} was varied along
+\mbox{\(t_2\)}, perpendicular to the reported rotation about
+\mbox{\(t_1\)}. Cartesian stiffness and damping remained unchanged. The
+TCP-centred condition is included as the zero-position reference.
 \Added{Repetition scatter was small at most Case-D settings, and
 \mbox{\Cref{tab:results_case_d}} gives every sample standard deviation. Four
 conditions carry a larger spread, and they are named where the error bars
@@ -156,30 +147,19 @@ appear below rather than summarised by a single bound.}
 
 As shown in \mbox{\Cref{fig:results_case_d}}, reversing the initial
 orientation condition changes which side of the TCP produces the larger
-response. About \mbox{\(t_1\)}, the positive condition gives
+response. The positive condition gives
 \mbox{\(+7.87^\circ\)} at \mbox{\(+40\,\mathrm{mm}\)} and
 \mbox{\(+0.18^\circ\)} at \mbox{\(-40\,\mathrm{mm}\)}. The reversed
 condition exchanges the larger response between the two sides.
 
-Changing the rotation axis also changes the required tangential direction.
-For a positive condition about \mbox{\(t_2\)}, the response changes from
-\mbox{\(-1.63^\circ\)} at the TCP to \mbox{\(+4.43^\circ\)} at the
-selected \mbox{\(r_{c,t_1}=-40\,\mathrm{mm}\)} position. The selected
-displacement therefore lies along \mbox{\(+t_2\)} for rotation about
-\mbox{\(t_1\)} and along \mbox{\(-t_1\)} for rotation about
-\mbox{\(t_2\)}. Among the tested positions, no non-zero tangential
-\abbr{CoC} was independent of the tangent direction and sign of the
-pose-based initial angular deviation.
+Among the tested positions, no non-zero tangential \abbr{CoC} increased the
+correction-directed response for both signs of the initial angular deviation.
+The required side of the TCP therefore depends on the sign of that deviation.
 
-\Added{The error bars in \mbox{\Cref{fig:results_case_d}} identify the conditions with
-the larger repetition spread. The positive \mbox{\(t_1\)} condition at
+\Added{The error bars in \mbox{\Cref{fig:results_case_d}} identify the condition with
+the largest repetition spread. The positive condition at
 \mbox{\(-20\,\mathrm{mm}\)} had a standard deviation of
-\mbox{\(0.44^\circ\)}. About \mbox{\(t_2\)}, the positive condition had
-standard deviations of \mbox{\(0.47^\circ\)} at
-\mbox{\(+20\,\mathrm{mm}\)} and \mbox{\(2.36^\circ\)} at
-\mbox{\(+40\,\mathrm{mm}\)}. The reversed condition at
-\mbox{\(+40\,\mathrm{mm}\)} had a standard deviation of
-\mbox{\(0.71^\circ\)}.}
+\mbox{\(0.44^\circ\)}.}
 
 The positive \mbox{\(t_1\)} condition was examined in the time domain to
 relate the rotation response to the commanded wrench. Its two outer positions
@@ -248,9 +228,9 @@ The measured sign reversal follows the relation derived in
 \mbox{\(r_c\neq0\)} retains one preferred moment direction while the press
 continues. At \mbox{\(r_c=0\)}, the point-shift contribution vanishes and the
 TCP selects no tangential direction. The TCP-centred condition is therefore
-the direction-independent fixed reference among the tested positions. A displaced
-centre provides greater condition-specific rotational authority where the
-required direction is known.
+the sign-independent fixed reference among the tested positions for rotation
+about \mbox{\(t_1\)}. A displaced centre provides greater condition-specific
+rotational authority when the required sign is known.
 
 The Grinding state returns to the decoupled impedance branch described in
 \mbox{\Cref{subsec:implementation_grinding_phase}}. This state structure is

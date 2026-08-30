@@ -39,7 +39,7 @@ would work as a pull quote, it is wrong for this thesis.
 |---|---|
 | Nothing tested came close to the lever. | The compliance-centre lever produced the largest effect among the parameters investigated. |
 | The floor came first. | The zero-tilt condition was used as the experimental baseline. |
-| One setting misbehaves. | The \(10^\circ\) \(t_2\) condition showed substantially greater variability than the other settings. |
+| One setting misbehaves. | The positive \(t_1\) condition at \(-20\,\mathrm{mm}\) showed the largest variability in the retained Case-D data. |
 | The limitation bites. | This limitation affects the interpretation of the measured improvement. |
 | Four contributions carry the work. | The main contributions of this thesis are the following. |
 | Which side the lever sits on decides the outcome. | The sign of the lever strongly affects the resulting alignment response. |
@@ -74,7 +74,7 @@ rules below. Keep the active voice where the grammatical subject is a physical
 quantity, an effect, or an artefact behaving on its own:
 
 > The improvement fell monotonically as \(K_{R,t_1}\) rose.
-> Stiffening the axis being corrected returned less angle on both tangents.
+> Stiffening the investigated rotation axis reduced the response about \(t_1\).
 > The sign of the lever determines the direction of the induced moment.
 > The controller realises a frame-consistent Cartesian impedance in real time.
 > \Cref{tab:results_case_d} shows …
@@ -258,8 +258,8 @@ sentence:
 > As shown in \cref{tab:results_case_d}, moving the compliance centre had a much
 > larger effect than changing either stiffness parameter.
 
-> The large standard deviation in the \(10^\circ\) \(t_2\) condition is caused
-> primarily by one repetition.
+> \Cref{tab:results_case_d} gives the largest retained Case-D standard
+> deviation at \(r_{c,t_2}=-20\,\mathrm{mm}\).
 
 This makes the interpretation traceable and shows that it came from the data
 rather than from the argument. At least one explicit `\cref` to the table or
@@ -301,9 +301,9 @@ final:
 
 | Final | Tied to the scope |
 |---|---|
-| the tangent-axis asymmetry stands | the measured asymmetry between the tangent axes remained after this limitation was accounted for |
+| the selected centre is sign independent | among the tested positions for rotation about \(t_1\), only the TCP-centred condition was sign independent |
 | the two entries did not act independently | within the tested range, the results indicate that the two entries were not independent |
-| the favourable sign is opposite on the two tangents | for the investigated configuration, opposite favourable lever signs were observed for the two tangent directions |
+| the favourable side is universal | for the investigated \(t_1\) conditions, the side that increased the response reversed with the initial-deviation sign |
 
 One robot, one tool, one surface, one parameter range. This is not hedging
 for its own sake — it connects each claim to the scope that was actually tested.
@@ -322,7 +322,7 @@ improvement was measured**.
 | the unfavourable sign removed the correction rather than reducing it | with the opposite sign, almost no alignment improvement was measured |
 | no tested setting improved on the most compliant baseline | the largest improvement was obtained with the lowest tested rotational stiffness |
 | displacement along the normal produced no change | moving the centre along the surface normal produced no measurable change above the interpretation threshold |
-| the favourable sign is opposite on the two tangents | opposite favourable lever directions were observed for tilts about \(t_1\) and \(t_2\) |
+| the same lever assists both signs | the side that increased the correction-directed response reversed with the initial-deviation sign about \(t_1\) |
 | the tool axis is known only to within a degree or two | the calibrated tool normal does not enter this quantity |
 | and shifts as the tool settles in the gripper | the relative tool--gripper rotation was not tracked during the contact experiments |
 
@@ -914,8 +914,8 @@ subsection in Chapter~\ref{ch:theory}, one bullet per assumption, each naming
 what it costs, would carry real weight. The pattern is `assumption → what it
 limits`:
 
-> - The tool is treated as rigidly held. Motion within the gripper is therefore
->   unmeasured, which makes the \(t_2\) results lower bounds.
+> - The tool is treated as rigidly held. Instantaneous relative motion within
+>   the gripper is therefore absent from the pose-based response.
 > - Contact is treated as quasi-static. Impact transients are outside the range
 >   over which the reported stiffness applies.
 
@@ -948,9 +948,9 @@ the conclusion should carry it alongside the positive ones.
 Where the answer is conditional, say it is conditional and name the condition,
 rather than manufacturing a rule:
 
-> No single stiffness setting was best across both tangents; the favourable
-> sign of the lever reverses between them, so the choice follows the axis being
-> corrected.
+> No tested non-zero tangential centre increased the correction-directed
+> response for both signs about \(t_1\), so the selected side depends on the
+> initial-deviation sign.
 
 ## Rewrite procedure
 
@@ -1008,10 +1008,8 @@ where the canonical phrasing is nearly fixed. Handling them well fixes both.
 
 A citation checker flagged this sentence as requiring a source:
 
-> Moving the lever 60 mm along the tangent perpendicular to the tilted axis
-> raised the alignment improvement from 0.56° to 6.05° for a tilt about \(t_1\)
-> and from 1.38° to 6.36° for a tilt about \(t_2\), reducing the residual
-> misalignment to 0.93° and 2.14°.
+> Moving the compliance centre along \(t_2\) changed the measured response
+> about \(t_1\) across the tested positions.
 
 It offered a Scribd machine-alignment guide at 11% relevance and a German
 structural-engineering blog post on rotational stiffness at 7%.
