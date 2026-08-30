@@ -2,13 +2,34 @@
 \label{ch:intro}
 \section{Motivation}
 
-Industrial manipulators commonly use position control to track commanded
-trajectories. In surface-finishing applications, placement tolerances can cause
-the physical surface pose to differ from its programmed pose. The surface is
-positioned manually, and the tool is held in a gripper. Their residual angular
-misalignment is therefore unknown before contact. Rigid position control
-resists the corresponding corrective motion and can generate high contact
-loads.
+\Added{Industrial manipulators commonly use position control to track commanded
+trajectories. In the controller, the surface is represented by a configured
+reference with normal \mbox{\(n_s\)}. The physical surface normal
+\mbox{\(n_{\mathrm{phys}}\)} can differ from this reference because of placement
+and calibration tolerances. Tool mounting adds a further source of
+tool--surface angular uncertainty. Consequently, commanding the tool face
+parallel to the configured surface does not guarantee parallelism with the
+physical surface. The remaining mismatch becomes apparent during contact
+establishment and can produce edge-first contact. Rigid position
+control resists the corresponding corrective motion and can generate high
+contact loads.}
+
+\begin{figure}[H]
+  \centering
+  \input{figures/surface_entry_concept.tex}
+  \caption[Configured reference, commanded offset, and contact entry]{\Added{Configured surface reference, commanded tool offset, and contact-entry
+  geometry. The physical normal is unknown to the controller, and the achieved
+  reference-relative angle need not equal the command.}}
+  \label{fig:surface_entry_concept}
+\end{figure}
+
+\Added{The physical surface-reference difference was not measured independently
+during the reported campaign. Reproducible entry conditions were instead
+created by varying the desired tool orientation relative to the configured
+surface. The command \mbox{\(\theta_{\mathrm{cmd}}\)} specifies this deliberate
+reference-relative offset. The pose-based angle \mbox{\(\theta_0\)} describes
+the orientation actually reached at contact entry. These quantities do not
+represent a measured physical surface angle.}
 
 Torque-controlled collaborative robots allow contact compliance to be
 specified directly and account for a growing share of industrial deployments
@@ -130,7 +151,7 @@ Contact-induced alignment forms the Contact Establishment state of the intended
 surface-contact sequence.
 The tool approaches the surface with an angular offset, establishes contact,
 and rotates under the compliant interaction. Sustained tangential motion would
-follow after alignment. However, the reported measurements cover the contact
+follow after alignment. However, the reported measurements cover the
 Contact Establishment state. An operator-controlled hold then maintains the reached Cartesian
 reference before grinding.
 

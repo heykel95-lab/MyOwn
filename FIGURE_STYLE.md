@@ -171,7 +171,26 @@ brief `if` condition and use a symbol already defined in the thesis when that
 makes the condition shorter. Put the condition beside a clear arrow segment,
 not over the line or a box border. Short display labels such as `Pre-Contact
 Hold` and `Pre-Grinding Hold` may stand for longer state names that the body
-text gives in full.
+text gives in full. The Tool Orientation arrow uses the compact display
+condition `angular error within tolerance or` \(t\geq t_{\mathrm{end}}\).
+The Contact Establishment arrow uses \(t\geq t_{\mathrm{end}}\). The body text
+retains the complete minimum-time, orientation, moment-change and timeout
+logic. Put the clearance condition beside the direct arrow into Pre-Contact
+Hold.
+Keep Pre-Contact Hold and Pre-Grinding Hold on the single main path. Do not draw
+or label separate `hold enabled` and `hold disabled` branches; the body text
+explains that a disabled hold advances without waiting. Operator confirmation
+labels the outgoing arrow from each hold.
+
+**A stop condition names the principal event rather than saying `fault`.** The
+shared controller-chart label reads only `stop requested` or `robot
+error/reflex`; the body text carries the run-duration limit and application-side
+exceptions. In the program-level chart, the shared rail descends through the
+centre into Stop. Place its short label beside that vertical path so the text
+does not interrupt the arrow. A recovery-failure label sits over the
+unobstructed left part of its own path, away from the controller-selection
+branches and the Surface-Contact Sequence box. Its vertical red rail remains
+visibly left of that box and never touches its border.
 
 **A label is never filled.** A white fill behind the text erases whatever it
 sits on, and on a label placed `above` a run it erases the top of that run, so
@@ -279,41 +298,56 @@ leading-edge midpoint, and tool-face centre.`; the shorter List-of-Figures entry
 ends after `tool face`.
 
 **The Chapter 3 controller flow uses two state-machine drawings.** The first
-shows Start, Robot Recovery and Controller Selection, followed by the
+starts directly with Robot Recovery and then shows Controller Selection, followed by the
 surface-contact, Cartesian Pose Hold and Manual Guidance branches. The second
-shows the surface-contact states from Tool Orientation through Grinding.
+shows the surface-contact states from Tool Orientation through Grinding. Its
+common start is the short blue rounded box `Initial Configuration`. A `Stored
+\(q_{\mathrm{init}}\)` box feeds it from one side on `move to
+\(q_{\mathrm{init}}\)`, while a separate `Guidance Mode` box states `Enter
+with g` and feeds it from the
+other on `if operator types s: use current \(q\)`. These are the stored-posture
+and guided-pose routes to the same sequence start. A blue Test Mode box follows
+Grinding and sits on the left return branch, beside the contact-state column
+rather than below Grinding. Its incoming arrow states `if operator types t`.
+It varies \(K_p\), \(K_R\), or \(r_c\), then returns through initialisation
+on an outgoing arrow labelled `if operator types s`. Keep both condition
+labels immediately beside the Test Mode box; a long return rail with an
+isolated condition label is not acceptable.
 `State` is the canonical node term, and the contact-press state is `Contact
 Establishment`; no alternative state name is used.
 
-**The surface-reference error figure keeps three angular references distinct.**
+**The Chapter 4 surface-reference geometry keeps three orientations distinct.**
 The physical surface is blue, the configured surface reference is red, and the
 tool face at the start of Contact Establishment is dark green. The inner arcs
-show the surface-reference error \(\delta_s\) and the pose-based initial
-angular deviation \(\theta_0\); the outer arc shows the physical initial angle
-\(\theta_{0,\mathrm{phys}}\). The drawing is a principal-tangent
-cross-section and carries no numerical value, because the physical surface
-normal was not measured independently for the reported runs.
+show only the pose-based initial angular deviation \(\theta_0\), drawn from the
+configured reference to the achieved tool face. No angle is drawn from the
+physical surface, and no symbol is assigned to its unknown difference from the
+configured reference. The drawing is a principal-tangent cross-section and
+carries no numerical value.
 
-**The commanded-surrogate figure beside Equation 2.51 separates the real,
-commanded and achieved cases.** Its three panels show the physical/configured
-surface error \(\delta_{s,t_i}\), the commanded tool-orientation offset
-\(\theta_{\mathrm{cmd},t_i}\), and the achieved entry angle
-\(\theta_{0,t_i}\), each relative to the configured reference. Do not overlay
-the commanded and achieved tool lines: their nearby angles make the labels
-collide and conceal that the achieved angle need not equal the command. The
-figure carries no numerical angles and does not present the unknown physical
-error as measured.
-The panel headings use `Unknown physical error`, `Commanded approximation`,
-and `Achieved entry angle` in that order. The caption repeats this mapping so
-the approximation cannot be read as a measurement of the physical plane.
+**The Chapter 1 surface-entry concept figure separates controller knowledge,
+the command, and physical contact.** Its panels show the configured and
+physical references, the desired tool offset relative to the configured
+surface, and the achieved reference-relative tool angle at contact entry. The
+physical surface and the command are never drawn as approximations of one
+another. Use red for the configured reference, blue for the physical surface,
+and dark green for desired or achieved tool orientations. Keep the commanded
+and achieved tool lines in separate panels so their nearby angles do not imply
+equality or cause label collisions. Panel (c) labels all three lines and draws
+\(\theta_0\) only between the configured surface and achieved tool face. The
+figure carries no numerical angles.
 
-**Every boxed node is an operating or controller state, and every arrow carries
-its transition condition.** A shared red termination rail may carry conditions
+**Every black rectangular node is an operating or controller state, and every
+arrow carries its transition condition.** Blue rounded boxes distinguish the
+run initialisation and Test Mode orchestration from the controller states. A
+shared red termination rail may carry conditions
 that apply from every active state, provided the accompanying text names those
 conditions explicitly. Use a red Stop state for termination. Mark the
 Operator-Controlled Hold Before Grinding as the final state entered in the
 reported runs, and state that Grinding was not entered. Source identifiers and
-gain-group annotations stay out of both state-machine drawings.
+numerical gain-group annotations stay out of both state-machine drawings; the
+Test Mode loop names only the varied parameter families \(K_p\), \(K_R\), and
+\(r_c\).
 
 **Figure 3.2 has one obvious main path and separates sensing from modelling.**
 Joint Feedback carries the measured \(q,\dot q\) to the Robot Model; the model
@@ -334,13 +368,22 @@ Its outgoing arrows show its parameter-selection role without another word in
 the box. Main-row blocks retain conspicuous gaps in the compiled page; short
 connectors squeezed between neighbouring boxes are not acceptable.
 
-**The Chapter 3 Cartesian pose-hold diagram branches after the common hold
-path.** It shows capture of the current pose followed by Cartesian pose hold,
-then four boxed alternatives: no null-space torque, singular-value
-conditioning, projected damping, and both terms together. All four alternatives
-sit at the same level, because they are selectable configurations rather than a
-temporal sequence. Keep the same plain black boxes and arrows as the controller
-state drawings.
+**The Chapter 3 Cartesian pose-hold diagram shows the four operator-selectable
+modes.** Its common path starts from one initial configuration. Use the same
+three-box initialisation motif as the surface-contact chart: `Stored
+\(q_{\mathrm{init}}\)` and `Guidance Mode` feed the central `Initial
+Configuration` box. The stored route moves the robot to
+\(q_{\mathrm{init}}\), while operator input `h` starts the hold from the current
+guided \(q\). The Guidance Mode box states `Enter with g`. The path then captures the
+current end-effector pose and enters Cartesian Pose Hold. Operator input 0, 1,
+2, or 3 selects no
+null-space torque, projected damping, singular-value conditioning, or both
+terms together. The selector remains active, so entering another number
+switches directly from any active mode to the selected one. Mode 1 exposes
+\(d_{\mathrm{null}}\), mode 2 exposes \(k_\sigma\), and mode 3 exposes both.
+Keep the numerical mapping visible and distinguish the selectable software
+modes from the four settings compared experimentally. Do not replace mode 3
+with a second conditioning-gain setting.
 
 ## Generated plots (matplotlib)
 
@@ -661,6 +704,10 @@ writes a generated file names it, so regeneration must preserve this mapping.
   `Pose-Based Initial Angular Deviation, \(\theta_{0,t_i}\) [°]`,
   `Commanded Normal Force, \(F_n\) [N]`,
   `Commanded TCP Moment About \(t_i\), \(M_{t_i}\) [N m]`.
+
+  **Figure 5.5 uses the first form exactly on its upper axis.** `Set-Up
+  Rotation About \(t_1\)` is withdrawn from the plot; the axis reads
+  `Contact-Establishment Rotation About \(t_1\), \(\gamma_{t_1}\) [°]`.
 
   **Mathematical symbols keep their own casing.** Title Case applies to the
   English words only: \(t_1\), \(r_{c,t_2}\), \(K_{R,t_1}\) and \(F_n\)

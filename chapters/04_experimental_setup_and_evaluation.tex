@@ -108,10 +108,26 @@ The complete run-specific controller configuration is given in
 
 
 % ============================================================================
-\section{Surface Reference and Tool Calibration}
+\Needspace{0.52\textheight}
+\section{Configured Surface Reference, Physical Surface, and Tool Calibration}
 \label{sec:surface_tool_calibration}
 \label{sec:contact_geometry}
 % ============================================================================
+
+\Added{Four quantities distinguish the controller reference from the physical
+contact geometry. The configured normal \mbox{\(n_s\)} is available to the
+controller, whereas \mbox{\(n_{\mathrm{phys}}\)} denotes the unmeasured physical
+surface normal. The command \mbox{\(\theta_{\mathrm{cmd}}\)} sets the desired
+tool offset relative to \mbox{\(n_s\)}. The pose-based angle
+\mbox{\(\theta_0\)} is the reference-relative orientation actually reached at
+contact entry.}
+
+\begin{figure}[H]
+  \centering
+  \input{figures/surface_reference_geometry.tex}
+  \caption{Physical, configured, and contact-entry angular references.}
+  \label{fig:surface_reference_geometry}
+\end{figure}
 
 Two geometric quantities were required before the contact experiments could be
 performed: a surface reference expressed in the robot base frame, and the
@@ -131,8 +147,10 @@ Each symbol carries the frame it is expressed in.
 \(n_{\mathrm{Tool,EE}}\) is the tool-face normal in end-effector coordinates,
 and \(n_{\mathrm{Tool},0}\) is the same physical direction in the base frame.
 Only the first is calibrated. The second follows from it during operation, as
-\Cref{sec:tool_orientation_given_surface} sets out. It is used only for the
-pose-based consistency check reported in \Cref{app:metric_agreement}.
+\Cref{sec:tool_orientation_given_surface} sets out. It is used to determine the
+pose-based initial angular deviation of
+\Cref{subsec:initial_angular_deviation} and for the supporting consistency
+check of \Cref{app:metric_agreement}.
 
 Neither calibration entered the other. The tool normal calibrated afterwards
 was not used to revise the surface reference, and determining
@@ -148,48 +166,26 @@ It was taken from the nominal end-effector axis at one seated pose. The
 calibrated tool normal. It is not a run-wise measurement of the angle between
 the physical and configured surfaces.
 
-The commanded tool orientation offset was introduced deliberately as an
-artificial surrogate for a surface-reference error. It rotates the desired
-tool orientation relative to the configured normal \(n_s\); neither the
-configured plane nor the physical plane changes.
+\Added{The physical surface-reference difference was not independently measured,
+and the plate was not rotated between conditions. The desired tool orientation
+was instead varied relative to \mbox{\(n_s\)}. The commanded offsets provided
+reproducible angular entry conditions for studying the contact response. They
+do not describe where the physical surface was assumed to be.}
 
-Three angular quantities must therefore be separated. The physical surface
-normal \(n_{\mathrm{phys}}\) denotes the actual plate orientation, whereas
-\(n_s\) is the configured normal used by the controller. Their signed
-difference about a surface tangent \(t_i\) is the surface-reference error
-\(\delta_{s,t_i}\). The pose-based initial angular deviation
-\(\theta_{0,t_i}\) is the achieved angle from the configured reference to the
-tool face at the start of Contact Establishment. In the principal-tangent
-cross-section of \Cref{fig:surface_reference_error}, the physical initial angle
-is
-
-\begin{equation}
-\theta_{0,\mathrm{phys},t_i}
-=
-\delta_{s,t_i}+\theta_{0,t_i}.
-\label{eq:physical_initial_angle_relation}
-\end{equation}
-
-For a general three-dimensional discrepancy, the corresponding rotations are
-composed rather than added component by component. The commanded orientation
-offset \(\theta_{t_i}\) generates the desired tool orientation relative to
-\(n_s\). It does not equal \(\theta_{0,t_i}\) when the Tool Orientation state
-terminates with a finite tracking error.
-
-\begin{figure}[H]
-  \centering
-  \input{figures/surface_reference_error.tex}
-  \caption{Physical, configured, and contact-entry angular references.}
-  \label{fig:surface_reference_error}
-\end{figure}
+\Added{The physical surface may differ from the configured reference by an
+unknown angular amount. Consequently, \mbox{\(\theta_{0,t_i}\)} describes the
+achieved tool orientation relative to the configured reference, not the
+physical tool--surface angle. The command \mbox{\(\theta_{t_i}\)} specifies the
+desired reference-relative offset and need not equal the achieved angle because
+Tool Orientation terminates with a finite tracking tolerance.}
 
 The physical surface normal \(n_{\mathrm{phys}}\) was not measured
 independently for the reported campaign. In addition, the instantaneous tool
-rotation relative to the gripper was not tracked during contact. Numerical
-values of \(\theta_{0,\mathrm{phys},t_i}\) cannot therefore be reconstructed
-from the archived runs. The experimental conditions are reported using the
-achieved pose-based angle \(\theta_{0,t_i}\), while the nominal command remains
-an implementation parameter. The main response remains the signed
+rotation relative to the gripper was not tracked during contact. A physical
+tool--surface angle cannot therefore be reconstructed from the archived runs.
+The experimental conditions are reported using the achieved pose-based angle
+\(\theta_{0,t_i}\), while the nominal command remains an implementation
+parameter. The main response remains the signed
 contact-establishment response of
 \Cref{subsec:experimental_supporting_metrics}.
 
@@ -646,8 +642,8 @@ position error, while the higher tangential entries restrict motion in the
 surface plane. The low rotational stiffnesses about \(t_1\) and \(t_2\) permit
 contact-induced alignment rotation, and the higher entry about \(n_s\) mainly
 resists in-plane spin of the tool face. Because the contact establishment translational
-stiffness \(K_{p,\mathrm{set}}\) is diagonal in the surface frame, the effective
-normal stiffness \(K_{p,n}=n_s^\top K_{p,\mathrm{set}}n_s\) equals the tabulated
+stiffness \(K_{p,\mathrm{CE}}\) is diagonal in the surface frame, the effective
+normal stiffness \(K_{p,n}=n_s^\top K_{p,\mathrm{CE}}n_s\) equals the tabulated
 normal entry of \(350\,\mathrm{N/m}\).
 
 The directional damping coefficients were calculated from the Cartesian inertia
@@ -879,12 +875,12 @@ is retained for the Case-D mechanism plot.
 
 At the start of Contact Establishment, the calibrated tool normal in base
 coordinates is
-\(n_{\mathrm{Tool},0}(t_{\mathrm{set,start}})\). Let the rotation vector
+\(n_{\mathrm{Tool},0}(t_{\mathrm{CE,start}})\). Let the rotation vector
 \(e_0=\phi_0u_0\) denote the shortest rotation from this direction back to the
 configured flat direction \(-n_s\), so that
 
 \begin{equation}
-R(u_0,\phi_0)n_{\mathrm{Tool},0}(t_{\mathrm{set,start}})
+R(u_0,\phi_0)n_{\mathrm{Tool},0}(t_{\mathrm{CE,start}})
 =-n_s.
 \label{eq:initial_deviation_rotation}
 \end{equation}
@@ -907,45 +903,43 @@ The minus sign makes a component directed away from the configured flat
 orientation carry the same sign as the command that produced it. This angle is
 calculated from the measured end-effector pose and the calibrated tool normal.
 It is therefore the achieved reference-relative condition rather than an
-independent measurement of the physical tool--surface angle. The relation to
-that physical angle is given in
-\Cref{eq:physical_initial_angle_relation}.
+independent measurement of the physical tool--surface angle.
 
 
 \subsection{Signed Contact-Establishment Response}
 \label{subsec:experimental_supporting_metrics}
 
-Let \(t_{\mathrm{set,start}}\) and \(t_{\mathrm{set,end}}\) denote the
+Let \(t_{\mathrm{CE,start}}\) and \(t_{\mathrm{CE,end}}\) denote the
 measurement instants at the beginning and end of contact establishment. The corresponding
 measured end-effector orientations relative to the robot base frame are
 
 \begin{equation}
-R_{\mathrm{set,start}}=R_{\mathrm{EE}}(t_{\mathrm{set,start}}),
+R_{\mathrm{CE,start}}=R_{\mathrm{EE}}(t_{\mathrm{CE,start}}),
 \qquad
-R_{\mathrm{set,end}}=R_{\mathrm{EE}}(t_{\mathrm{set,end}}).
+R_{\mathrm{CE,end}}=R_{\mathrm{EE}}(t_{\mathrm{CE,end}}).
 \end{equation}
 
 Contact-establishment holds the orientation captured at the clearance transition as its
 rotational reference, and the measured orientation coincides with it at the
-start of the state, so \(R_{\mathrm{set,start}}\) is that held reference. The
+start of the state, so \(R_{\mathrm{CE,start}}\) is that held reference. The
 relative rotation from the measured end orientation back to it is therefore
 
 \begin{equation}
-R_{\mathrm{set}}
+R_{\mathrm{CE}}
 =
-R_{\mathrm{set,start}}R_{\mathrm{set,end}}^\top.
+R_{\mathrm{CE,start}}R_{\mathrm{CE,end}}^\top.
 \end{equation}
 
 Writing this relative rotation in axis--angle form as
-\(R_{\mathrm{set}}=R(u_{\mathrm{set}},\phi_{\mathrm{set}})\) gives the
+\(R_{\mathrm{CE}}=R(u_{\mathrm{CE}},\phi_{\mathrm{CE}})\) gives the
 measured contact-establishment rotation vector \(\gamma_0\) in base coordinates:
 
 \begin{equation}
 \gamma_0
 =
-\phi_{\mathrm{set}}u_{\mathrm{set}}
+\phi_{\mathrm{CE}}u_{\mathrm{CE}}
 =
-e_R\big|_{\mathrm{end\ of\ set\text{-}up}} .
+e_R\big|_{\mathrm{end\ of\ Contact\ Establishment}} .
 \label{eq:contact_induced_rotation}
 \end{equation}
 

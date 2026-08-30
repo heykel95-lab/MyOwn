@@ -37,9 +37,9 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$p_{\mathrm{EE}},\ p_{\mathrm{TCP}}$}{End-effector / tool-centre-point position; $p_{\mathrm{TCP}}=p_{\mathrm{EE}}$ in the implemented model}{[m]}
 \symrow{$R_{\mathrm{EE}},\ T_{\mathrm{EE}}$}{End-effector orientation / transformation}{[-]}
 \symrow{$R_{\mathrm{EE,clearance}}$, $p_{\mathrm{TCP,clearance}}$}{End-effector orientation captured at the clearance transition and held as the contact-establishment orientation reference / TCP position captured at the same instant}{[-], [m]}
-\symrow{$R_{\mathrm{set,start}},\ R_{\mathrm{set,end}}$}{Measured end-effector orientations at the beginning / end of contact establishment}{[-]}
-\symrow{$R_{\mathrm{set}}$}{Current-to-reference relative rotation over contact establishment, $R_{\mathrm{set,start}}R_{\mathrm{set,end}}^\top$}{[-]}
-\symrow{$u_{\mathrm{set}},\ \phi_{\mathrm{set}}$}{Axis / angle of $R_{\mathrm{set}}$}{[-], [rad]}
+\symrow{$R_{\mathrm{CE,start}},\ R_{\mathrm{CE,end}}$}{Measured end-effector orientations at the beginning / end of contact establishment}{[-]}
+\symrow{$R_{\mathrm{CE}}$}{Current-to-reference relative rotation over contact establishment, $R_{\mathrm{CE,start}}R_{\mathrm{CE,end}}^\top$}{[-]}
+\symrow{$u_{\mathrm{CE}},\ \phi_{\mathrm{CE}}$}{Axis / angle of $R_{\mathrm{CE}}$}{[-], [rad]}
 \symrow{$p_d,\ R_d,\ T_d$}{Desired position / orientation / transformation}{[m], [-]}
 \symrow{$\Delta R_0$}{Current-to-desired relative rotation in the base frame, $R_dR_{\mathrm{EE}}^\top$}{[-]}
 \symrow{$\phi$}{Orientation-error angle}{[rad]}
@@ -47,16 +47,6 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$e_p$}{Translational (position) error}{[m]}
 \symrow{$e_R$}{Base-frame rotational error used by the command}{[rad]}
 \symrow{$\dot{x}$}{Cartesian velocity (twist)}{[m/s], [rad/s]}
-}
-
-\symgroup{Controller State Transitions}{
-\symrow{$T_{\mathrm{run}}$}{Configured maximum run duration}{[s]}
-\symrow{$t_{\mathrm{ori}},\ t_{\mathrm{ori,min}},\ t_{\mathrm{ori,out}}$}{Elapsed Tool Orientation time / minimum duration / timeout}{[s]}
-\symrow{$e_{\mathrm{axis}},\ e_{\mathrm{spin}}$}{Remaining tool-axis / enabled spin orientation error}{[rad]}
-\symrow{$\varepsilon_{\mathrm{axis}},\ \varepsilon_{\mathrm{spin}}$}{Tool-axis / spin transition tolerance}{[rad]}
-\symrow{$b_{\mathrm{pre}}$}{Pre-contact hold selection: enabled for $1$, disabled for $0$}{[-]}
-\symrow{$t_{\mathrm{set}},\ t_{\mathrm{set,min}},\ t_{\mathrm{set,out}}$}{Elapsed Contact Establishment time / minimum duration / timeout}{[s]}
-\symrow{$\Delta m_{\mathrm{ext}},\ \Delta m_{\mathrm{ext,min}}$}{Magnitude of the model-estimated external moment change from the clearance reference / its transition threshold}{[N\,m]}
 }
 
 \symgroup{Cartesian Stiffness and Damping}{
@@ -89,11 +79,11 @@ column makes the mixed translational and rotational quantities traceable.}
 \symgroup{Surface and Contact Geometry}{
 \symrow{$n_s$}{Configured surface-reference normal copied into the controller and used in the evaluation}{[-]}
 \symrow{$n_{\mathrm{phys}}$}{Physical surface normal; not measured independently in the reported experiments}{[-]}
-\symrow{$\delta_{s,t_i}$}{Signed angular error between the physical and configured surface references about tangent $t_i$}{[rad]}
 \symrow{$t_1,\ t_2$}{Surface tangent directions (unit)}{[-]}
 \symrow{$R_{\mathrm{surface}}$}{Surface-frame orientation $[\,t_1\;\;t_2\;\;n_s\,]$ in the base frame}{[-]}
 \symrow{$n_{\mathrm{Tool,EE}},\ n_{\mathrm{Tool},0},\ n_d$}{Tool-face normal expressed in the EE frame, fixed by calibration / the same direction expressed in the base frame, $n_{\mathrm{Tool},0}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}$ / desired tool-normal direction used by the controller}{[-]}
-\symrow{$\theta_{\mathrm{cmd}},\ u_{\mathrm{cmd}},\ R_{\mathrm{cmd}}$}{Commanded orientation-offset rotation vector used as an artificial surrogate for a surface-reference angular error, $\theta_{\mathrm{cmd}}=\theta_{t_1}t_1+\theta_{t_2}t_2$ / its unit rotation axis / the rotation matrix it produces through $R(u,\phi)$}{[rad], [-], [-]}
+\symrow{$\theta_{\mathrm{cmd}},\ u_{\mathrm{cmd}},\ R_{\mathrm{cmd}}$}{Commanded tool-orientation offset relative to the configured surface reference, $\theta_{\mathrm{cmd}}=\theta_{t_1}t_1+\theta_{t_2}t_2$ / its unit rotation axis / the rotation matrix it produces through $R(u,\phi)$}{[rad], [-], [-]}
+\symrow{$\theta_a,\ \theta_{a,t_1},\ \theta_{a,t_2}$}{Generic tangent-plane angular deviation used to derive the compliance-centre direction rule / its surface-tangent components}{[rad]}
 \symrow{$p_s$}{Point on the configured surface}{[m]}
 \symrow{$e_{x_0},\ e_{y_0},\ e_{z_0}$}{Unit vectors along the base-frame axes $x_0$, $y_0$ and $z_0$}{[-]}
 \symrow{$p_c$}{Centre of compliance}{[m]}
@@ -109,8 +99,9 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$h_{\mathrm{Tool}}$}{Minimum clearance of the rectangular tool face from the configured surface reference, $h_{\mathrm{Tool}}=\min_i h_i$}{[m]}
 \symrow{$h_{\mathrm{clearance}}$}{Configured tool clearance at which the transition from approach to contact establishment occurs}{[m]}
 \symrow{$\varepsilon_{\mathrm{sel}}$}{Tool-point selection tolerance}{[m]}
-\symrow{$s_{\mathrm{set}},\ v_{\mathrm{set}},\ s_{\mathrm{set,max}}$}{Commanded contact-establishment press coordinate of the selected tool point along $-n_s$ / its configured rate / its configured endpoint}{[m], [m/s], [m]}
-\symrow{$t_{\mathrm{set},0},\ t_{\mathrm{set,max}}$}{Instant of the clearance transition / instant at which $s_{\mathrm{set}}$ reaches $s_{\mathrm{set,max}}$}{[s], [s]}
+\symrow{$s_{\mathrm{CE}},\ v_{\mathrm{CE}},\ s_{\mathrm{CE,max}}$}{Commanded contact-establishment press coordinate of the selected tool point along $-n_s$ / its configured rate / its configured endpoint}{[m], [m/s], [m]}
+\symrow{$t_{\mathrm{CE},0},\ t_{\mathrm{CE,max}}$}{Instant of the clearance transition / instant at which $s_{\mathrm{CE}}$ reaches $s_{\mathrm{CE,max}}$}{[s], [s]}
+\symrow{$t_{\mathrm{CE,start}},\ t_{\mathrm{CE,end}}$}{Measurement instants at the beginning / end of Contact Establishment}{[s]}
 \symrow{$m_R$}{Rotational-impedance contribution to the commanded moment, $K_Re_R-D_R\omega_{\mathrm{EE}}$, present at every compliance-centre position}{[N\,m]}
 }
 
@@ -122,7 +113,6 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$\theta_{t_1},\ \theta_{t_2}$}{Surface-frame components of the commanded tool orientation offset}{[rad]}
 \symrow{$\theta_{0,S}$}{Pose-based initial angular-deviation vector in surface coordinates}{[rad]}
 \symrow{$\theta_{0,t_1},\ \theta_{0,t_2}$}{Achieved pose-based initial angular deviation about the surface tangents, relative to the configured reference}{[rad]}
-\symrow{$\theta_{0,\mathrm{phys},t_i}$}{Physical tool--surface angle at contact entry about tangent $t_i$; not recoverable from the archived runs}{[rad]}
 \symrow{$\gamma_0,\ \gamma_S$}{Signed contact-establishment response vector in base / surface coordinates: the end-of-contact-establishment orientation change relative to the held contact-establishment reference}{[rad], [rad]}
 \symrow{$\gamma_{t_1},\ \gamma_{t_2},\ \gamma_n$}{Surface-frame components of the signed contact-establishment response; a component reducing an initial deviation carries the same sign as that deviation}{[rad]}
 \symrow{$r_{c,t}$}{Tangential part of the compliance-centre displacement, $r_{c,t_1}t_1+r_{c,t_2}t_2$; its magnitude is written $\lVert r_{c,t}\rVert$}{[m]}

@@ -373,9 +373,7 @@ skew-symmetric matrix of the rotation axis is
 0 & -u_z & u_y\\
 u_z & 0 & -u_x\\
 -u_y & u_x & 0
-\end{bmatrix},
-\qquad
-[u]_\times^\top=-[u]_\times.
+\end{bmatrix}.
 \label{eq:skew_symmetric_axis_matrix}
 \end{equation}
 
@@ -1394,69 +1392,28 @@ t_1\times n_s=-t_2.
 \label{eq:surface_frame_cross_product_relations}
 \end{equation}
 
-\Needspace{0.58\textheight}
-\Added{For the small angular discrepancies considered here, define the angular
-error between the configured and physical surface orientations as}
+\Added{Consider a small angular deviation that the contact response should
+reduce. Its non-zero tangent-plane direction is written as}
 
 \begin{equation}
-\delta_s
+\theta_a
 =
-\delta_{s,t_1}t_1+\delta_{s,t_2}t_2.
-\label{eq:physical_surface_reference_error_components}
+\theta_{a,t_1}t_1+\theta_{a,t_2}t_2.
+\label{eq:alignment_deviation_surface_components}
 \end{equation}
-
-\Added{This is the surface-reference error that the controller should correct
-when the physical surface differs from its configured reference. The physical
-surface normal was not measured independently, so \mbox{\(\delta_s\)} could
-not be verified directly and was not imposed by rotating the plane. The same angular discrepancy was
-therefore created artificially at the tool by commanding}
-
-\begin{equation}
-\begin{aligned}
-\theta_{\mathrm{cmd}}
-&=
-\theta_{t_1}t_1+\theta_{t_2}t_2,\\
-\theta_{\mathrm{cmd}}
-&\approx
-\delta_s
-\qquad \text{for the emulated error.}
-\end{aligned}
-\label{eq:commanded_offset_surface_components}
-\end{equation}
-
-\Added{The approximation in
-\mbox{\Cref{eq:commanded_offset_surface_components}} states the intended
-experimental correspondence. Rotating the desired tool orientation relative
-to \mbox{\(n_s\)} creates the type and approximate magnitude of angular
-discrepancy that a rotated physical surface would produce. Neither surface
-plane is rotated by this command. The commanded angle is not reached exactly. At
-the start of Contact Establishment, the realised pose-based angle is
-\mbox{\(\theta_{0,t_i}\approx\theta_{t_i}\)} because Tool Orientation ends
-with a finite tracking tolerance. Thus \mbox{\(\delta_s\)},
-\mbox{\(\theta_{\mathrm{cmd}}\)}, and \mbox{\(\theta_0\)} denote the unknown
-physical error, its commanded approximation, and the achieved angle,
-respectively. \mbox{\Cref{fig:surface_error_surrogate}} shows this distinction.}
-
-\begin{figure}[H]
-  \centering
-  \input{figures/surface_error_surrogate.tex}
-  \caption[Surface-reference error and commanded approximation]{\Added{Unknown physical surface-reference error, its commanded
-  approximation, and the achieved entry angle.}}
-  \label{fig:surface_error_surrogate}
-\end{figure}
 
 For a prescribed tangential magnitude \mbox{\(\lVert r_{c,t}\rVert\)}, the
-displacement used to assist the commanded alignment rotation is chosen
-perpendicular to the orientation-offset direction,
+displacement used to reduce this deviation is selected perpendicular to its
+direction,
 
 \begin{equation}
 r_{c,t}
 =
 \lVert r_{c,t}\rVert
 \frac{
-\theta_{t_1}t_2-\theta_{t_2}t_1
+\theta_{a,t_1}t_2-\theta_{a,t_2}t_1
 }{
-\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}
+\sqrt{\theta_{a,t_1}^2+\theta_{a,t_2}^2}
 }.
 \label{eq:general_compliance_lever_selection}
 \end{equation}
@@ -1471,29 +1428,30 @@ r_{c,t}\times f_n
 =
 \lVert r_{c,t}\rVert F_n
 \frac{
-\theta_{t_1}t_1+\theta_{t_2}t_2
+\theta_{a,t_1}t_1+\theta_{a,t_2}t_2
 }{
-\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}
+\sqrt{\theta_{a,t_1}^2+\theta_{a,t_2}^2}
 }.
 \label{eq:general_compliance_lever_moment}
 \end{equation}
 
-During the contact-establishment press \mbox{\(F_n<0\)}, so this contribution acts opposite to
-\mbox{\(\theta_{\mathrm{cmd}}\)}. For the two principal directions the rule
+During the contact-establishment press \mbox{\(F_n<0\)}, so this contribution
+acts opposite to \mbox{\(\theta_a\)} and therefore tends to reduce the
+deviation. For the two principal directions the rule
 reduces to
 
 \begin{equation}
 r_{c,t}=+\lVert r_{c,t}\rVert t_2
-\quad\text{for }+\theta_{t_1},
+\quad\text{for }+\theta_{a,t_1},
 \qquad
 r_{c,t}=-\lVert r_{c,t}\rVert t_1
-\quad\text{for }+\theta_{t_2},
+\quad\text{for }+\theta_{a,t_2},
 \label{eq:principal_lever_selection}
 \end{equation}
 
 giving \mbox{\(r_{c,t}\times f_n=\lVert r_{c,t}\rVert F_nt_1\)} and
 \mbox{\(r_{c,t}\times f_n=\lVert r_{c,t}\rVert F_nt_2\)} respectively.
-Reversing the orientation offset reverses \mbox{\(r_{c,t}\)} and therefore
+Reversing the angular deviation reverses \mbox{\(r_{c,t}\)} and therefore
 reverses this contribution.
 \mbox{\Cref{fig:compliance_lever_moment}} shows the geometry for the two signs.
 
@@ -1503,7 +1461,7 @@ reverses this contribution.
   \caption[Normal-force contribution for opposite tangential displacements]{
   Normal-force contribution to the compliance-centre coupling moment for
   opposite tangential displacements: (a) the displacement selected from the
-  orientation offset; (b) the displacement with the opposite sign.}
+  angular-deviation direction; (b) the displacement with the opposite sign.}
   \label{fig:compliance_lever_moment}
 \end{figure}
 

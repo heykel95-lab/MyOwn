@@ -1,12 +1,22 @@
 % The archived vector plot is retained because the raw time-series CSV files
-% are not part of this clone. This wrapper replaces its retired state label.
+% are not part of this clone. Crop its three old y-axis labels and typeset the
+% current quantity names beside the unchanged plot area.
 \begin{tikzpicture}
-  \node[anchor=south west, inner sep=0] (image) at (0,0)
-    {\includegraphics[width=0.85\textwidth]{figures/MAIN_D_wrench.pdf}};
-  \begin{scope}[x={(image.south east)},y={(image.north west)}]
-    \fill[white] (0.000,0.675) rectangle (0.145,0.995);
-    \node[rotate=90, align=center, font=\scriptsize] at (0.060,0.835)
+  \node[anchor=south west, inner sep=0] (image) at (1.35,0)
+    {\includegraphics[width=0.755\textwidth,trim=44pt 0 0 0,clip]
+       {figures/MAIN_D_wrench.pdf}};
+  \begin{scope}[
+      shift={(image.south west)},
+      x={($(image.south east)-(image.south west)$)},
+      y={($(image.north west)-(image.south west)$)}]
+    \node[rotate=90, align=center, font=\scriptsize] at (-0.065,0.835)
       {Contact-Establishment Rotation About \(t_1\),\\
        \(\gamma_{t_1}\) [\(^\circ\)]};
+    \node[rotate=90, align=center, font=\scriptsize] at (-0.065,0.500)
+      {Commanded Normal Force,\\
+       \(F_n\) [N]};
+    \node[rotate=90, align=center, font=\scriptsize] at (-0.065,0.165)
+      {Commanded TCP Moment About \(t_1\),\\
+       \(M_{t_1}\) [N m]};
   \end{scope}
 \end{tikzpicture}

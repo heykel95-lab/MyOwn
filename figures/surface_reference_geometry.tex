@@ -8,26 +8,21 @@
 ]
   \coordinate (o) at (0,0);
 
-  % Three angular references through one common point. Their intersection is
-  % intentional: the drawing compares their orientations, not their offsets.
+  % The three lines compare orientations only. The physical orientation is
+  % illustrative because it was not measured independently.
   \draw[physical] (-4.2,0) -- (4.2,0);
   \draw[reference] (190:4.2) -- (10:4.2);
   \draw[tool] (212:4.2) -- (32:4.2);
 
   \node[lbl, blue!70!black, anchor=north west] at (4.25,-0.08)
-    {Physical surface};
+    {Physical surface (unknown)};
   \node[lbl, red!75!black, anchor=south west] at (4.05,0.82)
     {Configured surface reference};
   \node[lbl, green!60!black, anchor=south west] at (3.52,2.34)
     {Tool face at contact entry};
 
-  \draw[angle, blue!70!black] (0:0.95) arc[start angle=0,end angle=10,radius=0.95];
-  \node[lbl, blue!70!black, anchor=north] at (5:1.30) {$\delta_{s,t_i}$};
-
+  % theta_0 is drawn only from the configured reference to the achieved face.
   \draw[angle, red!75!black] (10:1.52) arc[start angle=10,end angle=32,radius=1.52];
-  \node[lbl, red!75!black, anchor=south west] at (21:1.95) {$\theta_{0,t_i}$};
-
-  \draw[angle, green!60!black] (0:2.62) arc[start angle=0,end angle=32,radius=2.62];
-  \node[lbl, green!60!black, anchor=south] at (16:3.28)
-    {$\theta_{0,\mathrm{phys},t_i}$};
+  \node[lbl, red!75!black, anchor=south west] at (21:1.95)
+    {$\theta_{0,t_i}$};
 \end{tikzpicture}

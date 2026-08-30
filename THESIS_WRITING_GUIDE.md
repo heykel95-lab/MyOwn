@@ -148,6 +148,12 @@ implemented approach; the experiment and its main findings; the principal
 limitation. Prefer one claim per sentence — an Abstract in which every sentence
 carries a full conclusion reads as machine-polished however accurate it is.
 
+The experimental part states that the reported angular conditions and
+responses are referenced to the configured surface geometry. It also states
+that neither the physical surface normal nor the instantaneous physical
+tool--surface angle was measured independently. The Kurzfassung carries the
+same scope statement in the same position.
+
 **Revise the Abstract last**, after the body text is settled, and derive the
 Kurzfassung from the finished English rather than paraphrasing it independently.
 
@@ -464,9 +470,9 @@ circulation, the settled choices are:
   distinguish the selectable null-space alternatives; neither replaces
   `state` for a runtime node. The contact-press state is **Contact
   Establishment**, and its measured quantity is the **contact-establishment
-  response**. The existing symbols with a
-  `\mathrm{set}` subscript remain source-aligned mathematical identifiers and
-  do not change the visible state name.
+  response**. Visible quantities associated with that state use the
+  `\mathrm{CE}` subscript. The older `set` form remains only in literal
+  software keys and internal source labels.
 
 - **centre of compliance** for the point the \(6\times6\) stiffness is
   defined about, \(p_c\), with \(r_c=p_c-p_{\mathrm{TCP}}\) as its lever.
@@ -658,7 +664,7 @@ circulation, the settled choices are:
   **Bind the symbol to the point positively at its first appearance**, by
   naming what \(p_{\mathrm{Tool}}\) is and what it does: the point of the tool
   face that contacts the surface, or is predicted to contact it, used as the
-  contact reference during contact establishment.
+  geometric tool reference during contact establishment.
 
   An earlier version of this rule required the sentence *the subscript \(T\)
   is the tool point and not the \(T\) of a homogeneous transformation
@@ -736,32 +742,38 @@ circulation, the settled choices are:
   rule is the subject. Do not rename that input to make the source appear to
   command the measured entry angle directly.
 
-  **The physical tool--surface angle is a third quantity.** Let
-  \(n_{\mathrm{phys}}\) denote the physical surface normal and
-  \(\delta_s\) the angular difference between it and the configured surface
-  normal \(n_s\). A physical initial angle additionally depends on this
-  surface-reference error and on any tool motion relative to the gripper. The
-  reported campaign contains no independent run-wise measurement of either,
-  so \(\theta_{0,t_i}\) is never called a measured physical angle. It is the
-  achieved pose-based condition relative to the configured surface reference.
+  **The physical tool--surface angle is unmeasured.** Let
+  \(n_{\mathrm{phys}}\) denote the physical surface normal. The reported
+  campaign contains no independent run-wise measurement of that normal or of
+  tool motion relative to the gripper. Do not introduce a symbol or equation
+  for the resulting physical entry angle. The quantity
+  \(\theta_{0,t_i}\) is the achieved pose-based condition relative to the
+  configured surface reference and is never called a measured physical angle.
 
-  **The commanded offset is an artificial surrogate for a surface-reference
-  error.** It rotates the desired tool orientation relative to the configured
-  normal \(n_s\), thereby creating the tool-reference discrepancy that an
-  angular error between the configured and physical surface orientations would
-  produce. It does not rotate either plane. Never call the commanded offset a
-  measured configured-to-physical plane angle: the actual surface-reference
-  error \(\delta_s\) remains unknown for the reported campaign.
+  **State the physical problem before the experimental input.** Tool
+  Orientation has access to the configured normal \(n_s\), not an independent
+  measurement of the physical normal \(n_{\mathrm{phys}}\). With zero commanded
+  offset it makes the desired tool face parallel to the configured plane. If
+  the physical plane differs, that nominal alignment leaves a physical
+  tool--surface error at contact entry. The contact interaction is intended to
+  permit a rotation that reduces this remaining mismatch.
 
-  Equation 2.51 defines the physical surface-reference error as
-  \(\delta_s=\delta_{s,t_1}t_1+\delta_{s,t_2}t_2\). The following equation
-  defines \(\theta_{\mathrm{cmd}}\) and shows the nominal emulation explicitly
-  as \(\theta_{\mathrm{cmd}}\approx\delta_s\). This is a selected commanded
-  approximation rather than a measurement of \(\delta_s\). The realised
-  pose-based entry angle \(\theta_{0,t_i}\) is close to the corresponding
-  commanded component but need not equal it because Tool Orientation uses a
-  finite tracking tolerance. Present the three quantities in this order: the
-  unknown physical error, its commanded approximation, and the achieved angle.
+  **The commanded offset is not a surrogate for the surface-reference
+  difference.** It is only the desired tool-orientation offset relative to
+  \(n_s\). Do not equate it with, or describe it as an approximation of, the
+  unknown physical difference. A zero command specifies parallelism with the
+  configured plane; a non-zero command specifies a deliberate inclination
+  about the selected surface tangents.
+
+  Keep the three chapter roles separate. Chapter 2 derives the directional
+  compliance-centre rule from a generic tangent-plane angular deviation that
+  contact should reduce. Chapter 3 defines \(\theta_{\mathrm{cmd}}\) only as a
+  controller input and constructs \(n_d=R_{\mathrm{cmd}}(-n_s)\). Chapter 4
+  explains that varying this input supplied reproducible reference-relative
+  entry conditions, then distinguishes the command from the achieved
+  \(\theta_{0,t_i}\). It states in words that the physical surface may differ
+  from the configured reference by an unknown angular amount. No equation is
+  introduced for that unmeasured relation.
 
   The supporting intermediate-direction table heading is **not** an instance
   of it. That column holds
@@ -1000,7 +1012,7 @@ The transition condition is
 \(\varepsilon_{\mathrm{sel}}\) is the **tool-point selection tolerance** and
 \(N=\lvert\mathcal I_{\mathrm{sel}}\rvert\). Its mean
 \(r_{\mathrm{Tool,EE}}=N^{-1}\sum_{i\in\mathcal I_{\mathrm{sel}}}
-r_{i,\mathrm{EE}}\) determines which physical tool point the contact-establishment reference
+r_{i,\mathrm{EE}}\) determines which geometric tool point the contact-establishment reference
 uses. Never use the normal coordinate of that averaged point as the minimum
 tool clearance.
 
@@ -1027,9 +1039,9 @@ as a literal string so a rename cannot revive it. The compact form was tried
 first and replaced on the author's instruction, for the reason that already
 spelled out \(p_{\mathrm{Tool}}\) over \(p_T\): an abbreviated index costs
 the reader a lookup on every equation it appears in, and these symbols appear
-in six. At \(t_{\mathrm{set},0}\), the controller retains
-\(R_{\mathrm{EE,clearance}}=R_{\mathrm{EE}}(t_{\mathrm{set},0})\),
-\(p_{\mathrm{TCP,clearance}}=p_{\mathrm{TCP}}(t_{\mathrm{set},0})\), and
+in six. At \(t_{\mathrm{CE},0}\), the controller retains
+\(R_{\mathrm{EE,clearance}}=R_{\mathrm{EE}}(t_{\mathrm{CE},0})\),
+\(p_{\mathrm{TCP,clearance}}=p_{\mathrm{TCP}}(t_{\mathrm{CE},0})\), and
 \(r_{\mathrm{Tool,EE}}\). The selected tool point at that instant is
 \(p_{\mathrm{Tool,clearance}}=p_{\mathrm{TCP,clearance}}
 +R_{\mathrm{EE,clearance}}r_{\mathrm{Tool,EE}}\).
@@ -1041,7 +1053,7 @@ reference is \(R_d(t)=R_{\mathrm{EE,clearance}}\).
 reference.** `starting reference` is withdrawn, written here as a literal
 string so a rename cannot revive it: the first commanded contact-establishment position is
 \(p_{\mathrm{Tool,clearance}}\), which the initial value of
-\(s_{\mathrm{set}}\) is chosen to reproduce, so calling the projected point
+\(s_{\mathrm{CE}}\) is chosen to reproduce, so calling the projected point
 the starting reference contradicts the equation two lines below it. The settled
 sentence is that the orthogonal projection *defines the surface reference
 point* \(p_{\mathrm{Tool},0}\), followed by the statement that it is the
@@ -1493,36 +1505,74 @@ then state which impedance acts on it. The pose-hold gain facts belong only in
 `Cartesian Pose Hold`.
 
 **The two controller flow charts come before the implementation equations.**
-The operating-state chart begins with Start, Robot Recovery and Controller
-Selection, then branches to the surface-contact sequence, Cartesian Pose Hold
+The operating-state chart begins with Robot Recovery and Controller Selection,
+then branches to the surface-contact sequence, Cartesian Pose Hold
 and Manual Guidance. A shared red path states every condition that ends an
 active controller state. The detailed surface-contact chart then shows Tool
 Orientation, Surface Approach, the optional Operator-Controlled Hold Before
 Contact Establishment, Contact Establishment,
-Operator-Controlled Hold Before Grinding and Grinding in execution order.
+Operator-Controlled Hold Before Grinding and Grinding in execution order. It
+shows two routes to one `Initial Configuration` box. The robot either moves to
+the stored \(q_{\mathrm{init}}\), or operator input `s` starts the sequence
+from the current \(q\) after input `g` enters Guidance Mode. Input `q` there stores the
+current configuration as \(q_{\mathrm{init}}\) for a later session. Input `p`
+is reserved for recapturing the reached pose when Guidance Mode is entered from
+an already active controller state; it is not a start command. A visually
+distinct Test Mode follows Grinding. Operator input `t` enters it, and operator
+input `s` returns through initialisation for the next contact after \(K_p\),
+\(K_R\), or \(r_c\) is varied.
 
-**A controller flow chart is a state machine, not a conceptual overview.**
-Every box is an operating or controller state. Its text is the short state name,
-never a sentence or paragraph. Every arrow states a compact `if` condition and
+**A controller flow chart is a state machine with only the required experiment
+orchestration shown around it.** Every black rectangular box is an operating or
+controller state. Blue rounded boxes distinguish run initialisation and Test
+Mode from those states. Box text stays short and never becomes a sentence or
+paragraph. Every arrow states a compact `if` condition and
 uses the thesis symbols where they are defined. Place that condition beside a
-clear segment, never over an arrow or a box border. The orientation transition
-uses \(t_{\mathrm{ori}}\), \(e_{\mathrm{axis}}\) and the enabled
-\(e_{\mathrm{spin}}\) criterion, with timeout \(t_{\mathrm{ori,out}}\) as
-the alternative. Surface Approach advances at
+clear segment, never over an arrow or a box border. The Tool Orientation arrow
+uses the compact display condition `angular error within tolerance or`
+\(t\geq t_{\mathrm{end}}\), while the body text retains the complete
+minimum-time and orientation logic. Surface Approach advances at
 \(h_{\mathrm{Tool}}\leq h_{\mathrm{clearance}}\) and stops if
-\(s_{\mathrm{app}}\geq s_{\mathrm{app,max}}\) first. Contact Establishment
-advances after \(t_{\mathrm{set,min}}\) and the
-\(\Delta m_{\mathrm{ext}}\) criterion, or at
-\(t_{\mathrm{set,out}}\). Operator confirmation is the only transition from
-the hold to Grinding. The reported runs are marked as ending in that hold;
-Grinding is shown because it is implemented, not because it was entered
-experimentally.
+\(s_{\mathrm{app}}\geq s_{\mathrm{app,max}}\) first. The Contact Establishment
+arrow uses \(t\geq t_{\mathrm{end}}\), while the body text retains the complete
+minimum-time, moment-change and timeout logic. Every reported run ended
+through the timeout.
+The optional holds remain on the single main path so that the state sequence is
+immediately readable. Do not draw or label separate `hold enabled` and `hold
+disabled` branches. A disabled hold advances without waiting, while operator
+confirmation releases an enabled hold to the following state. The reported
+runs are marked as ending in Pre-Grinding Hold; Grinding is shown because it is
+implemented, not because it was entered experimentally.
+
+Use the suffix `end`, never `out`, for any visible time variable that marks the
+end of a state or measured interval. Keep `start` for the beginning of an
+interval and `max` for a genuine upper bound. Literal software identifiers that
+contain `timeout` remain unchanged.
+
+After \(h_{\mathrm{Tool}}\leq h_{\mathrm{clearance}}\), the displayed main path
+enters Pre-Contact Hold and continues to Contact Establishment after operator
+confirmation. After Contact Establishment ends, the displayed path enters
+Pre-Grinding Hold and continues to Grinding after confirmation. The body text,
+not extra bypass arrows, explains that a disabled hold advances without a wait.
+
+Do not call a stiffness-and-damping configuration a `state group`. State the
+configuration directly and say when it is activated. For the reported
+surface-contact experiments, name Surface Approach and Contact Establishment
+as the states that used inertia-scaled damping.
 
 **Termination is shared rather than repeated as prose beside every state.**
 Operator stop, the configured run-duration limit, a robot-side error or reflex,
 and communication or control exceptions lead from every active state to the
 red Stop state. Recovery failure also leads to Stop before a controller is
 selected.
+
+The shared chart label contains only `stop requested` and `robot error/reflex`.
+The configured run-duration limit and communication or control exceptions stay
+in the body text rather than lengthening the diagram. The program-level stop
+rail descends through the centre into Stop. Its short condition sits beside
+that vertical path and never interrupts it. A robot error or reflex is any
+robot-side stop condition reported by libfranka and is not restricted to a
+joint-limit violation.
 
 **Static definitions precede one chronological runtime account.** `Surface and
 Tool Reference` defines the surface frame, the commanded tool orientation and
@@ -1537,7 +1587,7 @@ retained orientation, TCP reconstruction and active impedance, in that order.
 
 **Approach and contact establishment are written in the same shape.** Each state carries a
 scalar coordinate: \(s_{\mathrm{app}}(t)\) advances the TCP from the captured
-\(p_{\mathrm{TCP,start}}\), and \(s_{\mathrm{set}}(t)\) advances the
+\(p_{\mathrm{TCP,start}}\), and \(s_{\mathrm{CE}}(t)\) advances the
 selected tool point from \(p_{\mathrm{Tool},0}\). Each is followed by the
 position reference it produces —
 \(p_d(t)=p_{\mathrm{TCP,start}}-s_{\mathrm{app}}(t)n_s\), and
@@ -1545,6 +1595,12 @@ position reference it produces —
 is deliberate: the approach motion was previously described in words while
 contact establishment carried a trajectory, which left the tool-point selection reading as
 geometry that appeared from nowhere.
+
+Visible quantities associated with Contact Establishment use the subscript
+\(\mathrm{CE}\), including \(s_{\mathrm{CE}}\), \(t_{\mathrm{CE}}\),
+\(R_{\mathrm{CE}}\), \(u_{\mathrm{CE}}\), and \(\phi_{\mathrm{CE}}\).
+The older set form remains only in literal software keys and internal source
+labels where renaming it would obscure traceability.
 
 **The approach coordinate uses the same piecewise presentation as the contact-establishment
 coordinate.** It advances at \(v_{\mathrm{app}}\) from
@@ -1569,20 +1625,20 @@ cross-referenced from Chapter 3 in a clause:
 | The construction of \(R_{\mathrm{surface}}\) from \(a_s\) and \(n_s\) | Section 2.5 |
 | \(e_p=p_d-p_{\mathrm{EE}}\), \(\Delta R=R_{\mathrm{EE}}^\top R_d\), \(e_R\) | Section 2.2 |
 | The impedance wrench \(F=K\Delta x+D\Delta v\) | Section 2.4 |
-| A standalone \(\tau_{\mathrm{cart}}=J^\top F\) | inside the one final torque equation |
+| A standalone \(\tau_{\mathrm{cart}}=J^\top F\) | Equation 2.69 within the complete torque command |
 | \(G_0=R_{\mathrm{surface}}G_{\mathrm{surface}}R_{\mathrm{surface}}^\top\) | Section 2.6 |
 | Why a displaced centre produces an aligning moment | Section 2.7, and Chapter 5 for the measurement |
 | The null-space projector, damping and conditioning derivations | Section 2.8 |
 | \(M(q)Y(q)=J^\top(q)\), \(Y=M^{-1}J^\top\), \(\Lambda_0=(JY+\varepsilon I)^{-1}\) | reduced to one sentence; the damping implementation is not a contribution of this thesis |
 
-**The nominal controller equation is
-\(\tau_{\mathrm{cmd}}=J^\top(q)F+\tau_{\mathrm{null}}+\tau_c(q,\dot q)\), and
-\(\tau_{\mathrm{dist}}\) is not in it.** The disturbance is an experimental
-input rather than part of the controller, so its definition belongs to
-Section 4.6 alone, where \(\tau_{\mathrm{dist}}(t)=J_p(q(t))^\top f_d(t)\)
-already stands. Chapter 3 carries one sentence saying an experiment-specific
-disturbance torque is added only for the null-space pose-hold experiment and is
-therefore not part of the nominal formulation. It does not appear in the
+**The nominal controller equation is defined once in Chapter 2.** Chapter 3
+references Equation 2.69 rather than repeating
+\(\tau_{\mathrm{cmd}}=J^\top(q)F+\tau_{\mathrm{null}}+\tau_c(q,\dot q)\).
+The disturbance is an experimental input rather than part of the controller,
+so its definition belongs to Section 4.6 alone, where
+\(\tau_{\mathrm{dist}}(t)=J_p(q(t))^\top f_d(t)\) already stands. Chapter 3
+carries one sentence saying an experiment-specific disturbance torque is added
+only for the null-space pose-hold experiment. It does not appear in the
 Cartesian pose-hold account either.
 
 **What Chapter 3 must keep**, because these are what was designed rather than
@@ -1596,13 +1652,12 @@ the orientation captured at the clearance transition is held throughout
 Contact Establishment; the \abbr{SVD} details that differ from the theory; and the
 real-time-safe recording.
 
-**Two implementation equations are restated deliberately.**
-\(K_{\mathrm{TCP}}=\operatorname{Ad}^\top(r_{c,0})K_c\operatorname{Ad}(r_{c,0})\)
-and its damping counterpart appear in Chapter 3 not as a derivation but as a
-concise statement of what the code evaluates. One sentence then says that the
-point-shifted impedance lets the commanded normal press contribute to the
-rotational response, and sends the measurement to Chapter 5. Do not re-argue
-the cross terms there.
+**The point-shift equations are not repeated in Chapter 3.** The implementation
+account references Equations 2.39 and 2.40, then states how tool-fixed and
+surface-fixed displacements affect their callback update. One sentence says
+that the point-shifted impedance lets the commanded normal press contribute to
+the rotational response and sends the measurement to Chapter 5. Do not
+re-argue the cross terms there.
 
 **The Grinding state gets two sentences and no more.** No reported run entered
 it, so the chapter states that it maintains the normal contact-establishment
@@ -1618,7 +1673,7 @@ orientation trajectory.
 
 **Scope the start of Contact Establishment to the optional pre-contact hold.** In the reported
 surface-contact runs that hold was disabled, so
-\(t_{\mathrm{set},0}\) is the clearance-transition instant and Contact Establishment begins
+\(t_{\mathrm{CE},0}\) is the clearance-transition instant and Contact Establishment begins
 there directly. State that scope before the clearance-capture equations. The
 generic optional-hold behaviour remains one later sentence: with the hold
 enabled, the pose is held until operator confirmation and the contact-establishment references
@@ -1632,13 +1687,20 @@ tolerance scaled by the largest current singular value, numerical
 symmetrisation of the projector, reuse of that matrix for the recorded
 \(\dot q_{\mathrm{null}}\), and the sign selection from
 \(q\pm\alpha_{\mathrm{probe}}v_7\) with its deadband. Do not restore the
-null-space torque equation. Keep the four-configuration diagram inside
-`Cartesian Pose Hold`: the captured pose and Cartesian hold form its common
-path, followed by alternative branches for no null-space torque,
-singular-value conditioning, projected damping, and both terms together. The
-branches are selectable configurations rather than a temporal sequence. The
-surface-contact sequence held one combined setting, so the secondary controller
-was not a variable there.
+null-space torque equation. Keep the four-mode diagram inside `Cartesian Pose
+Hold`. Its common path starts from one `Initial Configuration` box. The robot
+may move to the stored \(q_{\mathrm{init}}\), while operator input `h` in
+Guidance Mode starts pose hold from the current \(q\). The Guidance Mode box
+states that input `g` enters it. Present these as two
+inputs to the same box, not as two unrelated starts. The path then captures the
+current end-effector pose and enters the hold. Operator inputs 0, 1, 2, and 3 select no null-space
+torque, projected damping, singular-value conditioning, and both terms
+together, respectively. A new number switches directly from any active mode
+to another. Show \(d_{\mathrm{null}}\) as adjustable in modes 1 and 3, and
+\(k_\sigma\) as adjustable in modes 2 and 3. These are selectable software
+modes rather than a temporal sequence or the four settings compared in the
+pose-hold experiment. The surface-contact sequence held one combined setting,
+so the secondary controller was not a variable there.
 
 **Safety and data recording are two sections, not one miscellany.** The former
 `Real-Time Operation, Safety, and Data Recording` covered connection setup,
@@ -1995,13 +2057,13 @@ the reversed-offset conditions, which Cases A and D both report: at
 \(\gamma_{t_1}=-10.83^\circ\),
 which is the **largest** correction of that group, not a motion the wrong way.
 
-The construction is \(\gamma_0=\phi_{\mathrm{set}}u_{\mathrm{set}}\) from
-\(R_{\mathrm{set}}=R_{\mathrm{set,start}}R_{\mathrm{set,end}}^\top\), with
+The construction is \(\gamma_0=\phi_{\mathrm{CE}}u_{\mathrm{CE}}\) from
+\(R_{\mathrm{CE}}=R_{\mathrm{CE,start}}R_{\mathrm{CE,end}}^\top\), with
 \(\gamma_S=R_{\mathrm{surface}}^\top\gamma_0=
 [\gamma_{t_1},\gamma_{t_2},\gamma_n]^\top\) in surface coordinates.
-\(R_{\mathrm{set,start}}\) is the **orientation reference held through
+\(R_{\mathrm{CE,start}}\) is the **orientation reference held through
 contact establishment**, captured at the clearance transition; the measured orientation
-coincides with it at the start of the phase, which is why the logged
+coincides with it at the start of the state, which is why the logged
 \(e_R\) is exactly zero there. The archived terminal summary separately gives
 the entry deviation calculated from the current end-effector pose, calibrated
 tool normal and configured surface reference. Use that diagnostic for
@@ -2037,7 +2099,7 @@ repeated is a reading rule of three lines, not an explanation or a derivation,
 and it is placed where a misreading would otherwise happen.
 
 **Say what the quantity is; do not give the sign rule a convention name.**
-State that \(R_{\mathrm{set}}\) rotates from the measured end orientation back
+State that \(R_{\mathrm{CE}}\) rotates from the measured end orientation back
 to the held start orientation, or that \(e_R\) has that relation, and let the
 sign follow. Naming it `the current-to-reference convention` reads as *the
 convention currently in use* and invites a reader to look for a superseded one.
@@ -2064,7 +2126,7 @@ the assumed fixed tool-to-end-effector relation, so neither it nor its
 before--after reduction appears in Chapter 5 tables, figures, or comparisons.
 The appendix may define \(\theta_{\mathrm{align}}\) locally for the consistency
 check, but \(\Delta\theta_{\mathrm{align}}\), \(\theta_{\mathrm{dev}}\),
-\(\Delta\theta_{\mathrm{set}}\), and their resolved variants are not
+the retired set-up before--after quantity, and their resolved variants are not
 thesis-wide reported symbols.
 
 **Each main surface-contact comparison changes one controller parameter and
@@ -2149,7 +2211,7 @@ the virtual shift.
 
 The contact sequence therefore originates at the selected tool point, not at
 the TCP and not at the centre of compliance: the face geometry gives \(p_{\mathrm{Tool}}\),
-the contact-establishment trajectory moves it as \(p_{\mathrm{Tool},d}(t)=p_{\mathrm{Tool},0}+s_{\mathrm{set}}(t)(-n_s)\),
+the contact-establishment trajectory moves it as \(p_{\mathrm{Tool},d}(t)=p_{\mathrm{Tool},0}+s_{\mathrm{CE}}(t)(-n_s)\),
 and the TCP target is reconstructed from it as
 \(p_d(t)=p_{\mathrm{Tool},d}(t)-R_{\mathrm{EE,clearance}}r_{\mathrm{Tool,EE}}\), which produces the
 press. The centre of compliance is a separate mechanism acting through
@@ -2611,10 +2673,8 @@ instantaneous opposing torque at identical joint configurations.
   subsection says in one short passage that libfranka
   supplies it, that it is stored at the clearance transition, and that the
   estimated external moment change can trigger the optional termination
-  condition. The compact transition symbol is
-  \(\Delta m_{\mathrm{ext}}\), with threshold
-  \(\Delta m_{\mathrm{ext,min}}\); it denotes the magnitude change and does
-  not reintroduce an estimated-force analysis. Every reported run terminated
+  condition. Describe that optional path in words rather than promoting its
+  values to flow-chart or thesis-wide symbols. Every reported run terminated
   through the timeout instead. The data-format appendix retains the literal
   recorded field names and bias columns. That is the whole of it.
 
@@ -3006,6 +3066,11 @@ reading rather than proving it, because it was measured unloaded.
 **Every rotation claim names the body that rotated.** Because the physical tool
 orientation is never measured independently, a sentence may say the **end
 effector** rotated, never that "contact rotated the tool":
+
+When the sign of \(\gamma_{t_i}\) is contrasted with the motion it represents,
+write `the measured end-effector rotation from the start to the end of Contact
+Establishment`. Do not call that motion a physical rotation without naming the
+end effector.
 
 | Was | Now |
 |---|---|

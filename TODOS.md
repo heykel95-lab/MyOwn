@@ -10,6 +10,14 @@ referenced from here rather than repeated.
 completes it removes the entry in the same turn, so that no later session — and
 no other agent — repeats work that is already in the document.
 
+## Publish the two local thesis commits
+
+`main` is two commits ahead of `origin/main`: `e13b01d` includes the
+`professoremail/` helper files and `ab16fe8` contains the latest thesis and
+figure revisions. The push to `https://github.com/heykel95-lab/MyOwn.git` was
+blocked pending explicit authorisation to publish both commits, including the
+`professoremail/` files and thesis material, to that destination.
+
 ## The campaign archive, and what it now supports
 
 The \(52\) reported settings each carry three repetitions. The two
@@ -67,10 +75,26 @@ references or citations, no overfull boxes. `Thesis.pdf` and
 `Professor_Draft.pdf` are 125 pages and `Review_Draft.pdf` is 129. The fifty
 underfull hboxes in the final pass are loose lines in the narrow description
 column of the symbol list and predate this work.
-The Windows MiKTeX builds were repeated on 2026-08-30 after the Equation 2.51
-figure and Chapter 3 flow-chart corrections. `Thesis.pdf` has 133 pages and
-`Review_Draft.pdf` has 136 pages, with no undefined references or citations,
-no overfull boxes and no soul reconstruction failures in their final passes.
+The Windows MiKTeX builds were repeated on 2026-08-30 after the surface-entry
+narrative, Chapter 3 flow-chart corrections, the restored Figure 3.3 angular-error
+and \(t_{\mathrm{end}}\) labels, and the Cartesian pose-hold mode and
+common-\(q_{\mathrm{init}}\) initialisation corrections. They were repeated
+again after the Figure 3.3 return condition was shortened to operator input
+`s`, without a separate confirmation.
+They were repeated after the Chapter 3 geometric-tool-reference wording, the
+Chapter 5 end-effector sign wording, and the Figure 5.5 axis relabelling.
+Figure 5.5 was checked visually in both outputs.
+They were repeated again after the final controller was checked against both
+figures. The corrected flow shows that `g` enters Guidance Mode, `s` starts the
+surface-contact sequence from the current guided \(q\), `h` starts Cartesian
+pose hold from it, `q` stores it as \(q_{\mathrm{init}}\), and `p` is reserved
+for recapture and resumption from an active controller state. Figure 3.3 also
+places the Test Mode box on the left return branch with its `s` and `t`
+conditions beside the box. Figures 3.3 and 3.7 were checked visually in the
+clean and review outputs.
+`Thesis.pdf` has 132 pages and `Review_Draft.pdf` has 135 pages,
+with no undefined references or citations, no overfull boxes and no soul
+reconstruction failures in their final passes.
 Judge a build by the final pass; the earlier ones always report undefined
 citations.
 
@@ -179,7 +203,7 @@ from this list rather than annotated, so everything here is still open.
 
 - **22** — Figure 4.1 labels and caption. Item 23, the contact-establishment figure, is done:
   it now carries \(p_{\mathrm{Tool,clearance}}\), \(p_{\mathrm{Tool},0}\),
-  \(s_{\mathrm{set}}\), \(p_d\) and the TCP with its rigid offset. Item 21,
+  \(s_{\mathrm{CE}}\), \(p_d\) and the TCP with its rigid offset. Item 21,
   the Figure 4.2
   calibration notation, is done: the figure now runs one band per calibration
   and its symbols match Section 4.2, and all four contact-establishment symbols are in the
@@ -510,17 +534,16 @@ that pass:
 - **The null-space figure gained a third panel** carrying the net redundant
   displacement of all four settings, so Section 5.2 onward repaginated again
   and the document is 128 pages. The page was rendered and read at 100 dpi
-  when the panel was added; the rest of the moved pages were not. After the appendix
-compression of 2026-08-27 the document is 126 pages.
-All three drivers build clean here with bibtex
-and three passes each, no undefined references or citations and no overfull
-boxes; `Review_Draft.tex` was rebuilt on 2026-08-25 and its soul spans still
-reconstruct.
-**The local builds needed
-`compat=1.16`**, because the TeX Live 2019 on this machine predates the
-`compat=1.18` the sources set; the file was restored afterwards and the plots
-were therefore not rendered at the compat level the author's MiKTeX uses.
-Rebuild there before judging any figure.
+  when the panel was added; the rest of the moved pages were not. Later edits
+  expanded the clean document to 132 pages and the review document to 135.
+  `Thesis.tex` and `Review_Draft.tex` were rebuilt on 2026-08-30 with bibtex
+  and three passes. Their final logs contain no undefined references,
+  undefined citations or overfull boxes. Figure 3.3 was rendered from both
+  documents after its contact-state, Guidance Mode and Test Mode routing was
+  revised; its labels, arrow clearances and box spacing were checked visually.
+  Figure 3.7 was also checked in both documents after its Guidance Mode route
+  was corrected. The remaining
+  moved pages still require the final page-by-page audit.
 
 ## What the Abstract-to-Conclusion consistency pass checked, and what it found
 
