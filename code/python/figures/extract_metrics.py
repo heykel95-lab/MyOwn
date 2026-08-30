@@ -3,7 +3,7 @@
 
   python3 analysis/extract_metrics.py [--results DIR] [--out FILE]
 
-Reads what each trial recorded rather than recomputing it: the set-up report in
+Reads what each trial recorded rather than recomputing it: the contact report in
 terminal.log carries the alignment, the wrench and the stop condition, and
 params_effective/ carries the settings the trial actually ran with. Both were
 written by the trial itself, so a row here cannot disagree with its archive.
@@ -129,7 +129,7 @@ def read_params(directory):
 
 
 def parse_report(path):
-    """Pull the set-up report out of a trial transcript.
+    """Pull the contact-establishment report out of a trial transcript.
 
     The first surface-frame block is the alignment-target frame; a second
     M_contact row follows in tool-face axes and is deliberately not taken here.
@@ -175,9 +175,9 @@ def surface_frame(tilt_x_deg, tilt_y_deg):
 
 
 def contact_rotation(trial, params):
-    """Return the current-to-reference set-up rotation in surface axes [deg].
+    """Return the current-to-reference contact rotation in surface axes [deg].
 
-    The set-up phase holds the orientation captured at the clearance transition
+    Contact establishment holds the orientation captured at the clearance transition
     as its reference. The logged orientation error is the rotation from the
     measured end orientation back to that held start orientation. The surface
     frame enters as the directions on which the rotation is resolved.
@@ -214,7 +214,7 @@ def contact_rotation(trial, params):
 
 
 def tool_flatness(trial, params):
-    """Return how far the TCP stands above the plane at the end of set-up [mm].
+    """Return the final TCP height above the configured reference plane [mm].
 
     A tool lying flat on the surface puts its grinding face on the plane, so
     the TCP stands one face offset above it. A tool resting on one edge stands
@@ -303,7 +303,7 @@ def collect(results_dir):
             row.update(contact_rotation(trial, params))
             row.update(tool_flatness(trial, params))
             if "deviation_gain_deg" not in report:
-                row["note"] = "no set-up report in transcript"
+                row["note"] = "no contact-establishment report in transcript"
             rows.append(row)
     return rows
 
@@ -336,7 +336,7 @@ def main():
 
     incomplete = sum(1 for row in rows if row.get("note"))
     print(f"wrote {len(rows)} rows to {args.out}"
-          + (f" ({incomplete} without a set-up report)" if incomplete else ""))
+          + (f" ({incomplete} without a contact-establishment report)" if incomplete else ""))
 
 
 if __name__ == "__main__":

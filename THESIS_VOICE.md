@@ -95,7 +95,7 @@ factual statements stay active, because the passive would only add weight:
 > The Jacobian maps joint velocity to Cartesian velocity.
 > \Cref{fig:software_data_flow} shows the signal flow.
 > The probe distance determines the evaluation points.
-> At full row rank, the null space is one-dimensional.
+> At full rank, the null space is one-dimensional.
 
 Making every sentence passive is its own tell: a uniformly passive chapter is
 heavier to read and sounds *more* machine-made, not less. The target is
@@ -108,7 +108,7 @@ generic passive clause that names an action and stops:
 | Too short and generic | Carries the substance |
 |---|---|
 | Four selectable laws are implemented. | Four null-space control configurations were implemented. These comprised an inactive mode, projected joint damping, a singular-value-based torque, and a combination of the latter two terms. |
-| The implementation constructs the torque projector from the full \(6\times7\) geometric Jacobian. | The torque projector was constructed from the full \(6\times7\) geometric Jacobian. At full row rank, the resulting null space is one-dimensional. |
+| The implementation constructs the torque projector from the full \(6\times7\) geometric Jacobian. | The torque projector was constructed from the full \(6\times7\) geometric Jacobian. At full rank, the resulting null space is one-dimensional. |
 
 Note the second pair: the action goes passive, and the mathematical consequence
 that follows it stays active. That alternation is what keeps the register from
@@ -125,14 +125,14 @@ left:
 > In this thesis a real-time Cartesian impedance controller was implemented for
 > the 7-\abbr{DOF} Panda, closing the remaining angle through the impedance
 > itself by shifting the \(6\times6\) stiffness and damping to the TCP from a
-> chosen centre of compliance during set-up.
+> chosen centre of compliance during contact establishment.
 
 That is *what* was implemented, *on which robot*, *what it achieves*, *how*,
 *where the matrices go*, and *when* — in one sentence. Unpack it into steps so
 the reasoning is presented in order:
 
 > A real-time Cartesian impedance controller was implemented on the
-> 7-\abbr{DOF} Panda. During set-up, the \(6\times6\) Cartesian stiffness and
+> 7-\abbr{DOF} Panda. During contact establishment, the \(6\times6\) Cartesian stiffness and
 > damping were spatially shifted from a selected centre of compliance to the
 > TCP. This coupling allows the normal contact force to generate a corrective
 > moment, which reduces the angular misalignment.
@@ -184,7 +184,7 @@ makes them stand out against the formal text around them.
 | three things stand between X and Y | the inference is affected by three sources of uncertainty |
 | two further caveats sit on that implementation | two additional limitations apply |
 | the probe configurations want checking | the probe configurations should be checked |
-| set-up duration deserves confirmation | set-up duration should be verified |
+| contact-establishment duration deserves confirmation | contact-establishment duration should be verified |
 | which bounds what the present arrangement can resolve | improvements of approximately this magnitude were therefore not interpreted as effects of the commanded tilt |
 | carry the controller / carry the contribution | are used in the controller / present the corresponding results |
 | the experiments probe that coupling | the effects of … were investigated in 75 contact runs |

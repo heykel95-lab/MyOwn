@@ -12,20 +12,21 @@ no other agent — repeats work that is already in the document.
 
 ## The campaign archive, and what it now supports
 
-The \(55\) reported settings each carry three repetitions. The two
-`B_combined_{t1,t2}` settings were removed from the report on 2026-08-24,
-taking the campaign from \(57\) settings and \(171\) runs to \(55\) and
-\(165\); their run directories stay in the archive and are simply not
-reported. The main A--D study contains \(37\) settings and \(111\) runs. The
-four supporting checks in Appendix D contain \(18\) settings and \(54\) runs.
+The \(52\) reported settings each carry three repetitions. The two
+`B_combined_{t1,t2}` settings and the three surface-fixed definition-frame
+settings were removed from the report. This takes the campaign from \(57\)
+settings and \(171\) runs to \(52\) and \(156\); their run directories stay
+in the archive and are simply not reported. The main A--D study contains
+\(37\) settings and \(111\) runs. The three supporting checks in Appendix D
+contain \(15\) settings and \(45\) runs.
 The Case-D run that
 Section 4.3.4 once recorded as excluded was re-recorded on 2026-08-19 under a
-byte-identical parameter set, so the count is \(165\) of \(165\) and the chapter
+byte-identical parameter set, so the count is \(156\) of \(156\) and the chapter
 says so. **Do not reintroduce an excluded-run sentence.**
 
 The archive lives on the lab machine at
 `Thesis_Final_Control/experiments/results/`, \(171\) archived run directories
-(the \(165\) reported plus the six no longer reported) each with
+(the \(156\) reported plus the fifteen no longer reported) each with
 `logs/surface_grinding_controller_log.csv`, and
 `experiments/derived/metrics.csv` carries the \(100\) `P2_` rows the contact
 figure scripts read. **A clone shows neither**, because that repository's
@@ -43,14 +44,14 @@ not be re-derived:
 | B | 4 | `A_rot_{t1,t2}_{15,50}` |
 | C | 4 | `B_trans_{t1,t2}_{0300,0800}` |
 | D | 24 | `P2_{t1,t2}_{pos,neg}_{m010,m020,m040,p010,p020,p040}` |
-| Supporting orientation-offset magnitude | 4 | `P5_mag_{t1,t2}_{p000,p040}` |
-| Supporting check 1: definition frame | 3 | `S3_surface_00deg`, `S3_surface_t1_10deg`, `S2_tool_00deg` |
-| Supporting check 2: tool-axis displacement | 6 | `P3_axis_{m010,m020,m040,p010,p020,p040}` |
-| Supporting check 3: intermediate tangent directions | 5 | `C_dir_{m45,p45}`, `C_fixed_{m45,p45}`, `C_fixed_t2` |
+| Supporting initial-deviation magnitude | 4 | `P5_mag_{t1,t2}_{p000,p040}` |
+| Supporting check 1: tool-axis displacement | 6 | `P3_axis_{m010,m020,m040,p010,p020,p040}` |
+| Supporting check 2: intermediate tangent directions | 5 | `C_dir_{m45,p45}`, `C_fixed_{m45,p45}`, `C_fixed_t2` |
 
-The `P2_*_{m080,p080}` directories and the `V_*`, `S4_*`, `S5_*`, `P4_*`,
+The surface-fixed `S3_surface_*` and `S2_tool_00deg` directories, the
+`P2_*_{m080,p080}` directories, and the `V_*`, `S4_*`, `S5_*`, `P4_*`,
 `P6_*`, `P_*`, `AXS*`, `REVS2_*` and `PROBE60_*` series are exploratory and
-outside the reported \(55\).
+outside the reported \(52\).
 
 The aborted first attempt at `P2_t1_pos_m040/r02` was moved to
 `experiments/results_aborted/P2_t1_pos_m040_r02_20260817/` so no analysis script
@@ -141,29 +142,20 @@ outstanding from the author on that front.
   govern the reported campaign. See `code/AGENTS.md` for which repository is
   authoritative for what.
 
-- **The two configuration branches now carry the same sign.** Both define
-  \(r_c=p_c-p_{\mathrm{TCP}}\). Confirmed in
-  `Thesis_Final_Control/surface_grinding_controller`:
-  `src/control/cartesian_impedance.cpp` forms
-  \(r_c=R_{\mathrm{EE}}\,\texttt{compliance\_center\_offset\_ee}\) on the
-  tool-frame branch and
-  \(r_c=R_{\mathrm{base,surface}}\,\texttt{compliance\_lever\_surface}\)
-  on the surface-frame branch, and `params/setup.conf` documents both in the
-  same words.
-
-  **The earlier "opposite in sign" reading is withdrawn**, and so is the
-  parameter name it quoted. The tool-frame negation went on 2026-08-24 with
-  `Define the compliance lever from the TCP to the centre`, and the
-  surface-frame key was renamed from `r_tcp_from_compliance_center_surface` to
-  `compliance_lever_surface` on 2026-08-25 with `Command the surface-frame
-  lever as r_c`, which dropped its negation at all four read sites and negated
-  the value in every setup overlay to leave the same physical lever. The old
-  key is no longer read; a missing key falls back to zero.
-
 ### Remaining work that can be done on this machine
 
 None of the following needs the lab machine. Completed items have been deleted
 from this list rather than annotated, so everything here is still open.
+
+- **The pulled controller and thesis use opposite compliance-lever signs.**
+  The thesis defines \(r_c=p_c-p_{\mathrm{TCP}}\). At pulled revision
+  `f54b7a5`, `surface_grinding_controller/src/control/cartesian_impedance.cpp`
+  instead forms \(r_c=p_{\mathrm{TCP}}-p_c\): it negates the tool-frame centre
+  offset and reads `r_tcp_from_compliance_center_surface` directly. The
+  terminology refactor deliberately did not change this behaviour. Reconcile
+  the source, parameter overlays and Appendix A together before the controller
+  is treated as the implementation of the thesis convention; the choice is
+  blocked on confirmation because changing it reverses the coupled moment.
 
 **Prose and technical (review pass 1)**
 
@@ -181,15 +173,12 @@ from this list rather than annotated, so everything here is still open.
 
 **Figures, tables and captions (review pass 2)**
 
-- **A.4** — Figure 3.1 still shows `spring wrench`, `tau_task` and `c(q,qdot)`.
-  Correct to the Cartesian impedance wrench, \(\tau_{\mathrm{cart}}=J^\top F\)
-  and \(\tau_c\). It is a TikZ source and needs no data.
-- **22** — Figure 4.1 labels and caption. Item 23, the set-up figure, is done:
+- **22** — Figure 4.1 labels and caption. Item 23, the contact-establishment figure, is done:
   it now carries \(p_{\mathrm{Tool,clearance}}\), \(p_{\mathrm{Tool},0}\),
   \(s_{\mathrm{set}}\), \(p_d\) and the TCP with its rigid offset. Item 21,
   the Figure 4.2
   calibration notation, is done: the figure now runs one band per calibration
-  and its symbols match Section 4.2, and all four set-up symbols are in the
+  and its symbols match Section 4.2, and all four contact-establishment symbols are in the
   symbol list.
 - **31, 33, 34, 37, 38** — the remaining pgfplots figures and their tables:
   Figures 5.1, 5.4 and the supporting-check figures in Appendix D are `.tex`
@@ -240,15 +229,6 @@ reader; correct them if they are ever reinstated.
 
 **`backmatter/appendix_code.tex`**
 
-- **Listing `lst:app_desired_motion`, the set-up case.** Calls
-  `setUpPush(params, phase_time - gate_grind_paused_time, ...)`. The function
-  is `setupPush` and it takes `phase_time`; `gate_grind_paused_time` was
-  deleted on 2026-08-13 with `Keep pressing through the grinding gate`, so the
-  set-up ramp deliberately runs on the live phase clock and keeps pressing to
-  the configured final penetration while the grinding gate waits. The prose
-  after the listing is still correct — both gates do latch, and the frozen
-  clock it describes is the *descent* clock, `gate_paused_time`, which is still
-  there.
 - **The paragraph after `lst:implementation_nullspace_projector`** says the
   routine "fills a diagnostics structure that carries the sampled singular
   values, the selected direction, and the projected joint velocity
@@ -289,7 +269,7 @@ Nothing here is blocked. The listings carry no `\Revised{}` wrappers, so no
 frozen text is in the way, but both appendices carry green assessment boxes
 and neither chapter has been declared revised — confirm before editing.
 
-## The set-up-reference figure does not follow FIGURE_STYLE
+## The contact-establishment reference figure does not follow FIGURE_STYLE
 
 `figures/setup_reference.tex` draws in grey, uses a `densely dotted` projection
 line, and opens its node text in lower case — `surface`, `selected point at
@@ -374,7 +354,7 @@ values already in Section 5.2. Both held on 2026-08-25.
   the last two items of the review work list further up, not a separate task.
 
 The second review also asked for the Chapter 5 null-space section to be split
-into subsections, the Case-D definition frame to be stated in Chapter 4, the
+into subsections, the Case-D displacement frame to be stated in Chapter 4, the
 calibration consequence to be spelled out in Section 4.2, the singular-value
 units to be corrected, the Figure 5.5 sign bridge, and the Section 4.5.1
 rewrite. All six are done, and the rulings behind them are in
@@ -392,10 +372,10 @@ reasoning on both sides so it is not re-argued.
 
 `FIGURE_STYLE.md` now requires every line of node text in a drawn diagram to
 begin with a capital, with lines that start with a symbol left as notation. The
-rule was applied to `calibration_flow` and the revised `phase_flow_chart`. The
-remaining TikZ diagrams have not been through it: `controller_block_diagram`
-(`robot state`, `phase machine`, `model`), `setup_schematic` (`compliance`),
-and any box text in `tool_transfer_flow`, `reference_frames`,
+rule was applied to `calibration_flow`, `phase_flow_chart` and
+`controller_block_diagram`. The remaining TikZ diagrams have not been through
+it: `setup_schematic` (`compliance`), and any box text in
+`tool_transfer_flow`, `reference_frames`,
 `compliance_lever_moment`, `moment_bookkeeping`, `tool_face_plan_view` and
 `case_c_direction_rule`.
 
@@ -451,6 +431,40 @@ whether the \(15.1\,\mathrm{N\,m}\) value is a commanded or an applied
 torque. If both are commanded values and libfranka handles the limit, say so in
 one clause and the paragraph can go back.
 
+## The commanded-against-estimated wrench plot needs a log from the lab machine
+
+Requested on 2026-08-28: a figure comparing the commanded Cartesian wrench with
+the model-estimated external wrench, with the CSV it is drawn from. **It cannot
+be produced away from the lab machine.** The estimate is
+`external_force_x..z` / `external_moment_x..z`, written only by the current
+`surface_grinding_controller` schema, and that schema exists on this machine
+nowhere: `Thesis_Final_Control` here holds source only, with no `experiments/`
+directory at all, and the fifty-nine log CSVs recoverable from the
+`MyController` history are all the earlier development schema, which logs
+`f`/`m` and `tau_raw`/`tau_limited` but carries no external-wrench column. This
+is the clone limitation the archive section above already records, confirmed
+against both repositories.
+
+The generator is written and tested, so only the data is missing:
+`code/python/figures/plot_commanded_vs_estimated_wrench.py` takes one log and
+emits `commanded_vs_estimated_wrench.pdf` (force panel then moment panel,
+magnitudes, commanded black against estimated red) and a matching CSV carrying
+the raw components as well as the plotted magnitudes. Its current `--phase 2`
+option selects Contact Establishment in archived logs; rename that interface
+to `--state` when the generator is next updated, while retaining the old CSV
+column as an input fallback. `--bias-corrected` selects the
+clearance-referenced estimate.
+
+`professoremail/` in this repository is the folder the two files are meant to
+reach the professor in. It currently holds the generator, `figure_style.py` and
+a README stating what is missing and the one command that fills it.
+
+To close it: copy one `logs/surface_grinding_controller_log.csv` from a run
+directory under `Thesis_Final_Control/experiments/results/` into
+`professoremail/` and run the script there. Decide at that point whether the figure is for the thesis or for
+the author's own checking; if it enters the thesis, the sign convention needs
+stating, because the estimate opposes the commanded wrench in steady contact.
+
 ## Inspect the pages this revision moved
 
 The contact study was rebuilt around the fixed-centre question, which changed
@@ -480,7 +494,7 @@ that pass:
   none has had the page-by-page read. They are: the end of Section 2.4.1, which
   gained the bridge to the compliance-centre section; Section 4.2, which gained
   the calibration-consequence paragraph; Section 4.4, which gained the
-  tool-fixed definition-frame statement; Section 4.5.1, whose provenance and
+  tool-fixed displacement statement; Section 4.5.1, whose provenance and
   sign paragraphs were rewritten; the opening of Chapter 5 and its Case-A and
   Case-D commentary; the null-space results, now split into three subsections
   and therefore repaginated from Section 5.2 onward; the three Appendix-D
@@ -519,9 +533,10 @@ symbol-list rows; no withdrawn spelling survives anywhere
 and \(p_c\) are never crossed, and nothing says the compliance centre moves
 the force. The external wrench is `model-estimated` at all three of its
 mentions and is never called measured. Grinding reads as implemented but not
-entered in Chapters 1, 3, 4, 5 and 6. The run counts reconcile: \(37+18=55\)
-settings, \(111+54=165\) runs, \(4+3+6+5=18\) supporting settings and
-\(12+9+18+15=54\) supporting runs, plus twelve pose-hold runs for \(177\).
+entered in Chapters 1, 3, 4, 5 and 6. After removal of the definition-frame
+experiment, the run counts reconcile: \(37+15=52\) settings,
+\(111+45=156\) runs, \(4+6+5=15\) supporting settings and
+\(12+18+15=45\) supporting runs, plus twelve pose-hold runs for \(168\).
 The three `longtable` references all use literal `Table~\ref`, and no `\ref`
 key in the compiled document is undefined. The only digit in the summaries is
 `7-achsigen`, which names the degrees of freedom rather than measuring
@@ -532,19 +547,12 @@ Section 3.3 for the definition of \(\tau_{\mathrm{null}}\), which is
 Cartesian pose hold; it now points at Section 2.8.4, where the complete torque
 is derived. Chapter 5's opening named the primary quantity twice, three lines
 apart, and defined it as the `current-to-reference relative rotation formed
-from the measured orientations at the beginning and end of set-up` — both the
+from the measured orientations at the beginning and end of Contact Establishment` — both the
 christened convention and the second measured pose that the guide rules
 against. Chapter 4 said `the measured alignment rotation`. Appendix C wrote the
 selection tolerance as \(10^{-4}\,\mathrm{m}\) where its home in Chapter 4
 writes \(0.1\,\mathrm{mm}\). All four are corrected and the rulings are in
 `THESIS_WRITING_GUIDE.md`.
-
-**One thing was deliberately left.** `Measured Set-Up Rotation` remains the
-Chapter 5 table heading and `signed set-up rotation` remains in the Appendix-D
-sentences that report a value, while `signed set-up response` is the name used
-wherever the quantity is defined or introduced. That split is what the guide
-prescribes; it is recorded here so a later pass does not read it as an
-inconsistency and unify it in the wrong direction.
 
 ## Two things the appendix compression left open
 
@@ -555,14 +563,6 @@ its table, figure and equations plus one observation. The rulings are in
 `THESIS_WRITING_GUIDE.md` under *The appendices: document and support*. Two
 items were seen during that pass and not fixed.
 
-- **Figure D.6's panel (b) has a clipped \(y\)-axis label.** The compiled page
-  reads `Reduction in Pose-Based Alignment Errc`, cut mid-word at the top of
-  the axis. It is in `figures/MAIN_DQ_metric_comparison.pdf`, a generated file,
-  and predates this pass. The generator is `compare_angle_metrics.py`; the
-  label needs either more figure height or a shorter string, and
-  `FIGURE_STYLE.md` governs which. Check the regenerated file against the
-  installed one before replacing it, as the font-set note further down this file
-  records.
 - **The manual-guidance rows in Appendix C were left in.** Under the principle
   that Appendix C holds only what reproduces the reported runs, the
   `Manual guidance` gain row and the `manual_guidance_damping` operating row
@@ -578,18 +578,22 @@ items were seen during that pass and not fixed.
   descend from that example before adding a clause; if they do, one sentence in
   the chapter lead is the whole fix.
 
-## The phase figure carries annotations the Chapter 3 rules now forbid
+## Align the controller source with the state-machine terminology
 
-`THESIS_WRITING_GUIDE.md` states under *Chapter 3: the settled structure* that
-the phase figure's boxed nodes are tool orientation, surface approach, contact
-set-up and grinding, with the unboxed clearance transition between approach and
-set-up, and that operator gates, hold modes and gain-group annotations do not
-appear in it. `figures/phase_flow_chart.tex` still draws a `Pre-grinding hold`
-box, an `Operator continuation` transition condition, and the two gain-group
-brackets on the right. Either the figure or the rule is out of date; the rule
-was written last, so the figure is the likely fix, but removing the gain groups
-loses the only place the two gain sets are shown against the phases they belong
-to. Settle which before editing.
+The controller repository was pulled to `f54b7a5`, and the active terminology
+refactor is complete. `operator_hold_states.conf` and
+`contact_establishment.conf` replace the two retired parameter files. The
+operator holds are explicit pre-contact and pre-grinding states, active source
+and configuration use state names, new CSV files use `state`, and analysis
+retains compatibility for archived files. Python syntax, shell syntax and the
+schema-compatibility fixtures passed. Cppcheck completed with only the
+pre-existing performance and style findings. The Makefile resolves every
+renamed source before it reaches the missing lab dependency.
+The real C++ build and state-transition test remain blocked on this Windows
+clone because the Makefile requires the lab tree at
+`/home/hm-panda/libfranka`, including `examples/examples_common.cpp`. Run that
+build and a non-contact transition test on the lab machine before deleting
+this entry or deploying the controller.
 
 ## Before the next prose session
 
@@ -614,6 +618,20 @@ both respects. Any new `longtable` needs the same treatment.
 ## Later todos
 
 Wanted, agreed, and deliberately not done yet. Nothing here blocks submission.
+
+### Measure the physical surface angle independently
+
+The controller archives provide the pose-based initial angular deviation from
+the configured surface reference, and that quantity is now used for the
+experimental condition. They do not provide an independent physical surface
+normal for the reported campaign, and the instantaneous tool rotation relative
+to the gripper was not tracked under contact load. A run-wise physical
+tool--surface angle therefore cannot be reconstructed from the existing logs.
+
+A follow-on measurement must record the physical plane normal independently of
+the mounted tool and track the tool face relative to the end effector during
+contact. Only then can the physical initial angle and its change replace the
+pose-based reference-relative quantities in the experimental evaluation.
 
 ### Name the joints that carry the redundant motion, in Section 4.6
 

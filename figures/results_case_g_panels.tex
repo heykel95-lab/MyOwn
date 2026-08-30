@@ -1,13 +1,11 @@
-% Case E plotted against the quantity the case varies, the commanded
-% orientation offset, with the two centre positions as the compared series.
+% Case E plotted against the achieved pose-based initial angular deviation,
+% with the two centre positions as the compared series.
 % Values from Table~\ref{tab:results_case_e}.
 \begin{tikzpicture}
 \pgfplotsset{
   every axis/.append style={
     width=7.1cm, height=6.0cm,
     xmin=3.5, xmax=11.5, ymin=-3.5, ymax=11.5,
-    xtick={5,10},
-    xticklabels={\(5^\circ\), \(10^\circ\)},
     ytick={-3,0,3,6,9},
     grid=major,
     grid style={gray!25, very thin},
@@ -29,25 +27,27 @@
   ]
 
 \nextgroupplot[
-    xlabel={\shortstack{Commanded Orientation Offset,\\\(\theta_{t_1}\) [\(^\circ\)]}},
-    ylabel={\shortstack{Set-Up Rotation About \(t_1\),\\\(\gamma_{t_1}\) [\(^\circ\)]}},
-    title={\footnotesize (a) commanded about \(t_1\)},
+    xtick={4.28,9.32},
+    xlabel={\shortstack{Pose-Based Initial Angular Deviation,\\\(\theta_{0,t_1}\) [\(^\circ\)]}},
+    ylabel={\shortstack{Contact-Establishment Rotation About \(t_1\),\\\(\gamma_{t_1}\) [\(^\circ\)]}},
+    title={\footnotesize (a) deviation about \(t_1\)},
     legend pos=north west,
   ]
-\addplot[black, mark=o] coordinates {(5,2.55) (10,7.57)};
+\addplot[black, mark=o] coordinates {(4.28,2.55) (9.32,7.57)};
 \addlegendentry{CoC at TCP, \(r_{c,t_2}=0\,\mathrm{mm}\)}
-\addplot[blue!55!black, mark=square] coordinates {(5,2.70) (10,7.87)};
+\addplot[blue!55!black, mark=square] coordinates {(4.28,2.70) (9.32,7.87)};
 \addlegendentry{Tangential CoC, \(r_{c,t_2}=+40\,\mathrm{mm}\)}
 
 \nextgroupplot[
-    xlabel={\shortstack{Commanded Orientation Offset,\\\(\theta_{t_2}\) [\(^\circ\)]}},
-    ylabel={\shortstack{Set-Up Rotation About \(t_2\),\\\(\gamma_{t_2}\) [\(^\circ\)]}},
-    title={\footnotesize (b) commanded about \(t_2\)},
+    xtick={5.16,10.03},
+    xlabel={\shortstack{Pose-Based Initial Angular Deviation,\\\(\theta_{0,t_2}\) [\(^\circ\)]}},
+    ylabel={\shortstack{Contact-Establishment Rotation About \(t_2\),\\\(\gamma_{t_2}\) [\(^\circ\)]}},
+    title={\footnotesize (b) deviation about \(t_2\)},
     legend pos=north west,
   ]
-\addplot[black, mark=o] coordinates {(5,-1.40) (10,-1.63)};
+\addplot[black, mark=o] coordinates {(5.16,-1.40) (10.03,-1.63)};
 \addlegendentry{CoC at TCP, \(r_{c,t_1}=0\,\mathrm{mm}\)}
-\addplot[blue!55!black, mark=square] coordinates {(5,5.91) (10,4.43)};
+\addplot[blue!55!black, mark=square] coordinates {(5.16,5.91) (10.03,4.43)};
 \addlegendentry{Tangential CoC, \(r_{c,t_1}=-40\,\mathrm{mm}\)}
 
 \end{groupplot}

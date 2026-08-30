@@ -14,7 +14,7 @@ reported in \Cref{app:supporting_contact_checks}.
 The main data set consists of surface-contact measurements in which the
 commanded tool orientation offset, directional Cartesian stiffness, and virtual
 \abbr{CoC} \(p_c\) were varied under otherwise matched conditions.
-The primary controller-response quantity is the signed set-up response. The TCP-height flatness classification is retained as an
+The primary controller-response quantity is the signed contact-establishment response. The TCP-height flatness classification is retained as an
 appendix check, while the commanded wrench supports the Case-D mechanism plot. A second, independent
 experiment evaluates the null-space terms under a repeatable internally
 commanded disturbance.
@@ -33,7 +33,7 @@ Panda operated through the Franka Control Interface. Joint-torque commands were
 transmitted through libfranka at the nominal control rate of
 \(1\,\mathrm{kHz}\), corresponding to a sampling period of
 \(1\,\mathrm{ms}\). The real-time
-controller, Cartesian impedance law, contact geometry, and phase sequence are
+controller, Cartesian impedance law, contact geometry, and state sequence are
 described in \Cref{ch:implementation}.
 
 The rectangular grinding tool was held by the Franka Hand using custom gripper
@@ -57,9 +57,9 @@ assumption of a fixed tool-to-end-effector transformation, and any motion of
 the tool within the gripper is not included in them.
 
 The surface was a plane plate mounted on a raised base board. All reported
-measurements used dry contact. The physical surface orientation and the
-tool normal were calibrated separately before the measurements, as
-described in \Cref{sec:surface_tool_calibration}.
+measurements used dry contact. The configured surface reference and the tool
+normal were determined separately before the measurements, as described in
+\Cref{sec:surface_tool_calibration}.
 
 \begin{figure}[H]
     \centering
@@ -144,10 +144,53 @@ approximately \(1.56^\circ\).
 Consequently the surface frame used by the controller is a configured geometric
 reference rather than an independent measurement of the physical plane normal.
 It was taken from the nominal end-effector axis at one seated pose. The
-\(1.56^\circ\) is the difference between those two orientation references, and
-it applies equally to every reported run. Since it limits an absolute
-interpretation of the physical tool--surface angle, the main comparisons report
-the signed set-up response of
+\(1.56^\circ\) is the difference between the nominal end-effector axis and the
+calibrated tool normal. It is not a run-wise measurement of the angle between
+the physical and configured surfaces.
+
+The commanded tool orientation offset was introduced deliberately as an
+artificial surrogate for a surface-reference error. It rotates the desired
+tool orientation relative to the configured normal \(n_s\); neither the
+configured plane nor the physical plane changes.
+
+Three angular quantities must therefore be separated. The physical surface
+normal \(n_{\mathrm{phys}}\) denotes the actual plate orientation, whereas
+\(n_s\) is the configured normal used by the controller. Their signed
+difference about a surface tangent \(t_i\) is the surface-reference error
+\(\delta_{s,t_i}\). The pose-based initial angular deviation
+\(\theta_{0,t_i}\) is the achieved angle from the configured reference to the
+tool face at the start of Contact Establishment. In the principal-tangent
+cross-section of \Cref{fig:surface_reference_error}, the physical initial angle
+is
+
+\begin{equation}
+\theta_{0,\mathrm{phys},t_i}
+=
+\delta_{s,t_i}+\theta_{0,t_i}.
+\label{eq:physical_initial_angle_relation}
+\end{equation}
+
+For a general three-dimensional discrepancy, the corresponding rotations are
+composed rather than added component by component. The commanded orientation
+offset \(\theta_{t_i}\) generates the desired tool orientation relative to
+\(n_s\). It does not equal \(\theta_{0,t_i}\) when the Tool Orientation state
+terminates with a finite tracking error.
+
+\begin{figure}[H]
+  \centering
+  \input{figures/surface_reference_error.tex}
+  \caption{Physical, configured, and contact-entry angular references.}
+  \label{fig:surface_reference_error}
+\end{figure}
+
+The physical surface normal \(n_{\mathrm{phys}}\) was not measured
+independently for the reported campaign. In addition, the instantaneous tool
+rotation relative to the gripper was not tracked during contact. Numerical
+values of \(\theta_{0,\mathrm{phys},t_i}\) cannot therefore be reconstructed
+from the archived runs. The experimental conditions are reported using the
+achieved pose-based angle \(\theta_{0,t_i}\), while the nominal command remains
+an implementation parameter. The main response remains the signed
+contact-establishment response of
 \Cref{subsec:experimental_supporting_metrics}.
 
 \begin{figure}[H]
@@ -167,7 +210,7 @@ point \mbox{\(p_s\)}. Projecting the base-frame \mbox{\(x\)} direction onto
 the plane gave \mbox{\(t_1\)}; \mbox{\(t_2=n_s\times t_1\)} completed
 \mbox{\(R_{\mathrm{surface}}=[t_1\ t_2\ n_s]\)}. The stored surface tilts
 were \mbox{\(-1.585^\circ\)} about base \mbox{\(x\)} and
-\mbox{\(+0.988^\circ\)} about base \mbox{\(y\)}. The calibrated values and
+\mbox{\(+0.988^\circ\)} about base \mbox{\(y\)}. The stored values and
 their construction are collected in \mbox{\Cref{app:controller_parameters}}.
 
 \subsection{Tool Normal Calibration}
@@ -219,7 +262,7 @@ p_{\mathrm{EE}}+R_{\mathrm{EE}}r_{\mathrm{face,EE}}.
 \end{equation}
 
 Because the complete face is seated on the plate, that centre lies on the
-plane, and \(p_s=p_{\mathrm{cal}}\). The calibrated plane is consequently
+plane, and \(p_s=p_{\mathrm{cal}}\). The configured reference plane is consequently
 
 \begin{equation}
 n_s^\top(p-p_s)=0,
@@ -267,7 +310,7 @@ Inverting that relation returns the stored angles from the measured normal,
 \label{eq:surface_tilt_from_normal}
 \end{equation}
 
-The calibrated angles were
+The stored reference angles were
 
 \begin{equation}
 \alpha_s=-1.585^\circ,
@@ -332,7 +375,7 @@ measurement and the nominal axis of \Cref{eq:plane_seated_normal}. An
 orientation of the plate measured independently of the tool was not recorded.
 
 The in-plane orientation was fixed by projecting the base-frame \(x\)-axis
-\(e_{x_0}\) onto the calibrated plane:
+\(e_{x_0}\) onto the configured reference plane:
 
 \begin{equation}
 t_1
@@ -349,7 +392,7 @@ t_2=n_s\times t_1.
 \label{eq:calibrated_second_surface_tangent}
 \end{equation}
 
-For the calibrated plane, to six decimal places,
+For the configured reference plane, to six decimal places,
 
 \begin{equation}
 t_1
@@ -560,48 +603,49 @@ selection algorithm that consumes it belongs to \Cref{ch:implementation}.
 \label{sec:cartesian_stiffness_selection}
 % ============================================================================
 
-All surface-contact cases used the same calibrated geometry, phase sequence,
-normal press trajectory, fixed gain entries, and null-space configuration
+All surface-contact cases used the same calibrated geometry, state sequence,
+normal press trajectory, fixed stiffness and damping entries, and null-space configuration
 except where a parameter was explicitly varied. This section defines that
 common experimental basis before the individual cases are introduced in
 \Cref{sec:experimental_design}.
 
 
-\subsection{Common Cartesian Gains and Damping}
+\subsection{Common Cartesian Stiffness and Damping}
 \label{subsec:initial_stiffness_damping_values}
 \label{subsec:experimental_inertia_scaled_damping}
 
-The phase-dependent gains are diagonal in the calibrated surface frame
+The state-dependent stiffness and damping matrices are diagonal in the configured surface frame
 \([t_1,t_2,n_s]\) before any compliance-centre shift.
 \Cref{tab:experimental_common_gains} gives the entries used by every reported
 contact run, together with the damping ratio \(\zeta\) of the corresponding
-phase. The pre-set-up gate was configured with the same stiffness as set-up and
-was disabled in the reported runs, so it did not act as a separate phase.
+state. The optional operator-controlled hold before Contact Establishment used the same
+stiffness as Contact Establishment. It was disabled in the reported runs and
+therefore was not entered.
 
 \begin{table}[H]
 \centering
 \small
-\caption{Common Cartesian gains and damping ratio by phase.}
+\caption{Common Cartesian stiffness and damping ratio by state.}
 \label{tab:experimental_common_gains}
 \begin{tabular}{@{}lrrrrrrr@{}}
 \toprule
 & \multicolumn{3}{c}{\(K_p\) [N/m]} & \multicolumn{3}{c}{\(K_R\) [N\,m/rad]} & \\
 \cmidrule(lr){2-4}\cmidrule(lr){5-7}
-\textbf{Phase} & \(t_1\) & \(t_2\) & \(n_s\) & \(t_1\) & \(t_2\) & \(n_s\) & \(\zeta\)\\
+\textbf{State} & \(t_1\) & \(t_2\) & \(n_s\) & \(t_1\) & \(t_2\) & \(n_s\) & \(\zeta\)\\
 \midrule
 Orientation and approach & 150 & 150 & 150 & 180 & 180 & 90 & 1.9\\
-Set-up & 2000 & 2000 & 350 & 5 & 5 & 50 & 1.0\\
+Contact-establishment & 2000 & 2000 & 350 & 5 & 5 & 50 & 1.0\\
 \bottomrule
 \end{tabular}
 \end{table}
 
 During orientation and approach the translational stiffness was isotropic and
-the rotational stiffness was higher about the surface tangents. In set-up the
+the rotational stiffness was higher about the surface tangents. In contact establishment the
 lower normal entry limits the elastic normal-force increase for a given normal
 position error, while the higher tangential entries restrict motion in the
 surface plane. The low rotational stiffnesses about \(t_1\) and \(t_2\) permit
 contact-induced alignment rotation, and the higher entry about \(n_s\) mainly
-resists in-plane spin of the tool face. Because the set-up translational
+resists in-plane spin of the tool face. Because the contact establishment translational
 stiffness \(K_{p,\mathrm{set}}\) is diagonal in the surface frame, the effective
 normal stiffness \(K_{p,n}=n_s^\top K_{p,\mathrm{set}}n_s\) equals the tabulated
 normal entry of \(350\,\mathrm{N/m}\).
@@ -613,7 +657,7 @@ damping values, used only if the inertia-based calculation could not be
 applied, are provided in \Cref{app:controller_parameters}.
 
 
-\subsection{Contact Sequence and Set-Up Motion}
+\subsection{Contact Sequence and Contact-Establishment Motion}
 \label{subsec:fixed_phase_motion_parameters}
 \label{subsec:experimental_case_jn_settings}
 \label{sec:contact_experimental_procedure}
@@ -626,14 +670,14 @@ throughout the surface-contact experiments unless explicitly stated otherwise.
 \begingroup
 \small
 \begin{longtable}{@{}p{0.43\textwidth}p{0.20\textwidth}p{0.27\textwidth}@{}}
-\caption{Common phase-transition and trajectory parameters for the surface-contact experiments.}
+\caption{Common state-transition and trajectory parameters.}
 \label{tab:experimental_phase_parameters}
 \label{tab:experimental_case_dh_parameters}\\
 \toprule
 \textbf{Quantity} & \textbf{Value} & \textbf{Role}\\
 \midrule
 \endfirsthead
-\caption[]{Common phase-transition and trajectory parameters for the surface-contact experiments (continued).}\\
+\caption[]{Common state-transition and trajectory parameters (continued).}\\
 \toprule
 \textbf{Quantity} & \textbf{Value} & \textbf{Role}\\
 \midrule
@@ -642,30 +686,30 @@ throughout the surface-contact experiments unless explicitly stated otherwise.
 \endfoot
 \bottomrule
 \endlastfoot
-Minimum orientation time & \(1.0\,\mathrm{s}\) & Prevents an immediate phase transition.\\
+Minimum orientation time & \(1.0\,\mathrm{s}\) & Prevents an immediate state transition.\\
 Tool-axis transition tolerance & \(0.016\,\mathrm{rad}\) & Maximum remaining tool-axis error before descent.\\
 Spin transition tolerance & \(0.009\,\mathrm{rad}\) & Maximum remaining normal-axis spin error.\\
-Orientation timeout / maximum rate & \(8.0\,\mathrm{s}\) / \(20^\circ\!/\mathrm{s}\) & Bounds the orientation phase.\\
+Orientation timeout / maximum rate & \(8.0\,\mathrm{s}\) / \(20^\circ\!/\mathrm{s}\) & Bounds Tool Orientation.\\
 Descent speed & \(0.1\,\mathrm{m/s}\) & Reference speed along the descent direction.\\
 Maximum descent distance & \(0.640\,\mathrm{m}\) & Terminates an unsuccessful approach.\\
-Tool clearance, \(h_{\mathrm{clearance}}\) & \(0.020\,\mathrm{m}\) & Minimum tool-face clearance at the transition to set-up.\\
-Minimum set-up time & \(2.0\,\mathrm{s}\) & Earliest activation of the moment-based exit condition.\\
-Set-up timeout & \(5.0\,\mathrm{s}\) & Time-based set-up termination.\\
-Moment-change threshold & \(150\,\mathrm{N\,m}\) & Alternative set-up termination based on the model-estimated external moment.\\
-Set-up push speed & \(0.080\,\mathrm{m/s}\) & Rate of the signed press coordinate.\\
-Set-up push endpoint & \(+0.240\,\mathrm{m}\) & Final signed Cartesian spring reference.\\
-Pre-set-up gate & disabled & Approach transfers directly to set-up.\\
-Pre-grind gate & enabled & Holds the reached pose at the end of the reported set-up sequence.\\
+Tool clearance, \(h_{\mathrm{clearance}}\) & \(0.020\,\mathrm{m}\) & Minimum tool-face clearance at the transition to Contact Establishment.\\
+Minimum contact-establishment time & \(2.0\,\mathrm{s}\) & Earliest activation of the moment-based exit condition.\\
+Contact-establishment timeout & \(5.0\,\mathrm{s}\) & Time-based contact establishment termination.\\
+Moment-change threshold & \(150\,\mathrm{N\,m}\) & Alternative contact establishment termination based on the model-estimated external moment.\\
+Contact-establishment push speed & \(0.080\,\mathrm{m/s}\) & Rate of the signed press coordinate.\\
+Contact-establishment push endpoint & \(+0.240\,\mathrm{m}\) & Final signed Cartesian spring reference.\\
+Operator-controlled hold before Contact Establishment & disabled & Surface Approach transfers directly to Contact Establishment.\\
+Operator-controlled hold before Grinding & enabled & Holds the reached pose after Contact Establishment.\\
 \end{longtable}
 \endgroup
 
 Before each run, the active parameter set was loaded and the robot was moved to
-the configured initial joint posture. The calibrated geometry, the phase gains
-and damping, and the compliance-centre definition were prepared before the
+the configured initial joint posture. The calibrated geometry, the state
+stiffness and damping, and the compliance-centre definition were prepared before the
 torque callback started.
 
 Approach ended when the part of the rectangular tool face closest to the
-calibrated plane reached the tool-clearance threshold in
+configured reference plane reached the tool-clearance threshold in
 Table~\ref{tab:experimental_phase_parameters}. This transition was defined
 geometrically rather than by a force threshold. At the same instant, the
 controller stored the TCP pose, the orientation reference, the selected tool
@@ -673,21 +717,21 @@ point, and its projection onto the plane. The model-estimated external wrench
 was additionally stored for the optional wrench-change termination condition described in
 \Cref{subsec:implementation_setup_phase}.
 
-The set-up press endpoint of \(+0.240\,\mathrm{m}\) is a Cartesian spring
-reference beyond the calibrated plane and is not interpreted as a physical
+The contact-establishment press endpoint of \(+0.240\,\mathrm{m}\) is a Cartesian spring
+reference beyond the configured plane and is not interpreted as a physical
 penetration of the same magnitude. The reference reached it after approximately
-\(3.25\,\mathrm{s}\) and was then held. Throughout set-up the rotational
+\(3.25\,\mathrm{s}\) and was then held. Throughout contact establishment the rotational
 reference remained the orientation captured at the clearance transition, so the
-measured set-up response results from the contact interaction rather than from
+measured contact-establishment response results from the contact interaction rather than from
 tracking a time-varying orientation command. The TCP-centred and stiffness-variation
-conditions used the decoupled Cartesian impedance during set-up. Conditions
+conditions used the decoupled Cartesian impedance during contact establishment. Conditions
 with a displaced \abbr{CoC} used the point-shifted \(6\times6\) impedance
 associated with the selected compliance-centre position.
 
-Every reported contact run ended at the \(5\,\mathrm{s}\) set-up timeout, and
-the moment-change threshold was reached in none of them. The enabled pre-grind
-gate then held the reached pose, so the recorded data cover orientation,
-approach, and set-up only.
+Every reported contact run ended at the \(5\,\mathrm{s}\) contact-establishment timeout, and
+the moment-change threshold was reached in none of them. The enabled
+operator-controlled hold before grinding then maintained the reached pose, so the recorded data cover orientation,
+approach, and contact establishment only.
 
 \paragraph{Fixed null-space configuration.}
 \label{subsec:nullspace_parameter_rationale}
@@ -695,7 +739,7 @@ approach, and set-up only.
 Projected null-space damping and singular-value conditioning were active
 together throughout the surface-contact measurements. Keeping this secondary
 controller fixed prevents changes in the null-space policy from becoming an
-additional variable across the surface-contact experiments. The gains were
+additional variable across the surface-contact experiments. The coefficients were
 \mbox{\(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\)} and
 \mbox{\(k_\sigma=1\,\mathrm{N\,m}\)}.
 
@@ -716,14 +760,14 @@ Three repetitions were recorded for each parameter setting. Results are
 reported as arithmetic means, with sample standard deviations given for the
 main comparisons and where relevant in the supporting checks. The main
 surface-contact study comprises \(111\) runs across \(37\) settings. A further
-\(54\) runs across \(18\) settings were performed as supporting checks and are reported in
-\Cref{app:supporting_contact_checks}. In total, \(165\) surface-contact runs
-across \(55\) settings were recorded. No run was discarded. Together with the
+\(45\) runs across \(15\) settings were performed as supporting checks and are reported in
+\Cref{app:supporting_contact_checks}. In total, \(156\) surface-contact runs
+across \(52\) settings were recorded. No run was discarded. Together with the
 \(12\) pose-hold runs of \Cref{sec:nullspace_hold_study}, the complete
-experimental data set contains \(177\) recorded runs.
+experimental data set contains \(168\) recorded runs.
 
-Within each controlled comparison, the calibrated geometry, common phase
-parameters, fixed gains, and null-space settings remained unchanged. Only the
+Within each controlled comparison, the calibrated geometry, common state
+parameters, fixed stiffness and damping, and null-space settings remained unchanged. Only the
 parameter assigned to the corresponding comparison was varied.
 
 
@@ -735,20 +779,18 @@ parameter assigned to the corresponding comparison was varied.
 The main surface-contact study separates the effects of the principal
 controller parameters. Case~A establishes the TCP-centred reference, where
 \(r_c=0\). In Cases~B and~C, rotational and translational stiffness were varied
-independently so that each gain could be evaluated without changing the other
-simultaneously. In Case~D the tangential compliance-centre position was varied
-across both principal surface tangents and both signs of the commanded
-orientation offset.
+independently. This allowed the effect of either entry to be evaluated while
+the other remained fixed. In Case~D the tangential compliance-centre position was varied
+across both principal surface tangents and both signs of the pose-based initial
+angular deviation.
 
-Unless stated otherwise, the non-zero compliance-centre displacements of the
-main study were configured tool-fixed, in end-effector coordinates. The
-tangential coordinates reported for Case~D are the surface-frame directions
-those settings realise in the flat target orientation. The definition frame
-itself is examined in the supporting check of
-\Cref{sec:supporting_definition_frame}.
+All non-zero compliance-centre displacements were configured and held constant
+in end-effector coordinates. The tangential coordinates reported for Case~D
+are the surface-frame projections of those settings in the flat target
+orientation.
 
-The orientation-offset-magnitude comparison, the \abbr{CoC} definition frame,
-displacement along the tool axis, and intermediate tangent-plane directions
+The initial angular-deviation magnitude comparison, displacement along the tool
+axis, and intermediate tangent-plane directions
 are treated as supporting checks in
 \Cref{app:supporting_contact_checks}.
 
@@ -762,42 +804,46 @@ reference condition counted with an earlier case.
 \begin{longtable}{@{}
 >{\centering\arraybackslash}p{0.075\textwidth}
 >{\raggedright\arraybackslash}p{0.145\textwidth}
->{\raggedright\arraybackslash}p{0.12\textwidth}
->{\raggedright\arraybackslash}p{0.27\textwidth}
+>{\raggedright\arraybackslash}p{0.17\textwidth}
+>{\raggedright\arraybackslash}p{0.22\textwidth}
 >{\centering\arraybackslash}p{0.06\textwidth}
 >{\raggedright\arraybackslash}p{0.17\textwidth}@{}}
 \caption{Main surface-contact cases and parameter variations.}
 \label{tab:experimental_test_cases}\\
 \toprule
-\textbf{Case} & \textbf{Varied quantity} & \textbf{Commanded tool orientation offset} & \textbf{Tested values} & \textbf{Runs} & \textbf{Evaluated effect}\\
+\textbf{Case} & \textbf{Varied quantity} & \textbf{Pose-based initial angular deviation} & \textbf{Tested values} & \textbf{Runs} & \textbf{Evaluated effect}\\
 \midrule
 \endfirsthead
 \caption[]{Main surface-contact cases and parameter variations (continued).}\\
 \toprule
-\textbf{Case} & \textbf{Varied quantity} & \textbf{Commanded tool orientation offset} & \textbf{Tested values} & \textbf{Runs} & \textbf{Evaluated effect}\\
+\textbf{Case} & \textbf{Varied quantity} & \textbf{Pose-based initial angular deviation} & \textbf{Tested values} & \textbf{Runs} & \textbf{Evaluated effect}\\
 \midrule
 \endhead
 \midrule
 \endfoot
 \bottomrule
 \endlastfoot
-A & \abbr{CoC} at the TCP & None and
-\(\pm10^\circ\) about \(t_1\) or \(t_2\) & \(r_c=0\). & 15 & Contact response
+A & \abbr{CoC} at the TCP & \(0.74^\circ\); \(+9.31^\circ\) and
+\(-9.41^\circ\) about \(t_1\); \(+10.05^\circ\) and \(-9.55^\circ\) about
+\(t_2\) & \(r_c=0\). & 15 & Contact response
 without \abbr{CoC} coupling.\\
 \addlinespace
 
-B & Rotational stiffness & \(+10^\circ\) about \(t_1\) or \(t_2\) &
+B & Rotational stiffness & \(+9.31^\circ\) to \(+9.32^\circ\) about
+\(t_1\); \(+10.02^\circ\) to \(+10.05^\circ\) about \(t_2\) &
 Command-axis \(K_R=15\) and \(50\,\mathrm{N\,m/rad}\). & 12 & Influence of
 rotational stiffness.\\
 \addlinespace
 
-C & Translational stiffness & \(+10^\circ\) about \(t_1\) or \(t_2\) &
+C & Translational stiffness & \(+9.24^\circ\) to \(+9.31^\circ\) about
+\(t_1\); \(+10.02^\circ\) to \(+10.05^\circ\) about \(t_2\) &
 Cross-axis \(K_p=300\) and \(800\,\mathrm{N/m}\). & 12 & Influence of
 translational stiffness.\\
 \addlinespace
 
-D & Tangential \abbr{CoC} position &
-\(\pm10^\circ\) about \(t_1\) or \(t_2\) & \(-40\), \(-20\), \(-10\),
+D & Tangential \abbr{CoC} position & About \(+9.32^\circ\) and
+\(-9.36^\circ\) about \(t_1\); about \(+10.03^\circ\) and
+\(-9.56^\circ\) about \(t_2\) & \(-40\), \(-20\), \(-10\),
 \(+10\), \(+20\), \(+40\,\mathrm{mm}\) along the tangent perpendicular to the
 commanded rotation. & 72 & Direction and sign dependence.\\
 
@@ -809,7 +855,7 @@ scheduled repetitions of each setting. A condition that a case shares with an
 earlier one is counted with that earlier case.
 
 In Cases~B and~C, only one Cartesian stiffness entry was varied within each
-comparison. The remaining gain entries were kept at the common values of
+comparison. The remaining stiffness and damping entries were kept at the common values of
 Table~\ref{tab:experimental_common_gains}.
 
 
@@ -819,18 +865,58 @@ Table~\ref{tab:experimental_common_gains}.
 \label{sec:alignment_evaluation}
 % ============================================================================
 
-The primary response quantity for the surface-contact experiments is the
-signed set-up response \(\gamma_{t_i}\). It is calculated from the measured
-end-effector orientation at the end of set-up and the orientation reference
-held through that phase. The commanded
-Cartesian wrench is retained for the Case-D mechanism plot.
+The angular condition for each surface-contact run is the pose-based initial
+angular deviation \(\theta_{0,t_i}\) reached at the start of Contact
+Establishment. The primary response quantity is the signed
+contact-establishment response \(\gamma_{t_i}\). It is calculated from the
+measured end-effector orientation at the end of contact establishment and the
+orientation reference held through that state. The commanded Cartesian wrench
+is retained for the Case-D mechanism plot.
 
 
-\subsection{Signed Set-Up Response}
+\subsection{Pose-Based Initial Angular Deviation}
+\label{subsec:initial_angular_deviation}
+
+At the start of Contact Establishment, the calibrated tool normal in base
+coordinates is
+\(n_{\mathrm{Tool},0}(t_{\mathrm{set,start}})\). Let the rotation vector
+\(e_0=\phi_0u_0\) denote the shortest rotation from this direction back to the
+configured flat direction \(-n_s\), so that
+
+\begin{equation}
+R(u_0,\phi_0)n_{\mathrm{Tool},0}(t_{\mathrm{set,start}})
+=-n_s.
+\label{eq:initial_deviation_rotation}
+\end{equation}
+
+The pose-based initial angular-deviation vector is defined in surface
+coordinates as
+
+\begin{equation}
+\theta_{0,S}
+=
+-R_{\mathrm{surface}}^\top e_0
+=
+\begin{bmatrix}
+\theta_{0,t_1} & \theta_{0,t_2} & \theta_{0,n}
+\end{bmatrix}^\top.
+\label{eq:pose_based_initial_deviation}
+\end{equation}
+
+The minus sign makes a component directed away from the configured flat
+orientation carry the same sign as the command that produced it. This angle is
+calculated from the measured end-effector pose and the calibrated tool normal.
+It is therefore the achieved reference-relative condition rather than an
+independent measurement of the physical tool--surface angle. The relation to
+that physical angle is given in
+\Cref{eq:physical_initial_angle_relation}.
+
+
+\subsection{Signed Contact-Establishment Response}
 \label{subsec:experimental_supporting_metrics}
 
 Let \(t_{\mathrm{set,start}}\) and \(t_{\mathrm{set,end}}\) denote the
-measurement instants at the beginning and end of set-up. The corresponding
+measurement instants at the beginning and end of contact establishment. The corresponding
 measured end-effector orientations relative to the robot base frame are
 
 \begin{equation}
@@ -839,9 +925,9 @@ R_{\mathrm{set,start}}=R_{\mathrm{EE}}(t_{\mathrm{set,start}}),
 R_{\mathrm{set,end}}=R_{\mathrm{EE}}(t_{\mathrm{set,end}}).
 \end{equation}
 
-Set-up holds the orientation captured at the clearance transition as its
+Contact-establishment holds the orientation captured at the clearance transition as its
 rotational reference, and the measured orientation coincides with it at the
-start of the phase, so \(R_{\mathrm{set,start}}\) is that held reference. The
+start of the state, so \(R_{\mathrm{set,start}}\) is that held reference. The
 relative rotation from the measured end orientation back to it is therefore
 
 \begin{equation}
@@ -852,7 +938,7 @@ R_{\mathrm{set,start}}R_{\mathrm{set,end}}^\top.
 
 Writing this relative rotation in axis--angle form as
 \(R_{\mathrm{set}}=R(u_{\mathrm{set}},\phi_{\mathrm{set}})\) gives the
-measured set-up rotation vector \(\gamma_0\) in base coordinates:
+measured contact-establishment rotation vector \(\gamma_0\) in base coordinates:
 
 \begin{equation}
 \gamma_0
@@ -884,14 +970,15 @@ R_{\mathrm{surface}}^\top\gamma_0
 \label{eq:surface_resolved_setup_rotation}
 \end{equation}
 
-The reported quantity \(\gamma_{t_i}\) is the signed set-up response about
-surface tangent \(t_i\). It represents the end-of-set-up orientation change
-relative to the held set-up reference, resolved along that tangent. Its sign is
-chosen such that a response reducing a commanded offset carries the same sign
-as that offset: a correcting response is positive for a positive offset and
-negative for a negative one, and its magnitude is the size of the correction.
-Reading the sign alone is therefore not enough, since the sign of the commanded
-offset fixes which direction counts as correcting. The
+The reported quantity \(\gamma_{t_i}\) is the signed contact-establishment response about
+surface tangent \(t_i\). It represents the end-of-contact-establishment orientation change
+relative to the held contact-establishment reference, resolved along that tangent. Its sign is
+chosen such that a response reducing the initial angular deviation
+\(\theta_{0,t_i}\) carries the same sign as that deviation. A correcting
+response is positive for a positive initial deviation and negative for a
+negative one, and its magnitude is the size of the correction. Reading the sign
+alone is therefore not enough, since \(\theta_{0,t_i}\) fixes which direction
+counts as correcting. The
 measurements confirm the correspondence: for the \(+10^\circ\) command about
 \(t_1\) at the TCP, \(\gamma_{t_1}=+7.57^\circ\) accompanies a fall in
 the pose-based alignment angle from \(9.32^\circ\) to \(3.38^\circ\),
@@ -911,12 +998,12 @@ is unsigned and depends on an assumed fixed relation between the tool and end
 effector.
 
 A separate geometry-based flatness classification is obtained from the final
-TCP height relative to the calibrated plane and the height expected from the
+TCP height relative to the configured reference plane and the height expected from the
 calibrated rectangular tool geometry when the tool face is flat. This
 classification uses the end-effector position and calibrated geometry; it is
 not a direct angular measurement of the physical tool face. The TCP-height
 classification is therefore reported separately from the primary end-effector
-set-up rotation.
+contact-establishment rotation.
 
 
 \subsection{Commanded Wrench Quantities}
@@ -951,16 +1038,16 @@ internally commanded disturbance.
 
 \subsection{Experimental Configuration}
 
-The pose-hold controller maintained the initial TCP pose with the gains of
+The pose-hold controller maintained the initial TCP pose with the stiffness and damping of
 \Cref{tab:experimental_hold_gains}. Every entry was isotropic, so each matrix
-is the stated value times the identity. Unlike the contact-sequence phases, the
+is the stated value times the identity. Unlike the contact-sequence states, the
 twelve pose-hold trials used fixed Cartesian damping rather than inertia-scaled
 damping.
 
 \begin{table}[H]
 \centering
 \small
-\caption{Isotropic Cartesian gains of the pose-hold trials.}
+\caption{Isotropic Cartesian stiffness and damping of the pose-hold trials.}
 \label{tab:experimental_hold_gains}
 \begin{tabular}{@{}llr@{}}
 \toprule
@@ -1072,7 +1159,7 @@ impedance resists that component while the disturbance acts.
 commanded pose was retained rather than assuming it.
 
 In every trial the selected null-space law was active from the start of the
-pose-hold phase. The first \(5\,\mathrm{s}\) therefore formed a
+pose-hold state. The first \(5\,\mathrm{s}\) therefore formed a
 pre-disturbance settling interval, during which the conditioning torque of the
 sigma-only settings could already move the redundant configuration. The
 disturbance then acted from \(5\) to \(9\,\mathrm{s}\), followed by an
@@ -1190,7 +1277,7 @@ remaining net displacement along that direction. The quantity is a signed
 projection of the accumulated projected joint motion rather than an exact
 nonlinear redundant-coordinate displacement, because \(N_q(q)\) changes with
 the robot configuration while \(v_{\mathrm{ref}}\) is held fixed. At full
-row rank the Panda has a one-dimensional instantaneous null space, so this
+rank the Panda has a one-dimensional instantaneous null space, so this
 common direction provides a meaningful signed comparison of the four tested
 settings.
 

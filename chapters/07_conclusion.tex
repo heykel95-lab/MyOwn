@@ -5,8 +5,8 @@
 \label{sec:conclusion_summary}
 
 A real-time Cartesian impedance controller was implemented for
-contact-induced alignment of a rectangular tool with a calibrated plane. The
-controller assigns directional gains in the surface frame and can shift the
+contact-induced alignment of a rectangular tool with a configured surface reference. The
+controller assigns directional stiffness and damping in the surface frame and can shift the
 virtual centre of compliance from the TCP. The shift couples the commanded
 press to the rotational impedance through
 \mbox{\(m=m_R+r_c\times f\)}.
@@ -19,11 +19,11 @@ reduced the response over the tested range. Changing the cross-axis
 translational stiffness produced a smaller effect.
 
 Tangential compliance-centre position produced the largest measured variation.
-The displacement that increased alignment depended on the sign of the initial
-orientation and on the commanded rotation axis. Reversing the displacement
+The displacement that increased alignment depended on the sign and axis of the
+pose-based initial angular deviation. Reversing the displacement
 reversed the moment contribution from the normal press. Within the investigated
 contact configuration and tested positions, a non-zero tangential centre could
-therefore not be selected independently of the direction and sign of the initial misalignment.
+therefore not be selected independently of the direction and sign of that initial deviation.
 
 The TCP-centred impedance is the direction-independent fixed centre of
 compliance among the tested positions, because it selects no tangential
@@ -46,19 +46,21 @@ produced the same suppression with less cumulative redundant motion.
 \label{subsec:conclusion_experimental_range}
 
 The contact study used one Panda configuration, one tool and mounting
-arrangement, one calibrated plane, and one press trajectory. The conclusions
+arrangement, one configured surface reference, and one press trajectory. The conclusions
 are therefore limited to this geometry and the tested stiffness,
-orientation-offset, and compliance-centre ranges. Sustained grinding and a
+initial angular-deviation and compliance-centre ranges. Sustained grinding and a
 centre scheduled during contact were not evaluated.
 
 \subsection{Measurement and Tool-Mount Uncertainty}
 \label{subsec:conclusion_measurement_uncertainty}
 
-The primary response was calculated from the measured end-effector rotation.
+The experimental condition was the pose-based initial angular deviation from
+the configured surface reference. The physical plane normal was not measured
+independently. The primary response was calculated from the measured end-effector rotation.
 The tool mount exhibited approximately \mbox{\(\pm2^\circ\)} of unloaded play
 about \mbox{\(y_{\mathrm{EE}}\)}, and its instantaneous motion was not tracked
 during contact. The results therefore describe end-effector rotation and do
-not provide an independent physical tool-face angle.
+not provide an independent physical tool--surface angle.
 
 \subsection{Null-Space Configuration and Real-Time Operation}
 \label{subsec:conclusion_nullspace_scope}
@@ -74,13 +76,14 @@ nominal \mbox{\(1\,\mathrm{kHz}\)} interface.
 \section{Future Work}
 \label{sec:future}
 
-The first priority is an independent measurement of the physical tool-face
-angle during contact. This would separate end-effector rotation from motion in
-the tool mount and provide a direct alignment reference.
+The first priority is an independent measurement of the physical plane normal
+and the physical tool-face angle during contact. This would quantify the
+surface-reference error and separate end-effector rotation from motion in the
+tool mount.
 
 The second priority is a direction-selected compliance-centre strategy. Such a
 controller would begin at the TCP, estimate the required alignment direction,
-apply a bounded tangential displacement during set-up, and return to the TCP
+apply a bounded tangential displacement during contact establishment, and return to the TCP
 before sustained contact. Negative orientation offsets and additional
 tangent-plane directions should be included in its evaluation.
 

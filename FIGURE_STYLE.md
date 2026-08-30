@@ -264,20 +264,52 @@ selected tool points for the rectangular tool face: leading corner,
 leading-edge midpoint, and tool-face centre.`; the shorter List-of-Figures entry
 ends after `tool face`.
 
-**The Chapter 3 surface-contact sequence is a phase overview, not a state
-machine.** It contains four boxed phases — tool orientation, surface approach,
-contact set-up and grinding — and the clearance transition is unboxed between
-approach and set-up. Operator gates, hold modes, menu keys, source identifiers,
-transition-condition annotations, gain groups and the separate Cartesian
-pose-hold study stay out of this figure.
+**The Chapter 3 controller flow uses two state-machine drawings.** The first
+shows Start, Robot Recovery and Controller Selection, followed by the
+surface-contact, Cartesian Pose Hold and Manual Guidance branches. The second
+shows the surface-contact states from Tool Orientation through Grinding.
+`State` is the canonical node term, and the contact-press state is `Contact
+Establishment`; no alternative state name is used.
+
+**The surface-reference error figure keeps three angular references distinct.**
+The physical surface is blue, the configured surface reference is red, and the
+tool face at the start of Contact Establishment is dark green. The inner arcs
+show the surface-reference error \(\delta_s\) and the pose-based initial
+angular deviation \(\theta_0\); the outer arc shows the physical initial angle
+\(\theta_{0,\mathrm{phys}}\). The drawing is a principal-tangent
+cross-section and carries no numerical value, because the physical surface
+normal was not measured independently for the reported runs.
+
+**Every boxed node is an operating or controller state, and every arrow carries
+its transition condition.** A shared red termination rail may carry conditions
+that apply from every active state, provided the accompanying text names those
+conditions explicitly. Use a red Stop state for termination. Mark the
+Operator-Controlled Hold Before Grinding as the final state entered in the
+reported runs, and state that Grinding was not entered. Source identifiers and
+gain-group annotations stay out of both state-machine drawings.
+
+**Figure 3.2 has one obvious main path and separates sensing from modelling.**
+Joint Feedback carries the measured \(q,\dot q\) to the Robot Model; the model
+evaluates \(T_{EE}\), \(J(q)\), \(M(q)\) and \(\tau_c(q,\dot q)\). The main row
+then runs from the Robot Model through Cartesian Error, Cartesian Impedance
+Wrench, Cartesian Torque and Torque Sum. The command drives the Joint Motors,
+whose motion returns through Joint Feedback. The model does not convert sensed
+moments into joint angles. Keep \(J(q)\), \(\tau_c\) and the null-space torque
+as short secondary inputs, and keep the frequency label out because the whole
+drawing is one control loop. Every box, arrowhead and label retains visible
+separation after compilation.
+The upper selection block is named `Controller State`. Do not append `Logic`.
+Its outgoing arrows show its parameter-selection role without another word in
+the box. Main-row blocks retain conspicuous gaps in the compiled page; short
+connectors squeezed between neighbouring boxes are not acceptable.
 
 **The Chapter 3 Cartesian pose-hold diagram branches after the common hold
 path.** It shows capture of the current pose followed by Cartesian pose hold,
 then four boxed alternatives: no null-space torque, singular-value
 conditioning, projected damping, and both terms together. All four alternatives
 sit at the same level, because they are selectable configurations rather than a
-temporal sequence. Keep the same plain black boxes and arrows as the
-surface-contact phase overview.
+temporal sequence. Keep the same plain black boxes and arrows as the controller
+state drawings.
 
 ## Generated plots (matplotlib)
 
@@ -466,11 +498,10 @@ file name still carries its acquisition-campaign identifier:
 | `MAIN_B_KR.pdf` | Case B |
 | `MAIN_C_KP.pdf` | Case C |
 | `MAIN_D_sign.pdf`, `MAIN_D_wrench.pdf`, `MAIN_D_diagnostics.pdf` | Case D |
-| `MAIN_G_magnitude.pdf` | Supporting orientation-offset-magnitude check; retained file identifier |
-| `MAIN_E_frame.pdf` | Supporting definition-frame check; retained file identifier |
+| `MAIN_G_magnitude.pdf` | Supporting initial angular-deviation magnitude check; retained file identifier |
 | `MAIN_F_toolaxis.pdf` | Supporting tool-axis check; retained file identifier |
 | `MAIN_H_direction.pdf` | Supporting intermediate-direction check; retained file identifier |
-| `MAIN_DQ_descent.pdf`, `MAIN_DQ_metric_comparison.pdf` | Data quality |
+| `MAIN_DQ_descent.pdf`, `MAIN_DQ_metric_comparison.pdf`, `MAIN_DQ_metric_summary.pdf` | Data quality |
 | `MAIN_NS_nullspace_automatic.pdf` | Null-space results |
 
 A figure spanning several main cases carries their letters in order. A figure
@@ -542,7 +573,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
   quantity — a model, a bound, a projection — so a broken line drawn merely to
   separate two measured series misleads. Series are distinguished by colour and
   by marker shape, never by dash pattern.
-- **A time series is drawn at a bounded number of points.** A set-up log holds
+- **A time series is drawn at a bounded number of points.** A contact-establishment log holds
   about five thousand samples and a panel is a few centimetres wide, so the
   full rate paints a band rather than a curve. Around nine hundred points keeps
   a curve legible at printed width.
@@ -591,12 +622,12 @@ writes a generated file names it, so regeneration must preserve this mapping.
   Case.** The English description comes first so a reader who does not remember
   the symbol list can still read the figure; the symbol follows so the figure
   ties back to the notation; the unit closes it in square brackets. Settled
-  examples: `Set-Up Rotation About \(t_1\), \(\gamma_{t_1}\) [°]`,
+  examples: `Contact-Establishment Rotation About \(t_1\), \(\gamma_{t_1}\) [°]`,
   `Rotational Stiffness, \(K_{R,t_i}\) [N m/rad]`,
   `Cross-Axis Translational Stiffness, \(K_{p,t_j}\) [N/m]`,
   `Tangential CoC Position, \(r_{c,t_2}\) [mm]`,
   `Tangential CoC Position, \(r_{c,t_1}\) [mm]`,
-  `Commanded Orientation Offset, \(\theta_{t_i}\) [°]`,
+  `Pose-Based Initial Angular Deviation, \(\theta_{0,t_i}\) [°]`,
   `Commanded Normal Force, \(F_n\) [N]`,
   `Commanded TCP Moment About \(t_i\), \(M_{t_i}\) [N m]`.
 
@@ -622,14 +653,14 @@ writes a generated file names it, so regeneration must preserve this mapping.
   the ticks are named conditions rather than values of one quantity, and it was
   **reverted the same day**: one axis in a format of its own is a more visible
   inconsistency than a symbol standing over categorical ticks, and the reader
-  meets `Set-Up Rotation, \(\gamma_{t_i}\) [°]` on the other axis of the same
+  meets `Contact-Establishment Rotation, \(\gamma_{t_i}\) [°]` on the other axis of the same
   figure. Uniformity of the axis format wins. Drop the symbol and the unit only
   where none exists, per the rule below.
 - **A legend names the experimental condition, and gives its symbol and value
   where one exists:** `Descriptive Condition, Symbol = Value`. It never repeats
   the \(y\)-axis quantity and never carries a unit already on the axis.
-  Settled forms: `Commanded Offset, \(\theta_{t_1}=+10^\circ\)` for a
-  commanded condition; `Projected Damping, \(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\)`
+  Settled forms: `Initial Deviation, \(\theta_{0,t_1}=+9.32^\circ\)` for an
+  achieved contact-entry condition; `Projected Damping, \(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\)`
   for a controller parameter; `CoC Position, \(r_{c,t_2}=+40\,\mathrm{mm}\)`
   and `CoC at TCP, \(r_{c,t_2}=0\)` for a compliance-centre position. A bare
   `+10°` or `40 mm` entry does not say what the number is, and is what this rule
@@ -646,7 +677,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
   uses descriptive labels instead of promoting its local quantities to the
   thesis-wide symbol list.
 
-  **Response axes pair words with the symbol.** Write `Measured set-up rotation
+  **Response axes pair words with the symbol.** Write `Measured contact-establishment rotation
   about \(t_1\), \(\gamma_{t_1}\) [°]`, not a bare symbol. A parameter axis
   likewise names the varied quantity before its symbol, for example
   `Rotational stiffness about the investigated tangent, \(K_{R,t_i}\)` or
@@ -658,7 +689,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
   axes kept their prose for that reason: the supporting tool-axis comparison, whose \(x\)
   carries a tangential displacement on one series and a tool-axis displacement
   on the other, so no single component symbol covers it; the categorical axis of
-  the Case-A bars, whose ticks name five different commanded conditions that no
+  the Case-A bars, whose ticks name five different initial conditions that no
   one symbol spans; and the time
   axes, which the author prefers as they
   read. Do not invent a symbol to satisfy this rule.

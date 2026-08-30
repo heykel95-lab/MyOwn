@@ -3,7 +3,7 @@
 
 This chapter describes the real-time implementation of the Cartesian impedance
 controller developed in \mbox{\Cref{ch:theory}}. The implementation combines
-surface-relative geometry, phase-dependent reference generation, a selectable
+surface-relative geometry, state-dependent reference generation, a selectable
 virtual \abbr{CoC}, null-space control, and real-time data handling.
 Mathematical relations already established in \mbox{\Cref{ch:theory}} are
 referenced here rather than restated, so that this chapter carries only what
@@ -32,6 +32,21 @@ and transfers them through atomic variables, which keeps terminal input outside
 the real-time callback. Reading and validating the configuration again before
 each session permits settings to be changed between runs without recompiling.
 
+The operating-state flow begins with robot recovery and controller selection,
+as shown in \mbox{\Cref{fig:controller_state_flow}}. A successful recovery
+opens the selection state. The operator can then select the surface-contact
+sequence, Cartesian pose hold, or manual guidance. An unsuccessful recovery
+ends the program. Operator stop, a configured run-duration limit, a robot-side
+error or reflex, and a communication or control exception provide the common
+transition from any active controller state to Stop.
+
+\begin{figure}[H]
+  \centering
+  \input{figures/controller_state_flow.tex}
+  \caption{Controller operating-state flow.}
+  \label{fig:controller_state_flow}
+\end{figure}
+
 \begin{figure}[H]
   \centering
   \resizebox{\textwidth}{!}{\input{figures/controller_block_diagram.tex}}
@@ -44,11 +59,11 @@ impedance-controlled cycle, and the order within that cycle is fixed. The
 callback first reads the measured joint configuration \mbox{\(q\)}, the joint
 velocity \mbox{\(\dot q\)}, the end-effector pose, the \mbox{\(6\times7\)}
 geometric Jacobian \mbox{\(J(q)\)}, and the remaining robot-model quantities.
-The phase logic then updates the desired Cartesian reference. The Cartesian
+The state logic then updates the desired Cartesian reference. The Cartesian
 pose error and the impedance wrench \mbox{\(F=[f^\top,m^\top]^\top\)} are
 evaluated according to \mbox{\Cref{subsec:cartesian_pose_error}} and
 \mbox{\Cref{sec:cartesian_impedance_control}}, using the reference of the
-active phase and the impedance matrices selected for it. That wrench is mapped
+active state and the impedance matrices selected for it. That wrench is mapped
 to joint torque through \mbox{\(J^\top(q)\)}, the secondary null-space torque
 and the model Coriolis contribution are added, the required signals are stored
 in preallocated memory, and the resulting torque vector is returned to
@@ -65,7 +80,7 @@ than to the impedance law. A rotational mask can be applied by resolving
 transforming the result back to the base frame; the mask acts on the
 rotational spring error alone, while the damping term continues to use the
 measured angular velocity. The controller also carries two impedance branches,
-one decoupled and one shifted to a virtual \abbr{CoC}, and the active phase
+one decoupled and one shifted to a virtual \abbr{CoC}, and the active state
 selects between them.
 
 The complete impedance-controlled command is
@@ -92,9 +107,9 @@ pose-hold experiment of \mbox{\Cref{sec:nullspace_hold_study}} and is therefore
 not part of the nominal controller formulation.
 
 The implemented controller is used in two configurations in this thesis. The
-surface-contact configuration generates a phase-dependent Cartesian reference
-for tool orientation, surface approach, contact set-up and the subsequent
-grinding phase. The Cartesian pose-hold configuration instead captures and
+surface-contact configuration generates a state-dependent Cartesian reference
+for tool orientation, surface approach, contact establishment and the
+subsequent grinding state. The Cartesian pose-hold configuration instead captures and
 maintains a fixed Cartesian pose, and it carries the separate null-space
 investigation of \mbox{\Cref{sec:nullspace_hold_study}}. Both run the callback
 above, and they differ in the reference they generate and in the impedance they
@@ -106,38 +121,50 @@ activate. Each is described in full before the other begins.
 \label{subsec:implementation_contact_sequence}
 \label{sec:control_phases}
 
-A surface-contact run passes through four phases, drawn in
-\mbox{\Cref{fig:phase_flow_chart}}. The step between approach and set-up is a
-transition rather than a fifth phase. It occurs when the geometric clearance of
-the tool face reaches its configured threshold. The quantities that initialise
-the set-up reference are captured at that instant.
+A surface-contact run passes through the controller states drawn in
+\mbox{\Cref{fig:phase_flow_chart}}. Tool Orientation advances to Surface
+Approach after its minimum duration and either satisfaction of the configured
+orientation criteria or the orientation timeout. Surface Approach advances to
+Contact Establishment when the tool clearance reaches its threshold. Reaching
+the maximum approach distance first instead terminates the run. Contact
+Establishment begins directly when the optional pre-contact hold is disabled;
+otherwise, operator confirmation releases that hold. Contact
+Establishment advances after the moment-change criterion and minimum duration,
+or through its independent timeout. The controller then waits in the
+operator-controlled hold before grinding until continuation is confirmed.
 
 \begin{figure}[H]
   \centering
   \input{figures/phase_flow_chart.tex}
-  \caption{Surface-contact phase sequence.}
+  \caption{Surface-contact state transitions.}
   \label{fig:phase_flow_chart}
 \end{figure}
 
 \begin{itemize}
-  \item Tool orientation moves the tool to the commanded surface-relative
+  \item Tool Orientation moves the tool to the commanded surface-relative
         angular offset while the captured TCP position is held.
-  \item Surface approach retains that orientation and advances the position
-        reference towards the surface along \mbox{\(-n_s\)}. The phase ends at
+  \item Surface Approach retains that orientation and advances the position
+        reference towards the surface along \mbox{\(-n_s\)}. The state ends at
         the clearance transition, where the pose and the selected tool-point
-        offset used to initialise set-up are captured.
-  \item Contact set-up presses the selected tool point onto the surface while
+        offset used to initialise contact establishment are captured.
+  \item Operator-Controlled Hold Before Contact Establishment is optional. It
+        retains the clearance pose until continuation is confirmed.
+  \item Contact-Establishment presses the selected tool point onto the surface while
         the captured orientation is held. Contact-induced end-effector rotation
-        and the optional compliance-centre coupling act in this phase.
+        and the optional compliance-centre coupling act in this state.
+  \item Operator-Controlled Hold Before Grinding retains the reached contact
+        reference while the controller waits for confirmation.
   \item Grinding retains the normal press and superimposes a tangential
         motion. No reported run entered it.
 \end{itemize}
 
-A phase is a generated Cartesian reference together with an active impedance
-configuration, and the four fall into two gain groups. Tool orientation and
-surface approach share the first. Contact set-up uses the compliant contact
-gains and can activate the shifted virtual \abbr{CoC}, while grinding retains
-those source gains and returns to the decoupled Cartesian impedance.
+A controller state combines a generated Cartesian reference, an active
+impedance configuration, and its transition conditions. Tool Orientation and
+Surface Approach share the first stiffness-and-damping set. Contact
+Establishment uses the compliant contact set and can activate the shifted
+virtual \abbr{CoC}. Grinding retains those source matrices and returns to the
+decoupled Cartesian impedance. The operator-controlled hold remains within the
+contact-establishment branch and retains its reached reference.
 \mbox{\Cref{subsec:implementation_setup_phase}} gives the construction, and
 the numerical values are stated in \mbox{\Cref{ch:methodology}}. The
 subsections below follow the sequence in the order the controller executes it.
@@ -161,7 +188,7 @@ axis, so a fallback direction is applied when the configured one lies close to
 \mbox{\(n_s\)}. The resulting directions
 \mbox{\(t_1\)}, \mbox{\(t_2\)} and \mbox{\(n_s\)} are then used consistently
 for the descent direction \mbox{\(-n_s\)}, the surface-relative orientation
-command, the directional Cartesian gains, the compliance-centre definition
+command, the directional Cartesian stiffness and damping, the compliance-centre definition
 when a surface-fixed displacement is selected, and the surface-resolved
 quantities of the experimental evaluation.
 
@@ -188,7 +215,9 @@ by the rotation vector
 \end{equation}
 
 Its magnitude \mbox{\(\lVert\theta_{\mathrm{cmd}}\rVert\)} is the commanded
-offset angle. For a non-zero offset the corresponding unit rotation axis is
+offset angle relative to the configured surface reference. It is a controller
+input and is not the achieved tool--surface angle at contact entry. For a
+non-zero offset the corresponding unit rotation axis is
 
 \begin{equation}
 u_{\mathrm{cmd}}
@@ -248,7 +277,7 @@ The offsets are defined from the tool centre point, which coincides with the
 reported end-effector origin in this implementation,
 \mbox{\(p_{\mathrm{TCP}}=p_{\mathrm{EE}}\)}. During surface approach the four
 corners determine the minimum tool clearance and the contact reference used
-for set-up, as described in
+for contact establishment, as described in
 \mbox{\Cref{subsec:implementation_clearance_detection}}.
 
 \begin{figure}[H]
@@ -262,7 +291,7 @@ for set-up, as described in
 \subsection{Tool Orientation}
 \label{subsec:implementation_tool_orientation_phase}
 
-The tool-orientation phase holds the captured start position while the desired
+The Tool Orientation state holds the captured start position while the desired
 orientation is advanced towards the surface-relative target of
 \mbox{\Cref{eq:implementation_tool_normal_target}}, following a rate-limited
 interpolation from the captured start orientation. Its transition is evaluated
@@ -280,7 +309,7 @@ desired orientation throughout the approach that follows.
 Surface approach advances the TCP towards the plane along
 \mbox{\(-n_s\)}. Its scalar coordinate \mbox{\(s_{\mathrm{app}}(t)\)} is
 the commanded travel from the TCP position \mbox{\(p_{\mathrm{TCP,start}}\)}
-captured when the phase begins at \mbox{\(t_{\mathrm{app},0}\)},
+captured when the state begins at \mbox{\(t_{\mathrm{app},0}\)},
 
 \begin{equation}
 s_{\mathrm{app}}(t)
@@ -315,7 +344,7 @@ plane can lie well below the TCP, so the TCP height alone does not give the
 clearance the transition needs. The
 controller therefore evaluates the four corners of
 \mbox{\Cref{fig:face_feature_selection}} in every control cycle. Their
-positions and clearances also identify the point of the face that set-up should
+positions and clearances also identify the point of the face that contact establishment should
 press onto the surface.
 
 The base-frame position \mbox{\(p_i(t)\)} of tool-face corner \mbox{\(i\)} is
@@ -327,7 +356,7 @@ p_{\mathrm{TCP}}(t)+R_{\mathrm{EE}}(t)r_{i,\mathrm{EE}}.
 \label{eq:implementation_corner_position}
 \end{equation}
 
-Its signed clearance \mbox{\(h_i(t)\)} from the calibrated surface is
+Its signed clearance \mbox{\(h_i(t)\)} from the configured surface reference is
 
 \begin{equation}
 h_i(t)
@@ -353,7 +382,7 @@ h_{\mathrm{Tool}}(t)
 \label{eq:implementation_tool_clearance}
 \end{equation}
 
-The phase ends at the clearance transition, where
+The state ends at the clearance transition, where
 
 \begin{equation}
 h_{\mathrm{Tool}}(t)\leq h_{\mathrm{clearance}},
@@ -362,18 +391,18 @@ h_{\mathrm{Tool}}(t)\leq h_{\mathrm{clearance}},
 
 with \mbox{\(h_{\mathrm{clearance}}\)} the configured tool clearance of
 Table~\ref{tab:experimental_phase_parameters}. The approach trajectory is
-generated for the TCP, whereas the transition to set-up is determined from the
+generated for the TCP, whereas the transition to Contact Establishment is determined from the
 physical tool geometry. Since \mbox{\(h_{\mathrm{Tool}}\)} is the minimum
 clearance of the four tool-face corners,
 \mbox{\(h_{\mathrm{clearance}}\)} refers to the part of the rectangular
 tool face closest to the plane rather than to the TCP. For the reported value
 \mbox{\(h_{\mathrm{clearance}}=0.020\,\mathrm{m}\)}, this part of the
-tool face is \mbox{\(20\,\mathrm{mm}\)} above the calibrated plane at the
+tool face is \mbox{\(20\,\mathrm{mm}\)} above the configured reference plane at the
 transition. The criterion therefore provides the same specified tool clearance
 for different tool orientations and is purely geometric.
 
 At the clearance transition, the same four clearances determine the selected
-tool point used for set-up. A corner belongs to the selected index set
+tool point used for contact establishment. A corner belongs to the selected index set
 \mbox{\(\mathcal I_{\mathrm{sel}}\)} when its clearance differs from the
 closest corner by no more than the tool-point selection tolerance
 \mbox{\(\varepsilon_{\mathrm{sel}}\)}:
@@ -404,8 +433,10 @@ r_{\mathrm{Tool,EE}}
 \label{eq:implementation_leading_feature_average}
 \end{equation}
 
-The selected tool point \mbox{\(p_{\mathrm{Tool}}\)} is the geometric contact
-reference used during set-up. Its position is
+The selected tool point \mbox{\(p_{\mathrm{Tool}}\)} is the geometric reference
+used to construct the contact-establishment trajectory. It is not the instantaneous physical
+contact point, whose position was not measured and can change during contact.
+Its position is
 
 \begin{equation}
 p_{\mathrm{Tool}}=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{\mathrm{Tool,EE}}.
@@ -429,9 +460,9 @@ sits on that axis directly beneath the TCP.
 
 The minimum clearance \mbox{\(h_{\mathrm{Tool}}\)} determines when approach
 ends. The offset \mbox{\(r_{\mathrm{Tool,EE}}\)} determines which physical
-tool point the set-up reference uses. At the clearance transition the selected
+tool point the contact-establishment reference uses. At the clearance transition the selected
 offset is retained in end-effector coordinates and then held constant
-throughout set-up.
+throughout contact establishment.
 
 Three points remain distinct in this construction. The impedance law regulates
 the Cartesian reference point \mbox{\(p_{\mathrm{TCP}}\)}. The selected tool
@@ -442,17 +473,19 @@ changes with the tool orientation. The virtual \abbr{CoC} \mbox{\(p_c\)} of
 \mbox{\Cref{sec:centre_of_compliance}} is a software-defined impedance
 reference and carries no tool geometry.
 
-With the optional pre-set-up gate enabled, the captured pose is held until
-operator confirmation, and the set-up references are then captured from the
-current measured state.
+\subsection{Operator-Controlled Hold Before Contact Establishment}
+\label{subsec:implementation_pre_contact_hold}
 
-\subsection{Contact Set-Up}
+The optional hold state before contact establishment maintains the captured pose
+until continuation is confirmed. The contact-establishment references are then captured from
+the current measured state.
+
+\subsection{Contact Establishment}
 \label{subsec:implementation_setup_phase}
 \label{sec:surface_frame_gains}
 \label{subsec:phase_dependent_gain_construction}
-\label{subsec:inertia_scaled_damping_calculation}
 
-In the reported surface-contact runs, set-up begins directly at the clearance
+In the reported surface-contact runs, contact establishment begins directly at the clearance
 transition. Its Cartesian reference is constructed from the selected tool
 point and end-effector pose captured at that instant. The captured orientation
 \mbox{\(R_{\mathrm{EE,clearance}}\)} and TCP position
@@ -475,7 +508,7 @@ p_{\mathrm{Tool,clearance}}
 \label{eq:implementation_clearance_tool_point}
 \end{equation}
 
-Its orthogonal projection onto the calibrated surface plane defines the
+Its orthogonal projection onto the configured surface reference defines the
 surface reference point \mbox{\(p_{\mathrm{Tool},0}\)},
 
 \begin{equation}
@@ -488,7 +521,7 @@ p_{\mathrm{Tool},0}
 \mbox{\(p_{\mathrm{Tool},0}\)} is therefore the point on the calibrated
 plane directly below the selected tool point at the clearance transition.
 
-Set-up generates the contact press evaluated in the experiments. The scalar
+Contact establishment generates the press evaluated in the experiments. The scalar
 coordinate \mbox{\(s_{\mathrm{set}}(t)\)} gives the selected tool point's
 commanded displacement from \mbox{\(p_{\mathrm{Tool},0}\)} towards the surface.
 Its initial value is the negative signed surface coordinate of that point,
@@ -502,7 +535,7 @@ s_{\mathrm{set}}(t_{\mathrm{set},0})
 
 The selected point remains above the surface at the transition, so
 \mbox{\(s_{\mathrm{set}}(t_{\mathrm{set},0})<0\)}. This initial value makes
-the first set-up reference equal to \mbox{\(p_{\mathrm{Tool,clearance}}\)} and avoids
+the first contact-establishment reference equal to \mbox{\(p_{\mathrm{Tool,clearance}}\)} and avoids
 a position step.
 
 The coordinate advances at the configured press speed
@@ -533,14 +566,14 @@ p_{\mathrm{Tool},0}-s_{\mathrm{set}}(t)n_s.
 \mbox{\Cref{app:controller_parameters}} records the configured press speed and
 endpoint.
 
-Throughout set-up the desired orientation is
+Throughout contact establishment the desired orientation is
 
 \begin{equation}
 R_d(t)=R_{\mathrm{EE,clearance}}.
 \label{eq:implementation_setup_orientation_reference}
 \end{equation}
 
-The set-up trajectory is defined for the selected physical tool point, whereas
+The contact-establishment trajectory is defined for the selected physical tool point, whereas
 the Cartesian impedance law regulates the TCP. The desired tool-point position
 must therefore be converted to the corresponding TCP reference. At the
 retained orientation, their rigid-body relation is
@@ -576,79 +609,62 @@ projected tool point to the TCP target.
 \begin{figure}[H]
   \centering
   \input{figures/setup_reference.tex}
-  \caption{Set-up reference generation for the selected tool point.}
+  \caption{Contact-establishment reference generation.}
   \label{fig:setup_reference}
 \end{figure}
 
-No time-varying tipping trajectory is commanded during set-up. The held
+No time-varying tipping trajectory is commanded during contact establishment. The held
 orientation reference acts as a finite-stiffness rotational spring
 rather than as a rigid pose constraint, so finite rotational compliance permits
 contact-induced end-effector rotation. When the virtual \abbr{CoC} is enabled,
 the point-shifted matrices of
 \mbox{\Cref{sec:self_alignment_virtual_center}} additionally couple the
-translational press to the commanded moment; the same set-up position
+translational press to the commanded moment; the same contact-establishment position
 reference is used in both cases.
 
 The model-estimated external wrench supplied by libfranka is stored at the
 clearance transition for the optional termination condition. After the
-configured minimum duration, set-up can terminate when the estimated external
+configured minimum duration, contact establishment can terminate when the estimated external
 moment change exceeds the configured threshold, or through the independent
 timeout. Every reported contact run terminated through the timeout, so that
-threshold did not affect the reported results. With the pre-grinding gate
-active, the controller remains in the set-up branch while waiting for operator
-confirmation, and the coupled impedance stays active where it was selected.
+threshold did not affect the reported results. During the operator-controlled
+hold before grinding, the controller remains in the contact-establishment branch while waiting
+for confirmation. The coupled impedance stays active where it was selected.
 
 The impedance acting on that reference changes at the same transition, from
-the approach set to the contact set-up set. Three choices determine it: the
+the approach set to the contact-establishment set. Three choices determine it: the
 directional stiffness, the damping associated with those directions, and
 whether the impedance reference point is the TCP or a shifted virtual
-\abbr{CoC}. The controller constructs the directional gains first and applies
+\abbr{CoC}. The controller constructs the directional stiffness and damping first and applies
 the compliance-centre transformation afterwards.
 
 Directional Cartesian stiffness and damping are defined relative to the
 surface frame and transformed to the robot base frame by the congruence of
-\mbox{\Cref{sec:stiffness_damping_representation}}. Each phase of the sequence
-activates its own gain set in the calibrated surface frame, and the set-up
-translational frame remains configurable. Set-up and grinding draw on the same
-source stiffness and damping blocks; the phase transition changes the generated
-Cartesian reference and the choice between the coupled and decoupled branch. A phase gate can temporarily replace the active matrices with
-dedicated hold gains while the current reference is maintained. The numerical
-gains used in the experiments are given in \mbox{\Cref{ch:methodology}}.
+\mbox{\Cref{sec:stiffness_damping_representation}}. Each state of the sequence
+activates its own stiffness and damping set in the configured surface frame, and the contact-establishment
+translational frame remains configurable. Contact Establishment and Grinding draw on the same
+source stiffness and damping blocks; the state transition changes the generated
+Cartesian reference and the choice between the coupled and decoupled branch.
+An operator-controlled hold can temporarily apply dedicated hold stiffness and
+damping while maintaining the current reference. The numerical values used in
+the experiments are given in \mbox{\Cref{ch:methodology}}.
 
-For phase groups configured to use inertia-scaled damping, each directional
-damping coefficient follows from the paired stiffness entry
-\mbox{\(k_i\)} and the directional Cartesian inertia \mbox{\(\lambda_i(q)\)}
-of the same translational or rotational direction:
-
-\begin{equation}
-d_i(q)
-=
-2\zeta\sqrt{\lambda_i(q)k_i},
-\label{eq:implementation_inertia_scaled_damping}
-\end{equation}
-
-where \mbox{\(\zeta\)} is the configured directional damping factor. For a
-single decoupled direction with \mbox{\(\zeta=1\)}, this is the
-critical-damping coefficient of that local second-order model.
-
-The directional inertia is evaluated from the current joint-space mass matrix
-\mbox{\(M(q)\)} and Jacobian \mbox{\(J(q)\)} supplied by the libfranka model,
-and then resolved along the axes of the active gain block. The inverse
-\mbox{\(M(q)^{-1}\)} is never formed: an \mbox{\abbr{LDLT}} factorisation of
-\mbox{\(M(q)\)} solves the corresponding linear system instead, and a small
-regularisation term keeps the subsequent inversion conditioned. The result is
-cached by phase group and recalculated when that group is entered again, so
-the current robot configuration is reflected in the damping; configured
-coefficient bounds, validity checks, and the fallback damping matrix are
+For the states using inertia-scaled damping, the directional coefficients are
+calculated from \mbox{\Cref{eq:inertia_scaled_damping}}. The implementation
+obtains the joint-space inertia \mbox{\(M(q)\)} and Jacobian \mbox{\(J(q)\)}
+from the libfranka model. An \mbox{\abbr{LDLT}} factorisation solves the
+required system without explicitly forming \mbox{\(M(q)^{-1}\)}. The result is
+cached for each state group and recalculated when that group is entered again.
+Coefficient bounds, validity checks, and the fallback damping matrix are
 recorded in \mbox{\Cref{app:controller_parameters}}.
 
-The reported surface-contact sequence used inertia-scaled damping in the phase
+The reported surface-contact sequence used inertia-scaled damping in the state
 groups stated in \mbox{\Cref{ch:methodology}}.
 
 \label{sec:self_alignment_virtual_center}
 
 The point-shift formulation derived in
-\mbox{\Cref{sec:centre_of_compliance}} is implemented with the lever
+\mbox{\Cref{sec:centre_of_compliance}} is implemented with the displacement
 \mbox{\(r_{c,0}=p_c-p_{\mathrm{TCP}}\)}. Two definitions are supported,
 because the meaning of a fixed displacement depends on the frame that holds
 it.
@@ -658,15 +674,15 @@ base-frame vector \mbox{\(r_{c,0}=R_{\mathrm{EE}}r_{c,\mathrm{EE}}\)} is
 therefore updated from the measured end-effector orientation in every callback
 and rotates as the end effector rotates. A surface-fixed displacement is
 configured in surface coordinates, so
-\mbox{\(r_{c,0}=R_{\mathrm{surface}}r_{c,S}\)} stays constant during set-up,
+\mbox{\(r_{c,0}=R_{\mathrm{surface}}r_{c,S}\)} stays constant during contact establishment,
 the surface frame being fixed for one controller session. The configuration
 loader requires exactly one of the two definitions to be active when the
 virtual centre is enabled, and rejects a parameter set selecting both or
-neither. The two definitions are compared experimentally in
-\mbox{\Cref{app:supporting_contact_checks}}.
+neither. Only the tool-fixed definition in end-effector coordinates was used
+in the reported experiments.
 
 The source translational and rotational matrices are assembled into
-block-diagonal spatial gains at \mbox{\(p_c\)}, and the same congruence is
+block-diagonal spatial stiffness and damping at \mbox{\(p_c\)}, and the same congruence is
 applied independently to stiffness and damping:
 
 \begin{equation}
@@ -680,27 +696,35 @@ D_{\mathrm{TCP}}
 
 For a tool-fixed displacement the shifted base-frame matrices are updated
 whenever the measured end-effector orientation changes, whereas a
-surface-fixed displacement leaves them constant as long as the source gains do
+surface-fixed displacement leaves them constant as long as the source matrices do
 not change. Setting \mbox{\(r_{c,0}=0\)} makes the adjoint the identity and
 returns the decoupled block-diagonal form.
 
-During set-up this point-shifted impedance allows the commanded normal press
+During contact establishment this point-shifted impedance allows the commanded normal press
 to contribute to the rotational response. The influence of the
 compliance-centre position on that response is evaluated experimentally in
 \mbox{\Cref{ch:results_discussion}}. The coupled branch is used only in the
-controller modes configured for a virtual \abbr{CoC}; the cases that used it
+controller states configured for a virtual \abbr{CoC}; the cases that used it
 are specified in \mbox{\Cref{ch:methodology}} and
 \mbox{\Cref{app:controller_parameters}}.
 
+
+\subsection{Operator-Controlled Hold Before Grinding}
+\label{subsec:implementation_pre_grinding_hold}
+
+The hold state begins when Contact Establishment satisfies its moment-change
+condition after the minimum duration, or when its timeout is reached. The
+controller retains the reached contact-establishment reference and waits for
+operator confirmation. Every reported surface-contact run ended in this state,
+and Grinding was not entered.
 
 \subsection{Grinding}
 \label{subsec:implementation_grinding_phase}
 \label{subsec:implementation_hold_guidance_modes}
 
-After set-up, the grinding phase retains the normal press and superimposes a
-smooth tangential motion using the decoupled impedance. No reported run entered
-this phase; the experimental evaluation therefore ends at the pre-grinding
-gate.
+After operator confirmation, the Grinding state retains the normal press and
+superimposes a smooth tangential motion using the decoupled impedance. No
+reported run entered this state.
 
 
 \section{Cartesian Pose Hold}
@@ -711,7 +735,7 @@ Cartesian pose hold captures the current end-effector pose at its entry instant
 \mbox{\(t_0\)} and uses the fixed references
 \mbox{\(p_d=p_{\mathrm{EE}}(t_0)\)} and
 \mbox{\(R_d=R_{\mathrm{EE}}(t_0)\)}. Its dedicated hold impedance is expressed
-in the base frame. Surface approach, clearance detection and set-up reference
+in the base frame. Surface Approach, clearance detection and contact-establishment reference
 generation take no part in it, and its reported trials used fixed hold damping
 rather than the inertia-scaled rule of
 \mbox{\Cref{subsec:implementation_setup_phase}}.
@@ -732,8 +756,8 @@ reference and Cartesian impedance are unchanged between them.
 The pose-hold study of \mbox{\Cref{sec:nullspace_hold_study}} compares four
 settings under one internally commanded disturbance. These settings are no
 null-space torque, projected damping, and singular-value conditioning at two
-commanded magnitudes. They do not correspond to the four modes one for one.
-The combined mode runs in the surface-contact sequence and was not compared in
+commanded magnitudes. They do not correspond to the four configurations one for one.
+The combined configuration runs in the surface-contact sequence and was not compared in
 pose hold. The disturbance, its timing and the evaluated quantities belong to
 \mbox{\Cref{sec:nullspace_hold_study}}.
 
@@ -789,8 +813,8 @@ the joint-torque callback.
 Experimental signals are stored during torque control in a preallocated
 in-memory ring buffer, so the callback performs no file access and grows no
 buffer dynamically. Each sampled row carries the measured state, the active
-reference, the calculated error and wrench, the controller phase, the
-secondary-controller state, and the returned joint torque. When the allocated
+reference, the calculated error and wrench, the controller state, the
+secondary-controller configuration, and the returned joint torque. When the allocated
 capacity is reached the write index wraps and new rows replace the oldest, which
 keeps the memory bounded while control continues. After the callback ends, the
 retained samples are written to the \mbox{\abbr{CSV}} file in chronological

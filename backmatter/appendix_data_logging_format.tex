@@ -1,7 +1,7 @@
 \chapter{Recorded Experimental Data}
 \label{app:recorded_data}
 \ReviewMark{green}{The appendix records the signals actually used in the
-evaluation and identifies the common calibrated plane used by the controller
+evaluation and identifies the common configured surface reference used by the controller
 and analysis.}
 
 The controller stores experimental signals in a preallocated ring buffer. This
@@ -9,21 +9,17 @@ avoids file access and dynamic buffer growth inside the
 \(1\,\mathrm{kHz}\) control callback. After the controller stops, the retained
 rows are written in chronological order to a CSV file.
 
-\section{Control Phases}
+\section{Control States}
 \ReviewMark{green}{The numeric phase values are mapped directly to their
 recorded state names.}
 
-The integer \texttt{phase} identifies the active part of the experiment:
+The source field \texttt{state} identifies the active controller state:
 \[
-\begin{array}{c|*{6}{>{\scriptstyle}c}}
-\texttt{phase} &0&1&2&3&4&5\\ \hline
-\text{state}&
-\texttt{approach\_orient}&
-\texttt{approach\_descend}&
-\texttt{set\_up}&
-\texttt{grind}&
-\texttt{hold}&
-\texttt{manual\_guide}.
+\begin{array}{c@{\quad}l@{\qquad}c@{\quad}l}
+0 & \texttt{tool\_orientation}       & 7 & \texttt{pre\_grinding\_hold} \\
+1 & \texttt{surface\_approach}       & 3 & \texttt{grinding} \\
+6 & \texttt{pre\_contact\_hold}     & 4 & \texttt{cartesian\_pose\_hold} \\
+2 & \texttt{contact\_establishment} & 5 & \texttt{manual\_guidance}
 \end{array}
 \]
 
@@ -52,7 +48,7 @@ Column group & Meaning \\
 \endfoot
 \bottomrule
 \endlastfoot
-\texttt{time}, \texttt{phase} &
+\texttt{time}, \texttt{state} &
 Run time and active control state.\\
 \texttt{p\_EE}, \texttt{p\_d} &
 Measured and desired TCP positions [m].\\
@@ -65,7 +61,7 @@ TCP position and projected surface reference captured at the clearance
 transition [m].\\
 \texttt{e\_p}, \texttt{e\_R}, \texttt{pdot},
 \texttt{pdot\_d}, \texttt{omega} &
-Cartesian errors and velocities; during set-up \texttt{e\_R} is referred to
+Cartesian errors and velocities; during Contact Establishment \texttt{e\_R} is referred to
 the orientation held from the clearance transition.\\
 \texttt{angular\_deviation\_deg} &
 Pose-based alignment error
@@ -82,9 +78,9 @@ The same angular deviation resolved on \(t_1\), \(t_2\) and \(n_s\)
 tool point, \(p_{\mathrm{Tool}}-p_c\), in the base frame [m]. Written for
 every run, including \(r_c=0\).\\
 \texttt{t\_align} &
-Time from the start of set-up at which the deviation first settled inside the
+Time from the start of Contact Establishment at which the deviation first settled inside the
 configured tolerance [s], negative until then. Observed only; it does not end
-the phase.\\
+the state.\\
 \texttt{f}, \texttt{m} &
 Commanded Cartesian force [N] and moment [N\,m].\\
 \texttt{external\_force}, \texttt{external\_moment} &
@@ -97,7 +93,7 @@ External-wrench values captured at the clearance transition.\\
 \texttt{moment\_after\_contact} &
 The model-estimated wrench with those reference values already subtracted.\\
 \texttt{push} &
-Set-up penetration reference or grind preload retained after set-up [m].\\
+Contact-establishment penetration reference or grinding preload retained afterwards [m].\\
 \texttt{nullspace\_mode}, \texttt{sigma\_current} &
 Selected null-space law and current smallest singular value \(\sigma_{\min}\).\\
 \texttt{sigma\_plus}, \texttt{sigma\_minus},\newline
@@ -112,7 +108,7 @@ Projected joint velocity \(\dot q_{\mathrm{null}}\) [rad/s].\\
 Singular-value torque \(\tau_\sigma\) and total null-space torque
 \(\tau_{\mathrm{null}}\) [N\,m].\\
 \texttt{nullspace\_damping} &
-Active projected damping gain [N\,m\,s/rad].\\
+Active projected damping coefficient [N\,m\,s/rad].\\
 \texttt{disturbance\_scale},
 \texttt{disturbance\_force\_}\newline\texttt{base\_x..z},
 \texttt{disturbance\_}\newline\texttt{point\_base\_x..z} &

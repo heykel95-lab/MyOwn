@@ -14,7 +14,7 @@ with a white face, a horizontal grid, and no dashed line anywhere.
   G  the centre swept along the tool axis
   H  the same positions at half the commanded offset
 
-Every case uses the signed set-up rotation about the commanded tangent. This
+Every case uses the signed contact-establishment rotation about the investigated tangent. This
 controller-response metric does not depend on the reconstructed tool normal or
 its uncertain absolute zero.
 """
@@ -38,7 +38,7 @@ from figure_style import (apply_style, reference_line,  # noqa: E402
 
 apply_style()
 
-ROTATION_LABEL = ("Set-Up Rotation,\n"
+ROTATION_LABEL = ("Contact-Establishment Rotation,\n"
                   r"$\gamma_{t_i}$ [$^\circ$]")
 
 # Every bar chart in the thesis takes the palette blue, the same one the line
@@ -47,7 +47,7 @@ ROTATION_LABEL = ("Set-Up Rotation,\n"
 BAR_FILL_BLUE = SERIES_BLUE
 
 # The four groups of the sweep, in the order they are drawn. Their legend
-# labels name the commanded orientation-offset condition.
+# labels name the achieved pose-based initial condition.
 GROUPS = [
     ("P2_t1_pos", "t1"),
     ("P2_t1_neg", "t1"),
@@ -97,19 +97,22 @@ def tag(position):
     return f"{'m' if position < 0 else 'p'}{abs(position):03d}"
 
 
-def command_label(groups, runs, axis, linebreak=False):
-    """Name a series by its commanded orientation-offset condition."""
-    del groups
+def initial_deviation_label(groups, runs, axis, linebreak=False):
+    """Name a series by its mean pose-based initial angular deviation."""
     separator = "\n" if linebreak else " "
     tangent = "t_1" if axis == "t1" else "t_2"
-    sign = "-" if any("_neg_" in run for run in runs) else "+"
-    magnitude = 5 if all(run.startswith("P5_mag_") for run in runs) else 10
-    return (f"Commanded Offset,{separator}"
-            f"$\\theta_{{{tangent}}}={sign}{magnitude}^\\circ$")
+    key = f"deviation_before_{axis}"
+    values = [stat(groups, run, key)[0] for run in runs
+              if stat(groups, run, key) is not None]
+    if not values:
+        return f"Initial Deviation About ${tangent}$"
+    value = -statistics.mean(values)
+    return (f"Initial Deviation,{separator}"
+            f"$\\theta_{{0,{tangent}}}={value:+.2f}^\\circ$")
 
 
-def stiffness_label(case, axis):
-    """Name a stiffness series by its rotation axis and the varied component.
+def stiffness_label(case, axis, groups, runs):
+    """Name a stiffness series by its axis, varied component, and entry angle.
 
     The component that is varied is perpendicular to the commanded rotation
     axis, so naming both in the legend is what makes that relation visible.
@@ -119,11 +122,21 @@ def stiffness_label(case, axis):
         entry = f"K_{{R,{tangent}}}"
     else:
         entry = "K_{p,t_2}" if axis == "t1" else "K_{p,t_1}"
-    return f"Rotation About ${tangent}$, ${entry}$"
+    key = f"deviation_before_{axis}"
+    values = [-stat(groups, run, key)[0] for run in runs
+              if stat(groups, run, key) is not None]
+    if values:
+        low, high = min(values), max(values)
+        angle = (f"{statistics.mean(values):.2f}"
+                 if high - low < 0.005
+                 else f"{low:.2f}\\text{{--}}{high:.2f}")
+        return (f"About ${tangent}$, ${entry}$\n"
+                f"$\\theta_{{0,{tangent}}}={angle}^\\circ$")
+    return f"About ${tangent}$, ${entry}$"
 
 
 def sweep(groups, prefix, positions, key):
-    """Return positions and signed set-up-rotation statistics for one group."""
+    """Return positions and signed contact-rotation statistics for one group."""
     x, y, err = [], [], []
     for position in positions:
         value = stat(groups, f"{prefix}_{tag(position)}", key)
@@ -213,7 +226,7 @@ def main():
         value = stat(groups, run, f"rotation_{axis}")
         if value is None:
             continue
-        labels.append(command_label(groups, [run], axis, linebreak=True))
+        labels.append(initial_deviation_label(groups, [run], axis, linebreak=True))
         values.append(value[0])
         errors.append(value[1])
     ax.bar(range(len(values)), values, yerr=errors, capsize=3,
@@ -250,7 +263,7 @@ def main():
                 runs.append(run)
             if x:
                 entries.append((np.array(x), np.array(y), np.array(err),
-                                stiffness_label(case, axis)))
+                                stiffness_label(case, axis, groups, runs)))
         if entries:
             draw_sweep(entries, xlabel, out(name),
                        ylabel=ROTATION_LABEL)
@@ -261,15 +274,15 @@ def main():
         x, y, err = sweep(groups, prefix, POSITIONS, f"rotation_{axis}")
         if len(x):
             runs = [f"{prefix}_{tag(position)}" for position in x]
-            entries.append((x, y, err, command_label(groups, runs, axis)))
+            entries.append((x, y, err, initial_deviation_label(groups, runs, axis)))
     # Four entries make this legend taller than the others, and the black
     # series runs flat under it from -10 mm on, so the room has to come from
     # above the data rather than from a symmetric margin.
     draw_sweep(entries, "Signed tangential CoC position [mm]",
                out("MAIN_E_sign.pdf"), figsize=(5.8, 3.8), top_headroom=0.45)
 
-    # F -- reported frame-definition comparison at zero and +10 degrees.
-    commands = ["none", r"$+10^\circ$ about $t_1$"]
+    # F -- reported frame-definition comparison at two achieved entry angles.
+    commands = [r"$+0.76^\circ$", r"$+9.30^\circ$ about $t_1$"]
     tool = np.array([-0.06, 7.87])
     tool_sd = np.array([0.01, 0.01])
     surface = np.array([-1.05, 0.13])
@@ -285,8 +298,8 @@ def main():
     reference_line(ax)
     ax.set_xticks(x)
     ax.set_xticklabels(commands)
-    ax.set_xlabel(r"Commanded Orientation Offset, $\theta_{t_1}$ [$^\circ$]")
-    ax.set_ylabel("Set-Up Rotation About $t_1$,\n"
+    ax.set_xlabel(r"Pose-Based Initial Angular Deviation, $\theta_{0,t_1}$ [$^\circ$]")
+    ax.set_ylabel("Contact-Establishment Rotation About $t_1$,\n"
                   r"$\gamma_{t_1}$ [$^\circ$]")
     ax.legend(loc="upper left")
     fig.tight_layout()
@@ -306,7 +319,7 @@ def main():
         x, y, err = x[order], y[order], err[order]
     runs = [f"P3_axis_{tag(position)}" for position in POSITIONS if position]
     runs.append("P2_t1_pos_p000")
-    draw_sweep([(x, y, err, command_label(groups, runs, "t1"))],
+    draw_sweep([(x, y, err, initial_deviation_label(groups, runs, "t1"))],
                # No surface-frame component symbol applies here: the
                # displacement is along the tool axis, so the words stay.
                "Tool-Axis CoC Position [mm]",
@@ -327,7 +340,7 @@ def main():
             runs.append(prefix)
         if x:
             entries.append((np.array(x), np.array(y), np.array(err),
-                            command_label(groups, runs, axis)))
+                            initial_deviation_label(groups, runs, axis)))
     for axis in ("t1", "t2"):
         x, y, err, runs = [], [], [], []
         for position in (0, 40):
@@ -341,7 +354,7 @@ def main():
             runs.append(run)
         if x:
             entries.append((np.array(x), np.array(y), np.array(err),
-                            command_label(groups, runs, axis)))
+                            initial_deviation_label(groups, runs, axis)))
     draw_sweep(entries, r"Tangential CoC Position, $r_{c,t}$ [mm]",
                out("MAIN_H_magnitude.pdf"), figsize=(5.8, 3.8), headroom=0.75)
 

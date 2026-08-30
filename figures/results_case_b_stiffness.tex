@@ -1,0 +1,27 @@
+% Case-B rotational-stiffness comparison. Entry-angle ranges are the achieved
+% pose-based conditions across the three stiffness settings.
+\begin{tikzpicture}
+\begin{axis}[
+    width=12.5cm, height=7.0cm,
+    xmin=2, xmax=53, ymin=-4, ymax=10,
+    xtick={5,15,50},
+    ytick={-3,0,3,6,9},
+    grid=major,
+    grid style={gray!25, very thin},
+    tick label style={font=\footnotesize},
+    label style={font=\footnotesize},
+    xlabel={Rotational Stiffness, \(K_{R,t_i}\) [N\,m/rad]},
+    ylabel={Contact-Establishment Rotation, \(\gamma_{t_i}\) [\(^\circ\)]},
+    legend style={font=\footnotesize, draw=gray!50, fill=white,
+                  cells={anchor=west}},
+    legend pos=north east,
+    every axis plot/.append style={thick, mark size=2.3pt},
+  ]
+\addplot[black, mark=o, error bars/.cd, y dir=both, y explicit] coordinates {
+  (5,7.57) +- (0,0.01) (15,7.29) +- (0,0.01) (50,2.73) +- (0,0.03)};
+\addlegendentry{About \(t_1\), \(\theta_{0,t_1}=9.31\text{--}9.32^\circ\)}
+\addplot[blue!55!black, mark=square, error bars/.cd, y dir=both, y explicit] coordinates {
+  (5,-1.63) +- (0,0.17) (15,-1.52) +- (0,0.31) (50,-0.48) +- (0,0.03)};
+\addlegendentry{About \(t_2\), \(\theta_{0,t_2}=10.02\text{--}10.05^\circ\)}
+\end{axis}
+\end{tikzpicture}

@@ -2,23 +2,24 @@
 \label{ch:results_discussion}
 
 The surface-contact experiments evaluate how the controller parameters
-influence the end-effector rotation generated during contact set-up. The
-primary response quantity is the signed set-up response
+influence the end-effector rotation generated during Contact Establishment. The
+primary response quantity is the signed contact-establishment response
 \mbox{\(\gamma_{t_i}\)} about the investigated surface tangent
 \mbox{\(t_i\)}, defined in
 \mbox{\Cref{sec:experimental_evaluation}}. It represents the
-end-of-set-up orientation change relative to the orientation reference held
-through set-up. Its sign is chosen so that a response reducing a commanded
-offset carries the same sign as that offset, and
+end-of-contact-establishment orientation change relative to the orientation reference held
+through contact establishment. Its sign is chosen so that a response reducing the initial
+angular deviation carries the same sign as that deviation, and
 \mbox{\(\lvert\gamma_{t_i}\rvert\)} is then the size of the correction.
 
-The commanded tool orientation offset \mbox{\(\theta_{t_i}\)} defines the
-initial experimental condition, whereas \mbox{\(\gamma_{t_i}\)} is the
-measured response. The main response
-figures therefore report \mbox{\(\gamma_{t_i}\)}, while the corresponding
-numerical values are provided in \mbox{\Cref{app:additional_plots}}. The
-pose-based alignment estimate and the TCP-height flatness classification are
-retained only as supporting checks in the same appendix.
+The pose-based initial angular deviation \mbox{\(\theta_{0,t_i}\)} defines
+the achieved experimental condition. The commanded tool orientation offset
+\mbox{\(\theta_{t_i}\)} is the controller input that generates it, whereas
+\mbox{\(\gamma_{t_i}\)} is the measured response. The main response figures
+therefore identify each condition by \mbox{\(\theta_{0,t_i}\)} and report
+\mbox{\(\gamma_{t_i}\)}. The corresponding numerical values are provided in
+\mbox{\Cref{app:additional_plots}}. The TCP-height flatness classification is
+retained only as a supporting check in the same appendix.
 
 \Added{Each contact parameter setting was repeated three times. The comparative
 response values in Cases~A--D are the arithmetic means over those repetitions,
@@ -26,18 +27,19 @@ and the corresponding sample standard deviations are given in
 \mbox{\Cref{app:additional_plots}}. Repetition scatter is summarised once for
 each main case below. Within these cases, individual values are discussed only
 where their spread is relevant to the interpretation. The Case-D comparison
-additionally carries error bars.} The preceding orientation phase terminated with a finite tracking
+additionally carries error bars.} The preceding Tool Orientation state terminated with a finite tracking
 tolerance, so the initial angular magnitude differed slightly from the
-commanded value. A commanded \mbox{\(+10^\circ\)} offset reached approximately
-\mbox{\(9.3^\circ\)} about \mbox{\(t_1\)} and \mbox{\(10.0^\circ\)} about
-\mbox{\(t_2\)}. The commanded offset identifies each experimental condition.
+commanded value. At the TCP, the \mbox{\(+10^\circ\)} input produced mean
+initial deviations of \mbox{\(+9.31^\circ\)} about \mbox{\(t_1\)} and
+\mbox{\(+10.05^\circ\)} about \mbox{\(t_2\)}. The reversed input produced
+\mbox{\(-9.41^\circ\)} and \mbox{\(-9.55^\circ\)}, respectively.
 
 In the response figures that follow, \mbox{\(\gamma_{t_i}\)} carries the
-same sign as the commanded offset when the response reduces that offset, and
+same sign as \mbox{\(\theta_{0,t_i}\)} when the response reduces that deviation, and
 its magnitude is the size of the correction. A response of the opposite sign to
-the commanded offset moved the end effector further from the flat orientation.
-Both signs therefore have to be read against the commanded offset of the
-condition, which \mbox{\Cref{subsec:experimental_supporting_metrics}} defines.
+the initial deviation moved the end effector further from the configured flat
+orientation. Both signs therefore have to be read against the achieved
+condition, which \mbox{\Cref{subsec:initial_angular_deviation}} defines.
 
 \section{Main Surface-Contact Results}
 \label{sec:results_main_contact_cases}
@@ -46,8 +48,8 @@ The cases are reported in the order in which they constrain the choice of
 compliance-centre position. The TCP-centred reference is reported in Case~A,
 followed by the stiffness sensitivities in Cases~B and~C. In Case~D the
 tangential compliance-centre displacement was tested over both surface tangents
-and both signs of the commanded orientation offset. The orientation-magnitude,
-definition-frame, tool-axis, and intermediate-direction comparisons are
+and both signs of the pose-based initial angular deviation. The angular-magnitude,
+tool-axis, and intermediate-direction comparisons are
 reported as supporting checks in
 \mbox{\Cref{app:supporting_contact_checks}}.
 
@@ -66,21 +68,22 @@ all Case-A settings in \mbox{\Cref{tab:results_case_a}}.}
 \begin{figure}[H]
 \centering
 \input{figures/results_case_a_bars.tex}
-\caption{Measured set-up rotation with the CoC at the TCP.}
+\caption{Measured contact-establishment rotation with the CoC at the TCP.}
 \label{fig:results_case_a}
 \end{figure}
 
 With the \abbr{CoC} at the TCP, the measured response differs strongly between
-the two surface tangents. For the positive \mbox{\(10^\circ\)} conditions,
+the two surface tangents. For the positive initial-deviation conditions,
 \Cref{fig:results_case_a} gives \mbox{\(+7.57^\circ\)} about
 \mbox{\(t_1\)} and \mbox{\(-1.63^\circ\)} about \mbox{\(t_2\)}.
-Reversing the commanded orientation changes the response to
+Reversing the initial angular deviation changes the response to
 \mbox{\(-10.83^\circ\)} and \mbox{\(-1.25^\circ\)}, respectively.
 The figure shows all five baseline conditions.
 
-The condition without a commanded orientation offset gave
+The nominal zero-offset input produced a pose-based initial deviation of
+\mbox{\(0.74^\circ\)} and gave
 \mbox{\(-0.97^\circ\)} about \mbox{\(t_1\)}. Contact produced end-effector
-rotation from the flat target orientation as well. The commanded
+rotation from the flat target orientation as well. The other
 conditions are read against that non-zero response rather than against zero.
 The TCP-centred condition provides the reference against which the stiffness
 and compliance-centre-position variations are compared.
@@ -99,8 +102,8 @@ all Case-B settings in \mbox{\Cref{tab:results_case_b}}.}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.85\textwidth]{figures/MAIN_B_KR.pdf}
-\caption{Measured set-up rotation by rotational stiffness.}
+\input{figures/results_case_b_stiffness.tex}
+\caption{Measured contact-establishment rotation by rotational stiffness.}
 \label{fig:results_case_b}
 \end{figure}
 
@@ -125,8 +128,8 @@ all Case-C settings in \mbox{\Cref{tab:results_case_c}}.}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.85\textwidth]{figures/MAIN_C_KP.pdf}
-\caption{Measured set-up rotation by cross-axis translational stiffness.}
+\input{figures/results_case_c_stiffness.tex}
+\caption{Measured contact-establishment rotation by cross-axis translational stiffness.}
 \label{fig:results_case_c}
 \end{figure}
 
@@ -142,7 +145,7 @@ for the directional difference in the baseline response.
 \label{sec:results_case_d}
 
 In Case~D the tangential position of the \abbr{CoC} was varied while the
-Cartesian gains remained unchanged. For each rotation axis, the centre was
+Cartesian stiffness and damping remained unchanged. For each rotation axis, the centre was
 moved along the surface tangent perpendicular to that axis. The TCP-centred
 condition is included as the zero-position reference.
 \Added{Repetition scatter was small at most Case-D settings, and
@@ -153,7 +156,7 @@ appear below rather than summarised by a single bound.}
 \begin{figure}[H]
 \centering
 \input{figures/results_case_d_panels.tex}
-\caption{Set-up rotation by tangential CoC position (mean \(\pm\) SD).}
+\caption{Contact-establishment rotation by tangential CoC position (mean \(\pm\) SD).}
 \label{fig:results_case_d}
 \end{figure}
 
@@ -194,31 +197,33 @@ recorded repetition of its centre position.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.85\textwidth]{figures/MAIN_D_wrench.pdf}
-\caption{Measured set-up rotation, commanded normal force, and commanded TCP
+\input{figures/results_case_d_wrench_relabel.tex}
+\caption{Measured contact-establishment rotation, commanded normal force, and commanded TCP
 moment for three tangential CoC positions.}
 \label{fig:results_case_d_wrench}
 \end{figure}
 
-\Cref{fig:results_case_d_wrench} places the set-up rotation
+\Cref{fig:results_case_d_wrench} places the contact-establishment rotation
 \mbox{\(\gamma_{t_1}\)}, the commanded normal force
 \mbox{\(F_n\)}, and the commanded TCP moment
 \mbox{\(M_{t_1}\)} on a common time axis for three
 centre positions. Every condition shown carries a commanded orientation offset
-of \mbox{\(+10^\circ\)} about \mbox{\(t_1\)}. At \mbox{\(-40\)}, \mbox{\(0\)}, and
+of \mbox{\(+10^\circ\)} about \mbox{\(t_1\)}, corresponding to a mean
+pose-based initial deviation of approximately \mbox{\(+9.32^\circ\)}. At
+\mbox{\(-40\)}, \mbox{\(0\)}, and
 \mbox{\(+40\,\mathrm{mm}\)}, the commanded normal force settles in a similar
 range of approximately \mbox{\(-77\)} to \mbox{\(-82\,\mathrm{N}\)}, while the
 commanded TCP moment about \mbox{\(t_1\)} settles at approximately
 \mbox{\(+3.28\)}, \mbox{\(+0.66\)}, and \mbox{\(-2.44\,\mathrm{N\,m}\)}. The
 outer positions therefore produce moments of similar magnitude and opposite
-sign while their set-up rotations differ by \mbox{\(7.73^\circ\)}. The
-difference in set-up rotation is therefore associated primarily with the moment
+sign while their contact-establishment rotations differ by \mbox{\(7.73^\circ\)}. The
+difference in contact-establishment rotation is therefore associated primarily with the moment
 generated by the displaced impedance reference rather than with a substantial
 change in the normal pressing force.
 
 The commanded moment and the reported rotation carry opposite signs here.
 \mbox{\(\gamma_{t_1}\)} is the rotation from the measured end-effector
-orientation back to the reference held through set-up, as
+orientation back to the reference held through contact establishment, as
 \mbox{\Cref{subsec:experimental_supporting_metrics}} defines it. Its sign is
 therefore opposite to that of the physical rotation. The alignment-directed
 response at \mbox{\(+40\,\mathrm{mm}\)} appears as a positive
@@ -244,11 +249,11 @@ the direction-independent fixed reference among the tested positions. A displace
 centre provides greater condition-specific rotational authority where the
 required direction is known.
 
-The grinding phase returns to the decoupled impedance branch described in
-\mbox{\Cref{subsec:implementation_grinding_phase}}. This phase structure is
-consistent with removing the direction-selective coupling after set-up. It is
+The Grinding state returns to the decoupled impedance branch described in
+\mbox{\Cref{subsec:implementation_grinding_phase}}. This state structure is
+consistent with removing the direction-selective coupling after contact establishment. It is
 an implementation property rather than an experimental result, because the
-reported runs ended at the pre-grinding gate.
+reported runs ended in the operator-controlled hold before grinding.
 
 Across Cases~A--D, tangential CoC position produced the largest measured
 response variation among the tested controller parameters.

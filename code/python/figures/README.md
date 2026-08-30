@@ -20,16 +20,18 @@ comparing it against the file in `figures/`.
 | `MAIN_C_KP.pdf` | `MAIN_B_KP.pdf` | `make_coc_figures.py` |
 | `MAIN_H_direction.pdf` | `MAIN_C_direction.pdf` | `make_coc_figures.py` |
 | `MAIN_D_sign.pdf` | `MAIN_E_sign.pdf` | `make_coc_figures.py` |
-| `MAIN_E_frame.pdf` | `MAIN_F_frame.pdf` | `make_coc_figures.py` |
 | `MAIN_D_wrench.pdf` | `MAIN_E_wrench.pdf` | `plot_coc_case.py` |
 | `MAIN_D_diagnostics.pdf` | `MAIN_E_diagnostics.pdf` | `plot_setup_diagnostics.py` |
 | `MAIN_DQ_metric_comparison.pdf` | same name | `compare_angle_metrics.py` |
+| `MAIN_DQ_metric_summary.pdf` | same name | `compare_angle_metrics.py --summary-only` |
 | `MAIN_NS_nullspace_automatic.pdf` | same name | `make_nullspace_figure.py` |
 
 `make_coc_figures.py` also writes `MAIN_D_contact.pdf`, `MAIN_G_toolaxis.pdf`
 and `MAIN_H_magnitude.pdf`, which are in `figures/` as `MAIN_A_contact.pdf`,
 `MAIN_F_toolaxis.pdf` and `MAIN_G_magnitude.pdf` but are no longer included by
-any chapter. `plot_angle_descent.py` writes `MAIN_DQ_descent.pdf`, which is in
+any chapter. It also writes `MAIN_F_frame.pdf`, retained in `figures/` as
+`MAIN_E_frame.pdf`; the corresponding definition-frame experiment is no
+longer reported. `plot_angle_descent.py` writes `MAIN_DQ_descent.pdf`, which is in
 `figures/` and is likewise no longer included; it is kept here so that every
 generated file in `figures/` has its generator.
 
@@ -40,6 +42,11 @@ positions and a moment about \(t_1\) of opposite sign — with the two remaining
 surface-frame components adding no distinction the thesis relies on. The file
 and `plot_setup_diagnostics.py` stay, so the generator is still here if the
 section is ever restored.
+
+The thesis includes `MAIN_DQ_metric_summary.pdf` in place of the older
+two-panel metric-comparison plot. The summary mode uses the archived derived
+metrics without requiring the absent raw time-series files and avoids the
+clipped label in the older figure.
 
 The four Chapter 5 figures drawn in `pgfplots` — the Case-A bars, the Case-D
 panels, the Case-D-against-Case-F comparison and the Case-G panels — have no

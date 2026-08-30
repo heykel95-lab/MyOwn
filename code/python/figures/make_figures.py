@@ -75,7 +75,7 @@ ALIGNMENT_IMPROVEMENT_LABEL = (
     r"$\theta_{\mathrm{initial}}-\theta_{\mathrm{final}}$ [$^\circ$]"
 )
 INITIAL_MISALIGNMENT_LABEL = (
-    r"Initial misalignment $\theta_{\mathrm{initial}}$ [$^\circ$]"
+    r"Initial angular deviation $\theta_{0,t_i}$ [$^\circ$]"
 )
 FINAL_MISALIGNMENT_LABEL = (
     r"Final misalignment $\theta_{\mathrm{final}}$ [$^\circ$]"
@@ -958,7 +958,7 @@ def fig_plane_validation(rows):
             )
 
     axes[0].set_ylabel("measured initial error [deg]")
-    axes[1].set_ylabel("residual after set-up [deg]")
+    axes[1].set_ylabel("residual after contact establishment [deg]")
     for ax in axes:
         ax.set_xticks(x_base)
         ax.set_xticklabels([definition[0] for definition in definitions])
@@ -1257,7 +1257,7 @@ def fig_c2_nullspace(rows):
 
 
 def fig_g2_convergence(rows):
-    """Did the set-up phase actually reach equilibrium?"""
+    """Did contact establishment actually reach equilibrium?"""
     sub = [r for r in rows if r["run_id"].startswith("G2_equilibrium")]
     if not sub:
         return None
@@ -1272,7 +1272,7 @@ def fig_g2_convergence(rows):
         buckets.setdefault(round(x), {"good": [], "bad": []})
         buckets[round(x)]["good" if not data_suspect(r) else "bad"].append(y)
     errorbar_from_buckets(ax, buckets, "final tip", "C0")
-    ax.set_xlabel("set-up phase duration [s]")
+    ax.set_xlabel("contact-establishment duration [s]")
     ax.set_ylabel("final tip angle [deg]")
     axis_legend(ax)
     ax.set_title("G2: is 4 s long enough to reach equilibrium?", fontsize=10)

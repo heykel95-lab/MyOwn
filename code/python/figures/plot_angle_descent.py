@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Draw the tool alignment falling from its commanded tilt during set-up.
+"""Draw the tool alignment during contact establishment.
 
   python3 analysis/plot_angle_descent.py [TRIAL=LABEL ...] [--out-dir DIR]
 
@@ -7,7 +7,7 @@ Each argument names an archived trial directory relative to experiments/results
 and the label it carries in the legend. Without arguments the two verification
 trials are drawn, which differ only in the compliance centre.
 
-The angle is the one between the tool axis and the calibrated plane, so its
+The angle is the one between the tool axis and the configured plane, so its
 zero is the plane itself and a curve can be read as how flat the tool ended.
 """
 
@@ -29,7 +29,7 @@ RESULTS = os.path.join(HERE, "..", "experiments", "results")
 
 apply_style()
 
-SETUP_PHASE = 2  # ControlPhase::kSetup
+CONTACT_ESTABLISHMENT_STATE = 2
 
 # Archives written before the rename carry the alignment_ column names.
 COLUMN_ALIASES = {
@@ -53,7 +53,7 @@ DEFAULT_TRIALS = [
 
 
 def load(trial):
-    """Return time from set-up entry and the tool-to-plane angle [s, deg]."""
+    """Return time from contact-establishment entry and the reference-relative angle."""
     matches = glob.glob(os.path.join(RESULTS, trial, "logs", "*.csv"))
     if not matches:
         raise SystemExit(f"no log csv under {trial}")
@@ -64,9 +64,9 @@ def load(trial):
             phase.append(float(row["phase"]))
             angle.append(column(row, "angular_deviation_deg"))
     time = np.array(time)
-    setup = np.array(phase) == SETUP_PHASE
-    t = time[setup]
-    return t - t[0], np.array(angle)[setup]
+    contact = np.array(phase) == CONTACT_ESTABLISHMENT_STATE
+    t = time[contact]
+    return t - t[0], np.array(angle)[contact]
 
 
 def main():
@@ -92,7 +92,7 @@ def main():
         print(f"{trial:24s} {angle[0]:5.2f} -> {angle[-1]:4.2f} deg")
 
     reference_line(ax)
-    ax.set_xlabel("Time from start of set-up [s]")
+    ax.set_xlabel("Time from contact-establishment entry [s]")
     ax.set_ylabel(r"Angular deviation [$^\circ$]")
     ax.set_ylim(bottom=-0.4)
     shared_legend(fig, [ax], ncol=2)

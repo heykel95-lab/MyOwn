@@ -95,13 +95,13 @@ q_{\mathrm{init}}={}&[
 \end{aligned}
 \]
 
-\section{Phase Sequence and Impedance}
+\section{State Sequence and Impedance}
 \ReviewMark{green}{The phase-specific gain frames and transition parameters
 reconcile the values stated across Chapters 3 and 4.}
 
 \begin{table}[H]
 \centering
-\caption{Phase and mode gains.}
+\caption{State and configuration stiffness and damping.}
 \label{tab:active_phase_gains}
 \small
 \begin{tabular}{@{}
@@ -109,7 +109,7 @@ reconcile the values stated across Chapters 3 and 4.}
 >{\raggedright\arraybackslash}p{0.40\textwidth}
 >{\raggedright\arraybackslash}p{0.28\textwidth}@{}}
 \toprule
-Phase / quantity & Active stiffness and frame & Configured damping \\
+State / quantity & Active stiffness and frame & Configured damping \\
 \midrule
 Approach translation &
   \([150,150,150]\,\mathrm{N/m}\), surface \([t_1,t_2,n_s]\) &
@@ -117,10 +117,10 @@ Approach translation &
 Approach rotation &
   \([180,180,90]\,\mathrm{N\,m/rad}\), surface \([t_1,t_2,n_s]\) &
   \([15,15,12]\,\mathrm{N\,m\,s/rad}\) \\
-Set-up translation &
+Contact Establishment translation &
   \([2000,2000,350]\,\mathrm{N/m}\), surface \([t_1,t_2,n_s]\) &
   \([10,10,175]\,\mathrm{N\,s/m}\) \\
-Set-up rotation &
+Contact-Establishment rotation &
   \([5,5,50]\,\mathrm{N\,m/rad}\), surface \([t_1,t_2,n_s]\) &
   \([10.01,10.01,10]\,\mathrm{N\,m\,s/rad}\) \\
 Hold translation &
@@ -141,7 +141,7 @@ The active timing and trajectory values are listed in
 
 \begin{table}[H]
 \centering
-\caption{Phase-transition and trajectory parameters.}
+\caption{State-transition and trajectory parameters.}
 \label{tab:active_phase_timing}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{@{}lll@{}}
@@ -161,15 +161,19 @@ Descent speed / maximum distance &
   \(0.1\,\mathrm{m/s}\), \(0.640\,\mathrm{m}\) \\
 Tool clearance, \(h_{\mathrm{clearance}}\) &
   \texttt{descend\_surface\_clearance} & \(0.020\,\mathrm{m}\) \\
-Set-up minimum time / timeout &
-  \texttt{setup\_min\_time}, \texttt{setup\_timeout} &
+Contact-establishment minimum time / timeout &
+  \texttt{contact\_establishment\_min\_time},
+  \texttt{contact\_establishment\_timeout} &
   \(2.0\,\mathrm{s}\), \(5.0\,\mathrm{s}\) \\
-Set-up moment-change threshold &
-  \texttt{setup\_moment\_threshold} & \(150\,\mathrm{N\,m}\) \\
-Set-up push speed / endpoint &
-  \texttt{setup\_push\_speed}, \texttt{setup\_push\_end} &
+Contact-establishment moment-change threshold &
+  \texttt{contact\_establishment\_moment\_threshold} &
+  \(150\,\mathrm{N\,m}\) \\
+Contact-establishment push speed / endpoint &
+  \texttt{contact\_establishment\_push\_speed},
+  \texttt{contact\_establishment\_push\_end} &
   \(0.080\,\mathrm{m/s}\), \(0.240\,\mathrm{m}\) in all surface-contact experiments \\
-Pre-grind gate & \texttt{pause\_before\_grind} & enabled \\
+Pre-contact hold & \texttt{enable\_pre\_contact\_hold} & disabled \\
+Pre-grinding hold & \texttt{enable\_pre\_grinding\_hold} & enabled \\
 \bottomrule
 \end{tabular}
 }
@@ -190,15 +194,15 @@ Pre-grind gate & \texttt{pause\_before\_grind} & enabled \\
 Quantity & Symbol / key & Value \\
 \midrule
 Approach damping factor & \(\zeta\) & \(1.9\) \\
-Set-up damping factor & \(\zeta\) & \(1.0\) \\
-Task-inertia regularisation & added to \(J(q)M(q)^{-1}J^\top(q)\) &
+Contact-establishment damping factor & \(\zeta\) & \(1.0\) \\
+Operational-space-inertia regularisation & added to \(J(q)M(q)^{-1}J^\top(q)\) &
   \(10^{-9}\) \\
 Maximum damping coefficient & \texttt{auto\_damping\_max} & \(400\) \\
 Lower bound from the configured matrices &
   \texttt{auto\_damping\_}\newline\texttt{min\_from\_manual} &
   \(0\); those matrices act as fallback only \\
-Reported contact phases using inertia-scaled damping & --- &
-  approach and set-up \\
+Reported contact states using inertia-scaled damping & --- &
+  Surface Approach and Contact Establishment \\
 Pose-hold inertia-scaled damping & \texttt{hold\_auto\_damping} &
   \(0\) in all twelve reported runs \\
 Pose-hold translational damping & \(D_p\) &
@@ -206,22 +210,18 @@ Pose-hold translational damping & \(D_p\) &
 Pose-hold rotational damping & \(D_R\) &
   \(8I_3\,\mathrm{N\,m\,s/rad}\) \\
 Coupled \(6\times6\) law & \texttt{use\_virtual\_}\newline\texttt{compliance\_center} &
-  set-up only, and only for displaced-centre conditions \\
+  Contact Establishment only, and only for displaced-centre conditions \\
 Displacement definition frame &
   \texttt{compliance\_center\_}\newline\texttt{in\_tool\_frame} &
-  tool-fixed, except the surface-fixed conditions of
-  \mbox{\Cref{sec:supporting_definition_frame}} \\
+  tool-fixed in all reported experiments \\
 Tool-fixed displacement & \texttt{compliance\_center\_}\newline\texttt{offset\_ee} &
   in end-effector axes \\
-Surface-fixed displacement & \texttt{compliance\_lever\_surface} &
-  in surface axes \([t_1,t_2,n_s]\) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Both configured displacements define \(r_c=p_c-p_{\mathrm{TCP}}\) and differ
-only in the frame their components are held constant in. The damping
-calculation and the compliance-centre transformation are described in
+The reported displacement defines \(r_c=p_c-p_{\mathrm{TCP}}\) in
+end-effector coordinates. The damping calculation and the compliance-centre transformation are described in
 \mbox{\Cref{subsec:implementation_setup_phase}}, and the tested displacement
 components are listed in \mbox{Table~\ref{tab:experimental_test_cases}} and
 \mbox{\Cref{app:supporting_contact_checks}}.

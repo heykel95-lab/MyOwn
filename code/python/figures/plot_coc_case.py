@@ -5,15 +5,15 @@
 
 Every case is read the same way, top to bottom:
 
-  1  set-up rotation   the signed current-to-reference rotation over set-up
-                       about the commanded surface tangent.
+  1  contact-establishment rotation   the signed current-to-reference rotation
+                       over contact establishment about the investigated tangent.
   2  normal force      the controller-commanded press along n_s.
   3  alignment moment  the controller-commanded moment about the commanded
                        surface tangent.
 
-The set-up rotation is the same controller-response quantity used by every
+The contact-establishment rotation is the same controller-response quantity used by every
 case-comparison plot. It comes from the robot orientation error referenced at
-the clearance transition and is resolved on the calibrated surface axes. It therefore has
+the clearance transition and is resolved on the configured surface axes. It therefore has
 no absolute flat-tool zero and is not affected by play between tool and
 gripper.
 
@@ -48,7 +48,7 @@ RESULTS = os.path.join(HERE, "..", "experiments", "results")
 
 apply_style()
 
-SETUP_PHASE = 2  # ControlPhase::kSetup
+CONTACT_ESTABLISHMENT_STATE = 2
 
 AXIS_COLUMN = {"t1": 0, "t2": 1, "n": 2}
 AXIS_LABEL = {"t1": r"$t_1$", "t2": r"$t_2$", "n": r"$n$"}
@@ -68,7 +68,7 @@ def curve_label(detail):
 
 
 def load(results, trial, axis):
-    """Return time, set-up rotation, commanded force and commanded moment."""
+    """Return time, contact-establishment rotation, commanded force and moment."""
     directory = os.path.join(results, trial)
     logs = glob.glob(os.path.join(directory, "logs", "*.csv"))
     if not logs:
@@ -77,18 +77,18 @@ def load(results, trial, axis):
     frame = surface_frame(float(params["surface_tilt_x_deg"]),
                           float(params["surface_tilt_y_deg"]))
     normal = frame[:, 2]
-    tilt_axis = frame[:, AXIS_COLUMN[axis]]
+    tangent_axis = frame[:, AXIS_COLUMN[axis]]
 
     with open(logs[0]) as f:
         rows = [r for r in csv.DictReader(f)
-                if float(r["phase"]) == SETUP_PHASE]
+                if float(r["phase"]) == CONTACT_ESTABLISHMENT_STATE]
 
     time, rotation, fn_cmd, m_cmd = [], [], [], []
     for row in rows:
         time.append(float(row["time"]))
-        rotation.append(float(np.degrees(vec(row, "e_R")) @ tilt_axis))
+        rotation.append(float(np.degrees(vec(row, "e_R")) @ tangent_axis))
         fn_cmd.append(float(normal @ vec(row, "f")))
-        m_cmd.append(float(tilt_axis @ vec(row, "m")))
+        m_cmd.append(float(tangent_axis @ vec(row, "m")))
 
     t = np.array(time)
     return (t - t[0], np.array(rotation), np.array(fn_cmd), np.array(m_cmd))
@@ -116,7 +116,7 @@ def main():
               f"Fn_cmd {fn_cmd[-1]:7.1f} N | M_cmd {m_cmd[-1]:+6.2f} N m")
 
     sub = AXIS_SUBSCRIPT[args.axis]
-    labels = [rf"Set-Up Rotation About ${sub}$," "\n"
+    labels = [rf"Contact-Establishment Rotation About ${sub}$," "\n"
               rf"$\gamma_{{{sub}}}$ [$^\circ$]",
               "Commanded Normal Force,\n" r"$F_n$ [N]",
               rf"Commanded TCP Moment About ${sub}$," "\n"

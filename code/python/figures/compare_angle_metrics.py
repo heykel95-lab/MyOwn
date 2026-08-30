@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
-"""Compare measured set-up rotation with a pose-based alignment estimate.
+"""Compare contact-establishment rotation with a pose-based alignment estimate.
 
   python3 analysis/compare_angle_metrics.py [--trial DIR] [--out-dir DIR]
 
 Two quantities describe the same event and are obtained from different data.
 
-  alignment  the angle between the tool axis and the calibrated plane. It has
+  alignment  the angle between the tool axis and the configured plane. It has
              an absolute zero, so a curve can be read as "flat" or "not flat",
              but it carries the tool-axis and plane calibration with it.
 
-  rotation   the motion from the orientation held at the start of set-up. It
+  rotation   the motion from the orientation held at contact-establishment entry. It
              comes from joint angles alone, so no tool-normal calibration
              enters, but it only says how far the end effector turned.
 
 The left panel overlays them for one trial, with the deviation subtracted from
-the alignment at the beginning of set-up so both start at the same value. The right panel puts
+the alignment at contact-establishment entry so both start at the same value. The right panel puts
 the magnitude of the alignment gain against the deviation for every archived
 trial, split by whether the trial improved or worsened the alignment.
 
@@ -45,7 +45,7 @@ from figure_style import (apply_style, reference_line, shared_legend,  # noqa: E
 
 apply_style()
 
-SETUP_PHASE = 2  # ControlPhase::kSetup
+CONTACT_ESTABLISHMENT_STATE = 2
 
 # Archives written before the rename carry the alignment_ column names.
 COLUMN_ALIASES = {
@@ -64,7 +64,7 @@ def column(row, name):
 
 
 def load_trial(trial_dir):
-    """Return set-up time, alignment angle, and angular deviation for a trial."""
+    """Return contact time, alignment angle, and angular deviation for a trial."""
     matches = glob.glob(os.path.join(trial_dir, "logs", "*.csv"))
     if not matches:
         raise SystemExit(f"no log csv under {trial_dir}")
@@ -80,16 +80,16 @@ def load_trial(trial_dir):
     for name in cols:
         d[name] = np.array(d[name])
 
-    setup = d["phase"] == SETUP_PHASE
-    t = d["time"][setup]
+    contact = d["phase"] == CONTACT_ESTABLISHMENT_STATE
+    t = d["time"][contact]
     total = ("angular_deviation_deg" if "angular_deviation_deg" in d
              else "alignment_angle_deg")
-    alignment = d[total][setup]
+    alignment = d[total][contact]
     # Calculating the deviation from the orientation captured at the geometric
-    # clearance transition and held during set-up [deg].
-    deviation = np.degrees(np.sqrt(d["e_R_x"][setup] ** 2 +
-                             d["e_R_y"][setup] ** 2 +
-                             d["e_R_z"][setup] ** 2))
+    # clearance transition and held during contact establishment [deg].
+    deviation = np.degrees(np.sqrt(d["e_R_x"][contact] ** 2 +
+                             d["e_R_y"][contact] ** 2 +
+                             d["e_R_z"][contact] ** 2))
     return t - t[0], alignment, deviation
 
 
@@ -112,11 +112,43 @@ def main():
     p.add_argument("--results", default=RESULTS)
     p.add_argument("--metrics", default=METRICS)
     p.add_argument("--out-dir", default=os.path.join(HERE, "..", "figures"))
+    p.add_argument("--summary-only", action="store_true",
+                   help="draw only the per-run comparison available from metrics.csv")
     args = p.parse_args()
     os.makedirs(args.out_dir, exist_ok=True)
 
-    t, alignment, deviation = load_trial(os.path.join(args.results, args.trial))
     gain, deviation_final, _ = load_metrics(args.metrics)
+
+    if args.summary_only:
+        plt.rcParams["axes.unicode_minus"] = False
+        fig, ax = plt.subplots(figsize=(5.8, 3.4))
+        limit = max(np.abs(gain).max(), deviation_final.max()) * 1.05
+        ax.plot([0.0, limit], [0.0, limit], color="#888888",
+                linewidth=0.8, zorder=0)
+        improved = gain >= 0.0
+        ax.plot(deviation_final[improved], gain[improved], linestyle="none",
+                marker="o", color=SERIES_BLUE, markerfacecolor="white",
+                markeredgewidth=1.0,
+                label=r"Error Reduced, $\Delta\theta_{\mathrm{align}}\geq0$")
+        ax.plot(deviation_final[~improved], gain[~improved], linestyle="none",
+                marker="s", color=SERIES_RED, markerfacecolor="white",
+                markeredgewidth=1.0,
+                label=r"Error Increased, $\Delta\theta_{\mathrm{align}}<0$")
+        ax.set_xlabel(
+            "Contact-Establishment Rotation Magnitude,\n"
+            r"$|\gamma_{t_i}|$ [$^\circ$]")
+        ax.set_ylabel("Pose-Based Alignment-Error Reduction,\n"
+                      r"$\Delta\theta_{\mathrm{align}}$ [$^\circ$]")
+        ax.legend(loc="upper right", framealpha=1.0, facecolor="white")
+        fig.tight_layout()
+        out = os.path.join(args.out_dir, "MAIN_DQ_metric_summary.pdf")
+        fig.savefig(out)
+        fig.savefig(out.replace(".pdf", ".png"), dpi=160)
+        plt.close(fig)
+        print(f"wrote {os.path.abspath(out)}")
+        return
+
+    t, alignment, deviation = load_trial(os.path.join(args.results, args.trial))
 
     fig, axes = plt.subplots(1, 2, figsize=(6.9, 3.0))
 
@@ -125,10 +157,10 @@ def main():
     axes[0].plot(t, alignment, color=SERIES_BLACK,
                  label=r"Pose-Based Alignment Error, $\theta_{\mathrm{align}}$")
     axes[0].plot(t, alignment[0] - deviation, color=SERIES_RED,
-                 label=(r"Reconstructed From Set-Up Rotation, "
+                 label=(r"Reconstructed From Contact-Establishment Rotation, "
                         r"$\theta_{\mathrm{align},0}-\gamma_{t_i}$"))
     reference_line(axes[0])
-    axes[0].set_xlabel(r"Set-Up Time, $t$ [s]")
+    axes[0].set_xlabel(r"Contact-Establishment Time, $t$ [s]")
     # Both curves are the alignment angle, obtained two ways; a bare "Angle"
     # leaves the reader to guess which angle is plotted.
     axes[0].set_ylabel(
@@ -151,7 +183,7 @@ def main():
                  markeredgewidth=1.0,
                  label=r"Error Increased, $\Delta\theta_{\mathrm{align}}<0$")
     axes[1].set_xlabel(
-        r"Measured Set-Up Rotation Magnitude, $|\gamma_{t_i}|$ [$^\circ$]")
+        r"Measured Contact-Establishment Rotation Magnitude, $|\gamma_{t_i}|$ [$^\circ$]")
     axes[1].set_ylabel("Reduction in Pose-Based Alignment Error,\n"
                        r"$\Delta\theta_{\mathrm{align}}$ [$^\circ$]")
     axes[1].set_title("(b)")

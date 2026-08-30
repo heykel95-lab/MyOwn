@@ -143,18 +143,18 @@ if (face_center_off_axis.norm() <= 0.05 * face_scale) {
 return Eigen::AngleAxisd(twist, tool_axis_target) * R_axis;
 \end{lstlisting}
 
-\section{Geometric Clearance and Phase Targets}
+\section{Geometric Clearance and State Targets}
 \label{app:desired_motion}
 
 The selected tool point is constructed from the rectangular tool-face corners
-closest to the surface along the descent direction. The transition into set-up
+closest to the surface along the descent direction. The transition into Contact Establishment
 is based on the minimum of the four corner clearances. Corners whose clearances
 differ from that minimum by no more than \(0.1\,\mathrm{mm}\) are averaged to
 form the selected tool point and its projected reference. The external-force
 estimate does not enter the transition decision. The following excerpt is
-abridged from the phase switch.
+abridged from the state switch.
 
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Phase-dependent tool-feature targets (abridged).}, label={lst:app_desired_motion}]
+\begin{lstlisting}[style=cppstyle, language=C++, caption={State-dependent selected-tool-point targets (abridged).}, label={lst:app_desired_motion}]
 const Vec3 descend_direction = -R_base_surface.col(2);
 double leading_contact_projection = 0.0;
 const Vec3 tool_contact_offset_ee =
@@ -162,11 +162,10 @@ const Vec3 tool_contact_offset_ee =
 const Vec3 tool_contact_point =
     p_EE + R_EE * tool_contact_offset_ee;
 
-case ControlPhase::kSurfaceApproach: {
-  // The gate freezes this clock, so waiting does not go on ramping
-  // the commanded distance.
+case ControlState::kSurfaceApproach: {
+  const double state_time = time - state_start_time;
   const double distance = std::min(
-      params.descend_speed * (phase_time - gate_paused_time),
+      params.descend_speed * state_time,
       params.descend_max_distance);
   desired.p_d = p_start + distance * descend_direction;
   desired.pdot_d = params.descend_speed * descend_direction;
@@ -182,33 +181,63 @@ case ControlPhase::kSurfaceApproach: {
   const bool clearance_reached =
       height_above_surface <= params.descend_surface_clearance;
 
-  if (clearance_reached && !gate_blocking) {
+  if (clearance_reached) {
     active_tool_contact_offset_ee = tool_contact_offset_ee;
     first_contact_tcp = p_EE;  // captured at clearance
     first_contact_point = projected_surface_point;
-    setup_push_start = -controlled_point_height;
+    contact_establishment_push_start = -controlled_point_height;
     R_contact_start = R_EE;
     contact_force_bias = external_force;
     contact_moment_bias = external_moment;
-    phase = ControlPhase::kSetup;
+    if (params.enable_pre_contact_hold) {
+      pre_contact_hold_p_d = p_EE;
+      state = ControlState::kPreContactHold;
+    } else {
+      state = ControlState::kContactEstablishment;
+    }
   }
   break;
 }
 
-case ControlPhase::kSetup: {
+case ControlState::kPreContactHold: {
+  desired.p_d = pre_contact_hold_p_d;
+  desired.pdot_d.setZero();
+  if (signals.operator_hold_continue.exchange(false)) {
+    // Re-capture the contact references from the held pose.
+    state = ControlState::kContactEstablishment;
+  }
+  break;
+}
+
+case ControlState::kContactEstablishment: {
+  const double state_time = time - state_start_time;
   const double push =
-      setUpPush(params, phase_time - gate_grind_paused_time,
-                setup_push_start, setup_push_velocity);
+      contactEstablishmentPush(
+          params, state_time, contact_establishment_push_start,
+          contact_establishment_push_velocity);
   const Vec3 edge_target =
       first_contact_point + push * descend_direction;
   desired.p_d =
       edge_target - R_contact_start * tool_contact_offset_ee;
-  desired.pdot_d = setup_push_velocity * descend_direction;
+  desired.pdot_d =
+      contact_establishment_push_velocity * descend_direction;
   // Exit after minimum time on moment-delta norm, or on timeout.
   break;
 }
 
-case ControlPhase::kGrinding: {
+case ControlState::kPreGrindingHold: {
+  const Vec3 edge_target =
+      first_contact_point + grind_push * descend_direction;
+  desired.p_d =
+      edge_target - R_contact_start * active_tool_contact_offset_ee;
+  desired.pdot_d.setZero();
+  if (signals.operator_hold_continue.exchange(false)) {
+    state = ControlState::kGrinding;
+  }
+  break;
+}
+
+case ControlState::kGrinding: {
   const Vec3 n = descend_direction;  // unit, into the surface
   Vec3 edge_target;
   if (params.grind_sweep_enabled) {
@@ -232,8 +261,8 @@ captured at the configured clearance, not at a force-detected first contact.
 The model-estimated wrench recorded at the same instant is subtracted from
 every later sample.
 
-Both operator gates latch once armed. The gate compares a held pose against the
-clearance height, and re-testing that comparison every cycle released the gate
+Both operator-controlled hold states latch once armed. The pre-contact hold compares a held pose against the
+clearance height, and re-testing that comparison every cycle released the hold
 for single cycles on measurement noise; on each release the descent clock
 advanced and commanded the tool further down, so a longer wait produced a
 harder press. Latching removes that dependence on waiting time.
@@ -242,8 +271,8 @@ harder press. Latching removes that dependence on waiting time.
 \section{Centre of Compliance and the Offset Adjoint}
 \label{app:center_compliance}
 
-The lever \(r_c=p_c-p_{\mathrm{TCP}}\) points from the TCP to the selected
-centre of compliance, and the same congruence is applied to stiffness and
+The displacement \(r_c=p_c-p_{\mathrm{TCP}}\) points from the TCP to the
+selected centre of compliance. The same congruence is applied to stiffness and
 damping.
 
 \begin{lstlisting}[style=cppstyle, language=C++, caption={TCP-to-compliance-centre adjoint and congruence transform.}, label={lst:app_compliance_adjoint}]
@@ -276,9 +305,10 @@ wrench routine differ only in the frame it is expressed in.
 \begin{lstlisting}[style=cppstyle, language=C++, caption={Selection of the decoupled or coupled spring wrench (abridged).}, label={lst:app_spring_wrench}]
 const bool coupled =
     params.use_virtual_compliance_center &&
-    (phase == ControlPhase::kSetup ||
-     (phase == ControlPhase::kPoseHold &&
-      params.use_setup_impedance_hold));
+    (state == ControlState::kContactEstablishment ||
+     state == ControlState::kPreGrindingHold ||
+     (state == ControlState::kPoseHold &&
+      params.use_contact_impedance_hold));
 if (!coupled) {
   // Two independent springs. dv.tail is -omega, so the damping
   // signs match.
@@ -302,17 +332,17 @@ return K_tcp * dx + D_tcp * dv;
 \end{lstlisting}
 
 \iffalse
-\section{Task-Inertia Damping}
+\section{Inertia-Scaled Damping}
 \label{app:auto_damping}
 
 The joint-space mass matrix \(M\) is solved rather than explicitly inverted.
-A \(10^{-9}\) diagonal regularisation is used only for the task-inertia
-matrix \(\Lambda\)
+A \(10^{-9}\) diagonal regularisation is used only for the operational-space
+inertia matrix \(\Lambda\)
 calculation; it is not the null-space pseudoinverse cutoff. Every intermediate
 result is checked before use, and a single non-finite or non-positive entry
 marks the estimate invalid.
 
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Task-inertia estimate and per-axis damping (abridged).}, label={lst:app_auto_damping}]
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Operational-space-inertia estimate and per-axis damping (abridged).}, label={lst:app_auto_damping}]
 Eigen::LDLT<Mat7x7> mass_ldlt(joint_mass);
 const Mat7x6 Minv_Jt = mass_ldlt.solve(J.transpose());
 Mat6x6 lambda_inv = J * Minv_Jt;
@@ -358,7 +388,7 @@ Vec3 criticalDampingFromStiffness(const Vec3& inertia,
 \end{lstlisting}
 
 Only finite, positive directional inertia values \(\lambda_i\) are used. Otherwise, the
-phase-specific fixed damping matrix \(D\) is applied. Each inertia-scaled coefficient
+state-specific fixed damping matrix \(D\) is applied. Each inertia-scaled coefficient
 is bounded above by \texttt{auto\_damping\_max}; the value configured for the
 reported experiments is listed in \Cref{app:controller_parameters}. The lower
 bound \texttt{min\_damping} is the configured manual matrix only when
@@ -479,7 +509,7 @@ const Vec3 p_EE = T_EE.block<3, 1>(0, 3);
 const Mat3 R_EE = T_EE.block<3, 3>(0, 0);
 \end{lstlisting}
 
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Core impedance, coupled set-up, and torque composition.}, label={lst:implementation_pose_error}]
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Core impedance, coupled contact establishment, and torque composition.}, label={lst:implementation_pose_error}]
 const Vec3 e_p = desired.p_d - p_EE;
 const Vec3 e_R = applyRotationalAxisMask(
     params, orientationError(R_EE, R_d_used), R_base_surface);
@@ -493,7 +523,7 @@ dv.tail<3>() = -omega;
 
 const Vec6 wrench =
     computeCartesianImpedanceWrench(
-        params, phase, Kp_used, Dp_used,
+        params, state, Kp_used, Dp_used,
         KR_used, DR_used, R_base_surface,
         dx, dv, R_EE);
 
@@ -501,11 +531,11 @@ const Vec7 tau_nullspace = computeNullspaceTorque(
     params, model, state, J, dq);
 
 AutomaticDisturbance disturbance;
-if (phase == ControlPhase::kPoseHold &&
+if (state == ControlState::kPoseHold &&
     params.disturbance_auto_enabled) {
   disturbance = computeAutomaticDisturbance(
       params, model, state, disturbance_force_direction_base,
-      time - phase_start_time);
+      time - state_start_time);
 }
 
 Array7 coriolis_array = model.coriolis(state);
