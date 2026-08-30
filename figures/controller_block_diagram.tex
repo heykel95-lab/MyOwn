@@ -14,7 +14,8 @@
 % Main calculation path, read from left to right.
 \node[src, text width=3.0cm] (model) at (0.0,0.0)
   {Robot Model\\[-2pt]\footnotesize
-   $T_{EE},\ J(q),\ M(q),\ \tau_c(q,\dot q)$};
+   $T_{EE},\ J(q)$\\[-2pt]
+   $M(q),\ \tau_c(q,\dot q)$};
 \node[blk] (error) at (5.0,0.0)
   {Cartesian Error\\[-2pt]\footnotesize $e_p,\ e_R$};
 \node[blk, text width=3.6cm] (wrench) at (10.0,0.0)
@@ -39,10 +40,11 @@
 
 % Main calculation path.
 \draw[sig] (model) -- node[lbl, above] {$T_{EE}$} (error);
-\draw[sig] (error) -- (wrench);
-\draw[sig] (wrench) -- (cart);
-\draw[sig] (cart) -- (sum);
-\draw[sig] (sum.south) -- node[lbl, right] {$\tau_{\mathrm{cmd}}$} (motors.north);
+\draw[sig] (error) -- node[lbl, above] {$e_p,\ e_R$} (wrench);
+\draw[sig] (wrench) -- node[lbl, above] {$F$} (cart);
+\draw[sig] (cart) -- node[lbl, above] {$\tau_{\mathrm{cart}}$} (sum);
+\draw[sig] (sum.south) -- node[lbl, right, pos=0.78]
+      {$\tau_{\mathrm{cmd}}$} (motors.north);
 
 % State-selected references and gains.
 \draw[sig] (machine.west) -- node[lbl, above] {$p_d,\ R_d$}
@@ -52,15 +54,16 @@
 % Model-dependent and secondary torque inputs.
 \draw[sig] (model.north) -- (0.0,3.45) --
       node[lbl, above, pos=0.72] {$J(q)$} (15.0,3.45) -- (cart.north);
-\draw[sig] (model.south) -- (0.0,-1.25) --
+\draw[sig] (model.south east) -- (model.south east |- 0,-1.25) --
       node[lbl, below, pos=0.68] {$\tau_c(q,\dot q)$} (19.3,-1.25) --
       (19.3,0 |- sum.south);
-\draw[sig] (null.east) -- (20.7,-2.25) --
-      (20.7,0 |- sum.south);
+\draw[sig] (null.east) -- node[lbl, above] {$\tau_{\mathrm{null}}$} (19.7,-2.25) --
+      (19.7,0 |- sum.south);
 
 % Joint sensing closes the physical loop.
 \draw[sig] (motors.west) -- node[lbl, above]
-      {Measured $q,\ \dot q$} (feedback.east);
-\draw[sig] (feedback.north) -- (model.south);
+      {Joint motion} (feedback.east);
+\draw[sig] (feedback.north) -- node[lbl, left]
+      {Measured $q,\ \dot q$} (model.south);
 
 \end{tikzpicture}

@@ -1,0 +1,64 @@
+% Physical surface-reference error, commanded surrogate, and achieved angle.
+\begin{tikzpicture}[
+    scale=1.0,
+    reference/.style={red!75!black, line width=1.1pt},
+    physical/.style={blue!70!black, line width=1.1pt},
+    command/.style={green!60!black, line width=1.1pt},
+    achieved/.style={black, line width=1.0pt},
+    angle/.style={-{Latex[length=1.8mm]}, line width=0.9pt},
+    lbl/.style={font=\footnotesize},
+    panel/.style={font=\footnotesize, align=center},
+  ]
+
+% (a) The physical surface-reference error that would exist in the apparatus.
+\begin{scope}[xshift=0cm]
+  \coordinate (oa) at (0,0);
+  \draw[reference] (oa) -- (1.8,0);
+  \draw[physical] (oa) -- (14:1.8);
+
+  \node[lbl, red!75!black, anchor=north west] at (0,-0.06)
+    {Configured reference};
+  \node[lbl, blue!70!black, anchor=south east] at (1.72,0.48)
+    {Physical surface};
+
+  \draw[angle, blue!70!black]
+    (0:0.62) arc[start angle=0,end angle=14,radius=0.62];
+  \node[lbl, blue!70!black] at (7:1.02) {$\delta_{s,t_i}$};
+  \node[panel] at (0.9,-1.14) {(a) Unknown physical error};
+\end{scope}
+
+% (b) The deliberately commanded surrogate.
+\begin{scope}[xshift=4.9cm]
+  \coordinate (ob) at (0,0);
+  \draw[reference] (ob) -- (1.8,0);
+  \draw[command] (ob) -- (18:1.8);
+
+  \node[lbl, red!75!black, anchor=north west] at (0,-0.06)
+    {Configured reference};
+  \node[lbl, green!60!black, anchor=south east] at (1.72,0.59)
+    {Commanded orientation};
+
+  \draw[angle, green!60!black]
+    (0:0.62) arc[start angle=0,end angle=18,radius=0.62];
+  \node[lbl, green!60!black] at (9:1.06) {$\theta_{\mathrm{cmd},t_i}$};
+  \node[panel] at (0.9,-1.14) {(b) Commanded approximation};
+\end{scope}
+
+% (c) The angle actually reached when contact establishment begins.
+\begin{scope}[xshift=9.8cm]
+  \coordinate (oc) at (0,0);
+  \draw[reference] (oc) -- (1.8,0);
+  \draw[achieved] (oc) -- (15:1.8);
+
+  \node[lbl, red!75!black, anchor=north west] at (0,-0.06)
+    {Configured reference};
+  \node[lbl, black, anchor=south east] at (1.72,0.50)
+    {Achieved tool face};
+
+  \draw[angle, black]
+    (0:0.62) arc[start angle=0,end angle=15,radius=0.62];
+  \node[lbl, black] at (7.5:1.02) {$\theta_{0,t_i}$};
+  \node[panel] at (0.9,-1.14) {(c) Achieved entry angle};
+\end{scope}
+
+\end{tikzpicture}

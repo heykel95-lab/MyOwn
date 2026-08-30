@@ -99,6 +99,12 @@ fourth without anything warning.
 **Orthogonal only.** A diagonal line in a block diagram reads as a different
 kind of connection and is almost always an accident.
 
+**Every signal arrow in a block diagram carries a brief label.** Name the
+quantity or physical transfer on the arrow itself, even when the neighbouring
+boxes imply it. Use the established symbol where one exists and a short noun
+phrase otherwise. Apply this to every arrow in the same diagram; partially
+labelled signal paths make the unlabelled connections ambiguous.
+
 **Use absolute coordinates for the corners.** `++(0,1.35)` is relative to the
 node anchor, not to the origin, so a run written that way silently becomes a
 diagonal when the anchor is not where it was assumed to be. Write
@@ -158,6 +164,14 @@ beside a diagram widens its bounding box, and `\resizebox` then shrinks the
 whole drawing to fit the page, so the geometry becomes unreadable to buy room
 for prose that belongs in the body text. Keep the drawing to the geometry and
 its symbols; say the rest in the paragraph before or after it.
+
+**Flow-chart boxes and conditions stay short.** A box contains only the state
+name, never an explanatory sentence or paragraph. Write each transition as a
+brief `if` condition and use a symbol already defined in the thesis when that
+makes the condition shorter. Put the condition beside a clear arrow segment,
+not over the line or a box border. Short display labels such as `Pre-Contact
+Hold` and `Pre-Grinding Hold` may stand for longer state names that the body
+text gives in full.
 
 **A label is never filled.** A white fill behind the text erases whatever it
 sits on, and on a label placed `above` a run it erases the top of that run, so
@@ -280,6 +294,19 @@ angular deviation \(\theta_0\); the outer arc shows the physical initial angle
 cross-section and carries no numerical value, because the physical surface
 normal was not measured independently for the reported runs.
 
+**The commanded-surrogate figure beside Equation 2.51 separates the real,
+commanded and achieved cases.** Its three panels show the physical/configured
+surface error \(\delta_{s,t_i}\), the commanded tool-orientation offset
+\(\theta_{\mathrm{cmd},t_i}\), and the achieved entry angle
+\(\theta_{0,t_i}\), each relative to the configured reference. Do not overlay
+the commanded and achieved tool lines: their nearby angles make the labels
+collide and conceal that the achieved angle need not equal the command. The
+figure carries no numerical angles and does not present the unknown physical
+error as measured.
+The panel headings use `Unknown physical error`, `Commanded approximation`,
+and `Achieved entry angle` in that order. The caption repeats this mapping so
+the approximation cannot be read as a measurement of the physical plane.
+
 **Every boxed node is an operating or controller state, and every arrow carries
 its transition condition.** A shared red termination rail may carry conditions
 that apply from every active state, provided the accompanying text names those
@@ -298,6 +325,10 @@ moments into joint angles. Keep \(J(q)\), \(\tau_c\) and the null-space torque
 as short secondary inputs, and keep the frequency label out because the whole
 drawing is one control loop. Every box, arrowhead and label retains visible
 separation after compilation.
+Every arrow is labelled with its transmitted signal. The physical return from
+Joint Motors to Joint Feedback is labelled `Joint motion`; the measured
+\(q,\dot q\) are then labelled on the arrow from Joint Feedback to the Robot
+Model, so sensing is not presented as a model transformation.
 The upper selection block is named `Controller State`. Do not append `Logic`.
 Its outgoing arrows show its parameter-selection role without another word in
 the box. Main-row blocks retain conspicuous gaps in the compiled page; short

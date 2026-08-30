@@ -1394,21 +1394,56 @@ t_1\times n_s=-t_2.
 \label{eq:surface_frame_cross_product_relations}
 \end{equation}
 
-Let the commanded orientation offset in the surface plane be
+\Needspace{0.58\textheight}
+\Added{For the small angular discrepancies considered here, define the angular
+error between the configured and physical surface orientations as}
 
 \begin{equation}
-\theta_{\mathrm{cmd}}
+\delta_s
 =
-\theta_{t_1}t_1+\theta_{t_2}t_2.
+\delta_{s,t_1}t_1+\delta_{s,t_2}t_2.
+\label{eq:physical_surface_reference_error_components}
+\end{equation}
+
+\Added{This is the surface-reference error that the controller should correct
+when the physical surface differs from its configured reference. The physical
+surface normal was not measured independently, so \mbox{\(\delta_s\)} could
+not be verified directly and was not imposed by rotating the plane. The same angular discrepancy was
+therefore created artificially at the tool by commanding}
+
+\begin{equation}
+\begin{aligned}
+\theta_{\mathrm{cmd}}
+&=
+\theta_{t_1}t_1+\theta_{t_2}t_2,\\
+\theta_{\mathrm{cmd}}
+&\approx
+\delta_s
+\qquad \text{for the emulated error.}
+\end{aligned}
 \label{eq:commanded_offset_surface_components}
 \end{equation}
 
-\Added{The commanded offset is used as an artificial surrogate for an angular
-error between the configured and physical surface orientations. The desired
-tool orientation is deliberately rotated relative to \mbox{\(n_s\)} before
-contact; neither surface plane is rotated. The actual surface-reference error
-\mbox{\(\delta_s\)} remains unknown because the physical surface normal was
-not measured independently.}
+\Added{The approximation in
+\mbox{\Cref{eq:commanded_offset_surface_components}} states the intended
+experimental correspondence. Rotating the desired tool orientation relative
+to \mbox{\(n_s\)} creates the type and approximate magnitude of angular
+discrepancy that a rotated physical surface would produce. Neither surface
+plane is rotated by this command. The commanded angle is not reached exactly. At
+the start of Contact Establishment, the realised pose-based angle is
+\mbox{\(\theta_{0,t_i}\approx\theta_{t_i}\)} because Tool Orientation ends
+with a finite tracking tolerance. Thus \mbox{\(\delta_s\)},
+\mbox{\(\theta_{\mathrm{cmd}}\)}, and \mbox{\(\theta_0\)} denote the unknown
+physical error, its commanded approximation, and the achieved angle,
+respectively. \mbox{\Cref{fig:surface_error_surrogate}} shows this distinction.}
+
+\begin{figure}[H]
+  \centering
+  \input{figures/surface_error_surrogate.tex}
+  \caption[Surface-reference error and commanded approximation]{\Added{Unknown physical surface-reference error, its commanded
+  approximation, and the achieved entry angle.}}
+  \label{fig:surface_error_surrogate}
+\end{figure}
 
 For a prescribed tangential magnitude \mbox{\(\lVert r_{c,t}\rVert\)}, the
 displacement used to assist the commanded alignment rotation is chosen

@@ -753,6 +753,16 @@ circulation, the settled choices are:
   measured configured-to-physical plane angle: the actual surface-reference
   error \(\delta_s\) remains unknown for the reported campaign.
 
+  Equation 2.51 defines the physical surface-reference error as
+  \(\delta_s=\delta_{s,t_1}t_1+\delta_{s,t_2}t_2\). The following equation
+  defines \(\theta_{\mathrm{cmd}}\) and shows the nominal emulation explicitly
+  as \(\theta_{\mathrm{cmd}}\approx\delta_s\). This is a selected commanded
+  approximation rather than a measurement of \(\delta_s\). The realised
+  pose-based entry angle \(\theta_{0,t_i}\) is close to the corresponding
+  commanded component but need not equal it because Tool Orientation uses a
+  finite tracking tolerance. Present the three quantities in this order: the
+  unknown physical error, its commanded approximation, and the achieved angle.
+
   The supporting intermediate-direction table heading is **not** an instance
   of it. That column holds
   `Commanded rotation direction` — the tangent-plane direction of the command,
@@ -1492,16 +1502,21 @@ Contact Establishment, Contact Establishment,
 Operator-Controlled Hold Before Grinding and Grinding in execution order.
 
 **A controller flow chart is a state machine, not a conceptual overview.**
-Every box is an operating or controller state. Every arrow states the condition
-that permits its transition. The orientation transition is
-\(t_{\mathrm{ori}}\geq t_{\mathrm{ori,min}}\) together with either the
-enabled orientation tolerances or the orientation timeout. Surface Approach
-advances at \(h_{\mathrm{Tool}}\leq h_{\mathrm{clearance}}\) and stops if
+Every box is an operating or controller state. Its text is the short state name,
+never a sentence or paragraph. Every arrow states a compact `if` condition and
+uses the thesis symbols where they are defined. Place that condition beside a
+clear segment, never over an arrow or a box border. The orientation transition
+uses \(t_{\mathrm{ori}}\), \(e_{\mathrm{axis}}\) and the enabled
+\(e_{\mathrm{spin}}\) criterion, with timeout \(t_{\mathrm{ori,out}}\) as
+the alternative. Surface Approach advances at
+\(h_{\mathrm{Tool}}\leq h_{\mathrm{clearance}}\) and stops if
 \(s_{\mathrm{app}}\geq s_{\mathrm{app,max}}\) first. Contact Establishment
-advances after the minimum duration and moment-change criterion, or at its
-timeout. Operator confirmation is the only transition from the hold to
-Grinding. The reported runs are marked as ending in that hold; Grinding is
-shown because it is implemented, not because it was entered experimentally.
+advances after \(t_{\mathrm{set,min}}\) and the
+\(\Delta m_{\mathrm{ext}}\) criterion, or at
+\(t_{\mathrm{set,out}}\). Operator confirmation is the only transition from
+the hold to Grinding. The reported runs are marked as ending in that hold;
+Grinding is shown because it is implemented, not because it was entered
+experimentally.
 
 **Termination is shared rather than repeated as prose beside every state.**
 Operator stop, the configured run-duration limit, a robot-side error or reflex,
@@ -2596,10 +2611,12 @@ instantaneous opposing torque at identical joint configurations.
   subsection says in one short passage that libfranka
   supplies it, that it is stored at the clearance transition, and that the
   estimated external moment change can trigger the optional termination
-  condition. This explanation is written in words and introduces no
-  mathematical symbol. Every reported run terminated through the timeout
-  instead. The data-format appendix retains the literal recorded field names
-  and bias columns. That is the whole of it.
+  condition. The compact transition symbol is
+  \(\Delta m_{\mathrm{ext}}\), with threshold
+  \(\Delta m_{\mathrm{ext,min}}\); it denotes the magnitude change and does
+  not reintroduce an estimated-force analysis. Every reported run terminated
+  through the timeout instead. The data-format appendix retains the literal
+  recorded field names and bias columns. That is the whole of it.
 
   **`F_{n,\mathrm{ext}}` is withdrawn**, with the symbol-list rows for
   \(\hat f_{\mathrm{ext}}\), \(\hat f_{\mathrm{ref}}\) and

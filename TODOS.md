@@ -67,6 +67,10 @@ references or citations, no overfull boxes. `Thesis.pdf` and
 `Professor_Draft.pdf` are 125 pages and `Review_Draft.pdf` is 129. The fifty
 underfull hboxes in the final pass are loose lines in the narrow description
 column of the symbol list and predate this work.
+The Windows MiKTeX builds were repeated on 2026-08-30 after the Equation 2.51
+figure and Chapter 3 flow-chart corrections. `Thesis.pdf` has 133 pages and
+`Review_Draft.pdf` has 136 pages, with no undefined references or citations,
+no overfull boxes and no soul reconstruction failures in their final passes.
 Judge a build by the final pass; the earlier ones always report undefined
 citations.
 

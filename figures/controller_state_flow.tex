@@ -1,59 +1,60 @@
-% Program-level controller operating states and the shared stop path.
-% Every boxed node is an operating state; every arrow is labelled by the
-% condition that permits the transition. Uses tikz, calc and arrows.meta.
+% Program-level controller states and their transition conditions.
+% Condition labels sit beside the routes so no text interrupts a line.
 \begin{tikzpicture}[
     scale=1.0,
     font=\footnotesize\setstretch{1.0},
-    state/.style={draw=black, thick, text width=3.35cm, align=center,
+    state/.style={draw=black, thick, text width=3.15cm, align=center,
                   inner sep=4pt, minimum height=1.0cm},
-    stopstate/.style={draw=red, text=red, thick, text width=3.35cm,
+    stopstate/.style={draw=red, text=red, thick, text width=3.15cm,
                       align=center, inner sep=4pt, minimum height=1.0cm},
     flow/.style={-{Latex[length=2mm]}, thick, black},
     stopflow/.style={-{Latex[length=2mm]}, thick, red},
     rail/.style={thick, red},
-    cond/.style={font=\scriptsize\setstretch{1.0}, align=center,
-                 inner sep=2pt, fill=white},
-    term/.style={font=\scriptsize\setstretch{1.0}, align=left, text=red,
-                 text width=8.5cm, inner sep=1pt},
+    cond/.style={font=\scriptsize\setstretch{1.0}, align=left, inner sep=0pt},
+    stopcond/.style={font=\scriptsize\setstretch{1.0}, align=center,
+                     text=red, inner sep=0pt},
   ]
 
   \node[state] (start)     at (0.00, 0.00) {Start};
   \node[state] (recovery)  at (0.00,-1.75) {Robot Recovery};
   \node[state] (selection) at (0.00,-3.50) {Controller Selection};
 
-  \node[state] (surface)  at (-4.70,-6.10) {Surface-Contact Sequence};
-  \node[state] (pose)     at ( 0.00,-6.10) {Cartesian Pose Hold};
-  \node[state] (guidance) at ( 4.70,-6.10) {Manual Guidance};
-  \node[stopstate] (stop) at ( 0.00,-10.30) {Stop};
+  \node[state] (surface)  at (-4.60,-6.15) {Surface-Contact Sequence};
+  \node[state] (pose)     at ( 0.00,-6.15) {Cartesian Pose Hold};
+  \node[state] (guidance) at ( 4.60,-6.15) {Manual Guidance};
+  \node[stopstate] (stop) at ( 0.00,-9.30) {Stop};
 
-  \draw[flow] (start) -- node[cond, right] {Program started} (recovery);
-  \draw[flow] (recovery) -- node[cond, right] {Recovery succeeds} (selection);
+  \draw[flow] (start) -- (recovery);
+  \node[cond, anchor=west] at (0.25,-0.88) {if start requested};
+
+  \draw[flow] (recovery) -- (selection);
+  \node[cond, anchor=west] at (0.25,-2.63) {if recovery succeeds};
 
   \coordinate (split) at (0.00,-4.65);
-  \draw[flow] (selection) -- (split) -- (-4.70,-4.65)
-      -- node[cond, left] {Surface-contact\\sequence selected} (surface);
-  \draw[flow] (selection) -- node[cond, right, pos=0.72]
-      {Cartesian pose hold selected} (pose);
-  \draw[flow] (selection) -- (split) -- (4.70,-4.65)
-      -- node[cond, right] {Manual guidance\\selected} (guidance);
+  \draw[flow] (selection) -- (split);
+  \draw[flow] (split) -- (-4.60,-4.65) -- (surface);
+  \draw[flow] (split) -- (pose);
+  \draw[flow] (split) -- (4.60,-4.65) -- (guidance);
+  \node[cond, anchor=south west] at (-4.30,-4.35)
+      {if surface contact\\selected};
+  \node[cond, anchor=west] at (0.25,-5.35) {if pose hold selected};
+  \node[cond, anchor=south east, align=right] at (4.30,-4.35)
+      {if manual guidance\\selected};
 
-  % Shared termination from every active controller state.
-  \coordinate (termleft) at (-4.70,-7.60);
-  \coordinate (termright) at (4.70,-7.60);
-  \draw[stopflow] (surface) -- (termleft);
-  \draw[stopflow] (pose) -- (0.00,-7.60);
-  \draw[stopflow] (guidance) -- (termright);
-  \draw[rail] (termleft) -- (termright);
-  \node[term, anchor=north west] at (-4.45,-7.82)
-      {Shared transition from any active state: operator stop, configured run
-       duration reached, robot-side error or reflex, or communication/control
-       exception};
-  \draw[rail] (termright) -- (4.70,-9.55) -- (2.35,-9.55)
-      -- (2.35,-10.30);
-  \draw[stopflow] (2.35,-10.30) -- (stop.east);
+  % One shared stop rail for all active controller states.
+  \coordinate (railleft) at (-4.60,-7.55);
+  \coordinate (railright) at (4.60,-7.55);
+  \draw[stopflow] (surface) -- (railleft);
+  \draw[stopflow] (pose) -- (0.00,-7.55);
+  \draw[stopflow] (guidance) -- (railright);
+  \draw[rail] (railleft) -- (railright);
+  \draw[stopflow] (0.00,-7.55) -- (stop);
+  \node[stopcond, anchor=north] at (0.00,-7.78)
+      {if stop requested \(\lor\ t\geq T_{\mathrm{run}}\ \lor\) fault};
 
-  % Recovery failure ends before a controller becomes active.
-  \draw[stopflow] (recovery.west) -- (-6.65,-1.75) -- (-6.65,-10.30)
-      -- node[cond, below, pos=0.90, text=red] {Recovery fails} (stop.west);
+  % Recovery can fail before a controller state is selected.
+  \draw[stopflow] (recovery.west) -- (-6.35,-1.75) -- (-6.35,-9.30)
+      -- (stop.west);
+  \node[stopcond, anchor=south] at (-3.90,-1.48) {if recovery fails};
 
 \end{tikzpicture}

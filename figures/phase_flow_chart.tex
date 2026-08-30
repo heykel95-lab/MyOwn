@@ -1,73 +1,74 @@
-% Surface-contact controller state machine. Every boxed node is a controller
-% state and every transition carries the condition that permits it. The common
-% red termination path applies to every active state.
-% Uses tikz, calc and arrows.meta, which config/packages.tex loads.
+% Surface-contact controller states and their transition conditions.
+% Labels are placed beside, rather than over, the orthogonal routes.
 \begin{tikzpicture}[
     scale=1.0,
     font=\footnotesize\setstretch{1.0},
-    state/.style={draw=black, thick, text width=4.2cm, align=center,
+    state/.style={draw=black, thick, text width=3.35cm, align=center,
                   inner sep=4pt, minimum height=1.0cm},
     stopstate/.style={draw=red, text=red, thick, text width=2.7cm,
                       align=center, inner sep=4pt, minimum height=1.0cm},
-    cond/.style={font=\scriptsize\setstretch{1.0}, anchor=west, align=left,
-                 text width=4.8cm, inner sep=2pt, fill=white},
+    cond/.style={font=\scriptsize\setstretch{1.0}, align=left, inner sep=0pt},
+    stopcond/.style={font=\scriptsize\setstretch{1.0}, align=left,
+                     text=red, inner sep=0pt},
     flow/.style={-{Latex[length=2mm]}, thick, black},
     stopflow/.style={-{Latex[length=2mm]}, thick, red},
     rail/.style={thick, red},
-    term/.style={font=\scriptsize\setstretch{1.0}, align=left, text=red,
-                 text width=5.8cm, inner sep=1pt},
-    report/.style={font=\scriptsize\setstretch{1.0}, align=right, text=blue,
-                   text width=3.5cm, inner sep=1pt},
+    report/.style={font=\scriptsize\setstretch{1.0}, text=blue, inner sep=0pt},
   ]
 
-  \node[state] (orient) at (-1.50, 0.00) {Tool Orientation};
-  \node[state] (appr)   at (-1.50,-3.00) {Surface Approach};
-  \node[state] (precontact) at (-1.50,-5.75)
-      {Operator-Controlled Hold Before Contact Establishment};
-  \node[state] (contact) at (-1.50,-8.50) {Contact Establishment};
-  \node[state] (hold)   at (-1.50,-11.25)
-      {Operator-Controlled Hold Before Grinding};
-  \node[state] (grind)  at (-1.50,-14.00) {Grinding};
-  \node[stopstate] (stop) at (4.50,-15.75) {Stop};
+  \node[state] (orient) at (-1.20, 0.00) {Tool Orientation};
+  \node[state] (appr)   at (-1.20,-2.45) {Surface Approach};
+  \node[state] (precontact) at (-1.20,-4.90) {Pre-Contact Hold};
+  \node[state] (contact) at (-1.20,-7.35) {Contact\\Establishment};
+  \node[state] (hold)   at (-1.20,-9.80) {Pre-Grinding Hold};
+  \node[state] (grind)  at (-1.20,-12.25) {Grinding};
+  \node[stopstate] (stop) at (5.25,-14.05) {Stop};
 
-  \draw[flow] (orient) -- node[cond, right, text width=5.4cm]
-      {Minimum duration reached, and either the tool-axis tolerance and enabled
-       spin tolerance are satisfied or the timeout is reached}
-      (appr);
-  \draw[flow] (appr) -- node[cond, right]
-      {\(h_{\mathrm{Tool}}\leq h_{\mathrm{clearance}}\) and
-       pre-contact hold enabled} (precontact);
-  \draw[flow] (precontact) -- node[cond, right]
-      {Operator confirms continuation} (contact);
-  \draw[flow] (appr.west) -- (-4.35,-3.00) -- (-4.35,-8.50)
-      -- node[cond, below, text width=4.0cm, anchor=south east]
-      {\(h_{\mathrm{Tool}}\leq h_{\mathrm{clearance}}\) and
-       pre-contact hold disabled} (contact.west);
-  \draw[flow] (contact) -- node[cond, right]
-      {Minimum duration and moment-change criterion reached,
-       or contact-establishment timeout reached} (hold);
-  \draw[flow] (hold) -- node[cond, right]
-      {Operator confirms continuation} (grind);
+  \draw[flow] (orient) -- (appr);
+  \node[cond, anchor=west, text width=5.0cm] at (0.85,-1.23)
+      {if \(t_{\mathrm{ori}}\geq t_{\mathrm{ori,min}}\) and either\\
+       \(e_{\mathrm{axis}}\leq\varepsilon_{\mathrm{axis}}\),
+       \(e_{\mathrm{spin}}\leq\varepsilon_{\mathrm{spin}}\) if enabled,\\
+       or \(t_{\mathrm{ori}}\geq t_{\mathrm{ori,out}}\)};
 
-  % The red rail is the shared transition to the terminal state.
-  \coordinate (termrailtop) at (4.50,0.00);
-  \coordinate (termrailbottom) at (4.50,-14.00);
-  \draw[stopflow] (orient.east) -- (termrailtop);
-  \draw[stopflow] (appr.east) -- node[cond, above, text=red, text width=4.3cm]
-      {\(s_{\mathrm{app}}\geq s_{\mathrm{app,max}}\) before clearance}
-      (4.50,-3.00);
-  \draw[stopflow] (precontact.east) -- (4.50,-5.75);
-  \draw[stopflow] (contact.east) -- (4.50,-8.50);
-  \draw[stopflow] (hold.east) -- (4.50,-11.25);
-  \draw[stopflow] (grind.east) -- (termrailbottom);
-  \draw[rail] (termrailtop) -- (termrailbottom);
-  \draw[stopflow] (termrailbottom) -- (stop);
+  \draw[flow] (appr) -- (precontact);
+  \node[cond, anchor=west] at (0.85,-3.68)
+      {if \(h_{\mathrm{Tool}}\leq h_{\mathrm{clearance}}\) and \(b_{\mathrm{pre}}=1\)};
 
-  \node[term, anchor=south west] at (0.10,0.45)
-      {Shared termination condition from any active state: operator stop,
-       configured run duration reached, robot-side error or reflex, or
-       communication/control exception};
-  \node[report, anchor=east] at (-3.95,-11.25)
-      {Reported runs ended here; Grinding was not entered.};
+  \draw[flow] (precontact) -- (contact);
+  \node[cond, anchor=west] at (0.85,-6.13) {if operator confirms};
+
+  \draw[flow] (appr.west) -- (-4.20,-2.45) -- (-4.20,-7.35)
+      -- (contact.west);
+  \node[cond, anchor=east, align=right] at (-4.45,-5.45)
+      {if \(h_{\mathrm{Tool}}\leq h_{\mathrm{clearance}}\)\\and \(b_{\mathrm{pre}}=0\)};
+
+  \draw[flow] (contact) -- (hold);
+  \node[cond, anchor=west, text width=5.0cm] at (0.85,-8.58)
+      {if \(t_{\mathrm{set}}\geq t_{\mathrm{set,min}}\) and\\
+       \(\Delta m_{\mathrm{ext}}\geq\Delta m_{\mathrm{ext,min}}\)\\
+       or \(t_{\mathrm{set}}\geq t_{\mathrm{set,out}}\)};
+
+  \draw[flow] (hold) -- (grind);
+  \node[cond, anchor=west] at (0.85,-11.03) {if operator confirms};
+
+  % Shared termination rail. The approach-distance condition is an additional
+  % stop condition for Surface Approach.
+  \coordinate (railtop) at (5.25,0.00);
+  \coordinate (railbottom) at (5.25,-12.25);
+  \draw[stopflow] (orient.east) -- (railtop);
+  \draw[stopflow] (appr.east) -- (5.25,-2.45);
+  \draw[stopflow] (precontact.east) -- (5.25,-4.90);
+  \draw[stopflow] (contact.east) -- (5.25,-7.35);
+  \draw[stopflow] (hold.east) -- (5.25,-9.80);
+  \draw[stopflow] (grind.east) -- (railbottom);
+  \draw[rail] (railtop) -- (railbottom);
+  \draw[stopflow] (railbottom) -- (stop);
+  \node[stopcond, anchor=south west] at (1.00,0.28)
+      {if stop requested \(\lor\ t\geq T_{\mathrm{run}}\ \lor\) fault};
+  \node[stopcond, anchor=south west] at (1.00,-2.25)
+      {if \(s_{\mathrm{app}}\geq s_{\mathrm{app,max}}\)};
+
+  \node[report, anchor=east] at (-3.20,-9.80) {Reported endpoint};
 
 \end{tikzpicture}

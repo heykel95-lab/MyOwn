@@ -1,36 +1,41 @@
 % Cartesian pose hold and its four alternative null-space configurations.
-% The common reference path is vertical; the four configurations branch at
-% one level so that the drawing does not imply a temporal sequence.
-% Uses only tikz + arrows.meta, which config/packages.tex loads.
+% The branch is configurational, not a temporal sequence.
 \begin{tikzpicture}[
     scale=1.0,
-    font=\footnotesize,
+    font=\footnotesize\setstretch{1.0},
     stage/.style={draw=black, thick, text width=4.0cm, align=center,
                   inner sep=4pt, minimum height=1.0cm},
-    mode/.style={draw=black, thick, text width=2.7cm, align=center,
+    mode/.style={draw=black, thick, text width=2.3cm, align=center,
                  inner sep=4pt, minimum height=1.2cm},
+    cond/.style={font=\scriptsize\setstretch{1.0}, align=left, inner sep=0pt},
     flow/.style={-{Latex[length=2mm]}, thick, black},
     branch/.style={thick, black},
   ]
 
-  % ---- common pose-hold path
-  \node[stage] (capture) at (0, 0.00) {Capture current pose};
-  \node[stage] (hold)    at (0,-1.80) {Cartesian pose hold};
-  \coordinate (split) at (0,-3.00);
+  \node[stage] (capture) at (0, 0.00) {Capture Pose Reference};
+  \node[stage] (hold)    at (0,-1.90) {Cartesian Pose Hold};
+  \coordinate (split) at (0,-3.15);
 
-  % ---- four alternative null-space configurations
-  \node[mode] (none) at (-5.10,-4.20) {No null-space\\torque};
-  \node[mode] (cond) at (-1.70,-4.20) {Singular-value\\conditioning};
-  \node[mode] (damp) at ( 1.70,-4.20) {Projected\\damping};
-  \node[mode] (both) at ( 5.10,-4.20) {Conditioning and\\damping};
+  \node[mode] (none) at (-5.10,-4.75) {No Null-Space\\Torque};
+  \node[mode] (condmode) at (-1.70,-4.75) {Singular-Value\\Conditioning};
+  \node[mode] (damp) at ( 1.70,-4.75) {Projected\\Damping};
+  \node[mode] (both) at ( 5.10,-4.75) {Conditioning and\\Damping};
 
-  % ---- flow and alternative branch
   \draw[flow] (capture) -- (hold);
+  \node[cond, anchor=west] at (0.28,-0.95)
+      {if \(p_d\) and \(R_d\) are stored};
+
   \draw[branch] (hold.south) -- (split);
-  \draw[branch] (-5.10,-3.00) -- (5.10,-3.00);
-  \draw[flow] (-5.10,-3.00) -- (none.north);
-  \draw[flow] (-1.70,-3.00) -- (cond.north);
-  \draw[flow] ( 1.70,-3.00) -- (damp.north);
-  \draw[flow] ( 5.10,-3.00) -- (both.north);
+  \draw[branch] (-5.10,-3.15) -- (5.10,-3.15);
+  \draw[flow] (-5.10,-3.15) -- (none.north);
+  \draw[flow] (-1.70,-3.15) -- (condmode.north);
+  \draw[flow] ( 1.70,-3.15) -- (damp.north);
+  \draw[flow] ( 5.10,-3.15) -- (both.north);
+
+  \node[cond, anchor=east] at (-5.35,-3.75) {if \(\tau_{\mathrm{null}}=0\)};
+  \node[cond, anchor=east] at (-1.95,-3.75) {if \(\tau_{\mathrm{null}}=\tau_\sigma\)};
+  \node[cond, anchor=west] at ( 1.95,-3.75) {if \(\tau_{\mathrm{null}}=\tau_d\)};
+  \node[cond, anchor=west] at ( 5.35,-3.75)
+      {if \(\tau_{\mathrm{null}}=\tau_\sigma+\tau_d\)};
 
 \end{tikzpicture}
