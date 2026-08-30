@@ -27,8 +27,13 @@ The source field \texttt{state} identifies the active controller state:
 \ReviewMark{green}{The table is a useful reproducibility record and keeps units,
 frames, and model-estimated quantities explicit.}
 
-Table~\ref{tab:csv_column_groups} lists the recorded signal groups relevant to
-the experiments and subsequent evaluation. A suffix
+Table~\ref{tab:csv_column_groups} lists the union of two CSV schemas used for
+the reported experiments. No individual file contains every group in the
+table. The surface-contact logs contain the contact-geometry fields and use the
+current angular-deviation names. The archived Cartesian pose-hold logs contain
+the singular-value probe and projected-motion fields and retain the earlier
+alignment-error names. Command, state, wrench, and disturbance groups common
+to the two schemas are listed once. A suffix
 \texttt{\_x,\_y,\_z} denotes base-frame components, and \texttt{\_1..\_7}
 denotes joint components.
 
@@ -67,16 +72,18 @@ the orientation held from the clearance transition.\\
 Pose-based alignment error
 \mbox{\(\theta_{\mathrm{align}}=\cos^{-1}(-n_{\mathrm{Tool},0}^\top n_s)\)},
 used in the consistency check of \mbox{\Cref{app:metric_agreement}}
-[\(^{\circ}\)].\\
+[\(^{\circ}\)]. The archived pose-hold schema names this field
+\texttt{alignment\_angle\_deg}.\\
 {\small\texttt{angular\_deviation\_t1\_deg}},\newline
 {\small\texttt{angular\_deviation\_t2\_deg}},\newline
 \texttt{angular\_deviation\_}\newline\texttt{normal\_deg} &
 The same angular deviation resolved on \(t_1\), \(t_2\) and \(n_s\)
-[\(^{\circ}\)]. Not evaluation quantities.\\
+[\(^{\circ}\)]. The archived pose-hold aliases begin with
+\texttt{alignment\_error\_}. These are not evaluation quantities.\\
 \texttt{p\_CoC}, \texttt{r\_eff} &
 \abbr{CoC} \(p_{\mathrm{TCP}}+r_c\) and the offset from it to the selected
 tool point, \(p_{\mathrm{Tool}}-p_c\), in the base frame [m]. Written for
-every run, including \(r_c=0\).\\
+each surface-contact run, including \(r_c=0\).\\
 \texttt{t\_align} &
 Time from the start of Contact Establishment at which the deviation first settled inside the
 configured tolerance [s], negative until then. Observed only; it does not end
@@ -93,14 +100,17 @@ External-wrench values captured at the clearance transition.\\
 \texttt{moment\_after\_contact} &
 The model-estimated wrench with those reference values already subtracted.\\
 \texttt{push} &
-Contact-establishment penetration reference or grinding preload retained afterwards [m].\\
-\texttt{nullspace\_mode}, \texttt{sigma\_current} &
-Selected null-space law and current smallest singular value \(\sigma_{\min}\).\\
+Contact-establishment press coordinate or grinding preload reference retained afterwards [m].\\
+\texttt{nullspace\_mode} &
+Selected null-space law.\\
+\texttt{sigma\_current} &
+Current smallest singular value \(\sigma_{\min}\) in the archived pose-hold
+schema.\\
 \texttt{sigma\_plus}, \texttt{sigma\_minus},\newline
 \texttt{sigma\_difference}, \texttt{sigma\_direction} &
 \(\sigma_{\min}\) at the two sampled configurations
 \(q\pm\alpha_{\mathrm{probe}}v_7\), their difference and the selected sign.
-Recorded in every mode.\\
+These fields belong to the archived pose-hold schema.\\
 \texttt{nullspace\_dq\_1..7} &
 Projected joint velocity \(\dot q_{\mathrm{null}}\) [rad/s].\\
 \texttt{tau\_sigma\_1..7}, \texttt{tau\_sigma\_norm},
@@ -109,11 +119,12 @@ Singular-value torque \(\tau_\sigma\) and total null-space torque
 \(\tau_{\mathrm{null}}\) [N\,m].\\
 \texttt{nullspace\_damping} &
 Active projected damping coefficient [N\,m\,s/rad].\\
-\texttt{disturbance\_scale},
+\texttt{disturbance\_scale},\newline
+{\small\texttt{disturbance\_torque\_scale}},\newline
 \texttt{disturbance\_force\_}\newline\texttt{base\_x..z},
 \texttt{disturbance\_}\newline\texttt{point\_base\_x..z} &
-Commanded hold-disturbance waveform, point force [N] and the base-frame
-position of the link point it acts at [m].\\
+Commanded hold-disturbance waveform, torque-limit scale, point force [N], and
+the base-frame position of the link point it acts at [m].\\
 \texttt{tau\_disturbance\_1..7} &
 Equivalent joint torque \(J_p^\top f_d\) in the internally commanded hold study [N\,m].\\
 \texttt{tau\_cmd\_1..7} &

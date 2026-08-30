@@ -28,7 +28,7 @@
   \node[gray!50!black, anchor=west] at (0.86,4.12) {\footnotesize custom fingers};
 
   % ---- wooden tool -----------------------------------------------------
-  % Anchored so its lower-LEFT corner sits exactly on the workpiece: the
+  % Anchored so its lower-left corner sits exactly on the surface: the
   % residual orientation error leaves the face a few degrees off parallel,
   % so one edge makes contact first.
   \begin{scope}[shift={(-0.62,2.98)}, rotate=9]
@@ -36,11 +36,11 @@
     \node[font=\footnotesize] at (0.72,0.21) {tool};
   \end{scope}
 
-  % ---- workpiece and bench --------------------------------------------
+  % ---- contact surface and bench --------------------------------------
   \draw[wood] (-1.75,2.58) rectangle (1.75,2.98);        % raised strip
   \draw[wood] (-2.60,2.18) rectangle (2.60,2.58);        % base board
   \draw[fill=white, draw=gray!50] (-3.20,1.72) rectangle (3.20,2.18);
-  \node[anchor=west] at (1.85,2.78) {\footnotesize workpiece};
+  \node[anchor=west] at (1.85,2.78) {\footnotesize surface};
   \node[anchor=west] at (2.70,2.38) {\footnotesize base board};
   \node[gray!55!black, anchor=west] at (3.30,1.95) {\footnotesize bench};
 
@@ -56,16 +56,18 @@
 % ============================ (b) contact geometry =======================
 \begin{scope}[xshift=9.4cm, yshift=0.15cm]
 
-  % ---- the physical plane, tilted by b ------------------------------------
+  % ---- physical surface ---------------------------------------------------
   \begin{scope}[shift={(0,2.30)}, rotate=-15]
-    \draw[wood] (-2.10,-0.24) rectangle (2.10,0);
+    \draw[draw=blue!65!black, fill=white] (-2.10,-0.24) rectangle (2.10,0);
   \end{scope}
 
-  % ---- horizontal reference and the tilt angle ----------------------------
-  \draw[gray!55, dashed] (-2.15,2.30) -- (2.60,2.30);
-  \draw[{Latex[length=1.5mm]}-, gray!60!black] (1.85,2.30) arc (0:-15:1.85);
-  \node[gray!50!black, font=\scriptsize] at (2.20,2.06) {$b$};
-  \node[gray!50!black, font=\scriptsize, anchor=west] at (1.95,2.44) {horizontal};
+  \node[blue!55!black, font=\scriptsize, anchor=west] at (1.45,1.48)
+        {physical surface};
+
+  % ---- configured orientation reference, drawn separately for clarity ----
+  \draw[red!65!black, densely dashed] (-2.15,0.40) -- (-0.20,0.40);
+  \node[red!60!black, font=\scriptsize, anchor=west] at (-2.05,0.17)
+        {configured reference};
 
   % ---- contact point -------------------------------------------------------
   \coordinate (C) at (-1.05,2.58);
@@ -74,25 +76,24 @@
   \node[red!60!black, anchor=south east, font=\footnotesize] at (-1.95,3.32)
         {contact};
 
-  % ---- surface frame at the contact ---------------------------------------
-  % t_1 points down-slope along the plane; n_s is its normal. Kept short so
-  % neither collides with the tool face or the lever arrow.
+  % ---- conceptual physical normal ----------------------------------------
   \begin{scope}[rotate around={-15:(C)}]
-    \draw[frameArrow] (C) -- ++(0.95,0)
-          node[anchor=north west, xshift=-1mm, yshift=1mm] {$t_1$};
-    \draw[frameArrow] (C) -- ++(0,1.55) node[anchor=south east] {$n_s$};
+    \draw[frameArrow, blue!65!black] (C) -- ++(0,1.00)
+          node[anchor=south east] {$n_{\mathrm{phys}}$};
   \end{scope}
+
+  % ---- configured surface frame ------------------------------------------
+  \coordinate (S) at (-1.35,0.40);
+  \draw[frameArrow, red!65!black] (S) -- ++(0.68,0)
+        node[anchor=south west, yshift=1mm] {$t_1$};
+  \draw[frameArrow, red!65!black] (S) -- ++(0,0.58)
+        node[anchor=south west] {$n_s$};
 
   % ---- the tool face, a few degrees off the plane --------------------------
   \begin{scope}[shift={(C)}, rotate=-4]
-    \draw[woodDark] (0,0.02) rectangle (1.25,0.34);
+    \draw[draw=green!45!black, fill=white] (0,0.02) rectangle (1.25,0.34);
     \node[font=\scriptsize] at (0.35,0.16) {tool};
   \end{scope}
-
-  % ---- configured normal ---------------------------------------------------
-  \draw[frameArrow, gray!55!black, densely dashed] (0.05,2.58) -- ++(0.11,1.35);
-  \node[gray!50!black, font=\scriptsize, anchor=south] at (0.16,3.95)
-        {configured $n$};
 
   % ---- the TCP, the compliance centre, and the lever between them ----------
   % r_c runs from the TCP to p_c. It starts at neither the contact point nor
@@ -101,20 +102,20 @@
   % clear of the plane and of the tool face, since the measurements say its
   % height is immaterial and the drawing is free to put it where it reads.
   \coordinate (TCP) at (-0.403,2.876);
-  \coordinate (P) at (1.55,3.28);
+  \coordinate (P) at (1.55,4.15);
   \fill (TCP) circle (1.7pt);
   \draw[thin] (TCP) -- (-0.38,3.07);
   \node[font=\scriptsize, anchor=south] at (-0.35,3.10) {$p_{\mathrm{TCP}}$};
   \draw[blue!65!black, thin, -{Latex[length=1.6mm]}] (TCP) -- (P);
-  \node[blue!55!black, font=\scriptsize, anchor=north west] at (0.30,2.92) {$r_c$};
+  \node[blue!55!black, font=\scriptsize, anchor=south east] at (0.62,3.48) {$r_c$};
   \fill[blue!70!black] (P) circle (1.9pt);
-  \node[blue!60!black, anchor=west, font=\footnotesize, align=left]
-        at (1.70,3.28) {compliance\\centre $p_c$};
+  \node[blue!60!black, anchor=west, font=\footnotesize]
+        at (1.70,4.15) {Compliance centre $p_c$};
 
   % Both sub-labels sit on one baseline at absolute y = 1.15. This scope
   % carries yshift=0.15cm, so the node is placed at 1.00 to compensate; if
   % that yshift changes, this value changes with it.
-  \node at (0.1,1.00) {(b) contact geometry};
+  \node at (0.1,-0.43) {(b) contact geometry};
 \end{scope}
 
 \end{tikzpicture}

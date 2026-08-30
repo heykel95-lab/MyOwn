@@ -137,6 +137,16 @@ than in the coordinates.
 Leave a visible gap between a label and any box: aim for at least half a line
 of text, and never let a label sit inside a node's bounding box.
 
+**Every in-figure name occupies one line at most.** Use the shortest
+unambiguous noun phrase or an established symbol, and never wrap a name across
+two lines. Any additional line may contain only a symbol, value, short
+instruction, or qualifier. Put definitions and explanatory wording in the
+caption or body text instead of lengthening a box, line label, panel label, or
+annotation. Shortening must preserve distinctions that carry the figure's
+meaning; for example, use `Configured reference` rather than the longer
+`Configured surface reference`, but never shorten it to `Configured surface`,
+which could be mistaken for the physical surface.
+
 ### Scale the picture, do not resize it
 
 **A tikz diagram is sized by `scale=` inside `egin{tikzpicture}[...]`, not by
@@ -189,7 +199,7 @@ exceptions. In the program-level chart, the shared rail descends through the
 centre into Stop. Place its short label beside that vertical path so the text
 does not interrupt the arrow. A recovery-failure label sits over the
 unobstructed left part of its own path, away from the controller-selection
-branches and the Surface-Contact Sequence box. Its vertical red rail remains
+branches and the Contact Sequence box. Its vertical red rail remains
 visibly left of that box and never touches its border.
 
 **A label is never filled.** A white fill behind the text erases whatever it
@@ -223,16 +233,13 @@ that a bare symbol carried by an arrow — `$n_{\mathrm{EE}}$`, `$n_s$` — is
 notation and stays as it is.
 
 Widening a box to fit a capitalised or lengthened line can close the gap its
-arrows need. The calibration flow lost almost all of the first run in its top
-row this way. Move the columns apart rather than shortening the text, and check
+arrows need. Move the columns apart rather than shortening the text, and check
 the arrow runs in the compiled figure afterwards.
 
 ### Fixing a box width: use `text width`, not `minimum width`
 
 `minimum width` sets a floor and lets a long line push past the frame, so the
-text overflows the rounded rectangle and adjacent boxes collide. The
-calibration flow did exactly that on its first redraw: two boxes in the lower
-row overlapped and their connecting arrowheads were squeezed to nothing.
+text overflows the rounded rectangle and adjacent boxes collide.
 
 Set `text width` instead. It fixes the box width and wraps the content inside
 the frame, so a box can only grow downwards, which the row spacing can absorb.
@@ -244,43 +251,16 @@ rather than widening one box out of line with the others.
 ### A diagram of parallel chains names each chain
 
 Where a diagram runs two or more chains as separate rows, each row carries a
-heading naming what it produces. The calibration flow needed this because both
-of its chains begin with the tool face seated flat, so the top row read as tool
-calibration until it was labelled; the reader could not tell which row was
-which.
+short heading naming what it produces. Put the heading above the row rather
+than in a label column, which widens the picture and reduces the available
+space for the diagram itself. A heading must not overstate what the row
+establishes.
 
-**The heading is capitalised and centred over its row's first box** —
-`Surface-reference construction`, `Tool-normal calibration` — set in
-`\footnotesize` with `anchor=south`, a third of a line above the box. Centring
-over the first box rather than left-aligning at its edge is what makes the
-heading read as belonging to the row rather than floating beside it.
-
-**A box that supports no claim is deleted, not reworded.** The calibration
-flow carried a held-out fourth pose, boxed first as `Consistency check` and
-then as `Additional capture`. No residual for it appears anywhere in the
-thesis, it entered no equation, and nothing downstream read it — so the box was
-removed altogether on 2026-08-26, together with its branch arrow and its
-colour. Rewording a box to be honest about a thing that supports nothing still
-leaves the reader carrying it; *Anything not discussed in the text* below is the
-rule that settles it. Deleting the box also let the row's remaining three boxes
-sit on one straight run.
-
-**The heading names what the row produces, not the category it belongs to.**
-Both rows of the calibration flow were once headed as calibrations, which was
-wrong about the upper one: it constructs a surface reference from one seated
-pose and the nominal \(+Z_{\mathrm{EE}}\) axis rather than measuring the
-physical plane normal. A heading that overstates what a row establishes is
-worse than no heading, because the figure then contradicts the prose.
-
-Put the headings above the rows, not to the left of them. A label column widens
-the picture, and `\resizebox{\textwidth}` then shrinks every other label to buy
-the room, which is the fault the scaling rule above describes. Headings above
-cost height, which is free. Where the lower heading has no clearance, move the
-rows apart rather than tightening the gap around it.
-
-A row heading is not the internal title banned below. A title restates the
-caption; a heading names one chain of several, which the caption cannot do
-without describing the whole drawing.
+**Delete a complete diagram when it only repeats adjacent prose.** The former
+Chapter 4 calibration flowchart repeated the procedures stated immediately in
+Sections 4.2.1 and 4.2.2 and was removed. A cleaner redraw would not have added
+information, so the figure must not be restored without a new conceptual
+distinction that requires a visual explanation.
 
 ### What does not belong in the drawing
 
@@ -299,7 +279,12 @@ ends after `tool face`.
 
 **The Chapter 3 controller flow uses two state-machine drawings.** The first
 starts directly with Robot Recovery and then shows Controller Selection, followed by the
-surface-contact, Cartesian Pose Hold and Manual Guidance branches. The second
+Contact Sequence, Cartesian Pose Hold and Manual Guidance branches. Label these
+three selections `if operator types s`, `if operator types h`, and `if operator
+types g`, respectively, so the drawing exposes the implemented keyboard
+mapping. This overview intentionally omits the direct `t` route to
+contact-impedance Test Mode; the Chapter 3 text names that implemented route,
+and the detailed drawing shows the experiment-oriented Test Mode loop. The second
 shows the surface-contact states from Tool Orientation through Grinding. Its
 common start is the short blue rounded box `Initial Configuration`. A `Stored
 \(q_{\mathrm{init}}\)` box feeds it from one side on `move to
@@ -349,20 +334,32 @@ numerical gain-group annotations stay out of both state-machine drawings; the
 Test Mode loop names only the varied parameter families \(K_p\), \(K_R\), and
 \(r_c\).
 
-**Figure 3.2 has one obvious main path and separates sensing from modelling.**
-Joint Feedback carries the measured \(q,\dot q\) to the Robot Model; the model
-evaluates \(T_{EE}\), \(J(q)\), \(M(q)\) and \(\tau_c(q,\dot q)\). The main row
-then runs from the Robot Model through Cartesian Error, Cartesian Impedance
-Wrench, Cartesian Torque and Torque Sum. The command drives the Joint Motors,
-whose motion returns through Joint Feedback. The model does not convert sensed
-moments into joint angles. Keep \(J(q)\), \(\tau_c\) and the null-space torque
-as short secondary inputs, and keep the frequency label out because the whole
-drawing is one control loop. Every box, arrowhead and label retains visible
-separation after compilation.
+**Figure 3.2 has one obvious torque path and separates sensing from modelling.**
+Joint Feedback carries measured \(q,\dot q,T_{EE},\dot p,\omega\). The pose
+\(T_{EE}\) goes directly to Cartesian Error, and the measured velocities go to
+the wrench calculation. Only \(q,\dot q\) enter the Robot Model, which supplies
+\(J(q)\) and \(\tau_c(q,\dot q)\). The model does not reconstruct the measured
+pose or convert sensed moments into joint angles. Keep these model outputs and
+the null-space torque as short secondary inputs, and keep the frequency label
+out because the whole drawing is one control loop. Every box, arrowhead and
+label retains visible separation after compilation.
 Every arrow is labelled with its transmitted signal. The physical return from
-Joint Motors to Joint Feedback is labelled `Joint motion`; the measured
-\(q,\dot q\) are then labelled on the arrow from Joint Feedback to the Robot
-Model, so sensing is not presented as a model transformation.
+Joint Motors to Joint Feedback is labelled `Joint motion`, and sensing is not
+presented as a model transformation.
+The wrench box is `Cartesian Impedance Wrench` and carries only \(F\). It does
+not repeat a simplified impedance law; the complete controller law belongs in
+the theory chapter.
+
+**Figure 4.1 does not identify the configured normal with the physical plane.**
+Panel (b) draws the physical surface and its conceptual normal
+\(n_{\mathrm{phys}}\) separately from the configured surface reference and its
+frame \((t_1,n_s)\). It assigns no measured angle to the unknown difference.
+
+**Figure 4.2 is the only calibration-related figure retained in Section 4.2.**
+It shows the distinction between the configured reference, the unmeasured
+physical surface and the contact-entry angle. The separate calibration
+flowchart is withdrawn because it duplicated the two procedure subsections.
+
 The upper selection block is named `Controller State`. Do not append `Logic`.
 Its outgoing arrows show its parameter-selection role without another word in
 the box. Main-row blocks retain conspicuous gaps in the compiled page; short
@@ -383,7 +380,8 @@ switches directly from any active mode to the selected one. Mode 1 exposes
 \(d_{\mathrm{null}}\), mode 2 exposes \(k_\sigma\), and mode 3 exposes both.
 Keep the numerical mapping visible and distinguish the selectable software
 modes from the four settings compared experimentally. Do not replace mode 3
-with a second conditioning-gain setting.
+with a second conditioning-gain setting. The compact box descriptions are
+`No Torque`, `Damping`, `Conditioning`, and `Together`; each stays on one line.
 
 ## Generated plots (matplotlib)
 

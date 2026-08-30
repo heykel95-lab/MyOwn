@@ -514,13 +514,19 @@ circulation, the settled choices are:
   \(r_c=0\) and in \(m_{\mathrm{cpl},K}=r_c\times f_K\). It is introduced there
   without \(p_c\), as the displacement from the TCP to the virtual CoC.
 
-  **The implementation stores \(r_c\) itself, in both definitions.** The
-  tool-frame `compliance_center_offset_ee` and the surface-frame
-  `compliance_lever_surface` both define \(p_c-p_{\mathrm{TCP}}\). Neither
-  branch negates: the source forms `r_c = R_EE * offset` and
-  `r_c = R_base_surface * lever`, so the variable named `r_c` in the listings
-  is \(r_c\) in the thesis convention, and the two branches differ only in the
-  frame the stored vector is expressed in.
+  **The thesis and source use opposite names for the same physical lever.** The
+  thesis always defines \(r_c=p_c-p_{\mathrm{TCP}}\). The current controller
+  instead uses the internal source-side lever
+  \(\ell_c=p_{\mathrm{TCP}}-p_c=-r_c\), although its C++ identifier is
+  `r_c`. Its adjoint block is therefore `+[ell_c]_x`, which is identical to the
+  thesis block `-[r_c]_x`. Appendix A states this mapping before reproducing
+  the implementation signs.
+
+  The tool-frame parameter `compliance_center_offset_ee` stores the thesis
+  displacement \(r_c\) and is negated when the source forms \(\ell_c\). The
+  surface-frame parameter `r_tcp_from_compliance_center_surface` stores
+  \(\ell_c\) directly. Do not describe the two parameter keys as carrying the
+  same signed vector.
 
   **Only the end-effector-frame definition is used in the reported
   experiments.** Every non-zero experimental displacement is configured with
@@ -529,13 +535,6 @@ circulation, the settled choices are:
   not an experimental condition. The former definition-frame comparison and
   its three settings are excluded from the thesis results and run totals.
 
-  **The opposite-vector convention is withdrawn.** The surface-frame parameter
-  was once named `r_tcp_from_compliance_center_surface` and stored \(-r_c\),
-  and the rule was that the listings were not edited to match while the code
-  appendix stated the sign relation instead. Both halves are gone: the key was
-  renamed and its negation dropped at all four read sites on 2026-08-25, and
-  the code appendix now reproduces the source as it stands, with no sign
-  correction in the prose around it.
 - **surface frame** for the directional frame \(\{S\}\) the contact
   experiments are resolved in, with
   \(R_{\mathrm{surface}}=[\,t_1\;\;t_2\;\;n_s\,]\). **Never `surface task
@@ -901,6 +900,13 @@ immediately after that name. For example, write `the alignment angle
 first definition. It does not apply to generic physical nouns that do not denote
 a specific defined variable, or to an unambiguous pronoun or shortened reference
 such as `this matrix` or `the value`.
+
+**Reserve \(\tau_{\mathrm{cmd}}\) for the complete implemented command.** Use
+\(\tau_{\mathrm{model}}\) for the general model-compensated balance that
+includes an explicit gravity term, and \(\tau_{\mathrm{cmd,cart}}\) for the
+implemented Cartesian-only command before the null-space contribution is
+added. One symbol must not denote both the general balance and the complete
+implemented command.
 
 **A direction that exists in two frames carries the frame in its subscript.**
 The tool-face normal is \(n_{\mathrm{Tool,EE}}\) in end-effector coordinates
@@ -1522,6 +1528,12 @@ distinct Test Mode follows Grinding. Operator input `t` enters it, and operator
 input `s` returns through initialisation for the next contact after \(K_p\),
 \(K_R\), or \(r_c\) is varied.
 
+The overview deliberately shows the three principal selections `s`, `h`, and
+`g`. The running text must also state that `t` can enter the contact-impedance
+Test Mode directly from Controller Selection or Guidance Mode. Figure 3.3 shows
+the experiment-oriented `t`/`s` tuning loop after Grinding rather than every
+software entry route.
+
 **A controller flow chart is a state machine with only the required experiment
 orchestration shown around it.** Every black rectangular box is an operating or
 controller state. Blue rounded boxes distinguish run initialisation and Test
@@ -1659,6 +1671,13 @@ that the point-shifted impedance lets the commanded normal press contribute to
 the rotational response and sends the measurement to Chapter 5. Do not
 re-argue the cross terms there.
 
+**A derived controller relation has one canonical equation.** The complete
+commanded-moment decomposition, projected null-space velocity, null-space
+damping law, surface-frame construction and compliance-lever direction rule
+are written as equations in the theory chapter. Later chapters and appendices
+cite those equations and state only the term or consequence needed locally.
+Figures do not repeat the full relations.
+
 **The Grinding state gets two sentences and no more.** No reported run entered
 it, so the chapter states that it maintains the normal contact-establishment
 reference while superimposing tangential motion with the decoupled impedance.
@@ -1732,7 +1751,7 @@ hold uses the base frame, and the contact establishment translational frame is c
 
 The chapter should come out shorter and stronger, not longer.
 
-### Chapter 4 restructure, agreed and not yet carried out
+### Chapter 4 structure
 
 The division of labour is: **Chapter 3 is mechanism and implementation,
 Chapter 4 is the physical setup, the settings actually used, the test matrix
@@ -1776,10 +1795,13 @@ Section by section:
   master table, then prose only for the cases that need interpretation: why an
   axial displacement is nominally weak, and why the lever direction changes with
   the commanded orientation.
-- **Evaluation quantities.** Equations belong here, unlike in Chapter 3: the
-  signed contact-establishment rotation and its surface-resolved component, the alignment-angle
-  definition with its tool-mount assumption, and the wrench projections all
-  define how results are calculated. **Remove the mean and sample
+- **Experimental condition and response quantity.** Keep one
+  input--condition--response chain: the controller input
+  \(\theta_{\mathrm{cmd}}\) produces the achieved pose-based condition
+  \(\theta_{0,t_i}\), and Contact Establishment produces the measured response
+  \(\gamma_{t_i}\). The pose- and geometry-based checks belong in Appendix D.
+  Define wrench projections locally beside the Case-D mechanism figure rather
+  than as a separate methodology subsection. **Remove the mean and sample
   standard-deviation equations** and say instead that repeated settings are
   reported by their arithmetic mean and sample standard deviation.
 
@@ -1827,22 +1849,21 @@ captures entered the fit` are the settled forms. **If the residual is ever
 computed, the fourth pose may come back with it** — as a reported number, not
 as a bare mention.
 
-**Section 4.2 says what each calibration produces, and stops there.** The
-section had grown to mix procedure, frame definitions, validation and the later
-combination of the two results before the reader knew what either calibration
-delivered. The settled shape is: state the two quantities needed, name what
-each procedure supplies —
-\(p_s\), \(n_s\) and \(R_{\mathrm{surface}}\) from the surface calibration,
-\(n_{\mathrm{Tool,EE}}\) from the tool calibration — and leave the combination
-to the chapters that use it. The transformation into the base frame belongs to
-Chapter 3 and the pose-based alignment estimate to its appendix consistency
-check; Section 4.2 cross-references both rather than deriving either.
+**Section 4.2 says what each procedure produces, and stops there.** The section
+had grown to mix procedure, frame definitions, validation and the later
+combination of the two results before the reader knew what either procedure
+delivered. Its settled opening is two short paragraphs: the first assigns
+\(p_s\), \(n_s\) and \(R_{\mathrm{surface}}\) to the surface-reference
+construction and \(n_{\mathrm{Tool,EE}}\) to the tool-normal calibration; the
+second states that the tool-normal calibration did not revise the configured
+surface reference and that the physical surface-reference difference was not
+measured independently. The two subsections then state the procedures and send
+the exact values and fitting relation to Appendix C.
 
-**The figure carries the same division.** Each band runs input, method, result,
-and the checks hang below the result box feeding nothing. Giving `Re-seated
-check` and `Held-out check` the same place in the arrow chain as
-\(R_{\mathrm{surface}}\) and \(n_{\mathrm{Tool,EE}}\) is what made readers take
-a validation step for a third calibration output.
+**The calibration flowchart is withdrawn.** It repeated the two procedures
+immediately before Sections 4.2.1 and 4.2.2 stated them again. It is removed
+rather than redesigned. Do not restore a calibration flowchart unless it adds
+a distinction that neither subsection can state directly.
 
 \(R_dn_{\mathrm{Tool,EE}}=-n_s\) still describes what the
 controller does with the calibration, not how the calibration was made, and is
@@ -1866,6 +1887,13 @@ technical quantity*.
 matrices whose diagonal entries are all equal spent most of a page saying four
 numbers. They are one small table with a sentence saying every entry was
 isotropic.
+
+**Tables 4.2 and 4.3 are not restated row by row.** After Table 4.2, retain
+only the experimental role of the rotational stiffness and the reference to
+the inertia-scaled damping formulation. After Table 4.3, give the chronological
+run procedure once, followed by one sentence stating the fixed null-space
+configuration. The table remains the home of the individual transition and
+trajectory values.
 
 **Chapter 4 documents the reported runs, so grinding leaves its tables.** No
 run entered the Grinding state, and the chapter said so four times: a
@@ -1919,7 +1947,7 @@ table cell is a definition, not a paragraph: name the quantity, its frame and
 its unit, and send anything longer to the section that owns it. The former
 `Evaluation Quantities` section was deleted on 2026-08-27 and **must not be
 restored**, because every quantity in it already had a better home —
-\(\gamma_{t_i}\) in Section 4.5.1, the TCP-height classification in
+\(\gamma_{t_i}\) in Section 4.5.2, the TCP-height classification in
 `Supporting Geometric Checks` and Appendix D.6, the pose-based alignment angle
 in Appendix D.7, and \(E_N\), \(\Delta\eta_{\mathrm{dist}}\) and the
 position-retention criterion in Section 4.6. The contact establishment-report markers
@@ -1974,8 +2002,11 @@ sentence above already stated; and the mounting-play qualification, which
 Chapter 6 carries. What stays because the appendix is the only place it exists:
 the \(\sin\alpha_{\mathrm{axis}}\) projection that explains why a
 \(40\,\mathrm{mm}\) tool-axis displacement gives under \(7\,\mathrm{mm}\) of
-tangential lever, the lever-selection equation of the direction check, and the
-two \(\theta_{\mathrm{align}}\) equations of the consistency check.
+tangential lever, the actual vectors used for the direction check, and the
+\(\theta_{\mathrm{align}}\) definition and reduction of the consistency check.
+The direction check cites the canonical lever-selection equation in Chapter 2,
+and the alignment check cites the Chapter 3 tool-normal transformation rather
+than repeating either relation.
 
 **An appendix table caption is a short noun phrase, like every other caption.**
 The Appendix D captions had grown to four and five lines carrying
@@ -2071,7 +2102,7 @@ tool normal and configured surface reference. Use that diagnostic for
 from the final \(e_R\).
 
 **The sign relation is restated wherever it is used to read a number, not only
-where it is defined.** Section 4.5.1 derives it and says what follows. A reader
+where it is defined.** Section 4.5.2 derives it and says what follows. A reader
 meeting the first results figure is by then a chapter away from the
 derivation, so two restatements were added on 2026-08-25 and both stay:
 
@@ -2091,7 +2122,7 @@ derivation, so two restatements were added on 2026-08-25 and both stay:
   rotation carry opposite signs on the same time axis. Without a bridge
   sentence the figure looks as though a negative commanded moment produced a
   positive rotation. Say what \(\gamma_{t_1}\) is, cross-reference
-  Section 4.5.1, and say that the alignment-directed response therefore appears
+  Section 4.5.2, and say that the alignment-directed response therefore appears
   as a positive \(\gamma_{t_1}\) against a negative \(M_{t_1}\).
 
 Restating this is not the internal repetition the guide bans elsewhere: what is
@@ -2109,17 +2140,19 @@ The general rule is that a sign convention is stated, not christened.
 frame, object or source that fixes it.
 
 **Do not coin an informal name for a defined quantity to carry a sign
-argument.** Section 4.5.1 said the metric was independent of `the plane-zero
+argument.** Section 4.5.2 said the metric was independent of `the plane-zero
 alignment`, which names nothing the thesis defines, and justified that
 independence by saying the tool axis `is known only to within a degree or two
 and shifts as the tool settles in the gripper`. Both were removed on
 2026-08-25. The second states a mechanical clearance as though it were a
 calibrated knowledge bound, which the \(\pm2^\circ\) rule below forbids, and
 asserts a motion during contact that was not tracked. The defensible statement
-names the chain instead: the quantity comes from the measured end-effector
-orientation, the calibrated tool normal does not enter it, it is therefore
-independent of the relative tool--gripper rotation of Section 4.1.1, and the
-surface frame enters only as the directions the rotation is resolved along.
+names the chain instead: the calculation uses only the measured end-effector
+orientations and therefore does not require the instantaneous tool--gripper
+rotation. Do not call the response independent of relative tool--gripper
+motion, because that motion can still affect the contact dynamics and measured
+end-effector response. The surface frame enters only as the directions the
+rotation is resolved along.
 
 The pose-based alignment error is appendix-only. It is unsigned and depends on
 the assumed fixed tool-to-end-effector relation, so neither it nor its
@@ -2141,8 +2174,9 @@ exception to a response-only comparison plot.
 
 The TCP-height flatness classification is appendix-only supporting evidence.
 It does not appear as a column in the Chapter 5 comparison tables or as a
-second outcome in their narratives. Appendix D retains the classified
-conditions, the geometric interpretation and the tool-mount qualification.
+second outcome in their narratives, and it is not repeatedly signposted in the
+openings of Chapters 4 and 5. Appendix D retains the classified conditions, the
+geometric interpretation and the tool-mount qualification.
 
 The **TCP-height flatness criterion** answers *is the final measured TCP
   position geometrically consistent with the calibrated rectangular face lying

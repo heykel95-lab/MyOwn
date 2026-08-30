@@ -1,9 +1,9 @@
 % The archived vector plot is retained because the raw time-series CSV files
-% are not part of this clone. Crop its three old y-axis labels and typeset the
-% current quantity names beside the unchanged plot area.
+% are not part of this clone. Crop its three old y-axis labels, then replace the
+% old axis and legend wording without changing the plotted data.
 \begin{tikzpicture}
   \node[anchor=south west, inner sep=0] (image) at (1.35,0)
-    {\includegraphics[width=0.755\textwidth,trim=44pt 0 0 0,clip]
+    {\includegraphics[width=0.755\textwidth,trim=58pt 0 0 0,clip]
        {figures/MAIN_D_wrench.pdf}};
   \begin{scope}[
       shift={(image.south west)},
@@ -18,5 +18,33 @@
     \node[rotate=90, align=center, font=\scriptsize] at (-0.065,0.165)
       {Commanded TCP Moment About \(t_1\),\\
        \(M_{t_1}\) [N m]};
+
+    % These covers occupy only the original opaque legend boxes; no additional
+    % part of a plotted trace is hidden.
+    \fill[white] (0.690,0.870) rectangle (0.965,0.943);
+    \fill[white] (0.690,0.550) rectangle (0.965,0.615);
+    \fill[white] (0.040,0.210) rectangle (0.300,0.285);
+
+    \foreach \y/\colour/\entry in {
+      0.930/black/{CoC, \(r_{c,t_2}=-40\,\mathrm{mm}\)},
+      0.905/red/{CoC at TCP, \(r_{c,t_2}=0\)},
+      0.880/blue/{CoC, \(r_{c,t_2}=+40\,\mathrm{mm}\)}} {
+      \draw[\colour, line width=0.5pt] (0.705,\y) -- (0.740,\y);
+      \node[anchor=west, inner sep=0, font=\tiny] at (0.748,\y) {\entry};
+    }
+    \foreach \y/\colour/\entry in {
+      0.605/black/{CoC, \(r_{c,t_2}=-40\,\mathrm{mm}\)},
+      0.582/red/{CoC at TCP, \(r_{c,t_2}=0\)},
+      0.559/blue/{CoC, \(r_{c,t_2}=+40\,\mathrm{mm}\)}} {
+      \draw[\colour, line width=0.5pt] (0.705,\y) -- (0.740,\y);
+      \node[anchor=west, inner sep=0, font=\tiny] at (0.748,\y) {\entry};
+    }
+    \foreach \y/\colour/\entry in {
+      0.270/black/{CoC, \(r_{c,t_2}=-40\,\mathrm{mm}\)},
+      0.245/red/{CoC at TCP, \(r_{c,t_2}=0\)},
+      0.220/blue/{CoC, \(r_{c,t_2}=+40\,\mathrm{mm}\)}} {
+      \draw[\colour, line width=0.5pt] (0.055,\y) -- (0.090,\y);
+      \node[anchor=west, inner sep=0, font=\tiny] at (0.098,\y) {\entry};
+    }
   \end{scope}
 \end{tikzpicture}

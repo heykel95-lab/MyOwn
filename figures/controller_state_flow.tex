@@ -18,7 +18,7 @@
   \node[state] (recovery)  at (0.00, 0.00) {Robot Recovery};
   \node[state] (selection) at (0.00,-1.75) {Controller Selection};
 
-  \node[state] (surface)  at (-4.60,-4.40) {Surface-Contact Sequence};
+  \node[state] (surface)  at (-4.60,-4.40) {Contact Sequence};
   \node[state] (pose)     at ( 0.00,-4.40) {Cartesian Pose Hold};
   \node[state] (guidance) at ( 4.60,-4.40) {Manual Guidance};
   \node[stopstate] (stop) at ( 0.00,-7.90) {Stop};
@@ -32,10 +32,11 @@
   \draw[flow] (split) -- (pose);
   \draw[flow] (split) -- (4.60,-2.90) -- (guidance);
   \node[cond, anchor=south west] at (-4.30,-2.60)
-      {if surface contact\\selected};
-  \node[cond, anchor=west] at (0.25,-3.60) {if pose hold selected};
+      {if operator types \texttt{s}};
+  \node[cond, anchor=west] at (0.25,-3.60)
+      {if operator types \texttt{h}};
   \node[cond, anchor=south east, align=right] at (4.30,-2.60)
-      {if manual guidance\\selected};
+      {if operator types \texttt{g}};
 
   % One shared stop rail for all active controller states.
   \coordinate (railleft) at (-4.60,-5.80);

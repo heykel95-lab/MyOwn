@@ -40,6 +40,12 @@ ends the program. Operator stop, a configured run-duration limit, a robot-side
 error or reflex, and a communication or control exception provide the common
 transition from any active controller state to Stop.
 
+The overview shows these three principal selections. The implementation also
+accepts input \texttt{t} from Controller Selection or Guidance Mode to enter
+the contact-impedance Test Mode directly. The experiment-oriented tuning loop
+is shown with the detailed contact sequence in
+\mbox{\Cref{fig:phase_flow_chart}}.
+
 \Added{A robot-side error or reflex is a stop condition reported by libfranka
 and is not limited to a joint-limit violation. Communication and control
 exceptions form the separate application-side category.}
@@ -47,7 +53,7 @@ exceptions form the separate application-side category.}
 \begin{figure}[H]
   \centering
   \input{figures/controller_state_flow.tex}
-  \caption{Controller operating-state flow.}
+  \caption{Principal controller operating-state flow.}
   \label{fig:controller_state_flow}
 \end{figure}
 
@@ -132,15 +138,17 @@ remain on the main path in the chart. A disabled hold advances
 without waiting, while operator confirmation releases an enabled hold. Contact
 Establishment advances after the moment-change criterion and minimum duration,
 or through its independent timeout. Pre-Grinding Hold then precedes Grinding.
-The reported runs ended in the enabled hold before Grinding. After Grinding,
-operator input \texttt{t} opens Test Mode for the next selection of
+The reported runs ended in the enabled hold before Grinding. In the
+experiment-oriented loop shown, operator input \texttt{t} after Grinding opens
+Test Mode for the next selection of
 \mbox{\(K_p\)}, \mbox{\(K_R\)}, or \mbox{\(r_c\)}. Operator input
-\texttt{s} returns the sequence to initialisation.
+\texttt{s} returns the sequence to initialisation. The same Test Mode can also
+be entered directly from Controller Selection or from Guidance Mode.
 
 \begin{figure}[H]
   \centering
   \input{figures/phase_flow_chart.tex}
-  \caption{Surface-contact state transitions.}
+  \caption{Experimental surface-contact sequence and tuning loop.}
   \label{fig:phase_flow_chart}
 \end{figure}
 
@@ -221,7 +229,7 @@ by the rotation vector
 
 Its magnitude \mbox{\(\lVert\theta_{\mathrm{cmd}}\rVert\)} is the commanded
 offset angle relative to the configured surface reference. It is a controller
-input and is not the achieved tool--surface angle at contact entry. For a
+input and not the achieved reference-relative angle at contact entry. For a
 non-zero offset the corresponding unit rotation axis is
 
 \begin{equation}
@@ -349,8 +357,8 @@ plane can lie well below the TCP, so the TCP height alone does not give the
 clearance the transition needs. The
 controller therefore evaluates the four corners of
 \mbox{\Cref{fig:face_feature_selection}} in every control cycle. Their
-positions and clearances also identify the point of the face that contact establishment should
-press onto the surface.
+positions and clearances determine the geometric tool reference used to
+construct the contact-establishment trajectory.
 
 The base-frame position \mbox{\(p_i(t)\)} of tool-face corner \mbox{\(i\)} is
 
@@ -539,7 +547,7 @@ s_{\mathrm{CE}}(t_{\mathrm{CE},0})
 \label{eq:implementation_setup_initial_coordinate}
 \end{equation}
 
-The selected point remains above the surface at the transition, so
+The selected point remains above the configured reference plane at the transition, so
 \mbox{\(s_{\mathrm{CE}}(t_{\mathrm{CE},0})<0\)}. This initial value makes
 the first contact-establishment reference equal to \mbox{\(p_{\mathrm{Tool,clearance}}\)} and avoids
 a position step.
@@ -606,8 +614,8 @@ During the linear part of the ramp, the desired TCP velocity is
 by prescribing the selected tool-point trajectory and reconstructing the TCP
 target that realises it. Because the surface restricts this commanded motion,
 the resulting Cartesian position error generates the press. The configured
-endpoint lies below the surface and therefore defines a spring reference
-rather than an expected physical travel.
+endpoint lies below the configured reference plane and defines a spring
+reference rather than an expected physical travel.
 
 \mbox{\Cref{fig:setup_reference}} shows the complete construction from the
 projected tool point to the TCP target.

@@ -92,7 +92,7 @@ for recapture and resumption from an active controller state. Figure 3.3 also
 places the Test Mode box on the left return branch with its `s` and `t`
 conditions beside the box. Figures 3.3 and 3.7 were checked visually in the
 clean and review outputs.
-`Thesis.pdf` has 132 pages and `Review_Draft.pdf` has 135 pages,
+`Thesis_preview.pdf` has 128 pages and `Review_Draft.pdf` has 132 pages,
 with no undefined references or citations, no overfull boxes and no soul
 reconstruction failures in their final passes.
 Judge a build by the final pass; the earlier ones always report undefined
@@ -175,22 +175,10 @@ outstanding from the author on that front.
 None of the following needs the lab machine. Completed items have been deleted
 from this list rather than annotated, so everything here is still open.
 
-- **The pulled controller and thesis use opposite compliance-lever signs.**
-  The thesis defines \(r_c=p_c-p_{\mathrm{TCP}}\). At pulled revision
-  `f54b7a5`, `surface_grinding_controller/src/control/cartesian_impedance.cpp`
-  instead forms \(r_c=p_{\mathrm{TCP}}-p_c\): it negates the tool-frame centre
-  offset and reads `r_tcp_from_compliance_center_surface` directly. The
-  terminology refactor deliberately did not change this behaviour. Reconcile
-  the source, parameter overlays and Appendix A together before the controller
-  is treated as the implementation of the thesis convention; the choice is
-  blocked on confirmation because changing it reverses the coupled moment.
-
 **Prose and technical (review pass 1)**
 
 - **4** — keep the three moment concepts separate throughout, and never add
   \(m_{r_T}\) to \(m_0\) or \(m_{\mathrm{cpl},K}\). Spot-check rather than rewrite.
-- **57** — \(\tau_{\mathrm{cmd}}\) carries two definitions in Section 2.4.3.
-  Reserve it for the implemented command and rename the generic form.
 - **59** — Introduction citation-support audit. Check each literature-supported
   claim against its source; soften anything the source does not carry, such as
   the share of industrial deployments attributed to *torque-controlled* robots.
@@ -201,13 +189,6 @@ from this list rather than annotated, so everything here is still open.
 
 **Figures, tables and captions (review pass 2)**
 
-- **22** — Figure 4.1 labels and caption. Item 23, the contact-establishment figure, is done:
-  it now carries \(p_{\mathrm{Tool,clearance}}\), \(p_{\mathrm{Tool},0}\),
-  \(s_{\mathrm{CE}}\), \(p_d\) and the TCP with its rigid offset. Item 21,
-  the Figure 4.2
-  calibration notation, is done: the figure now runs one band per calibration
-  and its symbols match Section 4.2, and all four contact-establishment symbols are in the
-  symbol list.
 - **31, 33, 34, 37, 38** — the remaining pgfplots figures and their tables:
   Figures 5.1, 5.4 and the supporting-check figures in Appendix D are `.tex`
   sources and can be edited directly. Figure 5.4 now carries sample-standard-
@@ -245,11 +226,10 @@ Checked on 2026-08-25 against
 commented out and were left alone. Each item below is a place where the
 document states something the source no longer does.
 
-The \(r_c\) items are done and have been removed from this list: the
-`lst:app_spring_wrench` listing and the paragraph above it now match the
-renamed key and its dropped negation, and the superseded ruling in
-`THESIS_WRITING_GUIDE.md` was replaced rather than annotated. What follows is
-the drift that predates the \(r_c\) work and is still open.
+The active \(r_c\) listings now state the exact sign bridge between the thesis
+displacement \(r_c=p_c-p_{\mathrm{TCP}}\) and the source-side lever
+\(p_{\mathrm{TCP}}-p_c\). What follows is drift in archived material that is
+still open.
 
 The compiled Appendix A now contains only the CoC point-shift and core callback
 listings. The following archived listings are inside `\iffalse` and reach no
@@ -267,35 +247,6 @@ reader; correct them if they are ever reinstated.
   reported null-space runs**, whose logs carry every one of those signals, so
   this is a question of which state the appendix documents and not a plain
   error. Settle that before editing it.
-
-**`backmatter/appendix_data_logging_format.tex` documents two generations of
-the log format at once, and this needs a decision rather than a correction.**
-An earlier note here claimed the sigma columns had never existed and should be
-deleted. **That was wrong and is withdrawn**: it came from reading the current
-writer instead of the archived logs. The header of
-`MAIN_NS7_baseline_20N_200mm/r01/logs/surface_grinding_controller_log.csv`
-carries `sigma_current`, `sigma_plus`, `sigma_minus`, `sigma_difference`,
-`sigma_direction`, `nullspace_dq_1..7`, `tau_sigma_1..7` and `tau_sigma_norm`,
-which is where the reported redundant-motion and \(\sigma_{\min}\) values come
-from. Those runs also spell the angular columns `alignment_error_*_deg` and
-`alignment_angle_deg`.
-
-The current `src/report/csv_logging.cpp` writes a different 99-column set: no
-sigma group, the angular columns spelled `angular_deviation_*_deg`, and
-`p_CoC`, `r_eff` and `t_align` added. The appendix table is the union of the
-two and says so nowhere. `disturbance_torque_scale` is in the current writer
-and in the null-space logs, and is documented in neither the appendix nor this
-note's earlier version.
-
-**Two things are still unverified.** Whether the archived contact runs carry
-the current spelling or the older one was not checked, and neither was the
-claim at the sigma row that those columns are "recorded in every mode,
-including when no torque is commanded". Check both against a contact-run
-header before rewriting the table.
-
-Nothing here is blocked. The listings carry no `\Revised{}` wrappers, so no
-frozen text is in the way, but both appendices carry green assessment boxes
-and neither chapter has been declared revised — confirm before editing.
 
 ## The contact-establishment reference figure does not follow FIGURE_STYLE
 
@@ -400,19 +351,18 @@ reasoning on both sides so it is not re-argued.
 
 `FIGURE_STYLE.md` now requires every line of node text in a drawn diagram to
 begin with a capital, with lines that start with a symbol left as notation. The
-rule was applied to `calibration_flow`, `phase_flow_chart` and
-`controller_block_diagram`. The remaining TikZ diagrams have not been through
-it: `setup_schematic` (`compliance`), and any box text in
+rule was applied to `phase_flow_chart` and `controller_block_diagram`. The
+remaining TikZ diagrams have not been through it: `setup_schematic`
+(`compliance`), and any box text in
 `tool_transfer_flow`, `reference_frames`,
 `compliance_lever_moment`, `moment_bookkeeping`, `tool_face_plan_view` and
 `case_c_direction_rule`.
 
-Capitalising a line widens its box, which can close the gap its arrows need —
-that happened in `calibration_flow` and cost a column-spacing adjustment. Do
-one diagram at a time and look at each in the compiled document before moving
-on.
+Capitalising a line widens its box, which can close the gap its arrows need.
+Do one diagram at a time and look at each in the compiled document before
+moving on.
 
-## Six diagrams are still sized by `\resizebox`
+## Five diagrams are still sized by `\resizebox`
 
 The three Chapter 3 diagrams were drawn at about 7--10 cm and then stretched to
 the text width, which magnified their label text along with the drawing: at
@@ -422,7 +372,7 @@ included without `\resizebox`, so the labels keep the size they were declared
 at.
 
 The same wrapper is still on `controller_block_diagram`, `tool_transfer_flow`,
-`setup_schematic`, `calibration_flow`, and the two appendix parameter tables.
+`setup_schematic`, and the two appendix parameter tables.
 A diagram that is *shrunk* by the wrapper has the
 opposite fault and is equally wrong. Each needs looking at in the compiled
 document, and the scale factor moving inside the picture wherever the label
@@ -534,15 +484,21 @@ that pass:
 - **The null-space figure gained a third panel** carrying the net redundant
   displacement of all four settings, so Section 5.2 onward repaginated again
   and the document is 128 pages. The page was rendered and read at 100 dpi
-  when the panel was added; the rest of the moved pages were not. Later edits
-  expanded the clean document to 132 pages and the review document to 135.
+  when the panel was added; the rest of the moved pages were not. The later
+  compression pass and removal of the Chapter 4 calibration flowchart leave
+  the clean document at 128 pages and the review document at 132 pages.
   `Thesis.tex` and `Review_Draft.tex` were rebuilt on 2026-08-30 with bibtex
   and three passes. Their final logs contain no undefined references,
   undefined citations or overfull boxes. Figure 3.3 was rendered from both
   documents after its contact-state, Guidance Mode and Test Mode routing was
   revised; its labels, arrow clearances and box spacing were checked visually.
   Figure 3.7 was also checked in both documents after its Guidance Mode route
-  was corrected. The remaining
+  was corrected. Figure 3.2, Figure 4.1, Figure 5.5 and the active Appendix A/B
+  pages were then rendered after the consistency fixes; their labels, routing,
+  crop and table/listing layout were checked visually. The Chapter 4 pages
+  around Sections 4.2 and 4.3 were checked after Figure 4.3 was removed and
+  the surrounding prose shortened; the clean and review versions have no
+  stranded calibration line or awkward float gap. The remaining
   moved pages still require the final page-by-page audit.
 
 ## What the Abstract-to-Conclusion consistency pass checked, and what it found
