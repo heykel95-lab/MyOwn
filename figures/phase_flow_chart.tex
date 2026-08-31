@@ -26,7 +26,7 @@
 
   \node[auxiliary, text width=3.60cm] (stored) at (-3.00,4.80)
       {Move to Stored \(q_{\mathrm{init}}\)};
-  \node[auxiliary] (guidance) at (5.00,4.80) {Manual Guidance};
+  \node[state, text width=2.90cm] (guidance) at (5.00,4.80) {Manual Guidance};
 
   \node[state] (orient)     at (0.00, 0.10) {Tool Orientation};
   \node[state] (appr)       at (0.00,-2.20) {Surface Approach};
@@ -43,14 +43,15 @@
   % Runtime guidance restarts an active contact sequence at Tool Orientation.
   \draw[testflow] ($(orient.east)+(0,-0.45)$) -| (9.00,4.80)
       -- (guidance.east);
-  \node[testcond, anchor=south] at (8.00,4.95) {\texttt{g}: guide};
+  \node[testcond, anchor=south] at (8.20,4.95) {\texttt{g}: guide};
   % Recapture enters the top edge vertically instead of ending on a corner.
-  \draw[testflow] (guidance.west) -- (2.80,4.80) -- (2.80,1.55)
+  \draw[testflow] (guidance.west) -- (2.30,4.80) -- (2.30,1.55)
       -- (1.20,1.55) -- ($(orient.north)+(1.20,0)$);
-  \node[testcond, anchor=west] at (3.00,2.60) {\texttt{p}: recapture};
+  \node[testcond, anchor=west] at (2.45,2.60) {\texttt{p}: recapture};
   \draw[flow] (orient) -- (appr);
-  \node[cond, anchor=west] at (2.15,-1.05)
-      {if \(\theta_{\mathrm{app,err}}\leq\varepsilon_{\mathrm{app}}\ \lor\)\\\(t\geq t_{\mathrm{end}}\)};
+  % One line: the condition measures 3.73 cm and the rail is 4.07 cm away.
+  \node[cond, text width=3.90cm, anchor=west] at (2.15,-1.05)
+      {if \(\theta_{\mathrm{app,err}}\leq\varepsilon_{\mathrm{app}}\ \lor\ t\geq t_{\mathrm{end}}\)};
   \draw[flow] (appr) -- (precontact);
   \node[cond, anchor=west] at (2.15,-3.35)
       {if \(h_{\mathrm{Tool}}\leq h_{\mathrm{clearance}}\)};

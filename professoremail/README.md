@@ -104,12 +104,36 @@ logged command, model estimate, baseline noise, signal-to-noise ratio and
 agreement status. The result is a one-run consistency check, not a
 repeatability claim.
 
+### Explicit K-frame repeat
+
+The prepared T_MODE_KFRAME_REPEAT setup retains the same stiffnesses and zero
+compliance-centre shift. It uses automatic damping with factor 1.0 and
+null-space mode 0. The damping calculated at t-mode entry is stored in the CSV
+and reported in the professor-email text. The rebuilt controller additionally
+logs K_F_ext_hat_K rotated into the base axes and the measured K-to-TCP offset.
+The analysis uses that explicitly K-referenced moment for the repeat and
+cross-checks it against the simultaneously logged O_F_ext_hat_K signal.
+Follow professoremail/T_MODE_KFRAME_REPEAT_PROTOCOL.md for the timed hand
+motions, first-trial check and optional three-trial analysis.
+
+### Manual-damping consistency trial
+
+The completed T_MODE_MANUAL_D_REPEAT trial reproduces the original manual
+damping while retaining the explicit K-frame wrench diagnostics. It uses
+DR_t1=10.01 N m s/rad, rc=0 and null-space mode 0. The professor-email result
+uses the stationary force interval from 8 to 13 s and the stationary moment
+interval from 28.5 to 31 s. Both component checks are consistent.
+`T_MODE_MANUAL_D_REPEAT_r01_controller_log.csv` is the untouched controller
+CSV for this measured trial; `t_mode_consistency_summary.csv` contains the
+plateau values used in the table.
+
 ## First-plot Contact Establishment diagnostic
 
 The proposed `T_MODE_MOMENT_DIAGNOSTIC` is not used for the first plot. That
 hand-operated hold checks a different controller state. The first plot is
 repeated with `P2_t1_pos_p000/r04` through the automatic `s` sequence. Its
-original gains and zero compliance-centre lever remain unchanged.
+original gains, automatic damping factor 1.9, null-space mode 3 and zero
+compliance-centre lever remain unchanged.
 
 Analyse the archived trial with:
 

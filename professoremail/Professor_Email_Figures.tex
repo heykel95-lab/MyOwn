@@ -26,6 +26,9 @@ The following gains were applied in the surface basis \([t_1,t_2,n_s]\):
  K_R &= [5,\ 5,\ 50]\,\mathrm{N\,m/rad}, &
  D_R &= [1.5,\ 1.9,\ 1.2]\,\mathrm{N\,m\,s/rad}.
 \end{align*}
+The damping values were calculated automatically at Contact Establishment
+entry with damping factor \(1.9\); the manual damping values were not used as
+lower bounds.  This contact sequence used null-space mode 3.
 The centre of compliance was placed at the TCP, with
 \(r_c=p_c-p_{\mathrm{TCP}}=0\).
 The first tangent \(t_1\) is the normalised projection of the base-frame
@@ -49,14 +52,9 @@ The first tangent \(t_1\) is the normalised projection of the base-frame
 \setlength{\jot}{2pt}
 The curves show one five-second Contact Establishment trace.  The grey area
 from \(4\) to \(5\,\mathrm{s}\) is the stationary interval used for the
-reported means.  Both plotted signals are absolute quantities resolved on the
-same surface axes.  The model estimate follows the robot-to-surface action
-convention.  The physical force acting on the robot is denoted throughout by
-\[
- {}^{O}\!f_{\mathrm{contact}}
- \equiv{}^{O}\!f_{\mathrm{surface}\to\mathrm{robot}}
- =-{}^{O}\!f_{\mathrm{robot}\to\mathrm{surface}}.
-\]
+measured means.  Both plotted signals are absolute quantities resolved on the
+same surface axes.  The physical contact force is denoted throughout by
+\({}^{O}\!f_{\mathrm{contact}}\).
 
 \par\smallskip
 \noindent\textbf{Normal-force comparison, \(F_n\)}\par
@@ -210,20 +208,23 @@ During each stationary hold, \(\dot e_n\simeq0\) and
  M_{t_1,\mathrm{qs}}=K_{R,t_1}\mathbin{\cdot}e_{R,t_1}.
 \]
 
-The consistency measurement used
-\[
- K_{p,n}=1000\,\mathrm{N/m},\quad D_{p,n}=175\,\mathrm{N\,s/m},\quad
- K_{R,t_1}=15\,\mathrm{N\,m/rad},\quad
- D_{R,t_1}=10.01\,\mathrm{N\,m\,s/rad}.
-\]
+The trial uses manual damping.  The gains in the surface basis
+\([t_1,t_2,n]\) are
+\begin{align*}
+ K_p&=[2000,2000,1000]~\mathrm{N/m}, &
+ D_p&=[10,10,175]~\mathrm{N\,s/m},\\
+ K_R&=[15,5,50]~\mathrm{N\,m/rad}, &
+ D_R&=[10.01,10.01,10]~\mathrm{N\,m\,s/rad}.
+\end{align*}
+The centre of compliance is at the TCP, \(r_c=0\).
 The accepted nominal checks were approximately \(20\,\mathrm{mm}\) and
-\(5^\circ\).  At exactly \(20\,\mathrm{mm}\), the force prediction is
+\(6^\circ\).  At exactly \(20\,\mathrm{mm}\), the force prediction is
 \[
  |F_{n,\mathrm{qs}}|=1000\mathbin{\cdot}0.020=20.0\,\mathrm{N},
 \]
-and at exactly \(5^\circ=0.087266\,\mathrm{rad}\), the moment prediction is
+and at exactly \(6^\circ=0.104720\,\mathrm{rad}\), the moment prediction is
 \[
- |M_{t_1,\mathrm{qs}}|=15\mathbin{\cdot}0.087266=1.309\,\mathrm{N\,m}.
+ |M_{t_1,\mathrm{qs}}|=15\mathbin{\cdot}0.104720=1.571\,\mathrm{N\,m}.
 \]
 
 \clearpage

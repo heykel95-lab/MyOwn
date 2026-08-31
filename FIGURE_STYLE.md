@@ -76,9 +76,9 @@ if a fifth colour is ever needed.
 moment exists but not which one, and the reader cannot match it to the relation
 in the annotation. Label the arc with the symbol the surrounding text uses.
 
-**A supporting figure uses the exact symbols defined beside it.** Do not
-shorten a surface-on-robot force to \(f_{\mathrm{s\to r}}\) in a drawing when
-the explanation defines \(f_{\mathrm{contact}}\), and do not replace
+**A supporting figure uses the exact symbols defined beside it.** Use
+\(f_{\mathrm{contact}}\) directly in the drawing and nearby definition; do not
+expand it into paired action-direction aliases. Do not replace
 \(M_{t_1,\mathrm{contact}}\) with a second action-direction index. The
 professor-email contact figure uses \(f_{\mathrm{contact}}\),
 \(r_{\mathrm{contact/TCP}}\), \(M_{t_1,\mathrm{contact}}\),
@@ -235,9 +235,12 @@ tolerance` is withdrawn, because Section 3.3 now defines both symbols.
 **A disjunction in a chart condition is written \(\lor\), never the word
 `or`**, so that one drawing states the same relation one way: the shared stop
 condition already read `if stop requested \(\lor\) robot error/reflex`, and
-the orientation condition was the only place left carrying the word. Where
-\(\lor\) ends a line it needs an explicit space before it, since TeX gives a
-trailing binary operator none.
+the orientation condition was the only place left carrying the word. The orientation condition is set on one
+line: it measures \(3.73\,\mathrm{cm}\) against the \(4.07\,\mathrm{cm}\)
+between its anchor and the stop rail, so it needs `text width=3.90cm` to
+override the \(3.8\,\mathrm{cm}\) the `cond` style would otherwise wrap it
+at. Where \(\lor\) does end a line, as in the stop condition, it needs an
+explicit space before it, since TeX gives a trailing binary operator none.
 The Contact Establishment arrow uses \(t\geq t_{\mathrm{end}}\). The body text
 retains the complete minimum-time, orientation, moment-change and timeout
 logic. Put the clearance condition beside the direct arrow into Pre-Contact
@@ -537,9 +540,16 @@ input `g` enters Manual Guidance from Cartesian Pose Hold, while `p` recaptures
 the reached configuration and pose before returning through pose capture.
 Runtime recapture is not specific to pose hold; the same `g` then `p`
 interaction restarts an active surface-contact sequence at Tool Orientation.
-**The Manual Guidance box carries its name and nothing else** in both charts;
+**Manual Guidance is drawn as a state, in the same black capsule as the
+sequence states, and carries its name and nothing else** in both charts.
 `Enter with g` is withdrawn, because the incoming `g: guide` arrow already
-states how the state is entered. The
+states how the state is entered; the blue rectangle is withdrawn too, on
+2026-09-01, for the reason that retired the blue Contact-Impedance Hold — it is
+a controller state, and Figure 3.1 had always drawn it as one. Its name is
+\(2.71\,\mathrm{cm}\) wide, so both capsules carry `text width=2.90cm`
+rather than the width their chart gives the sequence states: the routes that
+leave and enter Manual Guidance run close to its sides, and a full-width
+capsule would swallow the turn each of them needs. The
 path then captures the current end-effector pose and enters Cartesian Pose
 Hold, on an arrow that states the assignment the capture makes,
 \(p_d=p_{\mathrm{EE}}\) and \(R_d=R_{\mathrm{EE}}\), on two lines. The

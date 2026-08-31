@@ -2717,7 +2717,9 @@ instantaneous opposing torque at identical joint configurations.
   \(m_{\mathrm{CoC}}=r_c\times f=0\), but a surface force acting away from the
   TCP can still produce
   \(m_{\mathrm{contact},\mathrm{TCP}}=(p_{\mathrm{contact}}-
-  p_{\mathrm{TCP}})\times f_{\mathrm{surface}\to\mathrm{robot}}\).
+  p_{\mathrm{TCP}})\times f_{\mathrm{contact}}\). Use
+  \(f_{\mathrm{contact}}\) directly; do not expand it into paired
+  action-direction aliases in the nearby definition.
   In a standalone supporting report, this relation may state the physical
   flattening mechanism. If the pressure centre was not observed, do not assign
   it a measured position or evaluate the cross product from the selected tool
