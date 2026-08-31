@@ -150,9 +150,10 @@ two lines. Any additional line may contain only a symbol, value, short
 instruction, or qualifier. Put definitions and explanatory wording in the
 caption or body text instead of lengthening a box, line label, panel label, or
 annotation. Shortening must preserve distinctions that carry the figure's
-meaning; for example, use `Configured reference` rather than the longer
-`Configured surface reference`, but never shorten it to `Configured surface`,
-which could be mistaken for the physical surface.
+meaning. Use `Configured reference` rather than the longer `Configured surface
+reference`. `Configured surface` is permitted only in a shared legend that
+also names the contrasting `Physical surface`, as in Figure 1.1; elsewhere it
+can be mistaken for the physical surface.
 
 ### Scale the picture, do not resize it
 
@@ -329,16 +330,18 @@ physical surface and the configured offset are never drawn as approximations of 
 another. Use red for the configured reference, blue for the physical surface,
 and dark green for desired or achieved tool orientations. Keep the configured
 and achieved tool lines in separate panels so their nearby angles do not imply
-equality or cause label collisions. Panel (c) labels all three lines and draws
-\(\theta_0\) only between the configured surface and achieved tool face. Panel
-(b) labels its arc `Configured offset \(\theta_{\mathrm{offset}}\)` and places
-that name above the arc rather than beside the configured reference.
+equality or cause label collisions. A single legend above the panels names the
+red line `Configured surface`, the blue line `Physical surface`, and the green
+line `Tool face`. Do not repeat those names beside individual lines, and do not
+add `(unknown)` to the legend or the panels. Panel (c) draws \(\theta_0\) only
+between the configured surface and achieved tool face. Panel (b) labels its arc
+`Configured offset \(\theta_{\mathrm{offset}}\)` and places that name above the
+arc.
 The conceptual figures use \(\theta_{\mathrm{offset}}\) and \(\theta_0\) without a generic
 \(t_i\) index; Section 4.5 introduces the evaluated component
-\(\theta_{0,t_1}\). In both panels where the blue line appears, put `Physical
-surface` on one line and `(unknown)` on the qualifier line below it. In panel
-(c), label the arc `Reference-relative \(\theta_0\)` so the unknown physical
-surface cannot be mistaken for the reference from which the angle is defined.
+\(\theta_{0,t_1}\). In panel (c), label the arc `Reference-relative
+\(\theta_0\)` so the physical surface cannot be mistaken for the reference
+from which the angle is defined.
 Both angle arcs must remain conspicuous at the final printed size: give them
 visibly large radii and angular spans, together with heavier lines and
 arrowheads. The figure carries no numerical angles.

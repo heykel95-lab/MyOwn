@@ -103,9 +103,10 @@ contains no errors, undefined references or citations, or overfull boxes. Page
 28 was rendered from both outputs; the surface labels, angle label and arc have
 visible separation. The \(\theta_0\) arc was then enlarged in radius, angular
 span, line weight and arrowhead size. Panel (b)'s configured-offset arc now
-uses the same conspicuous treatment and carries its name above the arc.
-Detailed crops of both outputs confirm that the curves are visible and that
-the shortened tool lines do not cross the configured-reference labels.
+uses the same conspicuous treatment and carries its name above the arc. The
+repeated surface and tool labels were then replaced by one shared legend,
+without the repeated `(unknown)` qualifier. Detailed crops of both outputs
+confirm that the arcs, legend and panel labels remain distinct.
 `Thesis_preview.pdf` has 128 pages and `Review_Draft.pdf` has 132 pages,
 with no undefined references or citations, no overfull boxes and no soul
 reconstruction failures in their final passes.

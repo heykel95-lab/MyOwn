@@ -1,4 +1,4 @@
-% Configured reference, configured orientation offset, and achieved contact geometry.
+% Shared surface/tool legend, configured orientation offset, and contact geometry.
 \begin{tikzpicture}[
     scale=1.0,
     reference/.style={red!75!black, line width=1.1pt},
@@ -10,6 +10,17 @@
     panel/.style={font=\footnotesize, align=center},
   ]
 
+% One shared legend replaces repeated line labels in the three panels.
+\draw[reference] (0.10,1.95) -- (0.85,1.95);
+\node[lbl, red!75!black, anchor=west] at (1.00,1.95)
+  {Configured surface};
+\draw[physical] (4.45,1.95) -- (5.20,1.95);
+\node[lbl, blue!70!black, anchor=west] at (5.35,1.95)
+  {Physical surface};
+\draw[tool] (8.25,1.95) -- (9.00,1.95);
+\node[lbl, green!55!black, anchor=west] at (9.15,1.95)
+  {Tool face};
+
 % (a) The controller reference and the unmeasured physical surface.
 \begin{scope}[xshift=0cm]
   \coordinate (oa) at (0,0);
@@ -19,10 +30,6 @@
   \node[lbl, red!75!black, right] at (90:0.76) {$n_s$};
   \draw[normal, blue!70!black] (oa) -- (102:1.16)
     node[lbl, above left] {$n_{\mathrm{phys}}$};
-  \node[lbl, red!75!black, anchor=north] at (0,-0.28)
-    {Configured reference};
-  \node[lbl, blue!70!black, anchor=south west] at (0.58,0.36)
-    {Physical surface\\(unknown)};
   \node[panel] at (0,-1.18) {(a) Surface references};
 \end{scope}
 
@@ -35,10 +42,6 @@
     (0:1.18) arc[start angle=0,end angle=38,radius=1.18];
   \node[lbl, font=\scriptsize, green!55!black] at (0.68,1.16)
     {Configured offset $\theta_{\mathrm{offset}}$};
-  \node[lbl, red!75!black, anchor=north] at (0,-0.28)
-    {Configured reference};
-  \node[lbl, green!55!black, anchor=south west] at (0.25,1.48)
-    {Desired tool face};
   \node[panel] at (0,-1.18) {(b) Configured orientation offset};
 \end{scope}
 
@@ -52,12 +55,6 @@
     (0:1.18) arc[start angle=0,end angle=32,radius=1.18];
   \node[lbl, font=\scriptsize, green!55!black] at (0.82,1.15)
     {Reference-relative $\theta_0$};
-  \node[lbl, red!75!black, anchor=north] at (0,-0.28)
-    {Configured reference};
-  \node[lbl, green!55!black, anchor=south west] at (0.25,1.48)
-    {Achieved tool face};
-  \node[lbl, blue!70!black, anchor=south] at (-0.70,1.53)
-    {Physical surface\\(unknown)};
   \node[panel] at (0,-1.18) {(c) Contact entry};
 \end{scope}
 
