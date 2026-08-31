@@ -1,0 +1,21 @@
+# T-mode quasi-static wrench-consistency check
+
+The run starts directly in setup-impedance hold (`t`).  The recorded r01 trial
+contains a no-touch baseline, a held displacement of approximately 20 mm along
+the configured surface normal, and a held rotation of approximately 5 deg
+about tangent 1.  The normal displacement remained applied during rotation.
+The compliance-centre shift and null-space torque are disabled for this check.
+
+Timing from the controller clock:
+
+- 0.5--2.5 s: untouched force and moment baseline;
+- approximately 7.0--9.5 s: move slowly along the surface normal;
+- 9.5--13.5 s: stationary normal-displacement plateau;
+- 18.0--20.0 s: loaded baseline immediately before rotation;
+- approximately 22.4--24.8 s: rotate slowly about tangent 1;
+- 24.8--25.9 s: stationary rotational plateau.
+
+The analysis retains the recorded signs and compares like-signed commanded and
+model-estimated increments in the configured surface frame.  The moment change
+is measured relative to the loaded 18.0--20.0 s baseline, so the retained
+normal load is not counted as rotation-induced moment.

@@ -1,7 +1,7 @@
 % Program-level controller states and their transition conditions.
 % Controller states use one capsule shape across all Chapter 3 flowcharts.
 \begin{tikzpicture}[
-    xscale=1.10,
+    xscale=1.00,
     yscale=1.00,
     font=\footnotesize\setstretch{1.0},
     state/.style={draw=black, thick, rounded corners=5mm,
@@ -21,9 +21,10 @@
   \node[state] (recovery)  at (0.00, 0.00) {Robot Recovery};
   \node[state] (selection) at (0.00,-1.75) {Controller Selection};
 
-  \node[state] (surface)  at (-4.60,-4.40) {Contact Sequence};
-  \node[state] (pose)     at ( 0.00,-4.40) {Cartesian Pose Hold};
-  \node[state] (guidance) at ( 4.60,-4.40) {Manual Guidance};
+  \node[state] (surface)     at (-5.40,-4.40) {Contact Sequence};
+  \node[state] (pose)        at (-1.80,-4.40) {Cartesian Pose Hold};
+  \node[state] (contacthold) at ( 1.80,-4.40) {Contact-Impedance Hold};
+  \node[state] (guidance)    at ( 5.40,-4.40) {Manual Guidance};
   \node[stopstate] (stop) at ( 0.00,-7.90) {Stop};
 
   \draw[flow] (recovery) -- (selection);
@@ -31,21 +32,25 @@
 
   \coordinate (split) at (0.00,-2.90);
   \draw[flow] (selection) -- (split);
-  \draw[flow] (split) -- (-4.60,-2.90) -- (surface);
-  \draw[flow] (split) -- (pose);
-  \draw[flow] (split) -- (4.60,-2.90) -- (guidance);
-  \node[cond, anchor=south] at (-4.60,-2.68)
+  \draw[flow] (split) -- (-5.40,-2.90) -- (surface);
+  \draw[flow] (split) -- (-1.80,-2.90) -- (pose);
+  \draw[flow] (split) -- ( 1.80,-2.90) -- (contacthold);
+  \draw[flow] (split) -- ( 5.40,-2.90) -- (guidance);
+  \node[cond, anchor=south] at (-5.40,-2.68)
       {if operator types \texttt{s}};
-  \node[cond, anchor=west] at (0.28,-3.58)
+  \node[cond, anchor=south] at (-1.80,-2.68)
       {if operator types \texttt{h}};
-  \node[cond, anchor=south] at (4.60,-2.68)
+  \node[cond, anchor=south] at (1.80,-2.68)
+      {if operator types \texttt{t}};
+  \node[cond, anchor=south] at (5.40,-2.68)
       {if operator types \texttt{g}};
 
   % One light shared stop rail for all active controller states.
-  \coordinate (railleft) at (-4.60,-5.80);
-  \coordinate (railright) at (4.60,-5.80);
+  \coordinate (railleft) at (-5.40,-5.80);
+  \coordinate (railright) at (5.40,-5.80);
   \draw[stopflow] (surface) -- (railleft);
-  \draw[stopflow] (pose) -- (0.00,-5.80);
+  \draw[stopflow] (pose) -- (-1.80,-5.80);
+  \draw[stopflow] (contacthold) -- (1.80,-5.80);
   \draw[stopflow] (guidance) -- (railright);
   \draw[rail] (railleft) -- (railright);
   \draw[stopflow] (0.00,-5.80) -- (stop);

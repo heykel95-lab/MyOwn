@@ -1,0 +1,268 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=1.5cm]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{setspace}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,positioning}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\section*{Contact-Establishment Wrench Trace, \(r_c=0\)}
+
+\textbf{Used impedance.}
+The following gains were applied in the surface basis \([t_1,t_2,n_s]\):
+\begin{align*}
+ K_p &= [2000,\ 2000,\ 350]\,\mathrm{N/m}, &
+ D_p &= [231.2,\ 177.9,\ 112.1]\,\mathrm{N\,s/m},\\
+ K_R &= [5,\ 5,\ 50]\,\mathrm{N\,m/rad}, &
+ D_R &= [1.5,\ 1.9,\ 1.2]\,\mathrm{N\,m\,s/rad}.
+\end{align*}
+The centre of compliance was placed at the TCP, with
+\(r_c=p_c-p_{\mathrm{TCP}}=0\).
+The first tangent \(t_1\) is the normalised projection of the base-frame
+\(x_0\)-direction onto the configured surface plane:
+\[
+ t_1=\frac{e_{x_0}-(n_s\mathbin{\cdot}e_{x_0})\mathbin{\cdot}n_s}
+ {\lVert e_{x_0}-(n_s\mathbin{\cdot}e_{x_0})\mathbin{\cdot}n_s\rVert}
+ =(0.999851,-0.000477,-0.017238)^\top.
+\]
+
+\begin{center}
+  \includegraphics[width=0.68\textwidth]{professoremail/fn_mt1_commanded_vs_estimated.pdf}
+\end{center}
+
+\begingroup
+\small
+\setlength{\abovedisplayskip}{3pt}
+\setlength{\belowdisplayskip}{3pt}
+\setlength{\abovedisplayshortskip}{2pt}
+\setlength{\belowdisplayshortskip}{2pt}
+\setlength{\jot}{2pt}
+The curves show one five-second Contact Establishment trace.  The grey area
+from \(4\) to \(5\,\mathrm{s}\) is the stationary interval used for the
+reported means.  Both plotted signals are absolute quantities resolved on the
+same surface axes.  The model estimate follows the robot-to-surface action
+convention.  The physical force acting on the robot is denoted throughout by
+\[
+ {}^{O}\!f_{\mathrm{contact}}
+ \equiv{}^{O}\!f_{\mathrm{surface}\to\mathrm{robot}}
+ =-{}^{O}\!f_{\mathrm{robot}\to\mathrm{surface}}.
+\]
+
+\par\smallskip
+\noindent\textbf{Normal-force comparison, \(F_n\)}\par
+The mean desired and measured TCP positions in the grey interval were
+\[
+ \begin{aligned}
+ p_d&=(0.511749,-0.005127,-0.210071)^\top\,\mathrm{m},\\
+ p_{\mathrm{TCP}}&=(0.513909,0.005024,0.019199)^\top\,\mathrm{m}.
+ \end{aligned}
+\]
+Their normal error gives
+\[
+ \begin{aligned}
+ e_n&=n_s^\top\mathbin{\cdot}(p_d-p_{\mathrm{TCP}})
+ =-0.229466\,\mathrm{m},\\
+ F_{n,\mathrm{qs}}&=K_{p,n}\mathbin{\cdot}e_n
+ =350\mathbin{\cdot}(-0.229466)=-80.313\,\mathrm{N},\\
+ F_{n,\mathrm{cmd}}&=-80.312\,\mathrm{N},\qquad
+ F_{n,\mathrm{est}}=-78.451\,\mathrm{N}.
+ \end{aligned}
+\]
+The estimate differs from the command by \(1.861\,\mathrm{N}\), or
+\(2.32\%\).  The quasi-static value and the full command differ by
+\(0.001\,\mathrm{N}\), since the mean normal speed was nearly zero.
+The corresponding physical reaction on the robot is
+\[
+ F_{n,\mathrm{contact}}
+ =n_s^\top\mathbin{\cdot}f_{\mathrm{contact}}
+ =-F_{n,\mathrm{est}}=+78.451\,\mathrm{N}.
+\]
+
+\par\smallskip
+\noindent\textbf{Moment comparison about \(t_1\)}\par
+The centre of compliance is at the TCP.  It therefore introduces no virtual
+force-to-moment coupling:
+\[
+ m_{\mathrm{CoC}}=r_c\times f=0.
+\]
+The physical contact quantities shown in Figure~1 are
+\[
+ \begin{aligned}
+ r_{\mathrm{contact/TCP}}
+ &=p_{\mathrm{contact}}-p_{\mathrm{TCP}},\\
+ {}^{O}\!m_{\mathrm{contact},\mathrm{TCP}}
+ &=r_{\mathrm{contact/TCP}}\times{}^{O}\!f_{\mathrm{contact}},\\
+ M_{t_1,\mathrm{contact}}
+ &=t_1^\top\mathbin{\cdot}{}^{O}\!m_{\mathrm{contact},\mathrm{TCP}}.
+ \end{aligned}
+\]
+The pressure centre was not measured, so no contact lever is assigned a
+measured value.
+
+In the grey interval, the measured orientation error and angular speed give
+\[
+ \begin{aligned}
+ e_{R,t_1}&=0.126923\,\mathrm{rad}=7.272^\circ,\\
+ \omega_{t_1}&=-0.0000185\,\mathrm{rad/s},\\
+ M_{t_1,\mathrm{cmd}}
+ &=K_{R,t_1}\mathbin{\cdot}e_{R,t_1}
+   -D_{R,t_1}\mathbin{\cdot}\omega_{t_1}\\
+ &=5\mathbin{\cdot}0.126923
+   -1.5\mathbin{\cdot}(-0.0000185)\\
+ &=+0.635\,\mathrm{N\,m}.
+ \end{aligned}
+\]
+The quasi-static spring value is also \(+0.635\,\mathrm{N\,m}\).  Force and
+moment equilibrium then require the opposing surface-on-robot moment
+\[
+ \begin{aligned}
+ M_{t_1,\mathrm{contact}}+M_{t_1,\mathrm{cmd}}&=0,\\
+ M_{t_1,\mathrm{contact}}&=-0.635\,\mathrm{N\,m}.
+ \end{aligned}
+\]
+With the model-estimated force magnitude, this corresponds to the
+quasi-static equivalent lever
+\[
+ r_{\perp,\mathrm{qs}}
+ =\frac{\lvert M_{t_1,\mathrm{contact}}\rvert}
+ {\lvert F_{n,\mathrm{est}}\rvert}
+ =\frac{0.635}{78.451}=0.00809\,\mathrm{m}=8.09\,\mathrm{mm}.
+\]
+This is an equilibrium equivalent, not a measured contact location.
+
+The measured robot state confirmed \({}^{EE}T_K=I\), so stiffness frame \(K\)
+coincides with the controller TCP.  The base-expressed spatial wrench is
+therefore shifted to the TCP by
+\[
+ \begin{aligned}
+ {}^{O}\!m_{\mathrm{TCP},\mathrm{est}}
+ &= {}^{O}\!m_{O,\mathrm{est}}
+ -p_{\mathrm{TCP}}\times{}^{O}\!f_{\mathrm{est}},\\
+ M_{t_1,\mathrm{est}}
+ &=t_1^\top\mathbin{\cdot}{}^{O}\!m_{\mathrm{TCP},\mathrm{est}}
+ =+0.604\,\mathrm{N\,m}.
+ \end{aligned}
+\]
+The estimate uses the opposite action side to
+\(M_{t_1,\mathrm{contact}}\).  It is therefore compared with
+\(-M_{t_1,\mathrm{contact}}=+0.635\,\mathrm{N\,m}\), as shown in Figure~1.
+Its difference from the command is \(0.031\,\mathrm{N\,m}\), or \(4.87\%\).
+Subtracting the non-zero clearance estimate would instead give
+\(-0.601\,\mathrm{N\,m}\); that change signal is not compared with the
+absolute command and is not plotted here.
+
+\par\smallskip
+\noindent\textbf{Orientation change}\par
+The measured component about \(t_1\) fell from \(9.26^\circ\) at contact entry
+to \(1.99^\circ\) at the endpoint.  Thus,
+\[
+ \Delta\theta_{t_1}=1.99^\circ-9.26^\circ=-7.27^\circ.
+\]
+The off-centre contact rotates the tool towards the plane.  The positive
+rotational command develops in the opposing direction and retains the entry
+orientation.
+
+\begin{figure}[H]
+  \centering
+  \input{figures/professor_moment_case.tex}
+  \caption{Contact response and endpoint moment comparison.}
+\end{figure}
+
+\noindent\textbf{Normal-force summary.}
+The quasi-static, commanded and model-estimated endpoint values are
+\(-80.313\), \(-80.312\) and \(-78.451\,\mathrm{N}\).  The estimate differs
+from the command by \(2.32\%\).
+
+\par\smallskip
+\noindent\textbf{Moment summary.}
+The quasi-static, commanded and model-estimated endpoint values are
+\(+0.635\), \(+0.635\) and \(+0.604\,\mathrm{N\,m}\).  The estimate differs
+from the command by \(4.87\%\).  This single Contact Establishment trace is
+consistent in sign and magnitude for both components.
+\endgroup
+
+\clearpage
+\section*{T-Mode Quasi-Static Consistency Test}
+
+The test uses the decoupled setup impedance in surface coordinates, with
+\(r_c=0\).  The commanded components are
+\begin{align*}
+ F_{n,\mathrm{cmd}} &= K_{p,n}\mathbin{\cdot}e_n
+                       +D_{p,n}\mathbin{\cdot}\dot e_n,\\
+ M_{t_1,\mathrm{cmd}} &= K_{R,t_1}\mathbin{\cdot}e_{R,t_1}
+                         +D_{R,t_1}\mathbin{\cdot}\dot e_{R,t_1}.
+\end{align*}
+During each stationary hold, \(\dot e_n\simeq0\) and
+\(\dot e_{R,t_1}\simeq0\).  The quasi-static predictions therefore reduce to
+\[
+ F_{n,\mathrm{qs}}=K_{p,n}\mathbin{\cdot}e_n,
+ \qquad
+ M_{t_1,\mathrm{qs}}=K_{R,t_1}\mathbin{\cdot}e_{R,t_1}.
+\]
+
+The consistency measurement used
+\[
+ K_{p,n}=1000\,\mathrm{N/m},\quad D_{p,n}=175\,\mathrm{N\,s/m},\quad
+ K_{R,t_1}=15\,\mathrm{N\,m/rad},\quad
+ D_{R,t_1}=10.01\,\mathrm{N\,m\,s/rad}.
+\]
+The accepted nominal checks were approximately \(20\,\mathrm{mm}\) and
+\(5^\circ\).  At exactly \(20\,\mathrm{mm}\), the force prediction is
+\[
+ |F_{n,\mathrm{qs}}|=1000\mathbin{\cdot}0.020=20.0\,\mathrm{N},
+\]
+and at exactly \(5^\circ=0.087266\,\mathrm{rad}\), the moment prediction is
+\[
+ |M_{t_1,\mathrm{qs}}|=15\mathbin{\cdot}0.087266=1.309\,\mathrm{N\,m}.
+\]
+
+\clearpage
+\section*{T-Mode Consistency Results}
+
+\IfFileExists{professoremail/t_mode_consistency_results.tex}{%
+  \input{professoremail/t_mode_consistency_results.tex}%
+}{%
+  No measurements from a dedicated \(t\)-mode trial are available yet.  This section is
+  intentionally left without measured values; the analysis script replaces
+  this notice after the archived runs are supplied.
+}
+
+\clearpage
+\section*{Controller State Flow}
+
+\begin{center}
+  \input{figures/controller_state_flow.tex}
+\end{center}
+
+\clearpage
+\section*{Cartesian Impedance Block Diagram}
+
+\begin{center}
+  \input{figures/controller_block_diagram.tex}
+\end{center}
+
+\clearpage
+\section*{Surface-Contact Sequence}
+
+\begin{center}
+  \input{figures/phase_flow_chart.tex}
+\end{center}
+
+\clearpage
+\section*{Cartesian Pose Hold}
+
+\begin{center}
+  \input{figures/pose_hold_modes.tex}
+\end{center}
+
+\end{document}

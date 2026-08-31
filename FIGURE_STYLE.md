@@ -76,6 +76,45 @@ if a fifth colour is ever needed.
 moment exists but not which one, and the reader cannot match it to the relation
 in the annotation. Label the arc with the symbol the surrounding text uses.
 
+**A supporting figure uses the exact symbols defined beside it.** Do not
+shorten a surface-on-robot force to \(f_{\mathrm{s\to r}}\) in a drawing when
+the explanation defines \(f_{\mathrm{contact}}\), and do not replace
+\(M_{t_1,\mathrm{contact}}\) with a second action-direction index. The
+professor-email contact figure uses \(f_{\mathrm{contact}}\),
+\(r_{\mathrm{contact/TCP}}\), \(M_{t_1,\mathrm{contact}}\),
+\(M_{t_1,\mathrm{cmd}}\), and \(M_{t_1,\mathrm{est}}\) in both the equations
+and the drawing. Define the action side in prose once rather than encoding it
+again through different symbols.
+
+**Name an averaging interval, not only its final position.** When a value panel
+shows means over the grey stationary interval, title it ``Stationary-interval
+moment means'' rather than the ambiguous ``Endpoint signals''.
+
+**Moment arcs sharing one point take disjoint sectors, and a radius apart where
+a third is needed.** Two arcs about the same point drawn over the same sector
+cross each other, their arrowheads collide, and the labels land on the wrong
+arc; an arc drawn through the sector a lever or a face occupies crosses that
+line as well. Give each moment its own sector — upper and lower for an
+opposing pair, with the sum drawn at a smaller radius inside them where three
+are shown — and place each label outside its own arc on the free side. Choose
+the sectors after the levers are drawn, since it is the lever that decides
+which directions are already taken. This was settled on the professor-email
+moment figures, where the commanded and estimated arcs had been drawn across
+the tool face, the plane and each other.
+
+**A baseline-referenced wrench signal is not drawn as a physical moment acting
+on the tool.** When a commanded moment is compared with a model-estimated
+change from a stored baseline, place the two values on a signed axis or in
+separate value rows. Draw any preceding pose change in a separate panel. This
+prevents an endpoint signal from being read as the cause of the motion or as
+an action--reaction pair.
+
+**An unobserved contact point is schematic.** A contact-mechanism drawing may
+show an effective point, its TCP lever and the resulting physical moment, but
+the point is labelled `schematic` and carries no measured coordinate. The
+selected geometric tool point is not substituted for an unobserved pressure
+centre.
+
 **A right-angle marker spans the two things it marks, and the rotation that
 places it is the first of them.** The direction-rule figure drew its square
 inside `\begin{scope}[rotate=\ra]`, where `\ra` is the *lever* direction, so
@@ -189,8 +228,16 @@ brief `if` condition and use a symbol already defined in the thesis when that
 makes the condition shorter. Put the condition beside a clear arrow segment,
 not over the line or a box border. Short display labels such as `Pre-Contact
 Hold` and `Pre-Grinding Hold` may stand for longer state names that the body
-text gives in full. The Tool Orientation arrow uses the compact display
-condition `angular error within tolerance or` \(t\geq t_{\mathrm{end}}\).
+text gives in full. The Tool Orientation arrow carries
+\(\theta_{\mathrm{app,err}}\leq\varepsilon_{\mathrm{app}}\lor\)
+\(t\geq t_{\mathrm{end}}\); the worded form `angular error within
+tolerance` is withdrawn, because Section 3.3 now defines both symbols.
+**A disjunction in a chart condition is written \(\lor\), never the word
+`or`**, so that one drawing states the same relation one way: the shared stop
+condition already read `if stop requested \(\lor\) robot error/reflex`, and
+the orientation condition was the only place left carrying the word. Where
+\(\lor\) ends a line it needs an explicit space before it, since TeX gives a
+trailing binary operator none.
 The Contact Establishment arrow uses \(t\geq t_{\mathrm{end}}\). The body text
 retains the complete minimum-time, orientation, moment-change and timeout
 logic. Put the clearance condition beside the direct arrow into Pre-Contact
@@ -289,27 +336,44 @@ approach-direction marker and is not used as the height dimension.
 
 **The Chapter 3 controller flow uses two state-machine drawings.** The first
 starts directly with Robot Recovery and then shows Controller Selection, followed by the
-Contact Sequence, Cartesian Pose Hold and Manual Guidance branches. Label these
-three selections `if operator types s`, `if operator types h`, and `if operator
-types g`, respectively, so the drawing exposes the implemented keyboard
-mapping. This overview intentionally omits the direct `t` route to
-contact-impedance Test Mode; the Chapter 3 text names that implemented route,
-and the detailed drawing shows the experiment-oriented Test Mode loop. The second
+Contact Sequence, Cartesian Pose Hold, Contact-Impedance Hold and Manual Guidance
+branches. Label these selections `if operator types s`, `if operator types h`,
+`if operator types t`, and `if operator types g`, respectively, so the drawing
+exposes the implemented keyboard mapping. The second
 shows the surface-contact states from Tool Orientation through Grinding. Its
-common start is the short blue rectangular box `Initial Configuration`.
-`Stored \(q_{\mathrm{init}}\)` and `Guidance Mode` sit above that box, and
-their separate orthogonal paths enter its top edge rather than its sides. The
-stored path reads `move to \(q_{\mathrm{init}}\)`. The guided path states
-`s: start; p: recapture`: `s` starts from the current guided configuration,
-whereas `p` recaptures the current configuration and pose after `g` enters
-guidance from active control. These are the stored-posture and guided-pose
-routes to the same sequence start. A blue Test Mode box follows
-Grinding and sits on the left return branch, beside the contact-state column
-rather than below Grinding. Its incoming arrow states `if operator types t`.
-It varies \(K_p\), \(K_R\), or \(r_c\), then returns through initialisation
-on an outgoing arrow labelled `if operator types s`. Keep both condition
-labels immediately beside the Test Mode box; a long return rail with an
-isolated condition label is not acceptable.
+common start is the blue rectangular box `Move to Stored
+\(q_{\mathrm{init}}\)`, whose orthogonal path enters the top edge of Tool
+Orientation and reads `\(q_{\mathrm{init}}\) reached`. **The
+`Initial Configuration` box is withdrawn**, as of 2026-08-31, and so is the
+separate `start sequence` arrow that followed it. The box named the value the
+robot moves to and the arrow named the motion, which put a stored parameter and
+a reached configuration in the same column and left the reader looking for what
+performed the move. One box now performs it, named for the function that does
+so, and the arrow carries the arrival condition like every other arrow in the
+chart. **Manual Guidance is not drawn as a second route into the sequence**,
+withdrawn on the same day together with its `s: start` label: the box carries
+the runtime interaction only, so `g` enters Manual Guidance from an active
+contact sequence and `p` recaptures the reached pose and restarts at Tool
+Orientation. Section 3.2 still states that `s` starts the sequence from the
+current guided configuration. **Contact-Impedance Hold is drawn as a state, in the same black capsule as
+the sequence states**, on the left return branch beside the contact-state
+column. It was a blue rectangle until 2026-08-31; that made the one chart
+disagree with Figure 3.1, which had always drawn it as a state, and it is a
+controller state in the implementation, entered by input `t` and holding the
+captured Cartesian pose under its own impedance. Its
+incoming arrow states that `t` enters it from the contact sequence. Its name is
+\(3.83\,\mathrm{cm}\) wide, so this capsule alone carries
+`text width=3.95cm` rather than the shared \(3.80\,\mathrm{cm}\); the
+adjustable parameter families sit in a label beneath it rather than on a second
+line inside it, so the capsule keeps the state height the other six use. It holds
+the captured Cartesian pose while \(K_p\), \(K_R\), or \(r_c\) is set, then
+returns to Tool Orientation on an outgoing arrow labelled `s: start sequence`.
+**No Manual Guidance box is attached to that loop.** Withdrawn on 2026-08-31
+with its `g` and `p` connectors: guidance from the hold is a runtime
+interaction the body text carries, and drawing it a second time doubled the
+box and crowded the column. Keep the `s` and `t` labels immediately beside the
+Contact-Impedance Hold loop; a long return rail with an isolated condition
+label is not acceptable.
 `State` is the canonical node term, and the contact-press state is `Contact
 Establishment`; no alternative state name is used.
 
@@ -348,7 +412,7 @@ arrowheads. The figure carries no numerical angles.
 
 **The three Chapter 3 flowcharts use one visual grammar.** Figures 3.1, 3.3 and
 3.7 draw every operating or controller state as the same black rounded capsule.
-Operator input, initialisation, capture, selection, Test Mode and selectable
+Operator input, initialisation, capture, selection and selectable
 controller configurations use blue rectangular boxes. Normal state progression
 uses black arrows, operator and tuning paths use blue arrows, and stop or
 failure paths use red arrows. Conditions are written directly beside clear
@@ -357,8 +421,35 @@ the same text size, arrowhead size, border weight and state height.
 
 Figure 3.7 treats Cartesian Pose Hold as the controller state. Its four
 null-space modes are blue configuration boxes rather than additional states.
-Figure 3.2 is not part of this state-chart grammar: it retains ordinary black
-rectangular functional blocks.
+Figure 3.2 is not part of this state-chart grammar: it uses ordinary black
+rectangular functional blocks and crossed circular junctions.
+
+**A crossed junction's cross spans the whole circle.** Draw it between opposite
+node anchors — `(sum.45) -- (sum.225)` and `(sum.135) -- (sum.315)` — so each
+arm ends exactly on the circumference at whatever diameter the circle is given.
+A cross drawn from fixed offsets about the centre shrinks to a mark floating
+inside a large ring, which is what the first version of Figure 3.2 showed.
+
+**Every sign sits inside the circle, in the wedge its own arrow points into,
+and every arrow points at its own sign.** The reference input, the feedback
+input and each additive torque term therefore arrives on the radius that leads
+to its sign, so a reader traces the arrow inward and meets the sign that
+qualifies it. An input must land inside a wedge and never on an arm of the
+cross: the two additive terms of Figure 3.2 enter at \(115^\circ\) and
+\(65^\circ\), not at \(135^\circ\) and \(45^\circ\).
+
+**The junction diameter is set by what its fullest wedge has to hold, not
+chosen first.** Where two signs share one wedge they must clear both arms and
+each other, which fixes a lower bound: at `\scriptsize` a
+\(+\) is about \(2\,\mathrm{mm}\) across, and Figure 3.2's torque
+junction needs \(1.25\,\mathrm{cm}\) for two of them in the top wedge.
+Junctions at \(0.80\) and \(1.10\,\mathrm{cm}\) were both tried and both
+put a sign on an arm. Keep the junction visibly smaller than a functional
+block, and check the fit in the compiled figure rather than in the
+coordinates — the arithmetic is close enough that it has to be seen.
+
+The junction name goes on the side no signal uses, and never where a path runs
+through it.
 
 Figures 3.1, 3.3 and 3.7 are structurally settled. Do not redesign them or add
 further conditions and controller detail; their deliberate simplification is
@@ -368,22 +459,35 @@ Every arrow carries its transition condition. A shared red termination rail
 may carry conditions that apply from every active state, provided the
 accompanying text names those conditions explicitly. Keep that rail thinner
 than the main progression so it does not dominate the state sequence. Use a
-red capsule for Stop. Mark the Operator-Controlled Hold Before Grinding as the
-final state entered in the reported experiments, and state that Grinding was
-not entered. Source identifiers and numerical gain-group annotations stay out
-of both state-machine drawings; the Test Mode loop names only the varied
-parameter families \(K_p\), \(K_R\), and \(r_c\).
+red capsule for Stop. **The chart carries no `Reported endpoint` marker.**
+Withdrawn on 2026-08-31: the drawing shows the implemented state machine, and
+which state the campaign stopped in is a result rather than a transition. The
+body text states it in Sections 3.2 and 5.2 and in the Grinding entry of the
+state list, so nothing is lost by removing it from the figure. Source identifiers and numerical gain-group annotations stay out
+of both state-machine drawings; the Contact-Impedance Hold loop names only the
+adjustable parameter families \(K_p\), \(K_R\), and \(r_c\).
 
-**Figure 3.2 is drawn as a classical Cartesian feedback loop.** It is a
-functional block diagram, so its blocks remain ordinary rectangles and do not
-use the capsule state shape. A block names only the operation; the arrow names
-the transmitted signal. The dominant path reads from left to right as Cartesian
-Error, the Cartesian impedance controller, the Jacobian-transpose mapping,
-Torque Sum and Robot / Joint Motors. The compact visible labels `Impedance
-Controller` and \(J^\top\) `Mapping` are used where the full names would close
-the gaps between blocks. A Desired Cartesian Reference enters the error block,
-and the Measured Robot State closes the feedback path from the robot to that
-block. This ordering must be readable before any secondary branch is followed.
+**Figure 3.2 is drawn as a classical Cartesian feedback loop.** Its functional
+blocks remain ordinary rectangles and do not use the capsule state shape.
+Cartesian Error and Torque Sum are crossed circular junctions rather than
+rectangles. The error junction marks the desired-reference input with `+` in
+the left wedge and the measured-feedback input with `-` in the lower wedge.
+Every input to the torque junction is marked `+`. A block names only the operation; the arrow names the transmitted
+signal. Every connection leaves and enters a rectangular block perpendicular
+to that block's border. A route may turn only after this normal segment; no
+connection starts at a rectangle corner or departs diagonally. The dominant
+path reads from left to right as Cartesian Error, the Cartesian impedance
+controller, the Jacobian-transpose mapping, Torque Sum and Joint Motors.
+`Robot / Joint Motors` was shortened on 2026-08-31: the block is the actuated
+hardware the torque command reaches, and `Robot` added a second name for it.
+The feedback arrow out of it reads `Joint motion sensors`. The compact visible labels `Impedance Controller` and \(J^\top F\)
+are used where the full names would close the gaps between blocks; the mapping
+block names the operation it performs rather than being called `Mapping`, which
+is shorter and leaves the width the junctions need. A Desired Cartesian
+Reference enters the error junction **from the left**, so that the dominant
+path is one straight run and the feedback is the only input arriving from
+below. This ordering
+must be readable before any secondary branch is followed.
 
 The desired-reference arrow carries \(p_d\), \(R_d\), and \(\dot p_d\). The
 measured Cartesian feedback carries \(p_{\mathrm{EE}}\),
@@ -423,16 +527,28 @@ the box. Main-row blocks retain conspicuous gaps in the compiled page; short
 connectors squeezed between neighbouring boxes are not acceptable.
 
 **The Chapter 3 Cartesian pose-hold diagram shows the four operator-selectable
-modes.** Its common path starts from one initial configuration. Use the same
-three-box initialisation motif as the surface-contact chart: `Stored
-\(q_{\mathrm{init}}\)` and `Guidance Mode` sit above `Initial Configuration`,
-and both orthogonal paths enter its top edge. The stored route moves the robot
-to \(q_{\mathrm{init}}\). The guided route states `h: start; p: recapture`:
-`h` starts the hold from the current guided \(q\), while `p` recaptures the
-configuration and pose after runtime input `g`. Runtime recapture is not
-specific to pose hold; the same `g` then `p` interaction restarts the active
-surface-contact sequence. The Guidance Mode box states `Enter with g`. The
-path then captures the current end-effector pose and enters Cartesian Pose Hold. Cartesian Pose Hold
+modes.** Use the same
+initialisation motif as the surface-contact chart: one blue `Move to Stored
+\(q_{\mathrm{init}}\)` box leads into `Capture Current EE Pose` on an arrow
+reading `\(q_{\mathrm{init}}\) reached`. Its `Initial Configuration` box,
+the `start hold` arrow, the guided start route and its `h: start` label are all
+withdrawn as of 2026-08-31, matching the surface-contact chart. Runtime
+input `g` enters Manual Guidance from Cartesian Pose Hold, while `p` recaptures
+the reached configuration and pose before returning through pose capture.
+Runtime recapture is not specific to pose hold; the same `g` then `p`
+interaction restarts an active surface-contact sequence at Tool Orientation.
+**The Manual Guidance box carries its name and nothing else** in both charts;
+`Enter with g` is withdrawn, because the incoming `g: guide` arrow already
+states how the state is entered. The
+path then captures the current end-effector pose and enters Cartesian Pose
+Hold, on an arrow that states the assignment the capture makes,
+\(p_d=p_{\mathrm{EE}}\) and \(R_d=R_{\mathrm{EE}}\), on two lines. The
+bare pair \(p_d,R_d\) was replaced on 2026-08-31 because it named the
+quantities without saying where they came from. **The reference is assigned
+from the measurement, never the reverse**: the controller sets
+`p_start = p_EE` and `R_d = R_EE`, so writing
+\(p_{\mathrm{EE}}=p_d\) would state position control rather than the capture
+of a hold reference. Cartesian Pose Hold
 uses the shared black capsule state shape; pose capture,
 operator selection and the four modes use blue rectangular configuration boxes.
 Operator input 0, 1,
@@ -444,7 +560,11 @@ switches directly from any active mode to the selected one. Mode 1 exposes
 Keep the numerical mapping visible and distinguish the selectable software
 modes from the four settings compared experimentally. Do not replace mode 3
 with a second conditioning-gain setting. The compact box descriptions are
-`No Torque`, `Damping`, `Conditioning`, and `Together`; each stays on one line.
+`No Null-Space Torque`, `Damping`, `Conditioning`, and `Together`; each stays
+on one line. `No Torque` was withdrawn on 2026-08-31 as inaccurate: Mode 0
+switches off the null-space contribution alone, and the Cartesian torque is
+still commanded. Keeping the name on one line fixes the mode boxes at
+\(3.45\,\mathrm{cm}\), which is what sets their spacing.
 
 ## Generated plots (matplotlib)
 

@@ -43,7 +43,7 @@ would work as a pull quote, it is wrong for this thesis.
 | The limitation bites. | This limitation affects the interpretation of the measured improvement. |
 | Four contributions carry the work. | The main contributions of this thesis are the following. |
 | Which side the lever sits on decides the outcome. | The sign of the lever strongly affects the resulting alignment response. |
-| That is the whole of the null-space evidence. | No further null-space evidence was recorded. |
+| That is the whole of the null-space evidence. | No further null-space response was measured. |
 
 ### Impersonal voice: no first person, and the author never acts in the sentence
 
@@ -216,14 +216,60 @@ statement of use over the abstract statement of property.
 
 An implementation account becomes difficult to follow when almost every step
 of an algorithm carries its own disclaimer. State the implemented operation
-first, then place the limits together where the chapter assigns them. Chapter
-3 now keeps only the implementation-specific bridge from the null-space theory
-to Cartesian pose hold; the experimental bounds and unresolved limitations are
-collected in Chapter 6 rather than interleaved with that bridge.
+first, then place the limits together where the chapter assigns them. Chapters
+1--5 state what was done, calculated and observed. Section 6.2 collects what
+was not measured or evaluated. Chapter 3 keeps only the
+implementation-specific bridge from the null-space theory to Cartesian pose
+hold; the experimental bounds and unresolved limitations are not interleaved
+with that bridge.
 
 The same applies to theory: assumptions belong in Chapter 2, while
 implementation-specific shortcomings belong in Chapters 3, 4, or 6 according
 to the role of the chapter.
+
+### State the method, mechanism and result directly
+
+The recurring defensive sequence is withdrawn:
+
+1. `X was not measured.`
+2. `Therefore Y is not Z.`
+3. `It should be interpreted as A rather than B.`
+
+One occurrence may be accurate. Repetition across the Abstract, Introduction,
+Methodology, a metric definition and the Limitations gives the thesis a
+templated, self-defending rhythm. State the actual method, mechanism or result
+where it is used, and give the consolidated measurement limitation once in
+Section 6.2.
+
+| Defensive | Direct |
+|---|---|
+| The physical angle was not measured independently. | The angular condition was calculated relative to the configured surface from the measured end-effector pose. |
+| This is not the physical contact point. | The selected tool point is the geometric reference for the generated trajectory; the physical contact location can move across the tool face. |
+| The disturbance is internal and therefore is not a physical force. | The controller generates the disturbance internally as a repeatable joint-torque excitation. |
+| This is an acceptance check rather than a primary metric. | The \(2\,\mathrm{mm}\) threshold defines the Cartesian position-retention criterion. |
+
+A local limitation stays only where omitting it would cause an immediate
+technical misreading or where a numerical claim needs a nearby evidence bound.
+It is then stated once. This exception covers load-bearing distinctions such as
+the following:
+
+- No time-varying tipping trajectory is commanded during Contact Establishment.
+- The TCP-centred condition gives zero additional point-shift coupling, not
+  zero moment.
+- No separate gravity term is added because FCI handles gravity internally.
+- The singular-value-conditioning law is not dissipative.
+- The \(t_2\) exclusion is stated once in the methodology and discussed fully
+  in Section 6.2.2.
+
+Before accepting a sentence containing `not`, `rather than`, `therefore`,
+`consequently` or `reported`, ask whether it can state the actual method,
+mechanism or result directly. These words are not banned. Each occurrence has
+to carry a real distinction or consequence.
+
+Use `reported` only when it distinguishes the selected data set from archived
+or excluded material. Elsewhere name the thing directly: `experiments`,
+`measurements`, `response`, `value`, `data set`, `evaluation endpoint`, or
+`pose-hold trials`.
 
 ### Do not explain the same structure three times
 
@@ -349,6 +395,12 @@ contribute. `observed` and `measured` are the right verbs
 when reporting a campaign, and the negative form is `no measurable change above
 the interpretation threshold`, never a bare `no change`.
 
+**Use `measured`, not `recorded`, for experimental results.** Values,
+quantities, responses and observations are measured. Reserve `recorded` for
+the literal data-acquisition or storage process, and for a document or table
+that contains information. If `recorded` modifies a trial or condition,
+restructure the sentence around the response that was measured.
+
 ### What must never be done to sound less generated
 
 Authenticity comes from the work, not from damage to the prose. Never:
@@ -359,7 +411,7 @@ Authenticity comes from the work, not from damage to the prose. Never:
 - use the first person where the thesis requires impersonal writing;
 - passivise every sentence;
 - vary sentence length at random, without improving the explanation;
-- add laboratory observations that were not recorded;
+- add laboratory observations that were not measured;
 - invent a reason for a design decision after the fact;
 - paraphrase the same passage repeatedly through a tool.
 
@@ -1040,6 +1092,10 @@ implied or needed.
 
 Search the changed `.tex` files for each of these:
 
+- `not`, `rather than`, `therefore`, `consequently`, `reported` — inspect every
+  hit. Keep it only when the contrast, consequence, or selected-versus-excluded
+  distinction is technically load-bearing; otherwise state the method,
+  mechanism or result directly.
 - `In this way`, `This means that`, `In other words`, `It is important`,
   `It is worth noting` — still scaffolding. `Moreover`, `Furthermore`,
   `Additionally`, `Overall` and `As a result` are permitted by the author's

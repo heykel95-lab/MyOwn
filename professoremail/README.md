@@ -1,56 +1,123 @@
-# Commanded against model-estimated wrench
+# Professor email figures
 
-This folder is meant to hold two files:
+`Professor_Email_Figures.pdf` is the document prepared for the professor email.
+It contains the existing contact-sequence wrench comparison, the prepared
+quasi-static `t`-mode check and its measured-results section, followed by the
+controller state flow, Cartesian impedance block diagram, surface-contact
+sequence, and Cartesian pose-hold flowchart. Each item occupies its own section
+and page.
 
-    commanded_vs_estimated_wrench.pdf
-    commanded_vs_estimated_wrench.csv
+The plot compares absolute commanded and model-estimated \(F_n\) and
+\(M_{t_1}\) during Contact Establishment for `P2_t1_pos_p000/r04`, with the
+compliance centre at the TCP. The grey interval from 4 to 5 seconds supplies
+the stationary means. The commanded wrench is resolved on the configured
+surface axes. Libfranka supplies the estimated spatial wrench on stiffness
+frame \(K\), expressed in the base frame. Its moment contains the
+base-to-\(K\) force lever. The measured robot state has `EE_T_K = I`, so
+\(K\) and the controller TCP coincide and
+`m_TCP = m_O - p_TCP x f` gives the local moment.
 
-**Neither could be produced on this machine, because the log they are drawn
-from is not on it.**
+The stationary values are `Fn_cmd = -80.312 N`,
+`Fn_est = -78.451 N`, `Mt1_cmd = +0.635 N m`, and
+`Mt1_est = +0.604 N m`. The estimate differs from the command by `2.32%` for
+normal force and `4.87%` for tangent-1 moment. Both comparisons are consistent
+in sign and magnitude for this single trace. The clearance-referenced moment
+change is `-0.601 N m`, but it is kept out of the figure because it cannot be
+compared with an absolute command.
 
-## What is missing
+Regenerate the plot from the thesis repository root with:
 
-The estimated wrench is `external_force_x..z` and `external_moment_x..z`,
-libfranka's `O_F_ext_hat_K`. Only the current `surface_grinding_controller`
-schema records it, and no file with that schema exists here:
+```sh
+python3 professoremail/plot_fn_mt1_comparison.py \
+  ../Thesis_Final_Control/experiments/results/P2_t1_pos_p000/r04/logs/surface_grinding_controller_log.csv \
+  ../Thesis_Final_Control/experiments/results/P2_t1_pos_p000/r04/params_effective/surface.conf \
+  --out-dir professoremail
+```
 
-- `Thesis_Final_Control/surface_grinding_controller` holds source only. It has
-  no `experiments/` directory, so no `results/`, no `logs/`, no `derived/`.
-- The 59 log CSVs recoverable from the `MyController` git history are all the
-  earlier development schema. They record the commanded `f` and `m` and the
-  joint torques `tau_raw` and `tau_limited`, and carry no external-wrench
-  column under any name.
-- A full sweep of the C: drive finds 220 CSVs, none of them a controller log.
+Then compile the combined document from the same directory:
 
-This is the expected state away from the lab machine: that repository's
-`.gitignore` excludes `experiments/results/**/*.csv` for size and
-`experiments/derived/` entirely.
+```sh
+pdflatex -interaction=nonstopmode -output-directory professoremail \
+  professoremail/Professor_Email_Figures.tex
+```
 
-## How to fill the folder
+The plot source also writes `fn_mt1_commanded_vs_estimated.csv`. It contains
+the two absolute plotted pairs and their clearance-referenced estimator
+changes at the controller timestamps. The untouched controller record used to
+create it is included as `P2_t1_pos_p000_r04_controller_log.csv`; it retains
+all controller columns and the complete recorded time history. The shorter
+plotting table has seven columns.
 
-Copy one log from the lab machine, from any run directory under
-`Thesis_Final_Control/experiments/results/`:
+The PDF records the effective Contact Establishment set-up beside the plot:
+`Kp = [2000, 2000, 350] N/m`, `KR = [5, 5, 50] N m/rad`, automatically
+calculated `Dp = [231.2, 177.9, 112.1] N s/m`, and
+`DR = [1.5, 1.9, 1.2] N m s/rad`, all ordered as `[t1, t2, n]`. The compliance
+centre is at the TCP:
+`r_c = p_c - p_TCP = [0, 0, 0] mm` in the configured surface basis.
+The entry-to-end rotation about \(t_1\) is `-7.27 deg`. The pressure centre was
+not measured. The `8.09 mm` lever shown in the discussion is therefore a
+quasi-static force/moment equivalent, not a measured contact location.
 
-    <run>/logs/surface_grinding_controller_log.csv
+## Dedicated t-mode consistency test
 
-Put it beside this README, then run:
+The dedicated test is kept separate from the earlier contact-sequence plot.
+`t_mode_consistency_overlay.txt` makes the setup impedance decoupled at the TCP,
+disables null-space torque, uses configured damping, and sets
+`Kp_normal = 1000 N/m` and `KR_tangent1 = 15 N m/rad`. The accepted nominal
+checks are `20.0 N` at `20 mm` and `1.309 N m` at `5 deg`.
 
-    python plot_commanded_vs_estimated_wrench.py surface_grinding_controller_log.csv --out-dir .
+Create the controller setup once from the thesis repository root:
 
-Both files appear in this folder. Useful options:
+```sh
+mkdir -p ../Thesis_Final_Control/experiments/setups/T_MODE_CONSISTENCY
+cp professoremail/t_mode_consistency_overlay.txt \
+  ../Thesis_Final_Control/experiments/setups/T_MODE_CONSISTENCY/overlay.txt
+cp professoremail/t_mode_consistency_about.txt \
+  ../Thesis_Final_Control/experiments/setups/T_MODE_CONSISTENCY/about.txt
+```
 
-    --phase 2          restrict to the set-up phase
-    --bias-corrected   use the clearance-referenced estimate
-                       (force_after_contact / moment_after_contact)
+The recorded consistency run is:
 
-## What the figure shows
+```sh
+./experiments/run.sh T_MODE_CONSISTENCY 1
+```
 
-Two panels, force above moment, plotting magnitudes against time. The commanded
-Cartesian wrench is black; the model-estimated external wrench is red. The
-accompanying CSV holds exactly the plotted rows, with the raw x, y, z
-components kept alongside the magnitudes.
+Mode `t` was selected at the startup menu. The achieved stationary increments
+were about `23 mm` along the surface normal and `5.2 deg` about tangent 1. The
+normal load remained applied during the rotation.
 
-One caveat if the figure is ever used in the thesis rather than for checking:
-the estimate is the wrench the environment applies to the robot, so in steady
-contact it opposes the commanded wrench. Magnitudes are plotted so the two
-curves are comparable without carrying that sign, and the caption has to say so.
+Generate the result plot, CSV and LaTeX section from the thesis repository:
+
+```sh
+python3 professoremail/analyse_t_mode_consistency.py \
+  ../Thesis_Final_Control/experiments/results/T_MODE_CONSISTENCY/r01
+pdflatex -interaction=nonstopmode -output-directory professoremail \
+  professoremail/Professor_Email_Figures.tex
+```
+
+The analysis refuses logs that do not confirm `t` mode or the prepared
+decoupled parameters. It uses the untouched baseline for normal force. It
+transports the base-relative moment to the TCP, then subtracts the loaded
+pre-rotation baseline to isolate the moment increment. It retains the
+surface-frame component signs and reports the quasi-static spring prediction,
+logged command, model estimate, baseline noise, signal-to-noise ratio and
+agreement status. The result is a one-run consistency check, not a
+repeatability claim.
+
+## First-plot Contact Establishment diagnostic
+
+The proposed `T_MODE_MOMENT_DIAGNOSTIC` is not used for the first plot. That
+hand-operated hold checks a different controller state. The first plot is
+repeated with `P2_t1_pos_p000/r04` through the automatic `s` sequence. Its
+original gains and zero compliance-centre lever remain unchanged.
+
+Analyse the archived trial with:
+
+```sh
+python3 professoremail/analyse_contact_moment_diagnostic.py \
+  ../Thesis_Final_Control/experiments/results/P2_t1_pos_p000/r04
+```
+
+The generated files keep absolute TCP-referenced moments separate from changes
+relative to the clearance transition. The professor-email plot uses only the
+absolute pair.

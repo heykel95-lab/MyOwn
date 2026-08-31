@@ -35,17 +35,16 @@ each session permits settings to be changed between experiments without recompil
 
 The operating-state flow begins with robot recovery and controller selection,
 as shown in \mbox{\Cref{fig:controller_state_flow}}. A successful recovery
-opens the selection state. The operator can then select the surface-contact
-sequence, Cartesian pose hold, or manual guidance. An unsuccessful recovery
-ends the program. Operator stop, a configured experiment-duration limit, a robot-side
-error or reflex, and a communication or control exception provide the common
-transition from any active controller state to Stop.
+opens the selection state. Inputs \texttt{s}, \texttt{h}, \texttt{t}, and
+\texttt{g} select the surface-contact sequence, Cartesian pose hold,
+Contact-Impedance Hold, and Manual Guidance, respectively. An unsuccessful
+recovery ends the program. Operator stop, a configured experiment-duration
+limit, a robot-side error or reflex, and a communication or control exception
+provide the common transition from any active controller state to Stop.
 
-The overview shows these three principal selections. The implementation also
-accepts input \texttt{t} from Controller Selection or Guidance Mode to enter
-the contact-impedance Test Mode directly. The experiment-oriented tuning loop
-is shown with the detailed contact sequence in
-\mbox{\Cref{fig:phase_flow_chart}}.
+Contact-Impedance Hold retains the captured Cartesian pose with the impedance
+used for Contact Establishment. Its connection to the surface-contact sequence
+is shown in \mbox{\Cref{fig:phase_flow_chart}}.
 
 \Added{A robot-side error or reflex is a stop condition reported by libfranka
 and is not limited to a joint-limit violation. Communication and control
@@ -131,12 +130,14 @@ activate. Each is described in full before the other begins.
 A surface-contact experiment passes through the controller states drawn in
 \mbox{\Cref{fig:phase_flow_chart}}. The robot may first move to the stored
 initial joint configuration \mbox{\(q_{\mathrm{init}}\)}. Alternatively,
-operator input \texttt{g} enters Guidance Mode, and input \texttt{s} starts
+operator input \texttt{g} enters Manual Guidance, and input \texttt{s} starts
 the sequence from the current guided configuration \mbox{\(q\)}. Input
 \texttt{q} stores that configuration as \mbox{\(q_{\mathrm{init}}\)} for a
-later session. Input \texttt{p} has a different role: after Guidance Mode is
-entered from an active controller state, it captures the reached pose and
-resumes that state. Tool Orientation advances to Surface
+later session. During active control, input \texttt{g} enters Manual Guidance.
+Input \texttt{p} then captures the reached pose and restarts the originating
+controller configuration. A surface-contact sequence restarts at Tool
+Orientation. In either Cartesian hold configuration, the reached pose becomes
+the new held reference. Tool Orientation advances to Surface
 Approach after its minimum duration and either satisfaction of the configured
 orientation criteria or the orientation timeout. Surface Approach advances to
 Pre-Contact Hold when the tool clearance reaches its threshold. Reaching the
@@ -145,17 +146,16 @@ remain on the main path in the chart. A disabled hold advances
 without waiting, while operator confirmation releases an enabled hold. Contact
 Establishment advances after the moment-change criterion and minimum duration,
 or through its independent timeout. Pre-Grinding Hold then precedes Grinding.
-The reported experiments ended in the enabled hold before Grinding. In the
-experiment-oriented loop shown, operator input \texttt{t} after Grinding opens
-Test Mode for the next selection of
-\mbox{\(K_p\)}, \mbox{\(K_R\)}, or \mbox{\(r_c\)}. Operator input
-\texttt{s} returns the sequence to initialisation. The same Test Mode can also
-be entered directly from Controller Selection or from Guidance Mode.
+The reported experiments ended in the enabled hold before Grinding. Operator
+input \texttt{t} from the contact sequence enters Contact-Impedance Hold. The
+hold retains the current Cartesian pose while \mbox{\(K_p\)},
+\mbox{\(K_R\)}, or \mbox{\(r_c\)} is set for the next sequence. Operator
+input \texttt{s} restarts that sequence at Tool Orientation.
 
 \begin{figure}[H]
   \centering
   \input{figures/phase_flow_chart.tex}
-  \caption{Experimental surface-contact sequence and tuning loop.}
+  \caption{Surface-contact sequence and contact-impedance tuning loop.}
   \label{fig:phase_flow_chart}
 \end{figure}
 
@@ -325,10 +325,14 @@ towards the corresponding surface-relative orientation before Surface Approach.
 The captured start position is held while the desired orientation advances
 towards the target of
 \mbox{\Cref{eq:implementation_tool_normal_target}} through a rate-limited
-interpolation. The transition uses the tool-axis error and, when enabled, the
-remaining spin error about the target tool axis. A minimum duration prevents
-immediate acceptance of a transient orientation, while a timeout supplies the
-alternative transition. The end-effector orientation reached at this
+interpolation. The transition uses the tool-axis error
+\mbox{\(\theta_{\mathrm{app,err}}\)}, the angle between the current and the
+target tool axis. When the twist is commanded, the transition also uses the
+remaining spin error about that axis. Each is compared with its own configured
+tolerance, \mbox{\(\varepsilon_{\mathrm{app}}\)} for
+\mbox{\(\theta_{\mathrm{app,err}}\)}. A minimum duration prevents immediate
+acceptance of a transient orientation, while the state timeout
+\mbox{\(t_{\mathrm{end}}\)} supplies the alternative transition. The end-effector orientation reached at this
 transition is retained throughout Surface Approach.}
 
 \subsection{Surface Approach, Clearance and Tool-Point Selection}
@@ -756,7 +760,7 @@ reported experiment entered this state.
 Cartesian pose hold starts after the robot moves to the stored initial joint
 configuration \mbox{\(q_{\mathrm{init}}\)}, or directly from the current
 guided configuration \mbox{\(q\)} when the operator types \texttt{h} in
-Guidance Mode. The current end-effector pose is then captured at the entry instant
+Manual Guidance. The current end-effector pose is then captured at the entry instant
 \mbox{\(t_0\)} and used to define the fixed references
 \mbox{\(p_d=p_{\mathrm{EE}}(t_0)\)} and
 \mbox{\(R_d=R_{\mathrm{EE}}(t_0)\)}. Its dedicated hold impedance is expressed
@@ -772,6 +776,8 @@ adjustable \mbox{\(k_\sigma\)}. Mode 3 applies both terms and permits both param
 be varied. Entering another number switches directly to the selected mode
 while Cartesian pose hold remains active. The Cartesian reference and
 Cartesian impedance remain unchanged.
+
+Contact-Impedance Hold is separate from these four null-space modes.
 
 \begin{figure}[H]
     \centering

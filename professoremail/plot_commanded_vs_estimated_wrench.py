@@ -17,10 +17,9 @@ quantity:
               and referenced to stiffness frame K. It is a model estimate, not
               a force-sensor reading.
 
-Sign: the estimate is the wrench the environment applies to the robot, so in
-steady contact it opposes the commanded wrench. Magnitudes are drawn, so the
-two curves are comparable without carrying that sign through the plot; the
-per-component CSV keeps the raw signs.
+Sign: libfranka defines positive estimated components as forces and moments
+applied by the robot to the environment. Magnitudes are drawn in this general
+comparison, while the per-component CSV retains the signed values.
 
 --bias-corrected swaps the estimate for force_after_contact / moment_after
 _contact, which are the same signals with the values captured at the clearance

@@ -77,11 +77,11 @@ They were repeated after the Chapter 3 geometric-tool-reference wording, the
 Chapter 5 end-effector sign wording, and the Figure 5.5 axis relabelling.
 Figure 5.5 was checked visually in both outputs.
 They were repeated again after the final controller was checked against both
-figures. The corrected flow shows that `g` enters Guidance Mode, `s` starts the
+figures. The corrected flow shows that `g` enters Manual Guidance, `s` starts the
 surface-contact sequence from the current guided \(q\), `h` starts Cartesian
 pose hold from it, `q` stores it as \(q_{\mathrm{init}}\), and `p` is reserved
 for recapture and resumption from an active controller state. Figure 3.3 also
-places the Test Mode box on the left return branch with its `s` and `t`
+places the Contact-Impedance Hold box on the left return branch with its `s` and `t`
 conditions beside the box. Figures 3.3 and 3.7 were checked visually in the
 clean and review outputs.
 The Windows MiKTeX clean and professor builds were repeated on 2026-08-31
@@ -119,6 +119,12 @@ outright with `Sorry, 'compat=1.18' is unknown in this context`. Ubuntu 20.04
 has no newer TeX Live, so no apt package fixes it: the routes are a `tlmgr`
 update of pgfplots alone, or a current TeX Live installed alongside and put
 first on `PATH`.
+
+The Linux build was repeated on 2026-08-31 without lowering the compatibility
+level. BibTeX and all three pdfLaTeX passes ran, and `Thesis.pdf` was produced
+with 122 pages. The final pass contains no undefined references, undefined
+citations or overfull boxes, but it exits non-zero on the same pgfplots
+compatibility error.
 
 Until then a local build means lowering the line to `compat=1.16` and
 **restoring it afterwards** — done and restored twice on 2026-08-19. The
@@ -349,6 +355,49 @@ units to be corrected, the Figure 5.5 sign bridge, and the Section 4.5.1
 rewrite. All six are done, and the rulings behind them are in
 `THESIS_WRITING_GUIDE.md` and `FIGURE_STYLE.md`.
 
+## One open point from the Figure 3.2 and 3.3 revision
+
+Both figures were reworked on 2026-08-31. Figure 3.2 now draws its junctions at
+\(1.10\,\mathrm{cm}\) with the cross spanning the full diameter between
+opposite node anchors and one sign inside each wedge its arrows point into; the
+two additive torque terms share a single \(+\) in the top wedge. The desired
+reference enters the error junction from the left, the mapping block is
+labelled \(J^\top F\), the junctions carry no printed names, and the chain is
+respaced so \(F\) and \(e_p,e_R\) clear the blocks they sit between.
+Figure 3.3 lost its `Reported endpoint` marker, the guided-start arrow into
+Initial Configuration, the second Manual Guidance box on the
+Contact-Impedance Hold loop, and three routing faults: the guidance return
+doubled a segment and cut through the red stop condition, the recapture arrow
+ended on a rounded corner of Tool Orientation, and the tuning-loop return rail
+ran through the left edge of both blue boxes. Its orientation condition now
+carries \(\lor\) rather than the word `or`, matching the stop condition.
+Figure 3.7 lost its `h: start` arrow in the same way, and its Mode 0 box now
+reads `No Null-Space Torque`, which widened the mode row to
+\(3.45\,\mathrm{cm}\) boxes. In both charts the Manual Guidance box carries
+only its name, the `Initial Configuration` box is replaced by one blue
+`Move to Stored \(q_{\mathrm{init}}\)` box on an arrow reading
+`\(q_{\mathrm{init}}\) reached`, and every route now keeps a visible run
+between its last turn and the box it enters. In Figure 3.3 the
+Contact-Impedance Hold return rail goes straight to Tool Orientation, which is
+where input `s` actually restarts the sequence, and Contact-Impedance Hold is
+now drawn as a state in the same black capsule as the sequence states, matching
+Figure 3.1. Its name needs `text width=3.95cm`, which is why that one capsule
+is wider than the shared \(3.80\,\mathrm{cm}\); the chart is then
+\(453\,\mathrm{pt}\) against a \(455\,\mathrm{pt}\) text width, so it has
+almost no room left. The conventions behind the first are recorded
+in `FIGURE_STYLE.md`. Clean and review builds both pass with no overfull boxes
+and no soul reconstruction failures; the figures were checked from rendered
+pages 57 and 60 of `Thesis.pdf`.
+
+The symbol names are settled: the Tool Orientation arrow reads
+\(\theta_{\mathrm{app,err}}\leq\varepsilon_{\mathrm{app}}\), and the
+ruling with its reasoning is in `THESIS_WRITING_GUIDE.md` under *Mathematical
+notation*.
+
+**The Windows MiKTeX builds have not been repeated** since these two figures
+changed. The Linux clean and review builds were run here, with
+`compat=1.16` lowered for the run and restored afterwards.
+
 ## The other drawn diagrams still open their boxes in lower case
 
 `FIGURE_STYLE.md` now requires every line of node text in a drawn diagram to
@@ -411,40 +460,6 @@ whether the \(15.1\,\mathrm{N\,m}\) value is a commanded or an applied
 torque. If both are commanded values and libfranka handles the limit, say so in
 one clause and the paragraph can go back.
 
-## The commanded-against-estimated wrench plot needs a log from the lab machine
-
-Requested on 2026-08-28: a figure comparing the commanded Cartesian wrench with
-the model-estimated external wrench, with the CSV it is drawn from. **It cannot
-be produced away from the lab machine.** The estimate is
-`external_force_x..z` / `external_moment_x..z`, written only by the current
-`surface_grinding_controller` schema, and that schema exists on this machine
-nowhere: `Thesis_Final_Control` here holds source only, with no `experiments/`
-directory at all, and the fifty-nine log CSVs recoverable from the
-`MyController` history are all the earlier development schema, which logs
-`f`/`m` and `tau_raw`/`tau_limited` but carries no external-wrench column. This
-is the clone limitation the archive section above already records, confirmed
-against both repositories.
-
-The generator is written and tested, so only the data is missing:
-`code/python/figures/plot_commanded_vs_estimated_wrench.py` takes one log and
-emits `commanded_vs_estimated_wrench.pdf` (force panel then moment panel,
-magnitudes, commanded black against estimated red) and a matching CSV carrying
-the raw components as well as the plotted magnitudes. Its current `--phase 2`
-option selects Contact Establishment in archived logs; rename that interface
-to `--state` when the generator is next updated, while retaining the old CSV
-column as an input fallback. `--bias-corrected` selects the
-clearance-referenced estimate.
-
-`professoremail/` in this repository is the folder the two files are meant to
-reach the professor in. It currently holds the generator, `figure_style.py` and
-a README stating what is missing and the one command that fills it.
-
-To close it: copy one `logs/surface_grinding_controller_log.csv` from a run
-directory under `Thesis_Final_Control/experiments/results/` into
-`professoremail/` and run the script there. Decide at that point whether the figure is for the thesis or for
-the author's own checking; if it enters the thesis, the sign convention needs
-stating, because the estimate opposes the commanded wrench in steady contact.
-
 ## Inspect the pages this revision moved
 
 The contact study was rebuilt around the fixed-centre question, which changed
@@ -492,9 +507,9 @@ that pass:
   `Thesis.tex` and `Review_Draft.tex` were rebuilt on 2026-08-30 with bibtex
   and three passes. Their final logs contain no undefined references,
   undefined citations or overfull boxes. Figure 3.3 was rendered from both
-  documents after its contact-state, Guidance Mode and Test Mode routing was
+  documents after its contact-state, Manual Guidance and Contact-Impedance Hold routing was
   revised; its labels, arrow clearances and box spacing were checked visually.
-  Figure 3.7 was also checked in both documents after its Guidance Mode route
+  Figure 3.7 was also checked in both documents after its Manual Guidance route
   was corrected. Figure 3.2, Figure 4.1, Figure 5.5 and the active Appendix A/B
   pages were then rendered after the consistency fixes; their labels, routing,
   crop and table/listing layout were checked visually. The Chapter 4 pages
