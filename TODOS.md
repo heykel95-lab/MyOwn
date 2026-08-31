@@ -12,7 +12,7 @@ no other agent — repeats work that is already in the document.
 
 ## The campaign archive, and what it now supports
 
-The reported contact study is restricted to commanded rotations about
+The reported contact study is restricted to configured orientation offsets about
 \(t_1\). Its \(27\) settings each carry three repetitions. The main A--D
 study contains \(19\) settings and \(57\) measurements. The two supporting
 checks in Appendix D contain eight settings and \(24\) measurements. Together
@@ -90,10 +90,22 @@ Both PDFs contain 122 pages. Their final passes contain no errors, undefined
 references or citations, or overfull boxes. The revised Chapter 5 plots and
 Appendix D tables were checked from rendered pages; the Figure 5.5 crop was
 also corrected so that its numerical tick labels remain complete.
-The clean and professor builds were repeated after the Chapter 3 visual-system
-pass. Figures 3.1, 3.2, 3.3 and 3.7 were rendered from both 122-page outputs;
-the corresponding pages are identical and were checked for label, arrow and
-contour collisions.
+The clean and professor builds were repeated on 2026-08-31 after Figure 3.2 was
+reorganised as a Cartesian feedback loop. Both outputs contain 123 pages. The
+final clean pass contains no errors, undefined references or citations, or
+overfull boxes. Page 57 was rendered from both outputs; the reference, main
+torque path, measured-state feedback, robot-model inputs and null-space branch
+were checked for label, arrow and contour collisions.
+The clean and professor builds were repeated on 2026-08-31 after Figure 1.1
+made the unknown physical surface and the configured-reference definition of
+\(\theta_0\) explicit. Both outputs contain 123 pages. The final clean pass
+contains no errors, undefined references or citations, or overfull boxes. Page
+28 was rendered from both outputs; the surface labels, angle label and arc have
+visible separation. The \(\theta_0\) arc was then enlarged in radius, angular
+span, line weight and arrowhead size. Panel (b)'s configured-offset arc now
+uses the same conspicuous treatment and carries its name above the arc.
+Detailed crops of both outputs confirm that the curves are visible and that
+the shortened tool lines do not cross the configured-reference labels.
 `Thesis_preview.pdf` has 128 pages and `Review_Draft.pdf` has 132 pages,
 with no undefined references or citations, no overfull boxes and no soul
 reconstruction failures in their final passes.
@@ -197,8 +209,7 @@ from this list rather than annotated, so everything here is still open.
   numerical tables.
 - **45, 46** — Table 4.3 caption and one consistent centre convention;
   Table 4.4 component headings.
-- **51, 52, 53** — panel audit for every multi-panel caption, and short
-  List-of-Figures and List-of-Tables entries.
+- **51, 52, 53** — panel audit for every multi-panel caption.
 - **54** — finish the full source-level symbol inventory.
 - **62, 63, 64** — one cross-reference style (`Figure 5.4`, `Table 5.4`,
   `Section 4.5`, `Equation (5.1)`), consistent capitalisation, and
@@ -336,14 +347,6 @@ calibration consequence to be spelled out in Section 4.2, the singular-value
 units to be corrected, the Figure 5.5 sign bridge, and the Section 4.5.1
 rewrite. All six are done, and the rulings behind them are in
 `THESIS_WRITING_GUIDE.md` and `FIGURE_STYLE.md`.
-
-**One decision was made and then reversed, and the reversal stands.** The
-direction-comparison axis was briefly shortened to `Commanded Rotation
-Direction` on the grounds that its ticks are categorical, then restored to
-`Commanded Rotation Direction, \(\theta_{\mathrm{cmd}}\) [°]` the same day:
-uniformity of the `Descriptive Name, Symbol [Unit]` format across every axis
-matters more than the categorical exception. `FIGURE_STYLE.md` carries the
-reasoning on both sides so it is not re-argued.
 
 ## The other drawn diagrams still open their boxes in lower case
 
@@ -679,24 +682,6 @@ case — were **not** written in, because no such clearances were recorded and
 hypothetical set of numbers in the running text.
 
 If the author wants them anyway, the defensible routes are to compute them from
-the calibrated face geometry at a stated commanded orientation offset, which
+the calibrated face geometry at a stated configured orientation offset, which
 makes them derived rather than invented, or to place them in the code appendix
 as a worked example labelled as such. Blocked on that decision.
-
-### The direction figure was regenerated on this machine, and its embedded font changed
-
-`figures/MAIN_H_direction.pdf` carried the axis symbol in its glyphs, so the
-\(\theta_{\mathrm{tilt}}\to\theta_{\mathrm{cmd}}\) rename could not be made in
-the `.tex` alone. `make_coc_figures.py` needs no data for that figure — its four
-pairs of values are written into the script — so the label was corrected at
-line 199 and the figure regenerated here.
-
-The extracted text of the new file matches the old one apart from the symbol,
-and the rendered bars, ticks, legend and axes are unchanged. **One thing does
-differ**: the embedded font set moved from `LMRoman7-Regular` to
-`LMRoman8-Regular`, because this machine's matplotlib resolves a different
-optical size for the small text. `FIGURE_STYLE.md` says a regenerated figure
-differing in anything but the intended label is a signal to stop, so the
-decision to install it anyway is recorded here rather than left silent. The
-previous binary was kept only in this session's scratch directory; regenerate
-from the script on the original machine if the older font set is wanted back.

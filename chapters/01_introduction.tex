@@ -17,19 +17,19 @@ contact loads.}
 \begin{figure}[H]
   \centering
   \input{figures/surface_entry_concept.tex}
-  \caption[Configured reference, commanded offset, and contact entry]{\Added{Configured surface reference, commanded tool offset, and contact-entry
-  geometry. The physical normal is unknown to the controller, and the achieved
-  reference-relative angle need not equal the command.}}
+  \caption[Surface reference, orientation offset, and contact entry]{\Added{Surface reference, orientation offset, and contact entry.}}
   \label{fig:surface_entry_concept}
 \end{figure}
 
 \Added{The physical surface-reference difference was not measured independently
 during the reported campaign. Reproducible entry conditions were instead
 created by varying the desired tool orientation relative to the configured
-surface. The command \mbox{\(\theta_{\mathrm{cmd}}\)} specifies this deliberate
-reference-relative offset. The pose-based angle \mbox{\(\theta_0\)} describes
-the orientation actually reached at contact entry. These quantities do not
-represent a measured physical surface angle.}
+surface. The configured orientation offset
+\mbox{\(\theta_{\mathrm{offset}}\)} specifies this deliberate pre-contact
+offset relative to the configured surface reference. The pose-based initial
+angular deviation \mbox{\(\theta_0\)} is the achieved angle relative to that
+reference at contact entry. Neither quantity is a measurement of the physical
+tool--surface angle.}
 
 Torque-controlled collaborative robots allow contact compliance to be
 specified directly and account for a growing share of industrial deployments
@@ -158,11 +158,11 @@ The alignment response depends on the directional stiffness, contact geometry,
 compliance-centre displacement, robot configuration, and compliance of the tool mounting. The
 experiments therefore vary the selected controller parameters while keeping the
 calibrated geometry, the robot configuration, and the tool mounting
-unchanged. A commanded tool orientation offset sets the desired tool direction
+unchanged. A configured orientation offset sets the desired tool direction
 relative to the configured surface reference. The experiments are identified
 by the pose-based initial angular deviation reached at contact entry, because
-the finite orientation tolerance separates that angle from the nominal
-command. \mbox{\Cref{ch:theory,ch:implementation}} introduce the frame
+the finite orientation tolerance separates that angle from the configured
+offset. \mbox{\Cref{ch:theory,ch:implementation}} introduce the frame
 conventions and controller formulation used in the experiments.
 
 \section{Scope and Contributions}

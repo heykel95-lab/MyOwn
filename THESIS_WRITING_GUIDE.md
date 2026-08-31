@@ -154,10 +154,10 @@ that neither the physical surface normal nor the instantaneous physical
 tool--surface angle was measured independently. The Kurzfassung carries the
 same scope statement in the same position.
 
-The experimental axis is named explicitly in both summaries: `commanded
-rotations about surface tangent \(t_1\)` and `kommandierte Drehungen um die
-Flächentangente \(t_1\)`. Do not replace it with a generic reference to one
-surface tangent.
+The experimental axis is named explicitly in both summaries: `configured
+orientation offsets about surface tangent \(t_1\)` and `konfigurierte
+Orientierungsabweichungen um die Flächentangente \(t_1\)`. Do not replace it
+with a generic reference to one surface tangent.
 
 **Revise the Abstract last**, after the body text is settled, and derive the
 Kurzfassung from the finished English rather than paraphrasing it independently.
@@ -409,11 +409,15 @@ How a figure is drawn or generated is in
 rules, plot settings, and how to check a figure in the compiled document. The
 rules below cover captions and what the text around a figure must carry.
 
-Keep figure and table captions short, preferably one line and normally below
-about 12 words. Use a descriptive noun phrase that identifies the plotted
-quantity, comparison, geometry, or parameter set. **A noun phrase, never a
-question** — see the question-framing ban under *Scientific narrative*, which
-covers captions as well as headings.
+**Every visible figure caption and table caption must fit on one rendered
+line**, and should normally remain below about 12 words. Each corresponding
+entry in the List of Figures or List of Tables must also fit on one line. This
+is a hard layout limit rather than a preference. If a caption or list entry
+wraps, retain only the descriptive noun phrase that identifies the plotted
+quantity, comparison, geometry, or parameter set, and move every explanation
+to the surrounding text. **A noun phrase, never a question** — see the
+question-framing ban under *Scientific narrative*, which covers captions as
+well as headings.
 
 Good examples:
 
@@ -439,10 +443,10 @@ The List of Figures and List of Tables must always contain concise entries.
 **A table column heading takes the same form as a plot axis: descriptive name,
 symbol, then the unit in square brackets.** The thesis uses square brackets for
 a unit everywhere else — every axis, every symbol-list row — so a heading
-reading `\([\theta_{t_1},\theta_{t_2}]\) (deg)` was inconsistent twice over, in
+reading `\([\theta_{\mathrm{offset},t_1},\theta_{\mathrm{offset},t_2}]\) (deg)` was inconsistent twice over, in
 its brackets and in spelling out the degree where the rest of the document sets
 the symbol. The direction-check table was corrected on 2026-08-25 to
-`Commanded Rotation Components, \([\theta_{t_1},\theta_{t_2}]\) \([{}^\circ]\)`
+`Configured Orientation-Offset Components, \([\theta_{\mathrm{offset},t_1},\theta_{\mathrm{offset},t_2}]\) \([{}^\circ]\)`
 and `CoC Components, \([r_{c,t_1},r_{c,t_2},r_{c,n}]\) \([\mathrm{mm}]\)`.
 A bare symbol vector as a heading also leaves the reader to work out what the
 components are of; naming them costs two words. Grep for a unit in round
@@ -724,33 +728,43 @@ circulation, the settled choices are:
   statement is true in.
 - **pole** is implementation vocabulary from the parameter names. Keep it in
   equation labels and parameter keys, not in the running text.
-- **commanded tool orientation offset** for the deliberate angular command: a
-  `commanded tool orientation offset about t1`. Its components are the
-  **commanded rotation axis**, **commanded rotation direction**, and **offset
-  angle**. Use `zero orientation offset` and `reversed orientation offset` for
-  the corresponding conditions. Do not use `tilt`, `tool tilt`, or `signed
-  tilt` where this commanded quantity is meant. Not
-  `excitation`, which is borrowed from system identification and describes an
-  input signal rather than a commanded orientation, and not `mismatch`, which
-  implies an unwanted discrepancy where the angle is deliberate.
+- **configured orientation offset** for the deliberate pre-contact angular
+  setting: a `configured orientation offset about t1`. Its vector is
+  \(\theta_{\mathrm{offset}}\), and its surface-tangent components always carry
+  the full index \(\theta_{\mathrm{offset},t_1}\) and
+  \(\theta_{\mathrm{offset},t_2}\). Use `zero orientation offset` and
+  `reversed orientation offset` for the corresponding conditions. Do not use
+  `commanded rotation`, `commanded tool orientation offset`, `tilt`, `tool
+  tilt`, `signed tilt`, `excitation`, or `mismatch` for this configured
+  quantity.
 
-  **The command is an implementation input, not the experimental entry
-  angle.** In Chapter 3 and the parameter appendix, the controller input keeps
-  the name commanded tool orientation offset
-  \(\theta_{\mathrm{cmd}}\). In the experimental method, results, tables and
-  comparison figures, the initial condition is the **pose-based initial
-  angular deviation** \(\theta_{0,t_1}\) reached at the start of Contact
-  Establishment. It is calculated from the measured end-effector orientation,
-  the calibrated tool normal and the configured surface normal. The finite
-  Tool Orientation tolerance means that \(\theta_{0,t_1}\) is not replaced by
-  the nominal command.
+  **The configured offset establishes a pre-contact condition; it does not
+  prescribe the rotation measured during contact.** It is applied during Tool
+  Orientation before Surface Approach. At the start of Contact Establishment,
+  the achieved condition is the **pose-based initial angular deviation**
+  \(\theta_{0,t_1}\). Contact Establishment holds the captured orientation
+  reference and produces the signed **contact-establishment response**
+  \(\gamma_{t_1}\). The chain is therefore
+  \(\theta_{\mathrm{offset},t_1}\to\theta_{0,t_1}\to\gamma_{t_1}\).
+
+  In Chapter 3 the configured vector and its rotation are
+  \(\theta_{\mathrm{offset}}=\theta_{\mathrm{offset},t_1}t_1+
+  \theta_{\mathrm{offset},t_2}t_2\),
+  \(u_{\mathrm{offset}}=\theta_{\mathrm{offset}}/
+  \lVert\theta_{\mathrm{offset}}\rVert\), and
+  \(R_{\mathrm{offset}}=R(u_{\mathrm{offset}},
+  \lVert\theta_{\mathrm{offset}}\rVert)\). The desired tool-normal direction
+  is \(n_d=R_{\mathrm{offset}}(-n_s)\). For zero offset,
+  \(R_{\mathrm{offset}}=I\) and \(n_d=-n_s\). The former
+  \(\theta_{\mathrm{cmd}}\), \(u_{\mathrm{cmd}}\),
+  \(R_{\mathrm{cmd}}\), \(\theta_{t_1}\), and \(\theta_{t_2}\) forms are
+  withdrawn.
 
   A quantitative experimental axis uses `Pose-Based Initial Angular
   Deviation` followed by \(\theta_{0,t_1}\) and its unit. A table condition
-  column uses `Initial Angular Deviation`. The nominal command may still be
-  stated where the controller input, parameter file or direction-selection
-  rule is the subject. Do not rename that input to make the source appear to
-  command the measured entry angle directly.
+  column uses `Initial Angular Deviation`. The configured offset may be stated
+  where the pre-contact setting, parameter file, or direction-selection rule
+  is the subject. It is never substituted for the achieved entry condition.
 
   **The physical tool--surface angle is unmeasured.** Let
   \(n_{\mathrm{phys}}\) denote the physical surface normal. The reported
@@ -760,27 +774,27 @@ circulation, the settled choices are:
   \(\theta_{0,t_1}\) is the achieved pose-based condition relative to the
   configured surface reference and is never called a measured physical angle.
 
-  **State the physical problem before the experimental input.** Tool
+  **State the physical problem before the configured offset.** Tool
   Orientation has access to the configured normal \(n_s\), not an independent
-  measurement of the physical normal \(n_{\mathrm{phys}}\). With zero commanded
-  offset it makes the desired tool face parallel to the configured plane. If
-  the physical plane differs, that nominal alignment leaves a physical
+  measurement of the physical normal \(n_{\mathrm{phys}}\). With zero offset
+  it makes the desired tool face parallel to the configured plane. If the
+  physical plane differs, that nominal alignment leaves a physical
   tool--surface error at contact entry. The contact interaction is intended to
   permit a rotation that reduces this remaining mismatch.
 
-  **The commanded offset is not a surrogate for the surface-reference
-  difference.** It is only the desired tool-orientation offset relative to
-  \(n_s\). Do not equate it with, or describe it as an approximation of, the
-  unknown physical difference. A zero command specifies parallelism with the
-  configured plane; a non-zero command specifies a deliberate inclination
-  about the selected surface tangents.
+  **The configured offset is not a surrogate for the surface-reference
+  difference.** It is only the desired pre-contact orientation offset relative
+  to \(n_s\). Do not equate it with, or describe it as an approximation of, the
+  unknown physical difference. A zero offset specifies parallelism with the
+  configured plane; a non-zero offset specifies a deliberate inclination about
+  the selected surface tangents.
 
   Keep the three chapter roles separate. Chapter 2 derives the directional
-  compliance-centre rule from a generic tangent-plane angular deviation that
-  contact should reduce. Chapter 3 defines \(\theta_{\mathrm{cmd}}\) only as a
-  controller input and constructs \(n_d=R_{\mathrm{cmd}}(-n_s)\). Chapter 4
-  explains that varying this input supplied reproducible reference-relative
-  entry conditions, then distinguishes the command from the achieved
+  compliance-centre rule from the generic tangent-plane angular deviation
+  \(\theta_a\) that contact should reduce. Chapter 3 defines the configured
+  pre-contact offset and constructs \(n_d=R_{\mathrm{offset}}(-n_s)\).
+  Chapter 4 explains how varying that setting supplied reproducible
+  reference-relative entry conditions, then distinguishes it from the achieved
   \(\theta_{0,t_1}\). It states in words that the physical surface may differ
   from the configured reference by an unknown angular amount. No equation is
   introduced for that unmeasured relation.
@@ -920,8 +934,8 @@ expression alone. Do not repeat a definition that has already been established
 unless the symbol is assigned a different local meaning.
 
 Whenever running text names a defined mathematical quantity, place its symbol
-immediately after that name. For example, write `the commanded orientation
-offset \(\theta_{\mathrm{cmd}}\)` and `the commanded joint torque
+immediately after that name. For example, write `the configured orientation
+offset \(\theta_{\mathrm{offset}}\)` and `the commanded joint torque
 \(\tau_{\mathrm{cmd}}\)`. This rule applies to repeated uses as well as to the
 first definition. It does not apply to generic physical nouns that do not denote
 a specific defined variable, or to an unambiguous pronoun or shortened reference
@@ -1690,8 +1704,9 @@ only for the null-space pose-hold experiment. It does not appear in the
 Cartesian pose-hold account either.
 
 **What Chapter 3 must keep**, because these are what was designed rather than
-what was derived: the architecture figure; the commanded surface-relative
-offset \(\theta_{\mathrm{cmd}}=\theta_{t_1}t_1+\theta_{t_2}t_2\) and the
+what was derived: the architecture figure; the configured surface-relative
+offset \(\theta_{\mathrm{offset}}=\theta_{\mathrm{offset},t_1}t_1+
+\theta_{\mathrm{offset},t_2}t_2\) and the
 inward normal it rotates; the tool geometry and the selection of
 \(p_{\mathrm{Tool}}\); the tool-fixed against surface-fixed compliance-centre
 definition; the contact-establishment reference generation, with
@@ -1831,10 +1846,10 @@ Section by section:
   table.** Keep one paragraph naming the three effects being separated, then the
   master table, then prose only for the cases that need interpretation: why an
   axial displacement is nominally weak, and why the lever direction changes with
-  the commanded orientation.
+  the configured orientation offset.
 - **Experimental condition and response quantity.** Keep one
-  input--condition--response chain: the controller input
-  \(\theta_{\mathrm{cmd}}\) produces the achieved pose-based condition
+  input--condition--response chain: the configured pre-contact input
+  \(\theta_{\mathrm{offset},t_1}\) produces the achieved pose-based condition
   \(\theta_{0,t_1}\), and Contact Establishment produces the measured response
   \(\gamma_{t_1}\). Appendix D retains only the two supporting parameter
   checks and their measured response values.
@@ -2097,19 +2112,22 @@ were removed. Name the chain instead: `alignment angle calculated from the
 end-effector pose`, `end-effector-based alignment angle`, or `pose-based
 alignment angle`.
 
-### Separate the command, initial condition, and response
+### Separate the offset, initial condition, and response
 
-The orientation chain has three symbol families. \(\theta_{t_i}\) is a
-component of the commanded orientation offset about surface tangent \(t_i\).
+The orientation chain has three symbol families. \(\theta_{\mathrm{offset},t_i}\)
+is a component of the configured orientation offset about surface tangent
+\(t_i\). It establishes a pre-contact condition during Tool Orientation and
+does not prescribe the rotation during Contact Establishment.
 The pose-based initial angular deviation \(\theta_{0,t_1}\) is the achieved
 contact-entry condition relative to the configured surface reference, with its
-sign chosen in the direction of the command. The signed
+sign chosen in the direction of the configured offset. The signed
 contact-establishment response \(\gamma_{t_1}\) is the measured response about
 that tangent.
 
 The experiment tables and comparison figures identify their angular condition
-with \(\theta_{0,t_1}\), not with \(\theta_{t_1}\). The command remains in the
-methodology as the controller input that generated this condition. A physical
+with \(\theta_{0,t_1}\), not with \(\theta_{\mathrm{offset},t_1}\). The
+configured offset remains in the methodology as the controller input that
+generated this condition. A physical
 initial tool--surface error is not substituted for either quantity unless an
 independent physical surface normal and the tool orientation under load have
 both been measured.
@@ -2475,27 +2493,34 @@ instantaneous opposing torque at identical joint configurations.
   \(r_c\) shapes the **commanded** wrench through \(\mathrm{Ad}(r_c)\);
   \(r_{\mathrm{Tool}}\) belongs to the physical contact geometry.
 - **The direction-selected lever rule has one sign, and it is
-  \(r_{c,t}=\rho_c(\theta_{t_1}t_2-\theta_{t_2}t_1)/\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}\).**
+  \(r_{c,t}=\rho_c(\theta_{\mathrm{offset},t_1}t_2-
+  \theta_{\mathrm{offset},t_2}t_1)/
+  \sqrt{\theta_{\mathrm{offset},t_1}^2+
+  \theta_{\mathrm{offset},t_2}^2}\).**
   It reduces to \(r_{c,t}=+\rho_c t_2\) for a positive \(t_1\) offset and
   \(r_{c,t}=-\rho_c t_1\) for a positive \(t_2\) offset. Two independent
   things fix the reported \(t_1\) sign and must agree: the Case-D
-  measurements, where the \(+10^\circ\) command about \(t_1\) is assisted at
+  measurements, where the \(+10^\circ\) configured offset about \(t_1\) is assisted at
   positive \(r_{c,t_2}\), and the moment that follows it,
-  \(m_{\mathrm{cpl},K}\approx-F_{K,n}\rho_c(\theta_{t_1}t_1+\theta_{t_2}t_2)/
-  \sqrt{\theta_{t_1}^2+\theta_{t_2}^2}\), which is opposite to the commanded
+  \(m_{\mathrm{cpl},K}\approx-F_{K,n}\rho_c(
+  \theta_{\mathrm{offset},t_1}t_1+\theta_{\mathrm{offset},t_2}t_2)/
+  \sqrt{\theta_{\mathrm{offset},t_1}^2+
+  \theta_{\mathrm{offset},t_2}^2}\), which is opposite to the configured
   offset.
 
-  **The reversed numerator \(\theta_{t_2}t_1-\theta_{t_1}t_2\) is wrong and was
+  **The reversed numerator
+  \(\theta_{\mathrm{offset},t_2}t_1-
+  \theta_{\mathrm{offset},t_1}t_2\) is wrong and was
   removed** from Chapter 2 and Chapter 5 on 2026-08-25. It survived the \(r_c\)
   redefinition because it sits two equations away from the moment it feeds, and
   in both chapters it contradicted the moment printed immediately below it.
   Any future change to the lever convention is checked against both
   anchors above, not against the formula alone.
-- **The desired tool-normal direction is \(n_d=R_{\mathrm{cmd}}(-n_s)\), and
-  for zero commanded offset \(n_d=-n_s\), never \(+n_s\).** A tool face
+- **The desired tool-normal direction is \(n_d=R_{\mathrm{offset}}(-n_s)\), and
+  for zero configured offset \(n_d=-n_s\), never \(+n_s\).** A tool face
   parallel to the surface requires the tool normal to point into the plane, so
-  the direction the commanded rotation is applied to is the inward normal
-  \(-n_s\). Writing \(n_d=R_{\mathrm{cmd}}n_s\) makes the zero-offset
+  the configured offset is applied to the inward normal \(-n_s\). Writing
+  \(n_d=R_{\mathrm{offset}}n_s\) makes the zero-offset
   target point out of the surface instead of into it.
 
   **\(n_{\mathrm{flat}}\) and \(s_a\) are withdrawn**, written here as
@@ -2632,7 +2657,7 @@ instantaneous opposing torque at identical joint configurations.
 - **The compliance-centre hierarchy is stated once, in Section 2.7.3, and
   applied everywhere else.** The order is
   \(r_c\to(r_{c,t_1},r_{c,t_2},r_{c,n})\to r_{c,t}\), then
-  \(\theta_{\mathrm{cmd}}\to\) the selected direction, then
+  \(\theta_{\mathrm{offset}}\to\) the selected direction, then
   \(m=m_R+r_c\times f\). \(r_{c,t_1}\) and \(r_{c,t_2}\) are signed
   scalars and \(r_{c,t}\) is the tangential vector they form. Chapters 4
   and 5 must not re-derive any of it.
@@ -2700,7 +2725,7 @@ instantaneous opposing torque at identical joint configurations.
   tool-fixed one whose base-frame vector rotates with the end effector, and
   Appendix C records which the campaign used; Section 4.4 said only that the
   tangential position was varied along the tangent perpendicular to the
-  commanded rotation. A reader therefore had every reason to take
+  configured offset direction. A reader therefore had every reason to take
   \(r_{c,t_1}\) and \(r_{c,t_2}\) for surface-frame coordinates held constant
   throughout the experiment, which is not what the implementation does. Three sentences
   were added on 2026-08-25 and later simplified: all non-zero displacements
@@ -2745,28 +2770,31 @@ instantaneous opposing torque at identical joint configurations.
   the corresponding vector. Say so once where both first appear rather than
   leaving the reader to infer it.
 
-  **The orientation-offset family is the stated exception, and carries `cmd`.**
+  **The orientation-offset family carries `offset`, not `cmd`.**
   `\theta_{\mathrm{tilt}}` and `R_{\mathrm{tilt}}` are withdrawn, written here
   as literal strings so a rename cannot revive them. `tilt` was the last place
   in the notation where the word survived, and it named three different things
-  at once — the physical tool tilt, the commanded offset, and the measured
+  at once — the physical tool tilt, the configured offset, and the measured
   response — while the prose ban on `tilt` under *Naming a technical quantity*
   had already removed it everywhere else. The settled chain is
-  \(\theta_{\mathrm{cmd}}=\theta_{t_1}t_1+\theta_{t_2}t_2\), its magnitude
-  \(\lVert\theta_{\mathrm{cmd}}\rVert\) as the commanded offset angle, the
-  unit axis \(u_{\mathrm{cmd}}=\theta_{\mathrm{cmd}}/
-  \lVert\theta_{\mathrm{cmd}}\rVert\), and
-  \(R_{\mathrm{cmd}}=R(u_{\mathrm{cmd}},\lVert\theta_{\mathrm{cmd}}\rVert)\)
+  \(\theta_{\mathrm{offset}}=\theta_{\mathrm{offset},t_1}t_1+
+  \theta_{\mathrm{offset},t_2}t_2\), its magnitude
+  \(\lVert\theta_{\mathrm{offset}}\rVert\) as the configured offset angle, the
+  unit axis \(u_{\mathrm{offset}}=\theta_{\mathrm{offset}}/
+  \lVert\theta_{\mathrm{offset}}\rVert\), and
+  \(R_{\mathrm{offset}}=R(u_{\mathrm{offset}},
+  \lVert\theta_{\mathrm{offset}}\rVert)\)
   through the Rodrigues relation of Section 2.3.
 
-  The index is what separates the command from the response \(\gamma_{t_1}\)
+  The index is what separates the configured input from the response
+  \(\gamma_{t_1}\)
   and from the physical tool orientation, neither of which the thesis measures
   in the same frame, so it distinguishes rather than decorates. That is the
   difference from the withdrawn wrench indices: nothing was ever going to be
   confused with `F_{n,\mathrm{cmd}}`, because no estimated normal force is
-  reported at all. The scalar components keep their tangent index and take no
-  `cmd`, since \(\theta_{t_1}\) and \(\theta_{t_2}\) are already the
-  components of the commanded vector.
+  reported at all. The scalar components retain both `offset` and their tangent
+  index: \(\theta_{\mathrm{offset},t_1}\) and
+  \(\theta_{\mathrm{offset},t_2}\).
 - **The settled force and moment names.** `press` as a symbol name was
   withdrawn, because \(f_{\mathrm{press}}\) read as the complete force pressing
   against the surface when it was only the spring term. The subscript now says
@@ -2886,8 +2914,8 @@ scientific purpose statement.
 
 ## Results and conclusion priorities
 
-The reported contact campaign is restricted to commanded rotations about
-\(t_1\). The principal experimental conclusions are:
+The reported contact campaign is restricted to configured orientation offsets
+about \(t_1\). The principal experimental conclusions are:
 
 1. Within the tested range, tangential compliance-centre position produced the
    largest response variation. The side of the TCP that increased the
@@ -2904,7 +2932,8 @@ The reported contact campaign is restricted to commanded rotations about
    while a displaced centre can provide greater condition-specific authority.
 
 No result comparison, conclusion, caption, table, or active plot reports an
-experiment with commanded rotation about \(t_2\). The symbol \(t_2\) remains
+experiment with a configured orientation offset about \(t_2\). The symbol
+\(t_2\) remains
 where it denotes the second surface-frame axis or the perpendicular coordinate
 of a \(t_1\) experiment, including \(K_{p,t_2}\) and \(r_{c,t_2}\).
 

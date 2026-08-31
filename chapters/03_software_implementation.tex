@@ -61,24 +61,30 @@ exceptions form the separate application-side category.}
 \begin{figure}[H]
   \centering
   \input{figures/controller_block_diagram.tex}
-  \caption{Torque contributions combined in one control cycle.}
+  \caption{Cartesian impedance feedback loop and additive torque terms.}
   \label{fig:controller_block_diagram}
 \end{figure}
 
-\mbox{\Cref{fig:controller_block_diagram}} shows the torque path of one
-impedance-controlled cycle, and the order within that cycle is fixed. The
-callback first reads the measured joint configuration \mbox{\(q\)}, the joint
-velocity \mbox{\(\dot q\)}, the end-effector pose, the \mbox{\(6\times7\)}
-geometric Jacobian \mbox{\(J(q)\)}, and the remaining robot-model quantities.
-The state logic then updates the desired Cartesian reference. The Cartesian
-pose error and the impedance wrench \mbox{\(F=[f^\top,m^\top]^\top\)} are
-evaluated according to \mbox{\Cref{subsec:cartesian_pose_error}} and
-\mbox{\Cref{sec:cartesian_impedance_control}}, using the reference of the
-active state and the impedance matrices selected for it. That wrench is mapped
-to joint torque through \mbox{\(J^\top(q)\)}, the secondary null-space torque
-and the model Coriolis contribution are added, the required signals are stored
-in preallocated memory, and the resulting torque vector is returned to
-libfranka.
+\mbox{\Cref{fig:controller_block_diagram}} presents one callback as a closed
+Cartesian feedback loop. The active controller state supplies the desired
+reference \mbox{\(p_d\)}, \mbox{\(R_d\)}, and \mbox{\(\dot p_d\)}. The
+robot state supplies \mbox{\(p_{\mathrm{EE}}\)},
+\mbox{\(R_{\mathrm{EE}}\)}, \mbox{\(\dot p_{\mathrm{EE}}\)}, and
+\mbox{\(\omega_{\mathrm{EE}}\)} for feedback.
+
+The Cartesian pose error and the measured velocities determine the impedance
+wrench \mbox{\(F=[f^\top,m^\top]^\top\)} according to
+\mbox{\Cref{subsec:cartesian_pose_error,sec:cartesian_impedance_control}}.
+The Jacobian transpose maps this wrench to
+\mbox{\(\tau_{\mathrm{cart}}\)}. The secondary null-space torque
+\mbox{\(\tau_{\mathrm{null}}\)} and model Coriolis contribution
+\mbox{\(\tau_c(q,\dot q)\)} are then added before the commanded joint torque
+\mbox{\(\tau_{\mathrm{cmd}}\)} is returned to libfranka.
+
+The desired orientation \mbox{\(R_d\)} remains the reference of the impedance
+law. During Contact Establishment it is held constant, so the measured
+end-effector rotation arises through the closed-loop contact response rather
+than from a changing orientation reference.
 
 The end-effector pose supplied by the robot state is used directly for
 \mbox{\(p_{\mathrm{EE}}\)} and \mbox{\(R_{\mathrm{EE}}\)}. The real-time
@@ -154,7 +160,7 @@ be entered directly from Controller Selection or from Guidance Mode.
 \end{figure}
 
 \begin{itemize}
-  \item Tool Orientation moves the tool to the commanded surface-relative
+  \item Tool Orientation moves the tool to the configured surface-relative
         angular offset while the captured TCP position is held.
   \item Surface Approach retains that orientation and advances the position
         reference towards the surface along \mbox{\(-n_s\)}. The state ends at
@@ -215,50 +221,58 @@ n_{\mathrm{Tool},0}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}.
 \label{eq:implementation_current_tool_normal}
 \end{equation}
 
-The commanded orientation offset about the two surface tangents is represented
+The configured orientation offset about the two surface tangents is represented
 by the rotation vector
 
 \begin{equation}
-\theta_{\mathrm{cmd}}
+\theta_{\mathrm{offset}}
 =
-\theta_{t_1}t_1
+\theta_{\mathrm{offset},t_1}t_1
 +
-\theta_{t_2}t_2
+\theta_{\mathrm{offset},t_2}t_2
 \in\mathbb{R}^3.
 \label{eq:implementation_tilt_rotation_vector}
 \end{equation}
 
-Its magnitude \mbox{\(\lVert\theta_{\mathrm{cmd}}\rVert\)} is the commanded
-offset angle relative to the configured surface reference. It is a controller
-input and not the achieved reference-relative angle at contact entry. For a
-non-zero offset the corresponding unit rotation axis is
+Its magnitude \mbox{\(\lVert\theta_{\mathrm{offset}}\rVert\)} specifies the
+pre-contact orientation offset relative to the configured surface reference.
+It is used during Tool Orientation and does not prescribe the rotation occurring
+during Contact Establishment. For a non-zero offset, the corresponding unit
+rotation axis is
 
 \begin{equation}
-u_{\mathrm{cmd}}
+u_{\mathrm{offset}}
 =
-\frac{\theta_{\mathrm{cmd}}}{\lVert\theta_{\mathrm{cmd}}\rVert},
-\label{eq:implementation_commanded_rotation_axis}
+\frac{\theta_{\mathrm{offset}}}{\lVert\theta_{\mathrm{offset}}\rVert},
+\label{eq:implementation_offset_rotation_axis}
 \end{equation}
 
 and the axis--angle relation of \mbox{\Cref{eq:rodrigues_formula}} gives the
-commanded rotation matrix
-\mbox{\(R_{\mathrm{cmd}}=R(u_{\mathrm{cmd}},\lVert\theta_{\mathrm{cmd}}\rVert)\)},
-which is the identity for a zero commanded offset. The vector permits offsets
+offset rotation matrix
+
+\[
+R_{\mathrm{offset}}
+=
+R\!\left(u_{\mathrm{offset}},\lVert\theta_{\mathrm{offset}}\rVert\right).
+\]
+
+This matrix is the identity for a zero configured offset. The vector permits offsets
 about either surface tangent and along intermediate tangent-plane directions.
 
 Since \mbox{\(n_s\)} points out of the surface, the tool-normal direction for
 a tool face parallel to the surface is \mbox{\(-n_s\)}. Applying the
-commanded orientation offset to that direction gives the desired tool-normal
+configured orientation offset to that direction gives the desired tool-normal
 direction
 
 \begin{equation}
 n_d
 =
-R_{\mathrm{cmd}}\left(-n_s\right).
+R_{\mathrm{offset}}\left(-n_s\right).
 \label{eq:implementation_tool_normal_target}
 \end{equation}
 
-For a zero commanded offset \mbox{\(n_d=-n_s\)}. The shortest rotation that aligns the captured tool
+For \mbox{\(\theta_{\mathrm{offset}}=0\)},
+\mbox{\(R_{\mathrm{offset}}=I\)} and \mbox{\(n_d=-n_s\)}. The shortest rotation that aligns the captured tool
 direction with \mbox{\(n_d\)} is applied to the complete start orientation.
 The implementation can additionally prescribe a twist about the desired tool
 axis, which fixes the in-plane orientation of the rectangular face; because a
@@ -305,9 +319,10 @@ used for contact establishment, as described in
 
 \Added{The Tool Orientation state constructs the desired tool direction relative
 to the configured normal \mbox{\(n_s\)}. With
-\mbox{\(\theta_{\mathrm{cmd}}=0\)}, the target tool face is parallel to the
-configured plane. A non-zero command introduces the specified angular offset
-about the surface tangents. The captured start position is held while the desired orientation advances
+\mbox{\(\theta_{\mathrm{offset}}=0\)}, the target tool face is parallel to the
+configured plane. A non-zero configured orientation offset moves the tool
+towards the corresponding surface-relative orientation before Surface Approach.
+The captured start position is held while the desired orientation advances
 towards the target of
 \mbox{\Cref{eq:implementation_tool_normal_target}} through a rate-limited
 interpolation. The transition uses the tool-axis error and, when enabled, the
@@ -467,8 +482,7 @@ sits on that axis directly beneath the TCP.
   \centering
   \input{figures/leading_feature_cases.tex}
   \caption[Principal selected tool points for the rectangular tool face.]{%
-    Principal selected tool points for the rectangular tool face: leading
-    corner, leading-edge midpoint, and tool-face centre.}
+    Principal selected tool points for the rectangular tool face.}
   \label{fig:leading_feature_cases}
 \end{figure}
 

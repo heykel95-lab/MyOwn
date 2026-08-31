@@ -763,9 +763,9 @@ replaced this.
 
 ### Vary the frame, keep the term
 
-`commanded tool orientation offset` is the settled name
+`configured orientation offset` is the settled name
 (THESIS_WRITING_GUIDE.md, *Naming a technical quantity*) and does not change.
-Its components are the `commanded rotation axis`, the `commanded rotation
+Its components are the `configured offset axis`, the `configured offset
 direction`, and the `offset angle`. Repeating the full name in every sentence
 is unnecessary once the quantity has been introduced.
 
@@ -773,13 +773,13 @@ One name, many constructions:
 
 | Instead of, every time | Also |
 |---|---|
-| a commanded tool orientation offset about \(t_1\) | the offset about \(t_1\); the commanded rotation about \(t_1\) |
-| for a commanded tool orientation offset about \(t_2\) | with the offset about \(t_2\); about \(t_2\) |
-| the sign of the tool tilt | the commanded rotation direction; the offset direction |
-| Excited axis *(table header)* | Commanded rotation axis |
+| a configured orientation offset about \(t_1\) | the offset about \(t_1\); the configured \(t_1\) offset |
+| for a configured orientation offset about \(t_2\) | with the offset about \(t_2\); about \(t_2\) |
+| the sign of the tool tilt | the configured offset direction; the offset direction |
+| Excited axis *(table header)* | Configured offset axis |
 
-`tool tilt`, `excitation`, and `mismatch` are not used for the commanded tool
-orientation offset.
+`tool tilt`, `excitation`, `commanded rotation`, and `mismatch` are not used for
+the configured orientation offset.
 
 ## What already reads as your own voice
 

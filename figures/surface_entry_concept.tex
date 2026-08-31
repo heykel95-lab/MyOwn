@@ -1,11 +1,11 @@
-% Configured reference, commanded tool offset, and achieved contact geometry.
+% Configured reference, configured orientation offset, and achieved contact geometry.
 \begin{tikzpicture}[
     scale=1.0,
     reference/.style={red!75!black, line width=1.1pt},
     physical/.style={blue!70!black, line width=1.1pt},
     tool/.style={green!55!black, line width=1.1pt},
     normal/.style={-{Latex[length=1.8mm]}, line width=0.9pt},
-    angle/.style={-{Latex[length=1.8mm]}, line width=0.9pt},
+    conceptangle/.style={-{Latex[length=3.2mm,width=2.4mm]}, line width=1.5pt},
     lbl/.style={font=\footnotesize, align=center},
     panel/.style={font=\footnotesize, align=center},
   ]
@@ -22,7 +22,7 @@
   \node[lbl, red!75!black, anchor=north] at (0,-0.28)
     {Configured reference};
   \node[lbl, blue!70!black, anchor=south west] at (0.58,0.36)
-    {Physical surface};
+    {Physical surface\\(unknown)};
   \node[panel] at (0,-1.18) {(a) Surface references};
 \end{scope}
 
@@ -30,16 +30,16 @@
 \begin{scope}[xshift=4.65cm]
   \coordinate (ob) at (0,0);
   \draw[reference] (-1.55,0) -- (1.55,0);
-  \draw[tool, rotate around={18:(ob)}] (-1.55,0) -- (1.55,0);
-  \draw[angle, green!55!black]
-    (0:0.62) arc[start angle=0,end angle=18,radius=0.62];
-  \node[lbl, green!55!black] at (9:1.04)
-    {$\theta_{\mathrm{cmd}}$};
+  \draw[tool, rotate around={38:(ob)}] (-0.30,0) -- (1.20,0);
+  \draw[conceptangle, green!55!black]
+    (0:1.18) arc[start angle=0,end angle=38,radius=1.18];
+  \node[lbl, font=\scriptsize, green!55!black] at (0.68,1.16)
+    {Configured offset $\theta_{\mathrm{offset}}$};
   \node[lbl, red!75!black, anchor=north] at (0,-0.28)
     {Configured reference};
-  \node[lbl, green!55!black, anchor=south west] at (0.64,0.38)
+  \node[lbl, green!55!black, anchor=south west] at (0.25,1.48)
     {Desired tool face};
-  \node[panel] at (0,-1.18) {(b) Commanded offset};
+  \node[panel] at (0,-1.18) {(b) Configured orientation offset};
 \end{scope}
 
 % (c) The achieved angle is reference-relative; physical contact remains unknown.
@@ -47,15 +47,16 @@
   \coordinate (oc) at (0,0);
   \draw[reference] (-1.55,0) -- (1.55,0);
   \draw[physical, rotate around={-9:(oc)}] (-1.55,0) -- (1.55,0);
-  \draw[tool, rotate around={14:(oc)}] (-1.55,0) -- (1.55,0);
-  \draw[angle, green!55!black]
-    (0:0.62) arc[start angle=0,end angle=14,radius=0.62];
-  \node[lbl, green!55!black] at (0.62,0.40) {$\theta_0$};
+  \draw[tool, rotate around={32:(oc)}] (-0.30,0) -- (1.20,0);
+  \draw[conceptangle, green!55!black]
+    (0:1.18) arc[start angle=0,end angle=32,radius=1.18];
+  \node[lbl, font=\scriptsize, green!55!black] at (0.82,1.15)
+    {Reference-relative $\theta_0$};
   \node[lbl, red!75!black, anchor=north] at (0,-0.28)
     {Configured reference};
-  \node[lbl, green!55!black, anchor=south west] at (0.20,0.66)
+  \node[lbl, green!55!black, anchor=south west] at (0.25,1.48)
     {Achieved tool face};
-  \node[lbl, blue!70!black, anchor=south] at (-0.92,0.66)
+  \node[lbl, blue!70!black, anchor=south] at (-0.70,1.53)
     {Physical surface\\(unknown)};
   \node[panel] at (0,-1.18) {(c) Contact entry};
 \end{scope}

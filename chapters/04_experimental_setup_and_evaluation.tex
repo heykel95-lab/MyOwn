@@ -12,7 +12,7 @@ null-space controller. Supporting checks of the compliance-centre geometry are
 reported in \Cref{app:supporting_contact_checks}.
 
 The main data set consists of surface-contact measurements in which the
-commanded tool orientation offset, directional Cartesian stiffness, and virtual
+configured tool-orientation offset, directional Cartesian stiffness, and virtual
 \abbr{CoC} were varied under otherwise matched conditions. The primary
 response quantity is the signed contact-establishment response. A second,
 independent experiment evaluates the null-space terms under a repeatable
@@ -116,8 +116,9 @@ The complete experiment-specific controller configuration is given in
 \Added{Four quantities distinguish the controller reference from the physical
 contact geometry. The configured normal \mbox{\(n_s\)} is available to the
 controller, whereas \mbox{\(n_{\mathrm{phys}}\)} denotes the unmeasured physical
-surface normal. The command \mbox{\(\theta_{\mathrm{cmd}}\)} sets the desired
-tool offset relative to \mbox{\(n_s\)}. The pose-based angle
+surface normal. The configured orientation offset
+\mbox{\(\theta_{\mathrm{offset}}\)} sets the desired tool direction relative to
+\mbox{\(n_s\)}. The pose-based angle
 \mbox{\(\theta_0\)} is the reference-relative orientation actually reached at
 contact entry.}
 
@@ -655,7 +656,7 @@ The recorded signals and \abbr{CSV} structure are documented in
 Each parameter setting was evaluated in three repeated trials. Results are
 reported as arithmetic means, with sample standard deviations given for the
 main comparisons and where relevant in the supporting checks. The reported
-contact evaluation is restricted to commanded rotations about \(t_1\), because
+contact evaluation is restricted to configured orientation offsets about \(t_1\), because
 the \(t_2\) responses were not sufficiently repeatable. The cause of this
 variability was not isolated; the observed tool-mount play about
 \(y_{\mathrm{EE}}\), approximately aligned with \(t_2\), is one possible
@@ -680,7 +681,7 @@ parameter was varied.
 % ============================================================================
 
 The main surface-contact study separates the effects of the principal
-controller parameters for commanded rotation about \(t_1\). Case~A establishes
+controller parameters for configured orientation offsets about \(t_1\). Case~A establishes
 the TCP-centred reference, where \(r_c=0\). In Cases~B and~C, rotational and
 translational stiffness were varied independently. This allowed the effect of
 either entry to be evaluated while the other remained fixed. In Case~D the
@@ -758,10 +759,12 @@ Table~\ref{tab:experimental_common_gains}.
 \label{sec:alignment_evaluation}
 % ============================================================================
 
-The commanded tool-orientation offset \(\theta_{\mathrm{cmd}}\) is the
-controller input used to produce the pose-based initial angular deviation
-\(\theta_{0,t_1}\). Contact Establishment then produces the signed response
-\(\gamma_{t_1}\), which is used for the main experimental comparisons.
+The configured orientation offset \(\theta_{\mathrm{offset},t_1}\) is used
+during Tool Orientation to establish the pre-contact angular condition. The
+pose-based initial angular deviation \(\theta_{0,t_1}\) describes the
+orientation actually reached at the start of Contact Establishment. Contact
+Establishment then produces the signed response \(\gamma_{t_1}\), which is used
+for the main experimental comparisons.
 
 
 \subsection{Pose-Based Initial Angular Deviation}
@@ -787,7 +790,7 @@ The reported pose-based initial angular deviation about \(t_1\) is
 \end{equation}
 
 The minus sign makes a component directed away from the configured flat
-orientation carry the same sign as the command that produced it. This angle is
+orientation carry the same sign as the configured offset that produced it. This angle is
 calculated from the measured end-effector pose and the calibrated tool normal.
 It is therefore the achieved reference-relative condition rather than an
 independent measurement of the physical tool--surface angle.

@@ -80,7 +80,7 @@ in the annotation. Label the arc with the symbol the surrounding text uses.
 places it is the first of them.** The direction-rule figure drew its square
 inside `\begin{scope}[rotate=\ra]`, where `\ra` is the *lever* direction, so
 the square occupied the quadrant beyond \(r_{c,t}\) instead of the one
-between \(\theta_{\mathrm{cmd}}\) and \(r_{c,t}\) — in the `about t_1`
+between \(\theta_{\mathrm{offset}}\) and \(r_{c,t}\) — in the `about t_1`
 panel it sat between \(+t_2\) and \(-t_1\), where nothing is
 perpendicular to anything. Rotating by the *first* of the two directions,
 `\ua`, puts the local \(x\) axis on one vector and the local \(y\) axis on
@@ -279,10 +279,9 @@ distinction that requires a visual explanation.
 an exhaustive case set.** Its three panels are the leading corner,
 leading-edge midpoint and tool-face centre. The tolerance-based selector can
 also admit a three-corner group, so neither the drawing nor its caption claims
-that these are the only possible groups. The visible caption is `Principal
-selected tool points for the rectangular tool face: leading corner,
-leading-edge midpoint, and tool-face centre.`; the shorter List-of-Figures entry
-ends after `tool face`. Every panel draws the minimum tool height
+that these are the only possible groups. The visible caption and
+List-of-Figures entry are both `Principal selected tool points for the
+rectangular tool face.`; the panel labels name the three outcomes. Every panel draws the minimum tool height
 \(h_{\mathrm{Tool}}\) as a green dimension from a minimum-height corner to its
 projection on the configured surface. The black \(-n_s\) arrow remains the
 approach-direction marker and is not used as the height dimension.
@@ -323,19 +322,26 @@ configured reference. The drawing is a principal-tangent cross-section and
 carries no numerical value.
 
 **The Chapter 1 surface-entry concept figure separates controller knowledge,
-the command, and physical contact.** Its panels show the configured and
+the configured offset, and physical contact.** Its panels show the configured and
 physical references, the desired tool offset relative to the configured
 surface, and the achieved reference-relative tool angle at contact entry. The
-physical surface and the command are never drawn as approximations of one
+physical surface and the configured offset are never drawn as approximations of one
 another. Use red for the configured reference, blue for the physical surface,
-and dark green for desired or achieved tool orientations. Keep the commanded
+and dark green for desired or achieved tool orientations. Keep the configured
 and achieved tool lines in separate panels so their nearby angles do not imply
 equality or cause label collisions. Panel (c) labels all three lines and draws
 \(\theta_0\) only between the configured surface and achieved tool face. Panel
-(b) labels the conceptual command as \(\theta_{\mathrm{cmd}}\). The conceptual
-figures use \(\theta_{\mathrm{cmd}}\) and \(\theta_0\) without a generic
+(b) labels its arc `Configured offset \(\theta_{\mathrm{offset}}\)` and places
+that name above the arc rather than beside the configured reference.
+The conceptual figures use \(\theta_{\mathrm{offset}}\) and \(\theta_0\) without a generic
 \(t_i\) index; Section 4.5 introduces the evaluated component
-\(\theta_{0,t_1}\). The figure carries no numerical angles.
+\(\theta_{0,t_1}\). In both panels where the blue line appears, put `Physical
+surface` on one line and `(unknown)` on the qualifier line below it. In panel
+(c), label the arc `Reference-relative \(\theta_0\)` so the unknown physical
+surface cannot be mistaken for the reference from which the angle is defined.
+Both angle arcs must remain conspicuous at the final printed size: give them
+visibly large radii and angular spans, together with heavier lines and
+arrowheads. The figure carries no numerical angles.
 
 **The three Chapter 3 flowcharts use one visual grammar.** Figures 3.1, 3.3 and
 3.7 draw every operating or controller state as the same black rounded capsule.
@@ -365,31 +371,38 @@ not entered. Source identifiers and numerical gain-group annotations stay out
 of both state-machine drawings; the Test Mode loop names only the varied
 parameter families \(K_p\), \(K_R\), and \(r_c\).
 
-**Figure 3.2 has one obvious torque path and separates sensing from modelling.**
-It is a functional block diagram, so its blocks remain ordinary rectangles and
-do not use the capsule state shape. A block names only the operation; the arrow
-names the transmitted signal. The main path reads from left to right as
-Cartesian Error, Cartesian Impedance Wrench, Cartesian Torque, Torque Sum and
-Joint Motors, exposing \(e\to F\to J^\top F\to\tau_{\mathrm{cmd}}\).
-Joint Feedback carries measured \(q,\dot q,T_{EE},\dot p,\omega\). The pose
-\(T_{EE}\) goes directly to Cartesian Error, and the measured velocities go to
-the wrench calculation. Only \(q,\dot q\) enter the Robot Model, which supplies
-\(J(q)\) and \(\tau_c(q,\dot q)\). The model does not reconstruct the measured
-pose or convert sensed moments into joint angles. Keep these model outputs and
-the null-space torque as short secondary inputs, and keep the frequency label
-out because the whole drawing is one control loop. Every box, arrowhead and
-label retains visible separation after compilation.
-Every arrow is labelled with its transmitted signal. The physical return from
-Joint Motors to Joint Feedback is labelled `Joint motion`, and sensing is not
-presented as a model transformation.
-The Null-Space Term never appears without an input. One thin secondary arrow
-labelled `Robot state/model` supplies the combined joint-feedback and model
-information used to calculate \(\tau_{\mathrm{null}}\). Do not expand this
-arrow with the SVD, \(N_\tau\), \(v_7\), \(k_\sigma\), or other Chapter 2
-details.
-The wrench box is `Cartesian Impedance Wrench` and carries only \(F\). It does
-not repeat a simplified impedance law; the complete controller law belongs in
-the theory chapter.
+**Figure 3.2 is drawn as a classical Cartesian feedback loop.** It is a
+functional block diagram, so its blocks remain ordinary rectangles and do not
+use the capsule state shape. A block names only the operation; the arrow names
+the transmitted signal. The dominant path reads from left to right as Cartesian
+Error, the Cartesian impedance controller, the Jacobian-transpose mapping,
+Torque Sum and Robot / Joint Motors. The compact visible labels `Impedance
+Controller` and \(J^\top\) `Mapping` are used where the full names would close
+the gaps between blocks. A Desired Cartesian Reference enters the error block,
+and the Measured Robot State closes the feedback path from the robot to that
+block. This ordering must be readable before any secondary branch is followed.
+
+The desired-reference arrow carries \(p_d\), \(R_d\), and \(\dot p_d\). The
+measured Cartesian feedback carries \(p_{\mathrm{EE}}\),
+\(R_{\mathrm{EE}}\), \(\dot p_{\mathrm{EE}}\), and
+\(\omega_{\mathrm{EE}}\). The main controller path exposes
+\((e_p,e_R)\to F\to\tau_{\mathrm{cart}}\to\tau_{\mathrm{cmd}}\). Do not add
+a commanded angular velocity: the implemented rotational damping acts against
+the measured \(\omega_{\mathrm{EE}}\).
+
+Robot Model and Null-Space Term are secondary blocks. The measured joint state
+\(q,\dot q\) enters the model; the model supplies \(J(q)\) to the
+Jacobian-transpose mapping and \(\tau_c(q,\dot q)\) to Torque Sum. A short
+robot-state/model input supplies the Null-Space Term, which contributes only
+\(\tau_{\mathrm{null}}\) to Torque Sum. Do not expand this branch with the
+SVD, \(N_\tau\), \(v_7\), \(k_\sigma\), or other Chapter 2 details.
+
+Sensing and modelling remain distinct. The end-effector pose and velocities
+come from the robot state rather than being reconstructed by the Robot Model,
+and sensing is not presented as a model transformation from torque to joint
+angle. Keep the control frequency out because the whole drawing is one loop.
+Every arrow is labelled, every secondary route stays visually subordinate, and
+every box, arrowhead and label retains visible separation after compilation.
 
 **Figure 4.1 does not identify the configured normal with the physical plane.**
 Panel (b) draws the physical surface and its conceptual normal
@@ -436,13 +449,18 @@ Plots come from the scripts in `analysis/` in the controller repository, are
 written to its `figures/` directory, and are copied into `figures/` here as
 vector PDF.
 
-**The active contact-result plots report commanded rotations about \(t_1\)
-only.** Remove every \(\gamma_{t_2}\), \(\theta_{0,t_2}\), and commanded-
-rotation-about-\(t_2\) series from figures included by the thesis. The symbol
+**The active contact-result plots report configured orientation offsets about
+\(t_1\) only.** Remove every \(\gamma_{t_2}\), \(\theta_{0,t_2}\), and
+configured-orientation-offset-about-\(t_2\) series from figures included by the thesis. The symbol
 \(t_2\) remains on an active plot only when it is the perpendicular input
 coordinate of a \(t_1\) experiment, such as \(K_{p,t_2}\) or
 \(r_{c,t_2}\). Archived, non-included figure files and raw data are not
 deleted by this reporting-scope decision.
+
+**The archived direction-comparison plot uses the configured-offset name.** Its
+horizontal axis reads `Configured Orientation-Offset Direction,
+\(\theta_{\mathrm{offset}}\) [°]`. The withdrawn commanded-rotation wording and
+\(\theta_{\mathrm{cmd}}\) symbol must not return when the plot is regenerated.
 
 **Figure 5.3 uses the same \(0^\circ\) to \(10^\circ\) response scale as
 Figure 5.2.** Its measured span is only \(0.03^\circ\), so a narrow axis around
@@ -611,6 +629,13 @@ real caption in this thesis and had to be replaced. The full rule, with the
 list of banned openers and the grep that finds them, is under *Scientific
 narrative* in `THESIS_WRITING_GUIDE.md`; it covers captions, headings and
 appendix titles alike.
+
+**Every visible figure caption occupies one rendered line at most, and its
+List-of-Figures entry does the same.** Shorten the name to the plotted
+quantity, comparison, geometry, or parameter set. Move panel descriptions,
+procedures, interpretations, and qualifications into the surrounding text. A
+concise list entry does not compensate for a multi-line caption beneath the
+figure, and a short visible caption does not permit a wrapped list entry.
 
 Writing a caption to say what a figure *explains* is what produces the question
 form. Say what it *shows*.
@@ -831,4 +856,4 @@ Then look at the rendered page and check:
 - no label touches a box, a line, or another label;
 - every arrowhead lands on the node it belongs to;
 - the smallest text is still legible at final printed size;
-- the figure has no internal title and its caption is a short noun phrase.
+- the figure has no internal title and its caption is a one-line noun phrase.

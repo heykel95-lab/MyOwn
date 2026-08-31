@@ -1,16 +1,16 @@
 % Plan view of the supporting intermediate-direction rule, seen along the
 % inward surface normal.
-% One panel per commanded rotation direction. Each panel carries the surface
-% tangents, the commanded rotation vector theta_cmd, and the tangential lever
+% One panel per configured offset direction. Each panel carries the surface
+% tangents, the configured offset vector theta_offset, and the tangential lever
 % selected by the rule in Section 2.7.3. The lever is perpendicular to
-% the commanded rotation, as recorded by the right-angle marker at the origin.
+% the configured offset direction, as recorded by the right-angle marker at the origin.
 %
-% The commanded direction is drawn as a single arrow rather than a two-headed
+% The configured direction is drawn as a single arrow rather than a two-headed
 % axis, because the rule depends on its sense and not only on its line, and the
-% arrowed arc gives the in-plane angle measured from t_1. All four commands
+% arrowed arc gives the in-plane angle measured from t_1. All four offsets
 % carry the same magnitude; only the direction changes between panels.
 %
-% Palette per FIGURE_STYLE.md: black for the frame, red for the command, blue
+% Palette per FIGURE_STYLE.md: black for the frame, red for the offset, blue
 % for the compliance-centre lever, matching r_c in the moment-bookkeeping
 % figure. Solid lines only, no grey and no white.
 \begin{tikzpicture}[
@@ -34,20 +34,20 @@
     \pgfmathsetmacro{\ra}{\ua+90}
     \pgfmathsetmacro{\amid}{\ua/2}
 
-    % ---- commanded rotation, drawn in its own sense ---------------------
-    % Drawn before the tangents so that in the two panels where the command
+    % ---- configured offset, drawn in its own sense ----------------------
+    % Drawn before the tangents so that in the two panels where the offset
     % lies along a tangent, the thin black axis stays visible on top of it.
     \draw[cmd] (0,0) -- (\ua:1.15);
-    \node[lbl, red] at (\ua:1.42) {$\theta_{\mathrm{cmd}}$};
+    \node[lbl, red] at (\ua:1.42) {$\theta_{\mathrm{offset}}$};
 
     % ---- surface tangents ----------------------------------------------
     % The tangent labels sit below and to the left of their arrow tips, so
-    % that in the panels where the command lies along a tangent they clear the
-    % theta_cmd label instead of sitting on it.
+    % that in the panels where the offset lies along a tangent they clear the
+    % theta_offset label instead of sitting on it.
     \draw[ax] (0,0) -- (0.80,0) node[lbl, below] {$t_1$};
     \draw[ax] (0,0) -- (0,0.80) node[lbl, left] {$t_2$};
 
-    % ---- arc from t_1 to the commanded direction, with its angle --------
+    % ---- arc from t_1 to the configured direction, with its angle --------
     % The angle is set well outside the arc radius so the value reads clear of
     % the arc itself.
     \ifnum\arc=1
@@ -60,7 +60,7 @@
     \node[lbl, blue] at (\ra:1.34) {$r_{c,t}$};
 
     % ---- right angle between the two ------------------------------------
-    % The marker spans the quadrant from theta_cmd to r_c,t, so the scope is
+    % The marker spans the quadrant from theta_offset to r_c,t, so the scope is
     % rotated by \ua and not by \ra: rotating by the lever direction put the
     % square in the quadrant beyond r_c,t, away from the pair it marks.
     \begin{scope}[rotate=\ua]

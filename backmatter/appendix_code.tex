@@ -58,12 +58,12 @@ Mat3 makeSpatialGainMatrix(
 The physical tool normal \(n_{\mathrm{Tool,EE}}\) is configured in the EE frame. The desired orientation
 is the minimum rotation of the captured start orientation that maps this axis
 onto the signed normal; it is not obtained by assigning the complete surface
-frame to the EE frame. The commanded angular offsets of a case are applied to
-that axis before the rotation is formed. A commanded tool orientation offset
+frame to the EE frame. The configured angular offsets of a case are applied to
+that axis before the rotation is formed. A configured orientation offset
 about \(t_1\) or \(t_2\) therefore enters as a rotation of the orientation target
 rather than as a trajectory.
 
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Tool-axis target, commanded tool orientation offsets, and rotation-vector error.}, label={lst:app_orientation}]
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Tool-axis target and configured orientation offset.}, label={lst:app_orientation}]
 Vec3 surfaceToolAxisInBase(
     const ControllerConfig& params, const Mat3& R_base_surface) {
   const double sign =

@@ -7,12 +7,12 @@ One figure per case, matched to the thesis figure style: Latin Modern with
 Computer Modern maths, the black-red-blue-yellow series order, open markers
 with a white face, a horizontal grid, and no dashed line anywhere.
 
-  C  the selected and fixed lever across four commanded directions
-  D  the zero-lever response on each tangent, at both commanded signs
+  C  the selected and fixed lever across four configured offset directions
+  D  the zero-lever response on each tangent, at both configured offset signs
   E  the centre swept along the assisting tangent, all four groups together
   F  the tool-frame and surface-frame lever definitions
   G  the centre swept along the tool axis
-  H  the same positions at half the commanded offset
+  H  the same positions at half the configured offset
 
 Every case uses the signed contact-establishment rotation about the investigated tangent. This
 controller-response metric does not depend on the reconstructed tool normal or
@@ -114,7 +114,7 @@ def initial_deviation_label(groups, runs, axis, linebreak=False):
 def stiffness_label(case, axis, groups, runs):
     """Name a stiffness series by its axis, varied component, and entry angle.
 
-    The component that is varied is perpendicular to the commanded rotation
+    The component that is varied is perpendicular to the configured offset
     axis, so naming both in the legend is what makes that relation visible.
     """
     tangent = "t_1" if axis == "t1" else "t_2"
@@ -209,7 +209,7 @@ def main():
     # Every axis in the thesis reads "Descriptive Name, Symbol [Unit]", and this
     # one keeps that form even though its ticks are named directions: a single
     # axis in a different format is the more visible inconsistency.
-    ax.set_xlabel(r"Commanded Rotation Direction, $\theta_{\mathrm{cmd}}$ [$^\circ$]")
+    ax.set_xlabel(r"Configured Orientation-Offset Direction, $\theta_{\mathrm{offset}}$ [$^\circ$]")
     ax.set_ylabel(ROTATION_LABEL)
     ax.legend(loc="upper right")
     fig.tight_layout()

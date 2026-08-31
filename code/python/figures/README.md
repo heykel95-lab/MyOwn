@@ -113,7 +113,7 @@ Running it against `MyController/experiments/results/` reproduces every
 null-space value in Chapters 5 and 6, and the figure in `figures/` was
 regenerated from that run, so its axis label now matches the text.
 
-## The one edit
+## Plot-label edits
 
 `compare_angle_metrics.py` labelled its first series `EE-inferred angular
 deviation`, a term banned in the thesis. The published PDF was corrected by
@@ -123,3 +123,8 @@ Regenerating that figure now carries the same text as the published one; before
 this edit it would have reintroduced the banned term. The two files are not
 byte-identical, because the published PDF was patched in place and its objects
 were renumbered, but the drawing and every string in it are the same.
+
+`make_coc_figures.py` labels the data-independent direction comparison with the
+configured orientation-offset notation used by the thesis. Its horizontal axis
+therefore uses `Configured Orientation-Offset Direction` and
+\(\theta_{\mathrm{offset}}\), not the withdrawn commanded-rotation wording.
