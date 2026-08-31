@@ -21,9 +21,9 @@ with the twelve pose-hold trials, the complete reported data set contains
 check, the two `B_combined_{t1,t2}` settings, and the three surface-fixed
 definition-frame settings remain in the archive but are outside the thesis
 results. The \(t_2\) experiments were excluded because their responses were
-not sufficiently repeatable; tool-mount play about \(y_{\mathrm{EE}}\) is
-treated as a likely source of that variability, not as an isolated or proven
-cause.
+not sufficiently repeatable. The cause was not isolated; tool-mount play about
+\(y_{\mathrm{EE}}\), approximately aligned with \(t_2\), is treated only as
+one possible contributor.
 
 The archive lives on the lab machine at
 `Thesis_Final_Control/experiments/results/`, \(171\) archived run directories,
@@ -90,6 +90,10 @@ Both PDFs contain 122 pages. Their final passes contain no errors, undefined
 references or citations, or overfull boxes. The revised Chapter 5 plots and
 Appendix D tables were checked from rendered pages; the Figure 5.5 crop was
 also corrected so that its numerical tick labels remain complete.
+The clean and professor builds were repeated after the Chapter 3 visual-system
+pass. Figures 3.1, 3.2, 3.3 and 3.7 were rendered from both 122-page outputs;
+the corresponding pages are identical and were checked for label, arrow and
+contour collisions.
 `Thesis_preview.pdf` has 128 pages and `Review_Draft.pdf` has 132 pages,
 with no undefined references or citations, no overfull boxes and no soul
 reconstruction failures in their final passes.
@@ -317,9 +321,8 @@ values already in Section 5.2. Both held on 2026-08-25.
   `usetex` is off in `figure_style.py`, and a regenerated file differs from its
   installed copy only in the PDF creation date. Check the result at printed
   width before installing it.
-- **Figures 3.1 and 2.2 are small for what they carry.** Figure 3.1 would take
-  about ten to fifteen per cent more width if the page allows, and Figure 2.2
-  draws \(r_c\), \(f\) and \(m\) smaller than their importance to the argument.
+- **Figure 2.2 is small for what it carries.** It draws \(r_c\), \(f\) and
+  \(m\) smaller than their importance to the argument.
   Appendix Figures D.4 and D.6 are the same case. Both reviews raised the
   sizing and neither called it a fault. The `\resizebox` section below governs
   how to make the change.
@@ -357,7 +360,7 @@ Capitalising a line widens its box, which can close the gap its arrows need.
 Do one diagram at a time and look at each in the compiled document before
 moving on.
 
-## Five diagrams are still sized by `\resizebox`
+## Four diagrams or tables are still sized by `\resizebox`
 
 The three Chapter 3 diagrams were drawn at about 7--10 cm and then stretched to
 the text width, which magnified their label text along with the drawing: at
@@ -366,8 +369,8 @@ collided with each other. They now carry a `scale=` inside the picture and are
 included without `\resizebox`, so the labels keep the size they were declared
 at.
 
-The same wrapper is still on `controller_block_diagram`, `tool_transfer_flow`,
-`setup_schematic`, and the two appendix parameter tables.
+The same wrapper is still on `tool_transfer_flow`, `setup_schematic`, and the
+two appendix parameter tables.
 A diagram that is *shrunk* by the wrapper has the
 opposite fault and is equally wrong. Each needs looking at in the compiled
 document, and the scale factor moving inside the picture wherever the label

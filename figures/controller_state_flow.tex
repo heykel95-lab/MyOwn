@@ -1,16 +1,19 @@
 % Program-level controller states and their transition conditions.
-% Condition labels sit beside the routes so no text interrupts a line.
+% Controller states use one capsule shape across all Chapter 3 flowcharts.
 \begin{tikzpicture}[
-    scale=1.0,
+    xscale=1.10,
+    yscale=1.00,
     font=\footnotesize\setstretch{1.0},
-    state/.style={draw=black, thick, text width=3.15cm, align=center,
+    state/.style={draw=black, thick, rounded corners=5mm,
+                  text width=3.15cm, align=center,
                   inner sep=4pt, minimum height=1.0cm},
-    stopstate/.style={draw=red, text=red, thick, text width=3.15cm,
-                      align=center, inner sep=4pt, minimum height=1.0cm},
+    stopstate/.style={draw=red, text=red, thick, rounded corners=5mm,
+                      text width=3.15cm, align=center,
+                      inner sep=4pt, minimum height=1.0cm},
     flow/.style={-{Latex[length=2mm]}, thick, black},
-    stopflow/.style={-{Latex[length=2mm]}, thick, red},
-    rail/.style={thick, red},
-    cond/.style={font=\scriptsize\setstretch{1.0}, align=left, inner sep=0pt},
+    stopflow/.style={-{Latex[length=2mm]}, line width=0.7pt, red},
+    rail/.style={line width=0.7pt, red},
+    cond/.style={font=\scriptsize\setstretch{1.0}, align=center, inner sep=0pt},
     stopcond/.style={font=\scriptsize\setstretch{1.0}, align=center,
                      text=red, inner sep=0pt},
   ]
@@ -24,21 +27,21 @@
   \node[stopstate] (stop) at ( 0.00,-7.90) {Stop};
 
   \draw[flow] (recovery) -- (selection);
-  \node[cond, anchor=west] at (0.25,-0.88) {if recovery succeeds};
+  \node[cond, anchor=west] at (0.30,-0.88) {if recovery succeeds};
 
   \coordinate (split) at (0.00,-2.90);
   \draw[flow] (selection) -- (split);
   \draw[flow] (split) -- (-4.60,-2.90) -- (surface);
   \draw[flow] (split) -- (pose);
   \draw[flow] (split) -- (4.60,-2.90) -- (guidance);
-  \node[cond, anchor=south west] at (-4.30,-2.60)
+  \node[cond, anchor=south] at (-4.60,-2.68)
       {if operator types \texttt{s}};
-  \node[cond, anchor=west] at (0.25,-3.60)
+  \node[cond, anchor=west] at (0.28,-3.58)
       {if operator types \texttt{h}};
-  \node[cond, anchor=south east, align=right] at (4.30,-2.60)
+  \node[cond, anchor=south] at (4.60,-2.68)
       {if operator types \texttt{g}};
 
-  % One shared stop rail for all active controller states.
+  % One light shared stop rail for all active controller states.
   \coordinate (railleft) at (-4.60,-5.80);
   \coordinate (railright) at (4.60,-5.80);
   \draw[stopflow] (surface) -- (railleft);
@@ -46,12 +49,12 @@
   \draw[stopflow] (guidance) -- (railright);
   \draw[rail] (railleft) -- (railright);
   \draw[stopflow] (0.00,-5.80) -- (stop);
-  \node[stopcond, anchor=west, align=left] at (0.35,-6.70)
+  \node[stopcond, anchor=west, align=left] at (0.38,-6.72)
       {if stop requested \(\lor\) robot error/reflex};
 
   % Recovery can fail before a controller state is selected.
-  \draw[stopflow] (recovery.west) -- (-6.85,0.00) -- (-6.85,-7.90)
+  \draw[stopflow] (recovery.west) -- (-7.20,0.00) -- (-7.20,-7.90)
       -- (stop.west);
-  \node[stopcond, anchor=south] at (-5.05,0.20) {if recovery fails};
+  \node[stopcond, anchor=south] at (-5.10,0.22) {if recovery fails};
 
 \end{tikzpicture}

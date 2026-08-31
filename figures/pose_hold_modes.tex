@@ -1,34 +1,54 @@
-% Operator-selectable null-space modes in Cartesian pose hold.
+% Cartesian pose hold as one controller state with selectable configurations.
 \begin{tikzpicture}[
     scale=1.0,
     font=\footnotesize\setstretch{1.0},
-    stage/.style={draw=black, thick, text width=4.2cm, align=center,
+    state/.style={draw=black, thick, rounded corners=5mm,
+                  text width=4.20cm, align=center,
                   inner sep=4pt, minimum height=1.0cm},
-    auxiliary/.style={draw=blue!70!black, fill=blue!5, thick,
-                      rounded corners=3pt, text width=4.6cm, align=center,
-                      inner sep=4pt, minimum height=1.15cm},
-    mode/.style={draw=black, thick, text width=2.65cm, align=center,
+    auxiliary/.style={draw=blue, text=blue, thick,
+                      text width=4.20cm, align=center,
+                      inner sep=4pt, minimum height=1.0cm},
+    mode/.style={draw=blue, text=blue, thick,
+                 text width=2.70cm, align=center,
                  inner sep=4pt, minimum height=1.65cm},
     cond/.style={font=\scriptsize\setstretch{1.0}, align=center, inner sep=0pt},
     flow/.style={-{Latex[length=2mm]}, thick, black},
-    branch/.style={thick, black},
-    inputflow/.style={-{Latex[length=2mm]}, thick, blue!70!black},
+    branch/.style={thick, blue},
+    inputflow/.style={-{Latex[length=2mm]}, thick, blue},
+    inputcond/.style={font=\scriptsize\setstretch{1.0}, align=center,
+                      text=blue, inner sep=0pt},
   ]
 
-  \node[auxiliary, text width=2.65cm] (stored) at (-4.75,3.25)
+  \node[auxiliary, text width=2.65cm] (stored) at (-3.00,4.80)
       {Stored \(q_{\mathrm{init}}\)};
-  \node[auxiliary, text width=3.40cm] (initial) at (0,3.25)
+  \node[auxiliary, text width=3.40cm] (initial) at (0.00,3.25)
       {Initial Configuration};
-  \node[auxiliary, text width=2.65cm] (guidance) at (4.75,3.25)
+  \node[auxiliary, text width=2.65cm] (guidance) at (3.00,4.80)
       {Guidance Mode\\Enter with \texttt{g}};
-  \node[stage] (capture) at (0, 1.05) {Capture Current EE Pose};
-  \node[stage] (hold)    at (0,-0.95) {Cartesian Pose Hold};
-  \node[auxiliary] (selector) at (0,-3.05)
-      {Operator Mode Selection\\Type 0, 1, 2, or 3};
-  \coordinate (split) at (0,-4.25);
 
-  \node[mode] (none) at (-5.25,-5.85)
-      {Mode 0\\No Torque};
+  \draw[inputflow] (stored.south) -- (-3.00,4.05) -- (-0.80,4.05)
+      -- ($(initial.north)+(-0.80,0)$);
+  \node[inputcond, anchor=east] at (-3.20,4.05)
+      {move to \(q_{\mathrm{init}}\)};
+  \draw[inputflow] (guidance.south) -- (3.00,4.05) -- (0.80,4.05)
+      -- ($(initial.north)+(0.80,0)$);
+  \node[inputcond, anchor=west] at (3.20,4.05)
+      {\texttt{h}: start; \texttt{p}: recapture};
+
+  \node[auxiliary] (capture) at (0.00,1.05) {Capture Current EE Pose};
+  \node[state] (hold) at (0.00,-0.95) {Cartesian Pose Hold};
+  \node[auxiliary] (selector) at (0.00,-3.05)
+      {Operator Mode Selection};
+
+  \draw[flow] (initial) -- (capture);
+  \node[cond, anchor=west] at (0.30,2.15) {start hold};
+  \draw[flow] (capture) -- (hold);
+  \node[cond, anchor=west] at (0.30,0.05) {$p_d,\ R_d$};
+  \draw[inputflow] (hold) -- (selector);
+  \node[inputcond, anchor=west] at (0.30,-2.00) {select mode};
+
+  \coordinate (split) at (0.00,-4.25);
+  \node[mode] (none) at (-5.25,-5.85) {Mode 0\\No Torque};
   \node[mode] (damp) at (-1.75,-5.85)
       {Mode 1\\Damping\\Set \(d_{\mathrm{null}}\)};
   \node[mode] (sigma) at (1.75,-5.85)
@@ -36,38 +56,23 @@
   \node[mode] (both) at (5.25,-5.85)
       {Mode 3\\Together\\Set \(d_{\mathrm{null}},\,k_\sigma\)};
 
-  \draw[inputflow] (stored.east) -- (initial.west);
-  \node[cond, anchor=south] at (-2.38,3.98)
-      {move to \(q_{\mathrm{init}}\)};
-
-  \draw[inputflow] (guidance.west) -- (initial.east);
-  \node[cond, anchor=south, text width=3.0cm] at (2.38,3.98)
-      {if operator types \texttt{h}\\use current \(q\)};
-
-  \draw[flow] (initial) -- (capture);
-  \node[cond, anchor=west] at (0.28,2.15)
-      {start hold};
-
-  \draw[flow] (capture) -- (hold);
-  \node[cond, anchor=west] at (0.28,0.05) {Stored \(p_d,R_d\)};
-
-  \draw[flow] (hold) -- (selector);
-  \node[cond, anchor=west] at (0.28,-2.00) {Pose Hold Active};
-
   \draw[branch] (selector.south) -- (split);
   \draw[branch] (-5.25,-4.25) -- (5.25,-4.25);
-  \draw[flow] (-5.25,-4.25) -- (none.north);
-  \draw[flow] (-1.75,-4.25) -- (damp.north);
-  \draw[flow] ( 1.75,-4.25) -- (sigma.north);
-  \draw[flow] ( 5.25,-4.25) -- (both.north);
+  \draw[inputflow] (-5.25,-4.25) -- (none.north);
+  \draw[inputflow] (-1.75,-4.25) -- (damp.north);
+  \draw[inputflow] ( 1.75,-4.25) -- (sigma.north);
+  \draw[inputflow] ( 5.25,-4.25) -- (both.north);
+  \node[inputcond, anchor=west] at (-5.10,-4.58) {0};
+  \node[inputcond, anchor=west] at (-1.60,-4.58) {1};
+  \node[inputcond, anchor=west] at ( 1.90,-4.58) {2};
+  \node[inputcond, anchor=west] at ( 5.40,-4.58) {3};
 
-  % Any active mode returns to the common selector when another number is typed.
   \draw[branch] (none.south) -- (-5.25,-7.35);
   \draw[branch] (damp.south) -- (-1.75,-7.35);
   \draw[branch] (sigma.south) -- ( 1.75,-7.35);
   \draw[branch] (both.south) -- ( 5.25,-7.35);
   \draw[branch] (-5.25,-7.35) -- (7.15,-7.35) -- (7.15,-3.05);
-  \draw[flow] (7.15,-3.05) -- (selector.east);
-  \node[cond] at (4.75,-2.78) {Type New Mode Number};
-
+  \draw[inputflow] (7.15,-3.05) -- (selector.east);
+  \node[inputcond, anchor=south] at (5.00,-2.82)
+      {type new mode number};
 \end{tikzpicture}

@@ -154,6 +154,11 @@ that neither the physical surface normal nor the instantaneous physical
 tool--surface angle was measured independently. The Kurzfassung carries the
 same scope statement in the same position.
 
+The experimental axis is named explicitly in both summaries: `commanded
+rotations about surface tangent \(t_1\)` and `kommandierte Drehungen um die
+Flächentangente \(t_1\)`. Do not replace it with a generic reference to one
+surface tangent.
+
 **Revise the Abstract last**, after the body text is settled, and derive the
 Kurzfassung from the finished English rather than paraphrasing it independently.
 
@@ -235,10 +240,14 @@ contains 19 settings and 57 measurements; the two supporting checks contain
 eight settings and 24 measurements. The complete reported surface-contact total
 is 27 settings and 81 measurements.
 
-State the experimental exclusion once in Chapter 4. Measurements with
-commanded rotation about \(t_2\) were not sufficiently repeatable, and
-tool-mount play about \(y_{\mathrm{EE}}\) was considered a likely source of the
-variability. Do not present the mount play as an isolated or proven cause.
+State the experimental exclusion in Chapter 4, the Limitations and Future
+Work, with each section carrying its own role. Chapter 4 states that the
+\(t_2\) responses were not sufficiently repeatable and that the cause was not
+isolated. Tool-mount play about \(y_{\mathrm{EE}}\), approximately aligned
+with \(t_2\), is one possible contributor and is never presented as the likely,
+isolated or proven cause. The Limitations state that the \(t_2\) measurements
+were excluded from reliable comparison. Future Work calls for repeating them
+with improved tool constraint and independent physical-orientation measurement.
 
 Chapter 5 carries one comparison figure for each main case and retains the
 Case-D commanded-wrench mechanism figure. It does not repeat those plots as
@@ -282,13 +291,11 @@ scatter, and the author declined the work as disproportionate.
 **Cases A to C state their scatter in one form; Case D does not.** A, B and C
 each carry one sentence of the shape `Repetition scatter remained at or below
 \(X^\circ\) across all Case-N settings in Table N`, harmonised on
-2026-08-26 from three different phrasings. **Case D is deliberately excluded
-from that form.** A single maximum is misleading there, because four conditions
-carry a much larger spread than the rest, and quoting only the largest would
-either hide them or make every setting look uncertain. Case D therefore says
-that scatter was small at most settings, points at the Appendix-D table for
-every value, and names the four high-spread conditions where its error bars
-appear. Do not force Case D into the A--C sentence.
+2026-08-26 from three different phrasings. Case D instead states that scatter
+was small across most settings and identifies the largest spread: the
+positive-deviation condition at \(r_{c,t_2}=-20\,\mathrm{mm}\), with a sample
+standard deviation of \(0.44^\circ\). State this once before the figure and do
+not repeat it below the figure.
 
 A standard deviation that rounds to \(0.00^\circ\) at the reported two
 decimals is written `\(\pm0.00\)`. It is the correctly rounded sample standard
@@ -1908,11 +1915,12 @@ are stated once, in the data-recording subsection. The
 evaluation section says how repeated settings are reported and where the
 standard deviations appear, and does not restate the counts.
 
-Every setting now carries its three repetitions and nothing was discarded, so
-the subsection states that and stops. Do not reintroduce an excluded-experiment
-sentence, and do not describe how the complete set was arrived at: `recorded`
-is the only permitted verb, per the rule against `re-recorded` under *Naming a
-technical quantity*.
+Every reported setting carries its three repetitions. The \(t_2\) exclusion is
+stated separately from the data-set counts, which cover only the reported
+\(t_1\) measurements. Do not add the excluded measurements to those counts or
+describe the recording history used to arrive at them: `recorded` is the only
+permitted verb, per the rule against `re-recorded` under *Naming a technical
+quantity*.
 
 **Isotropic matrices are a table, not a display.** Four \(3\times3\)
 matrices whose diagonal entries are all equal spent most of a page saying four
@@ -2048,6 +2056,10 @@ tangential lever. The initial-deviation plot, the direction plots, the TCP-heigh
 and the pose-based alignment consistency check are withdrawn because they
 duplicate tables or introduce secondary outcomes outside the main
 \(\gamma_{t_1}\) comparison.
+
+Appendix D is settled and no further major content is removed. Its structure
+remains the exact numerical values behind Cases A--D, the initial-deviation
+magnitude check, and the tool-axis displacement check.
 
 **An appendix table caption is a short noun phrase, like every other caption.**
 The Appendix D captions had grown to four and five lines carrying
@@ -2899,12 +2911,14 @@ of a \(t_1\) experiment, including \(K_{p,t_2}\) and \(r_{c,t_2}\).
 ### What the contact study is investigating, and in which order
 
 The contact chapters are built on one open question, stated in running text and
-never as a heading (the question-framing ban above still binds): **the initial
-angular tool--surface misalignment is unknown before contact, so the
-appropriate location of the centre of compliance is also unknown before
-contact.** What the campaign establishes is whether one fixed centre can be
-selected in advance of that knowledge, or whether the centre has to be chosen
-per misalignment.
+never as a heading (the question-framing ban above still binds): **in the
+intended application, the sign of the initial angular tool--surface mismatch
+and its tangent-plane direction can be unknown before contact, so the
+appropriate location of the centre of compliance can also be unknown.** The
+experiments deliberately impose positive and negative deviations about
+\(t_1\). The campaign establishes whether one fixed centre can be selected in
+advance of the application-side knowledge, or whether the centre has to be
+chosen per mismatch.
 
 The narrative is therefore **not** "a displaced centre improves alignment, so
 find the best displaced lever". Chapter 1 introduces the question without
@@ -3205,9 +3219,10 @@ reading a catalogue.
 exactly one proposed experiment from each limitation produces a complete,
 evenly weighted list that reads as generated. State the three extensions
 considered most important, each with the question it would settle, then cover
-the remainder briefly in a single paragraph. For this thesis the three are
-negative orientation offsets, independent measurement of the tool-face angle, and a
-combined-mode null-space study with a physical disturbance.
+the remainder briefly in a single paragraph. For this thesis the three are a
+repeated \(t_2\) and additional tangent-plane evaluation with improved tool
+constraint, independent measurement of the tool-face angle, and a combined-mode
+null-space study with a physical disturbance.
 
 Items in a bulleted or numbered list begin with a capital letter and are
 written as complete statements. Do not continue a lead-in sentence across the

@@ -282,7 +282,10 @@ also admit a three-corner group, so neither the drawing nor its caption claims
 that these are the only possible groups. The visible caption is `Principal
 selected tool points for the rectangular tool face: leading corner,
 leading-edge midpoint, and tool-face centre.`; the shorter List-of-Figures entry
-ends after `tool face`.
+ends after `tool face`. Every panel draws the minimum tool height
+\(h_{\mathrm{Tool}}\) as a green dimension from a minimum-height corner to its
+projection on the configured surface. The black \(-n_s\) arrow remains the
+approach-direction marker and is not used as the height dimension.
 
 **The Chapter 3 controller flow uses two state-machine drawings.** The first
 starts directly with Robot Recovery and then shows Controller Selection, followed by the
@@ -293,12 +296,14 @@ mapping. This overview intentionally omits the direct `t` route to
 contact-impedance Test Mode; the Chapter 3 text names that implemented route,
 and the detailed drawing shows the experiment-oriented Test Mode loop. The second
 shows the surface-contact states from Tool Orientation through Grinding. Its
-common start is the short blue rounded box `Initial Configuration`. A `Stored
-\(q_{\mathrm{init}}\)` box feeds it from one side on `move to
-\(q_{\mathrm{init}}\)`, while a separate `Guidance Mode` box states `Enter
-with g` and feeds it from the
-other on `if operator types s: use current \(q\)`. These are the stored-posture
-and guided-pose routes to the same sequence start. A blue Test Mode box follows
+common start is the short blue rectangular box `Initial Configuration`.
+`Stored \(q_{\mathrm{init}}\)` and `Guidance Mode` sit above that box, and
+their separate orthogonal paths enter its top edge rather than its sides. The
+stored path reads `move to \(q_{\mathrm{init}}\)`. The guided path states
+`s: start; p: recapture`: `s` starts from the current guided configuration,
+whereas `p` recaptures the current configuration and pose after `g` enters
+guidance from active control. These are the stored-posture and guided-pose
+routes to the same sequence start. A blue Test Mode box follows
 Grinding and sits on the left return branch, beside the contact-state column
 rather than below Grinding. Its incoming arrow states `if operator types t`.
 It varies \(K_p\), \(K_R\), or \(r_c\), then returns through initialisation
@@ -326,22 +331,46 @@ another. Use red for the configured reference, blue for the physical surface,
 and dark green for desired or achieved tool orientations. Keep the commanded
 and achieved tool lines in separate panels so their nearby angles do not imply
 equality or cause label collisions. Panel (c) labels all three lines and draws
-\(\theta_0\) only between the configured surface and achieved tool face. The
-figure carries no numerical angles.
+\(\theta_0\) only between the configured surface and achieved tool face. Panel
+(b) labels the conceptual command as \(\theta_{\mathrm{cmd}}\). The conceptual
+figures use \(\theta_{\mathrm{cmd}}\) and \(\theta_0\) without a generic
+\(t_i\) index; Section 4.5 introduces the evaluated component
+\(\theta_{0,t_1}\). The figure carries no numerical angles.
 
-**Every black rectangular node is an operating or controller state, and every
-arrow carries its transition condition.** Blue rounded boxes distinguish the
-run initialisation and Test Mode orchestration from the controller states. A
-shared red termination rail may carry conditions
-that apply from every active state, provided the accompanying text names those
-conditions explicitly. Use a red Stop state for termination. Mark the
-Operator-Controlled Hold Before Grinding as the final state entered in the
-reported runs, and state that Grinding was not entered. Source identifiers and
-numerical gain-group annotations stay out of both state-machine drawings; the
-Test Mode loop names only the varied parameter families \(K_p\), \(K_R\), and
-\(r_c\).
+**The three Chapter 3 flowcharts use one visual grammar.** Figures 3.1, 3.3 and
+3.7 draw every operating or controller state as the same black rounded capsule.
+Operator input, initialisation, capture, selection, Test Mode and selectable
+controller configurations use blue rectangular boxes. Normal state progression
+uses black arrows, operator and tuning paths use blue arrows, and stop or
+failure paths use red arrows. Conditions are written directly beside clear
+arrow segments rather than placed in decision diamonds. The three drawings use
+the same text size, arrowhead size, border weight and state height.
+
+Figure 3.7 treats Cartesian Pose Hold as the controller state. Its four
+null-space modes are blue configuration boxes rather than additional states.
+Figure 3.2 is not part of this state-chart grammar: it retains ordinary black
+rectangular functional blocks.
+
+Figures 3.1, 3.3 and 3.7 are structurally settled. Do not redesign them or add
+further conditions and controller detail; their deliberate simplification is
+part of the final visual hierarchy.
+
+Every arrow carries its transition condition. A shared red termination rail
+may carry conditions that apply from every active state, provided the
+accompanying text names those conditions explicitly. Keep that rail thinner
+than the main progression so it does not dominate the state sequence. Use a
+red capsule for Stop. Mark the Operator-Controlled Hold Before Grinding as the
+final state entered in the reported experiments, and state that Grinding was
+not entered. Source identifiers and numerical gain-group annotations stay out
+of both state-machine drawings; the Test Mode loop names only the varied
+parameter families \(K_p\), \(K_R\), and \(r_c\).
 
 **Figure 3.2 has one obvious torque path and separates sensing from modelling.**
+It is a functional block diagram, so its blocks remain ordinary rectangles and
+do not use the capsule state shape. A block names only the operation; the arrow
+names the transmitted signal. The main path reads from left to right as
+Cartesian Error, Cartesian Impedance Wrench, Cartesian Torque, Torque Sum and
+Joint Motors, exposing \(e\to F\to J^\top F\to\tau_{\mathrm{cmd}}\).
 Joint Feedback carries measured \(q,\dot q,T_{EE},\dot p,\omega\). The pose
 \(T_{EE}\) goes directly to Cartesian Error, and the measured velocities go to
 the wrench calculation. Only \(q,\dot q\) enter the Robot Model, which supplies
@@ -353,6 +382,11 @@ label retains visible separation after compilation.
 Every arrow is labelled with its transmitted signal. The physical return from
 Joint Motors to Joint Feedback is labelled `Joint motion`, and sensing is not
 presented as a model transformation.
+The Null-Space Term never appears without an input. One thin secondary arrow
+labelled `Robot state/model` supplies the combined joint-feedback and model
+information used to calculate \(\tau_{\mathrm{null}}\). Do not expand this
+arrow with the SVD, \(N_\tau\), \(v_7\), \(k_\sigma\), or other Chapter 2
+details.
 The wrench box is `Cartesian Impedance Wrench` and carries only \(F\). It does
 not repeat a simplified impedance law; the complete controller law belongs in
 the theory chapter.
@@ -375,11 +409,17 @@ connectors squeezed between neighbouring boxes are not acceptable.
 **The Chapter 3 Cartesian pose-hold diagram shows the four operator-selectable
 modes.** Its common path starts from one initial configuration. Use the same
 three-box initialisation motif as the surface-contact chart: `Stored
-\(q_{\mathrm{init}}\)` and `Guidance Mode` feed the central `Initial
-Configuration` box. The stored route moves the robot to
-\(q_{\mathrm{init}}\), while operator input `h` starts the hold from the current
-guided \(q\). The Guidance Mode box states `Enter with g`. The path then captures the
-current end-effector pose and enters Cartesian Pose Hold. Operator input 0, 1,
+\(q_{\mathrm{init}}\)` and `Guidance Mode` sit above `Initial Configuration`,
+and both orthogonal paths enter its top edge. The stored route moves the robot
+to \(q_{\mathrm{init}}\). The guided route states `h: start; p: recapture`:
+`h` starts the hold from the current guided \(q\), while `p` recaptures the
+configuration and pose after runtime input `g`. Runtime recapture is not
+specific to pose hold; the same `g` then `p` interaction restarts the active
+surface-contact sequence. The Guidance Mode box states `Enter with g`. The
+path then captures the current end-effector pose and enters Cartesian Pose Hold. Cartesian Pose Hold
+uses the shared black capsule state shape; pose capture,
+operator selection and the four modes use blue rectangular configuration boxes.
+Operator input 0, 1,
 2, or 3 selects no
 null-space torque, projected damping, singular-value conditioning, or both
 terms together. The selector remains active, so entering another number
@@ -403,6 +443,10 @@ rotation-about-\(t_2\) series from figures included by the thesis. The symbol
 coordinate of a \(t_1\) experiment, such as \(K_{p,t_2}\) or
 \(r_{c,t_2}\). Archived, non-included figure files and raw data are not
 deleted by this reporting-scope decision.
+
+**Figure 5.3 uses the same \(0^\circ\) to \(10^\circ\) response scale as
+Figure 5.2.** Its measured span is only \(0.03^\circ\), so a narrow axis around
+the three means would visually exaggerate the cross-axis stiffness effect.
 
 ### Every generated plot has a generator, kept in `code/python/figures/`
 

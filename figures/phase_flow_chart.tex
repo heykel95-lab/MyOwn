@@ -1,105 +1,96 @@
 % Surface-contact controller states and their transition conditions.
-% Labels are placed beside, rather than over, the orthogonal routes.
+% The black state chain is central; tuning stays left and termination stays right.
 \begin{tikzpicture}[
-    scale=1.0,
+    scale=0.90,
     font=\footnotesize\setstretch{1.0},
-    state/.style={draw=black, thick, text width=3.35cm, align=center,
+    state/.style={draw=black, thick, rounded corners=5mm,
+                  text width=3.80cm, align=center,
                   inner sep=4pt, minimum height=1.0cm},
-    auxiliary/.style={draw=blue, text=blue, thick, rounded corners=2pt,
-                      text width=2.65cm, align=center,
+    auxiliary/.style={draw=blue, text=blue, thick,
+                      text width=2.75cm, align=center,
                       inner sep=4pt, minimum height=1.0cm},
-    stopstate/.style={draw=red, text=red, thick, text width=2.7cm,
-                      align=center, inner sep=4pt, minimum height=1.0cm},
+    stopstate/.style={draw=red, text=red, thick, rounded corners=5mm,
+                      text width=2.55cm, align=center,
+                      inner sep=4pt, minimum height=1.0cm},
     cond/.style={font=\scriptsize\setstretch{1.0}, align=left,
-                 text width=4.1cm, inner sep=0pt},
+                 text width=3.8cm, inner sep=0pt},
     stopcond/.style={font=\scriptsize\setstretch{1.0}, align=left,
                      text=red, inner sep=0pt},
     flow/.style={-{Latex[length=2mm]}, thick, black},
     testflow/.style={-{Latex[length=2mm]}, thick, blue},
-    stopflow/.style={-{Latex[length=2mm]}, thick, red},
-    rail/.style={thick, red},
-    report/.style={font=\scriptsize\setstretch{1.0}, text=blue, inner sep=0pt},
+    stopflow/.style={-{Latex[length=2mm]}, line width=0.7pt, red},
+    rail/.style={line width=0.7pt, red},
+    report/.style={font=\scriptsize\itshape\setstretch{1.0},
+                   text=black, inner sep=0pt},
     testcond/.style={font=\scriptsize\setstretch{1.0}, align=left,
                      text=blue, inner sep=0pt},
   ]
 
-  \node[auxiliary] (stored) at (-5.40, 2.15)
-      {Stored \(q_{\mathrm{init}}\)};
-  \node[auxiliary, text width=3.60cm] (initial) at (-1.20, 2.15)
+  \node[auxiliary] (stored) at (-3.00,3.95) {Stored \(q_{\mathrm{init}}\)};
+  \node[auxiliary, text width=3.25cm] (initial) at (0.00,2.35)
       {Initial Configuration};
-  \node[auxiliary] (guidance) at (3.50, 2.15)
+  \node[auxiliary] (guidance) at (3.00,3.95)
       {Guidance Mode\\Enter with \texttt{g}};
-  \node[state] (orient) at (-1.20, 0.00) {Tool Orientation};
-  \node[state] (appr)   at (-1.20,-2.45) {Surface Approach};
-  \node[state] (precontact) at (-1.20,-4.90) {Pre-Contact Hold};
-  \node[state, text width=4.0cm] (contact) at (-1.20,-7.35)
-      {Contact Establishment};
-  \node[state] (hold)   at (-1.20,-9.80) {Pre-Grinding Hold};
-  \node[state] (grind)  at (-1.20,-12.25) {Grinding};
-  \node[auxiliary] (testmode) at (-6.40,-4.00)
-      {Test Mode\\Vary \(K_p\), \(K_R\), or \(r_c\)};
-  \node[stopstate] (stop) at (5.80,-14.15) {Stop};
-
-  \draw[testflow] (stored.east) -- (initial.west);
-  \node[testcond, anchor=south] at (-3.30,2.88)
+  \draw[testflow] (stored.south) -- (-3.00,3.15) -- (-0.80,3.15)
+      -- ($(initial.north)+(-0.80,0)$);
+  \node[testcond, anchor=east] at (-3.20,3.15)
       {move to \(q_{\mathrm{init}}\)};
+  \draw[testflow] (guidance.south) -- (3.00,3.15) -- (0.80,3.15)
+      -- ($(initial.north)+(0.80,0)$);
+  \node[testcond, anchor=west] at (3.20,3.15)
+      {\texttt{s}: start; \texttt{p}: recapture};
 
-  \draw[testflow] (guidance.west) -- (initial.east);
-  \node[testcond, anchor=south, align=center, text width=3.0cm]
-      at (1.15,2.88)
-      {if operator types \texttt{s}\\use current \(q\)};
+  \node[state] (orient)     at (0.00, 0.10) {Tool Orientation};
+  \node[state] (appr)       at (0.00,-2.20) {Surface Approach};
+  \node[state] (precontact) at (0.00,-4.50) {Pre-Contact Hold};
+  \node[state] (contact)    at (0.00,-6.80) {Contact Establishment};
+  \node[state] (hold)       at (0.00,-9.10) {Pre-Grinding Hold};
+  \node[state] (grind)      at (0.00,-11.40) {Grinding};
 
   \draw[flow] (initial) -- (orient);
-  \node[cond, anchor=west] at (0.85,1.10)
-      {start sequence};
-
+  \node[cond, anchor=west] at (0.35,1.23) {start sequence};
   \draw[flow] (orient) -- (appr);
-  \node[cond, anchor=west] at (0.85,-1.23)
-      {if angular error \(\leq\) tolerance\\
-       or \(t\geq t_{\mathrm{end}}\)};
-
+  \node[cond, anchor=west] at (2.15,-1.05)
+      {if angular error \(\leq\) tolerance\\or \(t\geq t_{\mathrm{end}}\)};
   \draw[flow] (appr) -- (precontact);
-  \node[cond, anchor=west] at (0.85,-3.15)
+  \node[cond, anchor=west] at (2.15,-3.35)
       {if \(h_{\mathrm{Tool}}\leq h_{\mathrm{clearance}}\)};
-
   \draw[flow] (precontact) -- (contact);
-  \node[cond, anchor=west] at (0.85,-6.13) {if operator confirms};
-
+  \node[cond, anchor=west] at (2.15,-5.65) {if operator confirms};
   \draw[flow] (contact) -- (hold);
-  \node[cond, anchor=west] at (1.10,-8.20)
+  \node[cond, anchor=west] at (2.15,-7.95)
       {if \(t\geq t_{\mathrm{end}}\)};
-
   \draw[flow] (hold) -- (grind);
-  \node[cond, anchor=west] at (0.85,-11.03) {if operator confirms};
+  \node[cond, anchor=west] at (2.15,-10.25) {if operator confirms};
 
-  \draw[testflow] (grind.west) -- (-6.40,-12.25)
-      -- (testmode.south);
-  \node[testcond, anchor=west] at (-6.05,-10.85)
-      {if operator types \texttt{t}};
+  \node[report, anchor=east] at (-2.45,-9.10) {Reported endpoint};
 
-  \draw[testflow] (testmode.north) -- (-6.40,-2.75)
-      -- (-7.80,-2.75) -- (-7.80,3.85)
-      -- (-1.20,3.85) -- (initial.north);
-  \node[testcond, anchor=west] at (-6.05,-2.95)
+  \node[auxiliary, text width=2.75cm] (testmode) at (-6.00,-11.40)
+      {Test Mode\\Vary \(K_p\), \(K_R\), or \(r_c\)};
+  \draw[testflow] (grind.west) --
+      node[testcond, above, align=center] {if operator\\types \texttt{t}}
+      (testmode.east);
+  \draw[testflow] (testmode.north) -- (-6.00,-10.05) -- (-8.00,-10.05)
+      -- (-8.00,5.20) -- (0.00,5.20) -- (initial.north);
+  \node[testcond, anchor=south west] at (-5.75,-10.02)
       {if operator types \texttt{s}};
 
-  % Shared termination rail. The approach-distance condition is an additional
-  % stop condition for Surface Approach.
-  \coordinate (railtop) at (5.80,0.00);
-  \coordinate (railbottom) at (5.80,-12.25);
+  \coordinate (railtop) at (6.10,0.10);
+  \coordinate (railbottom) at (6.10,-11.40);
   \draw[stopflow] (orient.east) -- (railtop);
-  \draw[stopflow] (appr.east) -- (5.80,-2.45);
-  \draw[stopflow] (precontact.east) -- (5.80,-4.90);
-  \draw[stopflow] (contact.east) -- (5.80,-7.35);
-  \draw[stopflow] (hold.east) -- (5.80,-9.80);
+  \draw[stopflow] (appr.east) -- (6.10,-2.20);
+  \draw[stopflow] (precontact.east) -- (6.10,-4.50);
+  \draw[stopflow] (contact.east) -- (6.10,-6.80);
+  \draw[stopflow] (hold.east) -- (6.10,-9.10);
   \draw[stopflow] (grind.east) -- (railbottom);
   \draw[rail] (railtop) -- (railbottom);
-  \draw[stopflow] (railbottom) -- (stop);
-  \node[stopcond, anchor=south west] at (0.95,0.35)
-      {if stop requested \(\lor\) robot error/reflex};
-  \node[stopcond, anchor=south west] at (1.00,-2.25)
+
+  \node[stopcond, anchor=south east, align=right, text width=3.3cm]
+      at (6.05,0.55)
+      {if stop requested \(\lor\)\\robot error/reflex};
+  \node[stopcond, anchor=south] at (4.15,-2.12)
       {if \(s_{\mathrm{app}}\geq s_{\mathrm{app,max}}\)};
 
-  \node[report, anchor=south west] at (0.85,-9.62) {Reported endpoint};
-
+  \node[stopstate] (stop) at (6.10,-13.15) {Stop};
+  \draw[stopflow] (railbottom) -- (stop);
 \end{tikzpicture}
