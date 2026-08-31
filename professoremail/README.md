@@ -12,18 +12,13 @@ The plot compares absolute commanded and model-estimated \(F_n\) and
 compliance centre at the TCP. The grey interval from 4 to 5 seconds supplies
 the stationary means. The commanded wrench is resolved on the configured
 surface axes. Libfranka supplies the estimated spatial wrench on stiffness
-frame \(K\), expressed in the base frame. Its moment contains the
-base-to-\(K\) force lever. The measured robot state has `EE_T_K = I`, so
-\(K\) and the controller TCP coincide and
-`m_TCP = m_O - p_TCP x f` gives the local moment.
+frame \(K\), expressed in the base frame.
 
 The stationary values are `Fn_cmd = -80.312 N`,
 `Fn_est = -78.451 N`, `Mt1_cmd = +0.635 N m`, and
 `Mt1_est = +0.604 N m`. The estimate differs from the command by `2.32%` for
 normal force and `4.87%` for tangent-1 moment. Both comparisons are consistent
-in sign and magnitude for this single trace. The clearance-referenced moment
-change is `-0.601 N m`, but it is kept out of the figure because it cannot be
-compared with an absolute command.
+in sign and magnitude for this single trace.
 
 Regenerate the plot from the thesis repository root with:
 
@@ -42,11 +37,9 @@ pdflatex -interaction=nonstopmode -output-directory professoremail \
 ```
 
 The plot source also writes `fn_mt1_commanded_vs_estimated.csv`. It contains
-the two absolute plotted pairs and their clearance-referenced estimator
-changes at the controller timestamps. The untouched controller record used to
-create it is included as `P2_t1_pos_p000_r04_controller_log.csv`; it retains
-all controller columns and the complete recorded time history. The shorter
-plotting table has seven columns.
+the plotted pairs at the controller timestamps. The untouched controller
+record used to create it is included as
+`P2_t1_pos_p000_r04_controller_log.csv`.
 
 The PDF records the effective Contact Establishment set-up beside the plot:
 `Kp = [2000, 2000, 350] N/m`, `KR = [5, 5, 50] N m/rad`, automatically
@@ -142,6 +135,4 @@ python3 professoremail/analyse_contact_moment_diagnostic.py \
   ../Thesis_Final_Control/experiments/results/P2_t1_pos_p000/r04
 ```
 
-The generated files keep absolute TCP-referenced moments separate from changes
-relative to the clearance transition. The professor-email plot uses only the
-absolute pair.
+The professor-email plot uses the absolute TCP-referenced moment.

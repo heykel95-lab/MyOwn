@@ -104,24 +104,18 @@ The physical contact quantities shown in Figure~1 are
  &=t_1^\top\mathbin{\cdot}{}^{O}\!m_{\mathrm{contact},\mathrm{TCP}}.
  \end{aligned}
 \]
-The pressure centre was not measured, so no contact lever is assigned a
-measured value.
-
-In the grey interval, the measured orientation error and angular speed give
+The grey interval is treated as quasi-static.  The measured orientation error
+gives
 \[
  \begin{aligned}
  e_{R,t_1}&=0.126923\,\mathrm{rad}=7.272^\circ,\\
- \omega_{t_1}&=-0.0000185\,\mathrm{rad/s},\\
  M_{t_1,\mathrm{cmd}}
- &=K_{R,t_1}\mathbin{\cdot}e_{R,t_1}
-   -D_{R,t_1}\mathbin{\cdot}\omega_{t_1}\\
- &=5\mathbin{\cdot}0.126923
-   -1.5\mathbin{\cdot}(-0.0000185)\\
+ &=K_{R,t_1}\mathbin{\cdot}e_{R,t_1}\\
+ &=5\mathbin{\cdot}0.126923\\
  &=+0.635\,\mathrm{N\,m}.
  \end{aligned}
 \]
-The quasi-static spring value is also \(+0.635\,\mathrm{N\,m}\).  Force and
-moment equilibrium then require the opposing surface-on-robot moment
+Moment equilibrium then requires the opposing surface-on-robot moment
 \[
  \begin{aligned}
  M_{t_1,\mathrm{contact}}+M_{t_1,\mathrm{cmd}}&=0,\\
@@ -138,26 +132,10 @@ quasi-static equivalent lever
 \]
 This is an equilibrium equivalent, not a measured contact location.
 
-The measured robot state confirmed \({}^{EE}T_K=I\), so stiffness frame \(K\)
-coincides with the controller TCP.  The base-expressed spatial wrench is
-therefore shifted to the TCP by
-\[
- \begin{aligned}
- {}^{O}\!m_{\mathrm{TCP},\mathrm{est}}
- &= {}^{O}\!m_{O,\mathrm{est}}
- -p_{\mathrm{TCP}}\times{}^{O}\!f_{\mathrm{est}},\\
- M_{t_1,\mathrm{est}}
- &=t_1^\top\mathbin{\cdot}{}^{O}\!m_{\mathrm{TCP},\mathrm{est}}
- =+0.604\,\mathrm{N\,m}.
- \end{aligned}
-\]
-The estimate uses the opposite action side to
-\(M_{t_1,\mathrm{contact}}\).  It is therefore compared with
-\(-M_{t_1,\mathrm{contact}}=+0.635\,\mathrm{N\,m}\), as shown in Figure~1.
-Its difference from the command is \(0.031\,\mathrm{N\,m}\), or \(4.87\%\).
-Subtracting the non-zero clearance estimate would instead give
-\(-0.601\,\mathrm{N\,m}\); that change signal is not compared with the
-absolute command and is not plotted here.
+The stationary model estimate is
+\(M_{t_1,\mathrm{est}}=+0.604\,\mathrm{N\,m}\), compared with
+\(M_{t_1,\mathrm{cmd}}=+0.635\,\mathrm{N\,m}\).  The difference is
+\(0.031\,\mathrm{N\,m}\), or \(4.87\%\).
 
 \par\smallskip
 \noindent\textbf{Orientation change}\par

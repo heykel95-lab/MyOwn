@@ -17,7 +17,7 @@ torque are also disabled, so rc=0 and null-space mode 0.
 From the final-controller repository:
 
     cd ~/Desktop/Thesis_Final_Control
-    ./experiments/run.sh T_MODE_MANUAL_D_REPEAT 2
+    ./experiments/run.sh T_MODE_MANUAL_D_REPEAT 3
 
 Select t at the startup menu. Do not press g or p. Use the controller time for
 the following actions:
@@ -41,7 +41,7 @@ From the thesis repository:
 
     cd ~/Desktop/MyOwn-thesis
     python3 professoremail/analyse_t_mode_consistency.py \
-      ../Thesis_Final_Control/experiments/results/T_MODE_MANUAL_D_REPEAT/r02 \
+      ../Thesis_Final_Control/experiments/results/T_MODE_MANUAL_D_REPEAT/r03 \
       --force-window 8 13 \
       --moment-baseline-window 13 17 \
       --moment-window 28.5 31
