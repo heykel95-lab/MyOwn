@@ -61,9 +61,10 @@ they override the greyscale conventions above wherever the two disagree:
 - **Physical quantities and measured series are solid.** A dashed line is
   reserved for a configured, projected, modelled, or bounded reference when
   that distinction carries the meaning of the figure. Figure 1.1 therefore
-  draws the configured surface as a dashed red line, while the physical surface
-  and tool face remain solid. Never use a dash pattern merely to distinguish
-  otherwise identical objects. A construction datum that carries a direction to
+  draws every physical or configured object solid -- the configured surface in
+  red, the physical surface in blue, the tool face in green -- and reserves the
+  dash for its one construction line. Never use a dash pattern merely to
+  distinguish otherwise identical objects. A construction datum that carries a direction to
   where it is needed is **dashed black and thinner** than the objects compared
   against it, so it joins the black annotation layer rather than the coloured
   objects: Figure 1.1 draws its desired tool direction at \(0.8\,\mathrm{pt}\)
@@ -395,7 +396,7 @@ carries no numerical value.
 
 **The Chapter 1 surface-entry concept figure is one first-reader cross-section.**
 It separates two contributions to the angular relation at surface entry, and
-**each contribution carries its own arc and its own label.** The dashed red
+**each contribution carries its own arc and its own label.** The solid red
 line is the configured surface. The solid blue physical surface has a potential
 difference from it, marked by a black arc labelled `Configured--physical
 difference`. The desired parallel tool direction is drawn separately, as a
@@ -403,6 +404,13 @@ black dashed datum through the tool, and the dark-green tool face lies at a
 schematic angular difference from it, marked by a second black arc labelled
 `Desired--achieved difference`. The two labels are parallel in form because
 they name the two contributions the figure exists to separate.
+
+**The configured surface is drawn as a continuous line.** Agreed 2026-09-01,
+superseding the dashed red line the figure carried until then. Once the
+desired-direction datum was added, the drawing held two dashed elements and the
+dash no longer said anything: it is now the property of the one construction
+line in the figure, and the three objects are separated by colour alone, which
+the legend names. The general rule above was rewritten to match.
 
 **The desired direction is not drawn in red.** It was carried by the red dashed
 line until 2026-09-01, which left the achieved--desired contribution as an

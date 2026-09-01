@@ -4,6 +4,14 @@
 \ReviewMark{green}{The notation is extensive but well organised, and the unit
 column makes the mixed translational and rotational quantities traceable.}
 
+\Added{Cartesian quantities are expressed in the robot base frame
+\mbox{\(\{0\}\)} unless a frame suffix says otherwise, and the base-frame
+index is omitted. A suffix \mbox{\(S\)} or \mbox{\(\mathrm{EE}\)} after a
+comma names the surface or end-effector frame the components are represented
+in. An index that names a point or a body, as in
+\mbox{\(p_{\mathrm{EE}}\)}, identifies that point rather than a coordinate
+frame.}
+
 \renewcommand{\arraystretch}{1.2}
 \newcommand{\symrow}[3]{#1 & #2 & #3\\}
 % A group heading is useless without rows under it, so reserve room for the
@@ -41,7 +49,7 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$R_{\mathrm{EE}},\ T_{\mathrm{EE}}$}{End-effector orientation / transformation}{$R$: [-]; $T$: rotation block [-], translation block [m]}
 \symrow{$R_{\mathrm{EE,clearance}}$, $p_{\mathrm{TCP,clearance}}$}{End-effector orientation captured at the clearance transition and held as the contact-establishment orientation reference / TCP position captured at the same instant}{[-], [m]}
 \symrow{$p_d,\ R_d,\ T_d$}{Desired position / orientation / transformation}{$p$: [m]; $R$: [-]; $T$: rotation block [-], translation block [m]}
-\symrow{$\Delta R_0$}{Current-to-desired relative rotation in the base frame, $R_dR_{\mathrm{EE}}^\top$}{[-]}
+\symrow{$\Delta R$}{Current-to-desired relative rotation in the base frame, $R_dR_{\mathrm{EE}}^\top$}{[-]}
 \symrow{$\phi$}{Orientation-error angle}{[rad]}
 \symrow{$u,\ [u]_\times$}{Base-frame orientation-error axis / its skew matrix}{[-]}
 \symrow{$e_p$}{Translational (position) error}{[m]}
@@ -56,19 +64,18 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$K_{R,t_1},\ K_{R,t_2},\ K_{R,n}$}{Rotational stiffness entries about $t_1$, $t_2$, and $n_s$}{[N\,m/rad]}
 \symrow{$D_{p,t_1},\ D_{p,t_2},\ D_{p,n}$}{Translational damping entries along $t_1$, $t_2$, and $n_s$}{[N\,s/m]}
 \symrow{$D_{R,t_1},\ D_{R,t_2},\ D_{R,n}$}{Rotational damping entries about $t_1$, $t_2$, and $n_s$}{[N\,m\,s/rad]}
-\symrow{$K_0,\ D_0$}{Complete base-frame Cartesian stiffness / damping, assembled block diagonal from the rotated translational and rotational blocks}{[N/m], [N\,m/rad]; [N\,s/m], [N\,m\,s/rad]}
+\symrow{$K,\ D$}{Complete base-frame Cartesian stiffness / damping, assembled block diagonal from the rotated translational and rotational blocks}{[N/m], [N\,m/rad]; [N\,s/m], [N\,m\,s/rad]}
 }
 
 \symgroup{Dynamics and Torques}{
 \symrow{$M(q)$}{Joint-space inertia matrix}{[kg\,m$^2$]}
-\symrow{$\Lambda_0(q),\ \Lambda_S(q)$}{Regularised operational-space inertia in base coordinates / resolved along the surface-frame directions}{Translational: [kg]; coupling: [kg\,m]; rotational: [kg\,m$^2$]}
+\symrow{$\Lambda(q),\ \Lambda_S(q)$}{Regularised operational-space inertia in the base frame / resolved along the surface-frame directions}{Translational: [kg]; coupling: [kg\,m]; rotational: [kg\,m$^2$]}
 \symrow{$\lambda_i(q)$}{Directional Cartesian inertia, the $i$th diagonal entry of $\Lambda_S(q)$}{Translational: [kg]; rotational: [kg\,m$^2$]}
 \symrow{$k_i,\ d_i$}{Directional stiffness / inertia-scaled damping coefficient}{Translational: [N/m], [N\,s/m]; rotational: [N\,m/rad], [N\,m\,s/rad]}
 \symrow{$\zeta$}{Selected damping factor}{[-]}
 \symrow{$F$}{Complete commanded Cartesian wrench}{[N], [N\,m]}
 \symrow{$f,\ m$}{Complete commanded Cartesian force / moment at the TCP}{[N], [N\,m]}
 \symrow{$F_n,\ f_n,\ f_t$}{Commanded normal-force component, $F_n=n_s^\top f$ / normal force vector, $f_n=F_nn_s$ / tangential force vector, $f_t=f-f_n$}{[N]}
-\symrow{$K,\ D$}{Full Cartesian stiffness / damping matrices}{$K$: [N/m], [N/rad], [N\,m/m], [N\,m/rad]; $D$: [N\,s/m], [N\,s/rad], [N\,m\,s/m], [N\,m\,s/rad]}
 \symrow{$\tau$}{Joint torque vector}{[N\,m]}
 \symrow{$\tau_c$}{Coriolis and centrifugal compensation torque}{[N\,m]}
 \symrow{$\tau_{\mathrm{cart}}$}{Cartesian impedance torque, $J^\top(q)F$}{[N\,m]}
@@ -80,14 +87,14 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$n_{\mathrm{phys}}$}{Physical surface normal}{[-]}
 \symrow{$t_1,\ t_2$}{Surface tangent directions (unit)}{[-]}
 \symrow{$R_{\mathrm{surface}}$}{Surface-frame orientation $[\,t_1\;\;t_2\;\;n_s\,]$ in the base frame}{[-]}
-\symrow{$n_{\mathrm{Tool,EE}},\ n_{\mathrm{Tool},0},\ n_d$}{Tool-face normal expressed in the EE frame, fixed by calibration / the same direction expressed in the base frame, $n_{\mathrm{Tool},0}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}$ / desired tool-normal direction used by the controller}{[-]}
+\symrow{$n_{\mathrm{Tool,EE}},\ n_{\mathrm{Tool}},\ n_d$}{Tool-face normal expressed in the EE frame, fixed by calibration / the same direction expressed in the base frame, $n_{\mathrm{Tool}}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}$ / desired tool-normal direction used by the controller}{[-]}
 \symrow{$r_{\mathrm{face,EE}}$}{Calibrated tool-face-centre offset from the TCP in end-effector coordinates}{[m]}
 \symrow{$\theta_{\mathrm{offset}}$}{Configured pre-contact orientation offset that sets the desired tool direction, $\theta_{\mathrm{offset}}=\theta_{\mathrm{offset},t_1}t_1+\theta_{\mathrm{offset},t_2}t_2$}{[rad]}
 \symrow{$p_s$}{Point on the configured surface}{[m]}
 \symrow{$e_{x_0},\ e_{z_0}$}{Unit vectors along the base-frame axes $x_0$ and $z_0$}{[-]}
 \symrow{$p_c$}{Centre of compliance}{[m]}
-\symrow{$r_c$}{TCP-to-compliance-centre displacement, $p_c-p_{\mathrm{TCP}}$, as the point-shift transformation and the experimental plots and tables use it; where no frame index is shown, the base-frame representation is implied}{[m]}
-\symrow{$r_{c,0},\ r_{c,S},\ r_{c,\mathrm{EE}}$}{Representations of the same displacement in the base, surface and end-effector frames, with $r_{c,0}=R_{\mathrm{surface}}r_{c,S}=R_{\mathrm{EE}}r_{c,\mathrm{EE}}$}{[m]}
+\symrow{$r_c$}{TCP-to-compliance-centre displacement, $p_c-p_{\mathrm{TCP}}$, as the point-shift transformation and the experimental plots and tables use it}{[m]}
+\symrow{$r_c,\ r_{c,S},\ r_{c,\mathrm{EE}}$}{Representations of the same displacement in the base, surface and end-effector frames, with $r_c=R_{\mathrm{surface}}r_{c,S}=R_{\mathrm{EE}}r_{c,\mathrm{EE}}$}{[m]}
 \symrow{$r_{c,t_1},\ r_{c,t_2},\ r_{c,n}$}{Surface-frame components of $r_c$ along $t_1$, $t_2$ and $n_s$}{[m]}
 \symrow{$r_{\mathrm{Tool,EE}},\ p_{\mathrm{Tool}}$}{Selected tool-point offset from the TCP, expressed in the EE frame / selected tool-point position in the base frame}{[m]}
 \symrow{$p_{\mathrm{Tool,clearance}}$, $p_{\mathrm{Tool},0}$, $p_{\mathrm{Tool},d}$}{Selected tool point at the clearance transition / its projection onto the configured surface reference / its desired contact-establishment position}{[m]}
@@ -107,7 +114,7 @@ column makes the mixed translational and rotational quantities traceable.}
 \symrow{$K_c,D_c$}{Block-diagonal stiffness / damping at the centre of compliance}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
 \symrow{$K_{\mathrm{TCP}},D_{\mathrm{TCP}}$}{Centre-of-compliance stiffness and damping mapped by congruence to the TCP}{$K$: [N/m], [N/rad], [N\,m/m], [N\,m/rad]; $D$: [N\,s/m], [N\,s/rad], [N\,m\,s/m], [N\,m\,s/rad]}
 \symrow{$\theta_{\mathrm{offset},t_1},\ \theta_{\mathrm{offset},t_2}$}{Surface-frame components of the configured orientation offset about $t_1$ and $t_2$}{[rad]}
-\symrow{$\phi_0$}{Magnitude of the shortest rotation from the contact-entry tool normal to the configured flat direction}{[rad]}
+\symrow{$\phi_0$}{Magnitude of the shortest rotation from the contact-entry tool normal to the inward configured surface normal}{[rad]}
 \symrow{$\theta_{0,t_1}$}{Achieved pose-based initial angular offset about $t_1$, relative to the configured reference}{[rad]}
 \symrow{$\gamma_{t_1}$}{Contact-establishment response about $t_1$, from the measured end orientation back to the held entry reference}{[rad]}
 \symrow{$r_{c,t}$}{Tangential part of the compliance-centre displacement, $r_{c,t_1}t_1+r_{c,t_2}t_2$; its magnitude is written $\lVert r_{c,t}\rVert$}{[m]}

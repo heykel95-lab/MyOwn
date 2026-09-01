@@ -29,6 +29,39 @@ used \(20\,\mathrm{N}\) at \(200\,\mathrm{mm}\). Add this distinction beside the
 repository-authority rules in `code/AGENTS.md` so later analysis does not mix
 the two configurations.
 
+## Decide whether Chapter 6 carries the absolute case comparisons
+
+The Chapter 6 revision of 2026-09-01 was asked to add the absolute values
+beside the headline percentages: \(7.57^\circ\) to \(2.73^\circ\) and the
+\(4.84^\circ\) reduction for Case B, and the \(0.03^\circ\) span for Case C.
+They were not added, because *Results and conclusion priorities* in
+`THESIS_WRITING_GUIDE.md` sends the complete absolute comparisons to Chapter 5
+and keeps Chapter 6 to the headline percentages with their reference
+conditions, at roughly half the length of Chapter 5. The stated problem — that
+the conclusion reached its percentages before saying what they meant — was
+fixed by leading each paragraph with the finding instead. Confirm whether the
+absolute values should go in as well; if so, the guide rule is what has to
+change first.
+
+## Finish the Appendix C reduction
+
+The 2026-09-01 reduction pass removed Table C.3, which duplicated Table 4.3,
+and dropped the pose-hold damping and data-recording rows that Table 4.5 and
+Section 4.1.3 already carry. Three requested items remain:
+
+- Remove the `Configuration key` column from Tables C.1, C.4 and C.5. This
+  overturns the standing rule under *The appendices* that a parameter, its
+  configuration key and its value all belong in Appendix C, so the rule has to
+  be rewritten in the same turn. It touches roughly thirty rows across three
+  tables, each needing its column specification changed from three columns to
+  two.
+- Reduce Table C.2 to the fallback damping coefficients, dropping the stiffness
+  entries that Table 4.2 and Table 4.5 already state.
+- Drop the remaining Table C.5 rows that repeat Section 4.1.3 and Section 4.6.1:
+  the gripper speed, the collision thresholds, and the null-space values. The
+  gripper grasp force stays, because Section 6.2.3 discusses tool-mount
+  compliance.
+
 ## Conditional maintenance for dormant appendices
 
 - The retired, uncompiled files `backmatter/appendix_a_panda_example.tex` and

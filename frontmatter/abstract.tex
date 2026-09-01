@@ -1,32 +1,46 @@
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-Surface-placement and tool-mount tolerances can produce angular misalignment
-between a grinding tool and a surface. As a result, the tool can make edge-first
-contact and generate high contact loads.
+Surface-positioning and tool-mounting tolerances can produce angular
+misalignment between a grinding tool and a surface. This misalignment can cause
+edge-first contact and high contact loads.
 
-A real-time Cartesian impedance controller was implemented for a
-seven-degree-of-freedom (\abbr{DOF}) Franka Emika Panda. Its compliance was
-defined relative to the surface geometry and about a virtual centre. Moving this
-centre away from the tool centre point (TCP) coupled the commanded press to an
-additional rotational moment. During contact establishment, the controller held
-the orientation reference fixed while pressing the tool towards the surface.
+A real-time Cartesian impedance controller was implemented on a
+seven-degree-of-freedom (\abbr{DOF}) Franka Emika Panda. Directional stiffness
+and damping were defined relative to a configured surface frame, and the
+impedance reference could be shifted from the tool centre point (TCP) to a
+virtual centre of compliance (\abbr{CoC}). Displacing the \abbr{CoC} from the
+TCP coupled the commanded translational press to an additional commanded TCP
+moment. During Contact Establishment, the controller advanced the tool towards
+the surface while holding the contact-entry orientation as the rotational
+reference.
 
-The experiments varied the virtual centre and one rotational and one
-translational stiffness parameter. A configured angular offset defined the
-desired pre-contact orientation and was applied in both directions of rotation
-about the same axis in the surface plane. The offset achieved at contact entry
-was calculated relative to the configured surface. The response was calculated
-from the measured end-effector orientations.
+The surface-contact experiments varied the \abbr{CoC} position, the rotational
+stiffness, and the cross-axis translational stiffness. Positive and negative
+pre-contact angular offsets were tested about the same surface-tangent axis.
+The achieved initial angular offset at contact entry was calculated relative to
+the configured surface reference. The contact-establishment response was
+calculated from the measured end-effector orientations at the beginning and end
+of Contact Establishment.
 
-Within the tested ranges, centre position affected the response more than
-either stiffness parameter. Each tested displacement from the TCP increased the
-response towards parallel alignment in one rotational direction and reduced it
-in the other. The TCP-centred condition produced this response in both
-rotational directions and provided the neutral fixed setting. A displaced
-centre produced a slightly larger response when selected for the corresponding
-direction of rotation.
-A separate free-space study held the end-effector pose. Internal-motion damping
-reduced cumulative motion. Under the tested disturbance, active conditioning
-kept the measured net change along the evaluated internal direction close to
-zero.
+Within the tested ranges, the tangential \abbr{CoC} position produced the
+largest measured response variation. Increasing the rotational stiffness from
+\(5\) to \(50\,\mathrm{N\,m/rad}\) reduced the response by
+\(63.9\,\%\) relative to the \(5\,\mathrm{N\,m/rad}\) condition. The
+tested cross-axis translational stiffness values produced a response span equal
+to only \(0.4\,\%\) of the TCP-centred reference. For the two offset
+directions, the \abbr{CoC} displacement selected to reinforce the corrective
+rotation increased the response magnitude by \(4.0\,\%\) and
+\(4.3\,\%\). The opposite displacement reduced the corresponding response
+magnitude by \(97.6\,\%\) and \(99.2\,\%\). With the \abbr{CoC} at the
+TCP, the measured end-effector response was directed towards the configured
+surface-parallel orientation for both offset directions. That condition
+introduced no direction-selective \abbr{CoC} moment.
+
+A separate Cartesian pose-hold experiment evaluated the null-space controller
+under a repeatable internally commanded disturbance. Projected null-space
+damping reduced the cumulative redundant motion. With singular-value
+conditioning active before and during the disturbance, the measured net
+redundant displacement remained close to zero along the evaluated reference
+direction. The largest measured Cartesian position error was
+\(1.304\,\mathrm{mm}\), below the specified \(2\,\mathrm{mm}\) limit.

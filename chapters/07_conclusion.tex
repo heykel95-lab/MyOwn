@@ -4,133 +4,175 @@
 \section{Conclusion}
 \label{sec:conclusion_summary}
 
-A real-time Cartesian impedance controller was implemented for
-contact-induced alignment of a rectangular tool with a configured surface reference. The
-controller assigned directional stiffness and damping in the surface frame. A
-shift of the virtual centre of compliance from the TCP coupled the commanded
-press to the rotational impedance through \mbox{\(r_c\times f\)}.
+A real-time Cartesian impedance controller was implemented on a
+seven-degree-of-freedom Franka Emika Panda. Its purpose was to generate
+compliant contact-induced end-effector rotation towards the configured
+surface-parallel orientation. The controller assigned directional stiffness and
+damping in the surface frame. During Contact Establishment, a shift of the
+virtual centre of compliance from the TCP coupled the commanded translational
+press to the commanded TCP moment through \mbox{\(r_c\times f\)}.
 
-At the TCP, Case~A produced measured response-to-entry-magnitude ratios of
-\mbox{\(81.3\,\%\)} and \mbox{\(115.1\,\%\)} in the two evaluated directions
-of rotation. Raising \mbox{\(K_{R,t_1}\)} from
-\mbox{\(5\)} to \mbox{\(50\,\mathrm{N\,m/rad}\)} reduced the response by
-\mbox{\(63.9\,\%\)} relative to the \mbox{\(5\,\mathrm{N\,m/rad}\)}
-condition in Case~B. By comparison, the Case-C response span across the tested
-\mbox{\(K_{p,t_2}\)} values equalled only \mbox{\(0.4\,\%\)} of the
-TCP-centred reference.
+With the \abbr{CoC} at the TCP, the measured end-effector rotation was directed
+towards the configured surface-parallel orientation for both directions of the
+achieved initial angular offset. The response magnitudes reached
+\mbox{\(81.3\,\%\)} and \mbox{\(115.1\,\%\)} of the respective achieved initial
+angular-offset magnitudes in Case~A. For the negative-offset condition the
+measured response component therefore exceeded the achieved initial offset
+component.
+
+Rotational stiffness had a considerably stronger effect than cross-axis
+translational stiffness. Raising \mbox{\(K_{R,t_1}\)} from \mbox{\(5\)} to
+\mbox{\(50\,\mathrm{N\,m/rad}\)} reduced the response by \mbox{\(63.9\,\%\)}
+relative to the \mbox{\(5\,\mathrm{N\,m/rad}\)} condition in Case~B. The
+Case-C response span across the tested \mbox{\(K_{p,t_2}\)} values equalled
+only \mbox{\(0.4\,\%\)} of the TCP-centred reference.
 
 In Case~D, tangential compliance-centre position produced the largest measured
-variation.
-Relative to the TCP-centred response magnitudes, the outer position selected
-for each direction increased the response by \mbox{\(4.0\,\%\)} and
-\mbox{\(4.3\,\%\)}. The outer position in the other displacement direction
-reduced the response by \mbox{\(97.6\,\%\)} and \mbox{\(99.2\,\%\)},
-respectively. Every tested non-zero position increased the response in one
-direction of rotation and reduced it in the other.
+variation. Relative to the TCP-centred response magnitudes, the displacement
+direction selected for each offset direction increased the response by
+\mbox{\(4.0\,\%\)} and \mbox{\(4.3\,\%\)}. The displacement in the other
+direction reduced the response by \mbox{\(97.6\,\%\)} and
+\mbox{\(99.2\,\%\)}. Every tested non-zero position therefore favoured one
+direction of the initial angular offset and opposed the other. Within the
+tested range, a fixed displaced centre acted principally as a direction
+selector rather than as a means of increasing the response.
 
-For the tested positions and rotation about \mbox{\(t_1\)}, the TCP-centred
-impedance provided a neutral fixed centre with no direction-selected lever. At
-\mbox{\(r_c=0\)}, the point-shift contribution satisfies
-\mbox{\(r_c\times f=0\)}. Even so, the measured end-effector rotation was towards the
-configured flat direction in both tested directions of rotation. A displaced
-centre supplied greater rotational authority when its position was selected for
-a known direction. The neutral fixed reference and direction-specific authority
-are separate properties.
+The TCP-centred condition was neutral with respect to the additional
+\abbr{CoC}-induced moment, because \mbox{\(r_c=0\)} gives
+\mbox{\(r_c\times f=0\)}. It was not neutral in the sense of equal response
+magnitudes, which differed between the two offset directions. The measured
+end-effector rotation was nevertheless directed towards the configured
+surface-parallel orientation in both tested directions of rotation. A displaced
+centre produced a slightly larger measured response when its displacement
+direction was selected for the known direction of the initial angular offset.
+Neutrality and a direction-specific alignment response are separate properties.
 
 Projected joint damping and singular-value conditioning were separated in the
 null-space pose-hold study. Projected damping reduced cumulative redundant
-motion relative to the inactive mode. With the internally commanded disturbance
-used here, conditioning kept the net redundant displacement close to zero. The
-largest measured Cartesian position error was \mbox{\(1.304\,\mathrm{mm}\)},
-below the specified \mbox{\(2\,\mathrm{mm}\)} limit. The lower conditioning
-magnitude produced comparable suppression with less cumulative redundant
-motion.
+motion relative to the condition without null-space torque. The complete
+singular-value-conditioning modes were active before and during the
+disturbance, and they produced net redundant displacements close to zero under
+the tested virtual disturbance. The largest measured Cartesian position error
+was \mbox{\(1.304\,\mathrm{mm}\)}, below the specified
+\mbox{\(2\,\mathrm{mm}\)} limit. The lower conditioning magnitude produced
+comparable suppression with less cumulative redundant motion.
 
 \section{Limitations}
 \label{sec:limitations}
 
-\subsection{Experimental Generalisability}
+\subsection{Scope of the Surface-Contact Results}
 \label{subsec:conclusion_experimental_range}
 
-One Panda configuration, one tool and mounting arrangement, one configured
-surface reference, and one press trajectory were used in the contact study. The conclusions
-are therefore limited to this geometry and the tested stiffness, achieved
-initial angular-offset and compliance-centre ranges. The main comparison
-covered rotation about \mbox{\(t_1\)}. Measurements about \mbox{\(t_2\)}
-showed greater variability and did not support the same repeatable comparison.
-Sustained grinding and a centre scheduled during contact were not evaluated.
+The contact study used one Panda configuration, one rectangular tool and
+mounting arrangement, one configured surface reference, and one press
+trajectory. The reported parameter effects therefore apply to this experimental
+geometry, and to the tested ranges of rotational stiffness, translational
+stiffness, achieved initial angular offset, and compliance-centre position.
 
-\subsection{Calibration and Measurement Uncertainty}
+The principal repeatable comparison covered rotation about \mbox{\(t_1\)}.
+Measurements about \mbox{\(t_2\)} showed greater variability and did not
+support the same repeatable comparison. The study covered Contact Establishment
+with a fixed centre position. Sustained grinding, and a centre position changed
+during contact, remained outside the experimental scope.
+
+\subsection{Calibration and Measurement Scope}
 \label{subsec:conclusion_measurement_uncertainty}
 
-The physical plane normal was not measured independently in each experiment.
 The achieved pose-based initial angular offset \mbox{\(\theta_{0,t_1}\)} was
-calculated relative to the configured surface reference, and the primary
-response was calculated from the measured end-effector orientations. These
-quantities retain the
-uncertainty of the configured surface reference and do not constitute an
-independent physical tool--surface-angle measurement. The selected tool point
-\mbox{\(p_{\mathrm{Tool}}\)} was the geometric reference for trajectory
-generation. The physical pressure centre and instantaneous contact location
-were not observed.
+calculated from the measured end-effector pose and the calibrated tool normal,
+relative to the configured surface reference. The response
+\mbox{\(\gamma_{t_1}\)} was calculated from the measured end-effector
+orientations at the start and end of Contact Establishment. Both quantities
+therefore carry the uncertainty of the configured surface reference, the
+tool-normal calibration, and the robot pose measurements.
+
+The physical plane normal and the physical tool-face orientation during contact
+were not measured independently. The two quantities consequently describe the
+pose-based end-effector condition and response relative to the configured
+reference. They do not constitute an independent measurement of the physical
+tool--surface angle. The selected tool point \mbox{\(p_{\mathrm{Tool}}\)} was
+the geometric reference for trajectory generation. The physical pressure centre
+and the instantaneous contact location on the tool face were not observed.
 
 \subsection{Tool-Mount Compliance}
 \label{subsec:conclusion_tool_mount}
 
-The tool mount exhibited approximately \mbox{\(\pm2^\circ\)} of unloaded play
-about \mbox{\(y_{\mathrm{EE}}\)}. Its instantaneous relative rotation was not
-tracked during contact. This axis is approximately aligned with
-\mbox{\(t_2\)} in the flat configuration and may have contributed to the
-greater variability of the \mbox{\(t_2\)} measurements. The contact results
-quantify end-effector rotation rather than an independently measured
-physical tool-face rotation.
+The tool mount exhibited approximately \mbox{\(\pm2^\circ\)} of unloaded
+angular play about \mbox{\(y_{\mathrm{EE}}\)}. This axis is approximately
+aligned with \mbox{\(t_2\)} in the flat configuration. The relative motion
+between tool and end effector was not tracked during contact, and it may have
+contributed to the greater variability of the \mbox{\(t_2\)} measurements.
 
-\subsection{Null-Space Validation and Real-Time Operation}
+The reported contact response is therefore the measured end-effector rotation.
+The physical tool-face rotation may differ from it through motion within the
+tool mounting arrangement.
+
+\subsection{Scope of Null-Space and Real-Time Validation}
 \label{subsec:conclusion_nullspace_scope}
 
-The null-space terms were separated only in Cartesian pose hold under one
-internally commanded disturbance direction. The conditioning law applies an
-active, non-dissipative torque towards locally larger
-\mbox{\(\sigma_{\min}\)}, so its measured disturbance rejection is specific
-to that direction. Before the disturbance, the
-conditioning term shifted the singular-value-conditioning entry configurations by approximately
-\mbox{\(0.013\,\mathrm{rad}\)} relative to the modes without conditioning.
-Complete closed-loop modes are therefore compared rather than isolated torque
-contributions at identical configurations. The combined mode was held fixed in
-the surface-contact study, so the individual null-space contributions were not
-separated during contact and a physical disturbance was not evaluated.
-The net redundant displacement \mbox{\(\Delta\eta_{\mathrm{dist}}\)} is a
-fixed-direction projection. Because the joint-velocity projector
-\mbox{\(N_q\)} changes with the robot configuration, this projection is not an
-exact nonlinear redundant coordinate.
+The null-space terms were separated only in Cartesian pose hold, under one
+virtual disturbance direction. The conditioning law applies an active,
+non-dissipative torque towards the sampled neighbouring configuration with the
+larger \mbox{\(\sigma_{\min}\)}. Its measured response is therefore specific to
+the tested disturbance direction and robot configuration.
+
+The conditioning term was already active during the \mbox{\(5\,\mathrm{s}\)}
+settling interval preceding the disturbance. It shifted the entry
+configurations of the conditioning trials by approximately
+\mbox{\(0.013\,\mathrm{rad}\)} relative to the trials without conditioning. The
+study therefore compared complete closed-loop modes rather than isolated torque
+contributions applied from identical configurations.
+
+The surface-contact experiments held projected damping and singular-value
+conditioning active together. Their individual contributions were consequently
+not separated during contact. The separate pose-hold experiment also used a
+virtual disturbance rather than a physical external disturbance.
+
+The net redundant displacement \mbox{\(\Delta\eta_{\mathrm{dist}}\)} projects
+the accumulated joint displacement onto one fixed reference direction. The
+joint-velocity projector \mbox{\(N_q\)} changes with the robot configuration,
+so this projection gives a common directional comparison rather than an exact
+nonlinear redundant coordinate.
 
 \Added{The geometric Jacobian combines translational and rotational rows
 without a common length scale, so \mbox{\(\sigma_{\min}\)} is interpreted only
 as a relative indicator under the fixed Jacobian convention.}
 
-Worst-case execution time and scheduling jitter were not measured separately
-from operation through the nominal \mbox{\(1\,\mathrm{kHz}\)} interface. The
-assembled torque command had no application-side saturation or torque-rate
-limiter after assembly; robot-side collision and reflex monitoring supplied
-the independent protection layer.
+Operation was demonstrated through the nominal \mbox{\(1\,\mathrm{kHz}\)}
+interface. Worst-case callback execution time and scheduling jitter were not
+measured separately. The assembled torque command carried no application-side
+saturation or torque-rate limiter; robot-side collision and reflex monitoring
+supplied the independent protection layer.
 
 \section{Future Work}
 \label{sec:future}
 
-The first priority is an independent measurement of the physical plane normal
-and the physical tool-face angle during contact. This would quantify the
-surface-reference error and resolve end-effector and tool-mount rotation as
-separate quantities.
+Future work should address physical angle measurement, direction-dependent
+compliance-centre adaptation, and extended validation of the null-space
+controller.
 
-The second priority is a direction-selected compliance-centre strategy. Such a
-controller would begin at the TCP, estimate the required alignment direction,
-apply a bounded tangential displacement during contact establishment, and return to the TCP
-before sustained contact. The evaluation should be repeated about
-\mbox{\(t_2\)} and additional tangent-plane directions with improved tool
-constraint and independent measurement of the physical tool orientation.
+The physical plane normal and the physical tool-face orientation should first
+be measured independently during contact. Such measurements would quantify the
+error between the configured and physical surface references. They would also
+resolve end-effector rotation and tool-mount rotation as separate quantities.
 
-The third priority is a combined-mode null-space study under physical
-disturbance. Varying projected damping and conditioning together would measure
-their combined contact response. A comparison with a continuous or hysteretic
-conditioning law would quantify the achievable reduction in switching
-activity.
+The virtual \abbr{CoC} should then be adapted to the estimated direction of the
+initial angular offset. Such a controller would begin at the TCP, estimate the
+required rotation direction, apply a bounded tangential displacement during
+Contact Establishment, and return to the TCP before sustained contact. The
+evaluation should be repeated about \mbox{\(t_2\)} and additional tangent-plane
+directions, with improved tool constraint and an independent measurement of the
+physical tool orientation.
+
+Projected damping and singular-value conditioning should finally be evaluated
+together under a physical disturbance. Varying both terms would quantify their
+combined effect on redundant motion and Cartesian position retention. A
+continuous or hysteretic conditioning law should also be compared with the
+implemented deadband-based direction selection, to establish whether the
+observed cumulative back-and-forth motion can be reduced.
+
+The real-time implementation itself remains to be characterised. Callback
+execution time and scheduling jitter should be measured during operation at
+\mbox{\(1\,\mathrm{kHz}\)}. A final torque-saturation and torque-rate-limiting
+stage should be implemented after the torque contributions are assembled, and
+evaluated together with the robot-side collision and reflex monitoring.

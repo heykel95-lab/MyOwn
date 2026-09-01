@@ -853,7 +853,7 @@ The unflagged passages share concrete traits. Write toward these.
   libfranka end-effector/tool frame selected through the robot model
   interface".
 - **Symbol density.** "the base-frame stiffness and damping matrices
-  \(K_{p,0}\), \(D_{p,0}\), \(K_{R,0}\), and \(D_{R,0}\)" — unflagged. Prose
+  \(K_p\), \(D_p\), \(K_R\), and \(D_R\)" — unflagged. Prose
   anchored to the notation is prose only this author can write.
 - **Stated commitments.** "This sign convention is implementation-critical."
   "They are not assumed to be diagonal in the base frame."
@@ -1012,7 +1012,8 @@ Where the answer is conditional, say it is conditional and name the condition,
 rather than manufacturing a rule:
 
 > Every tested non-zero tangential centre increased the end-effector rotation
-> towards the configured flat direction in one rotational direction about
+> towards parallel alignment with the configured surface in one rotational
+> direction about
 > \(t_1\) and reduced it in the other, so the centre position depends on the
 > known direction of rotation.
 

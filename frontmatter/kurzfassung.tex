@@ -3,35 +3,50 @@
 
 \begin{otherlanguage}{ngerman}
 
-Toleranzen der Flächenlage und der Werkzeugaufnahme können eine
-Winkelfehlstellung zwischen Schleifwerkzeug und Fläche verursachen. Dadurch kann
-das Werkzeug zuerst mit einer Kante aufsetzen und hohe Kontaktlasten erzeugen.
+Toleranzen der Flächenpositionierung und der Werkzeugaufnahme können eine
+Winkelfehlstellung zwischen Schleifwerkzeug und Fläche verursachen. Diese
+Fehlstellung kann dazu führen, dass das Werkzeug zuerst mit einer Kante
+aufsetzt und hohe Kontaktlasten erzeugt.
 
 Für einen siebenachsigen Franka Emika Panda wurde ein kartesischer
-Echtzeit-Impedanzregler implementiert. Seine Nachgiebigkeit wurde relativ zur
-Flächengeometrie und um ein virtuelles Nachgiebigkeitszentrum definiert. Eine
-Verschiebung vom Werkzeugbezugspunkt (TCP) koppelte die kommandierte
-Anpressbewegung an ein zusätzliches Drehmoment. Während der Kontaktherstellung
-hielt der Regler die Orientierungsreferenz fest und drückte das Werkzeug gegen
-die Fläche.
+Echtzeit-Impedanzregler implementiert. Richtungsabhängige Steifigkeit und
+Dämpfung wurden relativ zu einem konfigurierten Flächenkoordinatensystem
+definiert, und der Impedanzbezugspunkt konnte vom Werkzeugbezugspunkt (TCP) auf
+ein virtuelles Nachgiebigkeitszentrum (\abbr{CoC}) verschoben werden. Eine
+Verschiebung des \abbr{CoC} vom TCP koppelte die kommandierte translatorische
+Anpressbewegung an ein zusätzliches kommandiertes TCP-Moment. Während der
+Kontaktherstellung führte der Regler das Werkzeug zur Fläche und hielt dabei
+die bei Kontaktbeginn erreichte Orientierung als Rotationsreferenz.
 
-Die Experimente variierten das Nachgiebigkeitszentrum sowie einen rotatorischen
-und einen translatorischen Steifigkeitsparameter. Ein konfigurierter
-Winkeloffset legte die gewünschte Orientierung vor dem Kontakt fest und wurde
-in beiden Drehrichtungen um dieselbe Achse in der Flächenebene vorgegeben. Der
-bei Kontaktbeginn erreichte Winkeloffset wurde relativ zur konfigurierten Fläche
-berechnet. Die Reaktion wurde aus gemessenen Endeffektororientierungen
-bestimmt.
+Die Kontaktversuche variierten die \abbr{CoC}-Position, die Rotationssteifigkeit
+und die quergerichtete translatorische Steifigkeit. Positive und negative
+Winkeloffsets vor dem Kontakt wurden um dieselbe Flächentangentenachse
+getestet. Der bei Kontaktbeginn erreichte anfängliche Winkeloffset wurde relativ
+zur konfigurierten Flächenreferenz berechnet. Die Kontaktherstellungsreaktion
+wurde aus den gemessenen Endeffektororientierungen zu Beginn und am Ende der
+Kontaktherstellung bestimmt.
 
-Innerhalb der getesteten Bereiche beeinflusste die Lage des
-Nachgiebigkeitszentrums die Reaktion stärker als beide Steifigkeitsparameter.
-Jede getestete Verschiebung vom TCP erhöhte die Reaktion Richtung paralleler
-Ausrichtung in einer Drehrichtung und verringerte sie in der anderen. Die
-TCP-zentrierte Einstellung erzeugte diese Reaktion in beiden
-Drehrichtungen und bildete die neutrale feste Einstellung. Ein verschobenes
-Zentrum erzeugte bei passender Auswahl für die jeweilige Drehrichtung eine
-geringfügig größere Reaktion. Eine getrennte Freiraumuntersuchung hielt die
-Endeffektorpose fest. Dämpfung verringerte die kumulierte interne Bewegung.
-Aktive Konditionierung hielt im Störversuch die Nettoänderung entlang der
-ausgewerteten internen Richtung nahe null.
+Innerhalb der getesteten Bereiche erzeugte die tangentiale
+\abbr{CoC}-Position die größte gemessene Reaktionsvariation. Eine Erhöhung der
+Rotationssteifigkeit von \(5\) auf \(50\,\mathrm{N\,m/rad}\) verringerte
+die Reaktion um \(63.9\,\%\) gegenüber der Bedingung bei
+\(5\,\mathrm{N\,m/rad}\). Die getesteten Werte der quergerichteten
+translatorischen Steifigkeit ergaben nur eine Reaktionsspanne von
+\(0.4\,\%\) der TCP-zentrierten Referenz. Für die beiden Offsetrichtungen
+erhöhte die zur Verstärkung der korrigierenden Drehung gewählte
+\abbr{CoC}-Verschiebung den Reaktionsbetrag um \(4.0\,\%\) und
+\(4.3\,\%\). Die entgegengesetzte Verschiebung verringerte den jeweiligen
+Reaktionsbetrag um \(97.6\,\%\) und \(99.2\,\%\). Mit dem \abbr{CoC} im
+TCP war die gemessene Endeffektorreaktion für beide Offsetrichtungen zur
+konfigurierten flächenparallelen Orientierung gerichtet. Diese Bedingung
+erzeugte kein richtungsselektives \abbr{CoC}-Moment.
+
+Ein getrennter kartesischer Posehalteversuch bewertete den Nullraumregler unter
+einer reproduzierbaren intern kommandierten Störung. Die projizierte
+Nullraumdämpfung verringerte die kumulierte redundante Bewegung. Bei vor und
+während der Störung aktiver Singulärwertkonditionierung blieb die gemessene
+resultierende redundante Verschiebung entlang der ausgewerteten Referenzrichtung
+nahe null. Der größte gemessene kartesische Positionsfehler betrug
+\(1.304\,\mathrm{mm}\) und lag damit unter der festgelegten Grenze von
+\(2\,\mathrm{mm}\).
 \end{otherlanguage}

@@ -4,39 +4,29 @@
 evaluation and identifies the common configured surface reference used by the controller
 and analysis.}
 
-The controller stores experimental signals in a preallocated, fixed-capacity
-ring buffer inside the \(1\,\mathrm{kHz}\) control callback. After the
-controller stops, the current rows are written in chronological order to a CSV
-file.
+During torque control, the controller stores the experimental signals in a
+preallocated, fixed-capacity ring buffer inside the
+\(1\,\mathrm{kHz}\) callback. After the controller stops, the retained rows
+are written to a CSV file in chronological order.
 
-\section{Control States}
-\ReviewMark{green}{The numeric phase values are mapped directly to their
-recorded state names.}
-
-The source field \texttt{state} identifies the active controller state:
-\[
-\begin{array}{c@{\quad}l@{\qquad}c@{\quad}l}
-0 & \texttt{tool\_orientation}       & 7 & \texttt{pre\_grinding\_hold} \\
-1 & \texttt{surface\_approach}       & 3 & \texttt{grinding} \\
-6 & \texttt{pre\_contact\_hold}     & 4 & \texttt{cartesian\_pose\_hold} \\
-2 & \texttt{contact\_establishment} & 5 & \texttt{manual\_guidance}
-\end{array}
-\]
-
-\section{Recorded Signals}
+\section{Evaluation Signals}
 \ReviewMark{green}{The table is a useful reproducibility record and keeps units,
 frames, and model-estimated quantities explicit.}
 
-\Added{\mbox{Table~\ref{tab:csv_column_groups}} lists the union of the two CSV schemas
-used for the experiments. The surface-contact schema contains the
-contact-geometry fields, whereas the Cartesian pose-hold schema contains the
-singular-value probe and projected-motion fields. Command, state, wrench, and
-disturbance groups are common to both schemas. A suffix
-\texttt{\_x,\_y,\_z} denotes base-frame components, and \texttt{\_1..\_7}
-denotes joint components.}
+\Added{\mbox{Table~\ref{tab:csv_column_groups}} lists the recorded signal
+groups used to calculate the reported surface-contact and null-space results.
+The surface-contact schema supplies the contact-geometry and commanded-wrench
+groups, and the Cartesian pose-hold schema supplies the singular-value,
+projected-motion, and disturbance groups. The complete file schemas, including
+the diagnostic fields that no reported result uses, are documented with the
+recorded data.}
+
+\Added{A suffix \texttt{\_x}, \texttt{\_y}, or \texttt{\_z} denotes a
+base-frame Cartesian component, and a suffix \texttt{\_1} to \texttt{\_7}
+denotes a joint component.}
 
 \begin{longtable}{@{}p{0.32\textwidth}p{0.61\textwidth}@{}}
-\caption{Recorded signal groups.}
+\caption{Recorded signal groups used in the evaluation.}
 \label{tab:csv_column_groups}\\
 \toprule
 Column group & Meaning \\
@@ -56,46 +46,38 @@ Elapsed time and active control state.\\
 \texttt{p\_EE}, \texttt{p\_d} &
 Measured and desired TCP positions [m].\\
 \texttt{tool\_contact}, \texttt{edge\_target} &
-Selected tool reference point and its target [m].\\
+Measured position of the selected geometric tool point and its desired
+contact-establishment target, in the base frame [m].\\
 \texttt{tool\_contact\_offset\_ee} &
-Offset of the selected tool reference point from the TCP, in EE coordinates [m].\\
-\texttt{first\_contact\_tcp}, \texttt{first\_contact} &
-TCP position and projected surface reference captured at the clearance
-transition [m].\\
+Offset of the selected geometric tool point from the TCP, in end-effector
+coordinates [m].\\
 \texttt{e\_p}, \texttt{e\_R}, \texttt{pdot},
 \texttt{pdot\_d}, \texttt{omega} &
-Cartesian errors and velocities; during Contact Establishment \texttt{e\_R} is referred to
-the orientation held from the clearance transition.\\
-\texttt{p\_CoC}, \texttt{r\_eff} &
-\abbr{CoC} \(p_{\mathrm{TCP}}+r_c\) and the offset from it to the selected
-tool point, \(p_{\mathrm{Tool}}-p_c\), in the base frame [m]. Written for
-each surface-contact experiment, including \(r_c=0\).\\
+Cartesian position and orientation errors, measured TCP velocity, desired TCP
+velocity, and measured end-effector angular velocity. During Contact
+Establishment, \texttt{e\_R} is calculated relative to the orientation
+captured at the clearance transition.\\
+\texttt{p\_CoC} &
+Base-frame \abbr{CoC} position \(p_c=p_{\mathrm{TCP}}+r_c\) [m], recorded
+for every surface-contact trial, including the TCP-centred condition
+\(r_c=0\).\\
 \texttt{f}, \texttt{m} &
-Commanded Cartesian force [N] and moment [N\,m].\\
-\texttt{external\_force}, \texttt{external\_moment} &
-Model-estimated external wrench from libfranka, acting on stiffness frame
-\(\{K\}\) and expressed relative to the base frame \(\{0\}\). In the experimental
-configuration, \({}^{\mathrm{EE}}T_K=I\), so \(\{K\}=\{\mathrm{EE}\}\).\\
-\texttt{contact\_force\_bias},
-\texttt{contact\_moment\_bias} &
-External-wrench values captured at the clearance transition.\\
-\texttt{force\_after\_contact},\newline
-\texttt{moment\_after\_contact} &
-The model-estimated wrench with those reference values already subtracted.\\
-\texttt{push} &
-Contact-establishment press coordinate or grinding preload reference held in the following state [m].\\
+Complete commanded Cartesian force and TCP moment, in the base frame [N],
+[N\,m].\\
 \texttt{nullspace\_mode} &
 Selected null-space law.\\
 \texttt{sigma\_current} &
-Current smallest singular value \(\sigma_{\min}\) in the pose-hold
-schema.\\
+Current smallest singular value \(\sigma_{\min}\); present in the Cartesian
+pose-hold schema.\\
 \texttt{sigma\_plus}, \texttt{sigma\_minus},\newline
 \texttt{sigma\_difference}, \texttt{sigma\_direction} &
-\(\sigma_{\min}\) at the two sampled configurations
-\(q\pm\alpha_{\mathrm{probe}}v_7\), their difference and the selected sign.
-These fields belong to the pose-hold schema.\\
+Smallest singular values at the two sampled configurations
+\(q\pm\alpha_{\mathrm{probe}}v_7\), their difference, and the resulting
+direction selector. These fields occur only in the Cartesian pose-hold
+schema.\\
 \texttt{nullspace\_dq\_1..7} &
-Projected joint velocity \(\dot q_{\mathrm{null}}\) [rad/s].\\
+Components of the projected joint velocity \(\dot q_{\mathrm{null}}\)
+[rad/s].\\
 \texttt{tau\_sigma\_1..7}, \texttt{tau\_sigma\_norm},
 \texttt{tau\_nullspace\_norm} &
 Singular-value torque \(\tau_\sigma\) and total null-space torque
@@ -106,10 +88,10 @@ Active projected damping coefficient [N\,m\,s/rad].\\
 {\small\texttt{disturbance\_torque\_scale}},\newline
 \texttt{disturbance\_force\_}\newline\texttt{base\_x..z},
 \texttt{disturbance\_}\newline\texttt{point\_base\_x..z} &
-Commanded hold-disturbance waveform, torque-limit scale, point force [N], and
-the base-frame position of the link point it acts at [m].\\
+Commanded virtual-disturbance waveform \(s_{\mathrm{dist}}\), applied
+torque-limit scale, commanded base-frame point force [N], and the base-frame
+position of the selected point on link~3 [m].\\
 \texttt{tau\_disturbance\_1..7} &
-Equivalent joint torque \(J_p^\top f_{\mathrm{dist}}\) in the internally commanded hold study [N\,m].\\
-\texttt{tau\_cmd\_1..7} &
-Final commanded joint torque [N\,m].\\
+Components of the equivalent joint disturbance torque
+\(\tau_{\mathrm{dist}}=J_p^\top f_{\mathrm{dist}}\) [N\,m].\\
 \end{longtable}

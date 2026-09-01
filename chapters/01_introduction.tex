@@ -3,16 +3,18 @@
 \section{Motivation}
 
 \Added{Industrial manipulators commonly use position control to track commanded
-trajectories. In the controller, the surface is represented by a configured
-reference with normal \mbox{\(n_s\)}. The physical surface normal
-\mbox{\(n_{\mathrm{phys}}\)} can differ from this reference through placement
-and calibration tolerances. The orientation achieved before surface approach
-can also differ from the desired orientation within the configured tolerance.
-Together, these differences determine the angular relation between the tool
-face and the physical surface at contact entry. This condition can produce
-edge-first contact. Rigid position
-control resists the corresponding corrective motion and can generate high
-contact loads.}
+trajectories. In this thesis, the controller represents the surface by a
+configured reference with normal \mbox{\(n_s\)}. Placement and calibration
+tolerances can make the physical surface normal
+\mbox{\(n_{\mathrm{phys}}\)} differ from that configured reference. The tool
+orientation reached before contact can also differ from the orientation desired
+relative to the same reference.}
+
+\Added{Together, the surface-reference error and the tool-orientation error
+determine the angular mismatch between the tool face and the physical surface
+at contact entry. That mismatch can bring the tool onto the surface along an
+edge or at a corner. A rigid position controller opposes the corresponding
+corrective rotation and can therefore generate high contact loads.}
 
 \begin{figure}[H]
   \centering
@@ -21,29 +23,30 @@ contact loads.}
   \label{fig:surface_entry_concept}
 \end{figure}
 
-\Added{\mbox{\Cref{fig:surface_entry_concept}} shows the configured surface as
-a dashed red line. The green tool face differs from the desired parallel
-direction, while the blue physical surface differs from the configured
-reference.}
+\Added{\mbox{\Cref{fig:surface_entry_concept}} separates the two contributions
+to that mismatch: the difference between the configured and physical surfaces,
+and the difference between the desired and achieved tool orientations.}
 
 \Added{Torque-controlled collaborative robots provide the interface required
 for active Cartesian compliance
 \mbox{\citep{Hogan1985,Albu2003}}.} Joint torque sensing and a torque-level
-command interface determine how the robot yields under contact as well as where
-it moves. In surface finishing, this compliance is intended to limit loads from
-angular tool--surface misalignment and allow rotation towards the surface under
-the commanded normal press. Contact Establishment then produces the measured
-angular response.
+command interface allow the controller to regulate both Cartesian motion and
+compliance during contact. In surface finishing, this compliance can limit the
+loads caused by angular tool--surface mismatch. It can also permit
+end-effector rotation towards parallel alignment with the configured surface
+under the commanded normal press. The rotation generated during Contact
+Establishment forms the measured contact response.
 
-Impedance control specifies this yielding behaviour as a dynamic relation between
-motion and interaction force \mbox{\citep{Hogan1985}}. Cartesian impedance control
-defines the relation for the end-effector pose. Its translational and
-rotational compliance can be assigned independently along selected
+Impedance control defines this compliant behaviour as a dynamic relation between
+motion and interaction wrench \mbox{\citep{Hogan1985}}. Cartesian impedance control
+applies that relation to the end-effector pose. Translational and
+rotational stiffness and damping can be assigned independently along selected
 Cartesian directions. During edge-first contact, the wrench contains both force and
-moment components. Stiffness and damping defined from the contact geometry allow part of this
-moment to rotate the tool towards the surface. The stiffness and damping
-matrices determine both the contact response and the free-space
-tracking behaviour.
+moment components. Finite rotational compliance allows the contact moment to
+rotate the end effector, while the translational impedance generates the
+commanded press. The selected stiffness and damping
+matrices therefore determine both the contact response and the free-space
+pose-tracking behaviour.
 
 \section{Related Work}
 
@@ -58,51 +61,55 @@ which a Cartesian wrench \mbox{\(F\)} is mapped to joint torques \mbox{\(\tau\)}
 the impedance relation between end-effector motion and interaction force
 \mbox{\citep{Hogan1985}}. Albu-Sch\"affer \mbox{et al.\ }implemented Cartesian impedance
 control using joint-torque sensing \mbox{\citep{Albu2003}}, which corresponds to the
-torque-controlled interface used in this thesis.
+torque-controlled interface used in this thesis. These formulations supply the
+kinematic and control basis adopted here.
 
 \Added{Mayr \mbox{et al.\ }implemented a modular
 Cartesian impedance controller for the Franka Emika Panda that combines
 real-time model access, null-space control, signal treatment, and command
-limiting \mbox{\citep{Mayr2024CartesianImpedance}}.}
+limiting \mbox{\citep{Mayr2024CartesianImpedance}}. Their implementation names
+the real-time components required on the robot platform used here.}
 
 Recent work has applied compliant and force-controlled strategies directly to
 robotic surface finishing. Alt \mbox{et al.\ }combined perception, planning, and
 force-controlled execution for robotic surface treatment
 \mbox{\citep{Alt2024RoboGrind}}. Min \mbox{et al.\ }integrated demonstrated motion and
 force skills with impedance control on a 7-\mbox{\abbr{DOF}} collaborative robot
-\mbox{\citep{Min2024HumanSkillsForceControl}}. Wu \mbox{et al.\ }used adaptive variable
-impedance control to regulate the contact force during robotic grinding
-\mbox{\citep{Wu2023DualPIDImpedance}}. These studies address force-controlled surface
-treatment with compliant robot motion.
+\mbox{\citep{Min2024HumanSkillsForceControl}}. Wu \mbox{et al.\ }regulated the
+contact force during robotic grinding with adaptive variable impedance control
+\mbox{\citep{Wu2023DualPIDImpedance}}. In each of these studies the regulated
+quantity is the commanded contact force rather than the rotational response at
+contact entry.
 
 \Added{Fasse and Broenink formulated spatial impedance about a selected point,
 so that translation
 and rotation become coupled through the position of this point
 \mbox{\citep{Fasse1997SpatialImpedance}}.} This formulation provides the theoretical
 basis for the compliance-centre shift used in this thesis. The same principle
-appears mechanically in remote-centre-compliance devices, in which elastic
+appears mechanically in remote-centre-compliance devices. Their elastic
 elements are arranged so that the tool behaves as if it rotates about a virtual
 point located away from the mechanism itself
 \mbox{\citep{Nevins1989ComputerControlledAssembly,Watson1978RCC}}. More recent
 mechanically compliant and variable-compliance-centre strategies apply this
 principle to peg-in-hole insertion
-\mbox{\citep{Wang2019VariableComplianceCenter,Hartisch2022FlexureRCC}}. In the
-mechanically compliant mechanisms, elastic bending produces the alignment motion
-through the mechanism geometry. In these approaches, the compliance directs
-contact forces towards reduced misalignment. However, most of these studies
-focus on insertion tasks and define the compliance centre
-through either the mechanical design or a strategy adapted to the hole geometry.
+\mbox{\citep{Wang2019VariableComplianceCenter,Hartisch2022FlexureRCC}}. In those
+mechanisms, elastic deformation and mechanism geometry permit the contact
+forces to generate corrective motion that reduces misalignment. Most of these
+studies address insertion tasks and fix the compliance centre through either
+the mechanical design or a strategy adapted to the hole geometry.
 
 Suomalainen \mbox{et al.\ }experimentally investigated how
 compliance-centre placement and compliant-axis selection influence alignment
 in an assembly task \mbox{\citep{Suomalainen2019DualArmCompliance}}. Friedrich
 \mbox{et al.\ }subsequently proposed an active remote \abbr{CoC} that
 combines passive compliance with active force control
-\mbox{\citep{Friedrich2025ActiveRCC}}. These approaches further illustrate the role
-of compliance location in contact alignment.
+\mbox{\citep{Friedrich2025ActiveRCC}}. Both show that the location of the
+compliance centre can strongly influence the direction and the magnitude of
+contact-induced motion.
 
-\Added{Together, these studies establish compliant surface treatment, spatial
-impedance about a selected point, and compliance-centre placement for assembly.
+\Added{Together, the cited work provides the basis for compliant surface
+treatment, spatial impedance about a selected point, and compliance-centre
+placement for assembly.
 In this thesis, the effects of directional Cartesian stiffness and a software-defined virtual
 compliance centre were isolated during planar tool--surface contact.}
 
@@ -115,24 +122,24 @@ directions of rotation about a surface-tangent axis and different rotation axes
 within the tangent plane. Under rigid position control, the contact
 geometry can generate high moments while the controller resists the corrective
 motion. Finite rotational compliance, however, allows contact-induced rotation.
-Additionally, a displaced \abbr{CoC} adds a selectable coupling between
-translation and rotation.
+Additionally, a displaced \abbr{CoC} couples translation and rotation.
 
 The displacement \mbox{\(r_c\)} points from the TCP to the virtual
-\abbr{CoC}. Its tangential component enters the commanded
-wrench through a cross product with the translational force. The displacement
-direction sets the direction of the additional rotational moment. A displaced centre chosen before contact
-encodes a preferred alignment direction.
+\abbr{CoC}. It contributes the term \mbox{\(r_c\times f\)} to the commanded
+TCP moment. For the commanded normal press, the tangential direction of
+\mbox{\(r_c\)} sets the direction of that additional moment. A fixed displaced
+centre therefore favours one rotational direction and opposes the other.
 
 A fixed \abbr{CoC} was evaluated for initial angular offsets in both directions
 of rotation about one axis in the surface plane. The comparison determined how
-each centre position changed the response in the two rotational directions.
+each centre position changed the measured end-effector response in the two
+rotational directions.
 
 The selected controller parameters were varied while the calibrated geometry,
 robot configuration, and tool mounting were held constant. A configured
 orientation offset sets the desired tool direction relative to the configured
-surface reference. The orientation reached at contact entry identifies each
-experimental condition and includes the effect of the finite orientation
+surface reference. The orientation achieved at contact entry characterises each
+experimental condition and accounts for the finite orientation
 tolerance. \mbox{\Cref{ch:theory,ch:implementation}} introduce the frame
 conventions and controller formulation used in the experiments.
 
@@ -145,17 +152,19 @@ The main contributions are:
 \item A real-time Cartesian impedance controller with surface-relative
 directional stiffness and damping and a shiftable virtual \abbr{CoC} was implemented on a
 Franka Emika Panda.
-\item The influence of directional stiffness and tangential
-compliance-centre position on contact-induced end-effector rotation was
-characterised experimentally.
+\item The effects of rotational stiffness, cross-axis translational stiffness,
+and tangential compliance-centre position on contact-induced end-effector
+rotation were characterised experimentally.
 \item A projected null-space controller combining joint damping and
 singular-value conditioning was implemented and evaluated separately in
 Cartesian pose hold.
 \end{itemize}
 
-With the CoC at the TCP, the measured end-effector rotation was towards the
-configured flat direction for both tested directions of rotation about the
-evaluated axis in the surface plane. A displaced centre supplied slightly greater rotational
-authority through the commanded moment
-\mbox{\(r_c\times f\)} when its position was selected for the known direction
-of rotation.
+With the CoC at the TCP, the measured end-effector rotation was towards
+parallel alignment with the configured surface for both tested directions of
+rotation about the evaluated axis in the surface plane. A fixed displaced
+centre favoured one rotational direction and opposed the other, through the
+additional commanded moment \mbox{\(r_c\times f\)}. Selecting the displacement
+direction for the known direction of rotation slightly increased the response
+relative to the TCP-centred condition, whereas the opposite displacement
+direction strongly reduced it.

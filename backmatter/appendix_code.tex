@@ -3,11 +3,14 @@
 \ReviewMark{green}{The listings are abridged to the mathematical paths used by
 the thesis and connect each important equation to an implementation excerpt.}
 
-\Added{Two abridged listings connect the compliance-centre transformation and
-final torque assembly to the controller source. They use the fixed-size Eigen
-aliases \texttt{Vec3}, \texttt{Vec7}, \texttt{Mat3}, \texttt{Mat6x6}, and
-\texttt{Mat6x7}. The identifier \texttt{R\_base\_surface} denotes the
-surface-frame orientation.}
+\Added{Three abridged source listings show the parts of the controller that
+are specific to this thesis: the compliance-centre point-shift and its
+congruence transformation, the selection between the TCP-centred and
+\abbr{CoC}-shifted branches, and the final joint-torque assembly. They use the
+fixed-size Eigen aliases \texttt{Vec3}, \texttt{Vec6}, \texttt{Vec7},
+\texttt{Mat3}, \texttt{Mat6x6}, and \texttt{Mat6x7}. The identifier
+\texttt{R\_base\_surface} denotes the orientation of the surface frame
+relative to the robot base frame.}
 
 \Added{The callback listings follow the official libfranka Cartesian impedance
 example \mbox{\cite{libfrankaCartesianExample}}. The compliance-centre
@@ -18,14 +21,18 @@ controller-specific extensions.}
 \section{Centre of Compliance and the Offset Adjoint}
 \label{app:center_compliance}
 
-The thesis displacement \(r_c=p_c-p_{\mathrm{TCP}}\) points from the TCP to
-the selected centre of compliance. The controller source evaluates the same
-transform with the internal lever
-\(\ell_c=p_{\mathrm{TCP}}-p_c=-r_c\). The source identifier
-\texttt{r\_c} in the following listings denotes the internal lever \(\ell_c\).
-The thesis quantity \(r_c\) retains its TCP-to-centre direction. The relation
-\([\ell_c]_\times=-[r_c]_\times\) makes the two displayed adjoints identical.
-The same congruence is applied to stiffness and damping.
+The thesis defines the compliance-centre displacement as
+\(r_c=p_c-p_{\mathrm{TCP}}\), which points from the TCP to the selected
+centre of compliance. The controller source uses the opposite vector
+internally, \(\ell_c=p_{\mathrm{TCP}}-p_c=-r_c\).
+
+In \mbox{\Cref{lst:app_compliance_adjoint,lst:app_spring_wrench}}, the code
+identifier \texttt{r\_c} represents this internal lever \(\ell_c\), not the
+thesis quantity \(r_c\). The upper-right block of the source-side point-shift
+matrix is therefore \([\ell_c]_\times=-[r_c]_\times\), which is the
+upper-right block of the adjoint defined in
+\mbox{\Cref{eq:offset_adjoint}}. The same congruence transformation is
+applied to the Cartesian stiffness and damping matrices.
 
 \begin{lstlisting}[style=cppstyle, language=C++, caption={Source-side compliance-centre adjoint and congruence transform.}, label={lst:app_compliance_adjoint}]
 Mat3 skewMatrix(const Vec3& v) {
@@ -51,12 +58,19 @@ Mat6x6 shiftGainToTcp(
 }
 \end{lstlisting}
 
+\begin{sloppypar}
 The tool-frame parameter \texttt{compliance\_center\_offset\_ee} stores the
-thesis displacement \(r_c\) and is negated when the internal lever is formed.
-The alternative surface-frame parameter
+thesis displacement \(r_c\) in end-effector coordinates, and the controller
+negates it when constructing the internal lever \(\ell_c\). The alternative
+surface-frame parameter
 \texttt{r\_tcp\_from\_compliance\_center\_surface} stores \(\ell_c\)
-directly. All non-zero experimental displacements used the tool-frame
-definition.
+directly. All non-zero \abbr{CoC} displacements used in the experiments were
+configured through the tool-frame definition.
+\end{sloppypar}
+
+\mbox{\Cref{lst:app_spring_wrench}} shows how the controller selects between
+the block-diagonal impedance at the TCP and the point-shifted impedance about a
+displaced centre of compliance.
 
 \begin{lstlisting}[style=cppstyle, language=C++, caption={Selection of the decoupled or coupled spring wrench (abridged).}, label={lst:app_spring_wrench}]
 const bool coupled =
@@ -89,38 +103,19 @@ return K_tcp * dx + D_tcp * dv;
 \end{lstlisting}
 
 
-\section{Core Control Callback}
+\section{Final Torque Assembly}
 \label{app:callback_core}
 
-\Added{The callback acquires the state and model quantities before assembling
-the torque command.}
+\Added{\mbox{\Cref{lst:implementation_pose_error}} shows how the callback
+combines the Cartesian impedance wrench, the null-space torque, the
+experiment-specific disturbance, and the model Coriolis contribution into the
+commanded joint torque of
+\mbox{\Cref{eq:nullspace_complete_torque_command}}. The acquisition of the
+measured joint state, the Jacobian and the end-effector pose is standard
+libfranka usage and is described in
+\mbox{\Cref{sec:software_architecture}}.}
 
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Robot-state and model quantities acquired by the torque callback.}, label={lst:callback_state_acquisition}]
-Map<const Vec7> q_current(state.q.data());
-Map<const Vec7> dq(state.dq.data());
-
-const auto jacobian_array =
-    model.zeroJacobian(Frame::kEndEffector, state);
-Map<const Mat6x7> J(jacobian_array.data());
-const Vec6 xdot = J * dq;
-
-Map<const Mat4x4> T_EE(state.O_T_EE.data());
-const Vec3 p_EE = T_EE.block<3, 1>(0, 3);
-const Mat3 R_EE = T_EE.block<3, 3>(0, 0);
-\end{lstlisting}
-
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Core impedance, coupled contact establishment, and torque composition.}, label={lst:implementation_pose_error}]
-const Vec3 e_p = desired.p_d - p_EE;
-const Vec3 e_R = applyRotationalAxisMask(
-    params, orientationError(R_EE, R_d_used), R_base_surface);
-
-Vec6 dx;
-dx.head<3>() = e_p;
-dx.tail<3>() = e_R;
-Vec6 dv;
-dv.head<3>() = desired.pdot_d - pdot;
-dv.tail<3>() = -omega;
-
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Final joint-torque assembly (abridged).}, label={lst:implementation_pose_error}]
 const Vec6 wrench =
     computeCartesianImpedanceWrench(
         params, state, Kp_used, Dp_used,
@@ -130,21 +125,11 @@ const Vec6 wrench =
 const Vec7 tau_nullspace = computeNullspaceTorque(
     params, model, state, J, dq);
 
-AutomaticDisturbance disturbance;
-if (state == ControlState::kPoseHold &&
-    params.disturbance_auto_enabled) {
-  disturbance = computeAutomaticDisturbance(
-      params, model, state, disturbance_force_direction_base,
-      time - state_start_time);
-}
-
-Array7 coriolis_array = model.coriolis(state);
-Map<const Vec7> coriolis(coriolis_array.data());
 const Vec7 tau_task = J.transpose() * wrench;
 const Vec7 tau_cmd =
     tau_task + tau_nullspace + disturbance.tau + coriolis;
 \end{lstlisting}
 
 \Added{The Cartesian pose-hold study of
-\mbox{\Cref{sec:nullspace_hold_study}} activates the disturbance term, whereas
-its value in the surface-contact study is zero.}
+\mbox{\Cref{sec:nullspace_hold_study}} activates the disturbance term. In the
+surface-contact experiments this contribution is zero.}

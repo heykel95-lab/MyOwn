@@ -1,6 +1,26 @@
 \chapter{Theoretical Background}
 \label{ch:theory}
 
+\Added{This chapter defines the mathematical formulation the Cartesian
+impedance controller evaluates. The frames come first, because every later
+quantity is expressed in one of them.}
+
+\Added{Unless stated otherwise, Cartesian vectors, orientations, velocities,
+wrenches, Jacobians, and stiffness and damping matrices are expressed in the
+robot base frame \mbox{\(\{0\}\)}, and the base-frame index is omitted. A
+quantity represented in another frame carries an explicit frame suffix,
+\mbox{\(S\)} for the surface frame and \mbox{\(\mathrm{EE}\)} for the
+end-effector frame. The compliance-centre displacement \mbox{\(r_c\)} is
+therefore the base-frame representation, while \mbox{\(r_{c,S}\)} and
+\mbox{\(r_{c,\mathrm{EE}}\)} are the same physical displacement in surface and
+end-effector coordinates.}
+
+\Added{A suffix that names a point or a body is not a frame suffix. In
+\mbox{\(p_{\mathrm{EE}}\)} the index identifies the point whose position is
+given, and that position is expressed in the base frame; in
+\mbox{\(r_{c,\mathrm{EE}}\)} the index after the comma identifies the
+coordinate frame the components are expressed in.}
+
 %% ------------------------------------------------------------
 
 \section{Reference Frames}
@@ -16,9 +36,10 @@ frames
         the robot base reference point used by the kinematic model. For the
         upright Panda configuration used in this thesis, the \mbox{\(z_0\)}-axis is
         normal to the mounting surface, while the \mbox{\(x_0\)}- and \mbox{\(y_0\)}-axes
-        lie in the mounting plane. Unless stated otherwise, Cartesian
-        positions, directions, velocities, forces, and moments are expressed
-        in this frame.
+        lie in the mounting plane. Because the base frame is the default,
+        its index is omitted: \mbox{\(p_{\mathrm{EE}}\)},
+        \mbox{\(e_p\)}, \mbox{\(f\)}, and \mbox{\(r_c\)} are all
+        expressed in it.
 
   \item \mbox{\textbf{Joint frames
         \mbox{\(\{1\},\{2\},\ldots,\{7\}\)}:}}
@@ -39,9 +60,11 @@ frames
         define the current Cartesian pose of the robot. The axes
         \mbox{\(x_{\mathrm{EE}}\)}, \mbox{\(y_{\mathrm{EE}}\)}, and
         \mbox{\(z_{\mathrm{EE}}\)} describe the current end-effector
-        orientation. The configured tool approach axis is defined in this frame
-        and is transformed to the base frame using
-        \mbox{\(R_{\mathrm{EE}}\)}.
+        orientation. The rotation \mbox{\(R_{\mathrm{EE}}\)} maps components
+        from end-effector coordinates into base coordinates, so a tool
+        direction \mbox{\(n_{\mathrm{Tool,EE}}\)} calibrated in this frame
+        has the base-frame representation
+        \mbox{\(n_{\mathrm{Tool}}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}\)}.
 
   \item \mbox{\textbf{Desired end-effector frame \mbox{\(\{d\}\)}:}}
         The desired frame represents the commanded TCP pose. Its origin is
@@ -174,10 +197,10 @@ the desired TCP position.
 The rotational block of
 \mbox{\Cref{eq:expanded_transformation_error}} is expressed in the current
 end-effector frame. The equivalent relative rotation in the robot base frame
-is \mbox{\(\Delta R_0\)}:
+is \mbox{\(\Delta R\)}:
 
 \begin{equation}
-\Delta R_0
+\Delta R
 =
 R_dR_{\mathrm{EE}}^\top.
 \label{eq:relative_rotation_error}
@@ -190,11 +213,11 @@ R_{\mathrm{EE}}(R_{\mathrm{EE}}^\top R_d)R_{\mathrm{EE}}^\top
 =R_dR_{\mathrm{EE}}^\top.
 \]
 
-It represents the correction from the current orientation to the desired
-orientation directly in base coordinates. If both orientations coincide, then
-\mbox{\(\Delta R_0=I\)}.
+It satisfies \mbox{\(\Delta R\,R_{\mathrm{EE}}=R_d\)} and therefore
+represents the rotation that maps the measured orientation to the desired
+orientation, directly in base coordinates.
 
-The axis--angle form of \mbox{\(\Delta R_0\)} consists of a rotation angle
+The axis--angle form of \mbox{\(\Delta R\)} consists of a rotation angle
 \mbox{\(\phi\)} and a unit rotation axis \mbox{\(u\in\mathbb{R}^3\)}
 \mbox{\cite{Siciliano2009,Murray1994}}. The rotation-matrix and axis--angle
 representations can be converted in both directions. Given a unit axis
@@ -210,7 +233,7 @@ I
 \label{eq:rodrigues_formula}
 \end{equation}
 
-For the relative rotation considered here, \mbox{\(R(u,\phi)=\Delta R_0\)}. The
+For the relative rotation considered here, \mbox{\(R(u,\phi)=\Delta R\)}. The
 skew-symmetric matrix of the rotation axis is
 
 \begin{equation}
@@ -224,11 +247,11 @@ u_z & 0 & -u_x\\
 \label{eq:skew_symmetric_axis_matrix}
 \end{equation}
 
-Conversely, when the rotation matrix \mbox{\(\Delta R_0\)} is known, the angle
+Conversely, when the rotation matrix \mbox{\(\Delta R\)} is known, the angle
 follows from
 
 \begin{equation}
-\operatorname{tr}(\Delta R_0)
+\operatorname{tr}(\Delta R)
 =
 1+2\cos\phi,
 \label{eq:trace_angle_relation}
@@ -240,19 +263,19 @@ This gives
 \phi
 =
 \arccos\!\left(
-\frac{\operatorname{tr}(\Delta R_0)-1}{2}
+\frac{\operatorname{tr}(\Delta R)-1}{2}
 \right),
 \qquad
 \phi\in[0,\pi].
 \label{eq:angle_from_trace}
 \end{equation}
 
-Subtracting the transpose of \mbox{\(\Delta R_0\)} isolates its skew-symmetric part:
+Subtracting the transpose of \mbox{\(\Delta R\)} isolates its skew-symmetric part:
 
 \begin{equation}
 \frac{1}{2}
 \left(
-\Delta R_0-\Delta R_0^\top
+\Delta R-\Delta R^\top
 \right)
 =
 \sin\phi\,[u]_\times.
@@ -266,9 +289,9 @@ u
 =
 \frac{1}{2\sin\phi}
 \begin{bmatrix}
-\Delta R_{0,32}-\Delta R_{0,23}\\
-\Delta R_{0,13}-\Delta R_{0,31}\\
-\Delta R_{0,21}-\Delta R_{0,12}
+\Delta R_{32}-\Delta R_{23}\\
+\Delta R_{13}-\Delta R_{31}\\
+\Delta R_{21}-\Delta R_{12}
 \end{bmatrix}.
 \label{eq:rotation_axis_from_matrix}
 \end{equation}
@@ -284,12 +307,11 @@ e_R
 \label{eq:rotation_error_base_frame}
 \end{equation}
 
-The direction of \mbox{\(e_R\)} defines the axis of the required correction, while
-its magnitude is the angular error in radians. When the current and desired
-orientations coincide, \mbox{\(\phi=0\)} and \mbox{\(e_R=0\)}. Together,
-\mbox{\(e_p=p_d-p_{\mathrm{EE}}\)} and \mbox{\(e_R\)} are expressed in the
-base frame and point in the translational and rotational directions required to
-reduce the pose error.
+The direction of \mbox{\(e_R\)} defines the axis of the required
+correction, while its magnitude is the angular error in radians. Both
+\mbox{\(e_p\)} and \mbox{\(e_R\)} are expressed in the base frame and
+point in the translational and rotational directions required to reduce the
+pose error.
 
 The complete Cartesian error \mbox{\(e\)} stacks the position error
 \mbox{\(e_p\)} and orientation error \mbox{\(e_R\)} used by the impedance controller:
@@ -385,6 +407,11 @@ Jacobian transpose maps this wrench to joint torque
 \mbox{\(\tau_{\mathrm{cart}}=J^\top F\)}
 \mbox{\citep{Khatib1987}}.}
 
+\Added{The quantities \mbox{\(F\)}, \mbox{\(f\)}, and \mbox{\(m\)}
+denote commanded controller quantities throughout this chapter. They are
+separate from the model-estimated external wrench that libfranka supplies and
+the experiments record.}
+
 
 
 
@@ -395,8 +422,8 @@ Jacobian transpose maps this wrench to joint torque
 
 The impedance wrench is evaluated in the robot base frame. The corresponding
 translational stiffness and damping matrices are
-\mbox{\(K_{p,0},D_{p,0}\in\mathbb{R}^{3\times3}\)}, while the rotational matrices are
-\mbox{\(K_{R,0},D_{R,0}\in\mathbb{R}^{3\times3}\)}. Rotating the diagonal
+\mbox{\(K_p,D_p\in\mathbb{R}^{3\times3}\)}, while the rotational matrices are
+\mbox{\(K_R,D_R\in\mathbb{R}^{3\times3}\)}. Rotating the diagonal
 surface-frame gains into the base frame generally produces full matrices. Their base-frame representation
 changes with the surface-frame orientation, even when the local matrix entries
 remain unchanged.
@@ -407,9 +434,9 @@ The commanded Cartesian force \mbox{\(f\)} is given by the translational spring-
 \begin{equation}
 f
 =
-K_{p,0}e_p
+K_pe_p
 +
-D_{p,0}
+D_p
 \left(
 \dot{p}_d-\dot{p}_{\mathrm{EE}}
 \right)
@@ -420,16 +447,16 @@ D_{p,0}
 where \mbox{\(\dot{p}_d\)} and \mbox{\(\dot{p}_{\mathrm{EE}}\)} are the desired and measured
 linear velocities expressed in the base frame. For a fixed position setpoint,
 \mbox{\(\dot{p}_d=\mathbf{0}\)}, and the damping term becomes
-\mbox{\(-D_{p,0}\dot{p}_{\mathrm{EE}}\)}.
+\mbox{\(-D_p\dot{p}_{\mathrm{EE}}\)}.
 
 The commanded Cartesian moment \mbox{\(m\)} is
 
 \begin{equation}
 m
 =
-K_{R,0}e_R
+K_Re_R
 -
-D_{R,0}\omega_{\mathrm{EE}}
+D_R\omega_{\mathrm{EE}}
 \in\mathbb{R}^3,
 \label{eq:rotational_impedance_moment}
 \end{equation}
@@ -450,13 +477,13 @@ m
 \end{bmatrix}
 =
 \begin{bmatrix}
-K_{p,0}e_p
+K_pe_p
 +
-D_{p,0}\left(\dot{p}_d-\dot{p}_{\mathrm{EE}}\right)
+D_p\left(\dot{p}_d-\dot{p}_{\mathrm{EE}}\right)
 \\[1mm]
-K_{R,0}e_R
+K_Re_R
 -
-D_{R,0}\omega_{\mathrm{EE}}
+D_R\omega_{\mathrm{EE}}
 \end{bmatrix}
 \in\mathbb{R}^6.
 \label{eq:cartesian_force_moment_vector}
@@ -496,13 +523,13 @@ torque contribution and
 =
 J^\top(q)
 \begin{bmatrix}
-K_{p,0}e_p
+K_pe_p
 +
-D_{p,0}\left(\dot{p}_d-\dot{p}_{\mathrm{EE}}\right)
+D_p\left(\dot{p}_d-\dot{p}_{\mathrm{EE}}\right)
 \\[1mm]
-K_{R,0}e_R
+K_Re_R
 -
-D_{R,0}\omega_{\mathrm{EE}}
+D_R\omega_{\mathrm{EE}}
 \end{bmatrix}.
 \label{eq:cartesian_impedance_control_law}
 \end{equation}
@@ -604,9 +631,12 @@ t_1 & t_2 & n_s
 
 For example, \mbox{\(K_{p,t_1}\)}, \mbox{\(K_{p,t_2}\)}, and
 \mbox{\(K_{p,n}\)} denote the translational stiffness entries along the two
-surface tangents and the surface normal, respectively. The same ordering is
-used for the rotational stiffness and damping and for surface-frame components of the
-compliance-centre displacement.
+surface tangents and the surface normal, respectively. These are scalar
+directional coefficients, and their direction is already named by
+\mbox{\(t_1\)}, \mbox{\(t_2\)}, and \mbox{\(n_s\)}, so they take no
+frame suffix. The same ordering is used for the rotational stiffness and
+damping and for surface-frame components of the compliance-centre
+displacement.
 
 
 \section{Stiffness and Damping Representation}
@@ -659,25 +689,28 @@ D_{R,t_1} & 0 & 0\\
 
 The common axis order is \mbox{\([t_1,t_2,n_s]\)}.
 
-For use in the base-frame impedance law, these matrices are rotated into the
-robot base frame:
+The matrices \mbox{\(K_{p,S}\)}, \mbox{\(D_{p,S}\)},
+\mbox{\(K_{R,S}\)}, and \mbox{\(D_{R,S}\)} hold the directional gains in
+surface coordinates. Rotating them with \mbox{\(R_{\mathrm{surface}}\)}
+gives the base-frame matrices \mbox{\(K_p\)}, \mbox{\(D_p\)},
+\mbox{\(K_R\)}, and \mbox{\(D_R\)} used by the impedance law:
 
 \begin{equation}
-K_{p,0}
+K_p
 =
 R_{\mathrm{surface}}K_{p,S}R_{\mathrm{surface}}^\top,
 \qquad
-D_{p,0}
+D_p
 =
 R_{\mathrm{surface}}D_{p,S}R_{\mathrm{surface}}^\top,
 \label{eq:spatial_gain_matrix}
 \end{equation}
 \begin{equation}
-K_{R,0}
+K_R
 =
 R_{\mathrm{surface}}K_{R,S}R_{\mathrm{surface}}^\top,
 \qquad
-D_{R,0}
+D_R
 =
 R_{\mathrm{surface}}D_{R,S}R_{\mathrm{surface}}^\top.
 \label{eq:general_task_frame_gain_transform}
@@ -686,18 +719,18 @@ R_{\mathrm{surface}}D_{R,S}R_{\mathrm{surface}}^\top.
 The complete base-frame stiffness and damping matrices are then
 
 \begin{equation}
-K_0
+K
 =
 \begin{bmatrix}
-K_{p,0} & 0\\
-0 & K_{R,0}
+K_p & 0\\
+0 & K_R
 \end{bmatrix},
 \qquad
-D_0
+D
 =
 \begin{bmatrix}
-D_{p,0} & 0\\
-0 & D_{R,0}
+D_p & 0\\
+0 & D_R
 \end{bmatrix}.
 \label{eq:full_task_frame_gain_transform}
 \end{equation}
@@ -716,11 +749,10 @@ between the two blocks.
 \label{subsec:inertia_scaled_damping_calculation}
 
 The damping coefficients are calculated from the stiffness and the Cartesian
-inertia along the same direction. The regularised operational-space inertia
-\mbox{\(\Lambda_0(q)\)} in base coordinates is
+inertia along the same direction. The regularised operational-space inertia \mbox{\(\Lambda(q)\)} is
 
 \begin{equation}
-\Lambda_0(q)
+\Lambda(q)
 =
 \left(J(q)M^{-1}(q)J^\top(q)+\varepsilon I_6\right)^{-1},
 \label{eq:directional_cartesian_inertia_base}
@@ -736,7 +768,7 @@ directional entries \mbox{\(\lambda_i(q)\)} are
 \begin{equation}
 \Lambda_S(q)
 =
-T_R^\top\Lambda_0(q)T_R,
+T_R^\top\Lambda(q)T_R,
 \qquad
 \lambda_i(q)=\left[\Lambda_S(q)\right]_{ii}.
 \label{eq:directional_cartesian_inertia}
@@ -843,8 +875,10 @@ change the principal directions of the impedance. The point-shift adjoint
 \mbox{\(\mathrm{Ad}(r_c)\)} changes the point about which the impedance is
 defined.
 
-After the stiffness and damping have been expressed in the base frame, the translational and
-rotational stiffness and damping matrices are assembled at the \abbr{CoC} as
+After the stiffness and damping have been expressed in the base frame, the
+translational and rotational matrices are assembled at the \abbr{CoC} as
+follows. The index \mbox{\(c\)} identifies the reference point of these
+matrices; their components remain expressed in the base frame.
 
 \begin{equation}
 K_c
@@ -980,7 +1014,7 @@ surface axes expressed in the base frame, the same physical displacement in
 base coordinates is
 
 \begin{equation}
-r_{c,0}
+r_c
 =
 R_{\mathrm{surface}}r_{c,S}
 =
@@ -989,7 +1023,7 @@ r_{c,t_1}t_1+r_{c,t_2}t_2+r_{c,n}n_s,
 \end{equation}
 
 with the inverse relation
-\mbox{\(r_{c,S}=R_{\mathrm{surface}}^\top r_{c,0}\)}. The tangential part
+\mbox{\(r_{c,S}=R_{\mathrm{surface}}^\top r_c\)}. The tangential part
 collects the two in-plane components,
 
 \begin{equation}
@@ -1013,7 +1047,7 @@ definition, the end-effector orientation carries the configured vector into
 the base frame:
 
 \begin{equation}
-r_{c,0}=R_{\mathrm{EE}}r_{c,\mathrm{EE}}.
+r_c=R_{\mathrm{EE}}r_{c,\mathrm{EE}}.
 \label{eq:coc_tool_fixed_definition}
 \end{equation}
 
@@ -1021,7 +1055,7 @@ For a surface-fixed definition \mbox{\(r_{c,S}\)} remains constant, and
 because the surface frame is fixed for one controller session the base-frame
 displacement is constant during contact establishment. For a tool-fixed definition
 \mbox{\(r_{c,\mathrm{EE}}\)} remains constant, so
-\mbox{\(r_{c,0}\)} rotates with the end effector.
+\mbox{\(r_c\)} rotates with the end effector.
 \mbox{\Cref{sec:self_alignment_virtual_center}} describes both
 implementations.
 
@@ -1179,7 +1213,7 @@ semidefinite complete matrices.
 
 This formulation is a local small-motion model in which the displacement is
 treated as fixed during one controller evaluation. A surface-fixed
-\mbox{\(r_{c,S}\)} keeps \mbox{\(r_{c,0}\)} constant during contact
+\mbox{\(r_{c,S}\)} keeps \mbox{\(r_c\)} constant during contact
 establishment. A tool-fixed displacement rotates with the end effector, so the
 controller updates the base-frame vector and the shifted stiffness and damping
 matrices during each control cycle.
