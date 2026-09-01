@@ -17,7 +17,7 @@ preamble of its own, and include it with
 ```tex
 \begin{figure}[H]
   \centering
-  \resizebox{\textwidth}{!}{\input{figures/<name>.tex}}
+  \input{figures/<name>.tex}
   \caption{Short noun phrase.}
   \label{fig:<name>}
 \end{figure}
@@ -25,8 +25,8 @@ preamble of its own, and include it with
 
 `config/packages.tex` already loads `tikz` with `arrows.meta`, `calc` and
 `positioning`, plus `siunitx` and `needspace`. Do not load packages from inside
-a figure file and do not set a font: the figure inherits the document's Latin
-Modern, which is the point of drawing it this way.
+a figure file or set a font family. The figure inherits the document's Latin
+Modern; local size declarations may be used for labels.
 
 ### Styles first, then nodes, then routing
 
@@ -58,10 +58,16 @@ they override the greyscale conventions above wherever the two disagree:
 - **White is not a colour either.** Do not fill a shape white to hide what
   passes behind it; order the drawing so nothing needs hiding, and leave the
   shape unfilled.
-- **Every line is solid**, in diagrams as in plots. A dashed or dotted line
-  reads as a different kind of quantity — a model, a bound, a projection — so
-  it must not be spent on marking one of two otherwise identical objects.
-  Distinguish by colour first and by line weight second.
+- **Physical quantities and measured series are solid.** A dashed line is
+  reserved for a configured, projected, modelled, or bounded reference when
+  that distinction carries the meaning of the figure. Figure 1.1 therefore
+  draws the configured surface as a dashed red line, while the physical surface
+  and tool face remain solid. Never use a dash pattern merely to distinguish
+  otherwise identical objects. A construction datum that carries a direction to
+  where it is needed is **dashed black and thinner** than the objects compared
+  against it, so it joins the black annotation layer rather than the coloured
+  objects: Figure 1.1 draws its desired tool direction at \(0.8\,\mathrm{pt}\)
+  against their \(1.1\,\mathrm{pt}\).
 
 **One quantity, one colour, across every panel of a figure.** In the
 moment-bookkeeping figure \(r_c\) is blue and \(r_{\mathrm{Tool}}\) is green in both panels,
@@ -104,8 +110,9 @@ the tool face, the plane and each other.
 
 **A baseline-referenced wrench signal is not drawn as a physical moment acting
 on the tool.** When a commanded moment is compared with a model-estimated
-change from a stored baseline, place the two values on a signed axis or in
-separate value rows. Draw any preceding pose change in a separate panel. This
+change from a stored baseline, place the two values on an axis with positive
+and negative values or in separate value rows. Draw any preceding pose change
+in a separate panel. This
 prevents an endpoint signal from being read as the cause of the motion or as
 an action--reaction pair.
 
@@ -196,11 +203,9 @@ can be mistaken for the physical surface.
 
 ### Scale the picture, do not resize it
 
-**A tikz diagram is sized by `scale=` inside `egin{tikzpicture}[...]`, not by
-wrapping the `\input` in `
-esizebox`.** `scale=` moves the coordinates and
-leaves node text at the size it was declared; `
-esizebox` magnifies the text
+**A TikZ diagram is sized by `scale=` inside `\begin{tikzpicture}[...]`, not by
+wrapping the `\input` in `\resizebox`.** `scale=` moves the coordinates and
+leaves node text at the size it was declared; `\resizebox` magnifies the text
 along with the drawing, so a diagram drawn at 7 cm and stretched to the text
 width comes out with labels about twice the size of the body text. It also
 multiplies every clearance, which is how a label that looked separated in the
@@ -212,8 +217,7 @@ picture at whatever size is convenient, then pick the `scale=` that brings it to
 the width it should occupy, and include it with a plain `\input`.
 
 The rule holds in the other direction too. A wide diagram shrunk to fit by
-`
-esizebox` has labels *smaller* than the body text, which is the same fault
+`\resizebox` has labels *smaller* than the body text, which is the same fault
 and is easier to miss.
 
 **Explanatory sentences do not go inside the picture.** A two-line note added
@@ -230,7 +234,7 @@ not over the line or a box border. Short display labels such as `Pre-Contact
 Hold` and `Pre-Grinding Hold` may stand for longer state names that the body
 text gives in full. The Tool Orientation arrow carries
 \(\theta_{\mathrm{app,err}}\leq\varepsilon_{\mathrm{app}}\lor\)
-\(t\geq t_{\mathrm{end}}\); the worded form `angular error within
+the `8.0 s timeout`; the worded form `angular error within
 tolerance` is withdrawn, because Section 3.3 now defines both symbols.
 **A disjunction in a chart condition is written \(\lor\), never the word
 `or`**, so that one drawing states the same relation one way: the shared stop
@@ -241,7 +245,7 @@ between its anchor and the stop rail, so it needs `text width=3.90cm` to
 override the \(3.8\,\mathrm{cm}\) the `cond` style would otherwise wrap it
 at. Where \(\lor\) does end a line, as in the stop condition, it needs an
 explicit space before it, since TeX gives a trailing binary operator none.
-The Contact Establishment arrow uses \(t\geq t_{\mathrm{end}}\). The body text
+The Contact Establishment arrow uses `5.0 s timeout`. The body text
 retains the complete minimum-time, orientation, moment-change and timeout
 logic. Put the clearance condition beside the direct arrow into Pre-Contact
 Hold.
@@ -382,36 +386,40 @@ Establishment`; no alternative state name is used.
 
 **The Chapter 4 surface-reference geometry keeps three orientations distinct.**
 The physical surface is blue, the configured surface reference is red, and the
-tool face at the start of Contact Establishment is dark green. The inner arcs
-show only the pose-based initial angular deviation \(\theta_0\), drawn from the
+tool face at the start of Contact Establishment is dark green. The inner arc
+shows the achieved pose-based initial angular offset \(\theta_{0,t_1}\), drawn from the
 configured reference to the achieved tool face. No angle is drawn from the
 physical surface, and no symbol is assigned to its unknown difference from the
 configured reference. The drawing is a principal-tangent cross-section and
 carries no numerical value.
 
-**The Chapter 1 surface-entry concept figure separates controller knowledge,
-the configured offset, and physical contact.** Its panels show the configured and
-physical references, the desired tool offset relative to the configured
-surface, and the achieved reference-relative tool angle at contact entry. The
-physical surface and the configured offset are never drawn as approximations of one
-another. Use red for the configured reference, blue for the physical surface,
-and dark green for desired or achieved tool orientations. Keep the configured
-and achieved tool lines in separate panels so their nearby angles do not imply
-equality or cause label collisions. A single legend above the panels names the
-red line `Configured surface`, the blue line `Physical surface`, and the green
-line `Tool face`. Do not repeat those names beside individual lines, and do not
-add `(unknown)` to the legend or the panels. Panel (c) draws \(\theta_0\) only
-between the configured surface and achieved tool face. Panel (b) labels its arc
-`Configured offset \(\theta_{\mathrm{offset}}\)` and places that name above the
-arc.
-The conceptual figures use \(\theta_{\mathrm{offset}}\) and \(\theta_0\) without a generic
-\(t_i\) index; Section 4.5 introduces the evaluated component
-\(\theta_{0,t_1}\). In panel (c), label the arc `Reference-relative
-\(\theta_0\)` so the physical surface cannot be mistaken for the reference
-from which the angle is defined.
-Both angle arcs must remain conspicuous at the final printed size: give them
-visibly large radii and angular spans, together with heavier lines and
-arrowheads. The figure carries no numerical angles.
+**The Chapter 1 surface-entry concept figure is one first-reader cross-section.**
+It separates two contributions to the angular relation at surface entry, and
+**each contribution carries its own arc and its own label.** The dashed red
+line is the configured surface. The solid blue physical surface has a potential
+difference from it, marked by a black arc labelled `Configured--physical
+difference`. The desired parallel tool direction is drawn separately, as a
+black dashed datum through the tool, and the dark-green tool face lies at a
+schematic angular difference from it, marked by a second black arc labelled
+`Desired--achieved difference`. The two labels are parallel in form because
+they name the two contributions the figure exists to separate.
+
+**The desired direction is not drawn in red.** It was carried by the red dashed
+line until 2026-09-01, which left the achieved--desired contribution as an
+unmarked tilt while the other contribution had an arc and a name. Repeating the
+red dash at the tool would state the relation correctly and still read as a
+second configured surface, so the datum is black and takes the colour of the
+arcs that annotate it. Nothing in the legend changes: the legend names the
+three objects, and a construction datum is not one of them.
+
+The tool tilt is drawn at \(10^\circ\) against the physical surface's
+\(19^\circ\). Both are schematic. The tilt was \(6^\circ\), which is too
+shallow to mark: its arc compiled as a tick that read as a stray mark rather
+than an angle. Keep the tool angle visibly smaller than the physical one, so
+the drawing does not suggest the two contributions are equal, and visibly large
+enough for an arc. The figure contains no panel letters, local tangent-axis
+symbols, angular quantity symbols, or numerical angles. A single legend above
+the geometry names `Configured surface`, `Physical surface`, and `Tool face`.
 
 **The three Chapter 3 flowcharts use one visual grammar.** Figures 3.1, 3.3 and
 3.7 draw every operating or controller state as the same black rounded capsule.
@@ -695,31 +703,6 @@ The main Case-D plot carries the sample standard deviation at every setting as
 an error bar. The earlier `MAIN_D_sign.pdf` appendix plot duplicated that
 information and is not included in the thesis.
 
-**Check every legend against the data in the compiled figure.** Three of the
-four redrawn figures first placed a legend on top of a curve, in a corner that
-looked empty when the coordinates were written. `legend pos` is chosen per
-panel from where that panel's data actually are, not once for the figure.
-
-**A legend also has to fit inside the axis frame, and in `pgfplots` that is a
-question of the axis box, not of `width`.** `width` counts the axis labels and
-tick labels as well, so a panel set to `width=6.6cm` with a two-line
-\(y\)-label leaves an axis box nearer \(5.3\,\mathrm{cm}\), and a legend
-written to fit `width` overhangs it. Two figures were corrected on 2026-08-27.
-The offset-magnitude panels had legends wider than their own axes at
-`\footnotesize`, sitting across the plotted lines; the tool-axis comparison had
-a `south east` legend whose box reached back far enough for the rising
-tangential series to run through it. The fix in both was `\scriptsize` with
-`inner sep=1.6pt` and `row sep=-1pt`, plus, for the two-panel figure, more
-headroom above the data and slightly wider panels traded against the group
-separation.
-
-Prefer that order — shrink the legend, then add headroom, then widen the panel
-— and do not shorten a legend entry to make it fit: the entry format
-`Descriptive Condition, Symbol = Value` further down this file is what the
-entry has to say, and a legend that only fits once it stops naming its
-condition has been solved the wrong way. Measure the result in the compiled
-thesis, not in the standalone figure.
-
 ### Correcting a label in a plot that has no generator
 
 The metric-comparison legend read `EE-inferred angular deviation` after the term
@@ -786,7 +769,7 @@ file name still carries its acquisition-campaign identifier:
 | `MAIN_B_KR.pdf` | Case B |
 | `MAIN_C_KP.pdf` | Case C |
 | `MAIN_D_sign.pdf`, `MAIN_D_wrench.pdf`, `MAIN_D_diagnostics.pdf` | Case D |
-| `MAIN_G_magnitude.pdf` | Supporting initial angular-deviation magnitude check; retained file identifier |
+| `MAIN_G_magnitude.pdf` | Supporting initial angular-offset magnitude check; retained file identifier |
 | `MAIN_F_toolaxis.pdf` | Supporting tool-axis check; retained file identifier |
 | `MAIN_H_direction.pdf` | Withdrawn intermediate-direction check; retained archive identifier |
 | `MAIN_DQ_descent.pdf`, `MAIN_DQ_metric_comparison.pdf`, `MAIN_DQ_metric_summary.pdf` | Data quality |
@@ -875,12 +858,14 @@ writes a generated file names it, so regeneration must preserve this mapping.
   uncertainty: it goes in the text, not in the caption, which stays a short noun
   phrase.
 - **Grid is horizontal only.** It exists to compare values across panels.
-- **Every plot has a legend, in its own upper right corner.** Each panel names
-  the series it shows, so a panel can be read without looking away from it.
-  Give the axes about a quarter of headroom (`ax.margins(y=0.3)`) so the legend
-  sits above the data rather than on it, and check the rendered figure: a
-  corner that looks empty at one scale is not empty at another. Where a figure
-  is a single panel the rule is the same.
+- **Every plotted series is identified by one legend below the complete plot.**
+  The Chapter 5 plots and the supporting comparison in Appendix D place a
+  borderless, transparent legend centrally below the axes and above the figure
+  caption. Multi-panel figures use one figure-level legend, including when
+  different panels contribute different entries. A legend never occupies an
+  axis, and a white cover is never placed over the data. Check the rendered
+  figure, because the space required by a long entry changes when the plot is
+  scaled.
 - **Commanded and estimated quantities go in separate panels** when their
   magnitudes differ by an order or their signs disagree. Overlaying them makes
   the smaller unreadable and invites reading one curve as the other.
@@ -913,7 +898,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
   `Rotational Stiffness About \(t_1\), \(K_{R,t_1}\) [N m/rad]`,
   `Cross-Axis Translational Stiffness, \(K_{p,t_2}\) [N/m]`,
   `Tangential CoC Position, \(r_{c,t_2}\) [mm]`,
-  `Pose-Based Initial Angular Deviation, \(\theta_{0,t_1}\) [°]`,
+  `Achieved Initial Angular Offset, \(\theta_{0,t_1}\) [°]`,
   `Commanded Normal Force, \(F_n\) [N]`,
   `Commanded TCP Moment About \(t_1\), \(M_{t_1}\) [N m]`.
 
@@ -938,7 +923,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
 - **A legend names the experimental condition, and gives its symbol and value
   where one exists:** `Descriptive Condition, Symbol = Value`. It never repeats
   the \(y\)-axis quantity and never carries a unit already on the axis.
-  Settled forms: `Initial Deviation, \(\theta_{0,t_1}=+9.32^\circ\)` for an
+  Settled forms: `Achieved Initial Offset, \(\theta_{0,t_1}=+9.32^\circ\)` for an
   achieved contact-entry condition; `Projected Damping, \(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\)`
   for a controller parameter; `CoC Position, \(r_{c,t_2}=+40\,\mathrm{mm}\)`
   and `CoC at TCP, \(r_{c,t_2}=0\)` for a compliance-centre position. A bare

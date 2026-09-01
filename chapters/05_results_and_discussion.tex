@@ -1,83 +1,72 @@
 \chapter{Results and Discussion}
 \label{ch:results_discussion}
 
-The surface-contact experiments evaluate how the controller parameters
-influence the end-effector rotation generated during Contact Establishment. The
-primary response quantity is the signed contact-establishment response
+The influence of the controller parameters on the end-effector rotation
+generated during Contact Establishment was measured in the surface-contact
+experiments. The
+primary response quantity is the contact-establishment response
 \mbox{\(\gamma_{t_1}\)} about surface tangent
 \mbox{\(t_1\)}, defined in
 \mbox{\Cref{sec:experimental_evaluation}}. It represents the
 end-of-contact-establishment orientation change relative to the orientation reference held
-through contact establishment. Its sign is chosen so that a response reducing the initial
-angular deviation carries the same sign as that deviation, and
-\mbox{\(\lvert\gamma_{t_1}\rvert\)} is then the size of the correction.
+through contact establishment. When the end effector rotates towards the
+configured flat direction, \mbox{\(\gamma_{t_1}\)} points in the same
+surface-tangent direction as the achieved initial angular offset
+\mbox{\(\theta_{0,t_1}\)}. Its size is
+\mbox{\(\lvert\gamma_{t_1}\rvert\)}.
 
 The configured orientation-offset component
-\mbox{\(\theta_{\mathrm{offset},t_1}\)} establishes the pre-contact reference
-condition, whereas \mbox{\(\theta_{0,t_1}\)} is the angle actually reached at
-contact entry and \mbox{\(\gamma_{t_1}\)} is the measured response. The main response figures
-therefore identify each condition by \mbox{\(\theta_{0,t_1}\)} and report
-\mbox{\(\gamma_{t_1}\)}. The corresponding numerical values are provided in
-\mbox{\Cref{app:additional_plots}}.
+\mbox{\(\theta_{\mathrm{offset},t_1}\)} established the pre-contact reference
+condition. The achieved pose-based initial angular offset
+\mbox{\(\theta_{0,t_1}\)} is the angle reached at contact entry, and
+\mbox{\(\gamma_{t_1}\)} is the measured response. Accordingly, the main response
+figures identify each condition by its achieved offset. Directional conditions use
+\mbox{\(\theta_{0,t_1}\)}; the nominal zero-offset condition uses the full
+initial angular-offset magnitude \mbox{\(\phi_0\)}.
+\Cref{app:additional_plots} tabulates the corresponding numerical values.
 
 \Added{Each contact parameter setting was repeated three times. The comparative
 response values in Cases~A--D are the arithmetic means over those repetitions,
-and the corresponding sample standard deviations are given in
-\mbox{\Cref{app:additional_plots}}. Repetition scatter is summarised once for
-each main case below. Within these cases, individual values are discussed only
-where their spread is relevant to the interpretation. The Case-D comparison
-additionally carries error bars.} The preceding Tool Orientation state terminated with a finite tracking
-tolerance, so the initial angular magnitude differed slightly from the
-configured value. At the TCP, the \mbox{\(+10^\circ\)} configured orientation
-offset produced a mean
-initial deviation of \mbox{\(+9.31^\circ\)} about \mbox{\(t_1\)}. The
-reversed orientation offset produced \mbox{\(-9.41^\circ\)}.
+and \mbox{\Cref{app:additional_plots}} tabulates their sample standard
+deviations.} At the TCP, a configured orientation offset of
+\mbox{\(+10^\circ\)} defined the desired pre-contact direction and produced a
+mean achieved initial angular offset of \mbox{\(+9.31^\circ\)} about
+\mbox{\(t_1\)}. The configured \mbox{\(-10^\circ\)} offset produced an
+achieved offset of \mbox{\(-9.41^\circ\)}.
 
 \section{Main Surface-Contact Results}
 \label{sec:results_main_contact_cases}
-
-The cases are reported in the order in which they constrain the choice of
-compliance-centre position. The TCP-centred reference is reported in Case~A,
-followed by the stiffness sensitivities in Cases~B and~C. In Case~D the
-tangential compliance-centre displacement was tested for both signs of the
-pose-based initial angular deviation about \mbox{\(t_1\)}. The angular-magnitude
-and tool-axis comparisons are
-reported as supporting checks in
-\mbox{\Cref{app:supporting_contact_checks}}.
 
 \subsection{Baseline Contact Response with the CoC at the TCP: Case~A}
 \label{sec:results_case_a}
 
 In Case~A the \abbr{CoC} was placed at the TCP, so
-\mbox{\(r_c=0\)}. This condition removes the additional
-translation--rotation coupling introduced by the virtual point shift. The
-ordinary rotational impedance and physical contact geometry remain. The
-measured response therefore provides the baseline for the stiffness and
-compliance-centre-position comparisons.
-\Added{Repetition scatter remained at or below \mbox{\(0.06^\circ\)} across
-all Case-A settings in \mbox{\Cref{tab:results_case_a}}.}
+\mbox{\(r_c=0\)} and \mbox{\(r_c\times f=0\)}. The ordinary rotational
+impedance and physical contact geometry remained active. The measured response
+formed the baseline for the stiffness and compliance-centre-position
+comparisons.
 
 \begin{figure}[H]
 \centering
 \input{figures/results_case_a_bars.tex}
-\caption{Measured contact-establishment rotation with the CoC at the TCP.}
+\caption{Contact-establishment response with the CoC at the TCP.}
 \label{fig:results_case_a}
 \end{figure}
 
-For the positive initial-deviation condition about \mbox{\(t_1\)},
-\Cref{fig:results_case_a} gives a response of
-\mbox{\(+7.57^\circ\)}. Reversing the initial angular deviation changes the
-response to \mbox{\(-10.83^\circ\)}. Both responses have the same sign as
-their initial deviations and are therefore correction-directed. The figure
-shows the three baseline conditions.
+For the direction of rotation generated by the configured
+\mbox{\(+10^\circ\)} offset about \mbox{\(t_1\)}, the measured response was
+\mbox{\(+7.57^\circ\)} in \mbox{\Cref{fig:results_case_a}}. The direction
+generated by the configured \mbox{\(-10^\circ\)} offset produced
+\mbox{\(-10.83^\circ\)}. Both responses represented end-effector rotation
+towards the configured flat direction.
 
-The nominal zero orientation offset produced a pose-based initial deviation of
-\mbox{\(0.74^\circ\)} and gave
-\mbox{\(-0.97^\circ\)} about \mbox{\(t_1\)}. Contact produced end-effector
-rotation from the configured zero-offset target orientation as well. The other
-conditions are read against that non-zero response rather than against zero.
-The TCP-centred condition provides the reference against which the stiffness
-and compliance-centre-position variations are compared.
+For comparison, the nominal zero orientation offset produced
+\mbox{\(\phi_0=0.74^\circ\)} and gave
+\mbox{\(-0.97^\circ\)} about \mbox{\(t_1\)}. This value forms the measured
+zero-offset reference. The measured response-to-entry-magnitude ratios were
+\mbox{\(81.3\,\%\)} and \mbox{\(115.1\,\%\)} for the directions generated by
+the configured \mbox{\(+10^\circ\)} and \mbox{\(-10^\circ\)} offsets,
+respectively.
 
 \subsection{Effect of Cartesian Stiffness: Cases~B and~C}
 
@@ -85,25 +74,26 @@ and compliance-centre-position variations are compared.
 \label{sec:results_case_b}
 
 In Case~B the rotational stiffness about the investigated tangent was varied
-while the other controller settings remained unchanged. The
+while the other controller settings were held at their baseline values. The
 \mbox{\(5\,\mathrm{N\,m/rad}\)} condition is the corresponding TCP-centred
 reference from Case~A.
-\Added{Repetition scatter remained at or below \mbox{\(0.03^\circ\)} across
-all Case-B settings in \mbox{\Cref{tab:results_case_b}}.}
 
 \begin{figure}[H]
 \centering
 \input{figures/results_case_b_stiffness.tex}
-\caption{Measured contact-establishment rotation by rotational stiffness.}
+\caption{Contact-establishment response by rotational stiffness.}
 \label{fig:results_case_b}
 \end{figure}
 
-Increasing \mbox{\(K_{R,t_1}\)} reduced the measured rotation over the tested
-range. \Cref{fig:results_case_b} shows a decrease from
+Increasing \mbox{\(K_{R,t_1}\)} reduced the measured response over the tested
+range, from
 \mbox{\(+7.57^\circ\)} at \mbox{\(5\,\mathrm{N\,m/rad}\)} to
-\mbox{\(+2.73^\circ\)} at \mbox{\(50\,\mathrm{N\,m/rad}\)}. Rotational
-stiffness therefore changed the response magnitude while its sign remained
-correction-directed.
+\mbox{\(+2.73^\circ\)} at \mbox{\(50\,\mathrm{N\,m/rad}\)} in
+\mbox{\Cref{fig:results_case_b}}. Every measured response remained directed
+towards the configured flat direction. The
+\mbox{\(4.84^\circ\)} reduction equalled
+\mbox{\(63.9\,\%\)} of the \mbox{\(7.57^\circ\)} response measured at
+\mbox{\(5\,\mathrm{N\,m/rad}\)}.
 
 \subsubsection{Cross-Axis Translational Stiffness: Case~C}
 \label{sec:results_case_c}
@@ -112,66 +102,64 @@ In Case~C the translational stiffness perpendicular to the investigated
 rotation axis was varied. The rotational stiffness about that axis was held at
 \mbox{\(5\,\mathrm{N\,m/rad}\)}. The \mbox{\(2000\,\mathrm{N/m}\)}
 condition is the corresponding TCP-centred reference from Case~A.
-\Added{Repetition scatter remained at or below \mbox{\(0.02^\circ\)} across
-all Case-C settings in \mbox{\Cref{tab:results_case_c}}.}
 
 \begin{figure}[H]
 \centering
 \input{figures/results_case_c_stiffness.tex}
-\caption{Measured contact-establishment rotation by cross-axis translational stiffness.}
+\caption{Contact-establishment response by cross-axis translational stiffness.}
 \label{fig:results_case_c}
 \end{figure}
 
-The influence of perpendicular translational stiffness was considerably
-smaller than that of rotational stiffness. The measured rotation varied by
-only \mbox{\(0.03^\circ\)} across the tested range in
-\mbox{\Cref{fig:results_case_c}}.
+The measured response spanned \mbox{\(+7.56^\circ\)} to
+\mbox{\(+7.59^\circ\)} across the tested range in
+\mbox{\Cref{fig:results_case_c}}. This \mbox{\(0.03^\circ\)} span equalled
+\mbox{\(0.4\,\%\)} of the \mbox{\(7.57^\circ\)} TCP-centred reference and
+was considerably smaller than the rotational-stiffness effect.
 
 \subsection{Effect of Tangential CoC Position: Case~D}
 \label{sec:results_case_d}
 
 In Case~D the tangential position of the \abbr{CoC} was varied along
-\mbox{\(t_2\)}, perpendicular to the reported rotation about
-\mbox{\(t_1\)}. Cartesian stiffness and damping remained unchanged. The
+\mbox{\(t_2\)}, perpendicular to the measured response about
+\mbox{\(t_1\)}. Cartesian stiffness and damping were held at their baseline
+values. The
 TCP-centred condition is included as the zero-position reference.
-\Added{Repetition scatter was small across most Case-D settings. The largest
-spread occurred for the positive-deviation condition at
-\mbox{\(r_{c,t_2}=-20\,\mathrm{mm}\)}, with a standard deviation of
-\mbox{\(0.44^\circ\)}.}
+\Added{The largest Case-D sample standard deviation was
+\mbox{\(0.44^\circ\)} for the \mbox{\(+10^\circ\)} configured direction at
+\mbox{\(r_{c,t_2}=-20\,\mathrm{mm}\)}.}
 
 \begin{figure}[H]
 \centering
 \input{figures/results_case_d_panels.tex}
-\caption{Contact-establishment rotation by tangential CoC position (mean \(\pm\) SD).}
+\caption[Contact response by tangential CoC position.]{\Added{Contact response by tangential CoC position.}}
 \label{fig:results_case_d}
 \end{figure}
 
-As shown in \mbox{\Cref{fig:results_case_d}}, reversing the initial
-orientation condition changes which side of the TCP produces the larger
-response. The positive condition gives
-\mbox{\(+7.87^\circ\)} at \mbox{\(+40\,\mathrm{mm}\)} and
-\mbox{\(+0.18^\circ\)} at \mbox{\(-40\,\mathrm{mm}\)}. The reversed
-condition exchanges the larger response between the two sides.
+Changing the tested direction of rotation changed which displacement direction
+from the TCP produced the larger response. For the direction generated by the
+configured \mbox{\(+10^\circ\)} offset,
+\mbox{\Cref{fig:results_case_d}} shows \mbox{\(+7.87^\circ\)} at
+\mbox{\(+40\,\mathrm{mm}\)} and \mbox{\(+0.18^\circ\)} at
+\mbox{\(-40\,\mathrm{mm}\)}. For the direction generated by the configured
+\mbox{\(-10^\circ\)} offset, the corresponding responses were
+\mbox{\(-11.30^\circ\)} and \mbox{\(-0.09^\circ\)} at
+\mbox{\(-40\,\mathrm{mm}\)} and \mbox{\(+40\,\mathrm{mm}\)}, respectively.
 
-Among the tested positions, no non-zero tangential \abbr{CoC} increased the
-correction-directed response for both signs of the initial angular deviation.
-The required side of the TCP therefore depends on the sign of that deviation.
+Every tested non-zero tangential \abbr{CoC} increased the magnitude of the
+end-effector rotation towards the configured flat direction for one tested
+rotational direction and reduced it for the other relative to the TCP-centred
+condition. The displacement direction that increased the response depended on
+the achieved initial angular offset \mbox{\(\theta_{0,t_1}\)}.
 
-The positive \mbox{\(t_1\)} condition was examined in the time domain to
-relate the rotation response to the commanded wrench. Its two outer positions
-produce a large difference in \mbox{\(\gamma_{t_1}\)}, while the
-TCP-centred condition provides the zero-position reference. Each trace is one
-recorded repetition of its centre position.
+To relate this direction dependence to the commanded wrench, the direction
+generated by the configured \mbox{\(+10^\circ\)} offset about \mbox{\(t_1\)}
+was examined in the time domain. Its two outer positions produced
+a large difference in \mbox{\(\gamma_{t_1}\)}, and the TCP-centred condition
+formed the zero-position reference. Each trace shows one measured repetition
+for the corresponding centre position.
 
-\begin{figure}[H]
-\centering
-\input{figures/results_case_d_wrench_relabel.tex}
-\caption{Contact response and commanded wrench by CoC position.}
-\label{fig:results_case_d_wrench}
-\end{figure}
-
-For this figure, the commanded Cartesian wrench
-\mbox{\(F=[f^\top,m^\top]^\top\)} is resolved as
+The commanded Cartesian wrench \mbox{\(F=[f^\top,m^\top]^\top\)} was resolved
+for the time histories as
 
 \[
 F_n=n_s^\top f,
@@ -182,72 +170,83 @@ M_{t_1}=t_1^\top m.
 The normal-force component is negative while the tool presses into the
 surface. Both quantities are controller commands.
 
-\Cref{fig:results_case_d_wrench} places the contact-establishment rotation
-\mbox{\(\gamma_{t_1}\)}, the commanded normal force
-\mbox{\(F_n\)}, and the commanded TCP moment
-\mbox{\(M_{t_1}\)} on a common time axis for three
-centre positions. Every condition shown uses
+\begin{figure}[H]
+\centering
+\input{figures/results_case_d_wrench_relabel.tex}
+\caption[Contact response and commanded wrench.]{\Added{Contact response and commanded wrench.}}
+\label{fig:results_case_d_wrench}
+\end{figure}
+
+\Cref{fig:results_case_d_wrench} places the contact-establishment response
+\mbox{\(\gamma_{t_1}\)} in panel~(a), the commanded normal force
+\mbox{\(F_n\)} in panel~(b), and the commanded TCP moment
+\mbox{\(M_{t_1}\)} in panel~(c), on a common time axis for three centre
+positions. Every condition shown uses
 \mbox{\(\theta_{\mathrm{offset},t_1}=+10^\circ\)}, corresponding to a mean
-pose-based initial deviation of approximately \mbox{\(+9.32^\circ\)}. At
+achieved pose-based initial angular offset of approximately
+\mbox{\(+9.32^\circ\)}. At
 \mbox{\(-40\)}, \mbox{\(0\)}, and
 \mbox{\(+40\,\mathrm{mm}\)}, the commanded normal force settles in a similar
 range of approximately \mbox{\(-77\)} to \mbox{\(-82\,\mathrm{N}\)}, while the
 commanded TCP moment about \mbox{\(t_1\)} settles at approximately
 \mbox{\(+3.28\)}, \mbox{\(+0.66\)}, and \mbox{\(-2.44\,\mathrm{N\,m}\)}. The
-outer positions therefore produce moments of similar magnitude and opposite
-sign while their contact-establishment rotations differ by \mbox{\(7.73^\circ\)}. The
-difference in contact-establishment rotation is therefore associated primarily with the moment
-generated by the displaced impedance reference rather than with a substantial
-change in the normal pressing force.
+outer positions produced moments in opposite directions and a
+\mbox{\(7.73^\circ\)} difference in contact-establishment response. The
+commanded normal force, by contrast, occupied a \mbox{\(5\,\mathrm{N}\)} range. These
+measurements associate the response difference primarily with the moment
+generated by the displaced impedance reference.
 
-At the selected \mbox{\(+40\,\mathrm{mm}\)} condition, the negative commanded
-moment \mbox{\(M_{t_1}\)} accompanies a positive
-\mbox{\(\gamma_{t_1}\)}. This response is formed from the measured end-effector
+At the selected \mbox{\(+40\,\mathrm{mm}\)} condition, the commanded moment
+\mbox{\(M_{t_1}\)} points along \mbox{\(-t_1\)}, while
+\mbox{\(\gamma_{t_1}\)} points along \mbox{\(+t_1\)}. This response is formed from the measured end-effector
 orientation back to the reference held through contact establishment, as
-\mbox{\Cref{subsec:experimental_supporting_metrics}} defines it. Its sign is
-therefore opposite to the measured end-effector rotation from the start to the
-end of Contact Establishment.
+\mbox{\Cref{subsec:experimental_supporting_metrics}} defines it. The measured
+start-to-end end-effector rotation pointed along \mbox{\(-t_1\)}.
 
 A tangential displacement of the \abbr{CoC} moves the impedance reference
 point away from the TCP, so the translational press is coupled to the rotational
 part of the impedance. According to
 \mbox{\Cref{eq:commanded_moment_decomposition}}, a non-zero tangential
 displacement adds the contribution \mbox{\(r_c\times f\)} from the commanded
-press. This explains
-why the commanded moment changes strongly with centre position while
-\mbox{\(F_n\)} remains within a similar range. Reversing the tangential
-displacement reverses the contribution \mbox{\(r_c\times f_n\)} generated by
-the normal press.
+press. This coupling produced the strong change in commanded moment across
+centre positions. Reversing the tangential displacement reverses the
+contribution \mbox{\(r_c\times f_n\)} generated by the normal press.
 
-The measured sign reversal follows the relation derived in
+This direction dependence follows
 \mbox{\Cref{subsec:coc_tangential_displacement}}. A fixed tangential
 \mbox{\(r_c\neq0\)} retains one preferred moment direction while the press
-continues. At \mbox{\(r_c=0\)}, the point-shift contribution vanishes and the
-TCP selects no tangential direction. The TCP-centred condition is therefore
-the sign-independent fixed reference among the tested positions for rotation
-about \mbox{\(t_1\)}. A displaced centre provides greater condition-specific
-rotational authority when the required sign is known.
-
-The Grinding state returns to the decoupled impedance branch described in
-\mbox{\Cref{subsec:implementation_grinding_phase}}. This state structure is
-consistent with removing the direction-selective coupling after contact establishment. It is
-an implementation property rather than an experimental result, because the
-reported experiments ended in the operator-controlled hold before grinding.
+continues. At \mbox{\(r_c=0\)}, the point-shift contribution satisfies
+\mbox{\(r_c\times f=0\)}. The TCP-centred condition provided a neutral fixed
+reference with no direction-selected lever. The measured end-effector rotation
+was towards the configured flat direction in both tested directions of
+rotation. Every displaced position
+increased the response in one direction and reduced it in the other relative to
+the TCP-centred response. Additional
+rotational authority required selecting the centre position for the
+known direction of rotation.
 
 Across Cases~A--D, tangential CoC position produced the largest measured
-response variation among the tested controller parameters.
+response variation. Its outer-position spans were \mbox{\(7.69^\circ\)} and
+\mbox{\(11.21^\circ\)} for the directions generated by the configured
+\mbox{\(+10^\circ\)} and \mbox{\(-10^\circ\)} offsets. These spans were
+compared with \mbox{\(4.84^\circ\)} for rotational stiffness and
+\mbox{\(0.03^\circ\)} for cross-axis translational stiffness. Relative to the
+TCP-centred response magnitudes, the outer position selected for each direction
+increased the response by \mbox{\(4.0\,\%\)} and \mbox{\(4.3\,\%\)}. The outer
+position in the other displacement direction reduced it by
+\mbox{\(97.6\,\%\)} and \mbox{\(99.2\,\%\)}, respectively.
 
 \section{Null-Space Pose-Hold Results}
 \label{sec:results_nullspace}
 
-The remaining experiment is separate from the contact cases and analyses the
-redundant joint-space direction while the Cartesian pose is held. Matched
-trials compare the selectable null-space terms under the same internally
-commanded point-force-equivalent disturbance. The commanded disturbance
+The redundant joint-space response was measured in the null-space pose-hold
+experiment while the Cartesian pose was held. The selectable null-space terms
+were compared in matched trials under the same internally commanded
+point-force-equivalent disturbance. The commanded disturbance
 reached \mbox{\(20.00\,\mathrm{N}\)} in all twelve trials, with peak equivalent
 joint-torque norms between \mbox{\(2.17\)} and
-\mbox{\(2.45\,\mathrm{N\,m}\)}. The torque-limit scale remained equal to one,
-so the waveform was applied without clipping.
+\mbox{\(2.45\,\mathrm{N\,m}\)}. A torque-limit scale of one preserved the
+complete waveform.
 
 \begin{figure}[!htbp]
 \centering
@@ -256,72 +255,69 @@ so the waveform was applied without clipping.
 \label{fig:results_nullspace_automatic}
 \end{figure}
 
-\Cref{fig:results_nullspace_automatic} reports the response during the
+\Cref{fig:results_nullspace_automatic} shows the response during the
 Cartesian pose-hold disturbance test in three panels. Panel (a) gives the mean
-cumulative projected null-space motion \mbox{\(E_N\)} without null-space torque
-and with projected damping, the shaded bands showing \mbox{\(\pm\)} one
-standard deviation across the three repetitions. Panel (b) gives the change in
-the minimum Jacobian singular value over the disturbance interval,
-\mbox{\(\Delta\sigma_{\min,\mathrm{dist}}\)}, together with the peak Cartesian
-position error, for the two singular-value conditioning magnitudes; its error
-bars show \mbox{\(\pm\)} one standard deviation and the horizontal line marks the
+cumulative projected null-space motion \mbox{\(E_N\)} for the inactive and
+projected-damping modes, the shaded bands showing \mbox{\(\pm\)} one
+standard deviation across the three repetitions. Panel (b) gives
+\mbox{\(\Delta\sigma_{\min,\mathrm{dist}}\)} and the peak Cartesian position
+error for both singular-value conditioning magnitudes. Its error bars show
+\mbox{\(\pm\)} one standard deviation, and the horizontal line marks the
 \mbox{\(2\,\mathrm{mm}\)} position-retention limit. Panel (c) gives the net
 redundant displacement \mbox{\(\Delta\eta_{\mathrm{dist}}\)} of all four
 settings, with the mean printed above each bar and error bars showing
-\mbox{\(\pm\)} one standard deviation. Selected numerical values are discussed
-below.
+\mbox{\(\pm\)} one standard deviation.
 
 \subsection{Projected Null-Space Damping}
 \label{subsec:results_nullspace_damping}
 
 Projected null-space damping reduced \mbox{\(E_N\)} from
-\mbox{\(7.596^\circ\)} without null-space torque to \mbox{\(5.687^\circ\)} at
-\mbox{\(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\)}, a reduction of
-approximately \mbox{\(25\,\%\)}; panel~(a) of
-\mbox{\Cref{fig:results_nullspace_automatic}} carries both traces. The net
+\mbox{\(7.596^\circ\)} in the inactive mode to \mbox{\(5.687^\circ\)} at
+\mbox{\(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\)}; panel~(a) of
+\mbox{\Cref{fig:results_nullspace_automatic}} shows both traces. The net
 redundant displacement decreased in
 the same proportion, from \mbox{\(0.131\,\mathrm{rad}\)} to
 \mbox{\(0.098\,\mathrm{rad}\)}, while the change in \mbox{\(\sigma_{\min}\)}
 across the disturbance interval became less negative, from
 \mbox{\(-2.13\times10^{-3}\)} to \mbox{\(-1.26\times10^{-3}\)}. This
 behaviour follows from the projected damping law of
-\mbox{\Cref{eq:nullspace_damping_torque}}. The torque vanishes as the redundant
-motion stops and therefore requests no return towards the initial
-configuration.
+\mbox{\Cref{eq:nullspace_damping_torque}}. At zero projected joint velocity,
+the damping torque equals zero.
 
 \subsection{Singular-Value Conditioning}
 \label{subsec:results_nullspace_sigma}
 
-Singular-value conditioning behaved differently from both the uncontrolled and
-the damping-only settings. It was already active during the
-\mbox{\(5\,\mathrm{s}\)} preceding the disturbance and remained active
-throughout it, so it did not act as a term applied after the redundant
-configuration had been displaced. Both sigma-only settings ended the
+Singular-value conditioning was active during the \mbox{\(5\,\mathrm{s}\)}
+preceding the disturbance and remained active throughout it. As a result, it
+shaped the redundant entry configuration and continued to drive the
+configuration during the disturbance. Both
+singular-value-conditioning settings ended the
 disturbance interval with a net redundant displacement close to zero:
 \mbox{\(0.3\times10^{-3}\,\mathrm{rad}\)} at
 \mbox{\(k_\sigma=1.5\,\mathrm{N\,m}\)} and
 \mbox{\(-0.1\times10^{-3}\,\mathrm{rad}\)} at \mbox{\(2.0\,\mathrm{N\,m}\)}.
-As panel~(c) of \mbox{\Cref{fig:results_nullspace_automatic}} shows, both
-values are more than two orders of magnitude smaller than the
-\mbox{\(0.131\,\mathrm{rad}\)} obtained without null-space torque. Over the
-same interval \mbox{\(\sigma_{\min}\)} increased by approximately
-\mbox{\(1.95\times10^{-5}\)} and \mbox{\(1.93\times10^{-5}\)}, whereas it
-decreased by \mbox{\(2.13\times10^{-3}\)} without null-space torque. Under the
-tested disturbance direction, the conditioning term therefore strongly
-suppressed the resulting redundant displacement.
+Both values are more than two orders of magnitude smaller than the
+\mbox{\(0.131\,\mathrm{rad}\)} measured in the inactive mode in panel~(c)
+of \mbox{\Cref{fig:results_nullspace_automatic}}. Over the same interval
+\mbox{\(\sigma_{\min}\)} increased by approximately
+\mbox{\(1.95\times10^{-5}\)} and \mbox{\(1.93\times10^{-5}\)}. A change of
+\mbox{\(-2.13\times10^{-3}\)} was measured in the inactive mode. With the tested
+disturbance direction, the conditioning term strongly reduced the resulting
+redundant displacement.
 
-The two sigma magnitudes differed mainly in motion activity. At
+Despite their similar suppression of net displacement, the two conditioning
+magnitudes differed in cumulative motion. At
 \mbox{\(k_\sigma=2.0\,\mathrm{N\,m}\)}, the cumulative projected null-space
 motion was \mbox{\(1.619^\circ\)}, compared with \mbox{\(0.283^\circ\)} at
-\mbox{\(1.5\,\mathrm{N\,m}\)}, a factor of about six, while both net
-displacements remained near zero. The larger torque magnitude was associated
-with greater switching activity near the locally preferred region. This is
-consistent with the control law, because the conditioning term commands a fixed
-torque magnitude along the selected direction and the selector
-\mbox{\(s_\sigma\)} becomes zero only inside the comparison deadband. The
-larger cumulative motion therefore indicates greater switching activity around
-the same region rather than poorer disturbance rejection. The mean peak
-Cartesian position error was \mbox{\(0.889\,\mathrm{mm}\)} at
+\mbox{\(1.5\,\mathrm{N\,m}\)}, a factor of about six. Net displacement
+magnitudes at or below \mbox{\(0.3\times10^{-3}\,\mathrm{rad}\)} were
+measured for both settings. The conditioning term commands a
+fixed torque magnitude along the selected direction, while the comparison
+deadband sets \mbox{\(s_\sigma=0\)}. The factor-of-six increase in cumulative
+motion quantified the greater switching activity around the same region.
+
+Cartesian position retention also remained within the acceptance limit. The
+mean peak Cartesian position error was \mbox{\(0.889\,\mathrm{mm}\)} at
 \mbox{\(1.5\,\mathrm{N\,m}\)} and \mbox{\(0.983\,\mathrm{mm}\)} at
 \mbox{\(2.0\,\mathrm{N\,m}\)}. The largest position error measured in the
 complete pose-hold study was \mbox{\(1.304\,\mathrm{mm}\)}, below the
@@ -329,30 +325,11 @@ predefined \mbox{\(2\,\mathrm{mm}\)} acceptance limit. Of the two tested
 magnitudes, \mbox{\(1.5\,\mathrm{N\,m}\)} achieved comparable suppression of
 net disturbance-induced displacement with substantially less redundant motion.
 
-\subsection{Interpretation and Experimental Bounds}
-\label{subsec:results_nullspace_bounds}
+\Added{Projected damping dissipates existing redundant joint motion, whereas
+the singular-value term drives the configuration towards the sampled neighbour
+with the larger \mbox{\(\sigma_{\min}\)}. Both terms act through the
+null-space projector and preserve the first-order Cartesian objective.}
 
-The pose-hold trials compare the four tested null-space settings under the
-repeatable commanded disturbance. The two terms act on different quantities.
-Projected damping dissipates redundant joint motion that is already present,
-whereas the singular-value term drives the redundant configuration towards the
-sampled neighbour with the larger \mbox{\(\sigma_{\min}\)} whether or not
-such motion is present. The conditioning law is not dissipative: a disturbance
-acting towards larger \mbox{\(\sigma_{\min}\)} would move the
-configuration in the same direction as \mbox{\(\tau_\sigma\)} rather than
-against it, so the rejection observed here is specific to the tested
-disturbance direction. Both terms act through the null-space projector, so neither
-contributes a first-order Cartesian wrench.
-
-Several bounds apply to these results. Because the conditioning torque was
-active before the disturbance, the sigma-only trials entered it from a redundant
-configuration displaced by approximately
-\mbox{\(0.013\,\mathrm{rad}\)} from the one at which the trials without
-conditioning began. The four settings therefore compare the closed-loop
-behaviour of the complete modes. They do not isolate an instantaneous opposing
-torque at identical joint configurations. The surface-contact experiments use
-both contributions together in the combined secondary-torque mode and therefore
-do not separate their individual effects during contact. The geometric Jacobian
-combines translational and rotational rows without a common length scale, so
-the reported \mbox{\(\sigma_{\min}\)} is used only as a relative indicator
-under the fixed Jacobian convention.
+At \mbox{\(k_\sigma=1.5\,\mathrm{N\,m}\)}, conditioning reduced the net
+redundant-displacement magnitude by approximately \mbox{\(99.8\,\%\)} relative
+to the \mbox{\(0.131\,\mathrm{rad}\)} measured in the inactive mode.

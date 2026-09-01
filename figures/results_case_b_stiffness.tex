@@ -1,5 +1,5 @@
-% Case-B rotational-stiffness comparison. Entry-angle ranges are the achieved
-% pose-based conditions across the three stiffness settings.
+% Case-B rotational-stiffness comparison. The legend gives the achieved
+% pose-based initial angular-offset range across the three stiffness settings.
 \begin{tikzpicture}
 \begin{axis}[
     width=12.5cm, height=7.0cm,
@@ -11,14 +11,13 @@
     tick label style={font=\footnotesize},
     label style={font=\footnotesize},
     xlabel={Rotational Stiffness About \(t_1\), \(K_{R,t_1}\) [N\,m/rad]},
-    ylabel={Contact-Establishment Rotation About \(t_1\), \(\gamma_{t_1}\) [\(^\circ\)]},
-    legend style={font=\footnotesize, draw=gray!50, fill=white,
-                  cells={anchor=west}},
-    legend pos=north east,
+    ylabel={Contact-Establishment Response About \(t_1\), \(\gamma_{t_1}\) [\(^\circ\)]},
+    legend style={font=\scriptsize, draw=none, fill=none,
+                  cells={anchor=west}, at={(0.5,-0.24)}, anchor=north},
     every axis plot/.append style={thick, mark size=2.3pt},
   ]
-\addplot[black, mark=o, error bars/.cd, y dir=both, y explicit] coordinates {
-  (5,7.57) +- (0,0.01) (15,7.29) +- (0,0.01) (50,2.73) +- (0,0.03)};
-\addlegendentry{Initial Deviation, \(\theta_{0,t_1}=9.31\text{--}9.32^\circ\)}
+\addplot[black, mark=o] coordinates {
+  (5,7.57) (15,7.29) (50,2.73)};
+\addlegendentry{Achieved Initial Angular Offset, \(\theta_{0,t_1}=+(9.31\text{--}9.32)^\circ\)}
 \end{axis}
 \end{tikzpicture}

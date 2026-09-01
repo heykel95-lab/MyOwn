@@ -1,57 +1,37 @@
 \chapter*{Kurzfassung}
 \addcontentsline{toc}{chapter}{Kurzfassung}
-\ReviewMark{green}{The German summary remains aligned with the English abstract
-in structure, certainty, findings, and limitations.}
 
 \begin{otherlanguage}{ngerman}
 
-Eine Winkelabweichung zwischen einem Schleifwerkzeug und einer Fläche kann zu
-Kantenkontakt und erhöhten Kontaktbelastungen führen. Bei Anwendungen, in
-denen die Lage der Fläche und die Werkzeugaufnahme Toleranzen aufweisen, sind
-Richtung und Größe dieser Winkelabweichung vor dem Kontakt in der Regel nicht
-bekannt. Diese Arbeit untersucht einen kartesischen Impedanzregelungsansatz,
-bei dem die Kontaktinteraktion selbst die rotatorische Ausrichtung des
-Werkzeugs an einer ebenen Fläche unterstützt.
+Toleranzen der Flächenlage und der Werkzeugaufnahme können eine
+Winkelfehlstellung zwischen Schleifwerkzeug und Fläche verursachen. Dadurch kann
+das Werkzeug zuerst mit einer Kante aufsetzen und hohe Kontaktlasten erzeugen.
 
-Für einen 7-achsigen Franka Emika Panda wurde ein kartesischer
-Echtzeit-Impedanzregler implementiert. Die translatorische und rotatorische
-Nachgiebigkeit wird relativ zur Flächengeometrie definiert. Das virtuelle
-Nachgiebigkeitszentrum kann gegenüber dem Werkzeugbezugspunkt (TCP) verschoben
-werden. Dadurch entsteht eine Kopplung zwischen Translation und Rotation
-innerhalb der kartesischen Impedanz, sodass die kommandierte normale
-Anpressbewegung ein zusätzliches Moment erzeugen kann, das die erforderliche
-Ausrichtungsdrehung unterstützt, ohne eine zusätzliche rotatorische Trajektorie
-vorzugeben.
+Für einen siebenachsigen Franka Emika Panda wurde ein kartesischer
+Echtzeit-Impedanzregler implementiert. Seine Nachgiebigkeit wurde relativ zur
+Flächengeometrie und um ein virtuelles Nachgiebigkeitszentrum definiert. Eine
+Verschiebung vom Werkzeugbezugspunkt (TCP) koppelte die kommandierte
+Anpressbewegung an ein zusätzliches Drehmoment. Während der Kontaktherstellung
+hielt der Regler die Orientierungsreferenz fest und drückte das Werkzeug gegen
+die Fläche.
 
-Experimentell wurden der Einfluss der richtungsabhängigen kartesischen
-Steifigkeit sowie der tangentialen Lage des virtuellen
-Nachgiebigkeitszentrums für konfigurierte Orientierungsabweichungen um die Flächentangente
-\(t_1\)
-untersucht. Die berichteten Winkelbedingungen und
-Reaktionen beziehen sich auf die
-konfigurierte Flächengeometrie; die physische Flächennormale und der momentane
-physische Winkel zwischen Werkzeug und Fläche wurden nicht unabhängig
-gemessen. Innerhalb der geprüften Parameterbereiche
-führte die Lage des Nachgiebigkeitszentrums zur größten Variation der
-Ausrichtungsreaktion. Die tangentiale Verschiebung lag senkrecht zur
-untersuchten Drehachse. Wurde das Vorzeichen der anfänglichen
-Winkelabweichung umgekehrt, musste die Verschiebung auf die gegenüberliegende
-Seite des TCP gelegt werden.
+Die Experimente variierten das Nachgiebigkeitszentrum sowie einen rotatorischen
+und einen translatorischen Steifigkeitsparameter. Ein konfigurierter
+Winkeloffset legte die gewünschte Orientierung vor dem Kontakt fest und wurde
+in beiden Drehrichtungen um dieselbe Achse in der Flächenebene vorgegeben. Der
+bei Kontaktbeginn erreichte Winkeloffset wurde relativ zur konfigurierten Fläche
+berechnet. Die Reaktion wurde aus gemessenen Endeffektororientierungen
+bestimmt.
 
-Unter den untersuchten Bedingungen erhöhte damit keine nicht verschwindende
-tangentiale Verschiebung die korrekturgerichtete Reaktion für beide Vorzeichen
-der anfänglichen Winkelabweichung. Die TCP-zentrierte Einstellung gibt keine
-bevorzugte tangentiale Richtung vor und stellt unter den getesteten Lagen das
-vorzeichenunabhängige feste Nachgiebigkeitszentrum für die untersuchte
-Drehachse dar. Ein verschobenes Nachgiebigkeitszentrum kann dagegen gezielt
-eingesetzt werden, wenn das erforderliche Vorzeichen bekannt ist und
-zusätzliche rotatorische Ausrichtungswirkung benötigt wird.
-
-Eine ergänzende Nullraumuntersuchung zeigte, dass die projizierte Dämpfung
-redundante Gelenkbewegungen reduzierte. Die Singularwert-Konditionierung war
-während der kommandierten Störung aktiv und unterdrückte unter der untersuchten
-Störungsrichtung die daraus resultierende Netto-Verschiebung im Nullraum
-deutlich. Dieses Verhalten beschreibt somit eine Unterdrückung der Störwirkung
-während ihrer Einwirkung und keine nachträgliche Rückführung der redundanten
-Konfiguration.
+Innerhalb der getesteten Bereiche beeinflusste die Lage des
+Nachgiebigkeitszentrums die Reaktion stärker als beide Steifigkeitsparameter.
+Jede getestete Verschiebung vom TCP erhöhte die Reaktion Richtung paralleler
+Ausrichtung in einer Drehrichtung und verringerte sie in der anderen. Die
+TCP-zentrierte Einstellung erzeugte diese Reaktion in beiden
+Drehrichtungen und bildete die neutrale feste Einstellung. Ein verschobenes
+Zentrum erzeugte bei passender Auswahl für die jeweilige Drehrichtung eine
+geringfügig größere Reaktion. Eine getrennte Freiraumuntersuchung hielt die
+Endeffektorpose fest. Dämpfung verringerte die kumulierte interne Bewegung.
+Aktive Konditionierung hielt im Störversuch die Nettoänderung entlang der
+ausgewerteten internen Richtung nahe null.
 \end{otherlanguage}

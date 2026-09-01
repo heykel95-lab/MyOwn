@@ -98,16 +98,16 @@ def tag(position):
 
 
 def initial_deviation_label(groups, runs, axis, linebreak=False):
-    """Name a series by its mean pose-based initial angular deviation."""
+    """Name a series by its mean achieved pose-based initial angular offset."""
     separator = "\n" if linebreak else " "
     tangent = "t_1" if axis == "t1" else "t_2"
     key = f"deviation_before_{axis}"
     values = [stat(groups, run, key)[0] for run in runs
               if stat(groups, run, key) is not None]
     if not values:
-        return f"Initial Deviation About ${tangent}$"
+        return f"Achieved Initial Offset About ${tangent}$"
     value = -statistics.mean(values)
-    return (f"Initial Deviation,{separator}"
+    return (f"Achieved Initial Offset,{separator}"
             f"$\\theta_{{0,{tangent}}}={value:+.2f}^\\circ$")
 
 
@@ -298,7 +298,7 @@ def main():
     reference_line(ax)
     ax.set_xticks(x)
     ax.set_xticklabels(commands)
-    ax.set_xlabel(r"Pose-Based Initial Angular Deviation, $\theta_{0,t_1}$ [$^\circ$]")
+    ax.set_xlabel(r"Achieved Initial Angular Offset, $\theta_{0,t_1}$ [$^\circ$]")
     ax.set_ylabel("Contact-Establishment Rotation About $t_1$,\n"
                   r"$\gamma_{t_1}$ [$^\circ$]")
     ax.legend(loc="upper left")

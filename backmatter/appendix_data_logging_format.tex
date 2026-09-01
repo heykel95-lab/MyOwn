@@ -4,10 +4,10 @@
 evaluation and identifies the common configured surface reference used by the controller
 and analysis.}
 
-The controller stores experimental signals in a preallocated ring buffer. This
-avoids file access and dynamic buffer growth inside the
-\(1\,\mathrm{kHz}\) control callback. After the controller stops, the retained
-rows are written in chronological order to a CSV file.
+The controller stores experimental signals in a preallocated, fixed-capacity
+ring buffer inside the \(1\,\mathrm{kHz}\) control callback. After the
+controller stops, the current rows are written in chronological order to a CSV
+file.
 
 \section{Control States}
 \ReviewMark{green}{The numeric phase values are mapped directly to their
@@ -27,14 +27,13 @@ The source field \texttt{state} identifies the active controller state:
 \ReviewMark{green}{The table is a useful reproducibility record and keeps units,
 frames, and model-estimated quantities explicit.}
 
-Table~\ref{tab:csv_column_groups} lists the union of two CSV schemas used for
-the reported experiments. No individual file contains every group in the
-table. The surface-contact logs contain the contact-geometry fields, whereas
-the archived Cartesian pose-hold logs contain the singular-value probe and
-projected-motion fields. Command, state, wrench, and disturbance groups common
-to both schemas are listed once. A suffix
+\Added{\mbox{Table~\ref{tab:csv_column_groups}} lists the union of the two CSV schemas
+used for the experiments. The surface-contact schema contains the
+contact-geometry fields, whereas the Cartesian pose-hold schema contains the
+singular-value probe and projected-motion fields. Command, state, wrench, and
+disturbance groups are common to both schemas. A suffix
 \texttt{\_x,\_y,\_z} denotes base-frame components, and \texttt{\_1..\_7}
-denotes joint components.
+denotes joint components.}
 
 \begin{longtable}{@{}p{0.32\textwidth}p{0.61\textwidth}@{}}
 \caption{Recorded signal groups.}
@@ -74,8 +73,9 @@ each surface-contact experiment, including \(r_c=0\).\\
 \texttt{f}, \texttt{m} &
 Commanded Cartesian force [N] and moment [N\,m].\\
 \texttt{external\_force}, \texttt{external\_moment} &
-Model-estimated external wrench from libfranka, expressed in the base
-orientation and referenced to stiffness frame \(K\).\\
+Model-estimated external wrench from libfranka, acting on stiffness frame
+\(\{K\}\) and expressed relative to the base frame \(\{0\}\). In the experimental
+configuration, \({}^{\mathrm{EE}}T_K=I\), so \(\{K\}=\{\mathrm{EE}\}\).\\
 \texttt{contact\_force\_bias},
 \texttt{contact\_moment\_bias} &
 External-wrench values captured at the clearance transition.\\
@@ -83,17 +83,17 @@ External-wrench values captured at the clearance transition.\\
 \texttt{moment\_after\_contact} &
 The model-estimated wrench with those reference values already subtracted.\\
 \texttt{push} &
-Contact-establishment press coordinate or grinding preload reference retained afterwards [m].\\
+Contact-establishment press coordinate or grinding preload reference held in the following state [m].\\
 \texttt{nullspace\_mode} &
 Selected null-space law.\\
 \texttt{sigma\_current} &
-Current smallest singular value \(\sigma_{\min}\) in the archived pose-hold
+Current smallest singular value \(\sigma_{\min}\) in the pose-hold
 schema.\\
 \texttt{sigma\_plus}, \texttt{sigma\_minus},\newline
 \texttt{sigma\_difference}, \texttt{sigma\_direction} &
 \(\sigma_{\min}\) at the two sampled configurations
 \(q\pm\alpha_{\mathrm{probe}}v_7\), their difference and the selected sign.
-These fields belong to the archived pose-hold schema.\\
+These fields belong to the pose-hold schema.\\
 \texttt{nullspace\_dq\_1..7} &
 Projected joint velocity \(\dot q_{\mathrm{null}}\) [rad/s].\\
 \texttt{tau\_sigma\_1..7}, \texttt{tau\_sigma\_norm},
@@ -109,7 +109,7 @@ Active projected damping coefficient [N\,m\,s/rad].\\
 Commanded hold-disturbance waveform, torque-limit scale, point force [N], and
 the base-frame position of the link point it acts at [m].\\
 \texttt{tau\_disturbance\_1..7} &
-Equivalent joint torque \(J_p^\top f_d\) in the internally commanded hold study [N\,m].\\
+Equivalent joint torque \(J_p^\top f_{\mathrm{dist}}\) in the internally commanded hold study [N\,m].\\
 \texttt{tau\_cmd\_1..7} &
 Final commanded joint torque [N\,m].\\
 \end{longtable}

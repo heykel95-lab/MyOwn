@@ -25,7 +25,6 @@ from make_figures import (  # noqa: E402
     SERIES_RED,
     SERIES_BLUE,
     SERIES_YELLOW,
-    axis_legend,
     save,
 )
 
@@ -247,14 +246,10 @@ def damping_panel(ax, groups):
         "Cumulative Projected\n"
         r"Null-Space Motion, $E_N$ [$^\circ$]"
     )
-    # Bottom right: the legend now occupies the upper left, and the curves
-    # rise from the lower left, so this is the one corner nothing reaches.
     ax.text(0.99, 0.03, "(a)", transform=ax.transAxes,
             ha="right", va="bottom")
-    # One column: the stacked layout is half the old width, so a two-column
-    # legend reached across the curves it sits above.
-    ax.margins(y=0.34)
-    axis_legend(ax, ncol=1, loc="upper left", bbox_to_anchor=(0.0, 0.99))
+    ax.margins(y=0.12)
+    return ax.get_legend_handles_labels()
 
 
 def sigma_panel(ax, groups):
@@ -408,12 +403,15 @@ def make_figure(groups):
     # two: it holds four bars and needs no room for a legend.
     fig, axes = plt.subplots(3, 1, figsize=(5.9, 8.4),
                              gridspec_kw={"height_ratios": [1.0, 1.0, 0.8]})
-    damping_panel(axes[0], groups)
-    handles, labels = sigma_panel(axes[1], groups)
+    damping_handles, damping_labels = damping_panel(axes[0], groups)
+    sigma_handles, sigma_labels = sigma_panel(axes[1], groups)
     net_displacement_panel(axes[2], groups)
+    handles = damping_handles + sigma_handles
+    labels = damping_labels + sigma_labels
     fig.legend(handles, labels, loc="lower center", ncol=2,
-               bbox_to_anchor=(0.5, 0.01), fontsize=7)
-    fig._thesis_legend_bottom = 0.09
+               bbox_to_anchor=(0.5, 0.01), fontsize=7, frameon=False,
+               handlelength=1.7, columnspacing=1.2)
+    fig._thesis_legend_bottom = 0.14
     return save(fig, "MAIN_NS_nullspace_automatic.pdf")
 
 

@@ -25,8 +25,7 @@ No model-estimated wrench is mixed into this controller-response comparison.
 The normal force is negative while the tool presses. n_s points out of the
 plate, so the commanded press runs along -n_s.
 
-Each panel carries its own legend, which identifies the compliance-centre
-position of each curve.
+One shared legend identifies the compliance-centre position of each curve.
 """
 
 import argparse
@@ -121,25 +120,20 @@ def main():
               "Commanded Normal Force,\n" r"$F_n$ [N]",
               rf"Commanded TCP Moment About ${sub}$," "\n"
               rf"$M_{{{sub}}}$ [N m]"]
-    # The deviation panel keeps the upper right corner, which its curves leave
-    # free and which the start-value annotations at the left edge do not reach.
-    # The rest take whichever corner is clearest.
-    corners = ["upper right", "best", "best", "best", "best"]
-    for ax, text, corner in zip(axes, labels, corners):
+    for ax, text in zip(axes, labels):
         ax.set_ylabel(text)
         # Zero separates a flat tool from a tilted one, and a restoring moment
         # from a driving one. The press panels are left without a line.
         if "F_" not in text:
             reference_line(ax)
-        # Headroom so the corner legend sits above the data rather than on it.
-        # The labels name the condition in full, so they are wide and need
-        # more room than a bare series name would.
-        ax.margins(y=1.15 if ax is axes[0] else 0.45)
-        # A legend printed over the data is worse than one in a different
-        # corner of the same panel.
-        ax.legend(loc=corner, fontsize=7, labelspacing=0.3)
+        ax.margins(y=0.3)
+    handles, legend_labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, legend_labels, loc="lower center", ncol=len(handles),
+               bbox_to_anchor=(0.5, 0.005),
+               frameon=False, fontsize=7, handlelength=1.5,
+               columnspacing=1.2, borderaxespad=0.2)
     axes[-1].set_xlabel(r"Time, $t$ [s]")
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0.06, 1, 1))
     out = os.path.join(args.out_dir, f"{args.out}.pdf")
     fig.savefig(out)
     fig.savefig(out.replace(".pdf", ".png"), dpi=160)

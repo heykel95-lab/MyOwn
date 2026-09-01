@@ -49,7 +49,6 @@ an AI-written impression after the repetition. State what a case *evaluates* or
 | Was | Now |
 |---|---|
 | The supporting check asks whether displacing the centre in any direction produces alignment | The tool-axis supporting check separates the contribution of the tangential displacement component from that of a displacement along the tool axis |
-| Case E asks whether the lever effect persists when the initial angle changes | Case E evaluates the dependence of the lever effect on the pose-based initial angular-deviation magnitude |
 | Two matters were investigated experimentally: whether … and whether … | The experimental investigation addressed contact-induced rotational alignment and the selection of a fixed centre of compliance |
 | This thesis investigates whether … It also asks whether … | This thesis investigates contact-induced alignment … and evaluates whether a fixed centre can be selected independently of … |
 | The cases are reported in the order in which they narrow one question | The cases are reported in the order in which they progressively constrain … |
@@ -115,10 +114,9 @@ The Abstract carries the general shape of the work and nothing more:
 4. the scope within which the finding applies.
 
 **Keep measured values out of the Abstract, without exception.** No degrees, no
-stiffness values, no distances. State the direction, the ordering, and the sign
-of an effect instead: `reduced the measured alignment response`, `no tested
-setting improved on the most compliant baseline`, `differed between the two
-surface tangent directions`.
+stiffness values, no distances. State the direction and ordering of an effect
+instead: `reduced the measured alignment response`, `no tested setting improved
+on the most compliant baseline`, `differed between the two surface directions`.
 
 **The exception for the strongest measured effect is withdrawn.** This rule
 once admitted one magnitude — `approximately 6 degrees of improvement` — so the
@@ -130,9 +128,10 @@ per-condition means makes one experimental condition look more important than
 the finding the Abstract exists to state, and those values belong in Chapter 5
 where the condition that produced them is on the page. The qualitative finding
 is what the Abstract needs: the compliance-centre position produced the largest
-response variation, an assisting tangential displacement lies perpendicular to
-the required rotation direction, and reversing the sign of the initial angular
-deviation requires the displacement on the opposite side of the TCP.
+response variation, each tested centre position away from the TCP increased the
+response in one rotational direction and reduced it in the other, and the
+TCP-centred setting produced a corrective response in both tested rotational
+directions.
 
 **The measurement count does not go in the Abstract.** A supervisor pass briefly asked
 for it, and it was added; the author then removed it as repetitive, which it
@@ -158,17 +157,47 @@ gemessenen Endeffektororientierungen bestimmt.` The physical-normal and
 instantaneous physical-angle limitations belong in Section 6.2.2 and are not
 repeated in either summary.
 
-The experimental axis is named explicitly in both summaries: `configured
-orientation offsets about surface tangent \(t_1\)` and `konfigurierte
-Orientierungsoffsets um die Flächentangente \(t_1\)`. Do not replace it
-with a generic reference to one surface tangent.
+**The Abstract and Kurzfassung are written for a first-time reader and contain
+no local axis symbols such as \(t_1\) or \(t_2\).** State that the desired
+pre-contact orientation was defined by a configured angular offset applied in
+both directions of rotation about the same axis in the surface plane.
+Distinguish this input from the angular offset achieved at contact entry and
+from the response calculated from the measured end-effector orientations.
+Explain the centre-position result through the
+measured outcome. Phrases such as `both signs`, `sign-independent`, `assisting
+side`, `the side reversed`, and `matched the sign` do not appear in either
+summary.
+
+**Angular test conditions are described as directions of rotation, not as
+signs.** Throughout the thesis, the configured orientation offset
+\(\theta_{\mathrm{offset},t_1}\) defines the desired pre-contact tool direction,
+the achieved pose-based initial angular offset \(\theta_{0,t_1}\) gives the
+condition reached at contact entry, and the contact-establishment response
+\(\gamma_{t_1}\) gives the measured outcome. Use `both directions of rotation`
+or `both rotational directions` for aggregate comparisons. The plus and minus
+symbols remain in scalar equations and numerical values because they encode the
+coordinate direction; prose does not call the two angular conditions `signs`.
+
+**The Introduction describes the geometry before it introduces local tangent
+symbols.** Write `both directions of rotation about one axis in the surface
+plane` until the surface frame and its tangent basis are defined in
+Chapter 2. The symbols \(t_1\) and \(t_2\) begin where their geometry is
+established.
+
+**Compliance-centre selection is described through displacement and rotational
+directions.** Write `the centre position selected for the known direction of
+rotation` for the aligned case. When the other outer position is meant, write
+`the outer position in the other displacement direction`. Phrases such as `the
+matching side`, `the opposite side`, `the side matched the initial-deviation
+sign`, and `initial-deviation sign` are not used. The technical compounds
+`robot-side` and `application-side` retain their established meanings.
 
 **Revise the Abstract last**, after the body text is settled, and derive the
 Kurzfassung from the finished English rather than paraphrasing it independently.
 
-Symbol names that identify a thing rather than measure it — the tangents
-\(t_1\) and \(t_2\), the robot's degrees of freedom — are not values and may
-stay where dropping them would make a finding vague.
+The robot's degrees of freedom may remain because they identify the robot
+configuration. Symbols for locally defined directions stay in the body chapters,
+where their geometry is introduced before they are used.
 
 This rule costs the Abstract its specificity, which is the trait that
 otherwise marks prose as the author's own (see [THESIS_VOICE.md](THESIS_VOICE.md)).
@@ -214,27 +243,25 @@ how a text will sit even while no limit is enforced.
   compliance-centre placement and contact alignment), say for each source what
   it established and which part is adopted here, then state the gap. A single
   compressed paragraph of citations reads as synthesised rather than reviewed.
-  The contribution list lives here, split into implemented, experimentally
-  established, and implemented-but-not-validated; Chapter 6 refers back to it
-  rather than repeating it.
+  The contribution list lives here and separates implemented controller
+  functions from experimentally established findings. Section 6.2 contains
+  the corresponding validation boundaries.
 - Theoretical Background: explain only the mathematics required to understand
   the controller and experiments.
 - Controller Design and Implementation: explain how the verified controller
   realizes the theory, without line-by-line code narration.
 - Experimental Methodology: document what was used, varied, held constant,
   measured, and calculated in the completed experiments.
-- Results and Discussion: report observations, quantitative analysis,
-  interpretation, and only the local evidence qualification needed to prevent
-  an immediate misreading.
+- Results and Discussion: report measured values, quantitative analysis, and
+  interpretation in positive form.
 - Conclusion: state what was learned without repeating the full controller
   architecture.
 
 **Limitations have one chapter-level home.** Chapters 1--5 state what was done,
-calculated and observed. Section 6.2 states what was not measured or evaluated.
-Do not repeat one measurement limitation in the Abstract, Introduction,
-Methodology, metric definition, Results and Limitations. A technical negation
-may remain locally when it prevents a concrete misconception; the voice guide
-lists the retained cases.
+calculated and measured in positive form. Section 6.2 contains every evidence
+gap, unevaluated case, unresolved measurement limit, and boundary on
+generalisability. Do not repeat a limitation in the Abstract, Introduction,
+Methodology, metric definition, or Results.
 
 Explain a concept authoritatively once. In particular, avoid repeating
 Cartesian impedance, point-shift derivations, gain transformations, damping,
@@ -246,11 +273,10 @@ The main contact argument contains Cases A--D only: the TCP-centred baseline,
 rotational stiffness, cross-axis translational stiffness, and tangential
 compliance-centre position. Every reported contact comparison uses commanded
 rotation about \(t_1\); \(t_2\) remains only as the perpendicular stiffness or
-lever coordinate where required. The initial angular-deviation magnitude and
-tool-axis comparisons are supporting appendix checks. The main study therefore
-contains 19 settings and 57 measurements; the two supporting checks contain
-eight settings and 24 measurements. The complete reported surface-contact total
-is 27 settings and 81 measurements.
+lever coordinate where required. The tool-axis comparison is the only
+supporting appendix check. The main study contains 19 settings and 57
+measurements; this check contains six settings and 18 measurements. The complete
+reported surface-contact total is 25 settings and 75 measurements.
 
 State the experimental exclusion once in Chapter 4: the contact evaluation
 uses the \(t_1\) data set, which provided repeatable comparisons, whereas the
@@ -284,14 +310,13 @@ error bars to the other comparison figures to make them
 match; a figure whose spread is invisible at plotted scale gains nothing from
 the marks. Chapter 5 states once in its opening that the comparative response
 values are arithmetic means over three repetitions and that Appendix D carries
-the corresponding sample standard deviations for Cases A--D. Each main case
-then gives one compact summary of its repetition scatter. Individual standard
-deviations appear in the main text only where their spread affects the
-interpretation; Case D therefore names its higher-spread conditions explicitly.
+the corresponding sample standard deviations for Cases A--D. Cases A--C do not
+repeat this information or add a separate maximum-scatter sentence. Individual
+standard deviations appear in the main text only where their spread affects the
+interpretation; Case D therefore names its higher-spread condition explicitly.
 
-**The supporting checks report means, and the methodology sentence says so.**
-The offset-magnitude and tool-axis tables give the
-response alone. Section 4.3.3 was therefore
+**The supporting check reports means, and the methodology sentence says so.**
+The tool-axis table gives the response and sample standard deviation. Section 4.3.3 was therefore
 reworded on 2026-08-25 to `Results are reported as arithmetic means, with
 sample standard deviations given for the main comparisons and where relevant in
 the supporting checks`, which is what the appendix actually does. **Do not
@@ -300,14 +325,15 @@ to justify it: the main argument rests on Cases A--D, the supporting checks are
 read as separations rather than as measurements to be compared within their own
 scatter, and the author declined the work as disproportionate.
 
-**Cases A to C state their scatter in one form; Case D does not.** A, B and C
-each carry one sentence of the shape `Repetition scatter remained at or below
-\(X^\circ\) across all Case-N settings in Table N`, harmonised on
-2026-08-26 from three different phrasings. Case D instead states that scatter
-was small across most settings and identifies the largest spread: the
-positive-deviation condition at \(r_{c,t_2}=-20\,\mathrm{mm}\), with a sample
-standard deviation of \(0.44^\circ\). State this once before the figure and do
-not repeat it below the figure.
+**The repeated mean and spread definition appears once.** Chapter 5 defines the
+arithmetic means and directs the reader to the Appendix-D standard deviations
+in its opening. Cases A--C proceed directly to their comparisons. Case D
+identifies the largest spread because that condition differs visibly from the
+rest: the direction generated by the \(+10^\circ\) configured offset at
+\(r_{c,t_2}=-20\,\mathrm{mm}\), with a sample
+standard deviation of \(0.44^\circ\). The generic sentence explaining that
+markers are means and error bars are one sample standard deviation is omitted;
+the chapter opening and the figure convention already establish it.
 
 A standard deviation that rounds to \(0.00^\circ\) at the reported two
 decimals is written `\(\pm0.00\)`. It is the correctly rounded sample standard
@@ -315,8 +341,9 @@ deviation at the precision the rest of the table uses, and switching that one
 entry to a third decimal or to an inequality would break the column for no
 gain.
 
-The main contact evaluation uses the signed contact-establishment rotation
-\(\gamma_{t_1}\). The commanded normal force \(F_n\) and commanded TCP
+The main contact evaluation uses the contact-establishment response
+\(\gamma_{t_1}\). Its positive and negative values retain the response
+direction. The commanded normal force \(F_n\) and commanded TCP
 moment \(M_{t_i}\) appear only in the Case-D mechanism plot. Selected-tool-point
 and TCP displacement metrics and the fully blocked spring-force scale are not
 reported quantities and are not defined. A quantity used in one local appendix
@@ -352,7 +379,7 @@ Avoid expressions such as:
 
 Prefer the sequence:
 
-measured value → comparison → interpretation → limitation.
+measured value → absolute and percentage comparison → interpretation.
 
 Use it as the default, not as a template for every paragraph. Four consecutive
 paragraphs built to that shape is itself a fault; vary what each paragraph does,
@@ -365,9 +392,25 @@ sentence that makes the claim.
 
 Match the certainty of the wording to one configuration and three repetitions.
 Prefer `indicates`, `supports`, `is consistent with`, and `strongly influences`
-to `proves` and `decides`; bound a general-sounding claim with `within the
-tested range` or `in the investigated configuration`. Having a limitations
-section does not license certainty elsewhere.
+to `proves` and `decides`. Name the cases or parameter interval directly so
+the sentence is specific by construction. Section 6.2 carries the
+generalisability boundary.
+
+**Do not use `signed` as a modifier in thesis prose, headings,
+captions, axes, or tables.** The defining equation and the displayed positive
+and negative values establish the algebraic direction. Name the quantity
+directly as the `contact-establishment response`, `normal-force component`,
+`clearance`, or `component along` a defined direction. State the meanings of
+positive and negative values once beside the definition when the reader needs
+them.
+
+**Each main case ends with one percentage-based headline comparison.** Keep
+the detailed results in their physical units. At the end of each Case A--D
+discussion, add one percentage for that case's main result and retain the
+corresponding absolute values. The Chapter 6 conclusion repeats only these
+headline percentages. State the denominator or reference condition clearly.
+Skip a percentage when its reference is near zero, crosses sign, or would
+obscure the physical quantity.
 
 Carry one main claim per sentence. A clause answering more than about two of
 *what / where / how / when / why* is algorithmically compressed however correct
@@ -376,14 +419,14 @@ it is; split it so the reasoning is presented step by step.
 Where a claim is the main finding of its section, give the measurement before
 the conclusion. `The response changed by several degrees when the lever was
 displaced by 60 mm. The changes produced by the tested stiffness values were
-substantially smaller. Within the investigated range, the compliance-centre
-position therefore had the largest measured influence.` reads as derived from
+substantially smaller. Across Cases A--D, the compliance-centre position
+therefore had the largest measured influence.` reads as derived from
 the data; the same content with the conclusion first reads as announced.
 
 The target style for this thesis is: impersonal academic English, passive voice
 for performed actions, direct language for mathematical and physical relations,
 one main claim per sentence, explicit links between measurements and
-interpretations, and conclusions limited to the tested configuration. Literary
+interpretations, and conclusions tied to the named measurements. Literary
 expressions, slogan-like conclusions, and overly compressed sentences are
 avoided. The list of things never to do in pursuit of this — deliberate errors,
 casual filler, vague synonyms, invented observations — is in
@@ -402,7 +445,7 @@ one seated pose`, `the controller was implemented`. Naming a case or the thesis 
 the agent — `Case D held every gain at baseline`, `this thesis built` — is the
 same sentence with the pronoun hidden, and is rewritten the same way. The active
 voice stays where the subject is a physical quantity, an effect, or an artefact:
-`the improvement fell as \(K_R\) rose`, `the sign of the lever determines the
+`the improvement fell as \(K_R\) rose`, `the lever direction determines the
 direction of the induced moment`, `\cref{tab:results_case_d} shows`. The rule and its examples are in the
 *Impersonal voice* subsection of [THESIS_VOICE.md](THESIS_VOICE.md).
 
@@ -520,19 +563,18 @@ circulation, the settled choices are:
   carried a separate \(d_c=p_c-p_{\mathrm{TCP}}=-r_c\) for what the plots
   and tables report, with a standing warning never to rename one into the
   other. **That is withdrawn.** \(d_c\) is removed from the thesis, and
-  \(r_c\) now *is* the reported signed coordinate: `centre position +40 mm`
+  \(r_c\) now *is* the reported coordinate: `centre position +40 mm`
   and \(r_{c,t_2}=+40\,\mathrm{mm}\) are the same statement. Labelling a
   `centre position` axis \(r_{c,t_2}\) is now correct rather than a sign
   error.
 
-  The sign is checked against the active Case-D result: the
-  \(+10^\circ\) condition about \(t_1\) uses positive
-  \(r_{c,t_2}\) for the selected side.
+  The displacement direction is checked against the active Case-D result: the
+  direction generated by the \(+10^\circ\) configured offset about \(t_1\)
+  uses the outer position \(r_{c,t_2}=+40\,\mathrm{mm}\) for its largest
+  response.
 
-  **The coupling moment is positive: \(m_{\mathrm{cpl},K}=r_c\times f_K\).** Every
-  moment built on the lever follows the same sign —
-  \(m_{\mathrm{cpl},D}=r_c\times f_D\) and
-  \(m_{\mathrm{cpl}}=r_c\times f\) — and the point-shift blocks carry
+  **The compliance-centre contribution is \(r_c\times f\), using the complete
+  commanded force.** The point-shift blocks carry
   \(-[r_c]_\times\) where they once carried \(+[r_c]_\times\). Terms
   quadratic in the lever, \([r_c]_\times^\top K_p[r_c]_\times\) and its
   damping counterpart, are unchanged, because the sign cancels.
@@ -545,8 +587,9 @@ circulation, the settled choices are:
   there.
 
   The lever \(r_c\) does stay in Chapter 1, because the chapter uses it at
-  \(r_c=0\) and in \(m_{\mathrm{cpl},K}=r_c\times f_K\). It is introduced there
-  without \(p_c\), as the displacement from the TCP to the virtual CoC.
+  \(r_c=0\) and in the complete moment relation \(m=m_R+r_c\times f\). It is
+  introduced there without \(p_c\), as the displacement from the TCP to the
+  virtual CoC.
 
   **The thesis and source use opposite names for the same physical lever.** The
   thesis always defines \(r_c=p_c-p_{\mathrm{TCP}}\). The current controller
@@ -560,7 +603,7 @@ circulation, the settled choices are:
   displacement \(r_c\) and is negated when the source forms \(\ell_c\). The
   surface-frame parameter `r_tcp_from_compliance_center_surface` stores
   \(\ell_c\) directly. Do not describe the two parameter keys as carrying the
-  same signed vector.
+  the same vector direction.
 
   **Only the end-effector-frame definition is used in the reported
   experiments.** Every non-zero experimental displacement is configured with
@@ -751,18 +794,19 @@ circulation, the settled choices are:
   setting: a `configured orientation offset about t1`. Its vector is
   \(\theta_{\mathrm{offset}}\), and its surface-tangent components always carry
   the full index \(\theta_{\mathrm{offset},t_1}\) and
-  \(\theta_{\mathrm{offset},t_2}\). Use `zero orientation offset` and
-  `reversed orientation offset` for the corresponding conditions. Do not use
+  \(\theta_{\mathrm{offset},t_2}\). Use `zero orientation offset`; identify a
+  non-zero condition by its configured value or its direction of rotation. Do not use
   `commanded rotation`, `commanded tool orientation offset`, `tilt`, `tool
   tilt`, `signed tilt`, `excitation`, or `mismatch` for this configured
   quantity.
 
   **The configured offset establishes a pre-contact condition; it does not
   prescribe the rotation measured during contact.** It is applied during Tool
-  Orientation before Surface Approach. At the start of Contact Establishment,
-  the achieved condition is the **pose-based initial angular deviation**
+  Orientation before Surface Approach and sets the desired pre-contact tool
+  direction. At the start of Contact Establishment, the achieved condition is
+  the **pose-based initial angular offset**
   \(\theta_{0,t_1}\). Contact Establishment holds the captured orientation
-  reference and produces the signed **contact-establishment response**
+  reference and produces the **contact-establishment response**
   \(\gamma_{t_1}\). The chain is therefore
   \(\theta_{\mathrm{offset},t_1}\to\theta_{0,t_1}\to\gamma_{t_1}\).
 
@@ -779,16 +823,16 @@ circulation, the settled choices are:
   \(R_{\mathrm{cmd}}\), \(\theta_{t_1}\), and \(\theta_{t_2}\) forms are
   withdrawn.
 
-  A quantitative experimental axis uses `Pose-Based Initial Angular
-  Deviation` followed by \(\theta_{0,t_1}\) and its unit. A table condition
-  column uses `Initial Angular Deviation`. The configured offset may be stated
+  A quantitative experimental axis uses `Achieved Initial Angular Offset`
+  followed by \(\theta_{0,t_1}\) and its unit. A table condition column uses
+  the same name. The configured offset may be stated
   where the pre-contact setting, parameter file, or direction-selection rule
   is the subject. It is never substituted for the achieved entry condition.
 
   **The angular evaluation uses the configured surface and measured
   end-effector pose.** In Chapters 1--5, state that
-  \(\theta_{0,t_1}\) is the achieved pose-based condition calculated relative
-  to the configured surface reference. Do not introduce a symbol or equation
+  \(\theta_{0,t_1}\) is the achieved pose-based initial angular offset
+  calculated relative to the configured surface reference. Do not introduce a symbol or equation
   for a physical entry angle, and do not call \(\theta_{0,t_1}\) a measured
   physical angle. Section 6.2.2 carries the consolidated limitation: the
   physical surface normal and instantaneous tool--surface angle were not
@@ -802,15 +846,25 @@ circulation, the settled choices are:
   tool--surface error at contact entry. The contact interaction is intended to
   permit a rotation that reduces this remaining mismatch.
 
+  **The Chapter 1 motivation separates two contact-entry angular differences.**
+  The first lies between the configured and physical surfaces through placement
+  and calibration tolerances. The second lies between the desired tool
+  orientation and the orientation achieved before surface approach within the
+  configured orientation tolerance. Figure 1.1 draws the configured surface as
+  a dashed red line, the physical surface as a solid blue line, and a schematic
+  tool face at the orientation reached before approach as a solid dark-green
+  line. Tool-mount play remains part of the measurement limitation in Section
+  6.2.
+
   **The configured offset is not a surrogate for the surface-reference
   difference.** It is only the desired pre-contact orientation offset relative
   to \(n_s\). Do not equate it with, or describe it as an approximation of, the
   unknown physical difference. A zero offset specifies parallelism with the
-  configured plane; a non-zero offset specifies a deliberate inclination about
+  configured plane; a non-zero offset specifies a deliberate angular offset about
   the selected surface tangents.
 
   Keep the three chapter roles separate. Chapter 2 derives the directional
-  compliance-centre rule from the generic tangent-plane angular deviation
+  compliance-centre rule from the generic tangent-plane angular offset
   \(\theta_a\) that contact should reduce. Chapter 3 defines the configured
   pre-contact offset and constructs \(n_d=R_{\mathrm{offset}}(-n_s)\).
   Chapter 4 explains how varying that setting supplied reproducible
@@ -960,6 +1014,15 @@ the equation, but the reader must not have to infer the symbol from the
 expression alone. Do not repeat a definition that has already been established
 unless the symbol is assigned a different local meaning.
 
+**Do not introduce a second symbol for a quantity already defined.** Before a
+new symbol is accepted, compare its physical quantity, reference point, frame,
+sign, and evaluation instant with the existing notation. Reuse the established
+symbol only when all five agree; matching units alone are insufficient. In
+particular, two angular quantities are not interchangeable when one is a
+surface-relative entry condition and the other is a controller tracking error
+relative to its desired orientation. If the definitions differ, retain two
+symbols and state the distinction once where they first meet.
+
 Whenever running text names a defined mathematical quantity, place its symbol
 immediately after that name. For example, write `the configured orientation
 offset \(\theta_{\mathrm{offset}}\)` and `the commanded joint torque
@@ -1077,16 +1140,17 @@ projection is explained in words instead, which *Textbook restatement* in
 **The reference-direction caveat stays.** \(t_1\) is fixed by a configured
 choice rather than by the surface, so *an axis-specific result holds with
 respect to the configured reference direction*. Chapter 5's central findings
-are specific to rotation about \(t_1\), including the reversal of the assisting
-side with the initial-deviation sign. That sentence is what bounds them. It is a
-scientific commitment, not filler, and it is not dropped when the section is
+are specific to rotation about \(t_1\): every tested non-zero centre position
+increased the response in one rotational direction and reduced it in the other
+relative to the TCP-centred condition. That sentence is what bounds them. It is
+a scientific commitment, not filler, and it is not dropped when the section is
 shortened.
 
 **The tool clearance is defined from physical corner positions.** For each
 tool-face corner, Chapter 3 defines
 \(p_i(t)=p_{\mathrm{TCP}}(t)+R_{\mathrm{EE}}(t)r_{i,\mathrm{EE}}\) and its
-signed clearance \(h_i(t)=n_s^\top(p_i(t)-p_s)\). The minimum
-\(h_{\mathrm{Tool}}(t)=\min_i h_i(t)\) is the signed clearance between the
+clearance \(h_i(t)=n_s^\top(p_i(t)-p_s)\). The minimum
+\(h_{\mathrm{Tool}}(t)=\min_i h_i(t)\) is the clearance between the
 rectangular tool face and the configured surface reference. Smaller values place a
 corner closer to the surface. Do not interpose a separate projection or
 extent notation between the corner position and this physical clearance.
@@ -1133,9 +1197,9 @@ as a literal string so a rename cannot revive it. The compact form was tried
 first and replaced on the author's instruction, for the reason that already
 spelled out \(p_{\mathrm{Tool}}\) over \(p_T\): an abbreviated index costs
 the reader a lookup on every equation it appears in, and these symbols appear
-in six. At \(t_{\mathrm{CE},0}\), the controller retains
-\(R_{\mathrm{EE,clearance}}=R_{\mathrm{EE}}(t_{\mathrm{CE},0})\),
-\(p_{\mathrm{TCP,clearance}}=p_{\mathrm{TCP}}(t_{\mathrm{CE},0})\), and
+in six. At \(t_{\mathrm{CE,start}}\), the controller retains
+\(R_{\mathrm{EE,clearance}}=R_{\mathrm{EE}}(t_{\mathrm{CE,start}})\),
+\(p_{\mathrm{TCP,clearance}}=p_{\mathrm{TCP}}(t_{\mathrm{CE,start}})\), and
 \(r_{\mathrm{Tool,EE}}\). The selected tool point at that instant is
 \(p_{\mathrm{Tool,clearance}}=p_{\mathrm{TCP,clearance}}
 +R_{\mathrm{EE,clearance}}r_{\mathrm{Tool,EE}}\).
@@ -1271,7 +1335,7 @@ literal string so a rename cannot revive it: a triple index is hard to read,
 and \(\lVert r_{c,t}\rVert\) is frame independent and would carry no index
 anyway, so indexing the vector alone would split a pair that belongs together.
 The scalar components \(r_{c,t_1}\), \(r_{c,t_2}\) and \(r_{c,n}\) are
-unchanged for the same reason — they are signed surface-frame coordinates and
+unchanged for the same reason — they are positive or negative surface-frame coordinates and
 carry no second index — and \(\lVert r_c\rVert\) takes none either.
 
 Macros defined in `config/commands.tex` (`\vF`, `\mK`, `\R{3}`, …) predate this
@@ -1301,8 +1365,7 @@ wrote the page current *after* the reference list had been typeset: the
 contents named the bibliography's last page, four pages past where it starts.
 Nothing warns, and the number is plausible enough to survive several reads. The
 correct order is the one the two front-matter lists already use, and the
-bibliography was brought into line with it on 2026-08-25 in `Thesis.tex`,
-`Professor_Draft.tex` and `Review_Draft.tex`:
+bibliography was brought into line with it on 2026-08-25 in `Thesis.tex`:
 
 ```tex
 \cleardoublepage
@@ -1321,9 +1384,8 @@ be checked against itself.
 substitution across the `.tex` files silently produced 190 undefined macros and
 four merged control sequences (`\times\e_R` collapsing into `\timese_R`), none
 of which is visible without a compile. If a notation change has to be made in
-bulk, compile both `Thesis.tex` and `Professor_Draft.tex` immediately
-afterwards, and diff the set of `\macro` tokens against the previous commit —
-any token that is new is a merge.
+bulk, compile `Thesis.tex` immediately afterwards, and diff the set of
+`\macro` tokens against the previous commit — any token that is new is a merge.
 
 ## Units in the list of symbols
 
@@ -1478,7 +1540,7 @@ visible from inside any single chapter:
   \(a=-0.474^\circ\), \(b=2.270^\circ\), which appear in no parameter file,
   no calibration overlay, and no experiment record. The configured reference plane is
   \(p_s=(0.5153,-0.1072,0.0031)\,\mathrm{m}\), \(a=-1.585^\circ\),
-  \(b=+0.988^\circ\), used by all 193 measurements.
+  \(b=+0.988^\circ\), used throughout the campaign.
 - **Which procedure.** The physical plane comes from **one seated pose of the
   complete tool face**, as `tools/measure_plane.cpp` performs it. The plane
   normal is the *configured* end-effector axis carried into the base frame, and
@@ -1528,7 +1590,8 @@ An enumeration of selectable software modes is a control-design decision, not
 theory — the four null-space modes moved out of Chapter 2 for that reason, and
 the theory chapter now gives one complete null-space torque instead. The same
 split applies to limitations: mathematical properties of a method stay with the
-method, implementation shortcomings go to Chapter 3 or the limitations.
+method, while evidence gaps and implementation shortcomings are consolidated
+in Section 6.2.
 
 **Tooling built only for your own analysis is not thesis content.** A second
 diagnostic log existed to support offline inspection and appeared in three
@@ -1632,7 +1695,7 @@ paragraph. Every arrow states a compact `if` condition and
 uses the thesis symbols where they are defined. Place that condition beside a
 clear segment, never over an arrow or a box border. The Tool Orientation arrow
 uses the compact display condition \(\theta_{\mathrm{app,err}}\leq
-\varepsilon_{\mathrm{app}}\lor t\geq t_{\mathrm{end}}\), while the
+\varepsilon_{\mathrm{app}}\lor 8.0\,\mathrm{s}\) `timeout`, while the
 body text retains the complete minimum-time and orientation logic. A
 disjunction in a chart condition is written \(\lor\) and never as the word
 `or`, matching the shared stop condition. The earlier
@@ -1644,9 +1707,10 @@ transition quantities and stay out of the global symbol list, under
 *Mathematical notation*. Surface Approach advances at
 \(h_{\mathrm{Tool}}\leq h_{\mathrm{clearance}}\) and stops if
 \(s_{\mathrm{app}}\geq s_{\mathrm{app,max}}\) first. The Contact Establishment
-arrow uses \(t\geq t_{\mathrm{end}}\), while the body text retains the complete
-minimum-time, moment-change and timeout logic. Every reported experiment ended
-through the timeout.
+arrow uses `5.0 s timeout`, while the body text retains the
+complete minimum-time, moment-change and timeout logic. Every reported
+experiment ended through the timeout. These state-specific phrases prevent one
+time symbol from denoting two independent timeout values.
 The optional holds remain on the single main path so that the state sequence is
 immediately readable. Do not draw or label separate `hold enabled` and `hold
 disabled` branches. A disabled hold advances without waiting, while operator
@@ -1689,10 +1753,10 @@ joint-limit violation.
 Tool Reference` defines the surface frame, the commanded tool orientation and
 the four rectangular tool-face corners, and stops there. Use `corner` and
 `corners`, never `vertex` or `vertices`, for that rectangle in visible prose and
-figures. The corner positions, signed clearances, minimum tool clearance,
+figures. The corner positions, clearances, minimum tool clearance,
 selected index set and selected tool point belong together in `Surface Approach, Clearance and
 Tool-Point Selection`. `Contact Establishment` then carries the clearance capture,
-surface projection, initial signed contact-establishment coordinate,
+surface projection, initial contact-establishment coordinate,
 contact-establishment trajectory,
 retained orientation, TCP reconstruction and active impedance, in that order.
 
@@ -1792,7 +1856,7 @@ orientation trajectory.
 
 **Scope the start of Contact Establishment to the optional pre-contact hold.** In the reported
 surface-contact experiments that hold was disabled, so
-\(t_{\mathrm{CE},0}\) is the clearance-transition instant and Contact Establishment begins
+\(t_{\mathrm{CE,start}}\) is the clearance-transition instant and Contact Establishment begins
 there directly. State that scope before the clearance-capture equations. The
 generic optional-hold behaviour remains one later sentence: with the hold
 enabled, the pose is held until operator confirmation and the contact-establishment references
@@ -1888,8 +1952,8 @@ Section by section:
   held fixed so it did not become a variable.
 - **Data recording.** Do not list the signals a third time. One sentence
   pointing at Chapter 3 and the data-format appendix. What stays is the data
-  quality: three trials per retained setting, 81 reported surface-contact
-  measurements over 27 settings, and all three trials retained within each
+  quality: three trials per retained setting, 75 reported surface-contact
+  measurements over 25 settings, and all three trials retained within each
   reported setting.
 - **Case matrix.** The cases are currently explained three times — a grouping
   table, a prose walk-through, and the master table. **Delete the grouping
@@ -1901,8 +1965,8 @@ Section by section:
   input--condition--response chain: the configured pre-contact input
   \(\theta_{\mathrm{offset},t_1}\) produces the achieved pose-based condition
   \(\theta_{0,t_1}\), and Contact Establishment produces the measured response
-  \(\gamma_{t_1}\). Appendix D retains only the two supporting parameter
-  checks and their measured response values.
+  \(\gamma_{t_1}\). Appendix D retains the tool-axis parameter check and its
+  measured response values.
   Define wrench projections locally beside the Case-D mechanism figure rather
   than as a separate methodology subsection. **Remove the mean and sample
   standard-deviation equations** and say instead that repeated settings are
@@ -2105,25 +2169,24 @@ renamed to match the prose.
 
 **Appendix D is its tables, one comparison figure, the tool-axis projection,
 and the minimum observation needed to read them.** It retains the four main-case
-tables, the initial-deviation table, and the tool-axis table and comparison
-figure. These two supporting sections account for all 24 supporting
-measurements. The intermediate-direction section is withdrawn with every
+tables and the tool-axis table and comparison figure. This supporting section
+accounts for 18 measurements. The intermediate-direction section is withdrawn with every
 experiment about \(t_2\). What was
 cut on 2026-08-27, and must not come back: repeated definitions of tool-fixed
 and surface-fixed, of the leading-feature rule, and of the general
 compliance-centre direction rule; second paragraphs generalising a result the
 sentence above already stated; and the mounting-play qualification, which
 Chapter 6 carries. What stays because the appendix is the only place it exists:
-the \(\sin\alpha_{\mathrm{axis}}\) projection that explains why a
+the \(\sin\phi_0\) projection that explains why a
 \(40\,\mathrm{mm}\) tool-axis displacement gives under \(7\,\mathrm{mm}\) of
-tangential lever. The initial-deviation plot, the direction plots, the TCP-height classification,
+tangential lever. The initial-angular-offset table and plot, the direction plots, the TCP-height classification,
 and the pose-based alignment consistency check are withdrawn because they
-duplicate tables or introduce secondary outcomes outside the main
-\(\gamma_{t_1}\) comparison.
+duplicate the main response relation or introduce secondary outcomes outside
+the main \(\gamma_{t_1}\) comparison.
 
 Appendix D is settled and no further major content is removed. Its structure
-remains the exact numerical values behind Cases A--D, the initial-deviation
-magnitude check, and the tool-axis displacement check.
+remains the exact numerical values behind Cases A--D and the tool-axis
+displacement check.
 
 **An appendix table caption is a short noun phrase, like every other caption.**
 The Appendix D captions had grown to four and five lines carrying
@@ -2157,7 +2220,7 @@ Distinguish:
 3. hypothesis requiring another experiment.
 
 Trace every geometric metric through its measurement chain. The primary angular
-result is the signed end-effector rotation and does not require the calibrated
+result is the contact-establishment response and does not require the calibrated
 tool normal. The appendix reconstructs a separate pose-based tool axis from the
 end-effector pose and a calibrated tool-to-end-effector transform. Because the
 mounted tool can rotate approximately ±2° about \(y_{EE}\), that secondary
@@ -2170,15 +2233,14 @@ were removed. Name the chain instead: `alignment angle calculated from the
 end-effector pose`, `end-effector-based alignment angle`, or `pose-based
 alignment angle`.
 
-### Separate the offset, initial condition, and response
+### Separate the desired offset, achieved initial offset, and response
 
 The orientation chain has three symbol families. \(\theta_{\mathrm{offset},t_i}\)
 is a component of the configured orientation offset about surface tangent
-\(t_i\). It establishes a pre-contact condition during Tool Orientation and
-does not prescribe the rotation during Contact Establishment.
-The pose-based initial angular deviation \(\theta_{0,t_1}\) is the achieved
-contact-entry condition relative to the configured surface reference, with its
-sign chosen in the direction of the configured offset. The signed
+\(t_i\). It defines the desired pre-contact tool direction during Tool
+Orientation and does not prescribe the rotation during Contact Establishment.
+The achieved pose-based initial angular offset \(\theta_{0,t_1}\) is the
+contact-entry condition relative to the configured surface reference. The
 contact-establishment response \(\gamma_{t_1}\) is the measured response about
 that tangent.
 
@@ -2190,84 +2252,51 @@ initial tool--surface error is not substituted for either quantity unless an
 independent physical surface normal and the tool orientation under load have
 both been measured.
 
-**\(\gamma_{t_1}\) is not the end-effector rotation, and must not be called
-it.** The settled definition, agreed 2026-08-26, is:
+**\(\gamma_{t_1}\) is not the start-to-end end-effector rotation.** It
+represents the end-of-contact-establishment orientation change from the
+measured end orientation back to the held entry reference. The corresponding
+start-to-end end-effector rotation points in the opposite rotational direction.
+For the \(+10^\circ\) configured offset at the TCP,
+\(\gamma_{t_1}=+7.56^\circ\), while the start-to-end end-effector rotation
+points along \(-t_1\) with a magnitude of \(7.56^\circ\).
 
-> The signed contact-establishment response \(\gamma_{t_1}\) represents the end-of-contact-establishment
-> orientation change relative to the held contact-establishment reference. Its sign is chosen
-> such that a response that reduces the pose-based initial angular deviation
-> has the same sign as that deviation.
-
-Earlier wording — `the signed measured end-effector rotation about surface
-tangent \(t_i\) from the beginning to the end of contact establishment` — was wrong by a
-sign, because \(\gamma_0\) is \(e_R\) at the end of contact establishment and \(e_R\)
-is directed from the measured orientation *back* to the held reference. Verified
-against the logs on 2026-08-26: for the \(+10^\circ\) command about
-\(t_1\) at the TCP, \(\gamma_{t_1}=+7.56^\circ\) while the end effector
-physically rotated \(-7.56^\circ\). Every reported value is correct; only
-the name was.
-
-**The sign rule is `same sign as the initial angular deviation`, never
-`positive means aligned`.** Correction occurs when \(\gamma_{t_1}\) and
-\(\theta_{0,t_1}\) share a sign, and \(\lvert\gamma_{t_1}\rvert\) is then the size of the
-correction. The half-rule `a positive \(\gamma_{t_1}\) denotes
-alignment-directed rotation` holds only for a positive offset and inverts on
-the reversed-offset conditions, which Cases A and D both report: at
-\(\theta_{0,t_1}=-9.41^\circ\) the baseline gives
-\(\gamma_{t_1}=-10.83^\circ\),
-which is the **largest** correction of that group, not a motion the wrong way.
+**Describe the two angular conditions as rotational directions.** For a
+start-to-end end-effector rotation towards the configured flat direction,
+\(\gamma_{t_1}\) points in the same surface-tangent direction as the achieved
+initial angular offset \(\theta_{0,t_1}\), and
+\(\lvert\gamma_{t_1}\rvert\) gives its size. The plus and minus symbols remain
+on equations and data values. Running prose uses `both directions of rotation`,
+not `both signs`, `positive condition`, or `reversed condition`.
+State the physical motion explicitly; do not compress it into the label
+`correction-directed response`.
 
 The construction is \(\gamma_0=\phi_{\mathrm{CE}}u_{\mathrm{CE}}\) from
-\(R_{\mathrm{CE}}=R_{\mathrm{CE,start}}R_{\mathrm{CE,end}}^\top\), with
-the reported component \(\gamma_{t_1}=t_1^\top\gamma_0\).
-\(R_{\mathrm{CE,start}}\) is the **orientation reference held through
-contact establishment**, captured at the clearance transition; the measured orientation
-coincides with it at the start of the state, which is why the logged
-\(e_R\) is exactly zero there. The archived terminal summary separately gives
-the entry deviation calculated from the current end-effector pose, calibrated
-tool normal and configured surface reference. Use that diagnostic for
-\(\theta_{0,t_1}\); `extract_metrics.py` reads the response \(\gamma_{t_1}\)
-from the final \(e_R\).
+\(R_{\mathrm{CE}}=R_{\mathrm{EE,clearance}}
+R_{\mathrm{EE}}^\top(t_{\mathrm{CE,end}})\), with the reported component
+\(\gamma_{t_1}=t_1^\top\gamma_0\).
+\(R_{\mathrm{EE,clearance}}\) is the **orientation reference held through
+contact establishment** and equals
+\(R_{\mathrm{EE}}(t_{\mathrm{CE,start}})\), which is why the logged
+\(e_R\) is exactly zero there. The achieved initial angular offset is
+calculated from the current end-effector pose, calibrated tool normal and
+configured surface reference, giving \(\theta_{0,t_1}\). `extract_metrics.py`
+reads the response \(\gamma_{t_1}\) from the final \(e_R\).
 
-**The sign relation is restated wherever it is used to read a number, not only
-where it is defined.** Section 4.5.2 derives it and says what follows. A reader
-meeting the first results figure is by then a chapter away from the
-derivation, so two restatements were added on 2026-08-25 and both stay:
+**Restate the direction relation where it is needed to read a number.** The
+opening of Chapter 5 states the relation between \(\theta_{0,t_1}\),
+\(\gamma_{t_1}\), and the corresponding start-to-end end-effector rotation.
+Beside the Case-D mechanism figure, state that \(M_{t_1}\) points along
+\(-t_1\), \(\gamma_{t_1}\) points along \(+t_1\), and the start-to-end
+end-effector rotation points along \(-t_1\). This bridge prevents the response
+coordinate from being mistaken for the physical direction of motion.
 
-- the opening of Chapter 5, immediately before the main results, giving the
-  reading rule alone — \(\gamma_{t_1}\) carries the same sign as the
-  initial angular deviation when the response reduces it, and its magnitude is the size
-  of the correction. That opening was corrected on 2026-08-27: it had named the
-  quantity `the signed contact-establishment rotation` three lines above calling it `the
-  signed contact-establishment response`, and described it as `the current-to-reference
-  relative rotation formed from the measured orientations at the beginning and
-  end of contact establishment`, which both christens the convention and asserts a second
-  measured pose the log does not carry. It now names the quantity once, states
-  that it is the end-of-contact-establishment orientation change relative to the orientation
-  reference held through contact establishment, and gives the sign rule with the magnitude
-  clause;
-- the Case-D mechanism figure, where the commanded moment and the reported
-  rotation carry opposite signs on the same time axis. Without a bridge
-  sentence the figure looks as though a negative commanded moment produced a
-  positive rotation. Say what \(\gamma_{t_1}\) is, cross-reference
-  Section 4.5.2, and say that the alignment-directed response therefore appears
-  as a positive \(\gamma_{t_1}\) against a negative \(M_{t_1}\).
+**Say what the quantity is; do not give the direction relation a convention
+name.** State that \(R_{\mathrm{CE}}\) rotates from the measured end orientation
+back to the held start orientation, or that \(e_R\) has that relation. Naming
+it `the current-to-reference convention` reads as *the convention currently in
+use* and invites a reader to look for a superseded one.
 
-Restating this is not the internal repetition the guide bans elsewhere: what is
-repeated is a reading rule of three lines, not an explanation or a derivation,
-and it is placed where a misreading would otherwise happen.
-
-**Say what the quantity is; do not give the sign rule a convention name.**
-State that \(R_{\mathrm{CE}}\) rotates from the measured end orientation back
-to the held start orientation, or that \(e_R\) has that relation, and let the
-sign follow. Naming it `the current-to-reference convention` reads as *the
-convention currently in use* and invites a reader to look for a superseded one.
-The general rule is that a sign convention is stated, not christened.
-`the surface-frame rotation convention`, `the selected lever convention` and
-`the Denavit--Hartenberg convention` are unaffected because each names the
-frame, object or source that fixes it.
-
-**Do not coin an informal name for a defined quantity to carry a sign
+**Do not coin an informal name for a defined quantity to carry a direction
 argument.** Section 4.5.2 said the metric was independent of `the plane-zero
 alignment`, which names nothing the thesis defines, and justified that
 independence by saying the tool axis `is known only to within a degree or two
@@ -2289,7 +2318,7 @@ an independent physical tool-orientation measurement. Do not restore
 or their logger-only aliases as reported thesis quantities.
 
 **Each main surface-contact comparison changes one controller parameter and
-reports one response.** The achieved angular condition is measured as
+reports one response.** The achieved pose-based initial angular offset is
 \(\theta_{0,t_1}\), and the response is the measured contact-establishment
 rotation \(\gamma_{t_1}\). Chapter 5 table headings name the changed parameter
 directly and call the output `Measured contact-establishment rotation`; generic columns such as
@@ -2305,9 +2334,9 @@ restore its table, count, or classification language. The physical face angle
 was not measured under load.
 
 **Do not write that a lever was insufficient to align the tool**, or that it
-`did not remove the full initial deviation`. Both read as claims about the
+`did not remove the full initial angular offset`. Both read as claims about the
 physical tool face, whose orientation under load was not tracked. Report the
-measured signed contact-establishment response about \(t_1\) and do not add an
+measured contact-establishment response about \(t_1\) and do not add an
 inferred final physical alignment.
 
 ### Three distinct points: selected tool point, TCP, compliance centre
@@ -2368,11 +2397,12 @@ press. The centre of compliance is a separate mechanism acting through
 The physical surface force still acts at the actual contact point. What changes
 is the point about which the compliance is defined, and therefore the
 translation–rotation coupling: the same normal press produces a different
-rotational response as \(p_c\) moves. Give that explanation before introducing
-\(r_c=p_c-p_{\mathrm{TCP}}\) and \(m_{\mathrm{cpl},K}=r_c\times f_K\), not
+  rotational response as \(p_c\) moves. Give that explanation before introducing
+  \(r_c=p_c-p_{\mathrm{TCP}}\) and \(r_c\times f\), not
 after. If \(p_c\) lies on the relevant line of action the moment contribution
-becomes small or zero; displacing it to one side produces a moment that assists
-the required alignment, and to the other side one that opposes or reverses it.
+becomes small or zero. Reversing a tangential displacement reverses the moment
+direction. Whether that moment supports correction depends on the direction of
+the achieved initial angular offset.
 
 Use `model-estimated external wrench` for
 `O_F_ext_hat_K`. Do not call it a directly measured wrench. A location derived
@@ -2440,7 +2470,7 @@ repeatedly in alternating directions accumulates \(E_N\) while ending where it
 started. The words `excursion` and `displacement` are wrong for it and have
 been removed. **The net redundant displacement is
 \(\Delta\eta_{\mathrm{dist}}=v_{\mathrm{ref}}^\top\Delta q_{\mathrm{null}}\)**,
-a signed projection of the net projected joint motion onto one common
+the scalar projection of the net projected joint motion onto one common
 direction. The two are reported together, because for the sigma-only settings
 they differ by orders of magnitude, and that difference is the result.
 
@@ -2550,21 +2580,21 @@ instantaneous opposing torque at identical joint configurations.
   compliance relative to the TCP. They never appear in the same expression.
   \(r_c\) shapes the **commanded** wrench through \(\mathrm{Ad}(r_c)\);
   \(r_{\mathrm{Tool}}\) belongs to the physical contact geometry.
-- **The direction-selected lever rule has one sign, and it is
-  \(r_{c,t}=\rho_c(\theta_{\mathrm{offset},t_1}t_2-
-  \theta_{\mathrm{offset},t_2}t_1)/
-  \sqrt{\theta_{\mathrm{offset},t_1}^2+
-  \theta_{\mathrm{offset},t_2}^2}\).**
-  It reduces to \(r_{c,t}=+\rho_c t_2\) for a positive \(t_1\) offset and
-  \(r_{c,t}=-\rho_c t_1\) for a positive \(t_2\) offset. Two independent
-  things fix the reported \(t_1\) sign and must agree: the Case-D
-  measurements, where the \(+10^\circ\) configured offset about \(t_1\) is assisted at
-  positive \(r_{c,t_2}\), and the moment that follows it,
-  \(m_{\mathrm{cpl},K}\approx-F_{K,n}\rho_c(
-  \theta_{\mathrm{offset},t_1}t_1+\theta_{\mathrm{offset},t_2}t_2)/
-  \sqrt{\theta_{\mathrm{offset},t_1}^2+
-  \theta_{\mathrm{offset},t_2}^2}\), which is opposite to the configured
-  offset.
+- **The direction-selected lever rule uses the following cross-product
+  orientation.** For the generic tangent-plane angular offset
+  \(\theta_a=\theta_{a,t_1}t_1+\theta_{a,t_2}t_2\), it is
+  \(r_{c,t}=\lVert r_{c,t}\rVert(\theta_{a,t_1}t_2-
+  \theta_{a,t_2}t_1)/\sqrt{\theta_{a,t_1}^2+
+  \theta_{a,t_2}^2}\). It reduces to
+  \(r_{c,t}=+\lVert r_{c,t}\rVert t_2\) when \(\theta_{a,t_1}>0\) and
+  \(r_{c,t}=-\lVert r_{c,t}\rVert t_1\) when \(\theta_{a,t_2}>0\).
+  The exact normal-press contribution is
+  \(r_{c,t}\times f_n=\lVert r_{c,t}\rVert F_n
+  (\theta_{a,t_1}t_1+\theta_{a,t_2}t_2)/
+  \sqrt{\theta_{a,t_1}^2+\theta_{a,t_2}^2}\). With \(F_n<0\), it acts
+  opposite to \(\theta_a\). In Case D, the direction generated by the
+  \(+10^\circ\) configured offset uses \(r_{c,t_2}>0\) for the outer position
+  that produced the larger response.
 
   **The reversed numerator
   \(\theta_{\mathrm{offset},t_2}t_1-
@@ -2632,13 +2662,11 @@ instantaneous opposing torque at identical joint configurations.
   quantity the relation actually holds for. The four routes used, in order of
   preference:
 
-  1. **Name the component the relation is exact for.** The press-direction
-     rule was \(m_{c,K}\approx-F_{K,n}\rho_ct_1\) because \(f_K\) carries
-     tangential components. Defining the normal component
-     \(f_{K,n}=-F_{K,n}n_s\) and the moment it alone produces,
-     \(m_{\mathrm{cpl},K,n}=r_{c,t}\times f_{K,n}\), makes it an identity, and
-     one sentence then says that tangential components add further terms to
-     \(m_{\mathrm{cpl},K}\).
+  1. **Name the component the relation is exact for.** Decompose the complete
+     commanded force as \(f=f_n+f_t\). The normal-force contribution is then
+     the exact quantity \(r_{c,t}\times f_n\), while
+     \(r_c\times f=r_c\times f_n+r_c\times f_t\) retains the tangential-force
+     contribution.
   2. **State the rounding in the prose.** The calibrated \(n_s\), \(t_1\),
      \(t_2\) and \(R_{\mathrm{surface}}\) are quoted to six decimals; the
      lead-in says `to six decimal places` and the equation takes `=`.
@@ -2658,7 +2686,7 @@ instantaneous opposing torque at identical joint configurations.
   governs the symbol alone. Grep for `\approx` across `chapters/`,
   `frontmatter/`, `backmatter/` and `figures/` before submitting; the expected
   count is zero.
-- **\(m=m_R+m_{\mathrm{cpl}}\) is an identity, and is written with an equals
+- **\(m=m_R+r_c\times f\) is an identity, and is written with an equals
   sign.** It holds exactly for the shifted \(6\times6\) law, provided \(f\) is
   the translational part of the same commanded wrench \(F=[f^\top,m^\top]^\top\)
   rather than the \(r_c=0\) expression. Writing \(m=[r_c]_\times f+K_Re_R-D_R
@@ -2672,31 +2700,18 @@ instantaneous opposing torque at identical joint configurations.
   **The earlier "mechanism explanation, not an identity" ruling is withdrawn.**
   It required "approximately" on the grounds that the lower-right block carries
   further \(r_c\)-dependent terms, which is true of the block and false of the
-  sum — those terms are inside \(r_c\times f\). What the approximation actually
-  concealed is narrower and is now stated where it belongs: the expressions
-  \(f_K=K_pe_p\) and \(f_D=D_p(\dot p_d-\dot p_{\mathrm{EE}})\) of
-  `eq:commanded_force_split` are the \(r_c=0\) forms, and under the shift the
-  elastic and damping split applies to the shifted force instead. The sign
-  analysis continues to use \(m_{\mathrm{cpl},K}=r_c\times f_K\) at \(e_R=0\), where the
-  two coincide.
-- **\(r_c=0\) is not a zero-moment condition, and it does not remove
-  \(m_{\mathrm{cpl},K}\) alone.** The earlier wording of this rule said "it removes
-  \(m_{\mathrm{cpl},K}\) alone", which is too narrow and has been replaced. Setting
-  \(r_c=0\) makes \(\mathrm{Ad}(r_c)\) the identity, so it removes the
-  **complete** additional coupling the virtual point shift introduces:
-  \(m_{\mathrm{cpl},K}\), \(m_{\mathrm{cpl},D}\), \(m_{\mathrm{cpl}}\), and every remaining
+  sum — those terms are inside \(r_c\times f\).
+- **\(r_c=0\) is not a zero-moment condition.** Setting
+  \(r_c=0\) makes \(\mathrm{Ad}(r_c)\) the identity, so it removes the complete
+  additional coupling introduced by the virtual point shift and every
   \(r_c\)-dependent term of the shifted \(K_{\mathrm{TCP}}\) and
   \(D_{\mathrm{TCP}}\) — both the off-diagonal blocks and the added rotational
   entries \([r_c]_\times^\top K_p[r_c]_\times\) and
   \([r_c]_\times^\top D_p[r_c]_\times\).
 
-  What it does **not** remove: the ordinary decoupled rotational impedance
-  \(m_R\), the finite rotational compliance, the tool geometry \(r_{\mathrm{Tool}}\), the
-  physical contact interaction, the external contact moment, and therefore
-  contact-induced robot rotation. \(r_{\mathrm{Tool}}\neq0\) means contact can still
-  contribute \(m_{r_{\mathrm{Tool}}}\). This is what makes the strong zero-lever \(t_1\)
-  rotation unsurprising, and the thesis states it where the reader will
-  otherwise assume the opposite.
+  The ordinary rotational impedance \(m_R\), finite rotational compliance,
+  tool geometry and physical contact interaction remain, so contact-induced
+  robot rotation can still occur.
 
   The general form to use is: *setting \(r_c=0\) removes the additional
   translation--rotation coupling introduced by the virtual point shift; the
@@ -2714,7 +2729,7 @@ instantaneous opposing torque at identical joint configurations.
   of one baseline-referenced endpoint estimate.
 - **The physical contact moment is distinct from the virtual
   compliance-centre contribution.** Setting \(r_c=0\) gives
-  \(m_{\mathrm{CoC}}=r_c\times f=0\), but a surface force acting away from the
+  \(r_c\times f=0\), but a surface force acting away from the
   TCP can still produce
   \(m_{\mathrm{contact},\mathrm{TCP}}=(p_{\mathrm{contact}}-
   p_{\mathrm{TCP}})\times f_{\mathrm{contact}}\). Use
@@ -2737,12 +2752,11 @@ instantaneous opposing torque at identical joint configurations.
   beside a clearance-referenced estimator change and call their difference a
   consistency error. For a rotation applied while a normal load remains, use
   the stationary loaded state immediately before the rotation as the moment
-  baseline for both command and estimate. Retain the absolute estimate as a
-  separate diagnostic because a pose-dependent model offset can change when
-  the tool rotates.
+  baseline for both command and estimate. The reported absolute comparison
+  reads the estimator force and moment variables directly and shifts their
+  wrench reference to the TCP with the equations below.
 - **Never cross a physical or controller lever with a force from the other
-  side.** With \(m_{r_{\mathrm{Tool}}}\) gone the commonest form of this error
-  is gone with it: \(r_c\) is crossed with the commanded force \(f\), and an
+  side.** The virtual lever \(r_c\) is crossed with the commanded force \(f\), and an
   assumed physical contact lever is not crossed with the model-estimated force
   to manufacture a contact-moment explanation.
 
@@ -2766,18 +2780,15 @@ instantaneous opposing torque at identical joint configurations.
   identify a physical contact lever or pressure centre. For a
   baseline-referenced result, shift the current and baseline wrenches at their
   own reference positions before subtraction.
-- The complete translational command carries a moment, not only its elastic
-  part: \(m_{\mathrm{cpl}}=r_c\times f\). The sign analysis then retains
-  \(f_K\) alone, giving \(m_{\mathrm{cpl},K}=r_c\times f_K\),
-  and says that it is doing so — otherwise \(f_K\) appears to
-  enter arbitrarily. The damping coupling follows from the shifted damping
-  matrix in the same way.
+- The complete translational command contributes \(r_c\times f\). Directional
+  analysis may isolate \(r_c\times f_n\), where \(f_n\) is the normal component
+  of that same complete commanded force.
 - **The compliance-centre hierarchy is stated once, in Section 2.7.3, and
   applied everywhere else.** The order is
   \(r_c\to(r_{c,t_1},r_{c,t_2},r_{c,n})\to r_{c,t}\), then
   \(\theta_{\mathrm{offset}}\to\) the selected direction, then
-  \(m=m_R+r_c\times f\). \(r_{c,t_1}\) and \(r_{c,t_2}\) are signed
-  scalars and \(r_{c,t}\) is the tangential vector they form. Chapters 4
+  \(m=m_R+r_c\times f\). \(r_{c,t_1}\) and \(r_{c,t_2}\) are scalar
+  coordinates that may be positive or negative, and \(r_{c,t}\) is the tangential vector they form. Chapters 4
   and 5 must not re-derive any of it.
 
   **The complete list of compliance-centre symbols is \(r_c\),
@@ -2790,30 +2801,31 @@ instantaneous opposing torque at identical joint configurations.
   supporting check is between
   \(\lVert r_c\rVert\) and \(\lVert r_{c,t}\rVert\).
 
-  **The tool-axis supporting check introduces the projection geometry before
-  using the sine.** Define \(\alpha_{\mathrm{axis}}\) as the **acute
-  inclination of the tool axis relative to the inward surface-normal direction
-  \(-n_s\)**, and say that this is the direction the tool axis takes when the
-  face lies flat. Then state that a tool-axis displacement contains normal and
-  tangential components, and use
-  \(\lVert r_{c,t}\rVert=\lVert r_c\rVert\sin\alpha_{\mathrm{axis}}\). At the
+  **The tool-axis supporting check reuses the initial angular-offset magnitude \(\phi_0\)
+  before using the sine.** This is the shortest-rotation magnitude from the
+  calibrated tool normal to the inward surface-normal direction \(-n_s\),
+  already defined with the pose-based entry condition. Do not introduce a
+  second angle for the same offset magnitude. State that a tool-axis displacement
+  contains normal and tangential components, and use
+  \(\lVert r_{c,t}\rVert=\lVert r_c\rVert\sin\phi_0\). At the
   outer setting, \(40\,\mathrm{mm}\) is the configured total tool-axis
   displacement \(\lVert r_c\rVert\), whereas \(6.47\,\mathrm{mm}\) is its
-  tangential projection at the pose-based \(9.30^\circ\) initial inclination,
+  tangential projection at the achieved pose-based \(9.30^\circ\) initial
+  angular-offset magnitude,
   stated to two decimal places. Never present the projection as a second
   configured CoC magnitude.
 
   **The reference direction is \(-n_s\), not \(n_s\)**, and the earlier wording
   `the angle between the tool axis and \(n_s\)` was corrected on 2026-08-25.
   A flat tool axis points into the surface, so measured from \(n_s\) the
-  nominal inclination is \(170^\circ\) rather than \(10^\circ\). The arithmetic
+  nominal angle is \(170^\circ\) rather than \(10^\circ\). The arithmetic
   would survive that direction error because
   \(\sin(180^\circ-\alpha)=\sin\alpha\). The same sine therefore follows from
   either reading. State the geometry the zero-offset target already fixes —
   \(n_d=-n_s\), further up this list — rather than one that
   happens to give the same number. Say which controller input generated the
   condition, but evaluate the projection with the achieved pose-based initial
-  inclination rather than the nominal command.
+  angular-offset magnitude rather than the configured value.
 
   **\(r_c\times f_n=r_{c,t}\times f_n\) is the load-bearing result.** The
   normal component of the displacement drops out of the normal-press moment,
@@ -2829,9 +2841,9 @@ instantaneous opposing torque at identical joint configurations.
   experiment.
 - **Plots and tables carry the actual surface-frame component
   \(r_{c,t_2}\) for the reported \(t_1\) experiments, never a sign-flipped
-  stand-in.** The selected side for the positive condition appears at
-  \(+40\,\mathrm{mm}\). Never adjust a reported value to make a coordinate
-  look tidy.
+  stand-in.** For the direction generated by the \(+10^\circ\) configured
+  offset, the corresponding outer position is \(+40\,\mathrm{mm}\). Never
+  adjust a reported value to make a coordinate look tidy.
 - **Every reported non-zero displacement was configured tool-fixed, in
   end-effector coordinates.** The mapping for the active Case-D comparison is
   \(r_{c,t_2}=-\) `offset_ee_y`, checked against the experiment overlays on
@@ -2884,7 +2896,7 @@ logged field names and bias columns. That is the whole of it.
   `F_{K,n}` and `f_{K,n}` are withdrawn. \(\tau_{\mathrm{cmd}}\) keeps its
   index because it is a joint torque rather than a Cartesian wrench component.
 
-  \(F_n\) is the signed scalar commanded normal force, and \(f_n=F_nn_s\) is
+  \(F_n\) is the commanded normal-force component, and \(f_n=F_nn_s\) is
   the corresponding vector. Say so once where both first appear rather than
   leaving the reader to infer it.
 
@@ -2923,6 +2935,13 @@ logged field names and bias columns. That is the whole of it.
   the desired orientation. When the desired orientation is the held entry
   pose, the entry-to-end rotation has the opposite sign to the endpoint error.
 
+  **Name the action--reaction quantity by the bodies, not by the operator.**
+  In an equilibrium explanation, call the opposite-sign physical quantity the
+  `external moment exerted on the robot`. Do not call it a `hand moment`; the
+  term is specific to one way of applying the load and does not describe
+  surface contact or another external interaction. A local symbol may use the
+  directional index \(M_{t_1,\mathrm{ext\to robot}}\).
+
   **The orientation-offset family carries `offset`, not `cmd`.**
   `\theta_{\mathrm{tilt}}` and `R_{\mathrm{tilt}}` are withdrawn, written here
   as literal strings so a rename cannot revive them. `tilt` was the last place
@@ -2960,7 +2979,7 @@ logged field names and bias columns. That is the whole of it.
   | \(f_n=F_nn_s\) | commanded | normal component of \(f\) |
   | \(f_t=(I_3-n_sn_s^\top)f\) | commanded | tangential component of \(f\) |
   | \(m_R=K_Re_R-D_R\omega_{\mathrm{EE}}\) | commanded | rotational-impedance contribution |
-  | \(m_{\mathrm{CoC}}=r_c\times f\) | commanded | compliance-centre contribution |
+  | \(r_c\times f\) | commanded | compliance-centre contribution |
   | \(M_{t_i}=t_i^\top m\) | commanded | the moment the plots carry |
 
   **The whole thesis turns on \(m=m_R+r_c\times f\)**, and the same language
@@ -2993,17 +3012,13 @@ logged field names and bias columns. That is the whole of it.
   elastic and damping parts shared their index with \(p_c\), \(r_c\), \(K_c\)
   and \(D_c\), which name the centre rather than the coupling.
 
-  **\(m_{r_{\mathrm{Tool}}}\) is unchanged.** It is the observed side and
-  keeps its lever name.
-
   **Say which quantity is commanded.** \(m\) is what the controller computes
   and what the experiments report, through
   \(M_{t_i,\mathrm{cmd}}=t_i^\top m\); the implementation forms
   \(K_{\mathrm{TCP}}\) and \(D_{\mathrm{TCP}}\) and returns the complete
-  wrench. \(m_{\mathrm{cpl}}\) and \(m_{\mathrm{cpl},K}\) are analytical
-  components, used to explain the mechanism and to derive the lever direction.
-  Chapter 2 states this once, where the decomposition is introduced. Do not
-  write that the controller commands, adds, or sends \(m_{\mathrm{cpl},K}\).
+  wrench. The analytical contribution \(r_c\times f\) explains the mechanism
+  and supplies the lever-direction relation; it is not a separately commanded
+  signal.
 
   This is a rule about **symbols only**. Ordinary prose such as `the press`,
   `the normal press` or `press-induced moment` describes the physical action
@@ -3033,7 +3048,7 @@ It should state:
 
 - robot, tool, surface, and relevant software stack;
 - configured and physical plane definitions;
-- initial angular mismatch;
+- configured orientation offset and achieved pose-based initial angular offset;
 - fixed gains and swept variables;
 - phase durations;
 - repetitions;
@@ -3072,18 +3087,17 @@ The reported contact campaign is restricted to configured orientation offsets
 about \(t_1\). The principal experimental conclusions are:
 
 1. Within the tested range, tangential compliance-centre position produced the
-   largest response variation. The side of the TCP that increased the
-   correction-directed response reversed with the sign of the initial angular
-   deviation. No tested non-zero tangential position increased that response
-   for both signs.
+   largest response variation. Every tested non-zero tangential position
+   increased the response in one rotational direction and reduced it in the
+   other relative to the TCP-centred condition.
 2. Raising \(K_{R,t_1}\) reduced the measured response over the tested range.
 3. Varying the perpendicular translational stiffness \(K_{p,t_2}\) produced
    only a \(0.03^\circ\) response span and was smaller than the rotational-
    stiffness effect.
-4. The TCP-centred condition produced correction-directed response for both
-   signs of the initial deviation about \(t_1\). It is therefore the
-   sign-independent fixed reference among the tested positions for that axis,
-   while a displaced centre can provide greater condition-specific authority.
+4. At the TCP, the measured end-effector rotation was towards the configured
+   flat direction in both tested directions of rotation about \(t_1\). It provided a neutral fixed
+   reference with no direction-selected lever, while a displaced centre could
+   provide greater authority when selected for a known rotational direction.
 
 No result comparison, conclusion, caption, table, or active plot reports an
 experiment with a configured orientation offset about \(t_2\). The symbol
@@ -3095,13 +3109,12 @@ of a \(t_1\) experiment, including \(K_{p,t_2}\) and \(r_{c,t_2}\).
 
 The contact chapters are built on one open question, stated in running text and
 never as a heading (the question-framing ban above still binds): **in the
-intended application, the sign of the initial angular tool--surface mismatch
-and its tangent-plane direction can be unknown before contact, so the
-appropriate location of the centre of compliance can also be unknown.** The
-experiments deliberately impose positive and negative deviations about
-\(t_1\). The campaign establishes whether one fixed centre can be selected in
-advance of the application-side knowledge, or whether the centre has to be
-chosen per mismatch.
+intended application, the direction and tangent-plane axis of the initial
+tool--surface angular offset can be unknown before contact, so the appropriate
+location of the centre of compliance can also be unknown.** The experiments
+deliberately command both directions of rotation about \(t_1\). The campaign
+establishes whether a neutral fixed centre can be selected in advance, or
+whether a displaced centre has to be chosen for the known rotational direction.
 
 The narrative is therefore **not** "a displaced centre improves alignment, so
 find the best displaced lever". Chapter 1 introduces the question without
@@ -3116,27 +3129,26 @@ The purposes of the main cases are settled and are stated in this order:
 | A | The contact-induced response with \(p_c=p_{\mathrm{TCP}}\), \(r_c=0\): the zero-coupling reference, not yet an answer. |
 | B | Whether rotational stiffness changes the response about \(t_1\). It reduces the response magnitude over the tested range. |
 | C | Whether cross-axis translational stiffness changes the response about \(t_1\). Its influence is smaller over the tested range. |
-| D | Whether one fixed non-zero tangential centre can assist both signs of the initial deviation about \(t_1\). It cannot: the assisting side reverses with the sign. This is the central experiment. |
+| D | Whether one fixed non-zero tangential centre can increase the response in both directions of rotation about \(t_1\). It cannot: every tested non-zero position increased one direction and reduced the other relative to the TCP. This is the central experiment. |
 
-Appendix D carries two supporting checks without case letters:
+Appendix D carries one supporting check without a case letter:
 
 | Supporting check | What it establishes |
 |---|---|
-| Initial angular-deviation magnitude | The displaced-centre effect remains small at both tested magnitudes about \(t_1\). |
 | Tool-axis displacement | The tangential component produces the press-induced moment; the tool-axis response spans \(0.34^\circ\) against \(7.73^\circ\) for the tangential displacement. |
 
 The measurement hierarchy is fixed. The main A--D study contains 19 settings
-and 57 measurements. The two supporting checks contain eight independently
-counted settings and 24 measurements. Together they form the reported
-surface-contact data set of 27 settings and 81 measurements. The null-space
-pose-hold study adds four settings and 12 trials, giving 93 measurements in the
+and 57 measurements. The tool-axis check contains six independently counted
+settings and 18 measurements. Together they form the reported surface-contact
+data set of 25 settings and 75 measurements. The null-space pose-hold study adds
+four settings and 12 trials, giving 87 measurements in the
 complete reported data set. Shared reference conditions are counted with the
 main case in which they first appear.
 
-The synthesis is that no tested non-zero tangential centre is sign independent
-about \(t_1\), so \(p_c=p_{\mathrm{TCP}}\) is the fixed default centre for the
-reported contact study. A displaced centre is a condition-dependent means of
-adding rotational alignment authority.
+The synthesis is that \(p_c=p_{\mathrm{TCP}}\) provides the neutral fixed centre
+for the reported \(t_1\) study because it selects no tangential lever direction.
+A displaced centre can add rotational authority when its position is selected
+for a known direction of rotation.
 
 The design sequence that follows from this — start at the TCP, evaluate the
 required alignment, introduce a direction-selected shift where more authority
@@ -3148,20 +3160,21 @@ completed adaptive functionality.
 ### The shifted centre is an alignment mechanism, not a steady-contact centre
 
 **Do not summarise the compliance-centre result as "find the best non-zero
-lever and use it."** That reading does not survive the model. The coupling
-moment \(m_{\mathrm{cpl},K}=r_c\times f_K\) does not vanish when the tool reaches a flat
+  lever and use it."** That reading does not survive the model. The contribution
+  \(r_c\times f\) does not vanish when the tool reaches a flat
 orientation: as long as a normal press is present and \(r_c\neq0\), a fixed
 tangential lever keeps commanding rotation in one direction, whether or not
-alignment has already been achieved. A lever that assists one initial
-misalignment therefore carries its preferred rotational direction into the
-steady contact afterwards.
+alignment has already been achieved. A lever selected for one direction of the
+initial angular offset therefore carries its preferred rotational direction
+into the steady contact afterwards.
 
 The defensible summary separates two regimes:
 
-- **Transient alignment.** A tangential displacement supplies a corrective
-  moment whose direction depends on the side of the TCP. The \(t_1\)
-  measurements demonstrate the sign reversal.
-- **Sustained contact.** \(r_c=0\) gives \(m_{\mathrm{cpl},K}=0\), so the TCP is the
+- **Transient alignment.** A tangential displacement supplies a moment whose
+  direction depends on the displacement direction from the TCP. The \(t_1\)
+  measurements show that every tested non-zero position increased the response
+  in one rotational direction and reduced it in the other.
+- **Sustained contact.** \(r_c=0\) gives \(r_c\times f=0\), so the TCP is the
   neutral centre: no preferred tangential direction, and the tool responds to
   the actual contact geometry.
 
@@ -3172,8 +3185,8 @@ experimental evidence**: the reported quantitative experiments ended at the
 pre-grinding hold.
 
 **This argument is the second reason for the TCP, not the first.** The first is
-sign independence under an unknown initial angular deviation about \(t_1\). The
-sustained-contact reading follows it and is written as the consequence it is:
+the neutral fixed reference needed when the initial direction of rotation about
+\(t_1\) is unknown. The sustained-contact reading follows it and is written as the consequence it is:
 once the press continues after alignment, a retained tangential lever also
 retains its preferred coupling-moment direction, so \(r_c=0\) is the
 appropriate neutral virtual reference for the state that follows.
@@ -3192,23 +3205,21 @@ show that the *tested* non-zero tangential displacements are direction
 dependent, not that no centre position anywhere in three dimensions, under any
 frame definition or geometry, could be direction independent.
 
-**The settled term for the reported campaign is `sign-independent fixed centre
-of compliance`.** It denotes one centre position that can be selected without
-prior knowledge of the sign of the initial angular deviation about \(t_1\).
-The definition is specific to one robot, one tool, one configured surface
-reference, one press trajectory, and the tested centre positions.
+**The settled term for the reported campaign is `neutral fixed centre`.** It
+denotes the TCP-centred condition \(r_c=0\), which selects no tangential lever
+direction. Do not use `sign-independent fixed centre`; the two angular
+conditions are described as directions of rotation. The claim is specific to
+one robot, one tool, one configured surface reference, one press trajectory,
+and the tested centre positions.
 
-Where the claim is stated, scope it to the tested set and the \(t_1\) rotation
-axis: `the sign-independent fixed centre among the tested centre positions for
-rotation about \(t_1\)`. Say once that other rotation axes were not established
-by the reported campaign. `universal`, `universally optimal`, `best` and
-`optimal` remain banned for any centre.
-
-The claim the thesis may make is that **within the investigated contact
-configuration and parameter range, the TCP-centred condition is the
-sign-independent fixed centre of compliance among the tested positions for
-rotation about \(t_1\).** `fixed centre` and `default centre` are the usable
-synonyms.
+Where the claim is stated, scope it to rotation about \(t_1\). At the TCP, the
+measured end-effector rotation was towards the configured flat direction in
+both tested rotational directions. Every tested non-zero position increased the response
+in one direction and reduced it in the other relative to the TCP-centred
+condition. The neutral default therefore avoids selecting one rotational
+direction in advance. Do not claim that it was the only tested position with a
+response towards the configured flat direction in both directions; the small
+outer-position responses also represented rotation towards that direction.
 
 **`universally optimal centre` remains banned, as does `best` and `optimal` for
 any centre.** So does any statement extending the result to every robot, tool,
@@ -3217,13 +3228,12 @@ surface-contact campaign did not test a displacement held through sustained grin
 not vary the surface orientation during contact; say that where the claim is
 made.
 
-**Sign independence and alignment authority are separate properties, and the thesis
-states the separation at least once in Chapter 5 and once in Chapter 6.** The
-centre that is independent of the initial-deviation sign is not necessarily
-the centre that produces the largest correction-directed response for each
-sign. Write that the TCP provides the fixed sign-independent condition for the
-reported \(t_1\) study, and that a displaced centre can provide greater
-condition-specific alignment authority.
+**Neutrality and direction-specific alignment authority are separate
+properties, and the thesis states the separation at least once in Chapter 5 and
+once in Chapter 6.** Write that the TCP provides the neutral fixed reference
+for the reported \(t_1\) study, and that a displaced centre can provide greater
+rotational authority when its position is selected for a known direction of
+rotation.
 
 **No informal manual test, demonstration, or video is reported anywhere in the
 thesis.** This overturns an earlier ruling that admitted the pre-grinding hold
@@ -3231,16 +3241,17 @@ observation as labelled qualitative evidence. That paragraph has been removed
 from Chapter 5. The reason for the change is that a hand-applied check carries
 no controlled condition and no measured quantity, so a reader cannot separate
 it from the measured cases however carefully it is labelled. The
-sustained-contact argument does not need it: it rests on the mechanism, that
-\(m_{\mathrm{cpl},K}=r_c\times f_K\) persists while the press is present, and on the
+  sustained-contact argument does not need it: it rests on the mechanism, that
+  \(r_c\times f\) persists while the press is present, and on the
 Case-D measurements.
 
 ### Scope of the reported tangent-axis result
 
 The reported contact results cover rotation about \(t_1\) only. The end
-effector rotated in the correction-directed sense at the TCP for both tested
-signs, while the selected tangential lever changed the response only slightly
-for the positive condition. This is consistent with contact geometry and
+effector rotated towards the configured flat direction at the TCP for both tested
+directions of rotation, while the selected tangential lever changed the
+response only slightly for the direction generated by the \(+10^\circ\)
+configured offset. This is consistent with contact geometry and
 tool-mount compliance contributing to the response, but those contributions
 were not isolated. The conclusion must not claim that either mechanism was
 sufficient on its own, and it must not generalise the result to rotation about
@@ -3250,17 +3261,17 @@ another tangent.
 orientation is never measured independently, a sentence may say the **end
 effector** rotated, never that "contact rotated the tool":
 
-When the sign of \(\gamma_{t_1}\) is contrasted with the motion it represents,
-write `the measured end-effector rotation from the start to the end of Contact
-Establishment`. Do not call that motion a physical rotation without naming the
-end effector.
+When the direction of \(\gamma_{t_1}\) is contrasted with the motion it
+represents, write `the measured end-effector rotation from the start to the end
+of Contact Establishment`. Do not call that motion a physical rotation without
+naming the end effector.
 
 | Was | Now |
 |---|---|
 | contact still rotated the tool | contact still produced end-effector rotation |
 | the physical tool may have rotated further than the end effector did | the physical tool may have undergone additional rotation relative to the end effector |
 
-`further` is wrong even as a hedge, because it implies the sign of the relative
+`further` is wrong even as a hedge, because it implies the direction of the relative
 motion is known. It is not: the instantaneous relative tool--gripper rotation
 was not tracked. Write `additional rotation relative to the end effector`.
 
@@ -3287,39 +3298,36 @@ an independent measurement of physical tool alignment**.
 Two claims must not be made from this:
 
 - **Not that the TCP is the best centre, or the optimal one.** The defensible
-  claim is sign independence about \(t_1\): the TCP is the fixed default
-  centre, since it adds no virtual coupling moment and selects no tangential
-  direction. A direction-selected lever may supply additional authority for a
-  known sign.
+  claim is that the TCP is the neutral fixed reference about \(t_1\), since it
+  adds no virtual coupling moment and selects no tangential direction. A
+  direction-selected lever may supply additional authority for a known
+  direction of rotation.
 - **Not that the lever magnitude changes an alignment time.** The contact establishment
   interval was fixed at \(5\,\mathrm{s}\) and no alignment-time metric was
   defined or compared. What may be said is the model statement: for the same
-  elastic press and a perpendicular lever, the predicted coupling moment is
-  proportional to \(\rho_c\). A timing claim is future work.
+  elastic press and a perpendicular lever, the predicted contribution is
+  proportional to \(\lVert r_{c,t}\rVert\). A timing claim is future work.
 
 Basic settling, formulation-equivalence, and repeatability checks support the
 measurements but should not dominate the conclusion.
 
-**The conclusion summarises the results chapter; it does not reproduce it.** An
-earlier version of this guide required one entry per experimental case, in the
-results-chapter order. A supervisor pass overturned that: the case-by-case list
-repeated Chapter 5 in full and was the single largest source of duplication in
-the thesis. **Do not restore it.**
+**The conclusion summarises the results chapter; it does not reproduce it.** A
+separate entry of equal length for every case repeats Chapter 5 and obscures the
+main ordering. Keep continuous prose, with one compact headline percentage for
+each main Case A--D result.
 
 The conclusion instead states the main findings as continuous prose: the
 controller was implemented and active in every reported experiment;
-compliance-centre position had the largest measured influence; the side that
-increased the correction-directed response reversed with the initial-deviation
-sign about \(t_1\); and the stiffness effects were smaller. The isolated
+compliance-centre position had the largest measured influence; every tested
+non-zero position increased the response in one rotational direction and
+reduced it in the other about \(t_1\); and the stiffness effects were smaller. The isolated
 null-space result remains bounded to free-space hold under the commanded
 force-equivalent.
 
-A value appears in the conclusion only where the finding is unintelligible
-without it — the baseline response, a bound on the generality of a claim.
-Standard deviations stay in Chapter 5 entirely. Where a value is cut, the
-relation may stay: `about eleven times`, `roughly a quarter`, `by a factor of
-about seven` carry the size of an effect without repeating the numbers behind
-it.
+The Case A--D headline percentages appear in the conclusion with their reference
+conditions. Standard deviations and the complete absolute comparisons stay in
+Chapter 5. A further value appears only where it carries a physically meaningful
+bound, such as the largest measured position error against its acceptance limit.
 
 **Target length.** Chapter 6 should sit at roughly half the length of the
 results chapter it summarises. The reduction comes from cutting duplication,
@@ -3327,19 +3335,18 @@ not from dropping findings.
 
 The central findings the conclusion must carry are: the stiffness parameters
 had a relatively small effect; compliance-centre placement had the largest
-measured effect; its assisting side depended on the initial-deviation sign
-about \(t_1\); and null-space conditioning was isolated in free-space
+measured effect; its required displacement direction depended on the known
+direction of rotation about \(t_1\); and null-space conditioning was isolated in free-space
 Cartesian pose hold, while the combined mode and a physical disturbance remain
 untested.
 
 Settling, formulation-equivalence, and repeatability checks belong in Chapter 5.
 Do not restate them in the conclusion.
 
-Do not give every case entry the same length. Case D is the principal finding
+Do not give every case section the same length. Case D is the principal finding
 and carries the longest treatment; Case C's effect was limited and its
-treatment is short. Uniform length across five entries is as recognisable as
-uniform structure. This applies to the case sections in Chapter 5; Chapter 6 no
-longer enumerates the cases at all.
+treatment is short. In Chapter 6, the four headline percentages remain within
+continuous prose and do not recreate the complete case structure.
 
 **Interpretation goes directly under the evidence that supports it, and
 Chapter 5 has no separate discussion section.** The chapter previously ran all
@@ -3355,7 +3362,7 @@ appears:
 | Relative influence of the parameters | Case C, closing the stiffness pair |
 | Physical role of the compliance-centre lever | Case D, under the lever sweep |
 | Weak tool-axis sensitivity | Supporting tool-axis check in Appendix D |
-| Sign-dependent centre-position response | Case D, where the assisting side reverses |
+| Direction-dependent centre-position response | Case D, where each displaced centre increased one rotational direction and reduced the other |
 | Measurement interpretation | Case A and the response definition |
 | Implications for parameter selection | Main-results synthesis after Case D |
 | Scope of interpretation | deleted; Chapter 6 *Limitations* already carried it |
@@ -3427,8 +3434,8 @@ When measurements are taken for a calibrated pilot after the main campaign:
 - state which earlier experiments are decoupled controls and which experiments activate the
   point-shifted law;
 - report the controller lever using
-  \(r_c=p_c-p_{\mathrm{TCP}}\), rather than calling its sign simply “left” or
-  “right”;
+  \(r_c=p_c-p_{\mathrm{TCP}}\), its surface-frame displacement direction, and
+  its value rather than calling it simply “left” or “right”;
 - keep the measured end-effector response separate from any operator-observed
   contact state when tool-to-gripper motion is unmeasured;
 - report mean and sample standard deviation only for repeated conditions; and
@@ -3457,7 +3464,7 @@ reserved explicitly, because `\nobreak` does not hold across an environment
 that begins its own breakable structure:
 
 ```tex
-\needspace{5\baselineskip}%
+\needspace{3\baselineskip}%
 \par\noindent\textbf{Group heading}\par\nobreak
 \begin{longtable}{...}
 ```
@@ -3523,7 +3530,7 @@ Before accepting a revision:
   one, such as the robot's degrees of freedom;
 - check Abstract, Kurzfassung, Results, and Conclusion for identical certainty;
 - remove duplicated theory and unsupported causal claims;
-- compile both `Thesis.tex` and `Professor_Draft.tex`;
+- compile `Thesis.tex`;
 - resolve undefined references and overfull boxes;
 - visually inspect changed pages.
 

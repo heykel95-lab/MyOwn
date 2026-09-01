@@ -42,7 +42,7 @@ would work as a pull quote, it is wrong for this thesis.
 | One setting misbehaves. | The positive \(t_1\) condition at \(-20\,\mathrm{mm}\) showed the largest variability in the retained Case-D data. |
 | The limitation bites. | This limitation affects the interpretation of the measured improvement. |
 | Four contributions carry the work. | The main contributions of this thesis are the following. |
-| Which side the lever sits on decides the outcome. | The sign of the lever strongly affects the resulting alignment response. |
+| Which side the lever sits on decides the outcome. | The lever direction strongly affects the resulting alignment response. |
 | That is the whole of the null-space evidence. | No further null-space response was measured. |
 
 ### Impersonal voice: no first person, and the author never acts in the sentence
@@ -75,7 +75,7 @@ quantity, an effect, or an artefact behaving on its own:
 
 > The improvement fell monotonically as \(K_{R,t_1}\) rose.
 > Stiffening the investigated rotation axis reduced the response about \(t_1\).
-> The sign of the lever determines the direction of the induced moment.
+> The lever direction determines the direction of the induced moment.
 > The controller realises a frame-consistent Cartesian impedance in real time.
 > \Cref{tab:results_case_d} shows …
 
@@ -175,7 +175,7 @@ makes them stand out against the formal text around them.
 
 | Crafted | Ordinary |
 |---|---|
-| taken the wrong way | applied with the opposite sign |
+| taken the wrong way | applied in the opposite direction |
 | landed between the two values | produced values between the two measured responses |
 | Both sit close to | Both results are close to |
 | works that argument through | provides the corresponding geometric explanation |
@@ -185,11 +185,11 @@ makes them stand out against the formal text around them.
 | two further caveats sit on that implementation | two additional limitations apply |
 | the probe configurations want checking | the probe configurations should be checked |
 | contact-establishment duration deserves confirmation | contact-establishment duration should be verified |
-| which bounds what the present arrangement can resolve | improvements of approximately this magnitude were therefore not interpreted as effects of the commanded tilt |
+| which bounds what the present arrangement can resolve | improvements of approximately this magnitude were therefore not interpreted as effects of the configured orientation offset |
 | carry the controller / carry the contribution | are used in the controller / present the corresponding results |
 | the experiments probe that coupling | the effects of … were investigated in 75 contact experiments |
 | breaks that assumption | the actual surface pose may differ from the programmed pose |
-| that angle has nowhere to go | that angular deviation cannot be absorbed by the commanded motion |
+| that angle has nowhere to go | that angular offset cannot be absorbed by the commanded motion |
 | Direction is what a contact task needs. | A contact task requires this compliance to be direction dependent. |
 | Three frames carry the controller | Three right-handed coordinate frames are used in the controller |
 | what each case showed | the conclusions and the work that remains |
@@ -223,9 +223,10 @@ implementation-specific bridge from the null-space theory to Cartesian pose
 hold; the experimental bounds and unresolved limitations are not interleaved
 with that bridge.
 
-The same applies to theory: assumptions belong in Chapter 2, while
-implementation-specific shortcomings belong in Chapters 3, 4, or 6 according
-to the role of the chapter.
+The same applies to theory: assumptions required by the derivation belong in
+Chapter 2, and implementation choices are stated directly in Chapter 3.
+Evidence gaps, unevaluated cases, and unresolved measurement limits belong
+only in Section 6.2.
 
 ### State the method, mechanism and result directly
 
@@ -248,23 +249,21 @@ Section 6.2.
 | The disturbance is internal and therefore is not a physical force. | The controller generates the disturbance internally as a repeatable joint-torque excitation. |
 | This is an acceptance check rather than a primary metric. | The \(2\,\mathrm{mm}\) threshold defines the Cartesian position-retention criterion. |
 
-A local limitation stays only where omitting it would cause an immediate
-technical misreading or where a numerical claim needs a nearby evidence bound.
-It is then stated once. This exception covers load-bearing distinctions such as
-the following:
+All limitations have one location: Section 6.2. Chapters 1--5 state the
+implemented method, mathematical property, measured condition, and result
+positively. A technical distinction is written as the quantity that remains
+active or the operation that was applied: Contact Establishment holds a fixed
+orientation reference; the TCP-centred condition removes point-shift coupling
+while rotational impedance remains active; FCI supplies gravity compensation;
+and singular-value conditioning is an active configuration objective.
 
-- No time-varying tipping trajectory is commanded during Contact Establishment.
-- The TCP-centred condition gives zero additional point-shift coupling, not
-  zero moment.
-- No separate gravity term is added because FCI handles gravity internally.
-- The singular-value-conditioning law is not dissipative.
-- The \(t_2\) exclusion is stated once in the methodology and discussed fully
-  in Section 6.2.2.
-
-Before accepting a sentence containing `not`, `rather than`, `therefore`,
-`consequently` or `reported`, ask whether it can state the actual method,
-mechanism or result directly. These words are not banned. Each occurrence has
-to carry a real distinction or consequence.
+Before accepting `not`, `does not`, `rather than`, `was not measured`,
+`therefore`, `consequently`, or `reported`, rewrite the sentence around the
+quantity, operation, or result. Retain a negative construction only when it is
+part of a mathematical definition that cannot be stated as clearly in positive
+form. Result sentences prefer `measured`, `calculated`, `showed`, `increased`,
+and `reduced`. State the direction and numerical size in the same sentence
+whenever the measurement provides both.
 
 Do not append administrative remarks about unused data products. Phrases such
 as `kept only as separate diagnostic quantities` describe how the analysis was
@@ -353,28 +352,27 @@ final:
 
 | Final | Tied to the scope |
 |---|---|
-| the selected centre is sign independent | among the tested positions for rotation about \(t_1\), only the TCP-centred condition was sign independent |
+| the selected centre works for every rotation | in the tested \(t_1\) conditions, the TCP-centred setting was the neutral reference and produced corrective responses in both rotational directions |
 | the two entries did not act independently | within the tested range, the results indicate that the two entries were not independent |
-| the favourable side is universal | for the investigated \(t_1\) conditions, the side that increased the response reversed with the initial-deviation sign |
+| the same displaced centre works in both directions | each non-zero centre position increased the response in one tested rotational direction and reduced it in the other |
 
 One robot, one tool, one surface, one parameter range. This is not hedging
 for its own sake — it connects each claim to the scope that was actually tested.
 
 ### Describe what was measured, not a narrative of what happened
 
-`the unfavourable sign removed the correction rather than reducing it` survived
-several passes because it is vivid and sounds precise. It describes an event
-that did not occur: nothing was removed. A correction that never happened cannot
-be taken away. What the log shows is that with the opposite lever sign, the
-improvement was \(0.02\pm0.06^\circ\) — that is, **almost no alignment
-improvement was measured**.
+An earlier sentence said that a centre position removed the correction. It
+described an event that did not occur: nothing was removed. A correction that
+never happened cannot be taken away. At the outer position in the other
+displacement direction, the improvement was \(0.02\pm0.06^\circ\); almost no
+alignment improvement was measured.
 
 | Narrative | Measured |
 |---|---|
-| the unfavourable sign removed the correction rather than reducing it | with the opposite sign, almost no alignment improvement was measured |
+| the centre selected for the other rotational direction removed the correction | that centre position reduced the measured response to almost zero |
 | no tested setting improved on the most compliant baseline | the largest improvement was obtained with the lowest tested rotational stiffness |
 | displacement along the normal produced no change | moving the centre along the surface normal produced no measurable change above the interpretation threshold |
-| the same lever assists both signs | the side that increased the correction-directed response reversed with the initial-deviation sign about \(t_1\) |
+| the same lever assists both rotational directions | each non-zero centre position increased the response in one tested rotational direction and reduced it in the other |
 | the tool axis is known only to within a degree or two | the calibrated tool normal does not enter this quantity |
 | and shifts as the tool settles in the gripper | the relative tool--gripper rotation was not tracked during the contact experiments |
 
@@ -396,10 +394,10 @@ carried `the plane-zero alignment`, which names nothing the thesis defines and
 appears nowhere else in it. Where a sentence needs a quantity that has no name,
 that is a sign the sentence is reaching for something the thesis does not have.
 Name the chain instead — `the calibrated tool normal`, `the surface frame`,
-`the measured end-effector orientation` — and say what each does or does not
-contribute. `observed` and `measured` are the right verbs
-when reporting a campaign, and the negative form is `no measurable change above
-the interpretation threshold`, never a bare `no change`.
+`the measured end-effector orientation` — and state each contribution
+directly. `measured`, `calculated`, `showed`, `increased`, and `reduced` are
+the preferred result verbs. When a change lies below an interpretation
+threshold, state the measured bound or value.
 
 **Use `measured`, not `recorded`, for experimental results.** Values,
 quantities, responses and observations are measured. Reserve `recorded` for
@@ -526,10 +524,12 @@ and it governs: those words may now be used. What survives unchanged is the
 *test*, which was always the substance of the rule and is not a matter of
 vocabulary.
 
-**The test.** A connector is written only where the relation it names is
-already in the logic. Delete it and read the sentence again: if it still
-follows, the connector was decoration and stays deleted; if it no longer
-follows, the relation is real and the connector belongs. Where a sentence does
+**The test.** A connector is written where it makes an existing logical
+relation explicit and gives the paragraph a natural progression. Delete it and
+read the sentence again: if the relation remains equally clear, the connector
+was decoration and stays deleted; if the relation becomes harder to follow,
+the connector belongs. Do not suppress a useful connector merely because the
+same word is often overused in generic academic prose. Where a sentence does
 not follow its predecessor at all, the paragraph order is wrong, and reordering
 is the fix — a transition pasted over a bad order hides the fault rather than
 repairing it.
@@ -573,9 +573,10 @@ added that the equation below does not state more precisely. Rewritten:
 > design freedom this thesis investigates; Chapter~5 reports how far the
 > alignment response moves across the tested range of \(K_R\).
 
-**Rule.** Delete the connective and read the sentence again. If it still
-follows, leave it deleted. If it no longer follows, the paragraph order is
-wrong — fix the order, not the transition.
+**Rule.** Delete the connective and read the sentence again. If the relation
+remains equally clear, leave it deleted. If the relation becomes harder to
+follow, retain the connector. If the sentence still fails to follow when the
+relation is named, repair the paragraph order.
 
 ### 3. Weak verbs where a term of art exists
 
@@ -833,11 +834,15 @@ One name, many constructions:
 |---|---|
 | a configured orientation offset about \(t_1\) | the offset about \(t_1\); the configured \(t_1\) offset |
 | for a configured orientation offset about \(t_2\) | with the offset about \(t_2\); about \(t_2\) |
-| the sign of the tool tilt | the configured offset direction; the offset direction |
+| which way the tool is inclined | the configured offset direction; the offset direction |
+| the side matched the initial-deviation sign | the centre position was selected for the known direction of rotation |
 | Excited axis *(table header)* | Configured offset axis |
 
 `tool tilt`, `excitation`, `commanded rotation`, and `mismatch` are not used for
-the configured orientation offset.
+the configured orientation offset. Angular conditions and compliance-centre
+selection are described through directions of rotation and displacement, not
+through a `side` or the sign of an initial offset. The established technical
+compounds `robot-side` and `application-side` remain unchanged.
 
 ## What already reads as your own voice
 
@@ -1006,9 +1011,10 @@ the conclusion should carry it alongside the positive ones.
 Where the answer is conditional, say it is conditional and name the condition,
 rather than manufacturing a rule:
 
-> No tested non-zero tangential centre increased the correction-directed
-> response for both signs about \(t_1\), so the selected side depends on the
-> initial-deviation sign.
+> Every tested non-zero tangential centre increased the end-effector rotation
+> towards the configured flat direction in one rotational direction about
+> \(t_1\) and reduced it in the other, so the centre position depends on the
+> known direction of rotation.
 
 ## Rewrite procedure
 
@@ -1016,8 +1022,9 @@ Applied to any flagged or weak paragraph, in order.
 
 1. **Delete every sentence that a robotics examiner already knows.** Usually
    one to three sentences per flagged block. Do this before rewording anything.
-2. **Strike the connective openers.** Re-read; fix paragraph order if the logic
-   breaks.
+2. **Test the connective openers.** Retain those that make a load-bearing cause,
+   contrast, concession, addition, synthesis, or consequence explicit. Remove
+   decorative openers, and repair the paragraph order where the logic breaks.
 3. **Replace every weak verb** using the table above.
 4. **Cut evaluative adjectives.** Keep scientific qualifications.
 5. **Add one checkable particular per paragraph** — a symbol, a value with

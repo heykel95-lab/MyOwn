@@ -1,6 +1,6 @@
-% The archived vector plot is retained because the raw time-series CSV files
-% are not part of this clone. Crop its three old y-axis labels, then replace the
-% old axis and legend wording without changing the plotted data.
+% The archived vector plot retains the three measured time histories without
+% its repeated panel legends. Crop its old y-axis labels, then add the current
+% labels and one shared legend below the complete plot.
 \begin{tikzpicture}
   \node[anchor=south west, inner sep=0] (image) at (1.35,0)
     {\includegraphics[width=0.755\textwidth,trim=47pt 0 0 0,clip]
@@ -9,42 +9,26 @@
       shift={(image.south west)},
       x={($(image.south east)-(image.south west)$)},
       y={($(image.north west)-(image.south west)$)}]
+    \node[anchor=north west, font=\scriptsize] at (0.015,0.990) {(a)};
+    \node[anchor=north west, font=\scriptsize] at (0.015,0.655) {(b)};
+    \node[anchor=north west, font=\scriptsize] at (0.015,0.320) {(c)};
     \node[rotate=90, align=center, font=\scriptsize] at (-0.065,0.835)
-      {Contact-Establishment Rotation About \(t_1\),\\
-       \(\gamma_{t_1}\) [\(^\circ\)]};
+      {Contact-Establishment Rotation\\
+       About \(t_1\), \(\gamma_{t_1}\) [\(^\circ\)]};
     \node[rotate=90, align=center, font=\scriptsize] at (-0.065,0.500)
       {Commanded Normal Force,\\
        \(F_n\) [N]};
     \node[rotate=90, align=center, font=\scriptsize] at (-0.065,0.165)
-      {Commanded TCP Moment About \(t_1\),\\
-       \(M_{t_1}\) [N m]};
+      {Commanded TCP Moment\\
+       About \(t_1\), \(M_{t_1}\) [N\,m]};
 
-    % These covers occupy only the original opaque legend boxes; no additional
-    % part of a plotted trace is hidden.
-    \fill[white] (0.690,0.870) rectangle (0.965,0.943);
-    \fill[white] (0.690,0.550) rectangle (0.965,0.615);
-    \fill[white] (0.040,0.210) rectangle (0.300,0.285);
-
-    \foreach \y/\colour/\entry in {
-      0.930/black/{CoC, \(r_{c,t_2}=-40\,\mathrm{mm}\)},
-      0.905/red/{CoC at TCP, \(r_{c,t_2}=0\)},
-      0.880/blue/{CoC, \(r_{c,t_2}=+40\,\mathrm{mm}\)}} {
-      \draw[\colour, line width=0.5pt] (0.705,\y) -- (0.740,\y);
-      \node[anchor=west, inner sep=0, font=\tiny] at (0.748,\y) {\entry};
-    }
-    \foreach \y/\colour/\entry in {
-      0.605/black/{CoC, \(r_{c,t_2}=-40\,\mathrm{mm}\)},
-      0.582/red/{CoC at TCP, \(r_{c,t_2}=0\)},
-      0.559/blue/{CoC, \(r_{c,t_2}=+40\,\mathrm{mm}\)}} {
-      \draw[\colour, line width=0.5pt] (0.705,\y) -- (0.740,\y);
-      \node[anchor=west, inner sep=0, font=\tiny] at (0.748,\y) {\entry};
-    }
-    \foreach \y/\colour/\entry in {
-      0.270/black/{CoC, \(r_{c,t_2}=-40\,\mathrm{mm}\)},
-      0.245/red/{CoC at TCP, \(r_{c,t_2}=0\)},
-      0.220/blue/{CoC, \(r_{c,t_2}=+40\,\mathrm{mm}\)}} {
-      \draw[\colour, line width=0.5pt] (0.055,\y) -- (0.090,\y);
-      \node[anchor=west, inner sep=0, font=\tiny] at (0.098,\y) {\entry};
+    \foreach \x/\colour/\entry in {
+      0.060/black/{CoC, \(r_{c,t_2}=-40\,\mathrm{mm}\)},
+      0.390/red/{CoC at TCP, \(r_{c,t_2}=0\)},
+      0.675/blue/{CoC, \(r_{c,t_2}=+40\,\mathrm{mm}\)}} {
+      \draw[\colour, line width=0.5pt] (\x,-0.035) -- +(0.032,0);
+      \node[anchor=west, inner sep=0, font=\scriptsize]
+        at ($(\x,-0.035)+(0.040,0)$) {\entry};
     }
   \end{scope}
 \end{tikzpicture}

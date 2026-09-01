@@ -39,9 +39,7 @@ if ($KeepLogs) {
 
 $buildBases = @(
   "Thesis",
-  "Thesis_*",
-  "Professor_Draft",
-  "Professor_Draft_*"
+  "Thesis_*"
 )
 
 $artifactPatterns = foreach ($base in $buildBases) {
@@ -55,12 +53,11 @@ $files = @(Get-SafeRootFiles $artifactPatterns)
 if ($RemoveGeneratedPdfs) {
   $generatedPdfPatterns = @(
     "Thesis_*.pdf",
-    "Thesis*_preview.pdf",
-    "Professor_Draft_*.pdf"
+    "Thesis*_preview.pdf"
   )
 
   $files += Get-SafeRootFiles $generatedPdfPatterns |
-    Where-Object { $_.Name -notin @("Thesis.pdf", "Professor_Draft.pdf") }
+    Where-Object { $_.Name -ne "Thesis.pdf" }
 }
 
 $files = @($files | Sort-Object FullName -Unique)

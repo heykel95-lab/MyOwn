@@ -1,49 +1,32 @@
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
-\ReviewMark{green}{The abstract states the problem, implemented mechanism,
-principal measured ordering, null-space result, and scope limits without
-overloading the reader with the full parameter matrix.}
 
-Angular misalignment between a grinding tool and a surface can lead to
-edge-first contact and increased contact loads. In applications where the
-surface pose and tool mounting are subject to tolerances, the direction and
-magnitude of this misalignment are generally unknown before contact. This
-thesis investigates a Cartesian impedance control approach that uses the
-contact interaction itself to support the rotational alignment of the tool
-with a planar surface.
+Surface-placement and tool-mount tolerances can produce angular misalignment
+between a grinding tool and a surface. As a result, the tool can make edge-first
+contact and generate high contact loads.
 
 A real-time Cartesian impedance controller was implemented for a
-seven-degree-of-freedom (\abbr{DOF}) Franka Emika Panda. Translational and
-rotational compliance are defined relative to the surface geometry. The
-controller allows the virtual centre of compliance to be shifted away from the
-tool centre point (TCP). This shift introduces translation--rotation coupling
-into the Cartesian impedance, so that the commanded normal press can generate
-an additional moment that supports the required alignment rotation without
-prescribing an additional rotational trajectory.
+seven-degree-of-freedom (\abbr{DOF}) Franka Emika Panda. Its compliance was
+defined relative to the surface geometry and about a virtual centre. Moving this
+centre away from the tool centre point (TCP) coupled the commanded press to an
+additional rotational moment. During contact establishment, the controller held
+the orientation reference fixed while pressing the tool towards the surface.
 
-The experimental investigation examined the influence of directional Cartesian
-stiffness and of the tangential position of the virtual compliance centre for
-configured orientation offsets about surface tangent \(t_1\). The
-reported angular conditions and responses are referenced to the configured
-surface geometry; the physical surface normal and instantaneous physical
-tool--surface angle were not measured independently. The
-compliance-centre position produced the largest response variation over the
-tested parameter ranges. The tangential displacement lay perpendicular to the
-investigated rotation axis. Reversing the sign of the initial angular
-deviation required the displacement to be placed on the opposite side of the
-TCP.
+The experiments varied the virtual centre and one rotational and one
+translational stiffness parameter. A configured angular offset defined the
+desired pre-contact orientation and was applied in both directions of rotation
+about the same axis in the surface plane. The offset achieved at contact entry
+was calculated relative to the configured surface. The response was calculated
+from the measured end-effector orientations.
 
-Within the tested conditions, no non-zero tangential displacement increased
-the correction-directed response for both signs of the initial angular
-deviation. The TCP-centred condition introduces no preferred tangential
-direction and is the sign-independent fixed centre of compliance among the
-tested positions for the investigated rotation axis. A displaced centre can
-instead be selected when the required sign is known and additional rotational
-alignment authority is needed.
-
-A complementary null-space study showed that projected damping reduced
-redundant joint motion. Singular-value conditioning was active while the
-commanded disturbance was applied and strongly suppressed the resulting net
-redundant displacement under the tested disturbance direction. This response
-therefore represents disturbance rejection during its application rather than a
-subsequent return of the redundant configuration.
+Within the tested ranges, centre position affected the response more than
+either stiffness parameter. Each tested displacement from the TCP increased the
+response towards parallel alignment in one rotational direction and reduced it
+in the other. The TCP-centred condition produced this response in both
+rotational directions and provided the neutral fixed setting. A displaced
+centre produced a slightly larger response when selected for the corresponding
+direction of rotation.
+A separate free-space study held the end-effector pose. Internal-motion damping
+reduced cumulative motion. Under the tested disturbance, active conditioning
+kept the measured net change along the evaluated internal direction close to
+zero.

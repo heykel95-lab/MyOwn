@@ -121,9 +121,10 @@ cross-checks it against the simultaneously logged O_F_ext_hat_K signal.
 Follow professoremail/T_MODE_KFRAME_REPEAT_PROTOCOL.md for the timed hand
 motions, first-trial check and optional three-trial analysis.
 
-Libfranka uses the robot-on-environment sign for the estimated wrench. The hand
-moment on the robot is therefore the negative of the plotted estimate, and
-moment equilibrium is checked as
+Libfranka uses the robot-on-environment sign for the estimated wrench. The
+external force and moment exerted on the robot are therefore the negatives of
+the plotted estimates. Equilibrium is checked as
+`Fn_commanded - Fn_estimated approximately 0` and
 `Mt1_commanded - Mt1_estimated approximately 0`. The commanded and estimated
 curves consequently have the same sign.
 

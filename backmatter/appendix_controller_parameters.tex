@@ -4,8 +4,8 @@
 null-space values, and collision settings are collected in one reproducibility
 record.}
 
-This appendix lists the effective controller parameters used in the reported
-experiments. It is a reproducibility record for the implementation described in
+The effective controller parameters used in the experiments are
+collected here for the implementation in
 \Cref{ch:implementation,ch:methodology}.
 
 \section{Surface and Tool Geometry}
@@ -40,7 +40,7 @@ First-tangent hint & \texttt{surface\_tangent1\_hint\_base} &
   \([1,0,0]\) \\
 Tool axis in EE & \texttt{tool\_axis\_ee} &
   \([0.026387057,-0.006678514,\newline 0.999629492]\) \\
-Signed alignment target & \texttt{tool\_axis\_target\_sign} & \(-n_s\) \\
+Tool-normal target direction & \texttt{tool\_axis\_target\_sign} & \(-n_s\) \\
 Spin about the tool axis, from \(t_1\) &
   \texttt{tool\_target\_offset\_}\newline\texttt{normal\_deg} &
   \(90.0^\circ\) \\
@@ -75,9 +75,9 @@ calibration, the fitted direction was
 \begin{equation}
 n_{\mathrm{Tool,EE}}
 =
-\operatorname*{arg\,min}_{\lVert n\rVert=1}
+\operatorname*{arg\,min}_{\lVert \tilde n\rVert=1}
 \sum_{i<j}
-\left\lVert(R_{\mathrm{cal},i}-R_{\mathrm{cal},j})n\right\rVert^2.
+\left\lVert(R_{\mathrm{cal},i}-R_{\mathrm{cal},j})\tilde n\right\rVert^2.
 \label{eq:appendix_tool_normal_fit}
 \end{equation}
 
@@ -86,7 +86,7 @@ was selected towards nominal \mbox{\(+Z_{\mathrm{EE}}\)}.
 
 \subsection{Initial Joint Configuration}
 
-The initial joint configuration used in the reported experiments is
+The initial joint configuration used in the experiments is
 \[
 \begin{aligned}
 q_{\mathrm{init}}={}&[
@@ -129,9 +129,6 @@ Hold translation &
 Hold rotation &
   \(50\,\mathrm{N\,m/rad}\), isotropic base &
   Fixed: \(8\,\mathrm{N\,m\,s/rad}\) \\
-Manual guidance &
-  no Cartesian stiffness; joint coordinates &
-  Fixed joint damping: \(0.5\,\mathrm{N\,m\,s/rad}\) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -143,16 +140,19 @@ The active timing and trajectory values are listed in
 \centering
 \caption{State-transition and trajectory parameters.}
 \label{tab:active_phase_timing}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{@{}lll@{}}
+\small
+\begin{tabular}{@{}
+>{\raggedright\arraybackslash}p{0.27\textwidth}
+>{\raggedright\arraybackslash}p{0.39\textwidth}
+>{\raggedright\arraybackslash}p{0.25\textwidth}@{}}
 \toprule
 Quantity & Configuration key & Value \\
 \midrule
 Orient minimum time & \texttt{approach\_orient\_min\_time} & \(1.0\,\mathrm{s}\) \\
 Tool-axis switch tolerance &
-  \texttt{approach\_orient\_error\_threshold} & \(0.016\,\mathrm{rad}\) \\
+  \texttt{approach\_orient\_}\newline\texttt{error\_threshold} & \(0.016\,\mathrm{rad}\) \\
 Spin switch tolerance &
-  \texttt{approach\_orient\_spin\_error\_threshold} & \(0.009\,\mathrm{rad}\) \\
+  \texttt{approach\_orient\_spin\_}\newline\texttt{error\_threshold} & \(0.009\,\mathrm{rad}\) \\
 Orient timeout / maximum rate &
   \texttt{approach\_orient\_timeout}, \texttt{approach\_orient\_max\_rate\_deg} &
   \(8.0\,\mathrm{s}\), \(20^\circ\!/\mathrm{s}\) \\
@@ -166,20 +166,29 @@ Contact-establishment minimum time / timeout &
   \texttt{contact\_establishment\_timeout} &
   \(2.0\,\mathrm{s}\), \(5.0\,\mathrm{s}\) \\
 Contact-establishment moment-change threshold &
-  \texttt{contact\_establishment\_moment\_threshold} &
+  \texttt{contact\_establishment\_}\newline\texttt{moment\_threshold} &
   \(150\,\mathrm{N\,m}\) \\
 Contact-establishment push speed / endpoint &
-  \texttt{contact\_establishment\_push\_speed},
-  \texttt{contact\_establishment\_push\_end} &
+  \texttt{contact\_establishment\_}\newline\texttt{push\_speed},
+  \texttt{contact\_establishment\_}\newline\texttt{push\_end} &
   \(0.080\,\mathrm{m/s}\), \(0.240\,\mathrm{m}\) in all surface-contact experiments \\
 Pre-contact hold & \texttt{enable\_pre\_contact\_hold} & disabled \\
 Pre-grinding hold & \texttt{enable\_pre\_grinding\_hold} & enabled \\
 \bottomrule
 \end{tabular}
-}
 \end{table}
 
-\section{Inertia-Scaled Damping and Centre of Compliance}
+\section{Damping and Centre of Compliance}
+
+The displacement \mbox{\(r_c=p_c-p_{\mathrm{TCP}}\)} is the
+base-frame vector. Tool-fixed settings specify its end-effector components
+\mbox{\(r_{c,\mathrm{EE}}\)}, with
+\mbox{\(r_c=R_{\mathrm{EE}}r_{c,\mathrm{EE}}\)}. The damping calculation and
+compliance-centre transformation are defined in
+\mbox{\Cref{subsec:inertia_scaled_damping_calculation,sec:centre_of_compliance}}.
+The tested components are listed in
+\mbox{Table~\ref{tab:experimental_test_cases}} and
+\mbox{\Cref{app:supporting_contact_checks}}.
 
 \begin{table}[H]
 \centering
@@ -197,56 +206,50 @@ Approach damping factor & \(\zeta\) & \(1.9\) \\
 Contact-establishment damping factor & \(\zeta\) & \(1.0\) \\
 Operational-space-inertia regularisation & added to \(J(q)M(q)^{-1}J^\top(q)\) &
   \(10^{-9}\) \\
-Maximum damping coefficient & \texttt{auto\_damping\_max} & \(400\) \\
+Maximum damping coefficient & \texttt{auto\_damping\_max} &
+  \(400\,\mathrm{N\,s/m}\) for translation;
+  \(400\,\mathrm{N\,m\,s/rad}\) for rotation \\
 Lower bound from the configured matrices &
   \texttt{auto\_damping\_}\newline\texttt{min\_from\_manual} &
-  \(0\); those matrices act as fallback only \\
-Reported contact states using inertia-scaled damping & --- &
+  \(0\); the configured matrices provide the fallback \\
+Contact states using inertia-scaled damping & --- &
   Surface Approach and Contact Establishment \\
 Pose-hold inertia-scaled damping & \texttt{hold\_auto\_damping} &
-  \(0\) in all twelve reported trials \\
+  \(0\) for all twelve pose-hold trials \\
 Pose-hold translational damping & \(D_p\) &
   \(50I_3\,\mathrm{N\,s/m}\) \\
 Pose-hold rotational damping & \(D_R\) &
   \(8I_3\,\mathrm{N\,m\,s/rad}\) \\
 Coupled \(6\times6\) law & \texttt{use\_virtual\_}\newline\texttt{compliance\_center} &
-  Contact Establishment only, and only for displaced-centre conditions \\
+  Active during Contact Establishment for displaced-centre conditions \\
 Displacement definition frame &
   \texttt{compliance\_center\_}\newline\texttt{in\_tool\_frame} &
-  tool-fixed in all reported experiments \\
+  tool-fixed in all contact experiments \\
 Tool-fixed displacement & \texttt{compliance\_center\_}\newline\texttt{offset\_ee} &
   in end-effector axes \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The reported displacement defines \(r_c=p_c-p_{\mathrm{TCP}}\) in
-end-effector coordinates. The damping calculation and the compliance-centre
-transformation are described in
-\mbox{\Cref{subsec:inertia_scaled_damping_calculation,sec:centre_of_compliance}},
-and the tested displacement
-components are listed in \mbox{Table~\ref{tab:experimental_test_cases}} and
-\mbox{\Cref{app:supporting_contact_checks}}.
-
-
 \section{Null-Space and Operating Parameters}
 \ReviewMark{green}{The selected mode, gains, probe settings, logging capacity,
 gripper state, and robot-side thresholds are stated explicitly.}
 
-The fixed null-space configuration of the surface-contact experiments is
-described in \Cref{subsec:nullspace_parameter_rationale}, while the separately
-tested pose-hold settings are described in
-\Cref{subsec:nullspace_pose_hold_configuration}. The final two rows of
-\Cref{tab:nullspace_safety_parameters} are Franka collision/reflex
-thresholds configured through the libfranka collision-behaviour interface.
-Robot-side monitoring applied these thresholds throughout the reported experiments.
+\Cref{subsec:nullspace_parameter_rationale,subsec:nullspace_pose_hold_configuration}
+define the surface-contact and pose-hold null-space configurations,
+respectively. The final two rows of
+\Cref{tab:nullspace_safety_parameters} give the Franka collision/reflex
+thresholds applied throughout the experiments through libfranka.
 
 \begin{table}[H]
 \centering
 \caption{Null-space and operating parameters.}
 \label{tab:nullspace_safety_parameters}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{@{}lll@{}}
+\small
+\begin{tabular}{@{}
+>{\raggedright\arraybackslash}p{0.26\textwidth}
+>{\raggedright\arraybackslash}p{0.39\textwidth}
+>{\raggedright\arraybackslash}p{0.26\textwidth}@{}}
 \toprule
 Parameter & Symbol / key & Value \\
 \midrule
@@ -264,15 +267,10 @@ Experiment duration / stop & \texttt{experiment\_duration} &
   \(0\,\mathrm{s}\): indefinite until \texttt{e+Enter} \\
 Gripper grasp & width, speed, force &
   \(0.066\,\mathrm{m}\), \(0.050\,\mathrm{m/s}\), \(60\,\mathrm{N}\) \\
-Tool-mount rotational play & observed pad-mount clearance &
-  approximately \(\pm2^\circ\) about \(y_{\mathrm{EE}}\) \\
-Manual-guidance damping & \texttt{manual\_guidance\_damping} &
-  \(0.5\,\mathrm{N\,m\,s/rad}\) \\
 Joint-side collision threshold & acceleration/nominal &
   \(140\,\mathrm{N\,m}\) on each axis \\
 Cartesian collision threshold & acceleration/nominal &
   \(240\,\mathrm{N}\) or \(\mathrm{N\,m}\) on each channel \\
 \bottomrule
 \end{tabular}
-}
 \end{table}

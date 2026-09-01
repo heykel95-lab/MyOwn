@@ -1,61 +1,45 @@
-% Shared surface/tool legend, configured orientation offset, and contact geometry.
+% Configured surface, achieved tool orientation, and physical surface.
 \begin{tikzpicture}[
-    scale=1.0,
-    reference/.style={red!75!black, line width=1.1pt},
+    scale=1.15,
+    reference/.style={red!75!black, line width=1.1pt, densely dashed},
     physical/.style={blue!70!black, line width=1.1pt},
     tool/.style={green!55!black, line width=1.1pt},
-    normal/.style={-{Latex[length=1.8mm]}, line width=0.9pt},
-    conceptangle/.style={-{Latex[length=3.2mm,width=2.4mm]}, line width=1.5pt},
+    datum/.style={black, line width=0.8pt, densely dashed},
+    conceptangle/.style={line width=1.5pt},
     lbl/.style={font=\footnotesize, align=center},
-    panel/.style={font=\footnotesize, align=center},
   ]
 
-% One shared legend replaces repeated line labels in the three panels.
-\draw[reference] (0.10,1.95) -- (0.85,1.95);
-\node[lbl, red!75!black, anchor=west] at (1.00,1.95)
+% Shared legend.
+\draw[reference] (-4.15,2.20) -- (-3.40,2.20);
+\node[lbl, red!75!black, anchor=west] at (-3.25,2.20)
   {Configured surface};
-\draw[physical] (4.45,1.95) -- (5.20,1.95);
-\node[lbl, blue!70!black, anchor=west] at (5.35,1.95)
+\draw[physical] (-0.70,2.20) -- (0.05,2.20);
+\node[lbl, blue!70!black, anchor=west] at (0.20,2.20)
   {Physical surface};
-\draw[tool] (8.25,1.95) -- (9.00,1.95);
-\node[lbl, green!55!black, anchor=west] at (9.15,1.95)
+\draw[tool] (2.85,2.20) -- (3.60,2.20);
+\node[lbl, green!55!black, anchor=west] at (3.75,2.20)
   {Tool face};
 
-% (a) The controller reference and the unmeasured physical surface.
-\begin{scope}[xshift=0cm]
-  \coordinate (oa) at (0,0);
-  \draw[reference] (-1.55,0) -- (1.55,0);
-  \draw[physical, rotate around={12:(oa)}] (-1.55,0) -- (1.55,0);
-  \draw[normal, red!75!black] (oa) -- (90:1.08);
-  \node[lbl, red!75!black, right] at (90:0.76) {$n_s$};
-  \draw[normal, blue!70!black] (oa) -- (102:1.16)
-    node[lbl, above left] {$n_{\mathrm{phys}}$};
-  \node[panel] at (0,-1.18) {(a) Surface references};
+% The configured surface gives the desired parallel tool direction, carried to
+% the tool as a short reference ray. The orientation reached before approach
+% retains a small schematic difference from it.
+\coordinate (origin) at (0,0);
+\coordinate (toolpivot) at (0,1.30);
+\draw[reference] (-3.35,0) -- (3.35,0);
+\draw[datum] (-2.40,1.30) -- (2.40,1.30);
+\draw[tool, rotate around={10:(0,1.30)}] (-2.10,1.30) -- (2.10,1.30);
+\begin{scope}[shift={(toolpivot)}]
+  \draw[conceptangle]
+    (180:1.90) arc[start angle=180,end angle=190,radius=1.90];
 \end{scope}
+\node[lbl, anchor=north] at (-1.95,0.68)
+  {Desired--achieved difference};
 
-% (b) The desired tool face is offset from the configured reference.
-\begin{scope}[xshift=4.65cm]
-  \coordinate (ob) at (0,0);
-  \draw[reference] (-1.55,0) -- (1.55,0);
-  \draw[tool, rotate around={38:(ob)}] (-0.30,0) -- (1.20,0);
-  \draw[conceptangle, green!55!black]
-    (0:1.18) arc[start angle=0,end angle=38,radius=1.18];
-  \node[lbl, font=\scriptsize, green!55!black] at (0.68,1.16)
-    {Configured offset $\theta_{\mathrm{offset}}$};
-  \node[panel] at (0,-1.18) {(b) Configured orientation offset};
-\end{scope}
-
-% (c) The achieved angle is reference-relative; physical contact remains unknown.
-\begin{scope}[xshift=9.30cm]
-  \coordinate (oc) at (0,0);
-  \draw[reference] (-1.55,0) -- (1.55,0);
-  \draw[physical, rotate around={-9:(oc)}] (-1.55,0) -- (1.55,0);
-  \draw[tool, rotate around={32:(oc)}] (-0.30,0) -- (1.20,0);
-  \draw[conceptangle, green!55!black]
-    (0:1.18) arc[start angle=0,end angle=32,radius=1.18];
-  \node[lbl, font=\scriptsize, green!55!black] at (0.82,1.15)
-    {Reference-relative $\theta_0$};
-  \node[panel] at (0,-1.18) {(c) Contact entry};
-\end{scope}
+% Placement and calibration can leave the physical surface angularly offset.
+\draw[physical, rotate around={19:(origin)}] (-3.35,0) -- (3.35,0);
+\draw[conceptangle]
+  (0:1.42) arc[start angle=0,end angle=19,radius=1.42];
+\node[lbl, anchor=north] at (1.42,-0.18)
+  {Configured--physical difference};
 
 \end{tikzpicture}

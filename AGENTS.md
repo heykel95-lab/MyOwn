@@ -113,81 +113,17 @@ synonyms, invented observations, or unsupported reasoning. Preserve the required
 impersonal voice, British spelling, plain technical register, and
 one-main-claim-per-sentence preference.
 
-## Review-draft colour coding
+## Legacy source annotations
 
-`config/review_annotations.tex` defines two kinds of mark, both invisible in
-`Thesis.pdf` and `Professor_Draft.pdf` and visible only in `Review_Draft.pdf`.
-
-`\ReviewMark{...}{...}` is an assessment box placed after a heading. It judges
-the section that follows and does not change the text. A sufficient assessment
-is rendered orange.
-
-`\Revised{...}` (green), `\Comment{...}` and `\Added{...}` (blue) mark the
-text itself:
-
-- **Green revised text is frozen. Never change a word inside `\Revised{}`.** Not a
-  reword, not a tightened clause, not an added qualifier, not a restructure.
-  The passage has been controlled and found correct and already satisfies what
-  the thesis requires. A revised chapter that comes back unchanged is the
-  correct outcome, not a missed opportunity.
-- **The one permitted exception is a change without which the document will
-  not compile** — for example boxing `\mbox{et al.\ }` so the highlighter can
-  reconstruct the line. Make the smallest fix that restores the build, change
-  no words, and say so. Nothing else qualifies: not a typo, not a wrong unit,
-  not a contradiction. Those are reported, not fixed.
-- **If a settled passage seems to need something, do not edit it — raise it.**
-  Either say so and wait for a decision, or place a `\Comment{...}` next to the
-  passage. It renders as `comment: "…"` in the review draft and is suppressed
-  entirely in the clean builds, so the submitted text is untouched.
-- **Do not add, remove, recolour or reword a `\ReviewMark` box in a chapter
-  that has not been declared revised.** Assessment boxes are the user's
-  judgement of their own work, not yours to reconcile.
-- **Only when it is genuinely necessary** — the context or the reasoning is
-  incomplete without it, a crucial fact is missing, a logical step is broken.
-  Never for polish, flow, or style. When in doubt, leave it and say nothing.
-- **`\Added{}` is for text in sections not yet revised**, marking new writing
-  as a whole sentence or whole word. It is never used inside a green revised passage;
-  a comment goes there instead.
-
-### Marking a chapter as revised
-
-When the user says a chapter is revised, do all three without asking again:
-
-1. **Delete every `\ReviewMark` assessment box in that chapter** — orange,
-   yellow, red and grey alike. A settled chapter is no longer being judged, so
-   the assessments retire with it. Say afterwards which concerns those boxes
-   were carrying, so a real objection is not lost silently.
-2. **Add one green revised-status box directly under `\chapter{...}`**, before
-   the first `\section`, framing the whole chapter. The legacy
-   `\ReviewMark{purple}{...}` source key renders this green box. Not one per
-   section.
-3. **Wrap every prose paragraph in `\Revised{...}`** — one wrapper per
-   paragraph, since a span cannot cross a paragraph break. Do not wrap headings,
-   labels, the `\ReviewMark` box, or float contents.
-
-Then build `Review_Draft.tex` and a clean document, and fix only what blocks
-the build. Report the wrapper counts and every build-required fix by name.
-
-Three mechanical rules, because the highlight is typeset character by
-character:
-
-- Inline maths, citations, cross-references and control spaces inside a marked
-  span must be wrapped in `\mbox{}` — `\mbox{\(J^\top\)}`,
-  `\mbox{\citep{Key}}`, `\mbox{\Cref{fig:x}}`, `\mbox{et al.\ }`. Wrapping them
-  in a helper macro instead does **not** work, and `\soulregister` does not
-  survive natbib's optional argument.
-- A span may not cross a paragraph break. Mark each paragraph separately.
-- A soul "Reconstruction failed" error means an unboxed construct of this kind
-  is inside a span; the log line number points at the closing brace, so look
-  through the whole paragraph, not just that line.
+`config/review_annotations.tex` keeps the existing `\ReviewMark`, `\Revised`,
+`\Comment`, and `\Added` wrappers compilable in `Thesis.pdf`. The thesis build
+suppresses assessment marks and comments while preserving the thesis text
+inside the inline wrappers. Do not add new annotation wrappers. Removing the
+compatibility file requires first unwrapping or deleting every existing use.
 
 ## Building
 
-- `./build_professor.ps1` — builds `Professor_Draft.pdf` (three pdflatex passes
-  plus bibtex) and opens it. `build_professor_commit.ps1` also commits.
-- `Review_Draft.tex` is built the same way (pdflatex, bibtex, pdflatex ×2); it
-  has no script of its own.
-- `./build.ps1` — builds the full `Thesis.tex`.
+- `./build.ps1` builds `Thesis.pdf` from `Thesis.tex`.
 - Judge a build by the **final** pass. Passes 1–2 always report undefined
   citations and references; only warnings surviving the last pass matter.
 
