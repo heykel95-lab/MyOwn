@@ -2,11 +2,27 @@
 
 Companion to [THESIS_WRITING_GUIDE.md](THESIS_WRITING_GUIDE.md). That file governs
 what a chapter contains and what a claim may assert. This file governs how the
-sentences sound, and it exists because a detector pass over Chapters 1 and 2
-flagged specific, repeatable prose patterns.
+sentences sound. It began as the record of a detector pass over Chapters 1
+and 2, and grew through supervisor passes over Chapters 4, 5 and 6 and a
+revision of every chapter.
 
 **Read this before writing or rewriting any thesis prose.** Every example below
-is real text from this thesis, not invented illustration.
+is real text this thesis once carried, not invented illustration.
+
+**The flagged passages have all been repaired.** Checked on 2026-09-01: none of
+the quoted faults survives in the chapters. The `Ott et al. discuss`
+attributions, the `puts ... in the same frame` verb, the `another difficulty`
+filler, the right-handed-orthogonal definition and the whole `Thesis Structure`
+roadmap section are gone, and Chapter 4 carries none of its twenty-six
+`X, not Y` terminators. The examples stay because each shows what the fault
+looked like beside its repair, which is what makes a rule followable. Read them
+as history rather than as a worklist.
+
+**Line references were removed at the same time.** Every one pointed at
+unrelated text after the rewrites -- the line once holding a flagged definition
+now holds a section heading -- and a stale line number sends a reader to the
+wrong place with more confidence than no reference at all. Where an example is
+still worth locating, it is named by chapter.
 
 **Start with the next section.** *Register* was added after a supervisor read
 the draft and found the opposite failure from the one the rest of this file was
@@ -158,7 +174,7 @@ measurement in front of it.
 
 ### Let the cases differ in length
 
-Cases A–E were given the same shape *and* the same length: bold name, headline,
+Cases A–D were given the same shape *and* the same length: bold name, headline,
 numeric comparison, interpretation, limitation. Visually clean, and completely
 predictable.
 
@@ -187,7 +203,7 @@ makes them stand out against the formal text around them.
 | contact-establishment duration deserves confirmation | contact-establishment duration should be verified |
 | which bounds what the present arrangement can resolve | improvements of approximately this magnitude were therefore not interpreted as effects of the configured orientation offset |
 | carry the controller / carry the contribution | are used in the controller / present the corresponding results |
-| the experiments probe that coupling | the effects of … were investigated in 75 contact experiments |
+| the experiments probe that coupling | the effects of … were investigated in 57 surface-contact trials |
 | breaks that assumption | the actual surface pose may differ from the programmed pose |
 | that angle has nowhere to go | that angular offset cannot be absorbed by the commanded motion |
 | Direction is what a contact task needs. | A contact task requires this compliance to be direction dependent. |
@@ -196,7 +212,7 @@ makes them stand out against the formal text around them.
 | whether the trade was struck well | the reported experiments do not evaluate that trade-off |
 | a bounded engineering seed | an initial engineering setting rather than an optimised parameter |
 | quietly averaged | the record was inspected and the discrepancy resolved before analysis |
-| Nothing was discarded. | All 75 measurements were retained for analysis. |
+| Nothing was discarded. | All 57 surface-contact trials were retained for analysis. |
 | proves nothing about / settles nothing about | does not isolate / is not evaluated for |
 | would invert the story | is therefore not plotted as … unless … is first reconstructed |
 | deserves particular care | requires particular care |
@@ -493,7 +509,7 @@ pattern is a worse fault than the missing sentence.
 The single largest flagged block. These sentences define terms to an examiner
 who has taught them for twenty years.
 
-Flagged, [02_theoretical_background.tex:26](chapters/02_theoretical_background.tex#L26):
+Flagged, formerly in Chapter 2:
 
 > To describe the motion of a robotic manipulator, multiple coordinate frames
 > are used simultaneously. A coordinate frame is a right-handed orthogonal
@@ -534,12 +550,17 @@ not follow its predecessor at all, the paragraph order is wrong, and reordering
 is the fix — a transition pasted over a bad order hides the fault rather than
 repairing it.
 
-The counts that prompted the change are worth keeping. The thesis linked almost
-entirely by consequence: `therefore` 104 times, `because` 33, against **zero**
-`However` and two `although`. Contrast and concession were missing altogether,
-which is what made adjacent results read as unrelated statements. Prefer
-contrast and concession where the relation is one of those, rather than adding
-more consequence.
+The counts that prompted the change are worth keeping, with the counts that
+replaced them. The thesis then linked almost entirely by consequence:
+`therefore` 104 times, `because` 33, against **zero** `However` and two
+`although`. Contrast and concession were missing altogether, which is what made
+adjacent results read as unrelated statements.
+
+After the revision pass the chapters carry `therefore` 35 times and `because`
+11, so the consequence rate fell by roughly two thirds. Contrast is still thin:
+one `However` and no `although`. Prefer contrast and concession where the
+relation is one of those, rather than adding more consequence — that is the
+half of this rule the rewrites have not yet answered.
 
 **Four items on the list are still not used**, because they collide with the
 evidence rules rather than with this pattern: `Obviously`, `Of course`,
@@ -552,7 +573,7 @@ Openers that still announce a relation the sentence fails to earn:
 `In this way`, `This means that`, `In other words`,
 `It is important to note that`.
 
-Flagged, [02_theoretical_background.tex:260](chapters/02_theoretical_background.tex#L260):
+Flagged, formerly in Chapter 2:
 
 > Impedance control imposes a desired dynamic behaviour between the
 > end-effector motion and the forces acting on it. Instead of commanding only a
@@ -582,7 +603,7 @@ relation is named, repair the paragraph order.
 
 The one you identified. `puts` is not thesis vocabulary.
 
-Flagged, [02_theoretical_background.tex:185](chapters/02_theoretical_background.tex#L185):
+Flagged, formerly in Chapter 2:
 
 > The multiplication by \(R_{\mathrm{EE}}\) puts \(e_R\), the angular velocity,
 > and the commanded rotational gains in the same base frame.
@@ -621,7 +642,7 @@ indications` for the same reason.
 `straightforward`, `it is worth noting`. These assert value instead of
 demonstrating it.
 
-Flagged, [01_introduction.tex:112](chapters/01_introduction.tex#L112):
+Flagged, formerly in Chapter 1:
 
 > The contact-alignment task adds another difficulty. ... A selected local
 > linearized centre of compliance provides a useful way to design this
@@ -648,10 +669,8 @@ Stating what something is not, before or instead of what it is:
 position...`.
 
 One such correction per subsection is precise. Three is a tic, and this thesis
-currently clusters them — [02:136](chapters/02_theoretical_background.tex#L136),
-[02:160](chapters/02_theoretical_background.tex#L160), and
-[01:118](chapters/01_introduction.tex#L118) are within a few pages of each
-other.
+once clustered them — three sat within a few pages of one another across
+Chapters 1 and 2. All three have since been repaired.
 
 **Rule.** Keep the negation only where a reader would otherwise assume the
 wrong thing — the Euler-angle and matrix-subtraction denials qualify, because
@@ -681,8 +700,7 @@ states a value, a unit, or a consequence.
 
 Machine prose runs 15–25 words per sentence with little variance. The flagged
 blocks above are almost perfectly even; the unflagged block at
-[02:36](chapters/02_theoretical_background.tex#L36) swings from four words to
-forty.
+unflagged block in the same chapter swings from four words to forty.
 
 **Rule.** If five consecutive sentences all sit in the 15–25 word band, rewrite.
 A short sentence is allowed after a long one.
@@ -693,12 +711,16 @@ out of the content — a short sentence because the statement is short, not a
 statement compressed to reach a target length. If a four-word sentence is not
 a plain technical statement, it is a slogan; see *Register* above.
 
-### 8. The chapter-roadmap paragraph
+### 8. The chapter-roadmap paragraph — resolved
 
-`\section{Thesis Structure}` at
-[01_introduction.tex:162](chapters/01_introduction.tex#L162) was flagged almost
-in full, and it is patterns 6 and 7 compounded — five consecutive sentences of
-identical shape, `Chapter N <verb>s <list of four or five nouns>`:
+**Chapter 1 no longer has a `Thesis Structure` section.** It was removed, and
+its four sections are now Motivation, Related Work, Problem Statement and
+Contributions. The pattern is recorded because it is the one most likely to
+come back the next time someone feels a chapter needs signposting.
+
+The section was flagged almost in full, and it is patterns 6 and 7 compounded —
+five consecutive sentences of identical shape,
+`Chapter N <verb>s <list of four or five nouns>`:
 
 > Chapter~\ref{ch:theory} develops the theoretical background for coordinate
 > frames, kinematics, Cartesian impedance control, null-space behaviour, and
@@ -717,7 +739,7 @@ real number in:
 > the compliance-centre shift; Chapter~\ref{ch:implementation} gives their
 > real-time realisation on the Panda. The experimental chapters carry the
 > contribution: Chapter~\ref{ch:methodology} documents the calibrated-plane
-> campaign of 75 contact measurements over 25 settings, and
+> campaign of 57 surface-contact trials over 19 settings, and
 > Chapter~\ref{ch:results_discussion} reports and interprets the measurements.
 > Chapter~\ref{ch:conclusion} states what each case showed.
 
@@ -744,10 +766,24 @@ every sentence wants a metric noun phrase as its subject — `The improvement`,
 **Rule.** Keep determiner openers under about a third. Start from the
 condition (`With the lever on the favourable side, …`), the participle
 (`Stiffening the axis being corrected …`), the quantity (`Sixty millimetres of
-lever …`), or the subordinate clause. After the rewrite both chapters sit at
-29–30 %.
+lever …`), or the subordinate clause.
 
-### 10. The `X, not Y` disclaimer as a paragraph terminator
+**This is the one pattern the revision pass did not fix, and the claim that it
+had is withdrawn.** This rule used to end `after the rewrite both chapters sit
+at 29–30 %`, which is no longer true of any chapter. Measured on 2026-09-01:
+Chapter 1 sits at 34 %, Chapter 5 at 45 %, Chapter 3 at 50 %, Chapter 4 at
+59 %, Chapter 6 at 61 %. Every revision pass since has improved sentence length
+and left the openers alone, because an opener is invisible one sentence at a
+time and only a whole-chapter count exposes it. Treat it as outstanding work
+rather than as a rule already satisfied.
+
+### 10. The `X, not Y` disclaimer as a paragraph terminator — resolved
+
+**Chapter 4 now carries none.** The count went from 26 to zero without one
+scientific commitment being dropped, which is the outcome this rule was written
+to produce. It stays because the disclaimers are individually correct and the
+temptation to reach for the construction returns whenever a sentence needs a
+qualification.
 
 Chapter 4 carried 26 of these, roughly one per paragraph, always in final
 position: `It is an engineering placeholder, not a measured safety boundary`,
@@ -795,10 +831,10 @@ Statements about what was *measured* or *observed* stay in the past regardless.
 
 ### 12. The templated section
 
-Chapter 5's five case sections were structurally identical: one-sentence
+Chapter 5's case sections were structurally identical: one-sentence
 `Case X varies Y`, table, figure, `For a tilt about t1 …`, `For a tilt about
 t2 …`, closing `therefore` generalisation. Once the reader has met Case A, no
-token in Cases B–E is a surprise, and next-token predictability is exactly what
+token in Cases B–D is a surprise, and next-token predictability is exactly what
 these tools score.
 
 **Rule, as originally written and now superseded.** "Vary what each section
@@ -839,10 +875,21 @@ One name, many constructions:
 | Excited axis *(table header)* | Configured offset axis |
 
 `tool tilt`, `excitation`, `commanded rotation`, and `mismatch` are not used for
-the configured orientation offset. Angular conditions and compliance-centre
-selection are described through directions of rotation and displacement, not
-through a `side` or the sign of an initial offset. The established technical
-compounds `robot-side` and `application-side` remain unchanged.
+the configured orientation offset. Compliance-centre selection is described
+through displacement and rotational directions, never through a `side`. The
+established technical compounds `robot-side` and `application-side` remain
+unchanged.
+
+**The blanket ban on naming a condition by its offset direction is
+withdrawn.** This paragraph used to forbid describing an angular condition
+`through ... the sign of an initial offset`, which is what produced
+`the direction of rotation generated by the configured \(+10^\circ\) offset`
+— eleven words, nine times in Chapter 5. The body chapters now use
+`positive-offset condition` and `negative-offset condition`, defined once
+against their achieved offsets; see *Abstract and Kurzfassung* in
+THESIS_WRITING_GUIDE.md. Aggregate comparisons still say `both directions of
+rotation`, and the two summaries still avoid the names, because a first-time
+reader has not met the definition.
 
 ## What already reads as your own voice
 
@@ -882,8 +929,7 @@ and declining to claim more than the data carries.
 placeholders. They tell the reader a paper exists, not what it changed. A
 strong literature section reads as a dated chain of moves, each attributed.
 
-Weak, and still present at
-[01_introduction.tex](chapters/01_introduction.tex):
+Weak, and formerly in Chapter 1:
 
 > Ott et al. discuss Cartesian impedance control for flexible joint robots and
 > the importance of stable interaction behaviour. Albu-Schäffer et al. describe
@@ -953,7 +999,7 @@ State how many, why, and what the surviving denominator is — then make every
 later percentage use it.
 
 > Of the \(N\) attempted experiments, \(M\) were discarded after a reflex stop during
-> the ramp phase. The remaining \(75\) measurements are the basis of every value
+> the ramp phase. The remaining \(57\) trials are the basis of every value
 > reported below.
 
 Fill in the real counts or drop the sentence; do not invent a number to make
@@ -1204,13 +1250,29 @@ And count, over the whole chapter — these are the four from the Chapters 4 and
 
 ## Register baseline
 
-This file once carried a measured baseline taken from a green revised Chapter 5
-— mean sentence length, median, the share of short and long sentences. That
-chapter has since been replaced and no revised paragraphs remain anywhere in
-the thesis, so the baseline described text that no longer exists and has been
-removed rather than left to mislead.
+This file carried a baseline taken from one revised chapter, then lost it when
+that chapter was replaced. Every chapter has since been revised, so the
+baseline is restored from the whole document rather than from one sample.
+Measured on 2026-09-01, over the revised prose with equations, tables and
+figure environments stripped:
 
-Until a chapter is revised and marked again, judge the register by the rules
-above rather than against a stored set of numbers: plain technical statements,
-one main claim per sentence, certainty bounded to what was measured, and
-paragraph shapes that vary with what the paragraph is doing.
+| Chapter | Mean words | Under 12 | Over 28 | Determiner openers |
+|---|---|---|---|---|
+| 1 Introduction | 18.7 | 15 % | 7 % | 34 % |
+| 3 Implementation | 17.7 | 23 % | 7 % | 50 % |
+| 4 Methodology | 18.1 | 18 % | 8 % | 59 % |
+| 5 Results | 17.0 | 18 % | 3 % | 45 % |
+| 6 Conclusion | 16.5 | 18 % | 1 % | 61 % |
+
+**Read the first three columns as satisfied and the fourth as outstanding.**
+Sentence length settled between about 16.5 and 18.7 words, with long sentences
+rare and short ones present throughout; that is the register the rules above
+describe. Determiner openers did not move, and pattern 9 records why.
+
+**Two cautions on using this table.** A measured target invites writing to the
+number, which is how the slogan table at the top of this file was produced: a
+short sentence has to be short because the statement is short. And these
+figures come from a script that strips LaTeX crudely, so it reads across a
+removed equation and counts the join as one long sentence — the `over 28`
+column is an upper bound, not a count of real faults. Check a flagged sentence
+before splitting it.

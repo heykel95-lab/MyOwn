@@ -2050,27 +2050,36 @@ on: a preallocated in-memory ring buffer, no file access inside the callback,
 bounded memory when the capacity wraps, and the chronological write after
 control stops. The column-level description stays in the data-format appendix.
 
-**Delete Table 3.1** (functional subsystems — software documentation the
-architecture figure already carries), **Table 3.3** (four null-space modes, one
-sentence suffices) and **Table 3.4** (logged signals, which belongs in the
-data-format appendix). **Simplify Table 3.2** or drop it: the point is only that
-surface-related states express gains relative to the configured surface reference, pose
-hold uses the base frame, and the contact establishment translational frame is configurable.
-**Remove the `robot.control` listing**, which shows nothing the prose does not.
+**Chapter 3 carries no tables and no `robot.control` listing, and must not
+regain them.** Four went, each for a stated reason: Table 3.1 documented
+functional subsystems the architecture figure already carries; Table 3.3 listed
+the four null-space modes, which one sentence states; Table 3.4 listed logged
+signals, which belong in the data-format appendix; and Table 3.2 said only that
+surface-related states express gains relative to the configured surface
+reference, that pose hold uses the base frame, and that the contact
+establishment translational frame is configurable, all of which the prose now
+says. The `robot.control` listing showed nothing the prose does not.
 
-The chapter should come out shorter and stronger, not longer.
+The chapter came out shorter and stronger, which is the test any future
+addition to it has to meet.
 
 ### Chapter 4 structure
 
 The division of labour is: **Chapter 3 is mechanism and implementation,
 Chapter 4 is the physical setup, the settings actually used, the test matrix
 and the evaluation method, and the appendices hold the exhaustive
-configuration.** Chapter 4 currently breaks this by re-explaining the
-controller, repeating settings in both prose and tables, and restating values
-that Appendix C already carries. It should lose roughly a fifth to a third of
-its length without losing any scientific content.
+configuration.** That rule is live and governs anything added to either
+chapter.
 
-Section by section:
+**The compression it called for has been carried out**, so the section-by-section
+list below is a record of what was done and why, not a pending worklist. Read
+it as the reasoning behind the chapter's present shape; an instruction to
+delete something already deleted will otherwise send the next reader hunting
+for a table that is not there. Chapter 4 no longer re-explains the controller,
+no longer repeats settings in both prose and tables, and no longer restates
+values Appendix C carries.
+
+Section by section, as executed:
 
 - **Experimental system.** Apparatus only. \(T_s=1\,\mathrm{ms}\) is not a
   numbered equation; write that the controller ran through the Franka Control
@@ -2099,12 +2108,11 @@ Section by section:
   quality: three trials per retained setting, 57 reported surface-contact
   trials over 19 settings, and all three trials retained within each
   reported setting.
-- **Case matrix.** The cases are currently explained three times — a grouping
-  table, a prose walk-through, and the master table. **Delete the grouping
-  table.** Keep one paragraph naming the three effects being separated, then the
-  master table, then prose only for the cases that need interpretation: why an
-  axial displacement is nominally weak, and why the lever direction changes with
-  the configured orientation offset.
+- **Case matrix.** The cases had been explained three times — a grouping
+  table, a prose walk-through, and the master table. The grouping table was
+  deleted, leaving one paragraph naming the effects being separated, then the
+  master table, then prose only for the cases that need interpretation. Do not
+  reintroduce a second case table.
 - **Experimental condition and response quantity.** Keep one
   input--condition--response chain: the configured pre-contact input
   \(\theta_{\mathrm{offset},t_1}\) produces the achieved pose-based condition

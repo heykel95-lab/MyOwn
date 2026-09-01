@@ -43,6 +43,21 @@ fixed by leading each paragraph with the finding instead. Confirm whether the
 absolute values should go in as well; if so, the guide rule is what has to
 change first.
 
+## Bring the determiner openers down
+
+Pattern 9 in `THESIS_VOICE.md` asks for sentences opening with `The`, `This`,
+`These`, `It` or `A` to stay under about a third. Measured on 2026-09-01, no
+chapter meets it: Chapter 1 sits at 34 %, Chapter 5 at 45 %, Chapter 3 at
+50 %, Chapter 4 at 59 %, Chapter 6 at 61 %. The rule previously claimed the
+figure had been brought to 29--30 %, which was withdrawn as false in the same
+pass.
+
+Every revision so far has improved sentence length and left the openers
+untouched, because an opener is invisible one sentence at a time and only a
+whole-chapter count exposes it. The fix is per chapter and mechanical: start
+from the condition, the participle, the quantity, or a subordinate clause,
+per the rule's own list. Chapters 6 and 4 are the worst and would gain most.
+
 ## Finish the Appendix C reduction
 
 The 2026-09-01 reduction pass removed Table C.3, which duplicated Table 4.3,
