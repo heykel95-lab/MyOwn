@@ -56,6 +56,29 @@ measured means.  Both plotted signals are absolute quantities resolved on the
 same surface axes.  The physical contact force is denoted throughout by
 \({}^{O}\!f_{\mathrm{contact}}\).
 
+The model-estimated curves start directly from Libfranka's absolute estimator
+output:
+\begin{center}
+\small\texttt{external\_wrench = robot\_state.O\_F\_ext\_hat\_K}
+\end{center}
+Its first and last three entries are logged as \(\mathtt{external\_force}\) and
+\(\mathtt{external\_moment}\).  The plotted scalars are projections of these
+direct vector values; they do not use the clearance-referenced signals obtained
+by subtracting the wrench stored before contact.  Since stiffness frame \(K\)
+coincides with the TCP in this run, the two plotted estimator components are
+\[
+ F_{n,\mathrm{est}}
+ =n_s^\top\mathbin{\cdot}{}^{O}\!f_{\mathrm{ext},K},
+ \qquad
+ M_{t_1,\mathrm{est}}
+ =t_1^\top\mathbin{\cdot}\left(
+ {}^{O}\!m_{\mathrm{ext},K}
+ -p_{\mathrm{TCP}}\times{}^{O}\!f_{\mathrm{ext},K}\right).
+\]
+The second equation expresses the base-origin moment about the coincident
+\(K\)/TCP point.  These absolute estimates are therefore compared directly
+with the absolute commanded components.
+
 \par\smallskip
 \noindent\textbf{Normal-force comparison, \(F_n\)}\par
 The mean desired and measured TCP positions in the grey interval were

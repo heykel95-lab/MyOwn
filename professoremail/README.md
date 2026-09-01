@@ -14,6 +14,18 @@ the stationary means. The commanded wrench is resolved on the configured
 surface axes. Libfranka supplies the estimated spatial wrench on stiffness
 frame \(K\), expressed in the base frame.
 
+The plot starts directly from Libfranka's absolute estimator output using
+`external_wrench = robot_state.O_F_ext_hat_K`; its first and last three entries
+are logged as `external_force` and `external_moment`. The plotted scalars are
+projections of these direct vector values, not separate raw estimator
+variables. They do not use the clearance-referenced signals formed by
+subtracting the stored pre-contact wrench. Since \(K\) coincides with the TCP
+in this run, the plotted components are
+\(F_{n,\mathrm{est}}=n_s^\top{}^{O}f_{\mathrm{ext},K}\) and
+\(M_{t_1,\mathrm{est}}=t_1^\top({}^{O}m_{\mathrm{ext},K}
+-p_{\mathrm{TCP}}\times{}^{O}f_{\mathrm{ext},K})\). They are compared with
+the corresponding absolute commanded components.
+
 The stationary values are `Fn_cmd = -80.312 N`,
 `Fn_est = -78.451 N`, `Mt1_cmd = +0.635 N m`, and
 `Mt1_est = +0.604 N m`. The estimate differs from the command by `2.32%` for

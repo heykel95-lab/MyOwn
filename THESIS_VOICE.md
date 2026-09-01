@@ -266,6 +266,12 @@ Before accepting a sentence containing `not`, `rather than`, `therefore`,
 mechanism or result directly. These words are not banned. Each occurrence has
 to carry a real distinction or consequence.
 
+Do not append administrative remarks about unused data products. Phrases such
+as `kept only as separate diagnostic quantities` describe how the analysis was
+organised instead of explaining the calculation. Where two signal definitions
+could be confused, identify the signal that supplies the result and state its
+equation. Stop once the comparison is defined.
+
 Use `reported` only when it distinguishes the selected data set from archived
 or excluded material. Elsewhere name the thing directly: `experiments`,
 `measurements`, `response`, `value`, `data set`, `evaluation endpoint`, or
