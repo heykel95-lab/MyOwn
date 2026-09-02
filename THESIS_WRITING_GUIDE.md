@@ -3530,13 +3530,25 @@ against \(99.8\,\%\). What the higher magnitude cost was cumulative motion,
 state the trade-off in that order. Where two settings differ on two quantities,
 name the quantity each one wins on rather than declaring one setting better.
 
-**A time-course observation is stated plainly.** Superseded 2026-09-02, the
-same day the rule was written. It had required a sentence marking the
-comparison qualitative, and the caveat was then withdrawn from Section 5.1.3.
-Section 5.1.3 and Section 6.1 both say the rotation towards alignment developed
-more quickly at the favourable displacement, without a rate metric attached.
-That is what the time histories show, and the scope of the campaign is set out
-in Section 6.2 rather than repeated beside each observation.
+**A time-course observation is stated plainly, and may carry the times read
+off the traces.** Amended 2026-09-02, twice. The rule first required a sentence
+marking the comparison qualitative, and that caveat was withdrawn from
+Section 5.1.3 the same day it was written. It then said the observation carried
+no rate metric at all, and that half is now withdrawn too: Section 5.1.3 states
+that the response at \(r_{c,t_2}=40\,\mathrm{mm}\) reaches its approximately
+steady value at about \(2.3\,\mathrm{s}\) and the TCP response at about
+\(3.6\,\mathrm{s}\), roughly \(1.3\,\mathrm{s}\) later. Section 6.1 keeps
+the qualitative form.
+
+Three conditions make such a reading admissible, and all three have to hold.
+The time is read from a plotted trace the section already cross-references, so
+the reader can check it against the figure. It is hedged to the digit the trace
+supports — `about`, and one decimal — because a settling time read off a curve
+is not a fitted quantity. And the paragraph has already said whether the traces
+are single repetitions or means. Do not promote such a reading to a defined
+metric, a table column, or a symbol; it stays a statement about what the figure
+shows. The scope of the campaign is set out in Section 6.2 rather than repeated
+beside each observation.
 
 **The two null-space terms were evaluated separately, and the text says so.**
 Corrected 2026-09-02. The third contribution bullet had read `a projected
@@ -3811,11 +3823,20 @@ Two claims must not be made from this:
   adds no virtual coupling moment and selects no tangential direction. A
   displaced centre may produce a larger alignment response for a known
   direction of rotation.
-- **Not that the lever magnitude changes an alignment time.** The contact establishment
-  interval was fixed at \(5\,\mathrm{s}\) and no alignment-time metric was
-  defined or compared. What may be said is the model statement: for the same
-  elastic press and a perpendicular lever, the predicted contribution is
-  proportional to \(\lVert r_{c,t}\rVert\). A timing claim is future work.
+- **Not that the lever magnitude scales an alignment time.** Narrowed
+  2026-09-02, replacing a blanket ban on any timing claim. The contact
+  establishment interval was fixed at \(5\,\mathrm{s}\), and no
+  alignment-time metric was defined, tabulated, or compared across the tested
+  lever magnitudes, so no dependence of a settling time on
+  \(\lVert r_{c,t}\rVert\) may be asserted. What may be said about magnitude
+  is the model statement: for the same elastic press and a perpendicular lever,
+  the predicted contribution is proportional to \(\lVert r_{c,t}\rVert\).
+
+  What the ban had also been catching, and should not have been, is the reading
+  of a settling time off a plotted trace. Section 5.1.3 gives the two times of
+  the Case-D wrench figure under the conditions in *A time-course observation is
+  stated plainly* above. Those are two positions of one comparison, hedged and
+  traceable to the panel, not a metric fitted across the magnitude range.
 
 Basic settling, formulation-equivalence, and repeatability checks support the
 measurements but should not dominate the conclusion.
