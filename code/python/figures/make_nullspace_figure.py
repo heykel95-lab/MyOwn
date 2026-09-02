@@ -281,7 +281,7 @@ def sigma_panel(ax, groups):
         markeredgewidth=1.1, linewidth=1.25, elinewidth=1.0,
         capthick=1.0, capsize=3,
         label=r"Singular-Value Change, "
-              r"$\Delta\sigma_{\min,\mathrm{dist}}$")
+              r"$\Delta\sigma_{\min}$")
     ax.plot(gains[screening], sigma_means[screening], color=SERIES_BLACK,
             marker="D", markerfacecolor="white", markeredgewidth=1.1,
             linestyle="none")
@@ -289,7 +289,7 @@ def sigma_panel(ax, groups):
     ax.set_xlabel(r"Conditioning Torque Magnitude, $k_\sigma$ [N m]")
     ax.set_ylabel(
         "Change in Minimum Singular\n"
-        r"Value, $\Delta\sigma_{\min,\mathrm{dist}}$ [-]")
+        r"Value, $\Delta\sigma_{\min}$ [-]")
     ax.set_xticks(gains)
     ax.ticklabel_format(axis="y", style="sci", scilimits=(0, 0),
                         useMathText=True)
@@ -311,7 +311,7 @@ def sigma_panel(ax, groups):
         markerfacecolor="white", markeredgecolor=SERIES_RED,
         markeredgewidth=1.1, linewidth=1.25, elinewidth=1.0,
         capthick=1.0, capsize=3,
-        label=r"Peak Position Error, $\|e_p\|_{\max}$")
+        label=r"Maximum Position Error, $\|e_p\|_{\max}$")
     task_ax.plot(gains[screening], task_means[screening], color=SERIES_RED,
                  marker="D", markerfacecolor="white", markeredgewidth=1.1,
                  linestyle="none")
@@ -319,7 +319,7 @@ def sigma_panel(ax, groups):
         2.0, color="0.45", linewidth=1.0,
         label=r"Position-Error Limit, $\|e_p\|_{\max}=2\,\mathrm{mm}$")
     task_ax.set_ylabel(
-        "Peak Cartesian Position\n"
+        "Maximum Cartesian Position\n"
         r"Error, $\|e_p\|_{\max}$ [mm]",
         color=SERIES_RED,
     )
@@ -328,8 +328,8 @@ def sigma_panel(ax, groups):
 
     return (
         [sigma_handle, task_handle, criterion_handle],
-        [r"Singular-Value Change, $\Delta\sigma_{\min,\mathrm{dist}}$",
-         r"Peak Position Error, $\|e_p\|_{\max}$",
+        [r"Singular-Value Change, $\Delta\sigma_{\min}$",
+         r"Maximum Position Error, $\|e_p\|_{\max}$",
          r"Position-Error Limit, $\|e_p\|_{\max}=2\,\mathrm{mm}$"],
     )
 
@@ -383,8 +383,8 @@ def net_displacement_panel(ax, groups):
     ax.set_xticks(positions)
     ax.set_xticklabels(NET_LABELS[:len(ordered)])
     ax.set_ylabel(
-        "Net Redundant Displacement,\n"
-        r"$\Delta\eta_{\mathrm{dist}}$ [rad]")
+        "Net Displacement,\n"
+        r"$\Delta\eta$ [rad]")
     ax.margins(y=0.28)
     for position, mean, sd in zip(positions, means, sds):
         offset = sd if np.isfinite(sd) else 0.0

@@ -3,6 +3,28 @@
 This file contains only agreed work that remains unfinished. Completed items are
 removed in the turn in which they are finished.
 
+## Regenerate Figure 5.6 on the lab machine
+
+The pose-hold figure `figures/MAIN_NS_nullspace_automatic.pdf` still prints the
+withdrawn notation: `Singular-Value Change, $\Delta\sigma_{\min,\mathrm{dist}}$`,
+`Net Redundant Displacement, $\Delta\eta_{\mathrm{dist}}$`, and `Peak
+Cartesian Position Error`. Chapter 5 around it now reads
+\(\Delta\sigma_{\min}\), \(\Delta\eta\) and maximum Cartesian position
+error, so the figure contradicts its own caption paragraph.
+
+The six labels were corrected in `code/python/figures/make_nullspace_figure.py`
+on 2026-09-02, but the PDF could not be rebuilt here. The script needs the four
+`MAIN_NS7`/`MAIN_NS8` run directories and
+`experiments/derived/MAIN_NS_automatic_summary.csv`, which a clone does not
+carry: `code/AGENTS.md` records that `MyController` excludes
+`experiments/results/**/*.csv` and `experiments/derived/` from version control.
+Running the script here fails with `missing Case-F data`.
+
+Rerun `python code/python/figures/make_nullspace_figure.py` on the machine
+holding the `MyController` run archive and copy the regenerated PDF into
+`figures/`. Nothing else in the script changed, so the plotted values are
+unaffected.
+
 ## Publish enough data to reproduce the figures
 
 The run CSV files and derived contact metrics remain outside the repository.
@@ -29,25 +51,16 @@ used \(20\,\mathrm{N}\) at \(200\,\mathrm{mm}\). Add this distinction beside the
 repository-authority rules in `code/AGENTS.md` so later analysis does not mix
 the two configurations.
 
-## Confirm the withdrawn symmetry clause in Section 3.2.6
+## Decide on `parallel alignment` thesis-wide
 
-The supplied text for Section 3.2.6 ended `The response therefore has no
-preferred rotational direction from the virtual CoC and is symmetric with
-respect to the two angular directions.` The final clause was not applied. It
-contradicts the settled result: Chapter 5 states that the TCP-centred condition
-favours neither direction of rotation, and Chapter 6 states that it was `not
-neutral in the sense of equal response magnitudes, which differed between the
-two offset directions`. The qualifier `under otherwise equivalent contact
-conditions` had been removed from the supplied wording in the same message,
-which strengthened the claim rather than bounding it. Chapter 3 also carries no
-measured comparisons. The sentence therefore ends at `from the virtual CoC`.
+The Abstract, Section 1.4 and Section 6.1 describe the result as rotation
+`towards the configured surface`. The longer form it replaced, `towards
+parallel alignment with the configured surface`, and its variant `the
+configured surface-parallel orientation`, remain in eight places: Section 1.1
+once, Section 3.2.2 once, Section 4.5.2 twice, and Chapter 5 four times.
 
-The Case-A wording and the supplied conclusion, both from 2026-09-02, settle
-the form. Section 6.1 now reads `showed an almost symmetrical rotational
-behaviour with respect to the two initial directions, although the measured
-response magnitudes were different`, and Case A carries the same qualification.
-Restoring the Section 3.2.6 clause in that form would be consistent with both.
-Confirm whether to restore it.
+Both are defensible, but one quantity now has two names. Decide which survives.
+Section 1.1 and Section 1.4 carry the two forms two pages apart.
 
 ## Bring the determiner openers down
 

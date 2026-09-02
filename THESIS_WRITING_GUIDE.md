@@ -165,22 +165,27 @@ gemessenen Endeffektororientierungen bestimmt.` The physical-normal and
 instantaneous physical-angle limitations belong in Section 6.2.2 and are not
 repeated in either summary.
 
-**The Abstract and Kurzfassung are written for a first-time reader and contain
-no local axis symbols such as \(t_1\) or \(t_2\).** State that the desired
-pre-contact orientation was defined by a configured angular offset applied in
-both directions of rotation about the same axis in the surface plane.
-Distinguish this input from the angular offset achieved at contact entry and
-from the response calculated from the measured end-effector orientations.
-Explain the centre-position result through the
-measured outcome. Phrases such as `sign-independent`, `assisting
-side`, `the side reversed`, and `matched the sign` do not appear in either
-summary.
+**The Abstract and Kurzfassung may use the thesis's symbols.** The supplied
+Abstract of 2026-09-02 withdrew the earlier rule that they contain no local
+axis symbols such as \(t_1\) or \(t_2\). It names \(t_1\) and \(t_2\) for the
+rotation and displacement axes, \(r_c\) for the lever arm, \(r_c\times f\) for
+the moment it generates, and \(\gamma_{t_1}\) for the response. The reason the
+earlier rule gave — that a first-time reader has not met the surface frame —
+was outweighed by the cost it imposed, which the rule itself recorded: an
+Abstract that names no axis cannot say which stiffness was varied without
+implying that both tangent entries were.
+
+What the summaries still avoid is a coordinate convention the reader must
+reconstruct. Phrases such as `sign-independent`, `assisting side`, `the side
+reversed`, and `matched the sign` do not appear in either, and neither uses the
+`positive-offset condition` and `negative-offset condition` names, which belong
+to the body chapters that define them against measured values.
 
 **Write `offset direction`, not `offset sign`, in the two summaries.** The
-Abstract now defines the pair itself — `positive and negative pre-contact
-angular offsets were tested about the same surface-tangent axis` — so `for both
-offset directions` is readable to a first-time reader where `for both offset
-signs` asks them to hold a coordinate convention the summaries never state.
+Abstract defines the pair itself — `positive and negative pre-contact angular
+offsets were investigated about \(t_1\)` — so `for both offset directions` is
+readable where `for both offset signs` asks the reader to hold a coordinate
+convention the summaries never state.
 This keeps `both signs` out of the Abstract and the Kurzfassung while the body
 chapters continue to use the `positive-offset condition` and
 `negative-offset condition` names settled below.
@@ -229,14 +234,9 @@ sign`, and `initial-deviation sign` are not used. The technical compounds
 **Revise the Abstract last**, after the body text is settled, and derive the
 Kurzfassung from the finished English rather than paraphrasing it independently.
 
-The robot's degrees of freedom may remain because they identify the robot
-configuration. Symbols for locally defined directions stay in the body chapters,
-where their geometry is introduced before they are used.
-
-This rule costs the Abstract its specificity, which is the trait that
-otherwise marks prose as the author's own (see [THESIS_VOICE.md](THESIS_VOICE.md)).
-Accept that for the Abstract and the Kurzfassung only; every other chapter
-keeps its numbers.
+The Abstract no longer expands \abbr{DOF} on first use, since it writes
+`seven-degree-of-freedom` in words. The acronym is still introduced by
+Chapter 1 and by the title, so the abbreviation list is unaffected.
 
 **The single-page limit is suspended.** The Abstract and the Kurzfassung
 previously had to fit one page each, and neither was allowed to spill onto a
@@ -3500,12 +3500,15 @@ Cartesian position error`. The waveform quantities \(f_{\mathrm{dist}}\),
 their suffix: there the word distinguishes the commanded disturbance from the
 measured signals beside it.
 
-**`fixed displaced centre` and `fixed displacement` are not used.** Agreed
-2026-09-02. Write `a displaced centre`, `a displaced CoC`, and `the CoC
-displacement`. The centre is a configured parameter that does not change during
+**`fixed` is not used of the compliance centre.** Agreed 2026-09-02, first for
+`fixed displaced centre` and `fixed displacement` and then for `a fixed CoC`.
+Write `a displaced centre`, `a displaced CoC`, `the CoC displacement`, and,
+where several positions were compared, `different CoC positions`. The centre is a configured parameter that does not change during
 a trial, so `fixed` adds nothing to `displaced` and invites the reader to look
-for a moving centre that the study never tested. Three uses were rewritten, in
-Sections 1.3, 1.4 and 6.1.
+for a moving centre that the study never tested. Worse, `fixed` already carries
+a precise and unrelated sense in `tool-fixed` and `surface-fixed`, so a reader
+meeting `a fixed CoC` in Section 1.3 has to rule out the frame reading first.
+Four uses were rewritten, in Sections 1.3, 1.4 and 6.1.
 
 Two neighbouring terms are **not** covered by this and must survive it.
 `tool-fixed displacement` and `surface-fixed displacement` name the frame the
@@ -3527,12 +3530,25 @@ against \(99.8\,\%\). What the higher magnitude cost was cumulative motion,
 state the trade-off in that order. Where two settings differ on two quantities,
 name the quantity each one wins on rather than declaring one setting better.
 
-**A time-course observation without a metric is marked qualitative.** Agreed
-2026-09-02 for the Case-D time histories. The favourable displacement shows the
-rotation towards alignment developing more quickly than at the TCP, and the
-sentence saying so states that no rise-time or settling-time metric was
-evaluated. Neither `faster` nor `more quickly` may stand alone in a results
-section; a reader takes an unqualified comparison of rates as a measurement.
+**A time-course observation is stated plainly.** Superseded 2026-09-02, the
+same day the rule was written. It had required a sentence marking the
+comparison qualitative, and the caveat was then withdrawn from Section 5.1.3.
+Section 5.1.3 and Section 6.1 both say the rotation towards alignment developed
+more quickly at the favourable displacement, without a rate metric attached.
+That is what the time histories show, and the scope of the campaign is set out
+in Section 6.2 rather than repeated beside each observation.
+
+**The two null-space terms were evaluated separately, and the text says so.**
+Corrected 2026-09-02. The third contribution bullet had read `a projected
+null-space controller combining joint damping and singular-value conditioning
+was implemented and evaluated separately`, which reads as one combined
+controller that was evaluated apart from the contact study. Section 4.6 lists
+four settings -- no null-space torque, projected damping alone, and
+conditioning at \(k_\sigma=1.5\) and \(2.0\,\mathrm{N\,m}\) -- so the two terms
+were never active together in the pose-hold trials. Write `Projected null-space
+damping and singular-value conditioning were implemented and evaluated
+separately in Cartesian pose hold`. Mode 3, where both act together, belongs to
+the surface-contact cases only.
 
 **A quantity is discussed where its figure shows it.** Agreed 2026-09-02.
 \(\Delta\sigma_{\min}\) appears in panel~(b) of the pose-hold figure, which

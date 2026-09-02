@@ -416,7 +416,8 @@ The impedance wrench is evaluated in the robot base frame. The corresponding
 translational stiffness and damping matrices are
 \mbox{\(K_p,D_p\in\mathbb{R}^{3\times3}\)}, while the rotational matrices are
 \mbox{\(K_R,D_R\in\mathbb{R}^{3\times3}\)}. Rotating the diagonal
-surface-frame gains into the base frame generally produces full matrices. Their base-frame representation
+surface-frame stiffness and damping matrices into the base frame generally
+produces non-zero off-diagonal entries. Their base-frame representation
 changes with the surface-frame orientation, even when the local matrix entries
 remain unchanged.
 
@@ -507,7 +508,7 @@ J^\top(q)F,
 
 where \mbox{\(\tau_{\mathrm{cart}}\in\mathbb{R}^7\)} is the Cartesian impedance
 torque contribution and
-\mbox{\(J^\top(q)\in\mathbb{R}^{n\times6}\)}. Substituting
+\mbox{\(J^\top(q)\in\mathbb{R}^{7\times6}\)}. Substituting
 \mbox{\Cref{eq:cartesian_force_moment_vector}} gives
 
 \begin{equation}
@@ -886,10 +887,9 @@ D_p & 0\\
 \end{equation}
 
 All blocks in \mbox{\Cref{eq:pole_block_gains}} are expressed in the base-frame
-orientation. The compliance-centre wrench is \mbox{\(F_c=K_ce_c\)}, and
-transforming this power-conjugate wrench gives the corresponding TCP wrench
-\mbox{\(F_{\mathrm{TCP}}=\mathrm{Ad}(r_c)^\top F_c\)}. The matrices at the TCP
-follow from the congruence transformations
+orientation. The point-shift transformation is applied to both the stiffness
+\mbox{\(K_c\)} and damping \mbox{\(D_c\)}. The corresponding matrices at the
+TCP follow from the congruence transformations
 
 \begin{equation}
 K_{\mathrm{TCP}}

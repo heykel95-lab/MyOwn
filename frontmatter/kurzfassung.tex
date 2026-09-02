@@ -3,53 +3,52 @@
 
 \begin{otherlanguage}{ngerman}
 
-Beim Kontaktbeginn zwischen einem Schleifwerkzeug und einer ebenen Fläche
-treten zwei Abweichungen auf. Die konfigurierte Flächenreferenz kann von der
-physischen Fläche abweichen, und die erreichte Werkzeugorientierung kann von
-der gewünschten Orientierung abweichen. Zusammen erzeugen diese Abweichungen eine Winkelfehlstellung zwischen Werkzeug
-und Fläche, die zu Kantenkontakt und hohen Kontaktlasten führen kann.
+Abweichungen zwischen der konfigurierten Flächenreferenz und der physischen
+Fläche können zusammen mit Abweichungen zwischen der gewünschten und der
+erreichten Werkzeugorientierung eine Winkelfehlstellung bei Kontaktbeginn
+erzeugen. Dies kann zu Kantenkontakt und erhöhten Kontaktlasten führen.
 
 Für einen siebenachsigen Franka Emika Panda wurde ein kartesischer
-Echtzeit-Impedanzregler implementiert. Richtungsabhängige Steifigkeit und
-Dämpfung wurden relativ zu einem konfigurierten Flächenkoordinatensystem
-definiert. Der Impedanzbezugspunkt konnte vom Werkzeugbezugspunkt (TCP) auf
-ein virtuelles Nachgiebigkeitszentrum (\abbr{CoC}) verschoben werden. Eine
-Verschiebung des \abbr{CoC} vom TCP koppelte die kommandierte translatorische
-Anpressbewegung an ein zusätzliches kommandiertes TCP-Moment. Während der
-Kontaktherstellung führte der Regler das Werkzeug zur Fläche und hielt dabei
-die bei Kontaktbeginn erreichte Orientierung als Rotationsreferenz.
+Echtzeit-Impedanzregler implementiert, um eine nachgiebige kontaktinduzierte
+Drehung zur konfigurierten Fläche zu erzeugen. Richtungsabhängige
+translatorische und rotatorische Steifigkeit und Dämpfung wurden im
+Flächenkoordinatensystem definiert. Das virtuelle Nachgiebigkeitszentrum
+(\abbr{CoC}) konnte vom Werkzeugbezugspunkt (TCP) verschoben werden, wodurch
+eine Kopplung zwischen Translation und Rotation in die kartesische Impedanz
+eingeführt wird. Das verschobene \abbr{CoC} gibt der kommandierten
+Anpressbewegung einen virtuellen Hebelarm \(r_c\), der am TCP das zusätzliche
+Moment \(r_c\times f\) erzeugt.
 
 Die Kontaktversuche variierten die \abbr{CoC}-Position, die
-Rotationssteifigkeit und die translatorische Steifigkeit entlang der Fläche.
-Positive und negative Winkeloffsets vor dem Kontakt wurden um dieselbe
-Flächentangentenachse getestet. Zur Charakterisierung der Anfangsbedingung
-jedes Versuchs wurde der bei Kontaktbeginn erreichte anfängliche Winkeloffset
-relativ zur konfigurierten Flächenreferenz berechnet. Die
-Kontaktherstellungsreaktion wurde anschließend aus der Relativdrehung zwischen
-den gemessenen Endeffektororientierungen bei Kontaktbeginn und am Ende der
-Kontaktherstellung bestimmt.
+Rotationssteifigkeit und die translatorische Steifigkeit entlang
+\(t_2\). Positive und negative Winkeloffsets vor dem Kontakt wurden um
+\(t_1\) untersucht. Die anfängliche Winkelbedingung bei Kontaktbeginn wurde
+relativ zur konfigurierten Flächenreferenz berechnet, und die
+Kontaktherstellungsreaktion \(\gamma_{t_1}\) wurde aus den gemessenen
+Endeffektororientierungen zu Beginn und am Ende der Kontaktherstellung
+bestimmt.
 
-Innerhalb der getesteten Bereiche erzeugte die tangentiale
-\abbr{CoC}-Position die größte gemessene Reaktionsvariation. Eine Erhöhung der
-Rotationssteifigkeit von \(5\) auf \(50\,\mathrm{N\,m/rad}\) verringerte
-die Reaktion um \(63.9\,\%\) gegenüber der Bedingung bei
-\(5\,\mathrm{N\,m/rad}\). Die Variation dieser translatorischen
-Steifigkeit hatte nur einen geringen Einfluss, mit einer Reaktionsspanne von
-\(0.4\,\%\) gegenüber der TCP-zentrierten Referenz. Für die beiden Offsetrichtungen
-erhöhte die zur Verstärkung der korrigierenden Drehung gewählte
-\abbr{CoC}-Verschiebung den Reaktionsbetrag um \(4.0\,\%\) und
-\(4.3\,\%\). Die entgegengesetzte Verschiebung verringerte den jeweiligen
-Reaktionsbetrag um \(97.6\,\%\) und \(99.2\,\%\). Mit dem \abbr{CoC} im
-TCP war die gemessene Endeffektorreaktion für beide Offsetrichtungen zur
-konfigurierten flächenparallelen Orientierung gerichtet. Diese Bedingung
-erzeugte kein richtungsselektives \abbr{CoC}-Moment.
+Mit dem \abbr{CoC} im TCP erfolgte die kontaktinduzierte Drehung für beide
+anfänglichen Drehrichtungen zur konfigurierten Fläche. Eine Erhöhung der
+Rotationssteifigkeit von \(5\) auf \(50\,\mathrm{N\,m/rad}\) verringerte die
+Reaktion um \(63.9\,\%\), während die getesteten translatorischen
+Steifigkeitswerte eine Reaktionsspanne von nur \(0.4\,\%\) gegenüber der
+TCP-zentrierten Referenz ergaben. Die tangentiale \abbr{CoC}-Verschiebung
+erzeugte eine stark richtungsabhängige Reaktion. Die Wahl der
+Verschiebungsrichtung entsprechend der Richtung des anfänglichen Winkeloffsets
+erhöhte die endgültige Reaktion um etwa \(4\,\%\) und erzeugte im gemessenen
+Zeitverlauf zudem eine schnellere Drehung zur Ausrichtung. Die
+entgegengesetzte Verschiebungsrichtung verringerte die Reaktion um etwa
+\(98\,\%\) bis \(99\,\%\). Das verschobene \abbr{CoC} wirkte daher
+hauptsächlich als Selektor der bevorzugten Drehrichtung.
 
 Ein getrennter kartesischer Posehalteversuch bewertete den Nullraumregler unter
-einer reproduzierbaren intern kommandierten Störung. Die projizierte
-Nullraumdämpfung verringerte die kumulierte redundante Bewegung. Bei vor und
-während der Störung aktiver Singulärwertkonditionierung blieb die gemessene
-resultierende redundante Verschiebung entlang der ausgewerteten Referenzrichtung
-nahe null. Der größte gemessene kartesische Positionsfehler betrug
-\(1.304\,\mathrm{mm}\) und lag damit unter der festgelegten Grenze von
-\(2\,\mathrm{mm}\).
+einer reproduzierbaren virtuellen Störung. Die projizierte Dämpfung verringerte
+die kumulierte Nullraumbewegung von \(7.596^\circ\) auf \(5.687^\circ\). Die
+Singulärwertkonditionierung verringerte die resultierende Verschiebung für
+beide getesteten Drehmomentbeträge auf nahezu null. Das höhere
+Konditionierungsmoment erzeugte eine geringfügig kleinere endgültige
+Verschiebung, aber deutlich mehr kumulierte hin- und hergehende
+Nullraumbewegung. Die kartesische Position blieb in allen Posehalteversuchen
+innerhalb der festgelegten Toleranz von \(2\,\mathrm{mm}\).
 \end{otherlanguage}

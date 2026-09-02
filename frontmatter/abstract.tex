@@ -1,50 +1,47 @@
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-Two differences arise at contact entry between a grinding tool and a plane
-surface. The configured surface reference can differ from the physical surface,
-and the achieved tool orientation can differ from the desired orientation.
-Together, these
-differences produce an angular tool--surface mismatch, which can cause
-edge-first contact and high contact loads.
+Differences between the configured surface reference and the physical surface,
+together with differences between the desired and achieved tool orientation,
+can produce an angular mismatch at contact entry. This can lead to edge-first
+contact and increased contact loads.
 
 A real-time Cartesian impedance controller was implemented on a
-seven-degree-of-freedom (\abbr{DOF}) Franka Emika Panda. Directional stiffness
-and damping were defined relative to a configured surface frame. The impedance
-reference could be shifted from the tool centre point (TCP) to a virtual centre
-of compliance (\abbr{CoC}). Displacing the \abbr{CoC} from the
-TCP coupled the commanded translational press to an additional commanded TCP
-moment. During Contact Establishment, the controller advanced the tool towards
-the surface while holding the contact-entry orientation as the rotational
-reference.
+seven-degree-of-freedom Franka Emika Panda to generate compliant
+contact-induced rotation towards the configured surface. Directional
+translational and rotational stiffness and damping were defined in the surface
+frame. The virtual centre of compliance (\abbr{CoC}) could be displaced from
+the tool centre point (TCP), introducing translation--rotation coupling into
+the Cartesian impedance. The displaced \abbr{CoC} gives the commanded press a
+virtual lever arm \(r_c\), which generates the additional moment
+\(r_c\times f\) at the TCP.
 
-The surface-contact experiments varied the \abbr{CoC} position, the rotational
-stiffness, and the translational stiffness along the surface. Positive and
-negative pre-contact angular offsets were tested about the same
-surface-tangent axis. To characterise the initial condition of each trial, the
-achieved initial angular offset at contact entry was calculated relative to
-the configured surface reference. The contact-establishment response was then
-calculated from the relative rotation between the measured end-effector
-orientations at contact entry and at the end of Contact Establishment.
+The surface-contact experiments varied the \abbr{CoC} position, rotational
+stiffness, and translational stiffness along \(t_2\). Positive and negative
+pre-contact angular offsets were investigated about \(t_1\). The initial
+angular condition at contact entry was calculated relative to the configured
+surface reference, and the contact-establishment response \(\gamma_{t_1}\) was
+calculated from the measured end-effector orientations at the beginning and end
+of Contact Establishment.
 
-Within the tested ranges, the tangential \abbr{CoC} position produced the
-largest measured response variation. Increasing the rotational stiffness from
-\(5\) to \(50\,\mathrm{N\,m/rad}\) reduced the response by
-\(63.9\,\%\) relative to the \(5\,\mathrm{N\,m/rad}\) condition. Varying that translational stiffness
-had only a small effect, with a response span of \(0.4\,\%\) relative to the
-TCP-centred reference. For the two offset
-directions, the \abbr{CoC} displacement selected to reinforce the corrective
-rotation increased the response magnitude by \(4.0\,\%\) and
-\(4.3\,\%\). The opposite displacement reduced the corresponding response
-magnitude by \(97.6\,\%\) and \(99.2\,\%\). With the \abbr{CoC} at the
-TCP, the measured end-effector response was directed towards the configured
-surface-parallel orientation for both offset directions. That condition
-introduced no direction-selective \abbr{CoC} moment.
+With the \abbr{CoC} at the TCP, contact-induced rotation occurred towards the
+configured surface for both initial rotational directions. Increasing the
+rotational stiffness from \(5\) to \(50\,\mathrm{N\,m/rad}\) reduced the
+response by \(63.9\,\%\), whereas the tested translational stiffness values
+produced a response span equal to only \(0.4\,\%\) of the TCP-centred
+reference. The tangential \abbr{CoC} displacement produced a strongly
+direction-dependent response. Selecting the displacement direction according to
+the initial angular-offset direction increased the final response by
+approximately \(4\,\%\) and also produced a faster rotation towards alignment
+in the measured time history. The opposite displacement direction reduced the
+response by approximately \(98\,\%\) to \(99\,\%\). The displaced \abbr{CoC}
+therefore acted mainly as a selector of the preferred rotational direction.
 
 A separate Cartesian pose-hold experiment evaluated the null-space controller
-under a repeatable internally commanded disturbance. Projected null-space
-damping reduced the cumulative redundant motion. With singular-value
-conditioning active before and during the disturbance, the measured net
-redundant displacement remained close to zero along the evaluated reference
-direction. The largest measured Cartesian position error was
-\(1.304\,\mathrm{mm}\), below the specified \(2\,\mathrm{mm}\) limit.
+under a repeatable virtual disturbance. Projected damping reduced the
+cumulative null-space motion from \(7.596^\circ\) to \(5.687^\circ\).
+Singular-value conditioning reduced the net displacement to nearly zero for
+both tested torque magnitudes. The higher conditioning torque produced a
+slightly smaller final displacement but considerably more cumulative
+back-and-forth null-space motion. The Cartesian position remained within the
+specified \(2\,\mathrm{mm}\) acceptance limit in all pose-hold trials.
