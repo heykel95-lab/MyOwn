@@ -567,6 +567,33 @@ Panel (b) draws the physical surface and its conceptual normal
 \(n_{\mathrm{phys}}\) separately from the configured surface reference and its
 frame \((t_1,n_s)\). It assigns no measured angle to the unknown difference.
 
+**The Chapter 4 sign-convention figure is a view along \(t_1\).** Added
+2026-09-02 at the opening of Section 4.5, where
+\(\theta_{\mathrm{offset},t_1}\), \(\theta_{0,t_1}\) and
+\(\gamma_{t_1}\) are introduced together and all three take their sign from
+one rotational direction. It draws the surface-frame plane spanned by
+\(t_2\) and \(n_s\), \(t_1\) out of the page as a dotted circle, and one
+counter-clockwise arc named `Positive rotation`. Nothing else: no tool, no
+surface, no angle symbol and no numerical angle, since the figure fixes a
+direction rather than a magnitude.
+
+It is the complementary view to the surface frame of `reference_frames.tex`,
+which draws \(t_1\) and \(n_s\) in the plane of the page and \(t_2\) into
+it as a crossed circle. **The two must stay consistent**, and the check is
+\(t_1\times t_2=n_s\): with \(t_1\) out of the page and \(t_2\) to the
+right, \(n_s\) points up and a positive rotation runs counter-clockwise,
+taking \(t_2\) towards \(n_s\). A drawing that reverses either in-plane
+axis reverses the sign of every reported response.
+
+Two placement rules were settled by compiling it. The negative half-axes are
+drawn at about half the length of the positive ones, because the named
+directions and the rotation all lie in the upper half and full-length halves
+left the lower half empty while giving the \(t_1\) label a long vertical line
+to be read against — which made the symbol look like the name of that line
+rather than of the marker at its top. And the four axis halves are broken at
+\(0.30\) around a marker of radius \(0.15\), so that the diagonals stay
+free for the \(t_1\) label and the arc's name.
+
 **Figure 4.2 is the only calibration-related figure retained in Section 4.2.**
 It shows the distinction between the configured reference, the unmeasured
 physical surface and the contact-entry angle. The separate calibration
@@ -703,9 +730,12 @@ behind, not that the script is broken.
 `make_nullspace_figure.py` detects which layout it is sitting in, so give it
 `<root>/analysis/` for the script and `<root>/experiments/` for the data.
 
-**`--out-dir` is not obeyed by every script.** `make_nullspace_figure.py`
-writes to `figures/` and `derived/` beside its resolved data root regardless.
-Find the file it actually wrote before copying anything.
+**Every generator now takes `--results` and `--out-dir`.**
+`make_nullspace_figure.py` was the exception until 2026-09-02: it wrote to
+`figures/` and `derived/` beside its resolved data root regardless, so the file
+it actually wrote had to be hunted for. It now takes `--results`, `--out-dir`
+and `--summary` like the others, which is what lets a thesis checkout that does
+not sit beside the run archive regenerate the figure.
 
 **`plot_coc_case.py` takes its trials on the command line**, and the three the
 reported figure uses are listed in `code/python/figures/README.md`. Its legend
@@ -946,6 +976,32 @@ writes a generated file names it, so regeneration must preserve this mapping.
   Rotation About \(t_1\)` is withdrawn from the plot; the axis reads
   `Contact-Establishment Rotation About \(t_1\), \(\gamma_{t_1}\) [°]`.
 
+  **It is set by the generator, not by an overlay.** The corrected axis label
+  lived in `plot_coc_case.py` while the committed `MAIN_D_wrench.pdf` still
+  carried the withdrawn one, and `results_case_d_wrench_relabel.tex` bridged the
+  gap by cropping \(47\,\mathrm{pt}\) off the left edge and drawing fresh
+  labels, panel letters and a hand-placed legend over the image. All three of
+  its parts failed. The crop cannot work: the baked axis labels run to
+  \(x=47\,\mathrm{pt}\) while the \(-100\) tick of panel~(b) begins at
+  \(x=37\,\mathrm{pt}\), so no vertical cut removes the one and keeps the
+  other, and the published figure printed that tick as `100` on an axis whose
+  values are all negative. The hand-placed legend put its three entries at
+  fixed fractions of the image width, so the second and third ran together as
+  soon as their text lengths differed. And its swatches were TikZ `red` and
+  `blue` against the plotted `#c00000` and `#0057b8`.
+
+  The overlay was deleted on 2026-09-02 and the figure regenerated, so
+  Chapter 5 now includes the PDF directly. `plot_coc_case.py` draws the panel
+  letters itself and already placed the shared legend the house style asks for.
+  **A label wrong in a committed PDF is fixed in the generator and the file
+  rebuilt; it is never patched over in the including document.**
+
+  Re-breaking the label lines was part of the same fix. A \(y\) label is set
+  rotated, so its longest line has to fit the panel height: the withdrawn
+  `Set-Up Rotation About \(t_1\),` fitted on one line and its replacement did
+  not, running off the top of the figure. No line exceeds about twenty-three
+  characters.
+
   **Mathematical symbols keep their own casing.** Title Case applies to the
   English words only: \(t_1\), \(r_{c,t_2}\), \(K_{R,t_1}\) and \(F_n\)
   are never recased to match the surrounding capitals.
@@ -965,10 +1021,18 @@ writes a generated file names it, so regeneration must preserve this mapping.
   the \(y\)-axis quantity and never carries a unit already on the axis.
   Settled forms: `Achieved Initial Offset, \(\theta_{0,t_1}=+9.32^\circ\)` for an
   achieved contact-entry condition; `Projected Damping, \(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\)`
-  for a controller parameter; `CoC Position, \(r_{c,t_2}=+40\,\mathrm{mm}\)`
+  for a controller parameter; `CoC Position, \(r_{c,t_2}=40\,\mathrm{mm}\)`
   and `CoC at TCP, \(r_{c,t_2}=0\)` for a compliance-centre position. A bare
-  `+10°` or `40 mm` entry does not say what the number is, and is what this rule
-  replaces.
+  `10°` or `40 mm` entry does not say what the number is, and is what this rule
+  replaces. The two examples carried a leading plus until 2026-09-02, when
+  *Positive values carry no explicit sign* in `THESIS_WRITING_GUIDE.md` reached
+  the figures; a negative position keeps its minus, so the Case-D legend reads
+  \(-40\,\mathrm{mm}\) beside \(40\,\mathrm{mm}\).
+
+  **Do not shorten a settled entry.** The Case-D wrench legend read
+  `CoC, \(r_{c,t_2}=-40\,\mathrm{mm}\)` while the rule and the sibling
+  figures said `CoC Position`, which is the same fault as a legend disagreeing
+  with the axis it sits under.
 - **An axis carries the symbol the symbol list assigns to the quantity.** A
   reader who has met \(r_{c,t_2}\) in the text should not have to work out that
   `Centre position along t_2` is the same thing. Where a symbol exists, the

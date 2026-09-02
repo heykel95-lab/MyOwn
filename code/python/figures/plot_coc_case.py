@@ -115,11 +115,22 @@ def main():
               f"Fn_cmd {fn_cmd[-1]:7.1f} N | M_cmd {m_cmd[-1]:+6.2f} N m")
 
     sub = AXIS_SUBSCRIPT[args.axis]
-    labels = [rf"Contact-Establishment Rotation About ${sub}$," "\n"
+    # A y label is set rotated, so its longest line has to fit the panel
+    # height, not the figure width. The withdrawn "Set-Up Rotation About t_1,"
+    # fitted on one line; "Contact-Establishment Rotation About t_1," does not,
+    # and ran off the top of the figure. Each label is therefore broken so that
+    # no line exceeds about twenty-three characters.
+    labels = [rf"Contact-Establishment" "\n"
+              rf"Rotation About ${sub}$," "\n"
               rf"$\gamma_{{{sub}}}$ [$^\circ$]",
               "Commanded Normal Force,\n" r"$F_n$ [N]",
-              rf"Commanded TCP Moment About ${sub}$," "\n"
-              rf"$M_{{{sub}}}$ [N m]"]
+              rf"Commanded TCP Moment" "\n"
+              rf"About ${sub}$, $M_{{{sub}}}$ [N m]"]
+    # The panel letters are drawn here rather than added over the PDF, so the
+    # thesis includes the file directly instead of overlaying it.
+    for ax, letter in zip(axes, "abc"):
+        ax.text(0.012, 0.95, f"({letter})", transform=ax.transAxes,
+                ha="left", va="top")
     for ax, text in zip(axes, labels):
         ax.set_ylabel(text)
         # Zero separates a flat tool from a tilted one, and a restoring moment

@@ -3,6 +3,45 @@
 This file contains only agreed work that remains unfinished. Completed items are
 removed in the turn in which they are finished.
 
+## Decide the Tool Orientation timeout before changing it
+
+A change from \(8.0\,\mathrm{s}\) to \(5.0\,\mathrm{s}\) was requested
+on 2026-09-02 for the controller and for the thesis. It is **not** made,
+because the two halves conflict. Every one of the 101 archived contact runs
+under `Thesis_Final_Control/experiments/results/P2_*` records
+`approach_orient_timeout = 8.0` in its `params_effective/approach.conf`, with
+no exceptions, so \(8.0\,\mathrm{s}\) is what the reported experiments used.
+Writing \(5.0\,\mathrm{s}\) into Table 4.3 and Figure 3.3 would state a
+configuration fact that contradicts every parameter file, which is the fault
+recorded under *Cross-chapter factual consistency* in
+`THESIS_WRITING_GUIDE.md` as `Which duration`.
+
+The thesis carries the value in exactly two places:
+`chapters/04_experimental_setup_and_evaluation.tex`, the
+`Orientation timeout / maximum rate` row of Table 4.3; and
+`figures/phase_flow_chart.tex`, the Tool Orientation arrow of Figure 3.3.
+`FIGURE_STYLE.md` and `THESIS_WRITING_GUIDE.md` also quote the
+`8.0 s timeout` arrow condition and would move with them. The other
+\(8\,\mathrm{s}\) hits in Chapter 4 belong to the disturbance waveform and
+must not be touched.
+
+Three ways out, and the choice is the author's. Change the controller default
+to \(5.0\,\mathrm{s}\) for future work and leave the thesis at
+\(8.0\,\mathrm{s}\), which is what the campaign ran. Repeat the campaign at
+\(5.0\,\mathrm{s}\) and report that. Or leave both unchanged.
+
+## Correct `signed component` in Section 4.5
+
+`chapters/04_experimental_setup_and_evaluation.tex` uses `signed component
+about \(t_1\)` twice in Section 4.5.1, once before Equation 4.3 and once
+after it. `THESIS_WRITING_GUIDE.md` bans `signed` as a modifier in prose,
+headings, captions, axes and tables, on the ground that the defining equation
+and the displayed positive and negative values already establish the algebraic
+direction. Write `component about \(t_1\)`. Not done because the passage is
+settled text and the change was not asked for; the new Figure 4.3 beside it now
+states the direction convention, which is what those two uses were reaching
+for.
+
 ## Retire the superseded null-space script in `MyController`
 
 `MyController/experiments/analysis/make_nullspace_figure.py` is the version
