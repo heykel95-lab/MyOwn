@@ -2453,7 +2453,7 @@ its unit, and send anything longer to the section that owns it. The former
 `Evaluation Quantities` section was deleted on 2026-08-27 and **must not be
 restored**. The reported quantities already have their proper homes:
 \(\gamma_{t_1}\) in Section 4.5.2, and \(E_N\),
-\(\Delta\eta_{\mathrm{dist}}\) and the position-retention criterion in
+\(\Delta\eta\) and the position-retention criterion in
 Section 4.6. The contact-establishment report markers
 `t_align_fraction`, `deviation_min` and `align_status` went with it: none feeds
 a state exit, a command, or a reported result, which is the rule under *What
@@ -2870,11 +2870,13 @@ displacement.** It integrates \(\lVert N_q\dot q\rVert_2\) over the
 disturbance interval, so it is a path length: a configuration that moves
 repeatedly in alternating directions accumulates \(E_N\) while ending where it
 started. The words `excursion` and `displacement` are wrong for it and have
-been removed. **The net redundant displacement is
-\(\Delta\eta_{\mathrm{dist}}=v_{\mathrm{ref}}^\top\Delta q_{\mathrm{null}}\)**,
-the scalar projection of the net projected joint motion onto one common
-direction. The two are reported together, because for the sigma-only settings
-they differ by orders of magnitude, and that difference is the result.
+been removed. **The net displacement is
+\(\Delta\eta=v_{\mathrm{ref}}^\top\Delta q_{\mathrm{null}}\)**, the
+scalar projection of the net projected joint motion onto one common direction.
+Both are angles in radians and both are reported in degrees, so the two panels
+that carry them can be read against one another. They are reported together,
+because for the sigma-only settings they differ by orders of magnitude, and
+that difference is the result.
 
 **The null-space subsections report means and the interpretation, not
 \(\pm\) SD.** Sections 5.2.1 and 5.2.2 carried a standard deviation on
@@ -2888,9 +2890,9 @@ carries the numbers. The prose now states the mean and what follows from it.
 displacements were once described as having a magnitude `smaller than the
 scatter across the three repetitions`, which forces the reader back into a
 standard-deviation discussion to understand a result that is simply near zero.
-`Both sigma-only settings ended the disturbance interval with a net redundant
+`Both sigma-only settings ended the disturbance interval with a net
 displacement close to zero` states it directly, and the two-orders-of-magnitude
-relation against the uncontrolled \(0.131\,\mathrm{rad}\) carries the size.
+relation against the uncontrolled \(7.517^\circ\) carries the size.
 
 Two things survive that compression and are not dropped with the deviations:
 the `\cref` to the figure panel the claim rests on, which every results
@@ -3500,6 +3502,26 @@ Cartesian position error`. The waveform quantities \(f_{\mathrm{dist}}\),
 their suffix: there the word distinguishes the commanded disturbance from the
 measured signals beside it.
 
+**\(\Delta\eta\) is reported in degrees, like \(E_N\).** Agreed
+2026-09-02. Both are angles whose unit is the radian, and panel~(c) of the
+pose-hold figure is read against panel~(a), so one unit is used for both: the
+axis is `Net Displacement, \(\Delta\eta\) [°]`, the bar values are printed
+to three decimals as the \(E_N\) values in Section 5.2 are, and Chapters 5
+and 6 carry the degree value alone. Section 4.6.3 states the unit once, in the
+sentence \(E_N\) already carried — `The unit of \(\Delta\eta\) is radians,
+and the values are expressed in degrees` — and the symbol-list row keeps
+`[rad]` with the conversion named in its description, again as \(E_N\) does.
+
+**The radian value is not kept in brackets beside it.** Chapters 5 and 6 had
+read `\(0.131\,\mathrm{rad}\) (\(7.51^\circ\))`, which states one
+measurement twice and makes the reader choose. Worse, the bracketed degrees had
+been converted from the *rounded* radian value rather than from the data, so
+two of the four were wrong in the last digit: the inactive mode is
+\(7.517^\circ\) and not \(7.51^\circ\), and \(k_\sigma=1.5\,\mathrm{N\,m}\)
+is \(0.015^\circ\) and not \(0.017^\circ\). **Convert from the measurement,
+never from the printed value**, and check any surviving pair of units in the
+thesis against the derived summary before trusting it.
+
 **`fixed` is not used of the compliance centre.** Agreed 2026-09-02, first for
 `fixed displaced centre` and `fixed displacement` and then for `a fixed CoC`.
 Write `a displaced centre`, `a displaced CoC`, `the CoC displacement`, and,
@@ -3523,8 +3545,8 @@ pose-hold conditioning comparison had read `\(1.5\,\mathrm{N\,m}\) achieved
 comparable suppression of net displacement with substantially less redundant
 motion`, in Section 5.2.2 and again in the conclusion. It is the wrong way
 round on the first quantity: \(2.0\,\mathrm{N\,m}\) left the smaller final
-displacement, \(0.1\times10^{-3}\,\mathrm{rad}\) against
-\(0.3\times10^{-3}\,\mathrm{rad}\), and reduced it by \(99.9\,\%\)
+displacement, \(0.006^\circ\) against \(0.015^\circ\), and reduced it by
+\(99.9\,\%\)
 against \(99.8\,\%\). What the higher magnitude cost was cumulative motion,
 \(E_N\) rising from \(0.283^\circ\) to \(1.619^\circ\). Both chapters now
 state the trade-off in that order. Where two settings differ on two quantities,
@@ -3867,9 +3889,9 @@ from the arithmetic.
 
 **The conditioning result is qualified by when the term was active.** Write
 that the complete singular-value-conditioning modes were active before and
-during the disturbance and produced net redundant displacements close to zero.
-`conditioning kept the net redundant displacement close to zero` reads as
-isolated disturbance rejection, which the timeline rules out.
+during the disturbance and produced net displacements close to zero.
+`conditioning kept the net displacement close to zero` reads as isolated
+disturbance rejection, which the timeline rules out.
 
 The conclusion instead states the main findings as continuous prose: the
 controller was implemented and active in every reported experiment;

@@ -886,17 +886,22 @@ writes a generated file names it, so regeneration must preserve this mapping.
   where a black curve prints as a line.
 
 - **Print the value above each bar where the series spans orders of
-  magnitude.** The net redundant displacement runs from \(0.131\) rad down to
-  about \(10^{-4}\), so on a linear axis the two conditioning bars are the
-  height of the axis line — which is the finding, but leaves a reader unable to
-  tell a suppressed value from a missing one. The printed value resolves it
-  without a second axis. A log axis does not: one of the four values is
-  negative, and taking magnitudes would discard the sign the quantity exists to
-  carry. The Case-A bars print their values for the same reason, so the two bar
-  figures agree. Choose the precision from the values rather than fixing one
-  format — three decimals above \(0.01\) and four below it keeps `0.131` and
-  `0.0003` both readable — and write the sign with the typographic minus the
-  tick labels use, not an ASCII hyphen.
+  magnitude.** The net displacement runs from \(7.517^\circ\) down to
+  about \(0.006^\circ\), so on a linear axis the two conditioning bars are
+  the height of the axis line — which is the finding, but leaves a reader
+  unable to tell a suppressed value from a missing one. The printed value
+  resolves it without a second axis. A log axis does not: one of the four
+  values is negative, and taking magnitudes would discard the sign the quantity
+  exists to carry. The Case-A bars print their values for the same reason, so
+  the two bar figures agree. Write the sign with the typographic minus the tick
+  labels use, not an ASCII hyphen.
+
+  **Match the precision to the section that reports the values, not to the
+  spread.** Three decimals throughout, which is what Section 5.2 prints for the
+  \(E_N\) values beside these. The panel needed two formats while it was
+  drawn in radians — three decimals above \(0.01\) and four below, so that
+  `0.131` and `0.0003` were both readable — and the switch to degrees retired
+  that rule along with the range that forced it.
 
   **In `pgfplots`, put a bar fill on the `\addplot`, never on
   `every axis plot`.** The `ybar` cycle list sets its own fill at thirty per

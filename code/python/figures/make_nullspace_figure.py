@@ -345,33 +345,38 @@ NET_LABELS = (
 
 
 def _net_value_label(value):
-    """Print a net displacement at a precision that shows what it is.
+    """Print a net displacement at the precision Section 5.2 reports.
 
-    The four values span more than two orders of magnitude, so one format
-    either rounds both conditioning settings to zero or gives the two large
-    ones three digits they do not carry. The sign takes the typographic minus
-    the tick labels use, so a printed value and an axis tick agree.
+    Three decimals throughout, matching the E_N values printed beside these in
+    the same section. In radians the four values needed two formats, because
+    0.0003 rounds to zero at three decimals; in degrees the smallest is 0.006
+    and one format covers the range. The sign takes the typographic minus the
+    tick labels use, so a printed value and an axis tick agree.
     """
-    text = f"{value:.3f}" if abs(value) >= 0.01 else f"{value:.4f}"
-    return text.replace("-", "\N{MINUS SIGN}")
+    return f"{value:.3f}".replace("-", "\N{MINUS SIGN}")
 
 
 def net_displacement_panel(ax, groups):
-    """Draw the net redundant displacement of all four settings.
+    """Draw the net displacement of all four settings.
+
+    Plotted in degrees, as panel (a) is: the quantity is an angle in radians,
+    and the two panels are read against one another, so one unit is used for
+    both.
 
     The suppression by more than two orders of magnitude is the strongest
     result of the conditioning experiment and the other two panels do not carry
     it: panel (a) plots the cumulative motion, which is a path length, and
     panel (b) plots the singular value and the task error. The bars are printed
     with their values, as the Case-A bars are, because at a scale set by
-    0.131 rad the two conditioning bars are the height of the axis line, and a
-    reader has no way to tell a suppressed value from a missing one.
+    7.517 degrees the two conditioning bars are the height of the axis line,
+    and a reader has no way to tell a suppressed value from a missing one.
     """
     order = {run_id: rank for rank, (run_id, _, _) in enumerate(CONDITIONS)}
     ordered = sorted(groups, key=lambda group: order[group["run_id"]])
     means, sds = [], []
     for group in ordered:
-        values = [run["net_displacement_rad"] for run in group["runs"]]
+        values = np.degrees([run["net_displacement_rad"]
+                             for run in group["runs"]])
         means.append(float(np.mean(values)))
         sds.append(sample_sd(values))
     positions = np.arange(len(ordered))
@@ -386,7 +391,7 @@ def net_displacement_panel(ax, groups):
     ax.set_xticklabels(NET_LABELS[:len(ordered)])
     ax.set_ylabel(
         "Net Displacement,\n"
-        r"$\Delta\eta$ [rad]")
+        r"$\Delta\eta$ [$^\circ$]")
     ax.margins(y=0.28)
     for position, mean, sd in zip(positions, means, sds):
         offset = sd if np.isfinite(sd) else 0.0
