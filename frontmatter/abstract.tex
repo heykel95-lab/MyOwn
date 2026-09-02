@@ -1,34 +1,38 @@
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-Surface-positioning and tool-mounting tolerances can produce angular
-misalignment between a grinding tool and a surface. This misalignment can cause
+Two differences arise at contact entry between a grinding tool and a plane
+surface. The configured surface reference can differ from the physical surface,
+and the achieved tool orientation can differ from the desired orientation.
+Together, these
+differences produce an angular tool--surface mismatch, which can cause
 edge-first contact and high contact loads.
 
 A real-time Cartesian impedance controller was implemented on a
 seven-degree-of-freedom (\abbr{DOF}) Franka Emika Panda. Directional stiffness
-and damping were defined relative to a configured surface frame, and the
-impedance reference could be shifted from the tool centre point (TCP) to a
-virtual centre of compliance (\abbr{CoC}). Displacing the \abbr{CoC} from the
+and damping were defined relative to a configured surface frame. The impedance
+reference could be shifted from the tool centre point (TCP) to a virtual centre
+of compliance (\abbr{CoC}). Displacing the \abbr{CoC} from the
 TCP coupled the commanded translational press to an additional commanded TCP
 moment. During Contact Establishment, the controller advanced the tool towards
 the surface while holding the contact-entry orientation as the rotational
 reference.
 
 The surface-contact experiments varied the \abbr{CoC} position, the rotational
-stiffness, and the cross-axis translational stiffness. Positive and negative
-pre-contact angular offsets were tested about the same surface-tangent axis.
-The achieved initial angular offset at contact entry was calculated relative to
-the configured surface reference. The contact-establishment response was
-calculated from the measured end-effector orientations at the beginning and end
-of Contact Establishment.
+stiffness, and the translational stiffness along the surface. Positive and
+negative pre-contact angular offsets were tested about the same
+surface-tangent axis. To characterise the initial condition of each trial, the
+achieved initial angular offset at contact entry was calculated relative to
+the configured surface reference. The contact-establishment response was then
+calculated from the relative rotation between the measured end-effector
+orientations at contact entry and at the end of Contact Establishment.
 
 Within the tested ranges, the tangential \abbr{CoC} position produced the
 largest measured response variation. Increasing the rotational stiffness from
 \(5\) to \(50\,\mathrm{N\,m/rad}\) reduced the response by
-\(63.9\,\%\) relative to the \(5\,\mathrm{N\,m/rad}\) condition. The
-tested cross-axis translational stiffness values produced a response span equal
-to only \(0.4\,\%\) of the TCP-centred reference. For the two offset
+\(63.9\,\%\) relative to the \(5\,\mathrm{N\,m/rad}\) condition. Varying that translational stiffness
+had only a small effect, with a response span of \(0.4\,\%\) relative to the
+TCP-centred reference. For the two offset
 directions, the \abbr{CoC} displacement selected to reinforce the corrective
 rotation increased the response magnitude by \(4.0\,\%\) and
 \(4.3\,\%\). The opposite displacement reduced the corresponding response

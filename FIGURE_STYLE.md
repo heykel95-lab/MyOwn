@@ -385,6 +385,38 @@ label is not acceptable.
 `State` is the canonical node term, and the contact-press state is `Contact
 Establishment`; no alternative state name is used.
 
+**The Chapter 3 clearance figure is a cross-section, not an oblique view.**
+Added 2026-09-02 beside Equation (3.11). It carries the configured plane, the
+inclined tool with its closest corner, \(n_s\), the green \(h_{\mathrm{Tool}}\)
+dimension and the dashed \(h_{\mathrm{clearance}}\) threshold, and nothing
+else. Two conventions are inherited from `leading_feature_cases.tex`, so the
+two Chapter 3 clearance drawings agree: \(h_{\mathrm{Tool}}\) is a green
+dimension from a minimum-height corner down to the plane, and the corner
+carries a filled dot. The dot is **black here, not blue**, because blue marks
+the selected tool point \(p_{\mathrm{Tool}}\) in the sibling figure and the
+closest corner is a different quantity, introduced two equations earlier.
+
+The drawing shows the instant *before* the transition, with the corner above
+the threshold, rather than the instant of equality. Drawn equal, the two
+dimensions coincide and neither can be read; the criterion is stated by
+Equation (3.11) and the caption, which is where an equality belongs.
+
+Three placement rules were settled by compiling it. Each annotation owns its
+own \(x\) column, listed in a comment at the head of the file, so no two
+labels can drift into one another. The \(h_{\mathrm{Tool}}\) label sits well
+above or below the dashed threshold, never at its height -- placed level with
+it, the label lands on the line and the dimension disappears into it. And the
+threshold dimension is kept a clear distance from the \(n_s\) arrow: drawn
+close together, two black vertical arrows read as a matched pair rather than as
+a dimension and a direction.
+
+**Line weight ranks the layers.** The plane and the tool are heavier than the
+dashed datum measured against them -- 1.0 pt and 1.4 pt against 0.7 pt in this
+figure -- so the configured threshold reads as construction rather than as a
+physical object. Both dimensions carry the same weight, since neither is
+subordinate to the other. A datum drawn heavier than the objects it is compared
+with inverts the reading, which is how this figure first compiled.
+
 **The Chapter 4 surface-reference geometry keeps three orientations distinct.**
 The physical surface is blue, the configured surface reference is red, and the
 tool face at the start of Contact Establishment is dark green. The inner arc

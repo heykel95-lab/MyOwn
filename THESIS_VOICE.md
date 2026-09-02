@@ -1160,6 +1160,13 @@ Search the changed `.tex` files for each of these:
   `It is worth noting` — still scaffolding. `Moreover`, `Furthermore`,
   `Additionally`, `Overall` and `As a result` are permitted by the author's
   connector list; see pattern 2 for the test they must pass.
+- `For example`, `for example`, `e.g.` — not used anywhere in the thesis,
+  agreed 2026-09-02. An instance that earns its place is a statement about the
+  quantities themselves, not an aside: write `The quantities \(K_{p,t_1}\),
+  \(K_{p,t_2}\), and \(K_{p,n}\) denote ...`, or carry the consequence with
+  `therefore`. Both hits were in Chapter 2, and neither was illustrating a
+  general rule with one case out of many; each was simply naming the
+  quantities the preceding equation had just introduced.
 - `Obviously`, `Of course`, `Clearly`, `Undoubtedly` — on the connector list but
   not used here, because they assert certainty the evidence does not carry
 - `puts`, `uses`, `provides a`, `helps to`, `plays a role`, `deals with`

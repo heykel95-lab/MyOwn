@@ -1,9 +1,9 @@
 \chapter{Theoretical Background}
 \label{ch:theory}
 
-\Added{This chapter defines the mathematical formulation the Cartesian
-impedance controller evaluates. The frames come first, because every later
-quantity is expressed in one of them.}
+\Added{This chapter introduces the mathematical formulation used by the
+Cartesian impedance controller. The frame convention is defined first because
+the following Cartesian quantities depend on their coordinate representation.}
 
 \Added{Unless stated otherwise, Cartesian vectors, orientations, velocities,
 wrenches, Jacobians, and stiffness and damping matrices are expressed in the
@@ -36,10 +36,7 @@ frames
         the robot base reference point used by the kinematic model. For the
         upright Panda configuration used in this thesis, the \mbox{\(z_0\)}-axis is
         normal to the mounting surface, while the \mbox{\(x_0\)}- and \mbox{\(y_0\)}-axes
-        lie in the mounting plane. Because the base frame is the default,
-        its index is omitted: \mbox{\(p_{\mathrm{EE}}\)},
-        \mbox{\(e_p\)}, \mbox{\(f\)}, and \mbox{\(r_c\)} are all
-        expressed in it.
+        lie in the mounting plane.
 
   \item \mbox{\textbf{Joint frames
         \mbox{\(\{1\},\{2\},\ldots,\{7\}\)}:}}
@@ -169,11 +166,6 @@ R_{\mathrm{EE}}^\top(p_d-p_{\mathrm{EE}})\\
 \end{bmatrix}.
 \label{eq:expanded_transformation_error}
 \end{equation}
-
-When the current and desired poses coincide,
-\mbox{\(T_{\mathrm{err}}=I_4\)}. Both blocks of
-\mbox{\Cref{eq:expanded_transformation_error}} represent zero error in this
-case.
 
 \paragraph{Position error.}
 
@@ -621,21 +613,17 @@ t_1 & t_2 & n_s
 \label{eq:surface_task_frame_matrix}
 \end{equation}
 
-Surface-frame quantities use the coordinate order
+Surface-frame quantities are listed in the column order of
+\mbox{\Cref{eq:surface_task_frame_matrix}}, that is \mbox{\(t_1\)}, then
+\mbox{\(t_2\)}, then \mbox{\(n_s\)}.
 
-\[
-\begin{bmatrix}
-t_1 & t_2 & n_s
-\end{bmatrix}^\top .
-\]
-
-For example, \mbox{\(K_{p,t_1}\)}, \mbox{\(K_{p,t_2}\)}, and
+The quantities \mbox{\(K_{p,t_1}\)}, \mbox{\(K_{p,t_2}\)}, and
 \mbox{\(K_{p,n}\)} denote the translational stiffness entries along the two
 surface tangents and the surface normal, respectively. These are scalar
-directional coefficients, and their direction is already named by
-\mbox{\(t_1\)}, \mbox{\(t_2\)}, and \mbox{\(n_s\)}, so they take no
+directional coefficients, and their direction is already specified by
+\mbox{\(t_1\)}, \mbox{\(t_2\)}, and \mbox{\(n_s\)}, so they carry no
 frame suffix. The same ordering is used for the rotational stiffness and
-damping and for surface-frame components of the compliance-centre
+damping and for the surface-frame components of the compliance-centre
 displacement.
 
 
@@ -737,7 +725,7 @@ D_p & 0\\
 
 The transformation rotates the matrix representation into base coordinates
 while preserving the physical directions fixed by the configured surface
-reference. For example, \mbox{\(K_{p,n}\)} follows an inclined
+reference. The normal entry \mbox{\(K_{p,n}\)} therefore follows an inclined
 \mbox{\(n_s\)} relative to the robot-base axes.
 
 At this stage translation and rotation remain decoupled. The
@@ -973,6 +961,10 @@ m=m_R+r_c\times f.
 \label{eq:commanded_moment_decomposition}
 \end{equation}
 
+\Added{The shifted \abbr{CoC} makes the commanded press act as if it had a
+virtual lever arm \mbox{\(r_c\)} relative to the TCP, which generates the
+additional moment \mbox{\(r_c\times f\)}.}
+
 \Added{\mbox{\Cref{eq:commanded_moment_decomposition}} is the analytical
 decomposition of the complete shifted spring--damper wrench evaluated by the
 controller.}
@@ -1009,8 +1001,7 @@ r_{c,n}
 \label{eq:coc_surface_components}
 \end{equation}
 
-Since \mbox{\(R_{\mathrm{surface}}=[\,t_1\;\;t_2\;\;n_s\,]\)} holds those
-surface axes expressed in the base frame, the same physical displacement in
+Using the surface-frame transformation, the same physical displacement in
 base coordinates is
 
 \begin{equation}

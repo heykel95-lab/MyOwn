@@ -82,14 +82,14 @@ entry reference.
 \Added{The end-effector pose supplied by the robot state provides
 \mbox{\(p_{\mathrm{EE}}\)} and \mbox{\(R_{\mathrm{EE}}\)} directly.}
 
-The controller can also apply a rotational mask. It resolves
-\mbox{\(e_R\)} in the surface frame, retains the enabled components, and
-transforms the masked error back to the base frame. The mask acts on the
-rotational spring error, while the damping term continues to use the measured
-angular velocity. Depending on the active state, the controller then applies
-either the TCP-centred branch, whose impedance is decoupled at the TCP, or the
-\abbr{CoC}-shifted branch. Both branches use the same final torque
-assembly.
+The rotational error \mbox{\(e_R\)} can be resolved in the surface frame so
+that only the selected rotational components contribute to the rotational
+spring term. The resulting error is then transformed back to the base frame,
+while the rotational damping continues to use the measured angular velocity.
+Depending on the active controller state, the impedance is defined either
+directly at the TCP or about a displaced virtual \abbr{CoC}. In both cases, the
+resulting Cartesian wrench is mapped to the joint-torque command through the
+same torque formulation.
 
 The complete impedance-controlled command follows
 \mbox{\Cref{eq:nullspace_complete_torque_command}}.
@@ -136,9 +136,10 @@ and otherwise waits for operator confirmation. Contact Establishment ends when
 the moment-change criterion is satisfied after the minimum duration, or when
 its independent timeout is reached.
 
-During active control, operator input \texttt{g} enters Manual Guidance. Input
-\texttt{p} captures the reached pose and returns to the controller from which
-Manual Guidance was entered. The surface-contact sequence restarts at Tool
+During active control, operator input \texttt{g} enters Manual Guidance. The
+robot can then be moved to a new configuration, and input \texttt{p} captures
+the reached pose before returning to the controller from which Manual Guidance
+was entered. The surface-contact sequence restarts at Tool
 Orientation, whereas either Cartesian hold configuration adopts the captured
 pose as its new held reference.
 
@@ -380,7 +381,21 @@ h_{\mathrm{Tool}}(t)\leq h_{\mathrm{clearance}},
 \end{equation}
 
 with \mbox{\(h_{\mathrm{clearance}}\)} the configured tool clearance of
-Table~\ref{tab:experimental_phase_parameters}. The trajectory is generated for
+Table~\ref{tab:experimental_phase_parameters}.
+
+\begin{figure}[H]
+  \centering
+  \input{figures/tool_clearance_criterion.tex}
+  \caption{Tool-face clearance criterion.}
+  \label{fig:tool_clearance_criterion}
+\end{figure}
+
+\mbox{\Cref{fig:tool_clearance_criterion}} draws the criterion for an inclined
+tool face. The minimum surface-normal distance \mbox{\(h_{\mathrm{Tool}}\)} is
+taken from the closest tool-face corner and compared with the configured
+threshold.
+
+The trajectory is generated for
 the TCP, whereas this transition is determined from the calibrated tool
 geometry. Since \mbox{\(h_{\mathrm{Tool}}\)} is the minimum clearance of the
 four corners, \mbox{\(h_{\mathrm{clearance}}\)} specifies the clearance of the
@@ -407,13 +422,20 @@ h_i-h_{\mathrm{Tool}}\leq\varepsilon_{\mathrm{sel}}
 \label{eq:implementation_selected_corner_set}
 \end{equation}
 
-The tolerance is recorded in \mbox{\Cref{tab:calibrated_tool_geometry}}. The
-principal geometric cases contain one selected corner, two adjacent selected
-corners, or all four corners. Their mean corresponds to the leading corner, the
-midpoint of the leading edge, or the centre of the tool face, respectively, as
-\mbox{\Cref{fig:leading_feature_cases}} shows. With
-\mbox{\(N=\lvert\mathcal I_{\mathrm{sel}}\rvert\)}, the selected tool-point
-offset is
+\mbox{\Cref{tab:calibrated_tool_geometry}} gives the selection tolerance used
+in the experiments. For the rectangular tool geometry, three geometric cases
+are possible, as \mbox{\Cref{fig:leading_feature_cases}} illustrates:
+
+\begin{itemize}
+  \item one selected corner: the tool point is the leading corner;
+  \item two adjacent selected corners: the tool point is the midpoint of the
+        leading edge;
+  \item all four selected corners: the tool point is the centre of the tool
+        face.
+\end{itemize}
+
+In each case, the selected tool point is obtained as the mean of the selected
+corner offsets. With \mbox{\(N=\lvert\mathcal I_{\mathrm{sel}}\rvert\)},
 
 \begin{equation}
 r_{\mathrm{Tool,EE}}
@@ -629,8 +651,9 @@ The frame used for the translational Contact Establishment gains is
 configurable, and the surface-contact experiments expressed these gains in the
 configured surface frame. Contact Establishment and Grinding obtain their gains
 from the same configured translational and rotational source blocks. Contact
-Establishment can apply the \abbr{CoC}-shifted branch, whereas Grinding uses
-the TCP-centred branch and a different Cartesian reference generator.
+Establishment can define the impedance about a displaced virtual \abbr{CoC},
+whereas Grinding defines it at the TCP and uses a different Cartesian reference
+generator.
 Contact-Impedance Hold can temporarily apply its dedicated hold stiffness and
 damping while maintaining the captured Cartesian reference.
 \mbox{\Cref{ch:methodology}} reports the numerical values used in the
@@ -704,11 +727,20 @@ the timeout transition.
 
 Pre-Grinding Hold begins when Contact Establishment satisfies the moment-change
 condition after its minimum duration, or reaches its independent timeout. The
-controller retains the final Contact Establishment position and orientation
-references and waits for operator confirmation.
+final Contact Establishment position and orientation references are retained,
+while the Cartesian impedance controller remains active. The controller
+therefore continues to generate the corresponding force and moment commands
+while waiting for operator confirmation.
 
-When Contact Establishment used a displaced \abbr{CoC}, the coupled impedance
-remains active during the hold. Operator confirmation then initiates Grinding.
+If the physical surface orientation is changed manually during the hold, the
+resulting contact moment can rotate the tool against the finite rotational
+impedance, allowing the tool to follow the changed surface orientation while
+the commanded reference remains fixed. For \mbox{\(r_c=0\)}, the translational
+and rotational impedance are decoupled at the TCP, so the normal pressing force
+introduces no additional \abbr{CoC}-induced moment. The response therefore has
+no preferred rotational direction from the virtual \abbr{CoC}.
+
+Operator confirmation then initiates Grinding.
 
 \subsection{Grinding}
 \label{subsec:implementation_grinding_phase}
@@ -716,7 +748,7 @@ remains active during the hold. Operator confirmation then initiates Grinding.
 
 \Added{After operator confirmation, the Grinding state retains the normal
 pressing reference established during Contact Establishment and superimposes a
-smooth tangential motion, using the TCP-centred impedance branch.}
+smooth tangential motion, with the impedance defined at the TCP.}
 
 \Added{The experimental evaluation of
 \mbox{\Cref{ch:methodology,ch:results_discussion}} concerns the Contact
@@ -758,14 +790,6 @@ state outside these four modes.
     \caption{Operator-selectable null-space modes in Cartesian Pose Hold.}
     \label{fig:pose_hold_modes}
 \end{figure}
-
-\Added{The pose-hold experiment compared four settings: no null-space torque,
-projected damping, singular-value conditioning at
-\mbox{\(k_\sigma=1.5\,\mathrm{N\,m}\)}, and singular-value conditioning at
-\mbox{\(k_\sigma=2.0\,\mathrm{N\,m}\)}. The surface-contact experiments
-used mode 3 with one fixed parameter setting, so the secondary controller was
-not a variable there. \mbox{\Cref{sec:nullspace_hold_study}} defines the
-virtual disturbance and the evaluated quantities.}
 
 The implementation specifies two numerical choices beyond
 \mbox{\Cref{sec:nullspace_svd}}. The pseudoinverse threshold is the configured

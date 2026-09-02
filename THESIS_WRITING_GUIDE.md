@@ -217,9 +217,11 @@ Chapter 2. The symbols \(t_1\) and \(t_2\) begin where their geometry is
 established.
 
 **Compliance-centre selection is described through displacement and rotational
-directions.** Write `the centre position selected for the known direction of
-rotation` for the aligned case. When the other outer position is meant, write
-`the outer position in the other displacement direction`. Phrases such as `the
+directions.** Write `the displacement direction selected for the corresponding
+initial angular-offset direction` for the aligned case, which names the offset
+the displacement is matched to instead of leaving the rotation unqualified.
+When the other outer position is meant, write `the outer position in the other
+displacement direction`. Phrases such as `the
 matching side`, `the opposite side`, `the side matched the initial-deviation
 sign`, and `initial-deviation sign` are not used. The technical compounds
 `robot-side` and `application-side` retain their established meanings.
@@ -550,6 +552,28 @@ campaign in the appendix assigned the common values 5, 15, and 50 Nm/rad to
 both entries together; those data establish the effect of the paired setting
 only and must not be described as an isolated \(t_1\)- or \(t_2\)-axis
 effect.
+
+**`cross-axis` is not used.** Withdrawn 2026-09-02, replacing the earlier
+rule that kept `cross-axis translational stiffness` wherever \(K_{p,t_2}\)
+stood beside it. It names an axis only by its relation to another axis, which
+the reader must first identify. Where the tangent symbols are available, the
+Case-C parameter is `the translational stiffness along \(t_2\)`, and the
+subsection heading, the figure axis label, the figure caption and the appendix
+caption all carry that name. In the Abstract and the Introduction, where
+\(t_1\) and \(t_2\) are not defined until Chapter 2, it is `translational
+stiffness along the surface`, in the singular, which states the plane without
+implying that both tangent entries were varied. Do not write `along the surface
+tangents` there; the plural reads as a sweep of both entries.
+
+**Positive values carry no explicit sign.** Agreed 2026-09-02 for Chapter 5 and
+its figures, and applied to the whole thesis. Write \(9.31^\circ\),
+\(7.57^\circ\), \(10^\circ\), \(40\,\mathrm{mm}\); keep the minus sign on
+negative quantities, so a directional pair reads \(10^\circ\) and
+\(-10^\circ\). A leading plus adds nothing where no sign is written on the
+positive member of the pair, and it makes a results table look as though two
+different conventions were in use. Figure labels follow the prose: the Case-A,
+Case-B, Case-C and Case-D legends were changed on the same date, since a figure
+that still prints \(+9.31^\circ\) contradicts the sentence beside it.
 
 Plots must use the same typeface as the thesis. This document loads
 `lmodern`, so generated plots use LaTeX-rendered Latin Modern Roman and Latin
@@ -1364,6 +1388,19 @@ r_c=R_{\mathrm{surface}}r_{c,S}
 r_c=R_{\mathrm{EE}}r_{c,\mathrm{EE}}.
 \]
 
+**\(R_{\mathrm{surface}}\) is expanded once.** Agreed 2026-09-02. The
+definition \(R_{\mathrm{surface}}=[\,t_1\ t_2\ n_s\,]\) belongs at the equation
+in Section 2.5 that introduces the surface frame. Later sections write
+\(R_{\mathrm{surface}}\) and cross-reference that equation; they do not restate
+the column expansion unless the individual components are carried through the
+local derivation, as they are where \(r_c\) is resolved into
+\(r_{c,t_1}t_1+r_{c,t_2}t_2+r_{c,n}n_s\). Two restatements were removed on that
+date: an unnumbered display two lines below the defining equation, which gave
+the coordinate order by repeating the matrix rather than by naming it, and an
+opening clause in Section 2.7.2 that reopened the definition before the
+compliance-centre transformation. A matrix restated a third time reads as
+though it were being defined again.
+
 The earlier rule was self-defeating. It kept \(0\) on the quantities that
 happened to appear beside a surface-frame twin — \(r_{c,0}\),
 \(K_{p,0}\), \(\Lambda_0\), \(\Delta R_0\), \(\gamma_0\) — while
@@ -1749,8 +1786,26 @@ controller keeps \(R_d\) fixed at the orientation captured at the clearance
 transition`. An abstract grammatical subject leaves the reader to work out who
 acts and when.
 
-**Name the two impedance branches.** They are the `TCP-centred branch` and the
-`\abbr{CoC}-shifted branch`; `one branch` and `the other branch` are not used.
+**`branch` and `mask` are not used.** Withdrawn 2026-09-02, replacing the
+earlier rule that required the names `TCP-centred branch` and
+`\abbr{CoC}-shifted branch`. Both words describe the source rather than the
+control law: a `branch` is a path through code, and a `mask` is the array that
+implements the selection. Say where the impedance is defined —
+`the impedance is defined either directly at the TCP or about a displaced
+virtual \abbr{CoC}` — and, for the rotational selection, say what reaches the
+spring term: `\(e_R\) is resolved in the surface frame so that only the
+selected rotational components contribute to the rotational spring term`. Four
+uses were rewritten on that date, in Sections 3.1, 3.2.5 and 3.2.7 and in
+Appendix A.
+
+**Keep forward references to a minimum.** Agreed 2026-09-02. Cite a later
+chapter only where the current section cannot be understood without it, not to
+advertise that a value or a procedure appears later. Chapter 3 states how the
+controller is implemented; the settings compared in an experiment, their
+numerical values, the virtual disturbance and the evaluated quantities belong
+in Chapter 4, and a Chapter 3 paragraph that lists them is removed rather than
+cross-referenced. The Section 3.3 paragraph naming the four pose-hold settings
+was deleted on that date for this reason.
 
 **Delete a sentence that restates its predecessor.** Two were removed on
 2026-09-01: `This validation enforces exclusive selection between the two
@@ -1908,6 +1963,27 @@ Visible quantities associated with Contact Establishment use the subscript
 \(R_{\mathrm{CE}}\), \(u_{\mathrm{CE}}\), and \(\phi_{\mathrm{CE}}\).
 The older set form remains only in literal software keys and internal source
 labels where renaming it would obscure traceability.
+
+**An evaluation instant is named by its symbol, not described in words.**
+Agreed 2026-09-02. Once \(t_{\mathrm{CE,start}}\) and
+\(t_{\mathrm{CE,end}}\) are defined in a subsection, every later reference
+uses them: write \(\gamma=\phi_{\mathrm{CE}}u_{\mathrm{CE}}=e_R(t_{\mathrm{CE,end}})\),
+not \(e_R\big|_{\text{end of Contact Establishment}}\). A worded subscript
+is longer, sets prose inside mathematics, and leaves the reader to check that
+it means the instant already defined a few lines above.
+
+**Say which quantities in a comparison are fixed.** Agreed 2026-09-02 for the
+achieved initial angular offset. \(n_s\) is the configured surface normal and
+does not change during a trial, so the subsection states that it is fixed and
+is *not* a surface normal evaluated at \(t_{\mathrm{CE,start}}\), and that
+the time dependence enters through the measured tool orientation. Without that
+sentence, \(n_{\mathrm{Tool}}(t_{\mathrm{CE,start}})\) beside \(-n_s\)
+reads as though both were sampled at the same instant, which would make the
+offset a measurement of the physical plate rather than of the commanded
+reference. The same subsection also gives the achieved tool-normal direction
+its own equation, \(n_{\mathrm{Tool}}(t_{\mathrm{CE,start}})=R_{\mathrm{EE}}(t_{\mathrm{CE,start}})n_{\mathrm{Tool,EE}}\),
+rather than asserting it in a clause, so the measured input to the comparison
+is visible.
 
 **The approach coordinate uses the same piecewise presentation as the contact-establishment
 coordinate.** It advances at \(v_{\mathrm{app}}\) from
@@ -2444,6 +2520,15 @@ Chapter 6 carries. What stays because the appendix is the only place it exists:
 the \(\sin\phi_0\) projection that explains why a
 \(40\,\mathrm{mm}\) tool-axis displacement gives under \(7\,\mathrm{mm}\) of
 tangential lever.
+
+**The shifted centre may be glossed as a virtual lever arm.** Agreed
+2026-09-02. Beside the formal decomposition \(m=m_R+r_c\times f\), write that
+the shifted \abbr{CoC} makes the commanded press act *as if* it had a virtual
+lever arm \(r_c\) relative to the TCP, which generates the additional moment
+\(r_c\times f\). The gloss states the mechanism the equation encodes and is not
+a second claim, so it carries no measurement and needs no citation. Keep the
+`as if`: no physical lever exists, and the displacement is a control-law
+quantity rather than a tool geometry.
 
 **The projection is an effective lever arm, not a moment.** `The tangential
 projection \(\lVert r_{c,t}\rVert=\lVert r_c\rVert\sin\phi_0\) supplies
@@ -3403,6 +3488,76 @@ Future Work, not in the completed methodology or results.
 Hardware constraints belong in setup and operating constraints, not in the
 scientific purpose statement.
 
+**The disturbance-interval quantities carry no `dist` suffix.** Agreed
+2026-09-02. They are \(\Delta\sigma_{\min}\) and \(\Delta\eta\), defined once in
+Section 4.6.3 and used unchanged in Chapters 5 and 6 and in the symbol list.
+The subscript restated the evaluation interval that the defining equation
+already fixes, and it made two short symbols long enough to break across lines.
+The maximum Cartesian position error is \(\lVert e_p\rVert_{\max}\), used in
+the figure paragraph and in Section 5.2.2 rather than the worded `peak
+Cartesian position error`. The waveform quantities \(f_{\mathrm{dist}}\),
+\(\tau_{\mathrm{dist}}\), \(F_{\mathrm{dist}}\) and \(s_{\mathrm{dist}}\) keep
+their suffix: there the word distinguishes the commanded disturbance from the
+measured signals beside it.
+
+**`fixed displaced centre` and `fixed displacement` are not used.** Agreed
+2026-09-02. Write `a displaced centre`, `a displaced CoC`, and `the CoC
+displacement`. The centre is a configured parameter that does not change during
+a trial, so `fixed` adds nothing to `displaced` and invites the reader to look
+for a moving centre that the study never tested. Three uses were rewritten, in
+Sections 1.3, 1.4 and 6.1.
+
+Two neighbouring terms are **not** covered by this and must survive it.
+`tool-fixed displacement` and `surface-fixed displacement` name the frame the
+displacement is fixed in, which is the distinction Sections 2.7 and 3.2.7 turn
+on. And `a fixed centre position` in the limitations means the position was
+held constant through contact, stated against `a centre position changed during
+contact`, which the study did not cover. Check which sense is meant before
+removing the word.
+
+**State which setting won on which quantity.** Corrected 2026-09-02. The
+pose-hold conditioning comparison had read `\(1.5\,\mathrm{N\,m}\) achieved
+comparable suppression of net displacement with substantially less redundant
+motion`, in Section 5.2.2 and again in the conclusion. It is the wrong way
+round on the first quantity: \(2.0\,\mathrm{N\,m}\) left the smaller final
+displacement, \(0.1\times10^{-3}\,\mathrm{rad}\) against
+\(0.3\times10^{-3}\,\mathrm{rad}\), and reduced it by \(99.9\,\%\)
+against \(99.8\,\%\). What the higher magnitude cost was cumulative motion,
+\(E_N\) rising from \(0.283^\circ\) to \(1.619^\circ\). Both chapters now
+state the trade-off in that order. Where two settings differ on two quantities,
+name the quantity each one wins on rather than declaring one setting better.
+
+**A time-course observation without a metric is marked qualitative.** Agreed
+2026-09-02 for the Case-D time histories. The favourable displacement shows the
+rotation towards alignment developing more quickly than at the TCP, and the
+sentence saying so states that no rise-time or settling-time metric was
+evaluated. Neither `faster` nor `more quickly` may stand alone in a results
+section; a reader takes an unqualified comparison of rates as a measurement.
+
+**A quantity is discussed where its figure shows it.** Agreed 2026-09-02.
+\(\Delta\sigma_{\min}\) appears in panel~(b) of the pose-hold figure, which
+carries only the two singular-value-conditioning settings, so it is discussed
+in Section 5.2.2 and not in the projected-damping subsection. Section 5.2.1
+reports what panel~(a) and panel~(c) show: the cumulative motion \(E_N\) and
+the net displacement \(\Delta\eta\). The withdrawn paragraph had explained
+that damping did not drive the robot towards a larger \(\sigma_{\min}\),
+which is a property of the conditioning term stated where that term is
+compared. Its \(-1.26\times10^{-3}\) damping-mode value left the thesis with
+it; the \(-2.13\times10^{-3}\) inactive-mode value remains in Section 5.2.2
+as the comparison baseline. \(\Delta\sigma_{\min}\) itself stays defined in
+Section 4.6.3, named in the figure paragraph, and listed in the symbol list.
+
+**Say `net displacement`, not `net redundant displacement`.** Agreed
+2026-09-02. \(\Delta\eta\) is already a projection onto the null-space
+reference direction, so `redundant` restates the projector.
+
+**A results paragraph does not narrate its own error bars.** Agreed 2026-09-02
+for the pose-hold figure paragraph. Say what each panel shows and what the
+shaded bands indicate in one clause -- `the spread across the repeated trials`
+-- rather than repeating `\(\pm\) one standard deviation` once per panel. The
+sample standard deviations are tabulated in Appendix D, and the repetition
+count is stated once at the head of the chapter.
+
 ## Results and conclusion priorities
 
 The reported contact campaign is restricted to configured orientation offsets
@@ -3467,7 +3622,7 @@ appear.
 The synthesis is that \(p_c=p_{\mathrm{TCP}}\) provides the neutral fixed centre
 for the reported \(t_1\) study because it selects no tangential lever direction.
 A displaced centre produces a larger alignment response when its position is
-selected for a known direction of rotation.
+selected for the corresponding initial angular-offset direction.
 
 The design sequence that follows from this — start at the TCP, evaluate the
 required alignment, introduce a direction-selected shift where more authority
@@ -3687,10 +3842,40 @@ reduced it in the other about \(t_1\); and the stiffness effects were smaller. T
 null-space result remains bounded to free-space hold under the commanded
 force-equivalent.
 
-The Case A--D headline percentages appear in the conclusion with their reference
-conditions. Standard deviations and the complete absolute comparisons stay in
-Chapter 5. A further value appears only where it carries a physically meaningful
-bound, such as the largest measured position error against its acceptance limit.
+The conclusion supplied on 2026-09-02 replaced the earlier rule that it carry
+the Case A--D headline percentages with their reference conditions. It names no
+case at all, and rounds the direction-dependent figures to `approximately
+\(4\,\%\)` and `approximately \(98\,\%\) to \(99\,\%\)`, keeping the exact
+\(4.0\), \(4.3\), \(97.6\) and \(99.2\,\%\) values in Chapter 5 where the
+comparison is made. The percentages that stay exact in the conclusion are the
+ones stated against a named reference condition: \(81.3\), \(115.1\),
+\(63.9\) and \(0.4\,\%\). Standard deviations and the absolute values stay in
+Chapter 5. A further value appears only where it carries a physically
+meaningful bound, such as the largest measured position error against its
+acceptance limit.
+
+**The conclusion explains the mechanism before the numbers.** As supplied on
+2026-09-02, it opens on what shifting the centre does to the stiffness and
+damping matrices -- the off-diagonal coupling, and the virtual lever arm that
+generates \(r_c\times f\) -- and only then reports what changed in the
+measurements. It also states what each result means for using the controller:
+the TCP-centred centre suits the final configuration after alignment because it
+removes the directional preference, and an adaptive strategy can displace the
+centre for the offset direction and return it to the TCP once alignment is
+established. Those two sentences are conclusions drawn from the measurements,
+not future work, and they stay in Section 6.1.
+
+**Each case section explains its own case, and does not compare across cases.**
+Agreed 2026-09-02. Two cross-case paragraphs were removed from the end of
+Case~D: the one ranking the response variation of the tangential centre against
+the two stiffness effects, and the one giving the direction-dependent
+percentages relative to the TCP-centred magnitudes. Both compared Cases~B,
+C and D rather than explaining Case~D, and the conclusion already carries the
+ranking with its percentages. Nothing was lost by the removal: the
+\(4.84^\circ\) and \(0.03^\circ\) spans are stated in Cases~B and C where they
+are measured, and the \(7.69^\circ\) and \(11.21^\circ\) Case-D spans are the
+difference between endpoint values the case still reports. A case section ends
+on what its own measurement shows.
 
 **Target length.** Chapter 6 should sit at roughly half the length of the
 results chapter it summarises. The reduction comes from cutting duplication,

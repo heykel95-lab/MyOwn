@@ -3,36 +3,39 @@
 
 \begin{otherlanguage}{ngerman}
 
-Toleranzen der Flächenpositionierung und der Werkzeugaufnahme können eine
-Winkelfehlstellung zwischen Schleifwerkzeug und Fläche verursachen. Diese
-Fehlstellung kann dazu führen, dass das Werkzeug zuerst mit einer Kante
-aufsetzt und hohe Kontaktlasten erzeugt.
+Beim Kontaktbeginn zwischen einem Schleifwerkzeug und einer ebenen Fläche
+treten zwei Abweichungen auf. Die konfigurierte Flächenreferenz kann von der
+physischen Fläche abweichen, und die erreichte Werkzeugorientierung kann von
+der gewünschten Orientierung abweichen. Zusammen erzeugen diese Abweichungen eine Winkelfehlstellung zwischen Werkzeug
+und Fläche, die zu Kantenkontakt und hohen Kontaktlasten führen kann.
 
 Für einen siebenachsigen Franka Emika Panda wurde ein kartesischer
 Echtzeit-Impedanzregler implementiert. Richtungsabhängige Steifigkeit und
 Dämpfung wurden relativ zu einem konfigurierten Flächenkoordinatensystem
-definiert, und der Impedanzbezugspunkt konnte vom Werkzeugbezugspunkt (TCP) auf
+definiert. Der Impedanzbezugspunkt konnte vom Werkzeugbezugspunkt (TCP) auf
 ein virtuelles Nachgiebigkeitszentrum (\abbr{CoC}) verschoben werden. Eine
 Verschiebung des \abbr{CoC} vom TCP koppelte die kommandierte translatorische
 Anpressbewegung an ein zusätzliches kommandiertes TCP-Moment. Während der
 Kontaktherstellung führte der Regler das Werkzeug zur Fläche und hielt dabei
 die bei Kontaktbeginn erreichte Orientierung als Rotationsreferenz.
 
-Die Kontaktversuche variierten die \abbr{CoC}-Position, die Rotationssteifigkeit
-und die quergerichtete translatorische Steifigkeit. Positive und negative
-Winkeloffsets vor dem Kontakt wurden um dieselbe Flächentangentenachse
-getestet. Der bei Kontaktbeginn erreichte anfängliche Winkeloffset wurde relativ
-zur konfigurierten Flächenreferenz berechnet. Die Kontaktherstellungsreaktion
-wurde aus den gemessenen Endeffektororientierungen zu Beginn und am Ende der
+Die Kontaktversuche variierten die \abbr{CoC}-Position, die
+Rotationssteifigkeit und die translatorische Steifigkeit entlang der Fläche.
+Positive und negative Winkeloffsets vor dem Kontakt wurden um dieselbe
+Flächentangentenachse getestet. Zur Charakterisierung der Anfangsbedingung
+jedes Versuchs wurde der bei Kontaktbeginn erreichte anfängliche Winkeloffset
+relativ zur konfigurierten Flächenreferenz berechnet. Die
+Kontaktherstellungsreaktion wurde anschließend aus der Relativdrehung zwischen
+den gemessenen Endeffektororientierungen bei Kontaktbeginn und am Ende der
 Kontaktherstellung bestimmt.
 
 Innerhalb der getesteten Bereiche erzeugte die tangentiale
 \abbr{CoC}-Position die größte gemessene Reaktionsvariation. Eine Erhöhung der
 Rotationssteifigkeit von \(5\) auf \(50\,\mathrm{N\,m/rad}\) verringerte
 die Reaktion um \(63.9\,\%\) gegenüber der Bedingung bei
-\(5\,\mathrm{N\,m/rad}\). Die getesteten Werte der quergerichteten
-translatorischen Steifigkeit ergaben nur eine Reaktionsspanne von
-\(0.4\,\%\) der TCP-zentrierten Referenz. Für die beiden Offsetrichtungen
+\(5\,\mathrm{N\,m/rad}\). Die Variation dieser translatorischen
+Steifigkeit hatte nur einen geringen Einfluss, mit einer Reaktionsspanne von
+\(0.4\,\%\) gegenüber der TCP-zentrierten Referenz. Für die beiden Offsetrichtungen
 erhöhte die zur Verstärkung der korrigierenden Drehung gewählte
 \abbr{CoC}-Verschiebung den Reaktionsbetrag um \(4.0\,\%\) und
 \(4.3\,\%\). Die entgegengesetzte Verschiebung verringerte den jeweiligen
