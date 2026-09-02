@@ -6,10 +6,13 @@ removed in the turn in which they are finished.
 ## Reconcile the Tool Orientation timeout with the run archive
 
 Changed to \(5.0\,\mathrm{s}\) on 2026-09-02 by the author's decision, in
-Table 4.3, on the Tool Orientation arrow of Figure 3.3, and in
+Table 4.3 and in
 `Thesis_Final_Control/surface_grinding_controller/params/approach.conf`. The
 change to the controller parameter file is **not committed** in that
-repository.
+repository. Figure 3.3 no longer states either value: both its timeout arrows
+now read `timeout` alone, under the rule in `FIGURE_STYLE.md` that a state
+chart names a timeout without valuing it, so the figure is no longer a place
+this decision has to be kept in step.
 
 The reported campaign ran at \(8.0\,\mathrm{s}\): every one of the 101
 archived `P2_*` runs records `approach_orient_timeout = 8.0` in its

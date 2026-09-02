@@ -6,27 +6,29 @@
     state/.style={draw=black, thick, rounded corners=5mm,
                   text width=3.80cm, align=center,
                   inner sep=4pt, minimum height=1.0cm},
-    auxiliary/.style={draw=blue, text=blue, thick,
-                      text width=2.75cm, align=center,
-                      inner sep=4pt, minimum height=1.0cm},
+    % Start and Stop share one terminal shape; only the colour separates them.
+    startstate/.style={draw=black, thick, rounded corners=5mm,
+                       text width=2.55cm, align=center,
+                       inner sep=4pt, minimum height=1.0cm},
     stopstate/.style={draw=red, text=red, thick, rounded corners=5mm,
                       text width=2.55cm, align=center,
                       inner sep=4pt, minimum height=1.0cm},
     cond/.style={font=\scriptsize\setstretch{1.0}, align=left,
-                 text width=3.8cm, inner sep=0pt},
+                 text width=3.5cm, inner sep=0pt},
     stopcond/.style={font=\scriptsize\setstretch{1.0}, align=left,
                      text=red, inner sep=0pt},
     flow/.style={-{Latex[length=2mm]}, thick, black},
-    testflow/.style={-{Latex[length=2mm]}, thick, blue},
+    % Operator and tuning paths keep their own style name but are drawn black.
+    testflow/.style={-{Latex[length=2mm]}, thick, black},
     stopflow/.style={-{Latex[length=2mm]}, line width=0.7pt, red},
     rail/.style={line width=0.7pt, red},
     testcond/.style={font=\scriptsize\setstretch{1.0}, align=left,
-                     text=blue, inner sep=0pt},
+                     inner sep=0pt},
   ]
 
-  \node[auxiliary, text width=3.60cm] (stored) at (-3.00,4.80)
-      {Move to Stored \(q_{\mathrm{init}}\)};
-  \node[state, text width=2.90cm] (guidance) at (5.00,4.80) {Manual Guidance};
+  \node[startstate] (start) at (-8.20,4.80) {Start};
+  \node[state, text width=3.20cm] (motion) at (-3.00,4.80) {Motion Generator};
+  \node[state, text width=2.90cm] (guidance) at (3.00,4.80) {Manual Guidance};
 
   \node[state] (orient)     at (0.00, 0.10) {Tool Orientation};
   \node[state] (appr)       at (0.00,-2.20) {Surface Approach};
@@ -35,31 +37,34 @@
   \node[state] (hold)       at (0.00,-9.10) {Pre-Grinding Hold};
   \node[state] (grind)      at (0.00,-11.40) {Grinding};
 
-  \draw[testflow] (stored.south) -- (-3.00,3.80) -- (-1.20,3.80)
+  % The terminal enters the first state, so this segment carries no condition.
+  \draw[flow] (start.east) -- (motion.west);
+  \draw[flow] (motion.south) -- (-3.00,2.60) -- (-1.20,2.60)
       -- ($(orient.north)+(-1.20,0)$);
-  \node[testcond, anchor=east] at (-3.20,3.80)
-      {\(q_{\mathrm{init}}\) reached};
+  \node[testcond, anchor=east] at (-3.15,3.40)
+      {if \(q_{\mathrm{init}}\) reached};
 
-  % Runtime guidance restarts an active contact sequence at Tool Orientation.
-  \draw[testflow] ($(orient.east)+(0,-0.45)$) -| (9.00,4.80)
-      -- (guidance.east);
-  \node[testcond, anchor=south] at (8.20,4.95) {\texttt{g}: guide};
-  % Recapture enters the top edge vertically instead of ending on a corner.
-  \draw[testflow] (guidance.west) -- (2.30,4.80) -- (2.30,1.55)
-      -- (1.20,1.55) -- ($(orient.north)+(1.20,0)$);
-  \node[testcond, anchor=west] at (2.45,2.60) {\texttt{p}: recapture};
+  % Runtime guidance is entered from Grinding; the route clears Stop beneath it.
+  \draw[testflow] (grind.south) -- (0.00,-14.40) -- (9.45,-14.40)
+      -- (9.45,4.80) -- (guidance.east);
+  \node[testcond, anchor=south east] at (9.30,4.95) {if operator types \texttt{g}};
+  % Recapture mirrors the Motion Generator entry: same break height, same
+  % inward run, so the two routes enter the top edge symmetrically.
+  \draw[testflow] (guidance.south) -- (3.00,2.60) -- (1.20,2.60)
+      -- ($(orient.north)+(1.20,0)$);
+  \node[testcond, anchor=west] at (3.15,3.40) {if operator types \texttt{p}};
   \draw[flow] (orient) -- (appr);
-  % One line: the condition measures 3.73 cm and the rail is 4.07 cm away.
-  \node[cond, text width=3.90cm, anchor=west] at (2.15,-1.05)
-      {if \(\theta_{\mathrm{app,err}}\leq\varepsilon_{\mathrm{app}}\ \lor\ 5.0\,\mathrm{s}\) timeout};
+  % The longest condition: its own width keeps it on one line, and moving it
+  % left keeps the box clear of the stop rail.
+  \node[cond, text width=3.90cm, anchor=west] at (1.85,-1.05)
+      {if \(\theta_{\mathrm{app,err}}\leq\varepsilon_{\mathrm{app}}\ \lor\) timeout};
   \draw[flow] (appr) -- (precontact);
   \node[cond, anchor=west] at (2.15,-3.35)
       {if \(h_{\mathrm{Tool}}\leq h_{\mathrm{clearance}}\)};
   \draw[flow] (precontact) -- (contact);
   \node[cond, anchor=west] at (2.15,-5.65) {if operator confirms};
   \draw[flow] (contact) -- (hold);
-  \node[cond, anchor=west] at (2.15,-7.95)
-      {if \(5.0\,\mathrm{s}\) timeout};
+  \node[cond, anchor=west] at (2.15,-7.95) {if timeout};
   \draw[flow] (hold) -- (grind);
   \node[cond, anchor=west] at (2.15,-10.25) {if operator confirms};
 
@@ -67,34 +72,35 @@
   % A controller state, drawn as the same capsule as the sequence states. The
   % adjustable parameter families sit beside it so the capsule keeps the state
   % height the other six use.
-  \node[state, text width=3.95cm] (contacthold) at (-8.20,-11.40)
+  \node[state, text width=3.95cm] (contacthold) at (-7.80,-11.40)
       {Contact-Impedance Hold};
-  \node[testcond, anchor=north, align=center] at (-8.20,-12.30)
+  \node[testcond, anchor=north, align=center] at (-7.80,-12.30)
       {Set \(K_p\), \(K_R\), or \(r_c\)};
   \draw[testflow] (grind.west) -- (contacthold.east);
-  \node[testcond, anchor=south] at (-3.90,-11.15)
-      {\texttt{t}: enter hold};
-  \draw[testflow] (contacthold.west) -- (-11.45,-11.40)
-      -- (-11.45,5.80) -- (0.00,5.80) -- (orient.north);
-  \node[testcond, anchor=north] at (-8.20,-12.95)
-      {\texttt{s}: start sequence};
+  \node[testcond, anchor=south] at (-3.76,-10.55)
+      {if operator types \texttt{t}};
+  \draw[testflow] (contacthold.west) -- (-10.90,-11.40)
+      -- (-10.90,5.80) -- (0.00,5.80) -- (orient.north);
+  % The return leg is long, so its condition rides the middle of it, outboard.
+  \node[testcond, rotate=90, anchor=south] at (-11.05,-2.80)
+      {if operator types \texttt{s}};
 
-  \coordinate (railtop) at (7.50,0.10);
-  \coordinate (railbottom) at (7.50,-11.40);
+  \coordinate (railtop) at (7.05,0.10);
+  \coordinate (railbottom) at (7.05,-11.40);
   \draw[stopflow] (orient.east) -- (railtop);
-  \draw[stopflow] (appr.east) -- (7.50,-2.20);
-  \draw[stopflow] (precontact.east) -- (7.50,-4.50);
-  \draw[stopflow] (contact.east) -- (7.50,-6.80);
-  \draw[stopflow] (hold.east) -- (7.50,-9.10);
+  \draw[stopflow] (appr.east) -- (7.05,-2.20);
+  \draw[stopflow] (precontact.east) -- (7.05,-4.50);
+  \draw[stopflow] (contact.east) -- (7.05,-6.80);
+  \draw[stopflow] (hold.east) -- (7.05,-9.10);
   \draw[stopflow] (grind.east) -- (railbottom);
   \draw[rail] (railtop) -- (railbottom);
 
   \node[stopcond, anchor=south east, align=right, text width=3.3cm]
-      at (7.45,0.55)
+      at (7.00,0.85)
       {if stop requested \(\lor\)\\robot error/reflex};
-  \node[stopcond, anchor=south] at (4.65,-2.12)
+  \node[stopcond, anchor=south] at (4.87,-2.12)
       {if \(s_{\mathrm{app}}\geq s_{\mathrm{app,max}}\)};
 
-  \node[stopstate] (stop) at (7.50,-13.15) {Stop};
+  \node[stopstate] (stop) at (7.05,-13.15) {Stop};
   \draw[stopflow] (railbottom) -- (stop);
 \end{tikzpicture}

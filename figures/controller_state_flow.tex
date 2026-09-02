@@ -7,6 +7,10 @@
     state/.style={draw=black, thick, rounded corners=5mm,
                   text width=3.15cm, align=center,
                   inner sep=4pt, minimum height=1.0cm},
+    % Start and Stop share one terminal shape; only the colour separates them.
+    startstate/.style={draw=black, thick, rounded corners=5mm,
+                       text width=3.15cm, align=center,
+                       inner sep=4pt, minimum height=1.0cm},
     stopstate/.style={draw=red, text=red, thick, rounded corners=5mm,
                       text width=3.15cm, align=center,
                       inner sep=4pt, minimum height=1.0cm},
@@ -18,6 +22,7 @@
                      text=red, inner sep=0pt},
   ]
 
+  \node[startstate] (start) at (0.00, 1.75) {Start};
   \node[state] (recovery)  at (0.00, 0.00) {Robot Recovery};
   \node[state] (selection) at (0.00,-1.75) {Controller Selection};
 
@@ -27,6 +32,8 @@
   \node[state] (guidance)    at ( 5.40,-4.40) {Manual Guidance};
   \node[stopstate] (stop) at ( 0.00,-7.90) {Stop};
 
+  % The terminal enters the first state, so this segment carries no condition.
+  \draw[flow] (start) -- (recovery);
   \draw[flow] (recovery) -- (selection);
   \node[cond, anchor=west] at (0.30,-0.88) {if recovery succeeds};
 

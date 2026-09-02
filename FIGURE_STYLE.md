@@ -339,30 +339,67 @@ that these are the only possible groups. The visible caption and
 List-of-Figures entry are both `Principal selected tool points for the
 rectangular tool face.`; the panel labels name the three outcomes. Every panel draws the minimum tool height
 \(h_{\mathrm{Tool}}\) as a green dimension from a minimum-height corner to its
-projection on the configured surface. The black \(-n_s\) arrow remains the
-approach-direction marker and is not used as the height dimension.
+projection on the configured surface. **That black arrow is \(n_s\), drawn
+from the surface outwards**, changed from \(-n_s\) on 2026-09-02: the drawings
+name the surface normal that the surface frame defines, and the approach
+direction is the prose's \(-n_s\), not a second arrow. Figure 3.5 had always
+drawn \(n_s\), so the two clearance drawings now agree on the marker as well
+as on the green height dimension. It is not used as the height dimension.
+**Figure 3.7 carries \(n_s\) too**, added the same day, rising from the
+surface line on its free left side; its commanded travel keeps the blue
+\(s_{\mathrm{CE}}(t)\,(-n_s)\) label, so the drawing shows the normal and
+states that the press runs against it.
 
 **The Chapter 3 controller flow uses two state-machine drawings.** The first
-starts directly with Robot Recovery and then shows Controller Selection, followed by the
+opens with a `Start` terminal, then shows Robot Recovery and Controller
+Selection, followed by the
 Contact Sequence, Cartesian Pose Hold, Contact-Impedance Hold and Manual Guidance
 branches. Label these selections `if operator types s`, `if operator types h`,
 `if operator types t`, and `if operator types g`, respectively, so the drawing
 exposes the implemented keyboard mapping. The second
 shows the surface-contact states from Tool Orientation through Grinding. Its
-common start is the blue rectangular box `Move to Stored
-\(q_{\mathrm{init}}\)`, whose orthogonal path enters the top edge of Tool
-Orientation and reads `\(q_{\mathrm{init}}\) reached`. **The
+common start is a `Start` terminal leading into `Motion Generator`, whose
+orthogonal path enters the top edge of Tool Orientation and reads
+`if \(q_{\mathrm{init}}\) reached`. **The
 `Initial Configuration` box is withdrawn**, as of 2026-08-31, and so is the
 separate `start sequence` arrow that followed it. The box named the value the
 robot moves to and the arrow named the motion, which put a stored parameter and
 a reached configuration in the same column and left the reader looking for what
 performed the move. One box now performs it, named for the function that does
 so, and the arrow carries the arrival condition like every other arrow in the
-chart. **Manual Guidance is not drawn as a second route into the sequence**,
+chart. **That box is `Motion Generator`, drawn as a black capsule, and it
+replaced the blue `Move to Stored \(q_{\mathrm{init}}\)` rectangle on
+2026-09-02.** The name states the component that produces the motion rather
+than the destination it moves to, and the arrival condition it carries already
+names \(q_{\mathrm{init}}\), so the configuration was written twice. The name
+follows Section 3.5, which calls it a libfranka joint-motion generator; do not
+rename it.
+
+**The two routes into Tool Orientation are drawn as mirror images.** Settled
+2026-09-02. Motion Generator and Manual Guidance sit at the same height either
+side of the state column, both leave from their own south edge, both turn at
+one shared break height, and both run inward the same distance before dropping
+into the top edge. The tuning return enters between them on the column axis, so
+three parallel drops arrive at the top edge and the eye reads one entry point
+rather than three unrelated routes. Their conditions sit outboard of the two
+vertical runs, not between them, because two labels facing each other across
+the column meet in the middle.
+
+**A timeout in the state charts is named, not valued.** Ruled 2026-09-02 for
+Figure 3.3, which had carried `\(5.0\,\mathrm{s}\) timeout` on two arrows.
+The chart states which condition ends a state; the configured duration belongs
+to Table 4.3 and Appendix C, where one edit changes it once. Two arrows stating
+a value that the run archive does not support made the drawing a third place to
+keep in step. Write `timeout` alone, as in `if \(\theta_{\mathrm{app,err}}
+\leq\varepsilon_{\mathrm{app}}\ \lor\) timeout` and `if timeout`. **Manual Guidance is not drawn as a second route into the sequence**,
 withdrawn on the same day together with its `s: start` label: the box carries
 the runtime interaction only, so `g` enters Manual Guidance from an active
 contact sequence and `p` recaptures the reached pose and restarts at Tool
-Orientation. Section 3.2 still states that `s` starts the sequence from the
+Orientation. **The `g` connector is drawn from Grinding**, moved there from
+Tool Orientation on 2026-09-02, and its route leaves the state column below the
+chart and returns up the right of Stop. Section 3.2 states the general rule,
+that `g` is available during active control; the chart draws the connector from
+one state, and Grinding is the state the campaign ends in. Section 3.2 still states that `s` starts the sequence from the
 current guided configuration. **Contact-Impedance Hold is drawn as a state, in the same black capsule as
 the sequence states**, on the left return branch beside the contact-state
 column. It was a blue rectangle until 2026-08-31; that made the one chart
@@ -375,13 +412,20 @@ incoming arrow states that `t` enters it from the contact sequence. Its name is
 adjustable parameter families sit in a label beneath it rather than on a second
 line inside it, so the capsule keeps the state height the other six use. It holds
 the captured Cartesian pose while \(K_p\), \(K_R\), or \(r_c\) is set, then
-returns to Tool Orientation on an outgoing arrow labelled `s: start sequence`.
+returns to Tool Orientation on an outgoing arrow labelled
+`if operator types s`.
 **No Manual Guidance box is attached to that loop.** Withdrawn on 2026-08-31
 with its `g` and `p` connectors: guidance from the hold is a runtime
 interaction the body text carries, and drawing it a second time doubled the
-box and crowded the column. Keep the `s` and `t` labels immediately beside the
-Contact-Impedance Hold loop; a long return rail with an isolated condition
-label is not acceptable.
+box and crowded the column. Keep the `t` label immediately beside the
+Contact-Impedance Hold loop. **The `s` label rides the return leg instead**,
+rotated to read bottom-to-top beside the middle of the long vertical segment,
+outboard of it, as of 2026-09-02. This suspends the older rule that no condition may sit alone
+on a long return rail: the leg is the tallest line in the chart, the label
+placed at its foot was read as belonging to the parameter list under
+Contact-Impedance Hold, and a rotated label at the midpoint names the leg
+along its whole length. The rule still holds for short connectors, where a
+label away from the arrow has no such excuse.
 `State` is the canonical node term, and the contact-press state is `Contact
 Establishment`; no alternative state name is used.
 
@@ -461,17 +505,40 @@ enough for an arc. The figure contains no panel letters, local tangent-axis
 symbols, angular quantity symbols, or numerical angles. A single legend above
 the geometry names `Configured surface`, `Physical surface`, and `Tool face`.
 
+**Every operator connector reads `if operator types <key>`.** Settled
+2026-09-02 across Figures 3.1, 3.3 and 3.8, replacing the `key: verb` form
+(`g: guide`, `p: recapture`, `t: enter hold`, `s: start sequence`) that only
+the two later charts used. The condition form states what the reader must do to
+take the arrow, matches the four selection arrows Figure 3.1 already carried,
+and removes a second grammar for the same kind of transition. The key stays in
+`\texttt`, as Figure 3.1 and the body text already set it, and the mode digits
+of Figure 3.8 take it too.
+
 **The three Chapter 3 flowcharts use one visual grammar.** Figures 3.1, 3.3 and
-3.7 draw every operating or controller state as the same black rounded capsule.
-Operator input, initialisation, capture, selection and selectable
-controller configurations use blue rectangular boxes. Normal state progression
-uses black arrows, operator and tuning paths use blue arrows, and stop or
-failure paths use red arrows. Conditions are written directly beside clear
+3.8 draw every operating or controller state as the same black rounded capsule.
+Capture, selection and selectable
+controller configurations use blue rectangular boxes. Stop and failure paths
+use red arrows. Conditions are written directly beside clear
 arrow segments rather than placed in decision diamonds. The three drawings use
 the same text size, arrowhead size, border weight and state height.
 
-Figure 3.7 treats Cartesian Pose Hold as the controller state. Its four
-null-space modes are blue configuration boxes rather than additional states.
+**Figures 3.1 and 3.3 are drawn in black apart from their red termination
+paths.** Ruled on 2026-09-02 for Figure 3.3, which had until then drawn its
+operator and tuning arrows and their condition labels in blue. Red already
+separates the one path that leaves the state machine, so a second colour
+inside it divided arrows that carry the same kind of transition, and the
+initialisation box was the only blue box either chart still held. The tuning
+and guidance branches remain legible on position alone: tuning stays left of
+the state column and guidance stays right of it. **Figure 3.8 followed on the
+same day**, so all three charts are now black apart from their red termination
+paths, and no blue box remains in any of them.
+
+Figure 3.8 treats Cartesian Pose Hold as the controller state. **Its four
+null-space modes are black capsules at a taller mode height**, changed from
+blue rectangles on 2026-09-02: with the chart drawn in black the rectangle
+carried no meaning the reader could name, and the modes are distinguished
+instead by the taller shape, by the numbered bus that feeds them, and by
+sitting in a row rather than in the state column.
 Figure 3.2 is not part of this state-chart grammar: it uses ordinary black
 rectangular functional blocks and crossed circular junctions.
 
@@ -502,7 +569,7 @@ coordinates — the arithmetic is close enough that it has to be seen.
 The junction name goes on the side no signal uses, and never where a path runs
 through it.
 
-Figures 3.1, 3.3 and 3.7 are structurally settled. Do not redesign them or add
+Figures 3.1, 3.3 and 3.8 are structurally settled. Do not redesign them or add
 further conditions and controller detail; their deliberate simplification is
 part of the final visual hierarchy.
 
@@ -510,7 +577,16 @@ Every arrow carries its transition condition. A shared red termination rail
 may carry conditions that apply from every active state, provided the
 accompanying text names those conditions explicitly. Keep that rail thinner
 than the main progression so it does not dominate the state sequence. Use a
-red capsule for Stop. **The chart carries no `Reported endpoint` marker.**
+red capsule for Stop and a black capsule of the same shape for `Start`.
+**Figures 3.1, 3.3 and 3.8 each open with a `Start` terminal**, added
+2026-09-02, so the charts declare their entry point the way they already
+declared their exit. Figures 3.3 and 3.8 give both terminals
+`text width=2.55cm`; Figure 3.1 matches its own state width instead. Do not
+shrink a terminal to make room for a route. Figure 3.3's guidance return passes
+to the right of Stop and was left almost touching it; the space came from
+moving the red rail inboard, which the conditions beside it had already made
+possible by dropping their timeout value, not from a smaller capsule. Its outgoing arrow carries no condition, because entering the first state
+is not a transition the controller tests. **The chart carries no `Reported endpoint` marker.**
 Withdrawn on 2026-08-31: the drawing shows the implemented state machine, and
 which state the campaign stopped in is a result rather than a transition. The
 body text states it in Sections 3.2 and 5.2 and in the Grinding entry of the
@@ -605,10 +681,25 @@ the box. Main-row blocks retain conspicuous gaps in the compiled page; short
 connectors squeezed between neighbouring boxes are not acceptable.
 
 **The Chapter 3 Cartesian pose-hold diagram shows the four operator-selectable
-modes.** Use the same
-initialisation motif as the surface-contact chart: one blue `Move to Stored
-\(q_{\mathrm{init}}\)` box leads into `Capture Current EE Pose` on an arrow
-reading `\(q_{\mathrm{init}}\) reached`. Its `Initial Configuration` box,
+modes.** It opens on the surface-contact chart's motif: a black `Start`
+terminal leading into `Motion Generator`, which enters `Operator Mode
+Selection` on an arrow reading `if \(q_{\mathrm{init}}\) reached`. It closes
+on `Cartesian Pose Hold` and a red `Stop`.
+
+**The mode is chosen before the pose is captured.** Reordered on 2026-09-02, so
+the chart reads `Operator Mode Selection`, the four modes, `Capture Current EE
+Pose`, then `Cartesian Pose Hold`; capture and hold are the last two nodes
+because the mode is what the operator sets first.
+
+**A mode change is a live switch, drawn as a self-loop on Cartesian Pose Hold.**
+Confirmed against the controller on 2026-09-02 and corrected the same day: a new
+mode number is handled inside the hold, which is neither left nor re-entered, so
+the arrow leaves the west edge and returns to it, labelled
+`if operator types 0, 1, 2, or 3`. It had been drawn as a return to Operator
+Mode Selection, which sent the reader back through `Capture Current EE Pose` and
+so contradicted Section 3.6, where switching modes leaves the Cartesian
+reference and impedance unchanged. Do not restore that return: the selector is
+entered once, from `Motion Generator`. Its `Initial Configuration` box,
 the `start hold` arrow, the guided start route and its `h: start` label are all
 withdrawn as of 2026-08-31, matching the surface-contact chart. Runtime
 input `g` enters Manual Guidance from Cartesian Pose Hold, while `p` recaptures
@@ -617,7 +708,8 @@ Runtime recapture is not specific to pose hold; the same `g` then `p`
 interaction restarts an active surface-contact sequence at Tool Orientation.
 **Manual Guidance is drawn as a state, in the same black capsule as the
 sequence states, and carries its name and nothing else** in both charts.
-`Enter with g` is withdrawn, because the incoming `g: guide` arrow already
+`Enter with g` is withdrawn, because the incoming `if operator types g` arrow
+already
 states how the state is entered; the blue rectangle is withdrawn too, on
 2026-09-01, for the reason that retired the blue Contact-Impedance Hold — it is
 a controller state, and Figure 3.1 had always drawn it as one. Its name is
