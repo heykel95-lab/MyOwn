@@ -9,6 +9,7 @@ The final campaign uses the clean 20 N, +200 mm records acquired after the
 disturbance and inter-trial hardware gates had been fixed.
 """
 
+import argparse
 import csv
 import glob
 import os
@@ -20,6 +21,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import make_figures  # noqa: E402
 from make_figures import (  # noqa: E402
     SERIES_BLACK,
     SERIES_RED,
@@ -311,7 +313,7 @@ def sigma_panel(ax, groups):
         markerfacecolor="white", markeredgecolor=SERIES_RED,
         markeredgewidth=1.1, linewidth=1.25, elinewidth=1.0,
         capthick=1.0, capsize=3,
-        label=r"Maximum Position Error, $\|e_p\|_{\max}$")
+        label=r"Maximum Cartesian Position Error, $\|e_p\|_{\max}$")
     task_ax.plot(gains[screening], task_means[screening], color=SERIES_RED,
                  marker="D", markerfacecolor="white", markeredgewidth=1.1,
                  linestyle="none")
@@ -329,7 +331,7 @@ def sigma_panel(ax, groups):
     return (
         [sigma_handle, task_handle, criterion_handle],
         [r"Singular-Value Change, $\Delta\sigma_{\min}$",
-         r"Maximum Position Error, $\|e_p\|_{\max}$",
+         r"Maximum Cartesian Position Error, $\|e_p\|_{\max}$",
          r"Position-Error Limit, $\|e_p\|_{\max}=2\,\mathrm{mm}$"],
     )
 
@@ -416,6 +418,24 @@ def make_figure(groups):
 
 
 def main():
+    global RESULTS, SUMMARY
+
+    # The thesis checkout holds the script but not the 6 GB of run records, so
+    # the data directory is given on the command line when the two are not
+    # side by side. Without it the layout resolution above still applies.
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--results", default=RESULTS,
+                        help="directory holding the MAIN_NS* run directories")
+    parser.add_argument("--out-dir", default=make_figures.FIGURES,
+                        help="directory the PDF is written to")
+    parser.add_argument("--summary", default=SUMMARY,
+                        help="path of the derived summary CSV")
+    args = parser.parse_args()
+
+    RESULTS = args.results
+    SUMMARY = args.summary
+    make_figures.FIGURES = args.out_dir
+
     groups = load_conditions()
     if len(groups) != len(CONDITIONS):
         found = {group["run_id"] for group in groups}

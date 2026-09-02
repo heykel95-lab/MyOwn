@@ -3,27 +3,16 @@
 This file contains only agreed work that remains unfinished. Completed items are
 removed in the turn in which they are finished.
 
-## Regenerate Figure 5.6 on the lab machine
+## Retire the superseded null-space script in `MyController`
 
-The pose-hold figure `figures/MAIN_NS_nullspace_automatic.pdf` still prints the
-withdrawn notation: `Singular-Value Change, $\Delta\sigma_{\min,\mathrm{dist}}$`,
-`Net Redundant Displacement, $\Delta\eta_{\mathrm{dist}}$`, and `Peak
-Cartesian Position Error`. Chapter 5 around it now reads
-\(\Delta\sigma_{\min}\), \(\Delta\eta\) and maximum Cartesian position
-error, so the figure contradicts its own caption paragraph.
-
-The six labels were corrected in `code/python/figures/make_nullspace_figure.py`
-on 2026-09-02, but the PDF could not be rebuilt here. The script needs the four
-`MAIN_NS7`/`MAIN_NS8` run directories and
-`experiments/derived/MAIN_NS_automatic_summary.csv`, which a clone does not
-carry: `code/AGENTS.md` records that `MyController` excludes
-`experiments/results/**/*.csv` and `experiments/derived/` from version control.
-Running the script here fails with `missing Case-F data`.
-
-Rerun `python code/python/figures/make_nullspace_figure.py` on the machine
-holding the `MyController` run archive and copy the regenerated PDF into
-`figures/`. Nothing else in the script changed, so the plotted values are
-unaffected.
+`MyController/experiments/analysis/make_nullspace_figure.py` is the version
+that produced the withdrawn Figure 5.6: two panels, no net-displacement bars,
+and the \(\Delta\sigma_{\min,\mathrm{dist}}\) labels. It sits beside the run
+archive, so it is the copy a session on the lab machine reaches for first, and
+running it silently reverts the figure. Either overwrite it from
+`code/python/figures/make_nullspace_figure.py` in this repository, which is now
+the authoritative generator, or delete it and leave a pointer here. Not done
+because it changes a second repository.
 
 ## Publish enough data to reproduce the figures
 
@@ -32,8 +21,9 @@ Choose whether to publish `experiments/derived/metrics.csv` from
 `Thesis_Final_Control` and one complete null-space run from `MyController`.
 Preserve `MyController`'s calibration exclusion: its measured plane and
 tool-axis calibration files are not to be published. If the data are placed in
-this repository, the current scripts expect them below
-`code/python/experiments/`.
+this repository, `make_nullspace_figure.py` and the other scripts that read run
+directories take a `--results` path, so the location is free; without it they
+resolve to `code/python/experiments/`.
 
 ## Verify the controller on the lab machine
 
