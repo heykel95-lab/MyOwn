@@ -753,7 +753,12 @@ Projection onto \(v_{\mathrm{ref}}\) gives a common directional comparison acros
 tested settings. The unit of \(\Delta\eta\) is radians, and the values are
 expressed in degrees, as for \(E_N\).
 
-\Added{The singular-value change over the same interval is}
+The singular-value change evaluates how the conditioning indicator
+\(\sigma_{\min}\) moves during the virtual disturbance alone. The selected
+null-space law was active from the start of every pose-hold trial. Taken on its
+own, \(\sigma_{\min}(9\,\mathrm{s})\) would therefore also carry the
+configuration reached during the preceding settling interval. Referencing it to
+the value at the start of the disturbance gives the change over that interval,
 
 \begin{equation}
 \Delta\sigma_{\min}
@@ -761,3 +766,9 @@ expressed in degrees, as for \(E_N\).
 \sigma_{\min}(9\,\mathrm{s})-\sigma_{\min}(5\,\mathrm{s}).
 \label{eq:nullspace_singular_value_change_metric}
 \end{equation}
+
+A positive \(\Delta\sigma_{\min}\) indicates that \(\sigma_{\min}\)
+increased over the disturbance interval, and a negative value that it
+decreased. Under the fixed Jacobian convention, an increase corresponds to
+motion towards a better-conditioned configuration and a decrease to motion
+towards a less well-conditioned one.
