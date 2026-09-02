@@ -3,32 +3,25 @@
 This file contains only agreed work that remains unfinished. Completed items are
 removed in the turn in which they are finished.
 
-## Decide the Tool Orientation timeout before changing it
+## Reconcile the Tool Orientation timeout with the run archive
 
-A change from \(8.0\,\mathrm{s}\) to \(5.0\,\mathrm{s}\) was requested
-on 2026-09-02 for the controller and for the thesis. It is **not** made,
-because the two halves conflict. Every one of the 101 archived contact runs
-under `Thesis_Final_Control/experiments/results/P2_*` records
-`approach_orient_timeout = 8.0` in its `params_effective/approach.conf`, with
-no exceptions, so \(8.0\,\mathrm{s}\) is what the reported experiments used.
-Writing \(5.0\,\mathrm{s}\) into Table 4.3 and Figure 3.3 would state a
-configuration fact that contradicts every parameter file, which is the fault
-recorded under *Cross-chapter factual consistency* in
-`THESIS_WRITING_GUIDE.md` as `Which duration`.
+Changed to \(5.0\,\mathrm{s}\) on 2026-09-02 by the author's decision, in
+Table 4.3, on the Tool Orientation arrow of Figure 3.3, and in
+`Thesis_Final_Control/surface_grinding_controller/params/approach.conf`. The
+change to the controller parameter file is **not committed** in that
+repository.
 
-The thesis carries the value in exactly two places:
-`chapters/04_experimental_setup_and_evaluation.tex`, the
-`Orientation timeout / maximum rate` row of Table 4.3; and
-`figures/phase_flow_chart.tex`, the Tool Orientation arrow of Figure 3.3.
-`FIGURE_STYLE.md` and `THESIS_WRITING_GUIDE.md` also quote the
-`8.0 s timeout` arrow condition and would move with them. The other
-\(8\,\mathrm{s}\) hits in Chapter 4 belong to the disturbance waveform and
-must not be touched.
+The reported campaign ran at \(8.0\,\mathrm{s}\): every one of the 101
+archived `P2_*` runs records `approach_orient_timeout = 8.0` in its
+`params_effective/approach.conf`, and those files are the record of what was
+executed and are not edited. The thesis therefore states a value the archive
+does not support until the campaign is repeated at \(5.0\,\mathrm{s}\).
+`THESIS_WRITING_GUIDE.md` records the decision under *Cross-chapter factual
+consistency* so that a consistency pass does not revert it.
 
-Three ways out, and the choice is the author's. Change the controller default
-to \(5.0\,\mathrm{s}\) for future work and leave the thesis at
-\(8.0\,\mathrm{s}\), which is what the campaign ran. Repeat the campaign at
-\(5.0\,\mathrm{s}\) and report that. Or leave both unchanged.
+Either repeat the campaign at \(5.0\,\mathrm{s}\) and re-derive the reported
+values, or decide that the stated value describes the controller as it now
+stands rather than the runs, and say which in Section 4.3.
 
 ## Correct `signed component` in Section 4.5
 

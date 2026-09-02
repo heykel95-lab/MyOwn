@@ -1649,6 +1649,17 @@ visible from inside any single chapter:
 - **Which duration.** A \(4.0\,\mathrm{s}\) contact-establishment timeout was stated in three
   places in the methodology chapter. Every completed experiment used
   \(5.0\,\mathrm{s}\); the \(4.0\,\mathrm{s}\) figure matched no parameter file.
+
+  **The Tool Orientation timeout is \(5.0\,\mathrm{s}\) by the author's
+  decision of 2026-09-02, and this one bullet does not apply to it.** The
+  thesis states \(5.0\,\mathrm{s}\) in Table 4.3 and on the Tool Orientation
+  arrow of Figure 3.3, and `surface_grinding_controller/params/approach.conf`
+  now sets `approach_orient_timeout = 5.0`. The archived
+  `params_effective/approach.conf` of all 101 reported contact runs records
+  \(8.0\,\mathrm{s}\), so a consistency pass that greps the value across the
+  archive will find a mismatch. **It is intended: do not revert either place to
+  \(8.0\,\mathrm{s}\).** The archived files are the record of what those runs
+  used and are never edited. What remains outstanding is in `TODOS.md`.
 - **Which plane.** The implementation chapter gave the active baseline surface
   point and tilt angles as \(p_s=(0.526,0.017,0.002)\,\mathrm{m}\),
   \(a=-0.474^\circ\), \(b=2.270^\circ\), which appear in no parameter file,
@@ -1866,7 +1877,7 @@ paragraph. Every arrow states a compact `if` condition and
 uses the thesis symbols where they are defined. Place that condition beside a
 clear segment, never over an arrow or a box border. The Tool Orientation arrow
 uses the compact display condition \(\theta_{\mathrm{app,err}}\leq
-\varepsilon_{\mathrm{app}}\lor 8.0\,\mathrm{s}\) `timeout`, while the
+\varepsilon_{\mathrm{app}}\lor 5.0\,\mathrm{s}\) `timeout`, while the
 body text retains the complete minimum-time and orientation logic. A
 disjunction in a chart condition is written \(\lor\) and never as the word
 `or`, matching the shared stop condition. The earlier

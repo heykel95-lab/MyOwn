@@ -235,7 +235,7 @@ not over the line or a box border. Short display labels such as `Pre-Contact
 Hold` and `Pre-Grinding Hold` may stand for longer state names that the body
 text gives in full. The Tool Orientation arrow carries
 \(\theta_{\mathrm{app,err}}\leq\varepsilon_{\mathrm{app}}\lor\)
-the `8.0 s timeout`; the worded form `angular error within
+the `5.0 s timeout`; the worded form `angular error within
 tolerance` is withdrawn, because Section 3.3 now defines both symbols.
 **A disjunction in a chart condition is written \(\lor\), never the word
 `or`**, so that one drawing states the same relation one way: the shared stop
