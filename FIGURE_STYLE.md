@@ -539,6 +539,15 @@ blue rectangles on 2026-09-02: with the chart drawn in black the rectangle
 carried no meaning the reader could name, and the modes are distinguished
 instead by the taller shape, by the numbered bus that feeds them, and by
 sitting in a row rather than in the state column.
+
+**Each mode capsule names the torque it applies.** Renamed 2026-09-02 to
+`No Null-Space Torque`, `Damping Torque`, `Conditioning Torque` and
+`Damping and Conditioning Torque`, from the bare `Damping`, `Conditioning` and
+`Together`. The four then name one kind of quantity four times, and the reader
+does not have to carry `Torque` across from Mode 0 to know what the others
+apply. `Together` named the combination without naming what was combined. The
+longest name runs to two lines inside the capsule, so all four carry
+`minimum height=1.90cm` and the row stays level.
 Figure 3.2 is not part of this state-chart grammar: it uses ordinary black
 rectangular functional blocks and crossed circular junctions.
 

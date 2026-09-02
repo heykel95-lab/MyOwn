@@ -16,7 +16,8 @@
                       inner sep=4pt, minimum height=1.0cm},
     flow/.style={-{Latex[length=2mm]}, thick, black},
     stopflow/.style={-{Latex[length=2mm]}, line width=0.7pt, red},
-    rail/.style={line width=0.7pt, red},
+    exitflow/.style={-{Latex[length=2mm]}, line width=0.7pt, black},
+    rail/.style={line width=0.7pt, black},
     cond/.style={font=\scriptsize\setstretch{1.0}, align=center, inner sep=0pt},
     stopcond/.style={font=\scriptsize\setstretch{1.0}, align=center,
                      text=red, inner sep=0pt},
@@ -52,15 +53,21 @@
   \node[cond, anchor=south] at (5.40,-2.68)
       {if operator types \texttt{g}};
 
-  % One light shared stop rail for all active controller states.
+  % One light shared exit rail for all active controller states. It leaves in
+  % two directions: red to Stop, black back to Controller Selection.
   \coordinate (railleft) at (-5.40,-5.80);
   \coordinate (railright) at (5.40,-5.80);
-  \draw[stopflow] (surface) -- (railleft);
-  \draw[stopflow] (pose) -- (-1.80,-5.80);
-  \draw[stopflow] (contacthold) -- (1.80,-5.80);
-  \draw[stopflow] (guidance) -- (railright);
+  \draw[exitflow] (surface) -- (railleft);
+  \draw[exitflow] (pose) -- (-1.80,-5.80);
+  \draw[exitflow] (contacthold) -- (1.80,-5.80);
+  \draw[exitflow] (guidance) -- (railright);
   \draw[rail] (railleft) -- (railright);
   \draw[stopflow] (0.00,-5.80) -- (stop);
+
+  % Operator return from any active controller state to the selection state.
+  \draw[exitflow] (railright) -- (7.60,-5.80) -- (7.60,-1.75)
+      -- (selection.east);
+  \node[cond, anchor=south] at (4.66,-1.65) {if operator types \texttt{m}};
   \node[stopcond, anchor=west, align=left] at (0.38,-6.72)
       {if stop requested \(\lor\) robot error/reflex};
 
