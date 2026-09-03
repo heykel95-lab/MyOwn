@@ -154,100 +154,80 @@ That state retains the current Cartesian pose while \mbox{\(K_p\)},
   \label{fig:phase_flow_chart}
 \end{figure}
 
-\subsection{Surface Frame, Tool Reference, and Tool Geometry}
+\subsection{Tool Orientation Reference and Tool Geometry}
 \label{subsec:implemented_surface_task_frame}
-\label{sec:tool_orientation_given_surface}
 \label{sec:surface_task_plane}
+\label{sec:tool_orientation_given_surface}
+\label{sec:tool_contact_geometry}
 
-The controller defines the surface frame \mbox{\(\{S\}\)} from the configured
-surface point \mbox{\(p_s\)}, the surface normal \mbox{\(n_s\)}, and a
-configured in-plane reference direction. The point \mbox{\(p_s\)} defines the
-origin of the configured surface, and \mbox{\(n_s\)} defines its normal
-direction. The reference direction takes the place of \mbox{\(e_{x_0}\)} in
-\mbox{\Cref{eq:surface_frame_tangents}}: it is projected onto the surface plane
-and normalised to obtain \mbox{\(t_1\)}. When it lies close to
-\mbox{\(n_s\)}, the controller applies a fallback direction. The second tangent
-\mbox{\(t_2=n_s\times t_1\)} completes the right-handed surface frame.
-
-The resulting directions \mbox{\(t_1\)}, \mbox{\(t_2\)}, and \mbox{\(n_s\)}
-define the approach direction \mbox{\(-n_s\)}, the surface-relative orientation
-reference, and the principal directions of the Cartesian stiffness and damping
-matrices. The same frame expresses a surface-fixed \abbr{CoC} displacement and
-resolves the experimental quantities.
-
-The tool-face normal is calibrated once in end-effector coordinates. During
-control, the measured end-effector orientation transforms it into the robot
-base frame:
+The surface-frame directions introduced in
+\mbox{\Cref{subsec:surface_task_frame}} are used to define the pre-contact tool
+orientation. The calibrated tool-face normal \mbox{\(n_{\mathrm{Tool,EE}}\)} is
+expressed in end-effector coordinates. Its current direction in the robot base
+frame is
 
 \begin{equation}
 n_{\mathrm{Tool}}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}.
 \label{eq:implementation_current_tool_normal}
 \end{equation}
 
-The configured pre-contact orientation offset is represented by the
-tangent-plane rotation vector
+The configured pre-contact orientation offset is parameterised by the rotation
+vector
 
 \begin{equation}
 \theta_{\mathrm{offset}}
 =
-\theta_{\mathrm{offset},t_1}t_1
-+
-\theta_{\mathrm{offset},t_2}t_2
-\in\mathbb{R}^3.
+\theta_{\mathrm{offset},t_1}t_1+\theta_{\mathrm{offset},t_2}t_2
+\in\mathbb{R}^{3}.
 \label{eq:implementation_tilt_rotation_vector}
 \end{equation}
 
-Its magnitude \mbox{\(\lVert\theta_{\mathrm{offset}}\rVert\)} defines the
-angular offset relative to the configured surface-parallel orientation. For a
-non-zero offset, the corresponding unit rotation axis is
+The scalars \mbox{\(\theta_{\mathrm{offset},t_1}\)} and
+\mbox{\(\theta_{\mathrm{offset},t_2}\)} are the components of this rotation
+vector along the two surface tangents. The direction of
+\mbox{\(\theta_{\mathrm{offset}}\)} defines the rotation axis, while its
+magnitude \mbox{\(\lVert\theta_{\mathrm{offset}}\rVert\)} defines the rotation
+angle. For a non-zero offset, the corresponding unit rotation axis is
 
 \begin{equation}
 u_{\mathrm{offset}}
 =
-\frac{\theta_{\mathrm{offset}}}{\lVert\theta_{\mathrm{offset}}\rVert},
+\frac{\theta_{\mathrm{offset}}}
+     {\lVert\theta_{\mathrm{offset}}\rVert},
 \label{eq:implementation_offset_rotation_axis}
 \end{equation}
 
-and the axis--angle relation of \mbox{\Cref{eq:rodrigues_formula}} gives
+and the corresponding rotation follows from the axis--angle relation of
+\mbox{\Cref{eq:rodrigues_formula}},
 
 \[
 R_{\mathrm{offset}}
 =
-R\!\left(u_{\mathrm{offset}},\lVert\theta_{\mathrm{offset}}\rVert\right).
+R\!\left(u_{\mathrm{offset}},
+\lVert\theta_{\mathrm{offset}}\rVert\right).
 \]
 
-For \mbox{\(\theta_{\mathrm{offset}}=0\)}, the controller sets
-\mbox{\(R_{\mathrm{offset}}=I\)}. The rotation-vector representation allows
-offsets about either surface tangent and about intermediate directions in the
-tangent plane.
+This parameterisation defines a single axis--angle rotation from the rotation
+vector.
 
-Because \mbox{\(n_s\)} points from the surface towards free space, a tool face
-parallel to the configured plane has the tool-normal direction
-\mbox{\(-n_s\)}. Applying the configured offset gives the desired tool-normal
+A tool face parallel to the configured surface has the tool-normal direction
+\mbox{\(-n_s\)}. Applying the configured rotation gives the desired tool-normal
 direction
 
 \begin{equation}
-n_d
-=
-R_{\mathrm{offset}}\left(-n_s\right).
+n_{\mathrm{Tool},d}=R_{\mathrm{offset}}(-n_s).
 \label{eq:implementation_tool_normal_target}
 \end{equation}
 
-The controller calculates the shortest rotation from the tool direction
-captured at state entry to \mbox{\(n_d\)}, and applies that rotation to the
-complete captured end-effector orientation. An optional spin command about the
-desired tool axis additionally fixes the in-plane orientation of the
-rectangular tool face. A centred rectangle has equivalent orientations
-separated by a half-turn about its normal, so the controller selects the
-equivalent target orientation closest to the captured start orientation.
-\mbox{\Cref{ch:methodology}} specifies the orientation settings used in the
-experiments.
+The controller determines the target end-effector orientation that brings the
+tool-normal direction to \mbox{\(n_{\mathrm{Tool},d}\)}. An optional rotation
+about \mbox{\(n_{\mathrm{Tool},d}\)} sets the in-plane orientation of the
+rectangular tool face.
 
-The controller represents the tool face as a rectangle fixed in the
-end-effector frame, drawn in \mbox{\Cref{fig:face_feature_selection}}. Its
-calibrated centre offset \mbox{\(r_{\mathrm{face,EE}}\)}, half-width vector
-\mbox{\(r_{\mathrm{width,EE}}\)}, and half-length vector
-\mbox{\(r_{\mathrm{length,EE}}\)} define the four corner offsets
+The rectangular tool face is represented in end-effector coordinates by its
+centre offset \mbox{\(r_{\mathrm{face,EE}}\)}, half-width
+\mbox{\(r_{\mathrm{width,EE}}\)}, and half-length
+\mbox{\(r_{\mathrm{length,EE}}\)}. These define the four corner offsets
 
 \begin{equation}
 r_{i,\mathrm{EE}}\in
@@ -255,16 +235,11 @@ r_{i,\mathrm{EE}}\in
 r_{\mathrm{face,EE}}
 \mathbin{\pm}r_{\mathrm{width,EE}}
 \mathbin{\pm}r_{\mathrm{length,EE}}
-\right\}.
+\right\},
+\qquad
+i\in\{1,2,3,4\}.
 \label{eq:implementation_tool_face_vertices}
 \end{equation}
-
-\label{sec:tool_contact_geometry}%
-These offsets are measured from the TCP, which coincides with the end-effector
-origin in the implemented model, \mbox{\(p_{\mathrm{TCP}}=p_{\mathrm{EE}}\)}.
-During Surface Approach the four corners determine the minimum clearance of the
-rectangular tool face and the geometric tool point used to construct the
-Contact Establishment trajectory.
 
 \begin{figure}[H]
   \centering
@@ -273,82 +248,76 @@ Contact Establishment trajectory.
   \label{fig:face_feature_selection}
 \end{figure}
 
+\mbox{\Cref{fig:face_feature_selection}} shows these offsets in the
+end-effector frame.
+
+The corner positions are used during Surface Approach to determine the
+clearance between the tool face and the configured surface.
+
 
 \subsection{Tool Orientation}
 \label{subsec:implementation_tool_orientation_phase}
 
-\Added{The Tool Orientation state rotates the tool to the configured
-pre-contact orientation while maintaining the TCP position captured at state
-entry. A zero orientation offset aligns the tool face parallel to the
-configured surface plane. A non-zero offset produces the corresponding
-surface-relative tool direction before Surface Approach begins.}
+Tool Orientation rotates the end effector from its orientation at state entry
+to the configured pre-contact orientation while maintaining the TCP position.
+The desired orientation is approached through a rate-limited interpolation.
 
-\Added{The desired orientation follows a rate-limited interpolation from the
-captured start orientation to the complete target orientation constructed from
-\mbox{\Cref{eq:implementation_tool_normal_target}} and the optional spin
-command. The controller evaluates the tool-axis error
-\mbox{\(\theta_{\mathrm{app,err}}\)}, the angle between the measured and
-desired tool axes. When a spin angle is configured, it also evaluates the
-remaining spin error about the desired tool axis.}
+After the configured minimum duration, the controller advances to Surface
+Approach when the enabled orientation errors satisfy their respective
+tolerances. The orientation timeout provides the alternative transition.
 
-\Added{After the configured minimum duration, the state advances to Surface
-Approach when all enabled orientation errors lie within their respective
-tolerances. The tool-axis error is compared with
-\mbox{\(\varepsilon_{\mathrm{app}}\)}, and the spin error with its separate
-configured tolerance. The orientation timeout \mbox{\(t_{\mathrm{end}}\)}
-supplies the alternative transition. The end-effector orientation reached at
-this transition is retained throughout Surface Approach.}
 
 \subsection{Surface Approach, Clearance and Tool-Point Selection}
 \label{subsec:implementation_surface_approach_phase}
 \label{subsec:implementation_clearance_detection}
 
-Surface Approach moves the TCP towards the configured plane along
-\mbox{\(-n_s\)}. The controller captures the TCP position
-\mbox{\(p_{\mathrm{TCP,start}}\)} at the beginning of the state, at time
-\mbox{\(t_{\mathrm{app},0}\)}. The commanded approach distance is
+Surface Approach moves the TCP towards the configured surface along
+\mbox{\(-n_s\)} while retaining the orientation reached during Tool
+Orientation. At the beginning of the state, denoted
+\mbox{\(t_{\mathrm{start}}\)}, the controller captures the TCP position
+\mbox{\(p_{\mathrm{TCP,start}}\)}. The commanded approach distance is
 
 \begin{equation}
-s_{\mathrm{app}}(t)
+s_a(t)
 =
 \begin{cases}
-v_{\mathrm{app}}\left(t-t_{\mathrm{app},0}\right),
-& t_{\mathrm{app},0}\leq t<t_{\mathrm{app,max}},\\[4pt]
-s_{\mathrm{app,max}}, & t\geq t_{\mathrm{app,max}},
+v_a\left(t-t_{\mathrm{start}}\right),
+& t_{\mathrm{start}}\leq t<t_{\mathrm{end}},\\[4pt]
+s_{a,\max}, & t\geq t_{\mathrm{end}},
 \end{cases}
 \label{eq:implementation_approach_coordinate}
 \end{equation}
 
-where \mbox{\(v_{\mathrm{app}}\)} is the configured approach speed,
-\mbox{\(s_{\mathrm{app,max}}\)} the maximum approach distance, and
-\mbox{\(t_{\mathrm{app,max}}\)} the instant at which the ramp reaches that
-distance. Both configured values are listed in
-Table~\ref{tab:experimental_phase_parameters}. The desired TCP position is
+and the desired TCP position is
 
 \begin{equation}
-p_d(t)=p_{\mathrm{TCP,start}}-s_{\mathrm{app}}(t)n_s.
+p_d(t)=p_{\mathrm{TCP,start}}-s_a(t)n_s.
 \label{eq:implementation_approach_reference}
 \end{equation}
 
-During the linear part of the trajectory, the desired TCP velocity is
-\mbox{\(\dot p_d(t)=-v_{\mathrm{app}}n_s\)}. After
-\mbox{\(s_{\mathrm{app,max}}\)} is reached, the desired position remains
-constant and \mbox{\(\dot p_d=0\)}. Reaching the maximum approach distance
-before the clearance criterion is satisfied terminates the experiment.
+During the linear approach,
 
-For an inclined tool face, the point closest to the plane can lie considerably
-closer than the TCP. The controller therefore calculates the positions of all
-four tool-face corners in every control cycle. The base-frame position of
-corner \mbox{\(i\)} is
+\[
+\dot p_d(t)=-v_an_s.
+\]
+
+After \mbox{\(s_{a,\max}\)} is reached, the desired position remains unchanged
+and \mbox{\(\dot p_d=0\)}.
+
+The TCP position alone does not describe the clearance of the rectangular tool
+face from the surface, particularly when the tool is inclined. The controller
+therefore calculates the position of each tool-face corner,
 
 \begin{equation}
 p_i(t)
 =
-p_{\mathrm{TCP}}(t)+R_{\mathrm{EE}}(t)r_{i,\mathrm{EE}}.
+p_{\mathrm{TCP}}(t)+R_{\mathrm{EE}}(t)r_{i,\mathrm{EE}},
+\qquad
+i\in\{1,2,3,4\},
 \label{eq:implementation_corner_position}
 \end{equation}
 
-Its surface-normal clearance from the configured plane is
+and its surface-normal clearance
 
 \begin{equation}
 h_i(t)
@@ -357,13 +326,8 @@ n_s^\top\left(p_i(t)-p_s\right).
 \label{eq:implementation_corner_clearance}
 \end{equation}
 
-Because \mbox{\(n_s\)} points towards free space, a smaller value of
-\mbox{\(h_i\)} places the corner closer to the plane. The TCP position and the
-surface point contribute the same term to all four clearances, so the
-implementation compares the rotated corner offsets directly without changing
-which corner has the smallest clearance.
-
-The minimum tool-face clearance is
+The tool-face clearance is determined by the corner closest to the configured
+surface,
 
 \begin{equation}
 h_{\mathrm{Tool}}(t)
@@ -372,15 +336,12 @@ h_{\mathrm{Tool}}(t)
 \label{eq:implementation_tool_clearance}
 \end{equation}
 
-Surface Approach ends when
+Surface Approach ends when the specified clearance is reached,
 
 \begin{equation}
-h_{\mathrm{Tool}}(t)\leq h_{\mathrm{clearance}},
+h_{\mathrm{Tool}}(t)\leq h_{\mathrm{clearance}}.
 \label{eq:implementation_clearance_transition}
 \end{equation}
-
-with \mbox{\(h_{\mathrm{clearance}}\)} the configured tool clearance of
-Table~\ref{tab:experimental_phase_parameters}.
 
 \begin{figure}[H]
   \centering
@@ -389,29 +350,15 @@ Table~\ref{tab:experimental_phase_parameters}.
   \label{fig:tool_clearance_criterion}
 \end{figure}
 
-\mbox{\Cref{fig:tool_clearance_criterion}} draws the criterion for an inclined
-tool face. The minimum surface-normal distance \mbox{\(h_{\mathrm{Tool}}\)} is
-taken from the closest tool-face corner and compared with the configured
-threshold.
+\mbox{\Cref{fig:tool_clearance_criterion}} illustrates this clearance
+condition.
 
-The trajectory is generated for
-the TCP, whereas this transition is determined from the calibrated tool
-geometry. Since \mbox{\(h_{\mathrm{Tool}}\)} is the minimum clearance of the
-four corners, \mbox{\(h_{\mathrm{clearance}}\)} specifies the clearance of the
-part of the rectangular face closest to the configured plane. At the
-experimental value \mbox{\(h_{\mathrm{clearance}}=0.020\,\mathrm{m}\)}, that
-part of the face is \mbox{\(20\,\mathrm{mm}\)} above the configured plane at
-the transition. The criterion therefore provides a consistent tool-face
-clearance for different pre-contact orientations.
-
-At the clearance transition, the same four corner clearances determine the
-geometric tool point used during Contact Establishment. Corner \mbox{\(i\)}
-belongs to the selected set \mbox{\(\mathcal I_{\mathrm{sel}}\)} when its
-clearance differs from the minimum clearance by no more than the selection
-tolerance \mbox{\(\varepsilon_{\mathrm{sel}}\)}:
+At the clearance transition, the corner clearances also identify the part of
+the rectangular tool face closest to the configured surface. Corner
+\mbox{\(i\)} belongs to the selected set when
 
 \begin{equation}
-\mathcal I_{\mathrm{sel}}
+I_{\mathrm{sel}}
 =
 \left\{
 i\in\{1,2,3,4\}
@@ -421,39 +368,10 @@ h_i-h_{\mathrm{Tool}}\leq\varepsilon_{\mathrm{sel}}
 \label{eq:implementation_selected_corner_set}
 \end{equation}
 
-\mbox{\Cref{tab:calibrated_tool_geometry}} gives the selection tolerance used
-in the experiments. For the rectangular tool geometry, three geometric cases
-are possible, as \mbox{\Cref{fig:leading_feature_cases}} illustrates:
-
-\begin{itemize}
-  \item one selected corner: the tool point is the leading corner;
-  \item two adjacent selected corners: the tool point is the midpoint of the
-        leading edge;
-  \item all four selected corners: the tool point is the centre of the tool
-        face.
-\end{itemize}
-
-In each case, the selected tool point is obtained as the mean of the selected
-corner offsets. With \mbox{\(N=\lvert\mathcal I_{\mathrm{sel}}\rvert\)},
-
-\begin{equation}
-r_{\mathrm{Tool,EE}}
-=
-\frac{1}{N}\sum_{i\in\mathcal I_{\mathrm{sel}}}r_{i,\mathrm{EE}}.
-\label{eq:implementation_leading_feature_average}
-\end{equation}
-
-The corresponding selected tool-point position is
-
-\begin{equation}
-p_{\mathrm{Tool}}=p_{\mathrm{TCP}}+R_{\mathrm{EE}}r_{\mathrm{Tool,EE}}.
-\label{eq:implementation_contact_point_position}
-\end{equation}
-
-For the tool-face-centre case,
-\mbox{\(r_{\mathrm{Tool,EE}}=r_{\mathrm{face,EE}}\)}. That calibrated centre
-offset lies along the end-effector \mbox{\(z\)}-axis, so the selected tool
-point then lies on that axis beneath the TCP.
+More than one corner can lie closest to the surface, and the tolerance
+\mbox{\(\varepsilon_{\mathrm{sel}}\)} decides how close counts as equal. Exact
+equality does not occur in the measured geometry, so corners that are level
+within the calibration resolution have to be admitted by a bound.
 
 \begin{figure}[H]
   \centering
@@ -464,31 +382,44 @@ point then lies on that axis beneath the TCP.
   \label{fig:leading_feature_cases}
 \end{figure}
 
-At the clearance transition, the controller retains
-\mbox{\(r_{\mathrm{Tool,EE}}\)} in end-effector coordinates and keeps it fixed
-throughout Contact Establishment. Its base-frame representation
-\mbox{\(r_{\mathrm{Tool}}=R_{\mathrm{EE}}r_{\mathrm{Tool,EE}}=p_{\mathrm{Tool}}-p_{\mathrm{TCP}}\)}
-therefore follows the measured end-effector orientation.
+Three principal cases follow for a rectangular face, drawn in
+\mbox{\Cref{fig:leading_feature_cases}}. A face inclined about both
+surface tangents meets the plane at one corner, and the set holds that corner
+alone. A face inclined about one tangent only has two corners of the leading
+edge equidistant from the plane, and both enter the set. A face parallel to the
+configured surface has all four corners equidistant, and the set holds all
+four. The tolerance is applied to each corner separately, so a face that is
+near-level about both tangents can also admit three corners.
 
-The controller uses three distinct points in this construction. The TCP
-\mbox{\(p_{\mathrm{TCP}}\)} is the Cartesian point regulated by the impedance
-law. The selected tool point \mbox{\(p_{\mathrm{Tool}}\)} is the calibrated
-geometric point used to generate the Contact Establishment trajectory. The
-virtual \abbr{CoC} \mbox{\(p_c\)} of
-\mbox{\Cref{sec:centre_of_compliance}} is the point about which the impedance
-is defined, and its position is independent of the selected tool geometry.
+The controller takes the mean of the selected corner offsets. The three
+principal cases therefore give the leading corner, the midpoint of the leading
+edge, and the centre of the tool face. With
+
+\[
+N=\lvert I_{\mathrm{sel}}\rvert,
+\]
+
+the corresponding selected tool offset is
+
+\begin{equation}
+r_{\mathrm{Tool,EE}}
+=
+\frac{1}{N}\sum_{i\in I_{\mathrm{sel}}}r_{i,\mathrm{EE}}.
+\label{eq:implementation_leading_feature_average}
+\end{equation}
+
+The selected tool offset is then retained to calculate the desired tool point
+for the Contact Establishment trajectory.
+
 
 \subsection{Pre-Contact Hold}
 \label{subsec:implementation_pre_contact_hold}
 
 The optional Pre-Contact Hold maintains the Cartesian pose reached at the end
 of Surface Approach. After operator confirmation, the controller captures the
-current measured pose and initialises the Contact Establishment references from
-it.
-
-The surface-contact experiments disabled this hold. Contact Establishment
-therefore began directly at the clearance transition, and that instant also
-defined \mbox{\(t_{\mathrm{CE,start}}\)}.
+current measured pose and uses it to initialise Contact Establishment. With
+Pre-Contact Hold disabled, reaching the clearance condition triggers the direct
+transition from Surface Approach to Contact Establishment.
 
 \subsection{Contact Establishment}
 \label{subsec:implementation_setup_phase}
@@ -496,127 +427,87 @@ defined \mbox{\(t_{\mathrm{CE,start}}\)}.
 \label{subsec:phase_dependent_gain_construction}
 \label{sec:self_alignment_virtual_center}
 
-At the transition instant \mbox{\(t_{\mathrm{CE,start}}\)}, the controller
-captures the measured end-effector orientation and TCP position:
+Let \mbox{\(t_{\mathrm{start}}\)} denote the beginning of Contact
+Establishment. Using the selected tool offset
+\mbox{\(r_{\mathrm{Tool,EE}}\)} from
+\mbox{\Cref{subsec:implementation_surface_approach_phase}}, the corresponding
+tool point at this instant is
 
 \begin{equation}
-R_{\mathrm{EE,clearance}}=R_{\mathrm{EE}}(t_{\mathrm{CE,start}}),
-\qquad
-p_{\mathrm{TCP,clearance}}=p_{\mathrm{TCP}}(t_{\mathrm{CE,start}}).
-\label{eq:implementation_clearance_pose}
-\end{equation}
-
-Together with the retained tool-point offset
-\mbox{\(r_{\mathrm{Tool,EE}}\)}, these quantities define the selected
-tool-point position at the transition:
-
-\begin{equation}
-p_{\mathrm{Tool,clearance}}
-=p_{\mathrm{TCP,clearance}}+R_{\mathrm{EE,clearance}}r_{\mathrm{Tool,EE}}.
+p_{\mathrm{Tool}}(t_{\mathrm{start}})
+=
+p_{\mathrm{TCP}}(t_{\mathrm{start}})
++R_{\mathrm{EE}}(t_{\mathrm{start}})r_{\mathrm{Tool,EE}}.
 \label{eq:implementation_clearance_tool_point}
 \end{equation}
 
-The controller projects this point orthogonally onto the configured surface
-plane, which defines the projected tool-point reference
-\mbox{\(p_{\mathrm{Tool},0}\)}:
+The controller projects this point along the surface normal onto the
+configured surface plane,
 
 \begin{equation}
 p_{\mathrm{Tool},0}
-=p_{\mathrm{Tool,clearance}}
--n_sn_s^\top\left(p_{\mathrm{Tool,clearance}}-p_s\right).
+=
+p_{\mathrm{Tool}}(t_{\mathrm{start}})
+-n_sn_s^\top\left(p_{\mathrm{Tool}}(t_{\mathrm{start}})-p_s\right).
 \label{eq:implementation_projected_tool_point}
 \end{equation}
 
-That point lies on the configured reference plane directly along the
-surface-normal direction from \mbox{\(p_{\mathrm{Tool,clearance}}\)}, and it is
-the zero position of the Contact Establishment coordinate
-\mbox{\(s_{\mathrm{CE}}\)}.
-
-The coordinate \mbox{\(s_{\mathrm{CE}}\)} specifies the desired
-selected-tool-point position relative to the configured plane along
-\mbox{\(-n_s\)}. Negative values place the reference on the free-space side of
-the plane, \mbox{\(s_{\mathrm{CE}}=0\)} places it on the plane, and positive
-values place it on the surface side. Its initial value is
+The projected point \mbox{\(p_{\mathrm{Tool},0}\)} defines the zero position of
+the contact-trajectory coordinate \mbox{\(s_c\)}. The initial value is
 
 \begin{equation}
-s_{\mathrm{CE}}(t_{\mathrm{CE,start}})
+s_c(t_{\mathrm{start}})
 =
--n_s^\top\left(p_{\mathrm{Tool,clearance}}-p_s\right).
+-n_s^\top\left(p_{\mathrm{Tool}}(t_{\mathrm{start}})-p_s\right).
 \label{eq:implementation_setup_initial_coordinate}
 \end{equation}
 
-At the clearance transition the selected point lies on the free-space side of
-the configured plane, so
-\mbox{\(s_{\mathrm{CE}}(t_{\mathrm{CE,start}})<0\)}. This initial value
-reproduces the measured selected-tool-point position exactly, so the Cartesian
-position reference is continuous when the controller enters Contact
-Establishment.
+This value places the desired tool point at its position at the beginning of
+Contact Establishment and provides a continuous position reference.
 
-The coordinate then increases at the configured press speed
-\mbox{\(v_{\mathrm{CE}}\)} until it reaches the endpoint
-\mbox{\(s_{\mathrm{CE,max}}\)} at \mbox{\(t_{\mathrm{CE,max}}\)}:
+The contact-trajectory coordinate increases at the configured speed
+\mbox{\(v_c\)} until the endpoint \mbox{\(s_{c,\max}\)} is reached at
+\mbox{\(t_{\mathrm{end}}\)}:
 
 \begin{equation}
-s_{\mathrm{CE}}(t)
+s_c(t)
 =
 \begin{cases}
-s_{\mathrm{CE}}(t_{\mathrm{CE,start}})
-+v_{\mathrm{CE}}\left(t-t_{\mathrm{CE,start}}\right),
-& t_{\mathrm{CE,start}}\leq t<t_{\mathrm{CE,max}},\\[4pt]
-s_{\mathrm{CE,max}}, & t\geq t_{\mathrm{CE,max}}.
+s_c(t_{\mathrm{start}})+v_c\left(t-t_{\mathrm{start}}\right),
+& t_{\mathrm{start}}\leq t<t_{\mathrm{end}},\\[4pt]
+s_{c,\max}, & t\geq t_{\mathrm{end}}.
 \end{cases}
 \label{eq:implementation_setup_press_coordinate}
 \end{equation}
 
-\mbox{\Cref{app:controller_parameters}} records the configured press speed and
-endpoint. The desired selected-tool-point position is
+The corresponding desired tool point is
 
 \begin{equation}
-p_{\mathrm{Tool},d}(t)
-=
-p_{\mathrm{Tool},0}-s_{\mathrm{CE}}(t)n_s.
+p_{\mathrm{Tool},d}(t)=p_{\mathrm{Tool},0}-s_c(t)n_s.
 \label{eq:implementation_setup_face_point_reference}
 \end{equation}
 
-Throughout Contact Establishment, the desired orientation remains fixed at the
-orientation captured at the clearance transition:
+As \mbox{\(s_c\)} increases, the desired tool point moves along
+\mbox{\(-n_s\)} towards the configured surface and then to the surface side of
+the configured plane.
+
+The desired orientation is held at the measured orientation at the beginning of
+Contact Establishment,
 
 \begin{equation}
-R_d(t)=R_{\mathrm{EE,clearance}}.
+R_d(t)=R_{\mathrm{EE}}(t_{\mathrm{start}}).
 \label{eq:implementation_setup_orientation_reference}
 \end{equation}
 
-The trajectory is defined for the selected geometric tool point, while the
-Cartesian impedance law regulates the TCP. At the fixed reference orientation,
-the rigid-body relation between the two points is
-
-\begin{equation}
-p_{\mathrm{Tool},d}(t)
-=
-p_d(t)+R_{\mathrm{EE,clearance}}r_{\mathrm{Tool,EE}}.
-\label{eq:implementation_setup_rigid_body_relation}
-\end{equation}
-
-Solving for the desired TCP position gives
+The Cartesian impedance controller regulates the TCP. The selected tool offset
+therefore gives the corresponding desired TCP position as
 
 \begin{equation}
 p_d(t)
 =
-p_{\mathrm{Tool},d}(t)-R_{\mathrm{EE,clearance}}r_{\mathrm{Tool,EE}}.
+p_{\mathrm{Tool},d}(t)-R_{\mathrm{EE}}(t_{\mathrm{start}})r_{\mathrm{Tool,EE}}.
 \label{eq:implementation_setup_tcp_reference}
 \end{equation}
-
-During the linear part of the press trajectory, the desired TCP velocity is
-\mbox{\(\dot p_d=-v_{\mathrm{CE}}n_s\)}. It is zero after
-\mbox{\(s_{\mathrm{CE,max}}\)} is reached.
-
-The controller therefore defines the press at the selected geometric tool point
-and calculates the corresponding TCP reference. Contact restricts the commanded
-motion towards the surface, and the resulting Cartesian position error
-generates the commanded pressing force. The configured endpoint lies on the
-surface side of the reference plane and is a virtual Cartesian spring
-reference; the contact interaction determines the actual tool motion.
-\mbox{\Cref{fig:setup_reference}} summarises this reference construction.
 
 \begin{figure}[H]
   \centering
@@ -624,6 +515,25 @@ reference; the contact interaction determines the actual tool motion.
   \caption{Contact-establishment reference generation.}
   \label{fig:setup_reference}
 \end{figure}
+
+\mbox{\Cref{fig:setup_reference}} draws this reference construction.
+
+During the linear part of the contact trajectory,
+
+\[
+\dot p_d=-v_cn_s,
+\]
+
+and after \mbox{\(s_{c,\max}\)} is reached,
+
+\[
+\dot p_d=0.
+\]
+
+Contact limits the commanded translation towards the surface, and the resulting
+position error generates the pressing force through the Cartesian impedance
+law. The held orientation reference and finite rotational compliance allow the
+contact interaction to generate the rotational response.
 
 \subsection{Pre-Grinding Hold}
 \label{subsec:implementation_pre_grinding_hold}
@@ -641,9 +551,8 @@ impedance, allowing the tool to follow the changed surface orientation while
 the commanded reference remains fixed. For \mbox{\(r_c=0\)}, the translational
 and rotational impedance are decoupled at the TCP, so the normal pressing force
 introduces no additional \abbr{CoC}-induced moment. The response therefore has
-no preferred rotational direction from the virtual \abbr{CoC}.
-
-Operator confirmation then initiates Grinding.
+no preferred rotational direction from the virtual \abbr{CoC}. Operator
+confirmation then initiates Grinding.
 
 \subsection{Grinding}
 \label{subsec:implementation_grinding_phase}
@@ -683,8 +592,7 @@ reference:
 \end{itemize}
 
 Entering another number switches modes while the Cartesian reference and
-impedance remain unchanged. Contact-Impedance Hold is a separate controller
-state outside these four modes.
+impedance remain unchanged.
 
 \begin{figure}[H]
     \centering

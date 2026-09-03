@@ -130,8 +130,10 @@ coordinates.}
 \label{subsec:plane_calibration_protocol}
 
 \Added{The complete tool face was seated on the physical plane, and one
-end-effector pose was recorded. At that pose, the nominal \mbox{\(+Z_{\mathrm{EE}}\)} axis transformed into
-the base frame defined the configured surface normal \mbox{\(n_s\)}. The
+end-effector pose was recorded. At that pose the tool face lay against the
+plane, with \mbox{\(+Z_{\mathrm{EE}}\)} directed into it. The nominal
+\mbox{\(-Z_{\mathrm{EE}}\)} axis transformed into the base frame therefore
+defined the outward configured surface normal \mbox{\(n_s\)}. The
 transformed tool-face-centre offset defined the point \mbox{\(p_s\)} on the
 configured reference plane. The surface tangents and \mbox{\(R_{\mathrm{surface}}\)}
 were then constructed as in \mbox{\Cref{subsec:surface_task_frame}}. The
@@ -264,13 +266,13 @@ Minimum orientation time & \(1.0\,\mathrm{s}\)\\
 Tool-axis transition tolerance & \(0.016\,\mathrm{rad}\)\\
 Spin transition tolerance & \(0.009\,\mathrm{rad}\)\\
 Orientation timeout / maximum rate & \(5.0\,\mathrm{s}\) / \(20^\circ\!/\mathrm{s}\)\\
-Descent speed, \(v_{\mathrm{app}}\) & \(0.1\,\mathrm{m/s}\)\\
-Maximum descent distance, \(s_{\mathrm{app,max}}\) & \(0.640\,\mathrm{m}\)\\
+Descent speed, \(v_a\) & \(0.1\,\mathrm{m/s}\)\\
+Maximum descent distance, \(s_{a,\max}\) & \(0.640\,\mathrm{m}\)\\
 Tool clearance, \(h_{\mathrm{clearance}}\) & \(0.020\,\mathrm{m}\)\\
 Minimum Contact Establishment time & \(2.0\,\mathrm{s}\)\\
 Contact Establishment timeout & \(5.0\,\mathrm{s}\)\\
-Press speed, \(v_{\mathrm{CE}}\) & \(0.080\,\mathrm{m/s}\)\\
-Press endpoint, \(s_{\mathrm{CE,max}}\) & \(0.240\,\mathrm{m}\)\\
+Press speed, \(v_c\) & \(0.080\,\mathrm{m/s}\)\\
+Press endpoint, \(s_{c,\max}\) & \(0.240\,\mathrm{m}\)\\
 Hold before Contact Establishment & disabled\\
 Hold before Grinding & enabled\\
 \end{longtable}
@@ -408,13 +410,13 @@ rotation about \(t_1\) as anticlockwise and negative rotation as clockwise.
 \label{subsec:initial_angular_deviation}
 
 \Added{At the start of Contact Establishment,
-\mbox{\(t_{\mathrm{CE,start}}\)}, the measured end-effector orientation gives
+\mbox{\(t_{\mathrm{start}}\)}, the measured end-effector orientation gives
 the achieved calibrated tool-normal direction}
 
 \begin{equation}
-n_{\mathrm{Tool}}(t_{\mathrm{CE,start}})
+n_{\mathrm{Tool}}(t_{\mathrm{start}})
 =
-R_{\mathrm{EE}}(t_{\mathrm{CE,start}})n_{\mathrm{Tool,EE}}.
+R_{\mathrm{EE}}(t_{\mathrm{start}})n_{\mathrm{Tool,EE}}.
 \label{eq:achieved_tool_normal}
 \end{equation}
 
@@ -423,7 +425,7 @@ direction \mbox{\(-n_s\)}. Let \mbox{\(\phi_0u_0\)} denote the shortest
 rotation vector from the achieved tool-normal direction to \mbox{\(-n_s\)}:}
 
 \begin{equation}
-R(u_0,\phi_0)n_{\mathrm{Tool}}(t_{\mathrm{CE,start}})
+R(u_0,\phi_0)n_{\mathrm{Tool}}(t_{\mathrm{start}})
 =-n_s.
 \label{eq:initial_deviation_rotation}
 \end{equation}
@@ -439,21 +441,21 @@ tool direction. Its signed component about \mbox{\(t_1\)} is therefore}
 \end{equation}
 
 \Added{The magnitude \mbox{\(\phi_0\)} is the total angular mismatch at
-\mbox{\(t_{\mathrm{CE,start}}\)} relative to the configured surface reference,
+\mbox{\(t_{\mathrm{start}}\)} relative to the configured surface reference,
 while \mbox{\(\theta_{0,t_1}\)} is its signed component about
 \mbox{\(t_1\)}. The direction \mbox{\(n_s\)} is fixed and is not a surface
-normal evaluated at \mbox{\(t_{\mathrm{CE,start}}\)}; the time dependence
+normal evaluated at \mbox{\(t_{\mathrm{start}}\)}; the time dependence
 enters through the measured tool orientation.}
 
 
 \subsection{Contact Response}
 \label{subsec:experimental_supporting_metrics}
 
-Let \(t_{\mathrm{CE,start}}\) and \(t_{\mathrm{CE,end}}\) denote the
+Let \(t_{\mathrm{start}}\) and \(t_{\mathrm{end}}\) denote the
 measurement instants at the beginning and end of contact establishment.
 Contact Establishment holds \mbox{\(R_{\mathrm{EE,clearance}}\)} as its
 rotational reference, with
-\mbox{\(R_{\mathrm{EE,clearance}}=R_{\mathrm{EE}}(t_{\mathrm{CE,start}})\)}.
+\mbox{\(R_{\mathrm{EE,clearance}}=R_{\mathrm{EE}}(t_{\mathrm{start}})\)}.
 The relative rotation from the measured end orientation back to this reference
 is
 
@@ -461,7 +463,7 @@ is
 R_{\mathrm{CE}}
 =
 R_{\mathrm{EE,clearance}}
-R_{\mathrm{EE}}^\top(t_{\mathrm{CE,end}}).
+R_{\mathrm{EE}}^\top(t_{\mathrm{end}}).
 \end{equation}
 
 Writing this relative rotation in axis--angle form as
@@ -473,7 +475,7 @@ contact response vector \(\gamma\) in base coordinates:
 =
 \phi_{\mathrm{CE}}u_{\mathrm{CE}}
 =
-e_R(t_{\mathrm{CE,end}}).
+e_R(t_{\mathrm{end}}).
 \label{eq:contact_induced_rotation}
 \end{equation}
 

@@ -17,9 +17,8 @@
     free/.style={fill=black, draw=black},
     arr/.style={-{Latex[length=1.8mm]}, black},
     height/.style={{Latex[length=1.6mm]}-{Latex[length=1.6mm]},
-                   green!60!black, line width=0.8pt},
-    heightguide/.style={draw=green!60!black, thin},
-    heightlbl/.style={font=\footnotesize, text=green!60!black, inner sep=1.6pt},
+                   black, line width=0.8pt},
+    heightlbl/.style={font=\footnotesize, inner sep=1.6pt},
     lbl/.style={font=\footnotesize, inner sep=1.6pt},
   ]
 
@@ -29,16 +28,12 @@
                  -- (-0.411,0.825) -- cycle;
     \draw[face]  (-1.02,1.41) -- (0.22,1.77) -- (1.02,3.29)
                  -- (-0.22,2.93) -- cycle;
-    \draw[height] (-1.32,-0.60) -- (-1.32,1.41);
-    \draw[heightguide] (-1.32,-0.60) -- (-1.02,-0.60);
-    \draw[heightguide] (-1.32,1.41) -- (-1.08,1.41);
-    \node[heightlbl, anchor=west] at (-1.23,0.40) {$h_{\mathrm{Tool}}$};
+    \draw[height] (-1.02,1.41) -- (-1.02,-0.60);
+    \node[heightlbl, anchor=east] at (-1.10,0.40) {$h_{\mathrm{Tool}}(t)$};
     \foreach \x/\y in {0.22/1.77, 1.02/3.29, -0.22/2.93}
       {\draw[free] (\x,\y) circle (1.3pt);}
     \draw[selected] (-1.02,1.41) circle (1.9pt);
     \node[lbl, anchor=west] at (-0.84,1.20) {\color{blue}$p_{\mathrm{Tool}}$};
-    \draw[arr] (1.85,1.05) -- (1.85,3.05);
-    \node[lbl, anchor=south] at (1.85,3.15) {$n_s$};
     \node[lbl, anchor=north] at (0,-1.20) {(a) Leading corner};
   \end{scope}
 
@@ -48,19 +43,15 @@
                  -- (-0.411,0.825) -- cycle;
     \draw[face]  (-1.02,1.59) -- (0.22,1.59) -- (1.02,3.11)
                  -- (-0.22,3.11) -- cycle;
-    \draw[height] (-1.32,-0.60) -- (-1.32,1.59);
-    \draw[heightguide] (-1.32,-0.60) -- (-1.02,-0.60);
-    \draw[heightguide] (-1.32,1.59) -- (-1.08,1.59);
-    \node[heightlbl, anchor=west] at (-1.23,0.50) {$h_{\mathrm{Tool}}$};
+    \draw[height] (-0.40,1.59) -- (-0.40,-0.60);
+    \node[heightlbl, anchor=west] at (-0.32,0.50) {$h_{\mathrm{Tool}}(t)$};
     \draw[blue, line width=1.2pt] (-1.02,1.59) -- (0.22,1.59);
     \foreach \x/\y in {1.02/3.11, -0.22/3.11}
       {\draw[free] (\x,\y) circle (1.3pt);}
     \foreach \x/\y in {-1.02/1.59, 0.22/1.59}
       {\draw[selected] (\x,\y) circle (1.7pt);}
     \draw[selected] (-0.40,1.59) circle (1.9pt);
-    \node[lbl, anchor=north] at (-0.40,1.42) {\color{blue}$p_{\mathrm{Tool}}$};
-    \draw[arr] (1.85,1.05) -- (1.85,3.05);
-    \node[lbl, anchor=south] at (1.85,3.15) {$n_s$};
+    \node[lbl, anchor=east] at (-0.52,1.30) {\color{blue}$p_{\mathrm{Tool}}$};
     \node[lbl, anchor=north] at (0,-1.20) {(b) Leading-edge midpoint};
   \end{scope}
 
@@ -70,10 +61,8 @@
                  -- (-0.411,0.825) -- cycle;
     \draw[face]  (-1.02,1.75) -- (0.22,1.75) -- (1.02,2.95)
                  -- (-0.22,2.95) -- cycle;
-    \draw[height] (-1.32,-0.60) -- (-1.32,1.75);
-    \draw[heightguide] (-1.32,-0.60) -- (-1.02,-0.60);
-    \draw[heightguide] (-1.32,1.75) -- (-1.08,1.75);
-    \node[heightlbl, anchor=west] at (-1.23,0.58) {$h_{\mathrm{Tool}}$};
+    \draw[height] (0,2.35) -- (0,0);
+    \node[heightlbl, anchor=west] at (0.08,1.18) {$h_{\mathrm{Tool}}(t)$};
     % the diagonals meet at the face centre, which is what the mean of four
     % selected corners returns
     \draw[diag] (-1.02,1.75) -- (1.02,2.95);
@@ -81,7 +70,8 @@
     \foreach \x/\y in {-1.02/1.75, 0.22/1.75, 1.02/2.95, -0.22/2.95}
       {\draw[selected] (\x,\y) circle (1.7pt);}
     \draw[selected] (0,2.35) circle (1.9pt);
-    \node[lbl, anchor=north] at (0,1.62) {\color{blue}$p_{\mathrm{Tool}}$};
+    \draw[blue!55!black, thin] (-1.14,2.35) -- (-0.08,2.35);
+    \node[lbl, anchor=east] at (-1.20,2.35) {\color{blue}$p_{\mathrm{Tool}}$};
     \draw[arr] (1.85,1.05) -- (1.85,3.05);
     \node[lbl, anchor=south] at (1.85,3.15) {$n_s$};
     \node[lbl, anchor=north] at (0,-1.20) {(c) Tool-face centre};

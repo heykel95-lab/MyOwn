@@ -47,7 +47,7 @@ frame.}
 \symgroup{Pose and Error}{
 \symrow{$p_{\mathrm{EE}},\ p_{\mathrm{TCP}}$}{End-effector / tool-centre-point position; $p_{\mathrm{TCP}}=p_{\mathrm{EE}}$ in the implemented model}{[m]}
 \symrow{$R_{\mathrm{EE}},\ T_{\mathrm{EE}}$}{End-effector orientation / transformation}{$R$: [-]; $T$: rotation block [-], translation block [m]}
-\symrow{$R_{\mathrm{EE,clearance}}$, $p_{\mathrm{TCP,clearance}}$}{End-effector orientation captured at the clearance transition and held as the contact-establishment orientation reference / TCP position captured at the same instant}{[-], [m]}
+\symrow{$R_{\mathrm{EE,clearance}}$, $p_{\mathrm{TCP}}(t_{\mathrm{start}})$}{End-effector orientation captured at the clearance transition and held as the contact-establishment orientation reference / TCP position captured at the same instant}{[-], [m]}
 \symrow{$p_d,\ R_d,\ T_d$}{Desired position / orientation / transformation}{$p$: [m]; $R$: [-]; $T$: rotation block [-], translation block [m]}
 \symrow{$\Delta R$}{Current-to-desired relative rotation in the base frame, $R_dR_{\mathrm{EE}}^\top$}{[-]}
 \symrow{$\phi$}{Orientation-error angle}{[rad]}
@@ -98,19 +98,18 @@ frame.}
 \symrow{$r_{c,S},\ r_{c,\mathrm{EE}}$}{The same displacement represented in the surface and end-effector frames, with $r_c=R_{\mathrm{surface}}r_{c,S}=R_{\mathrm{EE}}r_{c,\mathrm{EE}}$}{[m]}
 \symrow{$r_{c,t_1},\ r_{c,t_2},\ r_{c,n}$}{Surface-frame components of $r_c$ along $t_1$, $t_2$ and $n_s$}{[m]}
 \symrow{$r_{\mathrm{Tool,EE}},\ p_{\mathrm{Tool}}$}{Selected tool-point offset from the TCP, expressed in the EE frame / selected tool-point position in the base frame}{[m]}
-\symrow{$p_{\mathrm{Tool,clearance}}$, $p_{\mathrm{Tool},0}$, $p_{\mathrm{Tool},d}$}{Selected tool point at the clearance transition / its projection onto the configured surface reference / its desired contact-establishment position}{[m]}
-\symrow{$s_{\mathrm{app}},\ v_{\mathrm{app}},\ s_{\mathrm{app,max}}$}{Commanded approach travel of the TCP along $-n_s$ / its configured rate / its configured maximum}{[m], [m/s], [m]}
+\symrow{$p_{\mathrm{Tool}}(t_{\mathrm{start}})$, $p_{\mathrm{Tool},0}$, $p_{\mathrm{Tool},d}$}{Selected tool point at the start of Contact Establishment / its projection onto the configured surface reference / its desired contact-establishment position}{[m]}
+\symrow{$s_a,\ v_a,\ s_{a,\max}$}{Commanded approach travel of the TCP along $-n_s$ / its configured rate / its configured maximum}{[m], [m/s], [m]}
 \symrow{$p_{\mathrm{TCP,start}}$}{TCP position captured when surface approach begins}{[m]}
-\symrow{$t_{\mathrm{app},0},\ t_{\mathrm{app,max}}$}{Instant surface approach begins / instant the approach ramp reaches $s_{\mathrm{app,max}}$}{[s]}
+\symrow{$t_{\mathrm{start}},\ t_{\mathrm{end}}$}{Instants at which the state under discussion begins and ends; used for Surface Approach and for Contact Establishment}{[s]}
 \symrow{$p_i$}{Base-frame position of tool-face corner $i$}{[m]}
 \symrow{$h_i$}{Surface-normal clearance of tool-face corner $i$ from the configured surface reference}{[m]}
 \symrow{$h_{\mathrm{Tool}}$}{Minimum clearance of the rectangular tool face from the configured surface reference, $h_{\mathrm{Tool}}=\min_i h_i$}{[m]}
 \symrow{$h_{\mathrm{clearance}}$}{Configured tool clearance at which the transition from approach to contact establishment occurs}{[m]}
 \symrow{$\varepsilon_{\mathrm{sel}}$}{Tool-point selection tolerance}{[m]}
-\symrow{$\mathcal I_{\mathrm{sel}},\ N$}{Set of tool-face corners within the selection tolerance of the minimum clearance / its size}{[-]}
+\symrow{$I_{\mathrm{sel}},\ N$}{Set of tool-face corners within the selection tolerance of the minimum clearance / its size}{[-]}
 \symrow{$\theta_{\mathrm{app,err}},\ \varepsilon_{\mathrm{app}}$}{Tool-orientation angular error during Tool Orientation / its configured tolerance}{[rad]}
-\symrow{$s_{\mathrm{CE}},\ v_{\mathrm{CE}},\ s_{\mathrm{CE,max}}$}{Commanded contact-establishment press coordinate of the selected tool point along $-n_s$ / its configured rate / its configured endpoint}{[m], [m/s], [m]}
-\symrow{$t_{\mathrm{CE,start}},\ t_{\mathrm{CE,end}}$}{Measurement instants at the beginning / end of Contact Establishment}{[s]}
+\symrow{$s_c,\ v_c,\ s_{c,\max}$}{Commanded contact-establishment press coordinate of the selected tool point along $-n_s$ / its configured rate / its configured endpoint}{[m], [m/s], [m]}
 \symrow{$m_R$}{Rotational-impedance contribution to the commanded moment, $K_Re_R-D_R\omega_{\mathrm{EE}}$, present at every compliance-centre position}{[N\,m]}
 }
 

@@ -3,11 +3,13 @@
 % tool point is the face centre and lies on the end-effector axis below the TCP.
 % The commanded point advances past the surface, so the endpoint is a spring
 % reference rather than an expected travel.
-% The two offsets drawn are the same rigid offset: p_TCP,clearance above
-% p_Tool,clearance, and p_d above p_Tool,d. Drawing both makes the construction
-% of Equation (3.23) visible, so neither segment carries a label: the product
-% R_EE,clearance r_Tool,EE was the longest item in the picture and Equation
-% (3.16) states the relation on the same page.
+% The two offsets drawn are the same rigid offset: p_TCP(t_start) above
+% p_Tool(t_start), and p_d(t_end) above p_Tool,d(t_end). Drawing both makes the construction
+% of Equation (3.20) visible, so neither segment carries a label: the product
+% R_EE(t_start) r_Tool,EE was the longest item in the picture and Equation
+% (3.14) states the relation on the same page. The commanded travel carries no
+% label either: the arrow runs from p_Tool,0 to p_Tool,d(t), which is what
+% Equation (3.18) states, and s_c is the distance between those two points.
 % Drawn in black throughout. The chain is read from the line styles instead of
 % from colour: the surface and the tool face are the heaviest strokes, the rigid
 % tool offset is a plain line, the projection onto the surface is dashed because
@@ -43,12 +45,12 @@
   % ---- TCP, and the rigid offset down to the selected tool point
   \draw[off] (2.50,2.15) -- (2.50,1.05);
   \node[pt] at (2.50,2.15) [circle, inner sep=1.6pt] {};
-  \node[lbl, anchor=west] at (2.66,2.15) {$p_{\mathrm{TCP,clearance}}$};
+  \node[lbl, anchor=west] at (2.66,2.15) {$p_{\mathrm{TCP}}(t_{\mathrm{start}})$};
 
   % ---- the selected tool point is the face centre while the face is flat
   \node[pt] at (2.50,1.05) [circle, inner sep=1.7pt] {};
   \draw[leader] (2.44,1.00) -- (2.22,0.84);
-  \node[lbl, anchor=east] at (2.18,0.82) {$p_{\mathrm{Tool,clearance}}$};
+  \node[lbl, anchor=east] at (2.18,0.82) {$p_{\mathrm{Tool}}(t_{\mathrm{start}})$};
 
   % ---- its projection onto the configured surface reference
   \draw[proj] (2.50,1.05) -- (2.50,0);
@@ -57,12 +59,11 @@
 
   % ---- commanded motion of that point, continuing past the surface
   \draw[cmd] (2.50,0) -- (2.50,-1.45);
-  \node[lbl, anchor=west] at (2.64,-0.82) {$s_{\mathrm{CE}}(t)$};
   \node[pt] at (2.50,-1.45) [circle, inner sep=1.7pt] {};
-  \node[lbl, anchor=west] at (2.64,-1.45) {$p_{\mathrm{Tool},d}(t)$};
+  \node[lbl, anchor=west] at (2.64,-1.45) {$p_{\mathrm{Tool},d}(t_{\mathrm{end}})$};
 
   % ---- the TCP target that realises it, one rigid offset above
   \node[pt] at (2.50,-0.40) [circle, inner sep=1.6pt] {};
-  \node[lbl, anchor=east] at (2.34,-0.40) {$p_d(t)$};
+  \node[lbl, anchor=east] at (2.34,-0.40) {$p_d(t_{\mathrm{end}})$};
 
 \end{tikzpicture}
