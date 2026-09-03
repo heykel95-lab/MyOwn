@@ -59,8 +59,11 @@ is shown in \mbox{\Cref{fig:phase_flow_chart}}.
 
 \mbox{\Cref{fig:controller_block_diagram}} shows the computations performed
 during one real-time control cycle. The active controller state supplies the
-desired position \mbox{\(p_d\)}, orientation \mbox{\(R_d\)}, and linear
-velocity \mbox{\(\dot p_d\)}. The robot state supplies the measured
+desired position \mbox{\(p_d\)}, orientation \mbox{\(R_d\)}, linear velocity
+\mbox{\(\dot p_d\)}, and angular velocity \mbox{\(\omega_d\)}. In the
+implemented controller, \mbox{\(\omega_d=0\)}, so the rotational damping term
+becomes \mbox{\(-D_R\omega_{\mathrm{EE}}\)}. The robot state supplies the
+measured
 \mbox{\(p_{\mathrm{EE}}\)}, \mbox{\(R_{\mathrm{EE}}\)},
 \mbox{\(\dot p_{\mathrm{EE}}\)}, and \mbox{\(\omega_{\mathrm{EE}}\)}
 for feedback.
@@ -76,7 +79,7 @@ The Jacobian transpose maps this wrench to
 
 During Contact Establishment, the controller keeps \mbox{\(R_d\)} fixed at
 the orientation captured at the clearance transition. The measured
-end-effector rotation is therefore the contact response relative to this fixed
+end-effector rotation is therefore the contact response relative to this
 entry reference.
 
 \Added{The end-effector pose supplied by the robot state provides
@@ -135,12 +138,14 @@ first terminates the experiment. Each optional hold is skipped when disabled,
 and otherwise waits for operator confirmation. Contact Establishment ends when
 its independent timeout is reached.
 
-During active control, operator input \texttt{g} enters Manual Guidance. The
-robot can then be moved to a new configuration, and input \texttt{p} captures
-the reached pose before returning to the controller from which Manual Guidance
-was entered. The surface-contact sequence restarts at Tool
-Orientation, whereas either Cartesian hold configuration adopts the captured
-pose as its new held reference.
+During active control, operator input \texttt{g} transfers the controller to
+Manual Guidance, where the robot can be repositioned. Input \texttt{p} captures
+the reached pose and returns control according to the previously active mode.
+For Cartesian Pose Hold and Contact-Impedance Hold, the captured pose becomes
+the new Cartesian reference, with \mbox{\(p_d=p_{\mathrm{EE}}\)} and
+\mbox{\(R_d=R_{\mathrm{EE}}\)} at the capture instant. For the surface-contact
+sequence, the reached configuration provides the starting configuration for
+restarting the sequence at Tool Orientation.
 
 Operator input \texttt{t} enters Contact-Impedance Hold from the sequence.
 That state retains the current Cartesian pose while \mbox{\(K_p\)},
@@ -535,24 +540,34 @@ position error generates the pressing force through the Cartesian impedance
 law. The held orientation reference and finite rotational compliance allow the
 contact interaction to generate the rotational response.
 
+During Contact Establishment, the Cartesian impedance is configured with higher
+translational stiffness along \mbox{\(t_1\)} and \mbox{\(t_2\)} and lower
+stiffness along \mbox{\(n_s\)}, providing tangential position retention
+together with compliant normal pressing. The rotational stiffness follows the
+complementary directional choice: low stiffness about \mbox{\(t_1\)} and
+\mbox{\(t_2\)} permits contact-induced alignment, while higher stiffness about
+\mbox{\(n_s\)} maintains the in-plane tool orientation.
+
 \subsection{Pre-Grinding Hold}
 \label{subsec:implementation_pre_grinding_hold}
 
 Pre-Grinding Hold begins when Contact Establishment reaches its independent
-timeout. The
-final Contact Establishment position and orientation references are retained,
-while the Cartesian impedance controller remains active. The controller
-therefore continues to generate the corresponding force and moment commands
-while waiting for operator confirmation.
+timeout. The final Contact Establishment position and orientation references
+are retained, while the Cartesian impedance controller remains active. The
+controller therefore continues to generate the corresponding force and moment
+commands while waiting for operator confirmation.
 
-If the physical surface orientation is changed manually during the hold, the
-resulting contact moment can rotate the tool against the finite rotational
-impedance, allowing the tool to follow the changed surface orientation while
-the commanded reference remains fixed. For \mbox{\(r_c=0\)}, the translational
-and rotational impedance are decoupled at the TCP, so the normal pressing force
-introduces no additional \abbr{CoC}-induced moment. The response therefore has
-no preferred rotational direction from the virtual \abbr{CoC}. Operator
-confirmation then initiates Grinding.
+During Pre-Grinding Hold, if the physical surface orientation is changed
+manually, the resulting contact moment rotates the tool towards the changed
+surface orientation. The low rotational stiffness generates a comparatively
+small restoring commanded moment towards the held desired orientation, allowing
+the contact-induced moment to dominate and produce passive alignment with the
+changed surface. With a displaced \abbr{CoC}, the additional commanded moment
+\mbox{\(r_c\times f\)} biases the rotational response towards one direction.
+Depending on the selected \abbr{CoC} displacement, this moment can reinforce or
+counteract the contact-induced rotation.
+
+After operator confirmation, the sequence proceeds to Grinding.
 
 \subsection{Grinding}
 \label{subsec:implementation_grinding_phase}

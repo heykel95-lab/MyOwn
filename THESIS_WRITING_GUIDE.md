@@ -10,6 +10,34 @@ not be reinstated. Do not replace the main results with planned or empty
 sections; update the main chapter only after new measurements have been
 checked.
 
+## Supplied text is applied verbatim
+
+**When the author says `replace` and gives the text, that text goes into the
+thesis exactly as written.** Standing rule, recorded 2026-09-03 after it was
+stated twice. Do not reword, resequence, split, merge, hedge, or shorten it,
+and do not apply the register, sentence-length, determiner-opener or
+one-claim-per-sentence rules to it. Those rules govern prose written by an
+agent; supplied wording is the author's decision and outranks them.
+
+What may still be added is markup, because it is not wording: the paragraph is
+wrapped to the surrounding column width, an abbreviation the chapter already
+carries is written `\abbr{CoC}` rather than bare, inline mathematics is set as
+`\mbox{\(r_c\times f\)}` in the style of the lines around it, and British
+spelling is kept where the supplied text already uses it. The visible sentence
+is unchanged by all of these.
+
+**Record the ruling in the same turn.** A supplied passage usually settles
+something — a term, a mechanism, an order of presentation, or what a subsection
+may claim. Write that into this guide, or into `THESIS_VOICE.md` or
+`FIGURE_STYLE.md` where it belongs, before the turn ends, and say in the reply
+which file changed. Where the supplied text overturns wording already in the
+thesis, mark the old wording withdrawn rather than leaving both.
+
+**Where the supplied text breaks a rule, apply it and log the conflict.** Note
+it in `TODOS.md` as a decision for the author, with the rule it crosses and the
+smallest change that would satisfy both. Do not resolve it silently in either
+direction.
+
 ## Scientific narrative
 
 Write the thesis as one completed engineering investigation:
@@ -1109,10 +1137,18 @@ such as `this matrix` or `the value`.
 
 **Reserve \(\tau_{\mathrm{cmd}}\) for the complete implemented command.** Use
 \(\tau_{\mathrm{model}}\) for the general model-compensated balance that
-includes an explicit gravity term, and \(\tau_{\mathrm{cmd,cart}}\) for the
-implemented Cartesian-only command before the null-space contribution is
-added. One symbol must not denote both the general balance and the complete
-implemented command.
+includes an explicit gravity term. One symbol must not denote both the general
+balance and the complete implemented command.
+
+**\(\tau_{\mathrm{cmd,cart}}\) is withdrawn**, written here as a literal string
+so a rename cannot revive it. It named the implemented Cartesian-only command
+before the null-space contribution was added, and it existed for one equation
+in the Coriolis section, \(\tau_{\mathrm{cmd,cart}}=\tau_{\mathrm{cart}}+
+\tau_c(q,\dot q)\). That equation went with the section reordering of
+2026-09-03 below: once the compensation section sits immediately before the
+complete torque command, a partial sum stated one page earlier is a second
+assembly the reader has to hold. The contributions are named individually and
+assembled once, in Equation 2.69.
 
 **A direction that exists in two frames carries the non-default frame in its
 subscript.** The tool-face normal is \(n_{\mathrm{Tool,EE}}\) in
@@ -1718,6 +1754,62 @@ split applies to limitations: mathematical properties of a method stay with the
 method, while evidence gaps and implementation shortcomings are consolidated
 in Section 6.2.
 
+**Chapter 2 states the impedance law in general form; Chapter 3 states the
+values the implementation gives it.** Agreed 2026-09-03, for the desired
+angular velocity. Equations 2.19 to 2.23 carry
+\(f=K_pe_p+D_p(\dot p_d-\dot p_{\mathrm{EE}})\) and
+\(m=K_Re_R+D_R(\omega_d-\omega_{\mathrm{EE}})\), and \(\omega_d\) is defined
+once beside Equation 2.20 as the desired end-effector angular velocity.
+Chapter 2 no longer sets it to zero. The sentence that did so, and the one
+collapsing the damping term to \(-D_R\omega_{\mathrm{EE}}\), are withdrawn:
+substituting a value into a law is a controller design decision rather than a
+property of the law.
+
+The value is stated in Chapter 3, in the paragraph under Figure 3.2 that names
+the four desired quantities the active controller state supplies -- `In the
+implemented controller, \(\omega_d=0\), so the rotational damping term becomes
+\(-D_R\omega_{\mathrm{EE}}\)`. It belongs there rather than in Chapter 4,
+because it holds in every controller state rather than in one set of
+experimental settings: during Tool Orientation \(R_d\) advances through the
+rate-limited interpolation while the rotational damping still acts against the
+measured angular velocity alone. Figure 3.2's desired-reference arrow carries
+\(\omega_d\) beside \(p_d\), \(R_d\) and \(\dot p_d\), and `FIGURE_STYLE.md`
+records the withdrawal of the rule that had kept it out. The symbol list
+carries \(\dot p_d\) and \(\omega_d\) as one row beside the measured pair.
+
+**Chapter 2 ends on the assembly, and the model compensation is the section
+before it.** Agreed 2026-09-03. The Coriolis and gravity compensation was
+Section 2.4.3, inside the derivation of the Cartesian impedance law, where it
+does not belong: it is an additional torque contribution used when the final
+robot command is assembled, not part of the impedance law. It is now
+Section 2.9, a section in its own right, and the chapter closes on
+Section 2.10. The sequence the chapter follows is Cartesian impedance, centre
+of compliance, null-space torque, robot-model compensation, complete torque
+command.
+
+Section 2.9 states what the Franka Control Interface compensates internally and
+what the controller adds, and stops there. It carries no equation: the
+contributions are assembled once, in Equation 2.69, which is the section that
+follows it. The `libfrankaCartesianExample` attribution moved with the
+structure it credits and now sits beside that assembly, scoped to the Cartesian
+and Coriolis terms, since the null-space torque is this thesis's own.
+
+**Equation 2.69 expands the null-space torque on its right-hand side.** Agreed
+2026-09-03. The first equality names the three contributions,
+\(\tau_{\mathrm{cmd}}=\tau_{\mathrm{cart}}+\tau_{\mathrm{null}}+
+\tau_c(q,\dot q)\); the second writes each of them out, so the null-space term
+appears as \(\tau_d+\tau_\sigma\) rather than as \(\tau_{\mathrm{null}}\)
+repeated. The expanded form then shows every torque the controller actually
+adds, and the equation states the decomposition of Equation 2.68 where the
+command is assembled. The paragraph beneath it names the two terms once and
+cross-references that equation rather than restating the algebra.
+
+The removed equation shifted every later number down by one, which made three
+numeric references in this guide correct rather than stale: the point-shift
+blocks are Equations 2.39 and 2.40, the rotational-impedance contribution is
+Equation 2.41, and the complete torque command is Equation 2.69. Do not
+"correct" them back.
+
 **Tooling built only for your own analysis is not thesis content.** A second
 diagnostic log existed to support offline inspection and appeared in three
 chapters and two appendices before being removed. If a facility did not
@@ -1823,6 +1915,24 @@ was deleted on that date for this reason.
 definitions`, after the sentence stating that the loader requires exactly one
 definition; and `Cartesian pose hold captures these references directly at
 state entry`, after the sentence giving the capture.
+
+**Section 3.2 states the Manual Guidance return by what the resumed
+configuration does with the captured pose.** Supplied by the author on
+2026-09-03 and applied as given. Input `g` transfers the controller to Manual
+Guidance, where the robot can be repositioned; input `p` captures the reached
+pose and returns control. The two outcomes are then stated separately.
+Cartesian Pose Hold and Contact-Impedance Hold take the captured pose as the
+new Cartesian reference, \(p_d=p_{\mathrm{EE}}\) and \(R_d=R_{\mathrm{EE}}\) at
+the capture instant, which is the assignment the pose-hold chart already draws.
+The surface-contact sequence takes the reached configuration as the starting
+configuration and restarts at Tool Orientation.
+
+The earlier wording, `returning to the controller from which Manual Guidance
+was entered` followed by `whereas either Cartesian hold configuration adopts
+the captured pose as its new held reference`, is withdrawn. It named the two
+outcomes in one contrastive sentence and left the hold reference unstated in
+symbols, so a reader could not see that the capture is the same assignment the
+chart shows.
 
 **A state name is a proper noun.** Tool Orientation, Surface Approach,
 Pre-Contact Hold, Contact Establishment, Pre-Grinding Hold, Grinding, Cartesian
@@ -2061,10 +2171,58 @@ are written as equations in the theory chapter. Later chapters and appendices
 cite those equations and state only the term or consequence needed locally.
 Figures do not repeat the full relations.
 
+**Section 3.2.6 states the entry condition, the retained references, the
+manual re-orientation behaviour, and what a displaced centre does to it, in
+that order.** Supplied by the author on
+2026-09-03 and applied as given. Pre-Grinding Hold begins when Contact
+Establishment reaches its independent timeout. The final Contact Establishment
+position and orientation references are retained while the Cartesian impedance
+controller remains active, so the corresponding force and moment commands
+continue while operator confirmation is awaited. Manual re-orientation of the
+physical surface during the hold is written as two moments acting against each
+other: the contact moment rotates the tool towards the changed surface
+orientation, and the low rotational stiffness generates a comparatively small
+restoring commanded moment towards the held desired orientation, so the
+contact-induced moment dominates and produces passive alignment with the
+changed surface. `passive alignment` is the settled name for that behaviour.
+The earlier wording, `rotate the tool against the finite rotational impedance`,
+is withdrawn: it named the impedance that resists without naming the low
+stiffness that makes the resistance small, which is the point of the sentence.
+The compliance centre is then carried into the same behaviour, in text supplied
+on 2026-09-03: with a displaced \abbr{CoC} the additional commanded moment
+\mbox{\(r_c\times f\)} biases the rotational response towards one direction,
+and that moment can reinforce or counteract the contact-induced rotation
+depending on the selected displacement. This is the hold stated in both
+configurations, in the order *Capability first, then the configuration the
+experiments used* requires. The subsection closes on the transition, that the
+sequence proceeds to Grinding after operator confirmation.
+
+**The \(r_c=0\) decoupling argument is not restated in Pre-Grinding Hold.**
+Removed on 2026-09-03 with the rewrite above. The two deleted sentences said
+that the translational and rotational impedance are decoupled at the TCP, so
+the normal pressing force introduces no additional \abbr{CoC}-induced moment
+and the response has no preferred rotational direction from the virtual centre.
+That claim is correct and belongs where the compliance centre is argued, under
+*The shifted centre is an alignment mechanism, not a steady-contact centre*
+below. The subsection states what a displaced centre does to the hold's
+rotational response, which is behaviour of the state being described. It does
+not re-argue why \(r_c=0\) is the neutral centre, and it draws no conclusion
+about which displacement to select.
+
+**The manual re-orientation paragraph is not an informal manual test.** The ban
+under *No informal manual test, demonstration, or video* applies to reporting a
+hand-applied check as evidence, which is a Chapter 5 matter and stays
+withdrawn. Section 3.2.6 describes the standing behaviour of the implemented
+controller in the present tense, and states no trial, no condition and no
+measured quantity, so a later consistency pass must not delete it under that
+rule.
+
 **The Grinding state gets two sentences and no more.** No reported experiment entered
 it, so the chapter states that it maintains the normal contact-establishment
 reference while superimposing tangential motion with the decoupled impedance.
-The preceding hold subsection states that every reported experiment ended there.
+The Grinding subsection itself carries the scope statement, that the
+experimental evaluation concerns the Contact Establishment response; Section
+3.2.6 no longer says where the campaign stopped.
 
 **Section 3.2.5 is subdivided by unnumbered `\paragraph` headings.** Agreed
 2026-09-01. The subsection had run reference generation, active impedance, gain
@@ -2077,6 +2235,27 @@ unchanged. A `\label{}` that another chapter cross-references must sit on the
 subsection, not inside one of these paragraphs: `sec:self_alignment_virtual_center`
 is referenced from Chapter 2 and would otherwise print the wrong reference
 type.
+
+**The directional stiffness choice is a controller-design decision and is
+stated in Section 3.2.5.** Supplied by the author on 2026-09-03 and applied as
+given. The Cartesian impedance is configured with higher translational
+stiffness along \(t_1\) and \(t_2\) and lower stiffness along \(n_s\), giving
+tangential position retention together with compliant normal pressing; the
+rotational stiffness follows the complementary choice, low about \(t_1\) and
+\(t_2\) to permit contact-induced alignment and higher about \(n_s\) to
+maintain the in-plane tool orientation. The two halves are stated together,
+because the design idea is the complementarity: the axes that are stiff in
+translation are the compliant ones in rotation.
+
+Chapter 4 had carried half of it and Chapter 3 none. The paragraph after
+Table 4.2 explained the rotational entries and left the translational ones
+unexplained, which put a design rationale among the experimental settings and
+gave the reader no reason for
+\(K_{p,S}=\operatorname{diag}(2000,2000,350)\,\mathrm{N/m}\). That paragraph
+now cross-references Section 3.2.5 and keeps only the inertia-scaled damping
+pointer, under *A table replaces repetition; it is not followed by paragraphs
+restating its rows*. **Chapter 4 supplies the values and Chapter 3 the
+reason**; do not restore the rationale beside the table.
 
 **The Contact Establishment subsection stays detailed.** It is the one place that explains
 something Chapter 2 does not: how the reference is generated during contact.
@@ -3542,6 +3721,32 @@ for a moving centre that the study never tested. Worse, `fixed` already carries
 a precise and unrelated sense in `tool-fixed` and `surface-fixed`, so a reader
 meeting `a fixed CoC` in Section 1.3 has to rule out the frame reading first.
 Four uses were rewritten, in Sections 1.3, 1.4 and 6.1.
+
+**The plain adjective was thinned on 2026-09-03, from 45 uses to 27.** The
+compliance-centre ban above had left the word untouched everywhere else, and a
+count found it in every chapter but the Introduction and the Conclusion. What
+went was the redundant half: where `configured`, `captured` or `held constant`
+already said the quantity does not change, and where a frame relation was
+better named. The replacements were `attached to` for a frame mounted on a
+body, `determined by` and `defined by` where the word meant *set by*, `held
+constant` and `remained constant` for a parameter, and plain deletion where the
+preceding sentence had already said it -- `this fixed entry reference`, `the
+fixed configured surface-normal direction`, `the fixed unit force direction`.
+Two duplicate compounds went with them: the ring buffer keeps its
+`fixed-capacity` in Section 3.6, where the real-time claim is made, and the
+data-format appendix and the Eigen-alias sentence do without it.
+
+What survives is load-bearing and is not to be thinned further. `tool-fixed`
+and `surface-fixed` are the frame distinction this rule already protects.
+`fixed damping` distinguishes the pose-hold matrices from the inertia-scaled
+contact damping, in Chapter 4 and in the two Appendix C rows. `\(n_s\) is
+fixed` is required by *Say which quantities in a comparison are fixed*. The
+settled Chapter 3 sentence keeps \(R_d\) fixed at the orientation captured at
+the clearance transition. And `a fixed position setpoint`, `the fixed Jacobian
+convention`, `the fixed base-frame force direction` and \(u_f\) as the `Fixed
+unit direction` each name a quantity whose constancy is the point of the
+sentence. *Do not aim for zero* in [THESIS_VOICE.md](THESIS_VOICE.md) applies
+here as much as to any other word.
 
 Two neighbouring terms are **not** covered by this and must survive it.
 `tool-fixed displacement` and `surface-fixed displacement` name the frame the

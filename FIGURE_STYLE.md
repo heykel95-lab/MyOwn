@@ -625,13 +625,21 @@ path is one straight run and the feedback is the only input arriving from
 below. This ordering
 must be readable before any secondary branch is followed.
 
-The desired-reference arrow carries \(p_d\), \(R_d\), and \(\dot p_d\). The
-measured Cartesian feedback carries \(p_{\mathrm{EE}}\),
+The desired-reference arrow carries \(p_d\), \(R_d\), \(\dot p_d\) and
+\(\omega_d\). The measured Cartesian feedback carries \(p_{\mathrm{EE}}\),
 \(R_{\mathrm{EE}}\), \(\dot p_{\mathrm{EE}}\), and
 \(\omega_{\mathrm{EE}}\). The main controller path exposes
-\((e_p,e_R)\to F\to\tau_{\mathrm{cart}}\to\tau_{\mathrm{cmd}}\). Do not add
-a commanded angular velocity: the implemented rotational damping acts against
-the measured \(\omega_{\mathrm{EE}}\).
+\((e_p,e_R)\to F\to\tau_{\mathrm{cart}}\to\tau_{\mathrm{cmd}}\).
+
+**\(\omega_d\) was added on 2026-09-03, and the ban on it is withdrawn.** This
+rule read `Do not add a commanded angular velocity: the implemented rotational
+damping acts against the measured \(\omega_{\mathrm{EE}}\)`, and it was written
+while Chapter 2 set \(\omega_d=\mathbf{0}\) inside the impedance law itself.
+Equations 2.20, 2.21 and 2.23 now carry the general form
+\(m=K_Re_R+D_R(\omega_d-\omega_{\mathrm{EE}})\), and the paragraph under the
+figure states that \(\omega_d=0\) in the implemented controller. The arrow
+therefore names the four desired quantities the active state supplies, and the
+value they take is stated in the prose where the implementation is described.
 
 Robot Model and Null-Space Term are secondary blocks. The measured joint state
 \(q,\dot q\) enters the model; the model supplies \(J(q)\) to the

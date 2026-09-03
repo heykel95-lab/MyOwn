@@ -54,6 +54,7 @@ frame.}
 \symrow{$u,\ [u]_\times$}{Base-frame orientation-error axis / its skew matrix}{[-]}
 \symrow{$e_p$}{Translational (position) error}{[m]}
 \symrow{$e_R$}{Base-frame rotational error used by the command}{[rad]}
+\symrow{$\dot p_d,\ \omega_d$}{Desired end-effector linear / angular velocity; $\omega_d=0$ in the implemented controller}{[m/s], [rad/s]}
 \symrow{$\dot p_{\mathrm{EE}},\ \omega_{\mathrm{EE}}$}{Measured end-effector linear / angular velocity}{[m/s], [rad/s]}
 }
 
@@ -88,7 +89,7 @@ frame.}
 \symrow{$n_{\mathrm{phys}}$}{Physical surface normal}{[-]}
 \symrow{$t_1,\ t_2$}{Surface tangent directions (unit)}{[-]}
 \symrow{$R_{\mathrm{surface}}$}{Surface-frame orientation $[\,t_1\;\;t_2\;\;n_s\,]$ in the base frame}{[-]}
-\symrow{$n_{\mathrm{Tool,EE}},\ n_{\mathrm{Tool}},\ n_d$}{Tool-face normal expressed in the EE frame, fixed by calibration / the same direction expressed in the base frame, $n_{\mathrm{Tool}}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}$ / desired tool-normal direction used by the controller}{[-]}
+\symrow{$n_{\mathrm{Tool,EE}},\ n_{\mathrm{Tool}},\ n_d$}{Tool-face normal expressed in the EE frame, obtained from calibration / the same direction expressed in the base frame, $n_{\mathrm{Tool}}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}$ / desired tool-normal direction used by the controller}{[-]}
 \symrow{$r_{\mathrm{face,EE}}$}{Calibrated tool-face-centre offset from the TCP in end-effector coordinates}{[m]}
 \symrow{$\theta_{\mathrm{offset}}$}{Configured pre-contact orientation offset that sets the desired tool direction, $\theta_{\mathrm{offset}}=\theta_{\mathrm{offset},t_1}t_1+\theta_{\mathrm{offset},t_2}t_2$}{[rad]}
 \symrow{$p_s$}{Point on the configured surface}{[m]}
@@ -128,7 +129,7 @@ frame.}
 \symgroup{Null-Space and Singular Value Decomposition}{
 \symrow{$J^+$}{Thresholded-SVD Moore--Penrose pseudoinverse}{[rad/m], [-]}
 \symrow{$N_q,\ N_\tau$}{Joint-velocity / torque null-space projector}{[-]}
-\symrow{$\sigma_i,\ \sigma_{\min}$}{Jacobian singular value / $\sigma_6$ conditioning indicator. The geometric Jacobian mixes linear and angular rows, so a singular value carries no single physical unit and its numerical value depends on the chosen Jacobian representation and length unit; it is used as a relative indicator under one fixed convention}{Representation-dependent}
+\symrow{$\sigma_i,\ \sigma_{\min}$}{Jacobian singular value / $\sigma_6$ conditioning indicator. The geometric Jacobian mixes linear and angular rows, so a singular value carries no single physical unit and its numerical value depends on the chosen Jacobian representation and length unit; it is used as a relative indicator under that convention}{Representation-dependent}
 \symrow{$v_7$}{Structural null direction of the seven-joint Jacobian}{[-]}
 \symrow{$\dot q_{\mathrm{null}}$}{Projected joint velocity in the numerical null space}{[rad/s]}
 \symrow{$d_{\mathrm{null}}$}{Null-space damping}{[N\,m\,s/rad]}
@@ -143,7 +144,7 @@ frame.}
 \symrow{$E_N$}{Cumulative projected null-space motion; integrated projected joint-velocity magnitude during the disturbance interval and converted to degrees for reporting}{[rad]}
 \symrow{$u_f,\ F_{\mathrm{dist}},\ s_{\mathrm{dist}}$}{Fixed unit direction of the virtual disturbance / its commanded force magnitude / its commanded waveform in $[0,1]$}{[-], [N], [-]}
 \symrow{$f_{\mathrm{dist}},\ \tau_{\mathrm{dist}}$}{Virtual disturbance force in the base frame / the equivalent joint torque, $J_p^\top f_{\mathrm{dist}}$}{[N], [N\,m]}
-\symrow{$v_{\mathrm{ref}}$}{Fixed redundant comparison direction, taken from the condition without null-space torque}{[-]}
+\symrow{$v_{\mathrm{ref}}$}{Redundant comparison direction, taken from the condition without null-space torque}{[-]}
 \symrow{$\Delta q_{\mathrm{null}},\ \Delta\eta$}{Net projected joint displacement over the disturbance interval / its component along $v_{\mathrm{ref}}$, converted to degrees for reporting}{[rad]}
 \symrow{$\lVert e_p\rVert_{\max}$}{Maximum Cartesian position error over the disturbance interval}{[m]}
 }

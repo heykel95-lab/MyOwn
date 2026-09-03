@@ -191,6 +191,71 @@ consistent in sign and magnitude for both components.
 \endgroup
 
 \clearpage
+\section*{Sign of the Estimated and Physical Contact Moment}
+
+In the stationary part of the first experiment, the document gives
+\[
+ M_{t_1,\mathrm{cmd}}=+0.635\,\mathrm{N\,m}
+\]
+and
+\[
+ M_{t_1,\mathrm{est}}=+0.604\,\mathrm{N\,m}.
+\]
+So in the plot, commanded and model-estimated moments have the same sign.
+
+But \(M_{t_1,\mathrm{est}}\) is not being interpreted there as the physical
+surface-on-robot contact moment.  With the convention used in this document,
+the physical contact moment acting on the robot has the opposite sign:
+\[
+ M_{t_1,\mathrm{contact}}\simeq-M_{t_1,\mathrm{est}}.
+\]
+Therefore, approximately,
+\[
+ M_{t_1,\mathrm{contact}}=-0.635\,\mathrm{N\,m},
+\]
+while
+\[
+ M_{t_1,\mathrm{cmd}}=+0.635\,\mathrm{N\,m}.
+\]
+The quasi-static balance is therefore
+\[
+ \boxed{M_{t_1,\mathrm{contact}}+M_{t_1,\mathrm{cmd}}\simeq0}
+\]
+which is exactly what page 2 states.
+
+And the measured orientation confirms the physical interpretation.  The angular
+component changes from
+\[
+ 9.26^\circ\rightarrow1.99^\circ,
+\]
+so the actual tool rotation is
+\[
+ \Delta\theta_{t_1}=-7.27^\circ.
+\]
+The document explicitly describes this as: the off-centre surface contact
+rotates the tool towards the plane, while the positive commanded rotational
+moment acts in the opposing direction and tends to retain the entry
+orientation.
+
+So physically you have:
+\[
+ \boxed{\text{surface contact moment }(-)\rightarrow
+ \text{rotates tool towards alignment}}
+\]
+and simultaneously
+\[
+ \boxed{\text{rotational impedance command }(+)\rightarrow
+ \text{opposes that rotation and acts towards }R_d}
+\]
+
+The reason the red estimated curve and black commanded curve have the same sign
+in Figure~1 is simply the estimator/sign convention used in that comparison.
+The physical surface-on-robot contact moment is the opposite of that estimated
+quantity.  The later consistency-test explanation says this explicitly as well.
+
+So what we wrote for Pre-Grinding Hold remains consistent with this experiment.
+
+\clearpage
 \section*{T-Mode Quasi-Static Consistency Test}
 
 The test uses the decoupled setup impedance in surface coordinates, with

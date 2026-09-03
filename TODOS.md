@@ -104,6 +104,63 @@ from the condition, the participle, the quantity, or a subordinate clause,
 per the rule's own list. Chapters 2, 6 and 4 are the worst and would gain
 most.
 
+## Decide whether \(m_R\) follows the general rotational impedance law
+
+Equations 2.20, 2.21 and 2.23 were generalised on 2026-09-03 to
+\(m=K_Re_R+D_R(\omega_d-\omega_{\mathrm{EE}})\), on the author's instruction,
+which named those three equations. Equation 2.41 in Section 2.7.2 still defines
+the rotational-impedance contribution as
+\(m_R=K_Re_R-D_R\omega_{\mathrm{EE}}\), so Chapter 2 now states the law in two
+forms nine pages apart, the second silently assuming \(\omega_d=0\).
+
+The same expression sits in two other places and moves with it: the \(m_R\)
+row of `frontmatter/symbols.tex`, and the settled force-and-moment names table
+in `THESIS_WRITING_GUIDE.md` under *Technical conventions that must remain
+explicit*. Either generalise all three, or state beside Equation 2.42 that it
+is written at the implemented \(\omega_d=0\). Not done because the instruction
+named three equations and this is a fourth.
+
+## Decide `mode` in the Section 3.2 Manual Guidance return
+
+The paragraph supplied on 2026-09-03 reads `input \texttt{p} captures the
+reached pose and returns control according to the previously active mode`.
+`THESIS_WRITING_GUIDE.md` reserves `state` for each runtime node and rules out
+`phase`, `gate`, `mode` or `sequence step` as an alternate label for one, and
+the thesis uses `mode` elsewhere only for the four selectable null-space modes.
+A reader meeting it here has to rule out that reading first.
+
+Applied as supplied, under the verbatim rule. The smallest change that would
+satisfy both is `according to the previously active controller configuration`,
+which is the word Section 3.1 already uses for the surface-contact sequence and
+Cartesian pose hold as the two configurations of one callback.
+
+## Check two terms in the supplied Section 3.2.5 impedance paragraph
+
+Applied verbatim on 2026-09-03; both crossings are the author's to settle.
+
+`permits contact-induced alignment` names no body. `THESIS_WRITING_GUIDE.md`
+requires every rotation claim to name what rotated, because the physical tool
+orientation is never measured independently, and the Chapter 4 sentence this
+paragraph replaces read `permits contact-induced end-effector rotation`. The
+sentence describes what the configuration allows rather than reporting a
+measurement, so it may stand; `permits contact-induced end-effector rotation`
+is the wording that would satisfy both.
+
+`tangential position retention` reuses the words of `Cartesian position
+retention`, which is the settled name of the pose-hold acceptance criterion
+\(\max\lVert e_p(t)\rVert_2<2\,\mathrm{mm}\). The two are unrelated
+quantities. `retains the tangential tool position` would keep them apart.
+
+## Settle the zero-vector notation for a desired velocity
+
+`THESIS_WRITING_GUIDE.md` keeps \(\mathbf{0}\) as the one bold symbol in the
+thesis, so that the zero vector is distinguishable from the scalar zero.
+Chapter 2 follows it for \(\dot p_d=\mathbf{0}\). The supplied Chapter 3
+sentence writes \(\omega_d=0\), and the contact-establishment passage in
+Section 3.2.5 already writes \(\dot p_d=0\), so Chapter 3 uses the plain zero
+for the same kind of quantity that Chapter 2 sets bold. Decide which the thesis
+uses and apply it to all four places at once.
+
 ## Decide two long supplied sentences
 
 Both were supplied by the user on 2026-09-02 and applied as given, under the
@@ -117,12 +174,13 @@ added. Confirm whether they stand as written or may be split.
   face and the physical surface at contact entry.` It lifted the chapter mean
   from 18.7 to 19.5 words. Splitting after `tool orientations` would restore
   the register without changing the claim.
-- Section 3.2.6, 38 words: `If the physical surface orientation is changed
-  manually during the hold, the resulting contact moment can rotate the tool
-  against the finite rotational impedance, allowing the tool to follow the
-  changed surface orientation while the commanded reference remains fixed.`
-  The chapter mean moved from 17.7 to 18.3 words. Splitting after
-  `rotational impedance` would restore it.
+- Section 3.2.6, 30 words: `The low rotational stiffness generates a
+  comparatively small restoring commanded moment towards the held desired
+  orientation, allowing the contact-induced moment to dominate and produce
+  passive alignment with the changed surface.` Supplied on 2026-09-03 with the
+  rewrite of the whole subsection, replacing the 38-word sentence previously
+  listed here. Splitting after `desired orientation` would bring it under the
+  28-word limit without changing the mechanism it states.
 
 ## Finish the Appendix C reduction
 

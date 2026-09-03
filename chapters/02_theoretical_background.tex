@@ -32,7 +32,7 @@ frames
 
 \begin{itemize}
   \item \mbox{\textbf{Base frame \mbox{\(\{0\}\)}:}}
-        The base frame is fixed to the robot mounting surface. Its origin is
+        The base frame is attached to the robot mounting surface. Its origin is
         the robot base reference point used by the kinematic model. For the
         upright Panda configuration used in this thesis, the \mbox{\(z_0\)}-axis is
         normal to the mounting surface, while the \mbox{\(x_0\)}- and \mbox{\(y_0\)}-axes
@@ -71,10 +71,10 @@ frames
         used by the impedance controller.
 
   \item \mbox{\textbf{Surface frame \mbox{\(\{S\}\)}:}}
-        The surface frame is fixed to the configured surface and remains
+        The surface frame is attached to the configured surface and remains
         stationary as the tool moves. Its origin is placed at the configured surface
         point \mbox{\(p_s\)}. Its orientation \mbox{\(R_{\mathrm{surface}}\)} is
-        fixed by the two surface tangents \mbox{\(t_1\)} and \mbox{\(t_2\)} and
+        determined by the two surface tangents \mbox{\(t_1\)} and \mbox{\(t_2\)} and
         the surface normal \mbox{\(n_s\)}. Its construction is given in
         \mbox{\Cref{subsec:surface_task_frame}}.
 
@@ -351,7 +351,7 @@ R_z(q_i)\,T_z(d_i)\,T_x(a_i)\,R_x(\alpha_i),
 \end{equation}
 
 where \mbox{\(a_i\)}, \mbox{\(d_i\)}, and \mbox{\(\alpha_i\)} describe the
-fixed geometry between consecutive joint frames. The fixed transformation
+fixed geometry between consecutive joint frames. The transformation
 \mbox{\({}^{7}T_{\mathrm{EE}}\)} locates the configured end-effector frame
 relative to link 7. The complete base-to-end-effector transformation is
 
@@ -448,17 +448,17 @@ The commanded Cartesian moment \mbox{\(m\)} is
 m
 =
 K_Re_R
--
-D_R\omega_{\mathrm{EE}}
++
+D_R
+\left(
+\omega_d-\omega_{\mathrm{EE}}
+\right)
 \in\mathbb{R}^3,
 \label{eq:rotational_impedance_moment}
 \end{equation}
 
-where \mbox{\(\omega_{\mathrm{EE}}\)} is the measured end-effector angular velocity
-expressed in the base frame. The desired angular velocity is set to
-\mbox{\(\omega_d=\mathbf{0}\)}. Therefore,
-\mbox{\(D_R(\omega_d-\omega_{\mathrm{EE}})=-D_R\omega_{\mathrm{EE}}\)}, so the
-rotational damping term acts directly against the measured angular velocity.
+where \mbox{\(\omega_d\)} and \mbox{\(\omega_{\mathrm{EE}}\)} are the desired and
+measured end-effector angular velocities expressed in the base frame.
 
 The Cartesian wrench \mbox{\(F\)} stacks the force and moment:
 
@@ -476,8 +476,8 @@ K_pe_p
 D_p\left(\dot{p}_d-\dot{p}_{\mathrm{EE}}\right)
 \\[1mm]
 K_Re_R
--
-D_R\omega_{\mathrm{EE}}
++
+D_R\left(\omega_d-\omega_{\mathrm{EE}}\right)
 \end{bmatrix}
 \in\mathbb{R}^6.
 \label{eq:cartesian_force_moment_vector}
@@ -522,8 +522,8 @@ K_pe_p
 D_p\left(\dot{p}_d-\dot{p}_{\mathrm{EE}}\right)
 \\[1mm]
 K_Re_R
--
-D_R\omega_{\mathrm{EE}}
++
+D_R\left(\omega_d-\omega_{\mathrm{EE}}\right)
 \end{bmatrix}.
 \label{eq:cartesian_impedance_control_law}
 \end{equation}
@@ -533,36 +533,6 @@ surface-coordinate representations. A change in the surface-frame
 orientation changes the Cartesian wrench \mbox{\(F\)} and the
 resulting joint-torque contribution \mbox{\(\tau_{\mathrm{cart}}\)}, even when
 the local stiffness and damping values remain unchanged.
-
-\subsection{Coriolis and Gravity Compensation in libfranka}
-\label{subsec:coriolis_gravity_compensation}
-
-\Added{In external joint-torque mode, the Franka Control Interface compensates
-gravity and motor friction internally. The Coriolis vector
-\mbox{\(\tau_c(q,\dot q)\)} supplied by libfranka is added explicitly to the
-command \mbox{\citep{FrankaFCI2023}}.}
-
-The implemented Cartesian command before null-space addition
-\mbox{\(\tau_{\mathrm{cmd,cart}}\)} is
-
-\begin{equation}
-\tau_{\mathrm{cmd,cart}}
-=
-\tau_{\mathrm{cart}}
-+
-\tau_c(q,\dot{q})
-=
-J^\top(q)F
-+
-\tau_c(q,\dot{q}),
-\label{eq:commanded_torque_libfranka}
-\end{equation}
-
-which follows the official libfranka Cartesian impedance example
-\mbox{\cite{libfrankaCartesianExample}}. The null-space torque
-\mbox{\(\tau_{\mathrm{null}}\)} introduced later is
-added to this expression to obtain the complete commanded torque in
-\mbox{\Cref{eq:nullspace_complete_torque_command}}.
 
 \section{Surface Frame}
 \label{subsec:surface_task_frame}
@@ -726,7 +696,7 @@ D_p & 0\\
 \end{equation}
 
 The transformation rotates the matrix representation into base coordinates
-while preserving the physical directions fixed by the configured surface
+while preserving the physical directions defined by the configured surface
 reference. The normal entry \mbox{\(K_{p,n}\)} therefore follows an inclined
 \mbox{\(n_s\)} relative to the robot-base axes.
 
@@ -1044,7 +1014,7 @@ r_c=R_{\mathrm{EE}}r_{c,\mathrm{EE}}.
 \end{equation}
 
 For a surface-fixed definition \mbox{\(r_{c,S}\)} remains constant, and
-because the surface frame is fixed for one controller session the base-frame
+because the surface frame does not change during one controller session the base-frame
 displacement is constant during contact establishment. For a tool-fixed definition
 \mbox{\(r_{c,\mathrm{EE}}\)} remains constant, so
 \mbox{\(r_c\)} rotates with the end effector.
@@ -1204,7 +1174,7 @@ The negative off-diagonal entries are coupling terms within the positive
 semidefinite complete matrices.
 
 This formulation is a local small-motion model in which the displacement is
-treated as fixed during one controller evaluation. A surface-fixed
+treated as constant during one controller evaluation. A surface-fixed
 \mbox{\(r_{c,S}\)} keeps \mbox{\(r_c\)} constant during contact
 establishment. A tool-fixed displacement rotates with the end effector, so the
 controller updates the base-frame vector and the shifted stiffness and damping
@@ -1378,6 +1348,19 @@ because reversing \mbox{\(v_7\)} also exchanges the two probes and reverses
 \mbox{\(s_\sigma\)}.
 
 
+\section{Coriolis and Gravity Compensation in libfranka}
+\label{subsec:coriolis_gravity_compensation}
+
+In external joint-torque mode, the Franka Control Interface compensates gravity
+and motor friction internally \mbox{\citep{FrankaFCI2023}}. The model-based term
+the controller supplies is therefore the Coriolis and centrifugal vector
+\mbox{\(\tau_c(q,\dot q)\)}, which libfranka evaluates from the robot model at
+the measured joint position and velocity.
+
+The vector \mbox{\(\tau_c\)} depends on the joint state alone, so it is
+independent of the Cartesian reference and of the secondary null-space torque.
+It enters the command as a separate additive contribution.
+
 \section{Complete Joint-Torque Command}
 \label{sec:complete_joint_torque_command}
 
@@ -1396,15 +1379,16 @@ Cartesian impedance torque \mbox{\(\tau_{\mathrm{cart}}\)}, the null-space torqu
 =
 J^\top(q)F
 +
-\tau_{\mathrm{null}}
+\tau_d+\tau_\sigma
 +
 \tau_c(q,\dot q).
 \label{eq:nullspace_complete_torque_command}
 \end{equation}
 
-Here, \mbox{\(\tau_{\mathrm{cart}}=J^\top(q)F\)} is the Cartesian impedance torque,
-\mbox{\(\tau_{\mathrm{null}}\)} is the secondary null-space torque, and
-\mbox{\(\tau_c(q,\dot q)\)} is the Coriolis and centrifugal compensation obtained
-from the robot model and added in the control callback. The Franka Control
-Interface supplies gravity compensation internally, as described in
-\mbox{\Cref{subsec:coriolis_gravity_compensation}}.
+Here \mbox{\(\tau_{\mathrm{cart}}=J^\top(q)F\)} is the Cartesian impedance
+torque. The secondary null-space torque enters as its two contributions, the
+projected damping \mbox{\(\tau_d\)} and the singular-value conditioning torque
+\mbox{\(\tau_\sigma\)} of \mbox{\Cref{eq:nullspace_torque}}. The Cartesian and
+Coriolis terms of this command follow the official libfranka Cartesian
+impedance example \mbox{\cite{libfrankaCartesianExample}}, and the null-space
+torque is added to them.
