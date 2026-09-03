@@ -235,7 +235,7 @@ not over the line or a box border. Short display labels such as `Pre-Contact
 Hold` and `Pre-Grinding Hold` may stand for longer state names that the body
 text gives in full. The Tool Orientation arrow carries
 \(\theta_{\mathrm{app,err}}\leq\varepsilon_{\mathrm{app}}\lor\)
-the `5.0 s timeout`; the worded form `angular error within
+`timeout`; the worded form `angular error within
 tolerance` is withdrawn, because Section 3.3 now defines both symbols.
 **A disjunction in a chart condition is written \(\lor\), never the word
 `or`**, so that one drawing states the same relation one way: the shared stop
@@ -246,7 +246,7 @@ between its anchor and the stop rail, so it needs `text width=3.90cm` to
 override the \(3.8\,\mathrm{cm}\) the `cond` style would otherwise wrap it
 at. Where \(\lor\) does end a line, as in the stop condition, it needs an
 explicit space before it, since TeX gives a trailing binary operator none.
-The Contact Establishment arrow uses `5.0 s timeout`. The body text
+The Contact Establishment arrow uses `timeout`. The body text
 retains the complete minimum-time, orientation, moment-change and timeout
 logic. Put the clearance condition beside the direct arrow into Pre-Contact
 Hold.
@@ -1070,7 +1070,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
   Case.** The English description comes first so a reader who does not remember
   the symbol list can still read the figure; the symbol follows so the figure
   ties back to the notation; the unit closes it in square brackets. Settled
-  examples: `Contact-Establishment Rotation About \(t_1\), \(\gamma_{t_1}\) [°]`,
+  examples: `Contact Response About \(t_1\), \(\gamma_{t_1}\) [°]`,
   `Rotational Stiffness About \(t_1\), \(K_{R,t_1}\) [N m/rad]`,
   `Cross-Axis Translational Stiffness, \(K_{p,t_2}\) [N/m]`,
   `Tangential CoC Position, \(r_{c,t_2}\) [mm]`,
@@ -1080,7 +1080,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
 
   **Figure 5.5 uses the first form exactly on its upper axis.** `Set-Up
   Rotation About \(t_1\)` is withdrawn from the plot; the axis reads
-  `Contact-Establishment Rotation About \(t_1\), \(\gamma_{t_1}\) [°]`.
+  `Contact Response About \(t_1\), \(\gamma_{t_1}\) [°]`.
 
   **It is set by the generator, not by an overlay.** The corrected axis label
   lived in `plot_coc_case.py` while the committed `MAIN_D_wrench.pdf` still
@@ -1165,7 +1165,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
   every `Peak ...` form, and a legend entry uses the same words as the axis it
   shares a panel with rather than a shortened variant of them.
 
-  **Response axes pair words with the symbol.** Write `Measured contact-establishment rotation
+  **Response axes pair words with the symbol.** Write `Measured contact rotation
   about \(t_1\), \(\gamma_{t_1}\) [°]`, not a bare symbol. A parameter axis
   likewise names the varied quantity before its symbol, for example
   `Rotational stiffness about \(t_1\), \(K_{R,t_1}\)` or

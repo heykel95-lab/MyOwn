@@ -1,55 +1,68 @@
-% Set-up reference generation, seen along a surface tangent with the tool face
-% parallel to the surface. The face is flat here, so the selected tool point is
-% the face centre and lies on the end-effector axis below the TCP. The
-% commanded point advances past the surface, so the endpoint is a spring
+% Contact-establishment reference generation, seen along a surface tangent with
+% the tool face parallel to the surface. The face is flat here, so the selected
+% tool point is the face centre and lies on the end-effector axis below the TCP.
+% The commanded point advances past the surface, so the endpoint is a spring
 % reference rather than an expected travel.
-% Blue carries the selected-tool-point chain, black the TCP quantities.
+% The two offsets drawn are the same rigid offset: p_TCP,clearance above
+% p_Tool,clearance, and p_d above p_Tool,d. Drawing both makes the construction
+% of Equation (3.23) visible, so neither segment carries a label: the product
+% R_EE,clearance r_Tool,EE was the longest item in the picture and Equation
+% (3.16) states the relation on the same page.
+% Drawn in black throughout. The chain is read from the line styles instead of
+% from colour: the surface and the tool face are the heaviest strokes, the rigid
+% tool offset is a plain line, the projection onto the surface is dashed because
+% it is construction, and the commanded travel is the one arrow on the chain.
+% Labels alternate left and right of the axis so that no two sit on one side at
+% the same height.
 % Uses only tikz + arrows.meta, which config/packages.tex loads.
 \begin{tikzpicture}[
     scale=1.55,
     font=\footnotesize,
-    tool/.style={draw=black, thick},
-    off/.style={draw=black},
-    cmd/.style={-{Latex[length=1.9mm]}, blue, thick},
-    proj/.style={draw=blue, thin},
-    nrm/.style={-{Latex[length=1.9mm]}, black},
+    tool/.style={draw=black, line width=1.0pt},
+    surf/.style={draw=black, line width=1.0pt},
+    off/.style={draw=black, line width=0.8pt},
+    proj/.style={draw=black, line width=0.7pt, densely dashed},
+    cmd/.style={-{Latex[length=2.0mm]}, black, line width=1.0pt},
+    nrm/.style={-{Latex[length=2.0mm]}, black, line width=0.8pt},
+    leader/.style={draw=black, thin},
+    pt/.style={fill=black, draw=black},
     lbl/.style={font=\footnotesize, inner sep=1.8pt},
   ]
 
   % ---- surface
-  \draw[black] (0.6,0) -- (4.6,0);
-  \node[lbl, right] at (4.6,0) {Surface};
+  \draw[surf] (0.40,0) -- (4.75,0);
+  \node[lbl, anchor=west] at (4.82,0) {Surface};
 
-  % ---- the surface normal, rising from the surface on the free left side
-  \draw[nrm] (1.05,0) -- (1.05,0.60);
-  \node[lbl, right] at (1.14,0.32) {$n_s$};
+  % ---- the surface normal, rising from the surface clear of the chain
+  \draw[nrm] (0.72,0) -- (0.72,0.68);
+  \node[lbl, anchor=west] at (0.81,0.40) {$n_s$};
 
-  % ---- tool face at the clearance transition, drawn parallel to the surface
-  \draw[tool] (1.4,1.05) rectangle (3.6,1.5);
+  % ---- tool face at the clearance transition, parallel to the surface
+  \draw[tool] (1.50,1.05) rectangle (3.50,1.50);
 
-  % ---- TCP, and the rigid offset to the selected tool point
-  \fill (2.5,2.05) circle (1.6pt);
-  \node[lbl, right] at (2.62,2.05) {$p_{\mathrm{TCP,clearance}}$};
-  \draw[off] (2.5,2.05) -- (2.5,1.05);
-  \node[lbl, left] at (2.38,1.78) {$R_{\mathrm{EE,clearance}}r_{\mathrm{Tool,EE}}$};
+  % ---- TCP, and the rigid offset down to the selected tool point
+  \draw[off] (2.50,2.15) -- (2.50,1.05);
+  \node[pt] at (2.50,2.15) [circle, inner sep=1.6pt] {};
+  \node[lbl, anchor=west] at (2.66,2.15) {$p_{\mathrm{TCP,clearance}}$};
 
   % ---- the selected tool point is the face centre while the face is flat
-  \fill[blue] (2.5,1.05) circle (1.7pt);
-  \node[lbl, left, blue] at (2.38,0.84) {$p_{\mathrm{Tool,clearance}}$};
+  \node[pt] at (2.50,1.05) [circle, inner sep=1.7pt] {};
+  \draw[leader] (2.44,1.00) -- (2.22,0.84);
+  \node[lbl, anchor=east] at (2.18,0.82) {$p_{\mathrm{Tool,clearance}}$};
 
   % ---- its projection onto the configured surface reference
-  \draw[proj] (2.5,1.05) -- (2.5,0);
-  \fill[blue] (2.5,0) circle (1.7pt);
-  \node[lbl, above left, blue] at (2.40,0.04) {$p_{\mathrm{Tool},0}$};
+  \draw[proj] (2.50,1.05) -- (2.50,0);
+  \node[pt] at (2.50,0) [circle, inner sep=1.7pt] {};
+  \node[lbl, anchor=west] at (2.64,0.24) {$p_{\mathrm{Tool},0}$};
 
   % ---- commanded motion of that point, continuing past the surface
-  \draw[cmd] (2.5,0) -- (2.5,-1.35);
-  \node[lbl, right, blue] at (2.64,-0.70) {$s_{\mathrm{CE}}(t)\,(-n_s)$};
-  \fill[blue] (2.5,-1.35) circle (1.7pt);
-  \node[lbl, below, blue] at (2.5,-1.5) {Commanded endpoint};
+  \draw[cmd] (2.50,0) -- (2.50,-1.45);
+  \node[lbl, anchor=west] at (2.64,-0.82) {$s_{\mathrm{CE}}(t)$};
+  \node[pt] at (2.50,-1.45) [circle, inner sep=1.7pt] {};
+  \node[lbl, anchor=west] at (2.64,-1.45) {$p_{\mathrm{Tool},d}(t)$};
 
   % ---- the TCP target that realises it, one rigid offset above
-  \fill (2.5,-0.35) circle (1.6pt);
-  \node[lbl, left] at (2.38,-0.35) {$p_d(t)$};
+  \node[pt] at (2.50,-0.40) [circle, inner sep=1.6pt] {};
+  \node[lbl, anchor=east] at (2.34,-0.40) {$p_d(t)$};
 
 \end{tikzpicture}

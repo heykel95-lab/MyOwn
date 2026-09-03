@@ -243,7 +243,7 @@ def damping_panel(ax, groups):
                 markeredgewidth=1.1, label=label)
         ax.fill_between(common_t, mean - sd, mean + sd, color=colour,
                         alpha=0.10, linewidth=0)
-    ax.set_xlabel(r"Time After Disturbance Onset, $t_d$ [s]")
+    ax.set_xlabel(r"Time, $t$ [s]")
     ax.set_ylabel(
         "Cumulative Projected\n"
         r"Null-Space Motion, $E_N$ [$^\circ$]"
@@ -251,6 +251,9 @@ def damping_panel(ax, groups):
     ax.text(0.99, 0.03, "(a)", transform=ax.transAxes,
             ha="right", va="bottom")
     ax.margins(y=0.12)
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.30), ncol=2,
+              frameon=False, fontsize=8.5, handlelength=1.7,
+              columnspacing=2.0, borderaxespad=0.0)
     return ax.get_legend_handles_labels()
 
 
@@ -328,12 +331,15 @@ def sigma_panel(ax, groups):
     task_ax.tick_params(axis="y", colors=SERIES_RED)
     task_ax.grid(False)
 
-    return (
-        [sigma_handle, task_handle, criterion_handle],
-        [r"Singular-Value Change, $\Delta\sigma_{\min}$",
-         r"Maximum Cartesian Position Error, $\|e_p\|_{\max}$",
-         r"Position-Error Limit, $\|e_p\|_{\max}=2\,\mathrm{mm}$"],
-    )
+    handles = [sigma_handle, task_handle, criterion_handle]
+    labels = [r"Singular-Value Change, $\Delta\sigma_{\min}$",
+              r"Maximum Cartesian Position Error, $\|e_p\|_{\max}$",
+              r"Position-Error Limit, $\|e_p\|_{\max}=2\,\mathrm{mm}$"]
+    ax.legend(handles, labels, loc="upper center",
+              bbox_to_anchor=(0.5, -0.26), ncol=2, frameon=False,
+              fontsize=8.5, handlelength=1.7, columnspacing=2.0,
+              borderaxespad=0.0)
+    return handles, labels
 
 
 NET_LABELS = (
@@ -409,16 +415,17 @@ def make_figure(groups):
     # to read the curves against. The third panel is shorter than the other
     # two: it holds four bars and needs no room for a legend.
     fig, axes = plt.subplots(3, 1, figsize=(5.9, 8.4),
-                             gridspec_kw={"height_ratios": [1.0, 1.0, 0.8]})
+                             gridspec_kw={"height_ratios": [1.0, 1.0, 0.8],
+                                          "hspace": 0.75})
     damping_handles, damping_labels = damping_panel(axes[0], groups)
     sigma_handles, sigma_labels = sigma_panel(axes[1], groups)
     net_displacement_panel(axes[2], groups)
     handles = damping_handles + sigma_handles
     labels = damping_labels + sigma_labels
-    fig.legend(handles, labels, loc="lower center", ncol=2,
-               bbox_to_anchor=(0.5, 0.01), fontsize=7, frameon=False,
-               handlelength=1.7, columnspacing=1.2)
-    fig._thesis_legend_bottom = 0.14
+    # Each panel carries its own legend, so no figure-level legend is drawn and
+    # no strip is reserved at the foot of the figure for one.
+    fig._thesis_legend_bottom = 0.0
+    fig.align_ylabels(axes)
     return save(fig, "MAIN_NS_nullspace_automatic.pdf")
 
 

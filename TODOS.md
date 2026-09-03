@@ -8,8 +8,9 @@ removed in the turn in which they are finished.
 Changed to \(5.0\,\mathrm{s}\) on 2026-09-02 by the author's decision, in
 Table 4.3 and in
 `Thesis_Final_Control/surface_grinding_controller/params/approach.conf`. The
-change to the controller parameter file is **not committed** in that
-repository. Figure 3.3 no longer states either value: both its timeout arrows
+change to the controller parameter file is committed and pushed on the
+branch `nullspace-disturbance-video`, at `e4241ea`; `main` still carries
+\(8.0\,\mathrm{s}\). Figure 3.3 no longer states either value: both its timeout arrows
 now read `timeout` alone, under the rule in `FIGURE_STYLE.md` that a state
 chart names a timeout without valuing it, so the figure is no longer a place
 this decision has to be kept in step.

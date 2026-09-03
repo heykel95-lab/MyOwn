@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare contact-establishment rotation with a pose-based alignment estimate.
+"""Compare contact rotation with a pose-based alignment estimate.
 
   python3 analysis/compare_angle_metrics.py [--trial DIR] [--out-dir DIR]
 
@@ -135,7 +135,7 @@ def main():
                 markeredgewidth=1.0,
                 label=r"Error Increased, $\Delta\theta_{\mathrm{align}}<0$")
         ax.set_xlabel(
-            "Contact-Establishment Rotation Magnitude,\n"
+            "Contact Response Magnitude,\n"
             r"$|\gamma_{t_i}|$ [$^\circ$]")
         ax.set_ylabel("Pose-Based Alignment-Error Reduction,\n"
                       r"$\Delta\theta_{\mathrm{align}}$ [$^\circ$]")
@@ -157,7 +157,7 @@ def main():
     axes[0].plot(t, alignment, color=SERIES_BLACK,
                  label=r"Pose-Based Alignment Error, $\theta_{\mathrm{align}}$")
     axes[0].plot(t, alignment[0] - deviation, color=SERIES_RED,
-                 label=(r"Reconstructed From Contact-Establishment Rotation, "
+                 label=(r"Reconstructed From Contact Response, "
                         r"$\theta_{\mathrm{align},0}-\gamma_{t_i}$"))
     reference_line(axes[0])
     axes[0].set_xlabel(r"Contact-Establishment Time, $t$ [s]")
@@ -183,7 +183,7 @@ def main():
                  markeredgewidth=1.0,
                  label=r"Error Increased, $\Delta\theta_{\mathrm{align}}<0$")
     axes[1].set_xlabel(
-        r"Measured Contact-Establishment Rotation Magnitude, $|\gamma_{t_i}|$ [$^\circ$]")
+        r"Measured Contact Response Magnitude, $|\gamma_{t_i}|$ [$^\circ$]")
     axes[1].set_ylabel("Reduction in Pose-Based Alignment Error,\n"
                        r"$\Delta\theta_{\mathrm{align}}$ [$^\circ$]")
     axes[1].set_title("(b)")

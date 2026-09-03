@@ -43,6 +43,11 @@ def apply_style():
         "font.serif": ["Latin Modern Roman", "CMU Serif", "cmr10",
                        "DejaVu Serif"],
         "mathtext.fontset": "cm",
+        # Matplotlib defaults to U+2212 for a negative tick label. The serif
+        # faces available here carry no such glyph, and a Type-42 subset then
+        # embeds a character the viewer cannot draw: the sign disappears and a
+        # negative axis reads as positive. The ASCII hyphen is in every face.
+        "axes.unicode_minus": False,
         "pdf.fonttype": 42,
         "ps.fonttype": 42,
         "font.size": 9,

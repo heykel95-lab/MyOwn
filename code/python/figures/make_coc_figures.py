@@ -14,7 +14,7 @@ with a white face, a horizontal grid, and no dashed line anywhere.
   G  the centre swept along the tool axis
   H  the same positions at half the configured offset
 
-Every case uses the signed contact-establishment rotation about the investigated tangent. This
+Every case uses the signed contact rotation about the investigated tangent. This
 controller-response metric does not depend on the reconstructed tool normal or
 its uncertain absolute zero.
 """
@@ -38,7 +38,7 @@ from figure_style import (apply_style, reference_line,  # noqa: E402
 
 apply_style()
 
-ROTATION_LABEL = ("Contact-Establishment Rotation,\n"
+ROTATION_LABEL = ("Contact Response,\n"
                   r"$\gamma_{t_i}$ [$^\circ$]")
 
 # Every bar chart in the thesis takes the palette blue, the same one the line
@@ -299,7 +299,7 @@ def main():
     ax.set_xticks(x)
     ax.set_xticklabels(commands)
     ax.set_xlabel(r"Achieved Initial Angular Offset, $\theta_{0,t_1}$ [$^\circ$]")
-    ax.set_ylabel("Contact-Establishment Rotation About $t_1$,\n"
+    ax.set_ylabel("Contact Response About $t_1$,\n"
                   r"$\gamma_{t_1}$ [$^\circ$]")
     ax.legend(loc="upper left")
     fig.tight_layout()

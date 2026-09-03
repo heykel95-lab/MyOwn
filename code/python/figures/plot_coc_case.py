@@ -5,13 +5,13 @@
 
 Every case is read the same way, top to bottom:
 
-  1  contact-establishment rotation   the signed current-to-reference rotation
+  1  contact rotation   the signed current-to-reference rotation
                        over contact establishment about the investigated tangent.
   2  normal force      the controller-commanded press along n_s.
   3  alignment moment  the controller-commanded moment about the commanded
                        surface tangent.
 
-The contact-establishment rotation is the same controller-response quantity used by every
+The contact rotation is the same controller-response quantity used by every
 case-comparison plot. It comes from the robot orientation error referenced at
 the clearance transition and is resolved on the configured surface axes. It therefore has
 no absolute flat-tool zero and is not affected by play between tool and
@@ -67,7 +67,7 @@ def curve_label(detail):
 
 
 def load(results, trial, axis):
-    """Return time, contact-establishment rotation, commanded force and moment."""
+    """Return time, contact rotation, commanded force and moment."""
     directory = os.path.join(results, trial)
     logs = glob.glob(os.path.join(directory, "logs", "*.csv"))
     if not logs:
@@ -116,12 +116,11 @@ def main():
 
     sub = AXIS_SUBSCRIPT[args.axis]
     # A y label is set rotated, so its longest line has to fit the panel
-    # height, not the figure width. The withdrawn "Set-Up Rotation About t_1,"
-    # fitted on one line; "Contact-Establishment Rotation About t_1," does not,
-    # and ran off the top of the figure. Each label is therefore broken so that
-    # no line exceeds about twenty-three characters.
-    labels = [rf"Contact-Establishment" "\n"
-              rf"Rotation About ${sub}$," "\n"
+    # height, not the figure width. The full label on one line overruns the
+    # panel, so each is broken once: the words on the first line and the symbol
+    # with its unit on the second. Three lines were tried first and read worse
+    # than the single-line labels of the typeset figures beside this one.
+    labels = [rf"Contact Response About ${sub}$," "\n"
               rf"$\gamma_{{{sub}}}$ [$^\circ$]",
               "Commanded Normal Force,\n" r"$F_n$ [N]",
               rf"Commanded TCP Moment" "\n"
@@ -139,12 +138,19 @@ def main():
             reference_line(ax)
         ax.margins(y=0.3)
     handles, legend_labels = axes[0].get_legend_handles_labels()
-    fig.legend(handles, legend_labels, loc="lower center", ncol=len(handles),
-               bbox_to_anchor=(0.5, 0.005),
-               frameon=False, fontsize=7, handlelength=1.5,
-               columnspacing=1.2, borderaxespad=0.2)
+    # The legend sits directly under the x label rather than at the foot of the
+    # figure, so it reads as part of the last panel the way a pgfplots legend
+    # does in the figures beside it.
     axes[-1].set_xlabel(r"Time, $t$ [s]")
     fig.tight_layout(rect=(0, 0.06, 1, 1))
+    fig.align_ylabels(axes)
+    # The legend is built after the layout is fixed, so the panel geometry it
+    # is measured against is final.
+    panel = axes[-1].get_position()
+    fig.legend(handles, legend_labels, loc="lower left", ncol=len(handles),
+               bbox_to_anchor=(panel.x0, 0.008, panel.width, 0.045),
+               mode="expand", frameon=False, fontsize=8.0, handlelength=1.6,
+               handletextpad=0.5, borderaxespad=0.0)
     out = os.path.join(args.out_dir, f"{args.out}.pdf")
     fig.savefig(out)
     fig.savefig(out.replace(".pdf", ".png"), dpi=160)

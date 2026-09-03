@@ -133,7 +133,6 @@ Surface Approach ends when the minimum tool clearance reaches
 \mbox{\(h_{\mathrm{clearance}}\)}; reaching the maximum approach distance
 first terminates the experiment. Each optional hold is skipped when disabled,
 and otherwise waits for operator confirmation. Contact Establishment ends when
-the moment-change criterion is satisfied after the minimum duration, or when
 its independent timeout is reached.
 
 During active control, operator input \texttt{g} enters Manual Guidance. The
@@ -162,13 +161,13 @@ That state retains the current Cartesian pose while \mbox{\(K_p\)},
 
 The controller defines the surface frame \mbox{\(\{S\}\)} from the configured
 surface point \mbox{\(p_s\)}, the surface normal \mbox{\(n_s\)}, and a
-configured first-tangent hint. The point \mbox{\(p_s\)} defines the origin of
-the configured surface, and \mbox{\(n_s\)} defines its normal direction. The
-hint is projected onto the surface plane and normalised to obtain
-\mbox{\(t_1\)}, as in \mbox{\Cref{subsec:surface_task_frame}}. When the hint
-lies close to \mbox{\(n_s\)}, the controller applies a fallback direction. The
-second tangent \mbox{\(t_2=n_s\times t_1\)} completes the right-handed surface
-frame.
+configured in-plane reference direction. The point \mbox{\(p_s\)} defines the
+origin of the configured surface, and \mbox{\(n_s\)} defines its normal
+direction. The reference direction takes the place of \mbox{\(e_{x_0}\)} in
+\mbox{\Cref{eq:surface_frame_tangents}}: it is projected onto the surface plane
+and normalised to obtain \mbox{\(t_1\)}. When it lies close to
+\mbox{\(n_s\)}, the controller applies a fallback direction. The second tangent
+\mbox{\(t_2=n_s\times t_1\)} completes the right-handed surface frame.
 
 The resulting directions \mbox{\(t_1\)}, \mbox{\(t_2\)}, and \mbox{\(n_s\)}
 define the approach direction \mbox{\(-n_s\)}, the surface-relative orientation
@@ -479,7 +478,7 @@ virtual \abbr{CoC} \mbox{\(p_c\)} of
 \mbox{\Cref{sec:centre_of_compliance}} is the point about which the impedance
 is defined, and its position is independent of the selected tool geometry.
 
-\subsection{Operator-Controlled Hold Before Contact Establishment}
+\subsection{Pre-Contact Hold}
 \label{subsec:implementation_pre_contact_hold}
 
 The optional Pre-Contact Hold maintains the Cartesian pose reached at the end
@@ -497,7 +496,6 @@ defined \mbox{\(t_{\mathrm{CE,start}}\)}.
 \label{subsec:phase_dependent_gain_construction}
 \label{sec:self_alignment_virtual_center}
 
-\paragraph{Reference capture and press trajectory.}
 At the transition instant \mbox{\(t_{\mathrm{CE,start}}\)}, the controller
 captures the measured end-effector orientation and TCP position:
 
@@ -627,104 +625,11 @@ reference; the contact interaction determines the actual tool motion.
   \label{fig:setup_reference}
 \end{figure}
 
-\paragraph{Active impedance.}
-Contact Establishment keeps the orientation reference \mbox{\(R_d\)} fixed
-while applying finite rotational stiffness. Contact forces can therefore rotate
-the measured end-effector orientation away from the held reference, and the
-rotational impedance generates the corresponding restoring moment.
-
-The controller uses the same position and orientation references for the
-TCP-centred and displaced-\abbr{CoC} conditions. When a virtual \abbr{CoC} is
-enabled, the point-shifted stiffness and damping matrices of
-\mbox{\Cref{sec:centre_of_compliance}} additionally couple the translational
-press to the commanded moment. The active impedance matrices therefore change,
-while the generated Contact Establishment trajectory remains unchanged.
-
-At the transition from Surface Approach to Contact Establishment, the
-controller changes from the approach stiffness-and-damping set to the Contact
-Establishment set. The directional translational and rotational matrices are
-first defined in their configured frame and transformed into the robot base
-frame. When a displaced \abbr{CoC} is active, the controller then applies the
-point-shift transformation of \mbox{\Cref{sec:centre_of_compliance}}.
-
-The frame used for the translational Contact Establishment gains is
-configurable, and the surface-contact experiments expressed these gains in the
-configured surface frame. Contact Establishment and Grinding obtain their gains
-from the same configured translational and rotational source blocks. Contact
-Establishment can define the impedance about a displaced virtual \abbr{CoC},
-whereas Grinding defines it at the TCP and uses a different Cartesian reference
-generator.
-Contact-Impedance Hold can temporarily apply its dedicated hold stiffness and
-damping while maintaining the captured Cartesian reference.
-\mbox{\Cref{ch:methodology}} reports the numerical values used in the
-experiments.
-
-\paragraph{Inertia-scaled damping.}
-For controller states that use inertia-scaled damping, the directional damping
-coefficients are calculated according to
-\mbox{\Cref{eq:inertia_scaled_damping}}. The controller obtains the joint-space
-inertia \mbox{\(M(q)\)} and the Jacobian \mbox{\(J(q)\)} from the libfranka
-model. An \mbox{\abbr{LDLT}} factorisation evaluates the required system while
-leaving \mbox{\(M(q)^{-1}\)} implicit.
-
-The controller stores the resulting damping matrix for each
-stiffness-and-damping configuration and recalculates it when that configuration
-is activated. \mbox{\Cref{app:controller_parameters}} reports the coefficient
-bounds, the validity checks, and the fallback damping matrices. The
-surface-contact experiments used inertia-scaled damping during Surface Approach
-and Contact Establishment.
-
-\paragraph{Centre-of-compliance implementation.}
-The controller implements the point shift of
-\mbox{\Cref{sec:centre_of_compliance}} using
-\mbox{\(r_c=p_c-p_{\mathrm{TCP}}\)}. Two definitions of the displacement
-are supported, because the frame in which its components stay fixed determines
-its behaviour during end-effector rotation.
-
-For a tool-fixed displacement, the configured components
-\mbox{\(r_{c,\mathrm{EE}}\)} remain constant in the end-effector frame, and the
-controller transforms them into base coordinates in every callback,
-\mbox{\(r_c=R_{\mathrm{EE}}r_{c,\mathrm{EE}}\)}. The base-frame
-displacement therefore rotates with the end effector.
-
-For a surface-fixed displacement, the components \mbox{\(r_{c,S}\)} remain
-constant in the configured surface frame, so
-\mbox{\(r_c=R_{\mathrm{surface}}r_{c,S}\)}. The surface frame stays fixed
-during a controller session, so this base-frame displacement remains constant
-during Contact Establishment. When the virtual \abbr{CoC} is enabled, the
-configuration accepts exactly one of the two definitions. All non-zero
-\abbr{CoC} displacements used in the experiments were tool-fixed.
-
-The controller assembles the translational and rotational source matrices into
-the block-diagonal stiffness \mbox{\(K_c\)} and damping \mbox{\(D_c\)} at the
-virtual \abbr{CoC}. It then maps these matrices to the TCP through the
-congruence transformations of
-\mbox{\Cref{eq:coupled_tcp_stiffness,eq:coupled_tcp_damping}}.
-
-For a tool-fixed displacement, a change in \mbox{\(R_{\mathrm{EE}}\)} changes
-\mbox{\(r_c\)}, so the controller updates the shifted base-frame matrices
-in every control cycle. For a surface-fixed displacement, the shifted matrices
-remain constant while the source matrices are unchanged. Setting
-\mbox{\(r_c=0\)} makes the point-shift adjoint the identity and recovers the
-decoupled block-diagonal impedance at the TCP.
-
-During Contact Establishment, the displaced \abbr{CoC} allows the commanded
-normal press to contribute to the rotational response.
-
-\paragraph{Termination.}
-At the clearance transition, the controller stores the model-estimated external
-wrench supplied by libfranka. After the configured minimum Contact
-Establishment duration, the state can end when the change in the estimated
-external moment exceeds the configured threshold. The independent timeout
-supplies the alternative transition. Every surface-contact experiment reached
-the timeout transition.
-
-
-\subsection{Operator-Controlled Hold Before Grinding}
+\subsection{Pre-Grinding Hold}
 \label{subsec:implementation_pre_grinding_hold}
 
-Pre-Grinding Hold begins when Contact Establishment satisfies the moment-change
-condition after its minimum duration, or reaches its independent timeout. The
+Pre-Grinding Hold begins when Contact Establishment reaches its independent
+timeout. The
 final Contact Establishment position and orientation references are retained,
 while the Cartesian impedance controller remains active. The controller
 therefore continues to generate the corresponding force and moment commands

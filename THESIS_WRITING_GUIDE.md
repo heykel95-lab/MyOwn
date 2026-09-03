@@ -131,7 +131,7 @@ and a reader cannot infer the asymmetry from `slightly larger`.
 
 **This is not a return to the exception withdrawn on 2026-08-25.** That one
 admitted a pair of per-condition means — `changed the measured
-contact-establishment rotation from \(-1.63^\circ\) to \(+4.43^\circ\)` —
+contact rotation from \(-1.63^\circ\) to \(+4.43^\circ\)` —
 which made one experimental condition look more important than the finding, and
 it stays withdrawn. A percentage stated against its reference condition is a
 relation rather than a condition-specific measurement, which is the distinction
@@ -195,7 +195,7 @@ named by their offset direction where one has to be identified repeatedly.**
 Throughout the thesis, the configured orientation offset
 \(\theta_{\mathrm{offset},t_1}\) defines the desired pre-contact tool direction,
 the achieved pose-based initial angular offset \(\theta_{0,t_1}\) gives the
-condition reached at contact entry, and the contact-establishment response
+condition reached at contact entry, and the contact response
 \(\gamma_{t_1}\) gives the measured outcome. Use `both directions of rotation`
 or `both rotational directions` for aggregate comparisons. The plus and minus
 symbols remain in scalar equations and numerical values because they encode the
@@ -377,7 +377,7 @@ deviation at the precision the rest of the table uses, and switching that one
 entry to a third decimal or to an inequality would break the column for no
 gain.
 
-The main contact evaluation uses the contact-establishment response
+The main contact evaluation uses the contact response
 \(\gamma_{t_1}\). Its positive and negative values retain the response
 direction. The commanded normal force \(F_n\) and commanded TCP
 moment \(M_{t_i}\) appear only in the Case-D mechanism plot. Selected-tool-point
@@ -435,7 +435,7 @@ generalisability boundary.
 **Do not use `signed` as a modifier in thesis prose, headings,
 captions, axes, or tables.** The defining equation and the displayed positive
 and negative values establish the algebraic direction. Name the quantity
-directly as the `contact-establishment response`, `normal-force component`,
+directly as the `contact response`, `normal-force component`,
 `clearance`, or `component along` a defined direction. State the meanings of
 positive and negative values once beside the definition when the reader needs
 them.
@@ -881,7 +881,7 @@ circulation, the settled choices are:
   direction. At the start of Contact Establishment, the achieved condition is
   the **pose-based initial angular offset**
   \(\theta_{0,t_1}\). Contact Establishment holds the captured orientation
-  reference and produces the **contact-establishment response**
+  reference and produces the **contact response**
   \(\gamma_{t_1}\). The chain is therefore
   \(\theta_{\mathrm{offset},t_1}\to\theta_{0,t_1}\to\gamma_{t_1}\).
 
@@ -1877,7 +1877,7 @@ paragraph. Every arrow states a compact `if` condition and
 uses the thesis symbols where they are defined. Place that condition beside a
 clear segment, never over an arrow or a box border. The Tool Orientation arrow
 uses the compact display condition \(\theta_{\mathrm{app,err}}\leq
-\varepsilon_{\mathrm{app}}\lor 5.0\,\mathrm{s}\) `timeout`, while the
+\varepsilon_{\mathrm{app}}\lor\) `timeout`, while the
 body text retains the complete minimum-time and orientation logic. A
 disjunction in a chart condition is written \(\lor\) and never as the word
 `or`, matching the shared stop condition. The earlier
@@ -1889,7 +1889,7 @@ transition quantities and stay out of the global symbol list, under
 *Mathematical notation*. Surface Approach advances at
 \(h_{\mathrm{Tool}}\leq h_{\mathrm{clearance}}\) and stops if
 \(s_{\mathrm{app}}\geq s_{\mathrm{app,max}}\) first. The Contact Establishment
-arrow uses `5.0 s timeout`, while the body text retains the
+arrow uses `timeout`, while the body text retains the
 complete minimum-time, moment-change and timeout logic. Every reported
 experiment ended through the timeout. These state-specific phrases prevent one
 time symbol from denoting two independent timeout values.
@@ -2375,7 +2375,7 @@ the sentence placing sustained grinding outside the evaluation.
 **\(\gamma_{t_1}\) is what Chapter 4 says was measured.** The contact establishment
 procedure once ended `so the measured alignment rotation is a response to
 contact`, which names a physical tool alignment the thesis does not measure.
-The settled wording is `the measured contact-establishment response results from the contact
+The settled wording is `the measured contact response results from the contact
 interaction rather than from tracking a time-varying orientation command`.
 
 ## The appendices: document and support
@@ -2612,7 +2612,7 @@ Distinguish:
 3. hypothesis requiring another experiment.
 
 Trace every geometric metric through its measurement chain. The primary angular
-result is the contact-establishment response and does not require the calibrated
+result is the contact response and does not require the calibrated
 tool normal. The appendix reconstructs a separate pose-based tool axis from the
 end-effector pose and a calibrated tool-to-end-effector transform. Because the
 mounted tool can rotate approximately ±2° about \(y_{EE}\), that secondary
@@ -2633,7 +2633,7 @@ is a component of the configured orientation offset about surface tangent
 Orientation and does not prescribe the rotation during Contact Establishment.
 The achieved pose-based initial angular offset \(\theta_{0,t_1}\) is the
 contact-entry condition relative to the configured surface reference. The
-contact-establishment response \(\gamma_{t_1}\) is the measured response about
+contact response \(\gamma_{t_1}\) is the measured response about
 that tangent.
 
 The experiment tables and comparison figures identify their angular condition
@@ -2734,7 +2734,7 @@ or their logger-only aliases as reported thesis quantities.
 reports one response.** The achieved pose-based initial angular offset is
 \(\theta_{0,t_1}\), and the response is the measured contact-establishment
 rotation \(\gamma_{t_1}\). Chapter 5 table headings name the changed parameter
-directly and call the output `Measured contact-establishment rotation`; generic columns such as
+directly and call the output `Measured contact rotation`; generic columns such as
 `Varied entry` and `Value` are not used. Subsection titles, captions, axes and
 the surrounding prose use the same input--response vocabulary. The commanded
 wrench time history in Case D is the mechanism figure and remains the one
@@ -2749,7 +2749,7 @@ was not measured under load.
 **Do not write that a lever was insufficient to align the tool**, or that it
 `did not remove the full initial angular offset`. Both read as claims about the
 physical tool face, whose orientation under load was not tracked. Report the
-measured contact-establishment response about \(t_1\) and do not add an
+measured contact response about \(t_1\) and do not add an
 inferred final physical alignment.
 
 ### Three distinct points: selected tool point, TCP, compliance centre
@@ -3594,6 +3594,22 @@ were never active together in the pose-hold trials. Write `Projected null-space
 damping and singular-value conditioning were implemented and evaluated
 separately in Cartesian pose hold`. Mode 3, where both act together, belongs to
 the surface-contact cases only.
+
+**The response quantity is the `contact response`.** Renamed 2026-09-03,
+withdrawing `contact-establishment response`. \(\gamma_{t_1}\) is the contact
+response about \(t_1\), in prose, in the symbol list, in every figure axis
+label and in the Appendix D column headings. The document had been carrying
+both forms: Chapters 1 to 3, the Section 4.5 heading and two Chapter 5 captions
+already said `contact response`, while Chapters 4 to 6, the Abstract and six
+figure axes said `contact-establishment response`. The short form won because
+the state is already named beside it in almost every sentence that reports the
+quantity, so the compound repeated the state name rather than distinguishing
+anything.
+
+`Contact Establishment` the state keeps its name, and so does every other
+compound built on it: the contact-establishment motion, press, trajectory,
+damping, reference and timeout all name the state and are unchanged. Only the
+response and the rotation were renamed.
 
 **A quantity is discussed where its figure shows it.** Agreed 2026-09-02.
 \(\Delta\sigma_{\min}\) appears in panel~(b) of the pose-hold figure, which

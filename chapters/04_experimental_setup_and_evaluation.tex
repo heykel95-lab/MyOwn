@@ -269,7 +269,6 @@ Maximum descent distance, \(s_{\mathrm{app,max}}\) & \(0.640\,\mathrm{m}\)\\
 Tool clearance, \(h_{\mathrm{clearance}}\) & \(0.020\,\mathrm{m}\)\\
 Minimum Contact Establishment time & \(2.0\,\mathrm{s}\)\\
 Contact Establishment timeout & \(5.0\,\mathrm{s}\)\\
-Moment-change threshold & \(150\,\mathrm{N\,m}\)\\
 Press speed, \(v_{\mathrm{CE}}\) & \(0.080\,\mathrm{m/s}\)\\
 Press endpoint, \(s_{\mathrm{CE,max}}\) & \(0.240\,\mathrm{m}\)\\
 Hold before Contact Establishment & disabled\\
@@ -284,8 +283,8 @@ the minimum clearance of the rectangular tool face reached
 selected tool-point reference towards the surface, while holding the
 end-effector orientation captured at the clearance transition. Every contact
 experiment reached the configured \mbox{\(5\,\mathrm{s}\)} Contact
-Establishment timeout rather than the moment-change termination condition, and
-then entered the operator-controlled hold before Grinding.}
+Establishment timeout and then entered the operator-controlled hold before
+Grinding.}
 
 \label{subsec:nullspace_parameter_rationale}
 \Added{Throughout Cases~A--D, projected null-space damping and singular-value
@@ -385,24 +384,17 @@ D & Tangential \abbr{CoC} position & \(9.32^\circ\) and
 \label{sec:alignment_evaluation}
 % ============================================================================
 
-The surface-contact analysis uses three orientation quantities. The
-configured orientation offset \(\theta_{\mathrm{offset},t_1}\) defines the
-desired pre-contact tool direction commanded during Tool Orientation. The
-achieved pose-based initial angular offset \(\theta_{0,t_1}\) describes the
-orientation actually reached at the start of Contact Establishment. The
-contact-establishment response \(\gamma_{t_1}\) is the orientation change
-measured during Contact Establishment.
+The surface-contact evaluation distinguishes the configured angular offset, the
+achieved angular condition at contact entry, and the rotational response
+generated during Contact Establishment. These quantities are represented by
+\(\theta_{\mathrm{offset},t_1}\), \(\theta_{0,t_1}\), and \(\gamma_{t_1}\),
+respectively.
 
-The configured offset is therefore the commanded condition,
-\(\theta_{0,t_1}\) the measured initial condition, and \(\gamma_{t_1}\) the
-measured response used for the main experimental comparisons.
-
-All three quantities take their sign from the same rotational direction.
-\Cref{fig:rotation_sign_convention} shows the surface-frame plane spanned by
-\(t_2\) and \(n_s\), with \(t_1\) pointing out of the page. A positive
-rotation about \(t_1\) follows the right-hand rule and rotates \(t_2\)
-towards \(n_s\), whatever its magnitude. Positive and negative values of the
-three quantities therefore state the direction of rotation in that plane.
+All three quantities use the same sign convention about \(t_1\).
+\Cref{fig:rotation_sign_convention} shows the \((t_2,n_s)\) plane with \(t_1\)
+pointing out of the page. For the orientation shown in
+\Cref{fig:rotation_sign_convention}, the right-hand rule defines positive
+rotation about \(t_1\) as anticlockwise and negative rotation as clockwise.
 
 \begin{figure}[H]
   \centering
@@ -454,7 +446,7 @@ normal evaluated at \mbox{\(t_{\mathrm{CE,start}}\)}; the time dependence
 enters through the measured tool orientation.}
 
 
-\subsection{Contact-Establishment Response}
+\subsection{Contact Response}
 \label{subsec:experimental_supporting_metrics}
 
 Let \(t_{\mathrm{CE,start}}\) and \(t_{\mathrm{CE,end}}\) denote the
@@ -474,7 +466,7 @@ R_{\mathrm{EE}}^\top(t_{\mathrm{CE,end}}).
 
 Writing this relative rotation in axis--angle form as
 \(R_{\mathrm{CE}}=R(u_{\mathrm{CE}},\phi_{\mathrm{CE}})\) gives the
-contact-establishment response vector \(\gamma\) in base coordinates:
+contact response vector \(\gamma\) in base coordinates:
 
 \begin{equation}
 \gamma

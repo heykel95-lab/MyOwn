@@ -107,7 +107,7 @@ def main():
         t, rotation, force, moment = thin(*load(trial))
         first = column == 0
         draw_axes(axes[0][column], t, rotation,
-                  (r"Contact-Establishment Rotation, $\gamma_{t_1}$ [$^\circ$]"
+                  (r"Contact Response, $\gamma_{t_1}$ [$^\circ$]"
                    if first else ""))
         draw_axes(axes[1][column], t, force,
                   r"$F_{\mathrm{cmd}}$ [N]" if first else "")
