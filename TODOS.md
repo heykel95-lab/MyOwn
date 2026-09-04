@@ -3,6 +3,109 @@
 This file contains only agreed work that remains unfinished. Completed items are
 removed in the turn in which they are finished.
 
+## Confirm the material the new summaries dropped is carried elsewhere
+
+The supplied Abstract and Kurzfassung of 2026-09-04 dropped three things the
+previous versions carried, and each needs a home in the body or a decision that
+it is not needed.
+
+- The angular-evaluation basis: `The angular conditions were defined relative to
+  the configured surface geometry, and the contact response was calculated from
+  the measured end-effector orientations.` Chapter 4 defines this, so this is
+  probably already covered; confirm the wording there is explicit enough to
+  carry the claim alone.
+- The rotational-stiffness interval that produced the \(64\,\%\) reduction.
+  Chapter 5 reports it; confirm the Conclusion still states it, since the
+  Abstract no longer does.
+- The largest measured Cartesian position error against its \(2\,\mathrm{mm}\)
+  limit, now written qualitatively as `Cartesian position retention was
+  maintained throughout the tested conditions`. Confirm the measured value and
+  the limit both appear in Chapter 5.
+
+## Remove the duplicate TCP expansion in Chapter 2
+
+`chapters/02_theoretical_background.tex:760` spells out `tool centre point
+(TCP)`. Since 2026-09-04 Chapter 1 spells it out first, at the \(r_c\)
+sentence, so the Chapter 2 parenthesis is a second introduction. The duplicate
+predates the change — the old Abstract expanded TCP as well — so this is
+tidying rather than a fault. Drop the parenthesis in Chapter 2 and leave the
+words.
+
+## Reconcile the sentence after Equation 3.2 with its `\approx`
+
+Equation 3.2 became
+\(\theta_{\mathrm{offset}}\approx\theta_{\mathrm{offset},t_1}t_1+
+\theta_{\mathrm{offset},t_2}t_2\) on 2026-09-04, under the supplied lead-in
+`For small configured angular offsets, the pre-contact orientation offset is
+represented to first order in the surface tangent plane by`. The instruction
+named the equation and the sentence before it, so the sentence *after* it was
+left as it stood: `The scalars \(\theta_{\mathrm{offset},t_1}\) and
+\(\theta_{\mathrm{offset},t_2}\) are the components of this rotation vector
+along the two surface tangents.`
+
+Those two statements disagree. If the scalars are exactly the components of one
+rotation vector, the sum is exact and the equation takes an equals sign; that
+is the reason the equation carried `=` until now. Either the following sentence
+becomes `are the surface-tangent components used to construct the offset`, or
+the equation goes back to `=`. Not resolved here because the instruction named
+neither.
+
+## Check the revived \(\theta_{t_1}\) and \(\theta_{t_2}\) against older drafts
+
+Dropping the index \(a\) on 2026-09-04 made \(\theta_{t_1}\) and
+\(\theta_{t_2}\) the components of the general offset in Section 2.7.2. Both
+spellings were previously **withdrawn** names for the *configured* offset, and
+`THESIS_WRITING_GUIDE.md` carried that withdrawal until the same day.
+
+Nothing in the current thesis is ambiguous: the configured quantity keeps its
+`offset` index in all 21 of its uses, and the two families never meet in one
+section. The risk is external — a supervisor or examiner holding an earlier
+draft will have met \(\theta_{t_1}\) as the configured offset. If any circulated
+version used the old spelling, say once in Section 2.7.2 which quantity the
+symbol names there.
+
+## Decide whether the \(n_s\times\theta\) display is boxed
+
+The Section 2.7.2 rewrite supplied on 2026-09-04 gave the cross-product step as
+a plain display, and that is how it was applied. The message that carried it
+closed by singling the step out — `the particularly useful addition is
+\(\boxed{n_s\times\theta}\), because it immediately explains where your
+numerator comes from` — which reads as emphasis on which addition matters
+rather than as typesetting instruction, since the rewrite block itself showed
+the relation unboxed.
+
+The reason to ask is that Section 3.2.5 does carry a `\boxed` display, added on
+the author's instruction two days earlier, so a box here would not be foreign
+to the document. The reason not to is that the two do different jobs: the
+Chapter 3 box summarises a chain of five position symbols, whereas this is one
+step of a derivation whose result is already set as a numbered equation two
+displays later. Box it only if the author wants the derivation's turning point
+marked.
+
+## Decide whether the three `\approx` relations stay
+
+Instructed on 2026-09-04 and applied. The symbol now appears in three places:
+Equation 2.51, \(\theta\approx\theta_{t_1}t_1+\theta_{t_2}t_2\); Equation 3.2,
+the same construction for \(\theta_{\mathrm{offset}}\); and the unnumbered
+\(n_s\times\theta\approx\theta_{t_1}t_2-\theta_{t_2}t_1\) display added to
+Section 2.7.2 later the same day. The ground is that the two scalars read as
+rotation angles about \(t_1\) and \(t_2\), and finite rotations about different
+axes do not add. `THESIS_WRITING_GUIDE.md` records the blanket ban as narrowed
+to these three rather than lifted.
+
+The third is not an independent decision. \(n_s\times\theta\) is exact given
+\(\theta\), so its symbol is inherited: if Equation 2.51 goes back to `=`, that
+display does too, and if 2.51 keeps `\approx` the display keeps it. Decide 2.51
+and 3.2, and the third follows.
+
+The smallest change that would satisfy the old rule is the route the guide
+gives first: state that \(\theta_{t_1}\) and \(\theta_{t_2}\) are the
+components of the one rotation vector \(\theta\) along the two tangents, which
+makes the sum exact and restores the equals sign. That route is now closed on
+both sides — Chapter 3 took it until 2026-09-04 and no longer does — so the
+thesis is at least self-consistent. What remains is the single question of
+which reading it uses.
+
 ## Reconcile the Tool Orientation timeout with the run archive
 
 Changed to \(5.0\,\mathrm{s}\) on 2026-09-02 by the author's decision, in

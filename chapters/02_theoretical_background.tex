@@ -860,7 +860,7 @@ D_p & 0\\
 All blocks in \mbox{\Cref{eq:pole_block_gains}} are expressed in the base-frame
 orientation. The point-shift transformation is applied to both the stiffness
 \mbox{\(K_c\)} and damping \mbox{\(D_c\)}. The corresponding matrices at the
-TCP follow from the congruence transformations
+TCP follow as
 
 \begin{equation}
 K_{\mathrm{TCP}}
@@ -1076,60 +1076,85 @@ t_1\times n_s=-t_2.
 \label{eq:surface_frame_cross_product_relations}
 \end{equation}
 
-\Added{Consider a small angular offset that the contact response should
-reduce. Its non-zero tangent-plane direction is written as}
+\Added{Consider a small angular offset \mbox{\(\theta\)} that the contact
+response should reduce. For small rotations, its components about the two
+surface tangents are represented to first order by}
 
 \begin{equation}
-\theta_a
-=
-\theta_{a,t_1}t_1+\theta_{a,t_2}t_2.
+\theta
+\approx
+\theta_{t_1}t_1+\theta_{t_2}t_2.
 \label{eq:alignment_deviation_surface_components}
 \end{equation}
 
-For a prescribed tangential magnitude \mbox{\(\lVert r_{c,t}\rVert\)}, the
-displacement used to reduce this offset is selected perpendicular to its
-direction,
+The tangential \abbr{CoC} displacement is selected perpendicular to this
+angular-offset direction. A \mbox{\(90^\circ\)} rotation within the tangent
+plane about \mbox{\(n_s\)} is obtained from the cross product with
+\mbox{\(n_s\)}. Using the right-handed surface frame,
+
+\[
+n_s\times\theta
+\approx
+\theta_{t_1}t_2-\theta_{t_2}t_1.
+\]
+
+Since \mbox{\(t_1\)} and \mbox{\(t_2\)} are orthonormal, the magnitude of this
+direction is
+
+\[
+\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}.
+\]
+
+For a prescribed tangential \abbr{CoC} magnitude
+\mbox{\(\lVert r_{c,t}\rVert\)}, the corresponding displacement is therefore
 
 \begin{equation}
 r_{c,t}
 =
 \lVert r_{c,t}\rVert
 \frac{
-\theta_{a,t_1}t_2-\theta_{a,t_2}t_1
+\theta_{t_1}t_2-\theta_{t_2}t_1
 }{
-\sqrt{\theta_{a,t_1}^2+\theta_{a,t_2}^2}
+\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}
 }.
 \label{eq:general_compliance_lever_selection}
 \end{equation}
 
-The choice fixes the direction; the magnitude remains a free parameter of the
-configuration. Using
-\mbox{\Cref{eq:surface_frame_cross_product_relations}}, the normal-press
-contribution becomes
+The fraction in \mbox{\Cref{eq:general_compliance_lever_selection}} is the unit
+direction perpendicular to the angular offset in the surface tangent plane; the
+magnitude \mbox{\(\lVert r_{c,t}\rVert\)} remains a selectable controller
+parameter.
+
+The normal commanded force is \mbox{\(f_n=F_nn_s\)}. Using the cross-product
+relations of \mbox{\Cref{eq:surface_frame_cross_product_relations}}, the
+corresponding \abbr{CoC}-induced moment becomes
 
 \begin{equation}
 r_{c,t}\times f_n
 =
 \lVert r_{c,t}\rVert F_n
 \frac{
-\theta_{a,t_1}t_1+\theta_{a,t_2}t_2
+\theta_{t_1}t_1+\theta_{t_2}t_2
 }{
-\sqrt{\theta_{a,t_1}^2+\theta_{a,t_2}^2}
+\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}
 }.
 \label{eq:general_compliance_lever_moment}
 \end{equation}
 
-During the contact-establishment press \mbox{\(F_n<0\)}, so this contribution
-acts opposite to \mbox{\(\theta_a\)} and tends to reduce the
-offset. For the two principal directions the rule
+During Contact Establishment, \mbox{\(F_n<0\)}. The resulting moment therefore
+points opposite to the angular-offset direction and supports its reduction. For
+\mbox{\(\theta_{t_1}=\theta_{t_2}=0\)}, no preferred tangential \abbr{CoC}
+direction is defined and the directional selection rule is not applied.
+
+For the two principal directions, the rule
 reduces to
 
 \begin{equation}
 r_{c,t}=+\lVert r_{c,t}\rVert t_2
-\quad\text{for }+\theta_{a,t_1},
+\quad\text{for }+\theta_{t_1},
 \qquad
 r_{c,t}=-\lVert r_{c,t}\rVert t_1
-\quad\text{for }+\theta_{a,t_2},
+\quad\text{for }+\theta_{t_2},
 \label{eq:principal_lever_selection}
 \end{equation}
 
@@ -1155,7 +1180,7 @@ tangential-force contribution remains in the complete commanded moment of
 
 The coupling vanishes for \mbox{\(r_c=0\)}. Conversely, if \mbox{\(K_p\)} is
 nonsingular, zero coupling implies \mbox{\(r_c=0\)}. Since
-\mbox{\(\mathrm{Ad}(r_c)\)} is invertible, the congruence transformation also
+\mbox{\(\mathrm{Ad}(r_c)\)} is invertible, the point-shift transformation also
 preserves definiteness:
 
 \begin{equation}

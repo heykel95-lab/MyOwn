@@ -3,52 +3,37 @@
 
 \begin{otherlanguage}{ngerman}
 
-Abweichungen zwischen der konfigurierten Flächenreferenz und der physischen
-Fläche können zusammen mit Abweichungen zwischen der gewünschten und der
-erreichten Werkzeugorientierung eine Winkelfehlstellung bei Kontaktbeginn
-erzeugen. Dies kann zu Kantenkontakt und erhöhten Kontaktlasten führen.
+Diese Arbeit entwickelt einen Echtzeitregler für einen siebenachsigen
+kollaborativen Roboter zur Oberflächenbearbeitung mit einem rechteckigen
+Werkzeug auf einer ebenen Fläche. Die kartesische Impedanzregelung erzeugt die
+erforderliche Anpressbewegung und ermöglicht gleichzeitig eine passive,
+kontaktinduzierte Drehung des Werkzeugs zur Ausrichtung an der Fläche. Dadurch
+sollen die Auswirkungen einer Winkelfehlstellung bei Kontaktbeginn reduziert
+werden, die andernfalls zu Kantenkontakt und erhöhten Kontaktlasten führen
+kann.
 
-Für einen siebenachsigen Franka Emika Panda wurde ein kartesischer
-Echtzeit-Impedanzregler implementiert, um eine nachgiebige kontaktinduzierte
-Drehung zur konfigurierten Fläche zu erzeugen. Richtungsabhängige
-translatorische und rotatorische Steifigkeit und Dämpfung wurden im
-Flächenkoordinatensystem definiert. Das virtuelle Nachgiebigkeitszentrum
-(\abbr{CoC}) konnte vom Werkzeugbezugspunkt (TCP) verschoben werden, wodurch
-eine Kopplung zwischen Translation und Rotation in die kartesische Impedanz
-eingeführt wird. Das verschobene \abbr{CoC} gibt der kommandierten
-Anpressbewegung einen virtuellen Hebelarm \(r_c\), der am TCP das zusätzliche
-Moment \(r_c\times f\) erzeugt.
+Die translatorische und rotatorische Nachgiebigkeit wurde richtungsabhängig zur
+Fläche definiert. Zusätzlich konnte das virtuelle Nachgiebigkeitszentrum
+gegenüber dem Werkzeugbezugspunkt verschoben werden. Dadurch werden
+Anpressbewegung und Rotation gekoppelt und die bevorzugte Ausrichtungsrichtung
+beeinflusst.
 
-Die Kontaktversuche variierten die \abbr{CoC}-Position, die
-Rotationssteifigkeit und die translatorische Steifigkeit entlang
-\(t_2\). Positive und negative Winkeloffsets vor dem Kontakt wurden um
-\(t_1\) untersucht. Die anfängliche Winkelbedingung bei Kontaktbeginn wurde
-relativ zur konfigurierten Flächenreferenz berechnet, und die
-Kontaktherstellungsreaktion \(\gamma_{t_1}\) wurde aus den gemessenen
-Endeffektororientierungen zu Beginn und am Ende der Kontaktherstellung
-bestimmt.
+In den Kontaktversuchen wurden der Einfluss der Rotationssteifigkeit, der
+tangentialen Translationssteifigkeit und der Position des
+Nachgiebigkeitszentrums untersucht. Eine Erhöhung der Rotationssteifigkeit
+verringerte die Kontaktreaktion um etwa \(64\,\%\), während die Variation der
+translatorischen Steifigkeit die Reaktion nur um etwa \(0{,}4\,\%\) veränderte.
+Eine geeignet gewählte Verschiebung des Nachgiebigkeitszentrums erhöhte die
+endgültige Reaktion um etwa \(4\,\%\) und führte zu einer schnelleren
+Ausrichtung. Die entgegengesetzte Verschiebungsrichtung verringerte die
+Reaktion um etwa \(98\,\%\) bis \(99\,\%\). Das verschobene
+Nachgiebigkeitszentrum wirkte damit hauptsächlich als Selektor der bevorzugten
+Drehrichtung.
 
-Mit dem \abbr{CoC} im TCP erfolgte die kontaktinduzierte Drehung für beide
-anfänglichen Drehrichtungen zur konfigurierten Fläche. Eine Erhöhung der
-Rotationssteifigkeit von \(5\) auf \(50\,\mathrm{N\,m/rad}\) verringerte die
-Reaktion um \(63.9\,\%\), während die getesteten translatorischen
-Steifigkeitswerte eine Reaktionsspanne von nur \(0.4\,\%\) gegenüber der
-TCP-zentrierten Referenz ergaben. Die tangentiale \abbr{CoC}-Verschiebung
-erzeugte eine stark richtungsabhängige Reaktion. Die Wahl der
-Verschiebungsrichtung entsprechend der Richtung des anfänglichen Winkeloffsets
-erhöhte die endgültige Reaktion um etwa \(4\,\%\) und erzeugte im gemessenen
-Zeitverlauf zudem eine schnellere Drehung zur Ausrichtung. Die
-entgegengesetzte Verschiebungsrichtung verringerte die Reaktion um etwa
-\(98\,\%\) bis \(99\,\%\). Das verschobene \abbr{CoC} wirkte daher
-hauptsächlich als Selektor der bevorzugten Drehrichtung.
-
-Ein getrennter kartesischer Posehalteversuch bewertete den Nullraumregler unter
-einer reproduzierbaren virtuellen Störung. Die projizierte Dämpfung verringerte
-die kumulierte Nullraumbewegung von \(7.596^\circ\) auf \(5.687^\circ\). Die
-Singulärwertkonditionierung verringerte die resultierende Verschiebung für
-beide getesteten Drehmomentbeträge auf nahezu null. Das höhere
-Konditionierungsmoment erzeugte eine geringfügig kleinere endgültige
-Verschiebung, aber deutlich mehr kumulierte hin- und hergehende
-Nullraumbewegung. Die kartesische Position blieb in allen Posehalteversuchen
-innerhalb der festgelegten Toleranz von \(2\,\mathrm{mm}\).
+In einem getrennten Posehalteversuch wurde zusätzlich die Nullraumregelung
+untersucht. Die projizierte Dämpfung verringerte die kumulierte
+Nullraumbewegung um etwa \(25\,\%\), während die Singulärwertkonditionierung
+die verbleibende resultierende Verschiebung um etwa \(99{,}8\,\%\) bis
+\(99{,}9\,\%\) reduzierte. Die kartesische Positionshaltung blieb dabei
+erhalten.
 \end{otherlanguage}

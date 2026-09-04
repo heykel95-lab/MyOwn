@@ -298,7 +298,7 @@ def main():
     reference_line(ax)
     ax.set_xticks(x)
     ax.set_xticklabels(commands)
-    ax.set_xlabel(r"Achieved Initial Angular Offset, $\theta_{0,t_1}$ [$^\circ$]")
+    ax.set_xlabel(r"Achieved Initial Angular Offset, $\theta_{\mathrm{init},t_1}$ [$^\circ$]")
     ax.set_ylabel("Contact Response About $t_1$,\n"
                   r"$\gamma_{t_1}$ [$^\circ$]")
     ax.legend(loc="upper left")

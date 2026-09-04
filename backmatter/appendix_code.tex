@@ -4,8 +4,8 @@
 the thesis and connect each important equation to an implementation excerpt.}
 
 \Added{Three abridged source listings show the parts of the controller that
-are specific to this thesis: the compliance-centre point-shift and its
-congruence transformation, the selection between the TCP-centred and
+are specific to this thesis: the compliance-centre point-shift
+transformation, the selection between the TCP-centred and
 displaced-\abbr{CoC} impedance, and the final joint-torque assembly. They use the
 Eigen aliases \texttt{Vec3}, \texttt{Vec6}, \texttt{Vec7},
 \texttt{Mat3}, \texttt{Mat6x6}, and \texttt{Mat6x7}. The identifier
@@ -27,10 +27,10 @@ centre of compliance. The controller source uses the same vector, so the code
 identifier \texttt{r\_c} in
 \mbox{\Cref{lst:app_compliance_adjoint,lst:app_spring_wrench}} is the thesis
 quantity. Its upper-right block \(-[r_c]_\times\) is the upper-right block of
-the adjoint defined in \mbox{\Cref{eq:offset_adjoint}}. The same congruence
+the adjoint defined in \mbox{\Cref{eq:offset_adjoint}}. The same point-shift
 transformation is applied to the Cartesian stiffness and damping matrices.
 
-\begin{lstlisting}[style=cppstyle, language=C++, caption={Source-side compliance-centre adjoint and congruence transform.}, label={lst:app_compliance_adjoint}]
+\begin{lstlisting}[style=cppstyle, language=C++, caption={Source-side compliance-centre adjoint and point-shift transform.}, label={lst:app_compliance_adjoint}]
 Mat3 skewMatrix(const Vec3& v) {
   Mat3 s;
   s << 0.0, -v(2),  v(1),

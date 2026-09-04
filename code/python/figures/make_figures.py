@@ -75,7 +75,7 @@ ALIGNMENT_IMPROVEMENT_LABEL = (
     r"$\theta_{\mathrm{initial}}-\theta_{\mathrm{final}}$ [$^\circ$]"
 )
 INITIAL_MISALIGNMENT_LABEL = (
-    r"Achieved initial angular offset $\theta_{0,t_i}$ [$^\circ$]"
+    r"Achieved initial angular offset $\theta_{\mathrm{init},t_i}$ [$^\circ$]"
 )
 FINAL_MISALIGNMENT_LABEL = (
     r"Final misalignment $\theta_{\mathrm{final}}$ [$^\circ$]"

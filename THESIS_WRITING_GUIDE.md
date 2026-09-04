@@ -141,13 +141,27 @@ The Abstract carries the general shape of the work and nothing more:
 3. what was found, in general terms;
 4. the scope within which the finding applies.
 
-**The Abstract carries the headline percentages and the two acceptance
-values.** Agreed 2026-09-01, replacing `Keep measured values out of the
-Abstract, without exception`. The permitted set is the Case~A--D headline
-percentages with their reference conditions, the rotational-stiffness interval
-that produced one of them, and the largest measured Cartesian position error
-against its limit. Everything else stays out: no per-condition response means,
-no achieved offsets, no compliance-centre coordinates, no measurement counts.
+**The Abstract carries the headline percentages and nothing else numerical.**
+Agreed 2026-09-01, replacing `Keep measured values out of the Abstract, without
+exception`; the permitted set was revised by the supplied Abstract of
+2026-09-04. It is now the Case~A--D headline percentages with their reference
+conditions, and the two null-space percentages. Everything else stays out: no
+per-condition response means, no achieved offsets, no compliance-centre
+coordinates, no measurement counts.
+
+Two entries left the permitted set on 2026-09-04. The rotational-stiffness
+interval no longer appears -- the Abstract writes `increasing rotational
+stiffness` and leaves the values to Chapter 5 -- and the Cartesian position
+error is stated qualitatively as `Cartesian position retention was maintained
+throughout the tested conditions` rather than as a measured value against its
+limit. Both were dropped because a summary that names a setting invites the
+reader to look for the rest of the table.
+
+The percentages are rounded in the summaries and exact in the body: the
+Abstract writes `about \(64\,\%\)` where Chapter 5 reports \(63.9\,\%\), and
+`approximately \(98\,\%\) to \(99\,\%\)` where the chapter reports the two
+endpoints. Round in one direction only, so that no summary figure overstates a
+chapter figure.
 
 The reason for the change is that the qualitative wording could not state the
 main finding. `A displaced centre produced a slightly larger response` is true
@@ -184,24 +198,27 @@ investigated scope. Prefer one claim per sentence — an Abstract in which every
 sentence carries a full conclusion reads as machine-polished however accurate
 it is.
 
-State the angular evaluation positively: `The angular conditions were defined
-relative to the configured surface geometry, and the contact response was
-calculated from the measured end-effector orientations.` The Kurzfassung uses
-the corresponding statement: `Die Winkelbedingungen wurden relativ zur
-konfigurierten Flächengeometrie definiert, und die Kontaktreaktion wurde aus den
-gemessenen Endeffektororientierungen bestimmt.` The physical-normal and
-instantaneous physical-angle limitations belong in Section 6.2.2 and are not
-repeated in either summary.
+**The summaries no longer state how the angular conditions were evaluated.**
+The sentence `The angular conditions were defined relative to the configured
+surface geometry, and the contact response was calculated from the measured
+end-effector orientations` and its German counterpart were dropped by the
+supplied text of 2026-09-04. Where the reference basis has to be stated, state
+it in Chapter 4, which defines it against the configured surface. The
+physical-normal and instantaneous physical-angle limitations belong in
+Section 6.2.2 and are not repeated in either summary.
 
-**The Abstract and Kurzfassung may use the thesis's symbols.** The supplied
-Abstract of 2026-09-02 withdrew the earlier rule that they contain no local
-axis symbols such as \(t_1\) or \(t_2\). It names \(t_1\) and \(t_2\) for the
-rotation and displacement axes, \(r_c\) for the lever arm, \(r_c\times f\) for
-the moment it generates, and \(\gamma_{t_1}\) for the response. The reason the
-earlier rule gave — that a first-time reader has not met the surface frame —
-was outweighed by the cost it imposed, which the rule itself recorded: an
-Abstract that names no axis cannot say which stiffness was varied without
-implying that both tangent entries were.
+**The Abstract and Kurzfassung carry no symbols.** The supplied Abstract of
+2026-09-04 removed every symbol the 2026-09-02 text had introduced: \(t_1\),
+\(t_2\), \(r_c\), \(r_c\times f\) and \(\gamma_{t_1}\) are all gone, and the
+summaries again read as continuous prose. The permission granted on 2026-09-02
+is therefore spent; do not reintroduce a symbol into either text.
+
+The cost that permission was granted to avoid has been paid in words instead.
+The 2026-09-02 rule argued that an Abstract naming no axis cannot say which
+stiffness was varied without implying that both tangent entries were; the
+settled text says `tangential translational stiffness`, which identifies the
+entry without the axis symbol. Use the same device for any later addition:
+name the quantity in words, or leave it to the chapter.
 
 What the summaries still avoid is a coordinate convention the reader must
 reconstruct. Phrases such as `sign-independent`, `assisting side`, `the side
@@ -209,20 +226,27 @@ reversed`, and `matched the sign` do not appear in either, and neither uses the
 `positive-offset condition` and `negative-offset condition` names, which belong
 to the body chapters that define them against measured values.
 
-**Write `offset direction`, not `offset sign`, in the two summaries.** The
-Abstract defines the pair itself — `positive and negative pre-contact angular
-offsets were investigated about \(t_1\)` — so `for both offset directions` is
-readable where `for both offset signs` asks the reader to hold a coordinate
-convention the summaries never state.
-This keeps `both signs` out of the Abstract and the Kurzfassung while the body
-chapters continue to use the `positive-offset condition` and
-`negative-offset condition` names settled below.
+**Write `offset direction`, not `offset sign`, in the two summaries**, on the
+occasions when either has to name the pair. `For both offset signs` asks the
+reader to hold a coordinate convention the summaries never state. This keeps
+`both signs` out of the Abstract and the Kurzfassung while the body chapters
+continue to use the `positive-offset condition` and `negative-offset condition`
+names settled below.
+
+The settled summaries do not name the pair at all. The sentence that defined
+it — `positive and negative pre-contact angular offsets were investigated about
+\(t_1\)` — was dropped on 2026-09-04 along with the axis symbols, and the
+directional finding now reaches the reader through the compliance-centre
+result: a suitable displacement raised the response, the opposite displacement
+reduced it, and the displaced centre `acted mainly as a selector of the
+preferred rotational direction`. Do not restore the defining sentence to
+support a phrase; write the phrase without it.
 
 **Angular test conditions are described as directions of rotation, and are
 named by their offset direction where one has to be identified repeatedly.**
 Throughout the thesis, the configured orientation offset
 \(\theta_{\mathrm{offset},t_1}\) defines the desired pre-contact tool direction,
-the achieved pose-based initial angular offset \(\theta_{0,t_1}\) gives the
+the achieved pose-based initial angular offset \(\theta_{\mathrm{init},t_1}\) gives the
 condition reached at contact entry, and the contact response
 \(\gamma_{t_1}\) gives the measured outcome. Use `both directions of rotation`
 or `both rotational directions` for aggregate comparisons. The plus and minus
@@ -262,9 +286,20 @@ sign`, and `initial-deviation sign` are not used. The technical compounds
 **Revise the Abstract last**, after the body text is settled, and derive the
 Kurzfassung from the finished English rather than paraphrasing it independently.
 
-The Abstract no longer expands \abbr{DOF} on first use, since it writes
-`seven-degree-of-freedom` in words. The acronym is still introduced by
-Chapter 1 and by the title, so the abbreviation list is unaffected.
+**The summaries introduce no abbreviations.** The Abstract writes
+`seven-degree-of-freedom`, `centre of compliance` and `tool centre point` in
+words, so \abbr{DOF}, \abbr{CoC} and \abbr{TCP} are all first spelled out in
+Chapter 1 instead. This is where they belong: an abbreviation introduced in a
+summary is introduced in a text many readers skip.
+
+The consequence has to be checked whenever either summary is rewritten. Before
+2026-09-04 the Abstract was the only place `centre of compliance (\abbr{CoC})`
+and `tool centre point (TCP)` appeared in full, so removing them left both
+short forms unexplained at their first Chapter 1 use. Chapter 1 now spells out
+each at first use — the remote-centre citation for \abbr{CoC}, the \(r_c\)
+sentence for TCP. After any change to the summaries, confirm that every
+abbreviation they dropped is still expanded somewhere earlier than its first
+short-form use.
 
 **The single-page limit is suspended.** The Abstract and the Kurzfassung
 previously had to fit one page each, and neither was allowed to spill onto a
@@ -283,6 +318,12 @@ The two are translations of one another and must stay matched in content,
 certainty, and structure. **This rule is not suspended.** A cut on one side is
 a cut on the other, and an Abstract that grows is followed by a Kurzfassung
 that grows with it.
+
+**The Kurzfassung uses the German decimal comma.** Write `\(0{,}4\,\%\)` and
+`\(99{,}8\,\%\)` where the Abstract writes `\(0.4\,\%\)` and `\(99.8\,\%\)`.
+Set the comma as `{,}` so that mathematics mode does not add the punctuation
+space that would break the number in two. This corrects the earlier Kurzfassung,
+which carried English decimal points throughout.
 
 German needs roughly a fifth more space than English for the same statements,
 so the Kurzfassung will run longer than the Abstract it mirrors. That is
@@ -908,10 +949,10 @@ circulation, the settled choices are:
   Orientation before Surface Approach and sets the desired pre-contact tool
   direction. At the start of Contact Establishment, the achieved condition is
   the **pose-based initial angular offset**
-  \(\theta_{0,t_1}\). Contact Establishment holds the captured orientation
+  \(\theta_{\mathrm{init},t_1}\). Contact Establishment holds the captured orientation
   reference and produces the **contact response**
   \(\gamma_{t_1}\). The chain is therefore
-  \(\theta_{\mathrm{offset},t_1}\to\theta_{0,t_1}\to\gamma_{t_1}\).
+  \(\theta_{\mathrm{offset},t_1}\to\theta_{\mathrm{init},t_1}\to\gamma_{t_1}\).
 
   In Chapter 3 the configured vector and its rotation are
   \(\theta_{\mathrm{offset}}=\theta_{\mathrm{offset},t_1}t_1+
@@ -923,20 +964,58 @@ circulation, the settled choices are:
   is \(n_d=R_{\mathrm{offset}}(-n_s)\). For zero offset,
   \(R_{\mathrm{offset}}=I\) and \(n_d=-n_s\). The former
   \(\theta_{\mathrm{cmd}}\), \(u_{\mathrm{cmd}}\),
-  \(R_{\mathrm{cmd}}\), \(\theta_{t_1}\), and \(\theta_{t_2}\) forms are
-  withdrawn.
+  \(R_{\mathrm{cmd}}\) forms are withdrawn.
+
+  **The three angular families are \(\theta\), \(\theta_{\mathrm{offset}}\)
+  and \(\theta_{\mathrm{init}}\).** Settled 2026-09-04, replacing
+  \(\theta_a\) and \(\theta_{0,t_1}\):
+
+  | Symbol | Is |
+  |---|---|
+  | \(\theta\), \(\theta_{t_i}\) | the general small angular offset of the compliance-centre derivation, Section 2.7.2 |
+  | \(\theta_{\mathrm{offset}}\), \(\theta_{\mathrm{offset},t_i}\) | the configured pre-contact angular offset |
+  | \(\theta_{\mathrm{init}}\), \(\theta_{\mathrm{init},t_i}\) | the achieved initial angular offset at contact entry |
+
+  **\(\theta_a\) and \(\theta_{a,S}\) are withdrawn**, written here as literal
+  strings so a rename cannot revive them. The generic offset carries no index
+  at all: the derivation needs only one angular quantity, and the index named
+  nothing a reader could look up. The round-bracket surface-frame column
+  \(\theta_{a,S}\), added earlier the same day, went with it — the supplied
+  replacement paragraph does not carry it.
+
+  **\(\theta_{t_1}\) and \(\theta_{t_2}\) are therefore live again**, and the
+  earlier withdrawal of those two spellings is lifted. They now name the
+  components of the *general* offset in Section 2.7.2, not the configured one,
+  which keeps its `offset` index everywhere. A reader of an older draft could
+  read \(\theta_{t_1}\) as the configured offset; the two never appear in the
+  same section, and Chapter 2 introduces the general quantity by name where it
+  is defined.
+
+  **\(\theta_{0,t_1}\) is withdrawn**, written here as a literal string so a
+  rename cannot revive it. It named the achieved entry condition with a
+  \(0\) index that reads as *zero offset*, which is the one thing the quantity
+  is not: it is the offset actually reached at Contact Establishment entry, and
+  in the reported campaign it is \(9.31^\circ\) or \(-9.41^\circ\), never
+  zero. \(\theta_{\mathrm{init},t_1}\) says what it is. The rename was applied
+  on 2026-09-04 across the symbol list, Sections 4.2, 4.4, 4.5.1 and 4.5.2,
+  Table 4.4, Chapter 5, Chapter 6, Appendix D, the seven figure sources that
+  carry the axis label, and the two Python figure generators.
+
+  **\(\phi_0\) and \(u_0\) keep their \(0\).** They are the axis--angle pair
+  used to calculate the entry condition, a different quantity from the offset
+  itself, and the rename does not reach them.
 
   A quantitative experimental axis uses `Achieved Initial Angular Offset`
-  followed by \(\theta_{0,t_1}\) and its unit. A table condition column uses
+  followed by \(\theta_{\mathrm{init},t_1}\) and its unit. A table condition column uses
   the same name. The configured offset may be stated
   where the pre-contact setting, parameter file, or direction-selection rule
   is the subject. It is never substituted for the achieved entry condition.
 
   **The angular evaluation uses the configured surface and measured
   end-effector pose.** In Chapters 1--5, state that
-  \(\theta_{0,t_1}\) is the achieved pose-based initial angular offset
+  \(\theta_{\mathrm{init},t_1}\) is the achieved pose-based initial angular offset
   calculated relative to the configured surface reference. Do not introduce a symbol or equation
-  for a physical entry angle, and do not call \(\theta_{0,t_1}\) a measured
+  for a physical entry angle, and do not call \(\theta_{\mathrm{init},t_1}\) a measured
   physical angle. Section 6.2.2 carries the consolidated limitation: the
   physical surface normal and instantaneous tool--surface angle were not
   measured independently in each experiment.
@@ -969,11 +1048,11 @@ circulation, the settled choices are:
 
   Keep the three chapter roles separate. Chapter 2 derives the directional
   compliance-centre rule from the generic tangent-plane angular offset
-  \(\theta_a\) that contact should reduce. Chapter 3 defines the configured
+  \(\theta\) that contact should reduce. Chapter 3 defines the configured
   pre-contact offset and constructs \(n_d=R_{\mathrm{offset}}(-n_s)\).
   Chapter 4 explains how varying that setting supplied reproducible
   reference-relative entry conditions, then distinguishes it from the achieved
-  \(\theta_{0,t_1}\). It states in words that the physical surface may differ
+  \(\theta_{\mathrm{init},t_1}\). It states in words that the physical surface may differ
   from the configured reference by an unknown angular amount. No equation is
   introduced for that unmeasured relation.
 
@@ -1033,6 +1112,31 @@ therefore a rotational sense for the coupling moment. Name that instead:
 
 The ban covers running text, captions and headings alike. Literal source
 identifiers keep their spelling.
+
+**`congruence` is not used, in any form.** Banned outright on 2026-09-04, and
+written here as a literal string so a rename cannot revive it: not
+`congruence`, `congruent`, `congruence transformation`, or `congruence
+transform`. It named the algebraic *form* of a map the thesis already names by
+what the map *does*, so one operation carried two names and the reader had to
+hold the linear-algebra term to follow a geometric argument.
+
+Two different operations were both being called that, which is the second
+reason the word had to go. Use the name of the operation in each case:
+
+| Was | Now |
+|---|---|
+| the congruence transformations \(\mathrm{Ad}(r_c)^\top K_c\mathrm{Ad}(r_c)\) | the point-shift transformation |
+| mapped by congruence to the TCP *(symbol list)* | mapped to the TCP by \(\mathrm{Ad}(r_c)\) |
+| the same congruence transformation *(appendix, listing caption)* | the same point-shift transformation; point-shift transform |
+| a congruence transform of a diagonal matrix is not diagonal | rotating a diagonal matrix into another frame does not generally leave it diagonal |
+| the same congruence transformation \(R_{\mathrm{surface}}K_{p,S}R_{\mathrm{surface}}^\top\) | the surface-frame gain transformation |
+
+`point-shift transformation` is the settled name for
+\(\mathrm{Ad}(r_c)^\top(\cdot)\mathrm{Ad}(r_c)\) and Section 2.7 already used
+it one line above the banned word. The surface-frame gain rotations of
+Section 2.6 are named by their frame, which is what the section's own prose
+already does. The mathematical content is unchanged in every case: nothing was
+softened, and no relation was weakened to remove the word.
 
 **`sweep` is not used for a set of tested parameter values.** It is too vague:
 it names neither the quantity that was varied nor the values it took, and it
@@ -1217,7 +1321,8 @@ directional gains are defined along \([t_1,t_2,n_s]\) and are written
 no index at all, so \(K_p=R_{\mathrm{surface}}K_{p,S}
 R_{\mathrm{surface}}^\top\). The chain the reader follows is *gains in surface
 coordinates → \(R_{\mathrm{surface}}\) → gains in base coordinates*, and it is
-stated once, in the sentence that introduces the two congruence transforms.
+stated once, in the sentence that introduces the two surface-frame gain
+transformations.
 
 **\(a_s\) is withdrawn, with \(\tilde t_1\).** Both are written here as
 literal strings so a rename cannot revive them. The first-tangent hint is
@@ -1366,7 +1471,7 @@ the section opens by saying *why* the frames differ — the impedance law is
 evaluated in the base frame while the gain values are specified relative to the
 configured surface reference, because the directions that matter for contact are
 \(t_1\), \(t_2\) and \(n_s\). Then, in order: the four surface-frame
-matrices, the axis order in one sentence, the two congruence transforms into
+matrices, the axis order in one sentence, the two gain transformations into
 the base frame, the block-diagonal \(K\) and \(D\), and a forward
 pointer saying that translation and rotation are still decoupled at that stage
 and that the compliance-centre transformation of Section 2.7 can couple them.
@@ -1457,7 +1562,7 @@ misread.
 **Do not run this as a substitution.** Three families of index look like a
 base-frame index and are not: the base *axis* names \(e_{x_0}\),
 \(e_{y_0}\), \(e_{z_0}\), \(x_0\), \(y_0\), \(z_0\); the *initial*
-or *reference* values \(\theta_{0,t_1}\), \(\phi_0\), \(u_0\),
+or *reference* values \(\theta_{\mathrm{init},t_1}\), \(\phi_0\), \(u_0\),
 \(t_{\mathrm{app},0}\), \(\Delta q_{\mathrm{null},0}\); and
 \(p_{\mathrm{Tool},0}\), whose \(0\) is the zero of the
 contact-establishment coordinate \(s_{\mathrm{CE}}\), not a frame. The last
@@ -1679,9 +1784,9 @@ visible from inside any single chapter:
 - **Which gain.** The baseline translational stiffness appears as
   \(\operatorname{diag}(2000,2000,800)\) in the surface frame and
   \(\operatorname{diag}(2000,2000,350)\) in base coordinates. Two diagonal
-  matrices in frames \(10^\circ\) apart cannot both be the same gain: a
-  congruence transform of a diagonal matrix is not diagonal. Naming the frame
-  is not enough — the numbers must reconcile.
+  matrices in frames \(10^\circ\) apart cannot both be the same gain: rotating
+  a diagonal matrix into another frame does not generally leave it diagonal.
+  Naming the frame is not enough — the numbers must reconcile.
 - **Which duration.** A \(4.0\,\mathrm{s}\) contact-establishment timeout was stated in three
   places in the methodology chapter. Every completed experiment used
   \(5.0\,\mathrm{s}\); the \(4.0\,\mathrm{s}\) figure matched no parameter file.
@@ -2418,7 +2523,7 @@ Section by section, as executed:
 - **Experimental condition and response quantity.** Keep one
   input--condition--response chain: the configured pre-contact input
   \(\theta_{\mathrm{offset},t_1}\) produces the achieved pose-based condition
-  \(\theta_{0,t_1}\), and Contact Establishment produces the measured response
+  \(\theta_{\mathrm{init},t_1}\), and Contact Establishment produces the measured response
   \(\gamma_{t_1}\). Appendix D retains the Case A--D numerical values.
   Define wrench projections locally beside the Case-D mechanism figure rather
   than as a separate methodology subsection. **Remove the mean and sample
@@ -2445,7 +2550,7 @@ tables and chapter order did not change.
 
 **The minus sign of Equation 4.2 is explained where it appears.** The rotation
 vector \(\phi_0u_0\) points from the achieved entry direction towards the
-inward configured surface normal, and \(\theta_{0,t_1}\) is reported in the
+inward configured surface normal, and \(\theta_{\mathrm{init},t_1}\) is reported in the
 opposite direction so that it follows the same rotational direction as the
 configured offset. Section 4.5.1 states that before the equation. Section 4.5.2
 carries the matching statement for \(\gamma_{t_1}\): it is formed from the
@@ -2570,7 +2675,7 @@ trajectory values.
 
 **Table 4.3 has only `Quantity` and `Value`; Table 4.4 has no `Evaluated
 effect` column.** The removed columns repeated explanations already carried by
-Chapter 3 or by each case name. Retain the achieved \(\theta_{0,t_1}\) values
+Chapter 3 or by each case name. Retain the achieved \(\theta_{\mathrm{init},t_1}\) values
 in Table 4.4 because they are measured experimental conditions.
 
 **The \(s_{c,\max}\) row of Table 4.3 reads `Virtual press endpoint`.**
@@ -2854,13 +2959,13 @@ The orientation chain has three symbol families. \(\theta_{\mathrm{offset},t_i}\
 is a component of the configured orientation offset about surface tangent
 \(t_i\). It defines the desired pre-contact tool direction during Tool
 Orientation and does not prescribe the rotation during Contact Establishment.
-The achieved pose-based initial angular offset \(\theta_{0,t_1}\) is the
+The achieved pose-based initial angular offset \(\theta_{\mathrm{init},t_1}\) is the
 contact-entry condition relative to the configured surface reference. The
 contact response \(\gamma_{t_1}\) is the measured response about
 that tangent.
 
 The experiment tables and comparison figures identify their angular condition
-with \(\theta_{0,t_1}\), not with \(\theta_{\mathrm{offset},t_1}\). The
+with \(\theta_{\mathrm{init},t_1}\), not with \(\theta_{\mathrm{offset},t_1}\). The
 configured offset remains in the methodology as the controller input that
 generated this condition. A physical
 initial tool--surface error is not substituted for either quantity unless an
@@ -2883,7 +2988,7 @@ depends on. The attributive form is `parallel to the configured surface`.
 **The withdrawn phrase covered two different things, and they take different
 replacements.** Where it named the *direction* \(-n_s\) -- in the
 \(\phi_0\) construction of Section 4.5, in its symbol-list row, and in the
-definition of \(\theta_{0,t_1}\) -- write `the inward configured surface
+definition of \(\theta_{\mathrm{init},t_1}\) -- write `the inward configured surface
 normal`, which is what \(-n_s\) is and is already fixed by
 \(n_d=-n_s\). Where it named the *alignment state* the end effector rotates
 towards, write `parallel alignment with the configured surface`. Substituting
@@ -2892,7 +2997,7 @@ a state rather than to a direction, which is not what the equation does. For a
 start-to-end end-effector rotation towards parallel alignment with the
 configured surface,
 \(\gamma_{t_1}\) points in the same surface-tangent direction as the achieved
-initial angular offset \(\theta_{0,t_1}\), and
+initial angular offset \(\theta_{\mathrm{init},t_1}\), and
 \(\lvert\gamma_{t_1}\rvert\) gives its size. The plus and minus symbols remain
 on equations and data values. Running prose uses `both directions of rotation`
 for an aggregate comparison and the named conditions above for a single one;
@@ -2909,11 +3014,11 @@ contact establishment** and equals
 \(R_{\mathrm{EE}}(t_{\mathrm{CE,start}})\), which is why the logged
 \(e_R\) is exactly zero there. The achieved initial angular offset is
 calculated from the current end-effector pose, calibrated tool normal and
-configured surface reference, giving \(\theta_{0,t_1}\). `extract_metrics.py`
+configured surface reference, giving \(\theta_{\mathrm{init},t_1}\). `extract_metrics.py`
 reads the response \(\gamma_{t_1}\) from the final \(e_R\).
 
 **State the direction relation at the opening of Chapter 5, before any number
-depends on it.** The opening gives the relation between \(\theta_{0,t_1}\),
+depends on it.** The opening gives the relation between \(\theta_{\mathrm{init},t_1}\),
 \(\gamma_{t_1}\), and the corresponding start-to-end end-effector rotation,
 including the reason: \(\gamma_{t_1}\) is calculated from the measured end
 orientation back to the held entry reference, so its direction is opposite to
@@ -2955,7 +3060,7 @@ or their logger-only aliases as reported thesis quantities.
 
 **Each main surface-contact comparison changes one controller parameter and
 reports one response.** The achieved pose-based initial angular offset is
-\(\theta_{0,t_1}\), and the response is the measured contact-establishment
+\(\theta_{\mathrm{init},t_1}\), and the response is the measured contact-establishment
 rotation \(\gamma_{t_1}\). Chapter 5 table headings name the changed parameter
 directly and call the output `Measured contact rotation`; generic columns such as
 `Varied entry` and `Value` are not used. Subsection titles, captions, axes and
@@ -3223,19 +3328,56 @@ instantaneous opposing torque at identical joint configurations.
   compliance relative to the TCP. They never appear in the same expression.
   \(r_c\) shapes the **commanded** wrench through \(\mathrm{Ad}(r_c)\);
   \(r_{\mathrm{Tool}}\) belongs to the physical contact geometry.
+- **Section 2.7.2 derives the perpendicular direction; it does not assert it.**
+  Supplied by the author on 2026-09-04 and applied as given. The jump from
+  \(\theta\approx\theta_{t_1}t_1+\theta_{t_2}t_2\) straight to the selection
+  rule was too abrupt: the text said the displacement is selected perpendicular
+  to the offset without showing why \(\theta_{t_1}t_2-\theta_{t_2}t_1\) is that
+  perpendicular direction or where the square root comes from. Four steps now
+  carry the reader across, in this order:
+
+  1. A \(90^\circ\) rotation within the tangent plane about \(n_s\) is the
+     cross product with \(n_s\), giving the unnumbered display
+     \(n_s\times\theta\approx\theta_{t_1}t_2-\theta_{t_2}t_1\).
+  2. Because \(t_1\) and \(t_2\) are orthonormal, that direction has magnitude
+     \(\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}\), also unnumbered.
+  3. Equation 2.52 then scales the normalised direction by the prescribed
+     \(\lVert r_{c,t}\rVert\), and the sentence after it names the fraction as
+     the unit perpendicular direction and the magnitude as a selectable
+     controller parameter.
+  4. \(f_n=F_nn_s\) is stated before Equation 2.53, so the reader can see the
+     cross-product relations produce the moment.
+
+  **The two new displays are unnumbered**, which is what keeps Equations 2.52
+  and 2.53 at the numbers this guide and Chapter 5 already cite. Do not promote
+  either to a numbered equation.
+
+  **The degenerate case is stated.** For \(\theta_{t_1}=\theta_{t_2}=0\) no
+  preferred tangential \abbr{CoC} direction is defined and the directional
+  selection rule is not applied. It sits with the \(F_n<0\) sentence, closing
+  the general rule before the principal directions specialise it.
+
+  Three sentences went with the rewrite and are withdrawn: `the displacement
+  used to reduce this offset is selected perpendicular to its direction`, which
+  asserted the step the derivation now takes; `The choice fixes the direction;
+  the magnitude remains a free parameter of the configuration`, replaced by the
+  sentence naming the fraction; and `During the contact-establishment press
+  \(F_n<0\), so this contribution acts opposite to \(\theta\) and tends to
+  reduce the offset`, replaced by the two-sentence form.
+
 - **The direction-selected lever rule uses the following cross-product
   orientation.** For the generic tangent-plane angular offset
-  \(\theta_a=\theta_{a,t_1}t_1+\theta_{a,t_2}t_2\), it is
-  \(r_{c,t}=\lVert r_{c,t}\rVert(\theta_{a,t_1}t_2-
-  \theta_{a,t_2}t_1)/\sqrt{\theta_{a,t_1}^2+
-  \theta_{a,t_2}^2}\). It reduces to
-  \(r_{c,t}=+\lVert r_{c,t}\rVert t_2\) when \(\theta_{a,t_1}>0\) and
-  \(r_{c,t}=-\lVert r_{c,t}\rVert t_1\) when \(\theta_{a,t_2}>0\).
+  \(\theta\approx\theta_{t_1}t_1+\theta_{t_2}t_2\), it is
+  \(r_{c,t}=\lVert r_{c,t}\rVert(\theta_{t_1}t_2-
+  \theta_{t_2}t_1)/\sqrt{\theta_{t_1}^2+
+  \theta_{t_2}^2}\). It reduces to
+  \(r_{c,t}=+\lVert r_{c,t}\rVert t_2\) when \(\theta_{t_1}>0\) and
+  \(r_{c,t}=-\lVert r_{c,t}\rVert t_1\) when \(\theta_{t_2}>0\).
   The exact normal-press contribution is
   \(r_{c,t}\times f_n=\lVert r_{c,t}\rVert F_n
-  (\theta_{a,t_1}t_1+\theta_{a,t_2}t_2)/
-  \sqrt{\theta_{a,t_1}^2+\theta_{a,t_2}^2}\). With \(F_n<0\), it acts
-  opposite to \(\theta_a\). In Case D, the direction generated by the
+  (\theta_{t_1}t_1+\theta_{t_2}t_2)/
+  \sqrt{\theta_{t_1}^2+\theta_{t_2}^2}\). With \(F_n<0\), it acts
+  opposite to \(\theta\). In Case D, the direction generated by the
   \(+10^\circ\) configured offset uses \(r_{c,t_2}>0\) for the outer position
   that produced the larger response.
 
@@ -3298,8 +3440,47 @@ instantaneous opposing torque at identical joint configurations.
   interaction, which can in turn change the model-estimated external wrench.
   The estimated external moment is the result of that interaction, not an
   algebraic sum of commanded terms.
-- **`\approx` does not appear in the thesis, in any chapter, appendix, or
-  figure.** Every displayed and inline relation is written with an equals sign.
+- **`\approx` appears three times: Equations 2.51 and 3.2, and the unnumbered
+  \(n_s\times\theta\) display in Section 2.7.2.** Narrowed
+  2026-09-04 on the author's instruction, replacing a blanket ban, and widened
+  by one the same day when the supplied Section 2.7.2 derivation added the
+  cross-product display. That third one is not an independent approximation:
+  it inherits Equation 2.51's, because \(n_s\times\theta\) is exact given
+  \(\theta\) and the first-order decomposition is what carries the symbol. The generic
+  tangent-plane angular offset is now written
+  \(\theta\approx\theta_{t_1}t_1+\theta_{t_2}t_2\), because
+  \(\theta_{t_1}\) and \(\theta_{t_2}\) read as rotation angles about
+  \(t_1\) and \(t_2\), and finite rotations about different axes do not add.
+  The sentence before it already scopes the relation to a **small** angular
+  offset, which is the condition the approximation needs. The same equation
+  **The lead-in states the first-order scope.** Supplied 2026-09-04 and applied
+  as given: `Consider a small angular offset \(\theta\) that the contact
+  response should reduce. For small rotations, its components about the two
+  surface tangents are represented to first order by`. `For small rotations`
+  and `to first order` are what carry the approximation in words, so the symbol
+  and the sentence say the same thing. Two earlier lead-ins are withdrawn with
+  it: the plural `Considering small angular offsets …` form and, before that,
+  `its non-zero tangent-plane direction is written as`. The round-bracket
+  surface-frame column \(\theta_{a,S}\) went at the same time.
+
+  **Equation 3.2 carries `\approx` as well.** Instructed 2026-09-04, and this
+  overturns the earlier sentence here that Chapter 3 keeps its equals sign. The
+  configured offset is now
+  \(\theta_{\mathrm{offset}}\approx\theta_{\mathrm{offset},t_1}t_1+
+  \theta_{\mathrm{offset},t_2}t_2\), under the lead-in `For small configured
+  angular offsets, the pre-contact orientation offset is represented to first
+  order in the surface tangent plane by`. The reason is the same one: the two
+  scalars read as rotation angles about \(t_1\) and \(t_2\), and finite
+  rotations about different axes do not add. Every reported experiment set one
+  component only, so the tested conditions are exact rotations about the
+  selected tangent either way.
+
+  This does not reopen the rule further. The four routes below stay the first
+  resort everywhere else, and the expected count outside those three places is
+  still zero.
+
+  **The rest of this rule stands.** Every other displayed and inline relation
+  is written with an equals sign.
   This is not a licence to assert equalities that are false: a relation that
   was approximate is made exact before the symbol changes, by naming the
   quantity the relation actually holds for. The four routes used, in order of
@@ -3328,7 +3509,8 @@ instantaneous opposing torque at identical joint configurations.
   [THESIS_VOICE.md](THESIS_VOICE.md) and are unaffected by this rule, which
   governs the symbol alone. Grep for `\approx` across `chapters/`,
   `frontmatter/`, `backmatter/` and `figures/` before submitting; the expected
-  count is zero.
+  count is three, in Equations 2.51 and 3.2 and the \(n_s\times\theta\) display,
+  plus the two retired uncompiled appendix files `TODOS.md` already tracks.
 - **\(m=m_R+r_c\times f\) is an identity, and is written with an equals
   sign.** It holds exactly for the shifted \(6\times6\) law, provided \(f\) is
   the translational part of the same commanded wrench \(F=[f^\top,m^\top]^\top\)
@@ -4393,6 +4575,8 @@ Before accepting a revision:
 - search for question-driven headings and literal research questions;
 - search the running text for names carrying two or more underscores;
 - search for `frozen`, and for any name built from a quantity's state;
+- search for `congruen`; the expected count is zero, in the chapters, the
+  front matter, the appendices and the figures alike;
 - search for `automatic` and `automatically`; only literal source identifiers,
   `\label{}` keys, and figure filenames may keep them;
 - search for `tilt`, `excitation`, and `mismatch` where a commanded tool
@@ -4432,11 +4616,19 @@ Before accepting a revision:
 - check predicted versus experimentally confirmed results;
 - grep the Abstract and the Kurzfassung for digits, and check each hit against
   the permitted set under *Abstract and Kurzfassung*: the Case~A--D headline
-  percentages with their reference conditions, the rotational-stiffness
-  interval, the largest Cartesian position error against its limit, and numbers
-  that name a thing rather than measure one, such as the robot's degrees of
-  freedom. A per-condition response mean, an achieved offset, a
-  compliance-centre coordinate, or a measurement count is a fault;
+  percentages with their reference conditions, the two null-space percentages,
+  and numbers that name a thing rather than measure one, such as the robot's
+  degrees of freedom. A per-condition response mean, an achieved offset, a
+  compliance-centre coordinate, a gain value, or a measurement count is a
+  fault;
+- grep the Abstract and the Kurzfassung for `\abbr`; the expected count is
+  zero, under *The summaries introduce no abbreviations*, which also means
+  checking that every abbreviation they dropped is still expanded at its first
+  Chapter 1 use. Then read every `\(…\)` in both: each should be a percentage
+  and nothing else, under *The Abstract and Kurzfassung carry no symbols*. The
+  mathematics mode is there for the percent sign, not for notation;
+- check that the Kurzfassung writes its decimals with `{,}` and the Abstract
+  with `.`;
 - check that the two summaries carry the same values, and that a number added
   to one was added to the other;
 - check Abstract, Kurzfassung, Results, and Conclusion for identical certainty;

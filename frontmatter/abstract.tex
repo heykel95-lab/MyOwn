@@ -1,47 +1,32 @@
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-Differences between the configured surface reference and the physical surface,
-together with differences between the desired and achieved tool orientation,
-can produce an angular mismatch at contact entry. This can lead to edge-first
+This thesis develops a real-time controller for a seven-degree-of-freedom
+collaborative robot intended for surface grinding with a rectangular tool on a
+planar surface. Cartesian impedance control is used to generate the required
+pressing motion while allowing passive, contact-induced rotation of the tool
+towards surface alignment. This behaviour is intended to reduce the effect of
+angular mismatch at contact entry, which can otherwise produce edge-first
 contact and increased contact loads.
 
-A real-time Cartesian impedance controller was implemented on a
-seven-degree-of-freedom Franka Emika Panda to generate compliant
-contact-induced rotation towards the configured surface. Directional
-translational and rotational stiffness and damping were defined in the surface
-frame. The virtual centre of compliance (\abbr{CoC}) could be displaced from
-the tool centre point (TCP), introducing translation--rotation coupling into
-the Cartesian impedance. The displaced \abbr{CoC} gives the commanded press a
-virtual lever arm \(r_c\), which generates the additional moment
-\(r_c\times f\) at the TCP.
+Directional translational and rotational compliance was defined relative to the
+surface. In addition, a virtual centre of compliance could be displaced from the
+tool centre point to couple translational pressing with rotational motion and
+thereby influence the preferred direction of alignment.
 
-The surface-contact experiments varied the \abbr{CoC} position, rotational
-stiffness, and translational stiffness along \(t_2\). Positive and negative
-pre-contact angular offsets were investigated about \(t_1\). The initial
-angular condition at contact entry was calculated relative to the configured
-surface reference, and the contact response \(\gamma_{t_1}\) was
-calculated from the measured end-effector orientations at the beginning and end
-of Contact Establishment.
+Surface-contact experiments investigated the effects of rotational stiffness,
+tangential translational stiffness, and centre-of-compliance position.
+Increasing rotational stiffness reduced the contact response by about
+\(64\,\%\), whereas the tested translational stiffness variation changed the
+response by only about \(0.4\,\%\). A suitably selected centre-of-compliance
+displacement increased the final response by about \(4\,\%\) and produced
+faster alignment, while the opposite displacement direction reduced the
+response by approximately \(98\,\%\) to \(99\,\%\). The displaced centre of
+compliance therefore acted mainly as a selector of the preferred rotational
+direction.
 
-With the \abbr{CoC} at the TCP, contact-induced rotation occurred towards the
-configured surface for both initial rotational directions. Increasing the
-rotational stiffness from \(5\) to \(50\,\mathrm{N\,m/rad}\) reduced the
-response by \(63.9\,\%\), whereas the tested translational stiffness values
-produced a response span equal to only \(0.4\,\%\) of the TCP-centred
-reference. The tangential \abbr{CoC} displacement produced a strongly
-direction-dependent response. Selecting the displacement direction according to
-the initial angular-offset direction increased the final response by
-approximately \(4\,\%\) and also produced a faster rotation towards alignment
-in the measured time history. The opposite displacement direction reduced the
-response by approximately \(98\,\%\) to \(99\,\%\). The displaced \abbr{CoC}
-therefore acted mainly as a selector of the preferred rotational direction.
-
-A separate Cartesian pose-hold experiment evaluated the null-space controller
-under a repeatable virtual disturbance. Projected damping reduced the
-cumulative null-space motion from \(7.596^\circ\) to \(5.687^\circ\).
-Singular-value conditioning reduced the net displacement to nearly zero for
-both tested torque magnitudes. The higher conditioning torque produced a
-slightly smaller final displacement but considerably more cumulative
-back-and-forth null-space motion. The Cartesian position remained within the
-specified \(2\,\mathrm{mm}\) acceptance limit in all pose-hold trials.
+A separate pose-hold experiment evaluated the null-space controller. Projected
+damping reduced cumulative null-space motion by about \(25\,\%\), while
+singular-value conditioning reduced the remaining net displacement by
+approximately \(99.8\,\%\) to \(99.9\,\%\). Cartesian position retention was
+maintained throughout the tested conditions.
