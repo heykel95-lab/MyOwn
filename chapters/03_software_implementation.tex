@@ -413,8 +413,14 @@ r_{\mathrm{Tool,EE}}
 \label{eq:implementation_leading_feature_average}
 \end{equation}
 
-The selected tool offset is then retained to calculate the desired tool point
-for the Contact Establishment trajectory.
+The vector \mbox{\(r_{\mathrm{Tool,EE}}\)} points from the TCP to the
+selected tool-face point and is expressed in end-effector coordinates. The
+selected tool offset is retained for the Contact Establishment trajectory. It
+is used to determine the initial tool point
+\mbox{\(p_{\mathrm{Tool}}(t_{\mathrm{start}})\)} and its projection
+\mbox{\(p_{\mathrm{Tool},0}\)} onto the plane, from which the desired
+tool-point trajectory is generated up to the endpoint
+\mbox{\(p_{\mathrm{Tool},d}(t_{\mathrm{end}})\)}.
 
 
 \subsection{Pre-Contact Hold}
@@ -492,9 +498,10 @@ p_{\mathrm{Tool},d}(t)=p_{\mathrm{Tool},0}-s_c(t)n_s.
 \label{eq:implementation_setup_face_point_reference}
 \end{equation}
 
-As \mbox{\(s_c\)} increases, the desired tool point moves along
-\mbox{\(-n_s\)} towards the configured surface and then to the surface side of
-the configured plane.
+Since \mbox{\(p_{\mathrm{Tool},0}\)} lies on the configured surface plane,
+\mbox{\(s_c\)} gives the signed distance of the desired tool point from this
+plane along the surface-normal direction. At \mbox{\(s_c=s_{c,\max}\)}, the
+desired endpoint lies \mbox{\(s_{c,\max}\)} below the configured plane.
 
 The desired orientation is held at the measured orientation at the beginning of
 Contact Establishment,
@@ -513,6 +520,22 @@ p_d(t)
 p_{\mathrm{Tool},d}(t)-R_{\mathrm{EE}}(t_{\mathrm{start}})r_{\mathrm{Tool,EE}}.
 \label{eq:implementation_setup_tcp_reference}
 \end{equation}
+
+The reference construction can therefore be summarised as
+
+\[
+\boxed{
+r_{\mathrm{Tool,EE}}
+\;\rightarrow\;
+p_{\mathrm{Tool}}(t_{\mathrm{start}})
+\;\rightarrow\;
+p_{\mathrm{Tool},0}
+\;\rightarrow\;
+p_{\mathrm{Tool},d}(t)
+\;\rightarrow\;
+p_d(t)
+}
+\]
 
 \begin{figure}[H]
   \centering

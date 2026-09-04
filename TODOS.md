@@ -27,17 +27,46 @@ Either repeat the campaign at \(5.0\,\mathrm{s}\) and re-derive the reported
 values, or decide that the stated value describes the controller as it now
 stands rather than the runs, and say which in Section 4.3.
 
-## Correct `signed component` in Section 4.5
+## Decide `signed` in Sections 3.2.5 and 4.5
+
+`THESIS_WRITING_GUIDE.md` bans `signed` as a modifier in prose, headings,
+captions, axes and tables, on the ground that the defining equation and the
+displayed positive and negative values already establish the algebraic
+direction. Three uses stand against it, in two places.
 
 `chapters/04_experimental_setup_and_evaluation.tex` uses `signed component
 about \(t_1\)` twice in Section 4.5.1, once before Equation 4.3 and once
-after it. `THESIS_WRITING_GUIDE.md` bans `signed` as a modifier in prose,
-headings, captions, axes and tables, on the ground that the defining equation
-and the displayed positive and negative values already establish the algebraic
-direction. Write `component about \(t_1\)`. Not done because the passage is
+after it. Write `component about \(t_1\)`. Not done because the passage is
 settled text and the change was not asked for; the new Figure 4.3 beside it now
 states the direction convention, which is what those two uses were reaching
 for.
+
+`chapters/03_software_implementation.tex` uses `signed distance` once in
+Section 3.2.5, in the sentence after Equation 3.18 supplied on 2026-09-04 and
+applied verbatim. `the distance of the desired tool point from this plane along
+the surface-normal direction` would satisfy both, since Equation 3.16 already
+gives the negative initial value and Equation 3.18 fixes the direction. The two
+places are one decision: keeping the word in one and dropping it in the other
+would leave the ban half applied.
+
+## Reconcile the Chapter 3 state subscripts with the settled `CE` convention
+
+`THESIS_WRITING_GUIDE.md` settles the visible Contact Establishment quantities
+as \(s_{\mathrm{CE}}\), \(t_{\mathrm{CE,start}}\), \(t_{\mathrm{CE,end}}\),
+\(R_{\mathrm{EE,clearance}}\) and \(p_{\mathrm{Tool,clearance}}\), and the
+approach quantities as \(s_{\mathrm{app}}\) and \(v_{\mathrm{app}}\).
+Section 3.2 carries none of them: it writes \(s_c\), \(v_c\), \(s_{c,\max}\),
+\(s_a\), \(v_a\), \(s_{a,\max}\), \(t_{\mathrm{start}}\) and
+\(t_{\mathrm{end}}\), and \(t_{\mathrm{start}}\) denotes two different instants,
+the start of Surface Approach in Section 3.2.3 and the start of Contact
+Establishment in Section 3.2.5.
+
+The text supplied on 2026-09-04 uses \(s_c\) and \(t_{\mathrm{start}}\)
+throughout and was applied verbatim, so the chapter now carries the older
+notation in three more sentences. Table 4.3, Appendix C and the symbol list use
+\(s_{c,\max}\), \(v_c\) and \(v_a\) with it. Either convert all of them in one
+pass, or withdraw the `CE` convention from the guide; do not leave the two
+standing together.
 
 ## Retire the superseded null-space script in `MyController`
 

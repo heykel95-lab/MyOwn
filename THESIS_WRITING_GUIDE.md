@@ -2061,6 +2061,19 @@ something does not start negative. State the convention, then the initial
 value, then the ramp. Say also that the configured endpoint below the plane is
 a **virtual spring reference**, not an expected physical penetration depth.
 
+**The coordinate is stated as a distance from the plane, and its endpoint is
+named virtual.** Supplied by the author on 2026-09-04 and applied as given.
+Because \(p_{\mathrm{Tool},0}\) lies on the configured surface plane, the
+contact-establishment coordinate gives the distance of the desired tool point
+from that plane along the surface-normal direction, and at the configured
+maximum the desired endpoint lies that distance below the plane. The earlier
+wording, that the desired tool point moves along \(-n_s\) towards the
+configured surface and then to the surface side of the configured plane, is
+withdrawn: it described the motion without giving the reader any way to read
+\(0.240\,\mathrm{m}\) against the plane. The supplied sentence writes
+`signed distance`, which crosses the ban on `signed` as a modifier under
+*Style*; the crossing is logged in `TODOS.md` as a decision for the author.
+
 **Say why the TCP reference is reconstructed.** The controller defines the
 selected tool point's trajectory first and calculates the corresponding TCP
 reference from it; contact then prevents the tool from following the commanded
@@ -2078,6 +2091,29 @@ position reference it produces —
 is deliberate: the approach motion was previously described in words while
 contact establishment carried a trajectory, which left the tool-point selection reading as
 geometry that appeared from nowhere.
+
+**Section 3.2.3 states which way \(r_{\mathrm{Tool,EE}}\) points and what it
+feeds.** Supplied by the author on 2026-09-04 and applied as given. The vector
+points from the TCP to the selected tool-face point and is expressed in
+end-effector coordinates; the offset is retained for the Contact Establishment
+trajectory and determines \(p_{\mathrm{Tool}}(t_{\mathrm{start}})\) and its
+projection \(p_{\mathrm{Tool},0}\), from which the desired tool-point
+trajectory runs to \(p_{\mathrm{Tool},d}(t_{\mathrm{end}})\). The earlier
+single sentence, that the selected tool offset is then retained to calculate
+the desired tool point for the Contact Establishment trajectory, is withdrawn:
+it named the destination without saying which way the vector points, so a
+reader met the lever three equations later with no direction attached to it.
+
+**Section 3.2.5 closes the reference construction with a boxed chain.**
+Supplied by the author on 2026-09-04. After the reconstructed TCP reference, an
+unnumbered display carries
+\(r_{\mathrm{Tool,EE}}\rightarrow p_{\mathrm{Tool}}(t_{\mathrm{start}})
+\rightarrow p_{\mathrm{Tool},0}\rightarrow p_{\mathrm{Tool},d}(t)
+\rightarrow p_d(t)\).
+It is kept because the five position symbols differ only by their indices, and
+the chain gives the order in which the controller forms them. It summarises the
+construction rather than stating a relation, so it takes no equation number and
+nothing cross-references it.
 
 Visible quantities associated with Contact Establishment use the subscript
 \(\mathrm{CE}\), including \(s_{\mathrm{CE}}\), \(t_{\mathrm{CE}}\),
@@ -2536,6 +2572,14 @@ trajectory values.
 effect` column.** The removed columns repeated explanations already carried by
 Chapter 3 or by each case name. Retain the achieved \(\theta_{0,t_1}\) values
 in Table 4.4 because they are measured experimental conditions.
+
+**The \(s_{c,\max}\) row of Table 4.3 reads `Virtual press endpoint`.**
+Supplied by the author on 2026-09-04, replacing `Press endpoint`. The bare name
+let \(0.240\,\mathrm{m}\) be read as a physical penetration into the surface or
+as an absolute TCP coordinate, and the table row is the one place a reader
+meets the value without the surrounding text that says what it is. The word
+matches the virtual spring reference required under *Chapter 3: the settled
+structure*.
 
 **Chapter 4 documents the reported experiments, so grinding leaves its tables.** No
 experiment entered the Grinding state, and the chapter said so four times: a
