@@ -152,10 +152,20 @@ coordinates, no measurement counts.
 Two entries left the permitted set on 2026-09-04. The rotational-stiffness
 interval no longer appears -- the Abstract writes `increasing rotational
 stiffness` and leaves the values to Chapter 5 -- and the Cartesian position
-error is stated qualitatively as `Cartesian position retention was maintained
-throughout the tested conditions` rather than as a measured value against its
-limit. Both were dropped because a summary that names a setting invites the
-reader to look for the rest of the table.
+error stopped being stated as a measured value against its limit. Both were
+dropped because a summary that names a setting invites the reader to look for
+the rest of the table.
+
+**Position retention left the summaries entirely on 2026-09-05.** The
+qualitative replacement, `Cartesian position retention was maintained
+throughout the tested conditions`, and its German counterpart, `Die kartesische
+Positionshaltung blieb dabei erhalten`, are both withdrawn. They were the last
+sentence of each summary, and an acceptance check is not a finding: it says
+that nothing went wrong rather than what was measured, so it closed both texts
+on the weakest statement they carried. Section 5.2.2 keeps the result, with
+\(\lVert e_p\rVert_{\max}\) of \(0.889\) and \(0.983\,\mathrm{mm}\), a largest
+value of \(1.304\,\mathrm{mm}\), and the \(2\,\mathrm{mm}\) limit they are read
+against. Both summaries now end on the null-space percentages.
 
 The percentages are rounded in the summaries and exact in the body: the
 Abstract writes `about \(64\,\%\)` where Chapter 5 reports \(63.9\,\%\), and

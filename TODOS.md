@@ -7,7 +7,7 @@ removed in the turn in which they are finished.
 
 The supplied Abstract and Kurzfassung of 2026-09-04 dropped three things the
 previous versions carried, and each needs a home in the body or a decision that
-it is not needed.
+it is not needed. Two remain open.
 
 - The angular-evaluation basis: `The angular conditions were defined relative to
   the configured surface geometry, and the contact response was calculated from
@@ -17,10 +17,12 @@ it is not needed.
 - The rotational-stiffness interval that produced the \(64\,\%\) reduction.
   Chapter 5 reports it; confirm the Conclusion still states it, since the
   Abstract no longer does.
-- The largest measured Cartesian position error against its \(2\,\mathrm{mm}\)
-  limit, now written qualitatively as `Cartesian position retention was
-  maintained throughout the tested conditions`. Confirm the measured value and
-  the limit both appear in Chapter 5.
+
+The third is settled: Cartesian position retention left both
+summaries on 2026-09-05, and Section 5.2.2 was checked the same day — it
+carries \(0.889\) and \(0.983\,\mathrm{mm}\), the largest value of
+\(1.304\,\mathrm{mm}\), and the \(2\,\mathrm{mm}\) limit. Nothing was lost with
+the sentence.
 
 ## Remove the duplicate TCP expansion in Chapter 2
 
