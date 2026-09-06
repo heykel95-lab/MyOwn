@@ -1078,12 +1078,12 @@ t_1\times n_s=-t_2.
 
 \mbox{\Cref{fig:lever_direction_selection}} shows the angular offset in three
 views. Panel~(a) is an elevation along \mbox{\(t_1\)}, in which the component
-\mbox{\(a_{t_1}\)} appears as the angle between the tool face and the
+\mbox{\(\theta_{t_1}\)} appears as the angle between the tool face and the
 surface. Panel~(b) is a view along \mbox{\(n_s\)}, in which the small
 angular-offset vector \mbox{\(\mathbf{a}\)} is resolved in the surface
 tangent plane: its magnitude is \mbox{\(\lVert\mathbf{a}\rVert\)}, its
 direction forms the angle \mbox{\(\alpha\)} with \mbox{\(t_1\)}, and the two
-projections mark \mbox{\(a_{t_1}\)} and \mbox{\(a_{t_2}\)}.
+projections mark \mbox{\(\theta_{t_1}\)} and \mbox{\(\theta_{t_2}\)}.
 Panel~(c) carries the displacement selected from that direction.
 
 \begin{figure}[H]
@@ -1093,50 +1093,52 @@ Panel~(c) carries the displacement selected from that direction.
   \label{fig:lever_direction_selection}
 \end{figure}
 
-Considering a small angular offset that the contact response should reduce,
-the angular mismatch is represented to first order by the angular-offset vector
-\mbox{\(\mathbf{a}\)}. In the surface tangent plane, that vector is
-resolved as
+Considering a small angular mismatch of the tool relative to the surface, its
+first-order representation is described by the angular-offset vector
+\mbox{\(\mathbf{a}\)} in the surface tangent plane. The signed angular
+components about the two surface tangents are denoted by
+\mbox{\(\theta_{t_1}\)} and \mbox{\(\theta_{t_2}\)}. Thus,
 
 \begin{equation}
 \mathbf{a}
-=
-a_{t_1}t_1+a_{t_2}t_2
+\approx
+\theta_{t_1}t_1+\theta_{t_2}t_2
 =
 R_{\mathrm{surface}}a_S,
 \qquad
 a_S
 =
 \begin{bmatrix}
-a_{t_1}\\
-a_{t_2}\\
+\theta_{t_1}\\
+\theta_{t_2}\\
 0
 \end{bmatrix},
 \label{eq:alignment_deviation_surface_components}
 \end{equation}
 
-with magnitude \mbox{\(\lVert\mathbf{a}\rVert\)} and direction angle
-\mbox{\(\alpha\)}, so that
+where \mbox{\(\theta_{t_1}\)} and \mbox{\(\theta_{t_2}\)} are expressed in
+radians. For a pure offset about one tangent, the corresponding component
+equals the signed tool-tilt angle about that tangent. When both components are
+present, they represent the first-order angular coordinates of the combined
+small orientation mismatch.
+
+The direction of \mbox{\(\mathbf{a}\)} within the tangent plane is described by
+\mbox{\(\alpha\)}, measured from \mbox{\(+t_1\)} towards \mbox{\(+t_2\)},
 
 \[
-a_{t_1}=\lVert\mathbf{a}\rVert\cos\alpha,
+\alpha=\operatorname{atan2}(\theta_{t_2},\theta_{t_1}),
+\]
+
+and consequently
+
+\[
+\theta_{t_1}=\lVert\mathbf{a}\rVert\cos\alpha,
 \qquad
-a_{t_2}=\lVert\mathbf{a}\rVert\sin\alpha.
+\theta_{t_2}=\lVert\mathbf{a}\rVert\sin\alpha.
 \]
 
-The angle \mbox{\(\alpha\)} specifies the direction of the angular-offset
-vector in the surface tangent plane and is measured from \mbox{\(+t_1\)}
-towards \mbox{\(+t_2\)}. It is given by
-
-\[
-\alpha=\operatorname{atan2}(a_{t_2},a_{t_1}).
-\]
-
-The quantities \mbox{\(a_{t_1}\)} and \mbox{\(a_{t_2}\)} are the
-first-order angular components about the surface tangents, expressed in
-radians. Together, they define the magnitude and direction of the small angular
-offset. The vector \mbox{\(a_S\)} contains these components in surface
-coordinates, in the column order of
+The vector \mbox{\(a_S\)} contains the two components in surface coordinates,
+in the column order of
 \mbox{\Cref{eq:coc_surface_components}}. The component about \mbox{\(n_s\)} is
 set to zero in this alignment construction because rotation about the surface
 normal changes the in-plane tool orientation but not the inclination of the
@@ -1148,8 +1150,8 @@ angular-offset vector within the surface plane. Its direction follows from a
 
 \[
 n_s\times\mathbf{a}
-=
-a_{t_1}t_2-a_{t_2}t_1.
+\approx
+\theta_{t_1}t_2-\theta_{t_2}t_1.
 \]
 
 For a non-zero angular offset and a prescribed tangential \abbr{CoC} magnitude
@@ -1160,9 +1162,9 @@ r_{c,t}
 =
 \lVert r_{c,t}\rVert
 \frac{
-a_{t_1}t_2-a_{t_2}t_1
+\theta_{t_1}t_2-\theta_{t_2}t_1
 }{
-\sqrt{a_{t_1}^2+a_{t_2}^2}
+\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}
 }.
 \label{eq:general_compliance_lever_selection}
 \end{equation}
@@ -1170,7 +1172,7 @@ a_{t_1}t_2-a_{t_2}t_1
 Since
 
 \[
-\sqrt{a_{t_1}^2+a_{t_2}^2}=\lVert\mathbf{a}\rVert,
+\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}=\lVert\mathbf{a}\rVert,
 \]
 
 the fraction in \mbox{\Cref{eq:general_compliance_lever_selection}} is the unit
@@ -1188,16 +1190,16 @@ r_{c,t}\times f_n
 =
 \lVert r_{c,t}\rVert F_n
 \frac{
-a_{t_1}t_1+a_{t_2}t_2
+\theta_{t_1}t_1+\theta_{t_2}t_2
 }{
-\sqrt{a_{t_1}^2+a_{t_2}^2}
+\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}
 }.
 \label{eq:general_compliance_lever_moment}
 \end{equation}
 
 During Contact Establishment, \mbox{\(F_n<0\)}. The resulting moment therefore
 points opposite to the angular-offset direction and supports its reduction. For
-\mbox{\(a_{t_1}=a_{t_2}=0\)}, no preferred tangential \abbr{CoC}
+\mbox{\(\theta_{t_1}=\theta_{t_2}=0\)}, no preferred tangential \abbr{CoC}
 direction is defined and the directional selection rule is not applied.
 
 For the two principal directions, the rule
@@ -1205,10 +1207,10 @@ reduces to
 
 \begin{equation}
 r_{c,t}=+\lVert r_{c,t}\rVert t_2
-\quad\text{for }+a_{t_1},
+\quad\text{for }+\theta_{t_1},
 \qquad
 r_{c,t}=-\lVert r_{c,t}\rVert t_1
-\quad\text{for }+a_{t_2},
+\quad\text{for }+\theta_{t_2},
 \label{eq:principal_lever_selection}
 \end{equation}
 

@@ -1129,37 +1129,44 @@ circulation, the settled choices are:
   basis and is exact, so the `\approx` count is unchanged. And \(\theta_S\)
   appears in one equation, so it takes no symbol-list entry.
 
-  **The general offset is \(\mathbf{a}\), and \(\theta\) no longer names it.**
-  Instructed 2026-09-06, superseding every entry below that writes the general
-  offset as \(\theta\). Section 2.7.2 now carries the small angular-offset
-  vector \(\mathbf{a}\), its first-order angular components \(a_{t_1}\) and
-  \(a_{t_2}\), its magnitude \(\lVert\mathbf{a}\rVert\), its surface-coordinate
-  column \(a_S\), and the direction angle \(\alpha\), measured from \(+t_1\)
-  towards \(+t_2\) and given by \(\alpha=\operatorname{atan2}(a_{t_2},a_{t_1})\).
+  **The general offset vector is \(\mathbf{a}\); its components stay
+  \(\theta_{t_1}\) and \(\theta_{t_2}\).** Settled 2026-09-06 over two
+  instructions, and this is the standing form. Section 2.7.2 carries the small
+  angular-offset vector \(\mathbf{a}\), the signed angular components
+  \(\theta_{t_1}\) and \(\theta_{t_2}\) about the two tangents, the magnitude
+  \(\lVert\mathbf{a}\rVert\), the surface-coordinate column \(a_S\), and the
+  direction angle \(\alpha\), measured from \(+t_1\) towards \(+t_2\) and given
+  by \(\alpha=\operatorname{atan2}(\theta_{t_2},\theta_{t_1})\).
 
-  Two reasons. A Greek \(\theta\), bold or not, still reads as an angle, and the
-  derivation needs a symbol that reads as a vector beside two scalars that are
-  angles. And \(u_\theta\) had to go with it: \(u\) is the unit rotation axis of
-  the axis--angle pairs \(u_0\) and \(u_{\mathrm{CE}}\), so a second \(u\) three
-  sections away would collide. The direction now reaches the reader through
-  \(a_{t_1}=\lVert\mathbf{a}\rVert\cos\alpha\) and
-  \(a_{t_2}=\lVert\mathbf{a}\rVert\sin\alpha\) instead of through a named unit
-  vector.
+  The split is the point. A Greek \(\theta\), bold or not, reads as an angle, so
+  the vector takes a Latin letter and bold; the scalars are angles and keep
+  \(\theta\). An intermediate revision renamed the components to \(a_{t_1}\)
+  and \(a_{t_2}\), which lost that reading and is withdrawn. \(u_\theta\) is
+  withdrawn with it: \(u\) is the unit rotation axis of the axis--angle pairs
+  \(u_0\) and \(u_{\mathrm{CE}}\), so a second \(u\) three sections away would
+  collide, and the direction now reaches the reader through
+  \(\theta_{t_1}=\lVert\mathbf{a}\rVert\cos\alpha\) and
+  \(\theta_{t_2}=\lVert\mathbf{a}\rVert\sin\alpha\).
+
+  **What each name means, in one line each.** \(\mathbf{a}\) represents the
+  small angular mismatch; \(\theta_{t_1}\) and \(\theta_{t_2}\) are its
+  first-order angular coordinates in radians; \(\alpha\) is the direction of
+  \(\mathbf{a}\) in the tangent plane and is not a rotation of the tool. For a
+  pure offset about one tangent the corresponding component equals the tool-tilt
+  angle about that tangent, and Section 2.7.2 says so; with both components
+  present they are coordinates of one mismatch, not two rotations performed in
+  turn.
 
   **The experimental families are untouched.** \(\theta_{\mathrm{offset},t_1}\)
-  and \(\theta_{\mathrm{init},t_1}\) stay exactly as they are, because they are
-  scalar angular quantities and their `offset` and `init` indices already
-  separate them. `\theta_{t_1}` and `\theta_{t_2}` are withdrawn once more,
-  written here as literal strings so a rename cannot revive them: they now name
-  nothing in the thesis, which also settles the older worry about a reader of
-  an early draft meeting them as the configured offset.
+  and \(\theta_{\mathrm{init},t_1}\) stay as they are, because they are scalar
+  angular quantities whose `offset` and `init` indices already separate them.
 
   **\(\mathbf{a}\) is set bold and its components are not**, which is the
-  second exception to *One typeface: plain italic*, after the zero vector. The
-  first form of that exception, \(\boldsymbol{\theta}\), lasted one revision and
-  is withdrawn with the symbol it marked.
+  second exception to *One typeface: plain italic*, after the zero vector. An
+  earlier form of that exception, \(\boldsymbol{\theta}\), is withdrawn with the
+  symbol it marked.
 
-  **\(\theta_{t_1}\) and \(\theta_{t_2}\) were live again**, and the
+  **\(\theta_{t_1}\) and \(\theta_{t_2}\) were live again**, and the  **\(\theta_{t_1}\) and \(\theta_{t_2}\) were live again**, and the
   earlier withdrawal of those two spellings is lifted. They now name the
   components of the *general* offset in Section 2.7.2, not the configured one,
   which keeps its `offset` index everywhere. A reader of an older draft could
@@ -3574,16 +3581,16 @@ instantaneous opposing torque at identical joint configurations.
 
 - **The direction-selected lever rule uses the following cross-product
   orientation.** For the tangent-plane angular-offset vector
-  \(\mathbf{a}=a_{t_1}t_1+a_{t_2}t_2\), it is
-  \(r_{c,t}=\lVert r_{c,t}\rVert(a_{t_1}t_2-
-  a_{t_2}t_1)/\sqrt{a_{t_1}^2+
-  a_{t_2}^2}\). It reduces to
-  \(r_{c,t}=+\lVert r_{c,t}\rVert t_2\) when \(a_{t_1}>0\) and
-  \(r_{c,t}=-\lVert r_{c,t}\rVert t_1\) when \(a_{t_2}>0\).
+  \(\mathbf{a}\approx\theta_{t_1}t_1+\theta_{t_2}t_2\), it is
+  \(r_{c,t}=\lVert r_{c,t}\rVert(\theta_{t_1}t_2-
+  \theta_{t_2}t_1)/\sqrt{\theta_{t_1}^2+
+  \theta_{t_2}^2}\). It reduces to
+  \(r_{c,t}=+\lVert r_{c,t}\rVert t_2\) when \(\theta_{t_1}>0\) and
+  \(r_{c,t}=-\lVert r_{c,t}\rVert t_1\) when \(\theta_{t_2}>0\).
   The exact normal-press contribution is
   \(r_{c,t}\times f_n=\lVert r_{c,t}\rVert F_n
-  (a_{t_1}t_1+a_{t_2}t_2)/
-  \sqrt{a_{t_1}^2+a_{t_2}^2}\). With \(F_n<0\), it acts
+  (\theta_{t_1}t_1+\theta_{t_2}t_2)/
+  \sqrt{\theta_{t_1}^2+\theta_{t_2}^2}\). With \(F_n<0\), it acts
   opposite to \(\mathbf{a}\). In Case D, the direction generated by the
   \(+10^\circ\) configured offset uses \(r_{c,t_2}>0\) for the outer position
   that produced the larger response.
@@ -3647,17 +3654,16 @@ instantaneous opposing torque at identical joint configurations.
   interaction, which can in turn change the model-estimated external wrench.
   The estimated external moment is the result of that interaction, not an
   algebraic sum of commanded terms.
-- **`\approx` appears once, in Equation 3.2.** Narrowed again on 2026-09-06,
-  when the author placed the approximation where it belongs: the first-order
-  step is the replacement of the finite orientation mismatch by the small-angle
-  vector \(\mathbf{a}\), and it is carried by the sentence, `the angular
-  mismatch is represented to first order by the angular-offset vector`.
-  Resolving that vector into tangent components is ordinary vector algebra and
-  is exact, so Equation 2.51 and the \(n_s\times\mathbf{a}\) display both take
-  equals signs. Chapter 2 now carries no `\approx` at all. Grep for it across
-  `chapters/`, `frontmatter/`, `backmatter/` and `figures/` before submitting;
-  the expected count is one, plus the two retired uncompiled appendix files
-  `TODOS.md` already tracks.
+- **`\approx` appears three times: Equations 2.51 and 3.2, and the unnumbered
+  \(n_s\times\mathbf{a}\) display in Section 2.7.2.** The count went to one on
+  2026-09-06, when the approximation was moved into the sentence and the
+  resolution written as exact, and back to three later the same day: the author
+  keeps the symbol on the first-order representation
+  \(\mathbf{a}\approx\theta_{t_1}t_1+\theta_{t_2}t_2\), because that relation
+  is where the small-angle qualification lives. The cross-product display
+  inherits it. Grep across `chapters/`, `frontmatter/`, `backmatter/` and
+  `figures/` before submitting; the expected count is three, plus the two
+  retired uncompiled appendix files `TODOS.md` already tracks.
 
   The paragraphs below record how the rule reached three, and are kept for the
   reasoning rather than as current counts.

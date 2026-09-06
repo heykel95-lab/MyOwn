@@ -70,22 +70,24 @@ step of a derivation whose result is already set as a numbered equation two
 displays later. Box it only if the author wants the derivation's turning point
 marked.
 
-## Decide whether Equation 3.2 keeps its `\approx`
+## Two words in the supplied Section 2.7.2 text cross standing rules
 
-Section 2.7.2 gave up both of its occurrences on 2026-09-06, when the author
-placed the approximation in the sentence rather than in the algebra: the
-first-order step is the replacement of the finite orientation mismatch by the
-small-angle vector \(\mathbf{a}\), and resolving that vector into tangent
-components is exact. Equation 2.51 and the \(n_s\times\mathbf{a}\) display both
-carry equals signs now, and Chapter 2 carries no `\approx` at all.
+Applied as supplied on 2026-09-06 and logged here rather than resolved.
 
-Equation 3.2 still does, for the configured offset
-\(\theta_{\mathrm{offset}}\approx\theta_{\mathrm{offset},t_1}t_1+
-\theta_{\mathrm{offset},t_2}t_2\), on the older ground that its two scalars read
-as rotation angles about different axes. The same argument that freed
-Section 2.7.2 applies there: name the configured offset as a first-order vector
-in the sentence, and the decomposition becomes exact. Either apply it and take
-the count to zero, or say why Chapter 3 differs.
+- `The signed angular components about the two surface tangents` and `the
+  signed tool-tilt angle about that tangent` both use `signed` as a modifier,
+  which *Style* rules out: the defining equation and the displayed positive and
+  negative values are supposed to establish the direction. The smallest change
+  that satisfies both is `angular components ... which may be positive or
+  negative`, which the guide already uses for \(r_{c,t_1}\) and
+  \(r_{c,t_2}\).
+- `tool-tilt angle` carries `tilt`, which the final checklist greps for. The
+  ban is written against the *configured* orientation offset, and this sentence
+  describes the physical tool angle in a pure single-tangent offset, so it is
+  arguably outside it. `tool inclination about that tangent` would avoid the
+  grep.
+
+Both are the author's wording and stand until changed.
 
 ## Reconcile the Tool Orientation timeout with the run archive
 

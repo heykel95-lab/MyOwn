@@ -505,7 +505,7 @@ direction, \(r_{c,t}\) perpendicular to it between a black TCP dot and a blue
 the dashed lines mark and draws no arrow on either axis. An arrow on each
 tangent reads as a second and a third rotation, where the geometry is one
 small-angle vector with two coordinates, and an earlier version that drew them
-as arrows had to label them \(a_{t_1}t_1\) and \(a_{t_2}t_2\) to stay honest.
+as arrows had to label them \(\theta_{t_1}t_1\) and \(\theta_{t_2}t_2\) to stay honest.
 The offset itself carries one arrowhead: a double head was tried, as the
 notation for a rotation vector, and dropped once the vector was set bold and
 named \(\mathbf{a}\).
