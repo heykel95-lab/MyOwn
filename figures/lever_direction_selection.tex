@@ -100,6 +100,11 @@
 % vector, and the displacement carries a single one and runs between two marked
 % points, the TCP and p_c. That is the distinction the panel has to make: one
 % arrow is an angle about an axis, the other a length in the plane.
+%
+% The magnitude and the direction angle are drawn as well, since the components
+% are the magnitude taken through the cosine and the sine of that angle. Panel
+% (b) therefore carries the whole of theta = ||theta|| u_theta, not only its
+% resolved parts.
 \begin{scope}
 
   % ---- surface tangents, broken at the origin ----------------------------
@@ -120,10 +125,17 @@
   \node[lbl, red, anchor=north west] at (0.13,0.98) {$\theta_{t_2}$};
 
   % ---- the offset, as a rotation vector -----------------------------------
+  % Its magnitude and its direction angle are both drawn, because the two
+  % components are that magnitude resolved through the cosine and the sine of
+  % that angle, and a panel that shows only the components hides where they
+  % come from.
   \draw[prj] (1.556,0) -- (35:1.90);
   \draw[prj] (0,1.090) -- (35:1.90);
   \draw[off] (0,0) -- (35:1.90);
   \node[lbl, red, anchor=west] at (35:2.18) {$\theta$};
+  \draw[arc] (0.55,0) arc (0:35:0.55);
+  \node[lbl, red] at (17.5:0.75) {$\alpha$};
+  \node[lbl, red] at (1.26,0.50) {$\lVert\theta\rVert$};
 
   % ---- displacement selected perpendicular to it --------------------------
   % The point name sits left of the tip and the vector name beyond it, on

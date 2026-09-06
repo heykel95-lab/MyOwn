@@ -490,6 +490,14 @@ angle and one a length. What it has now:
   blue \(p_c\) dot, which is what separates a length in the plane from an angle
   about an axis.
 
+**Panel~(b) also carries the magnitude and the direction angle.** Added
+2026-09-06 with the derivation that introduces them: an arc at the origin from
+\(t_1\) to the offset, named \(\alpha\), and \(\lVert\theta\rVert\) beside the
+offset arrow. A panel that draws only the resolved components hides where they
+come from, which is the magnitude taken through the cosine and the sine of that
+angle. The arc sits below the offset and the right-angle marker above it, so
+the two never meet.
+
 Two placements were settled by compiling it. The point name sits left of the
 arrowhead and the vector name beyond it, on opposite sides: stacked, `\(p_c\)`
 and `\(r_{c,t}\)` ran together. And the right-angle marker is drawn last and at

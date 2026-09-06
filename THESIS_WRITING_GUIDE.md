@@ -3630,15 +3630,44 @@ instantaneous opposing torque at identical joint configurations.
   \(t_1\) and \(t_2\), and finite rotations about different axes do not add.
   The sentence before it already scopes the relation to a **small** angular
   offset, which is the condition the approximation needs. The same equation
-  **The lead-in states the first-order scope.** Supplied 2026-09-04 and applied
-  as given: `Consider a small angular offset \(\theta\) that the contact
-  response should reduce. For small rotations, its components about the two
-  surface tangents are represented to first order by`. `For small rotations`
-  and `to first order` are what carry the approximation in words, so the symbol
-  and the sentence say the same thing. Two earlier lead-ins are withdrawn with
-  it: the plural `Considering small angular offsets …` form and, before that,
-  `its non-zero tangent-plane direction is written as`. The round-bracket
-  surface-frame column \(\theta_{a,S}\) went at the same time.
+  **The lead-in states the first-order scope, and it opens on `Considering`.**
+  Supplied 2026-09-04 as `Consider a small angular offset \(\theta\) that the
+  contact response should reduce. For small rotations, its components about the
+  two surface tangents are represented to first order by`, and rewritten on
+  2026-09-06 to introduce the magnitude and the direction first. It now reads
+  `Considering a small angular offset \(\theta\) that the contact response
+  should reduce, its direction in the surface tangent plane forms an angle
+  \(\alpha\) with \(t_1\) and is written`, followed by the unnumbered
+  \(u_\theta=\cos\alpha\,t_1+\sin\alpha\,t_2\), then `For small rotations, the
+  angular offset is represented to first order by` and Equation 2.51.
+  **`Considering` is the author's wording and is kept**, which lifts the
+  withdrawal of that opener recorded on 2026-09-04; the earlier plural
+  `Considering small angular offsets …` stays withdrawn, and so does
+  `its non-zero tangent-plane direction is written as`. `For small rotations`
+  and `to first order` still carry the approximation in words, so the symbol
+  and the sentence say the same thing. The round-bracket surface-frame column
+  \(\theta_{a,S}\) went with the 2026-09-04 revision.
+
+  **The components are derived, not asserted.** Equation 2.51 now reads
+  \(\theta\approx\lVert\theta\rVert u_\theta=\theta_{t_1}t_1+\theta_{t_2}t_2
+  =R_{\mathrm{surface}}\theta_S\), and an unnumbered display after it defines
+  \(\theta_{t_1}=\lVert\theta\rVert\cos\alpha\) and
+  \(\theta_{t_2}=\lVert\theta\rVert\sin\alpha\). The reason is that the earlier
+  form jumped to the resolved components, which left a reader asking where the
+  sine and the cosine had gone: they are inside the two component values. Both
+  new displays are unnumbered and take equals signs, so Equations 2.52 and 2.53
+  keep their numbers and the `\approx` count stays at three.
+
+  **The magnitude is \(\lVert\theta\rVert\), and \(\phi\) is not used for it.**
+  The author's formulation of 2026-09-06 wrote the magnitude \(\phi\), which is
+  already the orientation-error angle in the symbol list and in Section 2.2 of
+  the same chapter, so the two would have shared one name three sections apart.
+  The norm says the same thing, needs no symbol-list row, and follows the
+  precedent that withdrew `\rho_c`: a vector already has a norm. The direction
+  angle \(\alpha\) is introduced where it is used and takes no row either;
+  \(\alpha_{\mathrm{probe}}\) is a different symbol and is unaffected. The
+  sentence after Equation 2.52 now names the square root as
+  \(\lVert\theta\rVert\), which is where that denominator comes from.
 
   **Equation 3.2 carries `\approx` as well.** Instructed 2026-09-04, and this
   overturns the earlier sentence here that Chapter 3 keeps its equals sign. The

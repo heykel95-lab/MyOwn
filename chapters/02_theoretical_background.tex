@@ -1080,7 +1080,9 @@ t_1\times n_s=-t_2.
 views. Panel~(a) is an elevation along \mbox{\(t_1\)}, in which the component
 \mbox{\(\theta_{t_1}\)} appears as the angle between the tool face and the
 surface. Panel~(b) is the plan view along \mbox{\(n_s\)}, in which the same
-offset appears as a vector in the tangent plane.
+offset appears as a vector of magnitude \mbox{\(\lVert\theta\rVert\)} at the
+angle \mbox{\(\alpha\)} from \mbox{\(t_1\)}, with its two components as the
+projections of that vector on the tangents.
 
 \begin{figure}[H]
   \centering
@@ -1089,13 +1091,21 @@ offset appears as a vector in the tangent plane.
   \label{fig:lever_direction_selection}
 \end{figure}
 
-\Added{Consider a small angular offset \mbox{\(\theta\)} that the contact
-response should reduce. For small rotations, its components about the two
-surface tangents are represented to first order by}
+Considering a small angular offset \mbox{\(\theta\)} that the contact response
+should reduce, its direction in the surface tangent plane forms an angle
+\mbox{\(\alpha\)} with \mbox{\(t_1\)} and is written
+
+\[
+u_\theta=\cos\alpha\,t_1+\sin\alpha\,t_2.
+\]
+
+For small rotations, the angular offset is represented to first order by
 
 \begin{equation}
 \theta
 \approx
+\lVert\theta\rVert u_\theta
+=
 \theta_{t_1}t_1+\theta_{t_2}t_2
 =
 R_{\mathrm{surface}}\theta_S,
@@ -1106,14 +1116,22 @@ R_{\mathrm{surface}}\theta_S,
 \theta_{t_1}\\
 \theta_{t_2}\\
 0
-\end{bmatrix}.
+\end{bmatrix},
 \label{eq:alignment_deviation_surface_components}
 \end{equation}
 
-The components \mbox{\(\theta_{t_1}\)} and \mbox{\(\theta_{t_2}\)} are
-rotation angles about the two surface tangents, in radians, so
-\mbox{\(\theta\)} is a rotation vector whose direction is the rotation axis.
-Here \mbox{\(\theta_S\)} holds its surface coordinates, in the column order of
+where
+
+\[
+\theta_{t_1}=\lVert\theta\rVert\cos\alpha,
+\qquad
+\theta_{t_2}=\lVert\theta\rVert\sin\alpha.
+\]
+
+The two components are therefore rotation angles about the surface tangents, in
+radians, and they carry the magnitude and the direction of the offset between
+them. Here \mbox{\(\theta_S\)} holds its surface coordinates, in the column
+order of
 \mbox{\Cref{eq:coc_surface_components}}. The entry about \mbox{\(n_s\)} is
 zero, because a rotation about the surface normal leaves the inclination of the
 tool face unchanged.
@@ -1142,7 +1160,8 @@ r_{c,t}
 \label{eq:general_compliance_lever_selection}
 \end{equation}
 
-The fraction in \mbox{\Cref{eq:general_compliance_lever_selection}} is the unit
+The square root is the offset magnitude \mbox{\(\lVert\theta\rVert\)}, so the
+fraction in \mbox{\Cref{eq:general_compliance_lever_selection}} is the unit
 direction perpendicular to the angular offset in the surface tangent plane; the
 magnitude \mbox{\(\lVert r_{c,t}\rVert\)} remains a selectable controller
 parameter. Panel~(b) of \mbox{\Cref{fig:lever_direction_selection}} draws that
