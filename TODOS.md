@@ -220,12 +220,12 @@ Section 3.2.5 already writes \(\dot p_d=0\), so Chapter 3 uses the plain zero
 for the same kind of quantity that Chapter 2 sets bold. Decide which the thesis
 uses and apply it to all four places at once.
 
-## Decide two long supplied sentences
+## Decide three long supplied sentences
 
-Both were supplied by the user on 2026-09-02 and applied as given, under the
-rule that supplied wording is not altered for style. Each is over the 28-word
-limit in the register baseline, and each is the longest sentence its revision
-added. Confirm whether they stand as written or may be split.
+All three were supplied by the user and applied as given, under the rule that
+supplied wording is not altered for style. Each is over the 28-word limit in the
+register baseline, and each is the longest sentence its revision added. Confirm
+whether they stand as written or may be split.
 
 - Chapter 1, Motivation, 34 words: `Together, the difference between the
   configured and physical surfaces and the difference between the desired and
@@ -240,6 +240,13 @@ added. Confirm whether they stand as written or may be split.
   rewrite of the whole subsection, replacing the 38-word sentence previously
   listed here. Splitting after `desired orientation` would bring it under the
   28-word limit without changing the mechanism it states.
+- Section 2.7.2, 30 words: `The exact composition depends on the order of the
+  two finite rotations, whereas this difference enters only through second- and
+  higher-order terms and therefore disappears in the first-order small-angle
+  representation.` Supplied on 2026-09-06 and offered as an optional addition
+  after Equation 2.53, where it is what licenses the additive form. Splitting
+  after `finite rotations` would bring it under the limit and leave both halves
+  standing.
 
 ## Finish the Appendix C reduction
 
@@ -306,20 +313,24 @@ positions instead. `the subscript \(\mathrm{est}\)` became `the
 \(\mathrm{est}\) index`, because `subscript` is not used in thesis prose.
 Restore either if the supplied wording is meant to stand.
 
-## \(\phi\) now names two different rotations
+## \(u\) now names two different directions
 
-The Section 2.7.2 construction of 2026-09-06 defines the angular mismatch
-through the shortest rotation from \(n_d=-n_s\) to \(n_{\mathrm{Tool}}\), whose
-angle is \(\phi\) and whose unit axis is \(u_a\). The author supplied both
-symbols and both were applied. \(\phi\) is already the orientation-error angle
-of \(\Delta R\), in Section 2.2 and in its own symbol-list row, so the List of
-Symbols now carries two rows headed \(\phi\), and one chapter uses the letter
-for two different rotations five sections apart.
+The Section 2.7.2 construction of 2026-09-06 defines the first-order direction
+of a general angular tool offset as
+\(u=(\theta_{t_1}t_1+\theta_{t_2}t_2)/\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}\).
+The author supplied the symbol and it was applied. \(u\) is already the
+base-frame orientation-error axis of \(\Delta R\), in Section 2.2 and in its own
+symbol-list row, so the List of Symbols now carries two rows containing \(u\),
+and one chapter uses the letter for two different directions five sections
+apart.
 
-The smallest change that satisfies both is \(\phi_a\), which pairs with
-\(u_a\) exactly as \(\phi_0\) pairs with \(u_0\) in Section 4.5 and
-\(\phi_{\mathrm{CE}}\) with \(u_{\mathrm{CE}}\) in Chapter 3, and leaves the
-mathematics untouched. Every other axis--angle instance in the thesis is
-indexed that way; the bare pair \(\phi,u\) belongs to the generic construction
-of Section 2.3. Two files change: `chapters/02_theoretical_background.tex`, in
-Equation 2.51 and the sentences around it, and the symbol-list row.
+This is the same collision the withdrawn axis--angle construction had with
+\(\phi\), and it has the same smallest fix: an index. \(u_\theta\) is
+withdrawn by name in `THESIS_WRITING_GUIDE.md` and would have to be un-withdrawn
+to be used, so \(u_t\) for the tangent-plane direction is the free candidate.
+Every other axis or direction in the thesis is indexed that way -- \(u_0\) in
+Section 4.5, \(u_{\mathrm{CE}}\) in Chapter 3, \(u_{\mathrm{offset}}\) in
+Section 3.2.2 -- and the bare \(u\) belongs to the generic axis--angle
+construction of Section 2.3. Two files change:
+`chapters/02_theoretical_background.tex`, in Equations 2.54 to 2.58 and the
+sentences around them, and the symbol-list row.

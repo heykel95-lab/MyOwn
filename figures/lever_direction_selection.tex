@@ -1,101 +1,121 @@
 % Three views of the compliance-centre direction rule, for Section 2.7.2. The
-% section builds the rule on the shortest rotation that takes the inward
-% surface normal to the tool-face normal, so the figure separates the three
-% quantities that construction produces:
+% section composes two small rotations about the surface tangents, reduces the
+% composition to first order, and selects the tangential displacement
+% perpendicular to the direction that reduction produces. The three panels
+% follow that order:
 %
-%   (a) how large the mismatch is   phi, the angle between n_d = -n_s and
-%                                   n_Tool, seen in an elevation whose plane is
-%                                   perpendicular to the rotation axis
-%   (b) where its axis lies         u_a in the surface tangent plane, located by
-%                                   the direction angle alpha from +t_1
-%   (c) how the displacement        r_{c,t} = ||r_{c,t}||(n_s x u_a), drawn
-%       follows                     between the TCP and p_c
+%   (a) what is rotated        theta_{t_1} about t_1 and theta_{t_2} about t_2,
+%                              drawn as curls wrapping the two tangents of an
+%                              oblique view
+%   (b) what they combine to   the first-order contributions theta_{t_1} t_1 and
+%                              theta_{t_2} t_2 and their resultant, whose unit
+%                              direction is u
+%   (c) what is selected       r_{c,t} = ||r_{c,t}|| (n_s x u), drawn between the
+%                              TCP and p_c
 %
-% u_a is an ordinary unit direction vector, not a rotation, so it carries one
-% arrowhead and no angular components are drawn on the tangent axes. Earlier
-% versions resolved a rotation vector onto t_1 and t_2, which left the reader
-% unable to tell an angle from a length; that construction is gone.
+% The two contributions in panel (b) are labelled as the products theta_{t_i}t_i
+% rather than as bare angles, so that a length in the tangent plane is never
+% read as an angle in it. The withdrawn axis-angle construction and its
+% quantities n_d, n_Tool, phi, u_a and alpha appear nowhere.
 %
-% Because n_d and n_Tool both lie in the plane of panel (a), their cross product
-% is perpendicular to it, so u_a points out of the page there. The dotted circle
-% marks that direction and ties the elevation to the two plan views.
+% Panel (a) uses one oblique projection, fixed here: t_1 at -25 degrees, t_2 at
+% +35 degrees, n_s up the page. Each curl is centred on its own tangent, so it
+% wraps that axis, and runs in the positive sense that follows from
+% t_1 x t_2 = n_s: the curl about t_1 carries t_2 towards n_s, and the curl
+% about t_2 carries n_s towards t_1. Both sit beyond the drawn patch of surface,
+% which is kept small for that reason, and each label sits perpendicular to its
+% own axis on the free side.
 %
 % Uses only tikz + arrows.meta, which config/packages.tex loads.
 %
 % Colour follows compliance_lever_moment.tex and case_c_direction_rule.tex: the
-% surface, the tool and the frame directions are black, red carries the angular
-% mismatch and the axis it defines, blue the compliance-centre displacement.
+% surface and the frame directions are black, red carries the angular offsets
+% and the direction they combine to, blue the compliance-centre displacement.
+%
+% Horizontal placement. Each panel is listed with the span it occupies in its
+% own scope, and the scopes are shifted so that about 0.95 units separate one
+% panel's outermost label from the next:
+%   (a) [-0.38, 1.88] at x = -4.55      (b) [-0.55, 2.05] at x = -1.17
+%   (c) [-1.18, 1.85] at x =  3.01
 \begin{tikzpicture}[
     scale=1.1,
     font=\small,
     ax/.style={-{Latex[length=1.8mm]}, black},
     nrm/.style={-{Latex[length=2.0mm]}, thick, black},
     dir/.style={-{Latex[length=2.2mm]}, thick, red},
+    cmp/.style={-{Latex[length=1.8mm]}, red},
+    con/.style={dashed, thin, black},
     lev/.style={-{Latex[length=2.2mm]}, thick, blue},
     arc/.style={-{Latex[length=1.6mm]}, red},
     surf/.style={draw=black, fill=black!8},
-    tool/.style={draw=black, fill=black!4},
     lbl/.style={font=\footnotesize, inner sep=1.8pt},
     pt/.style={circle, fill=black, inner sep=0pt, minimum size=3.0pt},
     cpt/.style={circle, fill=blue, inner sep=0pt, minimum size=3.0pt},
   ]
 
-% ============ (a) the angular mismatch between the two normals ==============
-\begin{scope}[shift={(-5.05,0)}]
-  \fill[surf] (-1.90,-0.22) rectangle (1.30,0);
-  \draw[black] (-1.90,0) -- (1.30,0);
+% ============ (a) the two rotations about the surface tangents ==============
+% Projected unit directions: t_1 -> (0.906,-0.423), t_2 -> (0.819,0.574),
+% n_s -> (0,1).
+\begin{scope}[shift={(-4.55,0.22)}]
 
-  \begin{scope}[shift={(-1.15,1.10)}, rotate=28]
-    \draw[tool] (0,0) rectangle (1.35,0.16);
-  \end{scope}
+  % ---- a small patch of the surface the two tangents span -----------------
+  \fill[surf] (-0.345,-0.030) -- (0.516,-0.432) -- (1.212,0.056)
+           -- (0.351,0.458) -- cycle;
+  \draw[black] (-0.345,-0.030) -- (0.516,-0.432) -- (1.212,0.056)
+            -- (0.351,0.458) -- cycle;
 
-  % Both normals leave one point of the tool face, so the arc between them is
-  % the angle of the rotation that takes the first to the second. The sector is
-  % narrow, so the angle name sits well inside the two arrowheads, and each
-  % direction name clears the face above it and the surface below it.
-  \draw[nrm] (-0.709,1.335) -- (-0.709,0.155);
-  \node[lbl, anchor=east] at (-0.80,0.75) {$n_d=-n_s$};
-  \draw[nrm] (-0.709,1.335) -- (-0.155,0.293);
-  \node[lbl, anchor=west] at (-0.19,0.94) {$n_{\mathrm{Tool}}$};
+  % ---- the frame directions ----------------------------------------------
+  \draw[ax] (0,0) -- (1.586,-0.740);
+  \node[lbl, anchor=west] at (1.66,-0.79) {$t_1$};
+  \draw[ax] (0,0) -- (1.310,0.918);
+  \node[lbl, anchor=south west] at (1.36,0.96) {$t_2$};
+  \draw[nrm] (0,0) -- (0,1.20);
+  \node[lbl, anchor=east] at (-0.10,1.06) {$n_s$};
 
-  \draw[arc] ([shift=(270:0.55)]-0.709,1.335) arc (270:298:0.55);
-  \node[lbl, red] at ([shift=(284:0.80)]-0.709,1.335) {$\phi$};
+  % ---- rotation about t_1, wrapping that axis and carrying t_2 to n_s -----
+  \draw[arc] plot[domain=-50:140, samples=32, variable=\s]
+    ({1.042+0.262*cos(\s)}, {-0.486+0.184*cos(\s)+0.320*sin(\s)});
+  \node[lbl, red] at (0.809,-0.984) {$\theta_{t_1}$};
 
-  % The plane of the drawing is perpendicular to the rotation axis.
-  \draw[red, fill=white] (0.72,0.62) circle (0.13);
-  \fill[red] (0.72,0.62) circle (0.04);
-  \node[lbl, red, anchor=west] at (0.89,0.62) {$u_a$};
+  % ---- rotation about t_2, wrapping that axis and carrying n_s to t_1 -----
+  \draw[arc] plot[domain=-50:140, samples=32, variable=\s]
+    ({0.860+0.290*sin(\s)}, {0.603+0.320*cos(\s)-0.135*sin(\s)});
+  \node[lbl, red] at (0.447,1.193) {$\theta_{t_2}$};
 \end{scope}
-\node[lbl] at (-5.35,-1.55) {(a) Angular mismatch};
+\node[lbl] at (-3.80,-1.60) {(a) Tangent rotations};
 
-% ============ (b) the axis, located in the surface tangent plane ============
-\begin{scope}[shift={(-2.45,0)}]
-  \draw[ax] (0,0) -- (1.80,0);
-  \node[lbl, anchor=west]  at (1.94,0) {$t_1$};
-  \draw[ax] (0,0) -- (0,1.60);
-  \node[lbl, anchor=south] at (0,1.72) {$t_2$};
+% ============ (b) their first-order contributions, and the direction =======
+\begin{scope}[shift={(-1.17,-0.30)}]
+  \draw[ax] (0,0) -- (1.70,0);
+  \node[lbl, anchor=west]  at (1.82,0) {$t_1$};
+  \draw[ax] (0,0) -- (0,1.45);
+  \node[lbl, anchor=south] at (0,1.52) {$t_2$};
 
-  \draw[dir] (0,0) -- (35:1.10);
-  \node[lbl, red, anchor=south west] at (35:1.16) {$u_a$};
+  % The two first-order contributions, and the parallelogram they close.
+  \draw[cmp] (0,0) -- (1.05,0);
+  \node[lbl, red, anchor=north] at (0.52,-0.08) {$\theta_{t_1}t_1$};
+  \draw[cmp] (0,0) -- (0,0.72);
+  \node[lbl, red, anchor=east] at (-0.08,0.40) {$\theta_{t_2}t_2$};
+  \draw[con] (1.05,0) -- (1.05,0.72) -- (0,0.72);
 
-  \draw[arc] (0.48,0) arc (0:35:0.48);
-  \node[lbl, red] at (17.5:0.72) {$\alpha$};
+  \draw[dir] (0,0) -- (1.05,0.72);
+  \node[lbl, red, anchor=south west] at (1.09,0.76) {$u$};
 \end{scope}
-\node[lbl] at (-1.58,-1.55) {(b) Axis in the tangent plane};
+\node[lbl] at (-0.42,-1.60) {(b) First-order direction};
 
-% ============ (c) the displacement selected from that axis ==================
-\begin{scope}[shift={(2.35,0)}]
+% ============ (c) the displacement selected from that direction ============
+\begin{scope}[shift={(3.01,0)}]
   \draw[ax] (0,0) -- (1.45,0);
   \node[lbl, anchor=west]  at (1.58,0) {$t_1$};
   \draw[ax] (0,0) -- (0,1.45);
   \node[lbl, anchor=south] at (0,1.57) {$t_2$};
 
-  \draw[black, fill=white] (-1.05,-0.75) circle (0.13);
-  \fill[black] (-1.05,-0.75) circle (0.04);
-  \node[lbl, anchor=east] at (-1.25,-0.75) {$n_s$};
+  \draw[black, fill=white] (1.05,-0.80) circle (0.13);
+  \fill[black] (1.05,-0.80) circle (0.04);
+  \node[lbl, anchor=west] at (1.25,-0.80) {$n_s$};
 
   \draw[dir] (0,0) -- (35:1.15);
-  \node[lbl, red, anchor=west] at (35:1.35) {$u_a$};
+  \node[lbl, red, anchor=west] at (35:1.35) {$u$};
 
   \draw[lev] (0,0) -- (125:1.40);
   \node[cpt] at (125:1.40) {};
@@ -105,11 +125,11 @@
   \node[lbl, anchor=north west] at (0.08,-0.10) {TCP};
 
   % The square spans the quadrant between the two, so it is rotated by the
-  % axis direction, the first of them.
+  % direction u, the first of them.
   \begin{scope}[rotate=35]
     \draw[black, thin] (0.30,0) -- (0.30,0.30) -- (0,0.30);
   \end{scope}
 \end{scope}
-\node[lbl] at (2.43,-1.55) {(c) Selected displacement};
+\node[lbl] at (3.345,-1.60) {(c) Selected displacement};
 
 \end{tikzpicture}
