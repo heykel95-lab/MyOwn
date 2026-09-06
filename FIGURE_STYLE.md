@@ -490,35 +490,29 @@ angle and one a length. What it has now:
   blue \(p_c\) dot, which is what separates a length in the plane from an angle
   about an axis.
 
-**Panel~(b) draws the triangle the two components close, and states what it
-means.** Settled 2026-09-06 over three passes. It carries the direction angle
-\(\alpha\) as an arc at the origin, the magnitude
-\(\lVert\boldsymbol{\theta}\rVert\) beside the offset arrow, the two dashed
-projections with a right-angle marker at the foot of the vertical one, and the
-two relations \(\theta_{t_1}=\lVert\boldsymbol{\theta}\rVert\cos\alpha\) and
-\(\theta_{t_2}=\lVert\boldsymbol{\theta}\rVert\sin\alpha\) set below the panel.
-A panel that draws only the resolved components hides where they come from, and
-the triangle is what makes the cosine and the sine visible rather than merely
-stated in the paragraph below.
+**The figure has three panels, one question each.** Settled 2026-09-06 after a
+two-panel version carried the offset, its components, the direction angle, the
+TCP, \(p_c\) and the displacement in one drawing. Panel~(a) is the elevation
+along \(t_1\), where the component appears as an angle between the tool face
+and the surface. Panel~(b) answers what the offset vector is: the two tangents,
+the vector \(\mathbf{a}\), its magnitude, the direction angle \(\alpha\) as an
+arc from \(+t_1\), and the two dashed projections marking \(a_{t_1}\) and
+\(a_{t_2}\). Panel~(c) answers how the displacement follows: the same
+direction, \(r_{c,t}\) perpendicular to it between a black TCP dot and a blue
+\(p_c\) dot, \(n_s\) as an out-of-page marker, and the right-angle marker.
 
-**The axis arrows carry the products, and the vector is bold.** The arrows are
-labelled \(\theta_{t_1}t_1\) and \(\theta_{t_2}t_2\), because that is what they
-are; an earlier version labelled them \(\theta_{t_1}\) and \(\theta_{t_2}\), so
-one name stood for an arc in panel~(a) and an arrow in panel~(b), which is the
-fault this figure exists to prevent. \(\boldsymbol{\theta}\) is set bold in
-every figure label, matching the prose, and its components and \(u_\theta\)
-stay plain.
+**The components are projections, not arrows.** Panel~(b) labels the segments
+the dashed lines mark and draws no arrow on either axis. An arrow on each
+tangent reads as a second and a third rotation, where the geometry is one
+small-angle vector with two coordinates, and an earlier version that drew them
+as arrows had to label them \(a_{t_1}t_1\) and \(a_{t_2}t_2\) to stay honest.
+The offset itself carries one arrowhead: a double head was tried, as the
+notation for a rotation vector, and dropped once the vector was set bold and
+named \(\mathbf{a}\).
 
-The relation block sits below the panel rather than beside the arrows: placed
-level with them it landed on `TCP` and on the \(\theta_{t_1}t_1\) label, and
-the space between the \(t_2\) axis and the offset is too narrow for a line of
-that length.
-
-Two placements were settled by compiling it. The point name sits left of the
-arrowhead and the vector name beyond it, on opposite sides: stacked, `\(p_c\)`
-and `\(r_{c,t}\)` ran together. And the right-angle marker is drawn last and at
-\(0.34\) rather than \(0.22\), because the component arrow along \(t_2\) passes
-through the marked quadrant and covered the smaller square.
+The magnitude label is placed off the shaft on the free side rather than
+anchored above it, because an anchored label still printed across the arrow at
+this size.
 
 Three things were settled by compiling panel~(a). The angle is drawn at the
 vertex, at a radius of about \(0.8\): a first version marked it at \(1.45\), out

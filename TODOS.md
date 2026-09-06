@@ -52,20 +52,6 @@ becomes `are the surface-tangent components used to construct the offset`, or
 the equation goes back to `=`. Not resolved here because the instruction named
 neither.
 
-## Check the revived \(\theta_{t_1}\) and \(\theta_{t_2}\) against older drafts
-
-Dropping the index \(a\) on 2026-09-04 made \(\theta_{t_1}\) and
-\(\theta_{t_2}\) the components of the general offset in Section 2.7.2. Both
-spellings were previously **withdrawn** names for the *configured* offset, and
-`THESIS_WRITING_GUIDE.md` carried that withdrawal until the same day.
-
-Nothing in the current thesis is ambiguous: the configured quantity keeps its
-`offset` index in all 21 of its uses, and the two families never meet in one
-section. The risk is external — a supervisor or examiner holding an earlier
-draft will have met \(\theta_{t_1}\) as the configured offset. If any circulated
-version used the old spelling, say once in Section 2.7.2 which quantity the
-symbol names there.
-
 ## Decide whether the \(n_s\times\theta\) display is boxed
 
 The Section 2.7.2 rewrite supplied on 2026-09-04 gave the cross-product step as
@@ -84,29 +70,22 @@ step of a derivation whose result is already set as a numbered equation two
 displays later. Box it only if the author wants the derivation's turning point
 marked.
 
-## Decide whether the three `\approx` relations stay
+## Decide whether Equation 3.2 keeps its `\approx`
 
-Instructed on 2026-09-04 and applied. The symbol now appears in three places:
-Equation 2.51, \(\theta\approx\theta_{t_1}t_1+\theta_{t_2}t_2\); Equation 3.2,
-the same construction for \(\theta_{\mathrm{offset}}\); and the unnumbered
-\(n_s\times\theta\approx\theta_{t_1}t_2-\theta_{t_2}t_1\) display added to
-Section 2.7.2 later the same day. The ground is that the two scalars read as
-rotation angles about \(t_1\) and \(t_2\), and finite rotations about different
-axes do not add. `THESIS_WRITING_GUIDE.md` records the blanket ban as narrowed
-to these three rather than lifted.
+Section 2.7.2 gave up both of its occurrences on 2026-09-06, when the author
+placed the approximation in the sentence rather than in the algebra: the
+first-order step is the replacement of the finite orientation mismatch by the
+small-angle vector \(\mathbf{a}\), and resolving that vector into tangent
+components is exact. Equation 2.51 and the \(n_s\times\mathbf{a}\) display both
+carry equals signs now, and Chapter 2 carries no `\approx` at all.
 
-The third is not an independent decision. \(n_s\times\theta\) is exact given
-\(\theta\), so its symbol is inherited: if Equation 2.51 goes back to `=`, that
-display does too, and if 2.51 keeps `\approx` the display keeps it. Decide 2.51
-and 3.2, and the third follows.
-
-The smallest change that would satisfy the old rule is the route the guide
-gives first: state that \(\theta_{t_1}\) and \(\theta_{t_2}\) are the
-components of the one rotation vector \(\theta\) along the two tangents, which
-makes the sum exact and restores the equals sign. That route is now closed on
-both sides — Chapter 3 took it until 2026-09-04 and no longer does — so the
-thesis is at least self-consistent. What remains is the single question of
-which reading it uses.
+Equation 3.2 still does, for the configured offset
+\(\theta_{\mathrm{offset}}\approx\theta_{\mathrm{offset},t_1}t_1+
+\theta_{\mathrm{offset},t_2}t_2\), on the older ground that its two scalars read
+as rotation angles about different axes. The same argument that freed
+Section 2.7.2 applies there: name the configured offset as a first-order vector
+in the sentence, and the decomposition becomes exact. Either apply it and take
+the count to zero, or say why Chapter 3 differs.
 
 ## Reconcile the Tool Orientation timeout with the run archive
 
@@ -383,16 +362,21 @@ Restore either if the supplied wording is meant to stand.
 
 ## Decide whether the bold-vector notation stays local to Section 2.7.2
 
-\(\boldsymbol{\theta}\) was set bold on 2026-09-06, on the author's
+The general angular offset became \(\mathbf{a}\) on 2026-09-06, on the author's
 instruction, so that the vector cannot be read as a third scalar beside
-\(\theta_{t_1}\) and \(\theta_{t_2}\). It crosses *One typeface: plain italic*
-in `THESIS_WRITING_GUIDE.md`, which sets every symbol plain and admits only the
-zero vector as an exception.
+\(a_{t_1}\) and \(a_{t_2}\). Bold crosses *One typeface: plain italic* in
+`THESIS_WRITING_GUIDE.md`, which sets every symbol plain and admits only the
+zero vector as an exception. Applied as instructed and recorded there as a
+second exception.
 
-Applied as instructed and recorded there as a second exception. What is open is
-the scope: the thesis now has one bold vector and about thirty plain ones,
-including \(f\), \(m\), \(e_p\), \(r_c\) and \(\theta_S\) in the same chapter.
-Either the exception stays local, and the guide says why this symbol alone
-needs it, or the convention widens to every Cartesian vector, which is a pass
-over every chapter, the symbol list and the figures. The first is what is
-written now.
+Two things are open. The scope: the thesis now has one bold vector and about
+thirty plain ones, including \(f\), \(m\), \(e_p\), \(r_c\) and \(a_S\) in the
+same section. Either the exception stays local, with the guide saying why this
+symbol alone needs it, or the convention widens to every Cartesian vector,
+which is a pass over every chapter, the symbol list and the figures.
+
+And the letter: a plain \(a\) is already the surface tilt angle about the base
+\(x_0\)-axis, in Chapter 4 and the parameter appendix, beside \(b\). Bold
+\(\mathbf{a}\) and italic \(a\) are different symbols and never meet in one
+equation, but a reader who has met the tilt angles may pause at the letter.
+Renaming the tilt angles, or accepting the pair, is a decision for the author.
