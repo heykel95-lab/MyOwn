@@ -47,6 +47,7 @@ from figure_style import (apply_style, thin,  # noqa: E402
                           SERIES_BLACK, SERIES_BLUE, SERIES_RED,
                           REFERENCE_GREY)
 import matplotlib.pyplot as plt  # noqa: E402
+from matplotlib.ticker import MaxNLocator  # noqa: E402
 
 
 def panel_legend(figure, axes, reserve):
@@ -123,12 +124,16 @@ def contact_wrench_figure(csv_path, out_path):
 
     apply_style()
     plt.rcParams["axes.formatter.use_mathtext"] = True
-    figure, axes = plt.subplots(2, 1, figsize=(6.15, 4.30), sharex=True)
+    figure, axes = plt.subplots(2, 1, figsize=(6.15, 3.90), sharex=True)
     for axis in axes:
         axis.axvspan(4.0, 5.0, color=REFERENCE_GREY, alpha=0.13, linewidth=0)
     axes[0].plot(t, fn_cmd, color=SERIES_BLACK, label="Commanded")
     axes[0].plot(t, fn_est, color=SERIES_RED, label="Model-estimated")
     axes[0].set_ylabel("Normal Force,\n" r"$F_n$ [N]")
+    # The panel is short enough that the automatic locator drops to two labels,
+    # which leaves the settled force with no tick to be read against. Ask for
+    # the four the taller canvas used to give: 0, -25, -50, -75.
+    axes[0].yaxis.set_major_locator(MaxNLocator(nbins=4))
     axes[0].set_title("(a)", loc="left")
     axes[1].plot(t, mt1_cmd, color=SERIES_BLACK, label="Commanded")
     axes[1].plot(t, mt1_est, color=SERIES_RED, label="Model-estimated")

@@ -1352,6 +1352,29 @@ is already one line and the figure still does not fit, reduce `figsize` in the
 generator and re-run it, so the fonts keep their size while the canvas loses
 height.
 
+**Shrinking a figure moves whitespace; it only removes it when a page is
+saved.** Recorded 2026-09-07 after the second application of this rule, so the
+next reader does not expect the first outcome twice. Figure 5.8 gained a page
+for the document, because the figure and the paragraph above it then shared one
+page that had held only the paragraph. Figure 5.1 did not: the contact-wrench
+canvas was cut from \(4.30\) to \(3.90\,\mathrm{in}\), which closed the
+\(338\,\mathrm{pt}\) gap on page 62 to \(17\,\mathrm{pt}\), but every later
+`[H]` figure in the chapter then landed differently and pages 63, 64, 66, 67
+and 70 each gained between \(20\) and \(120\,\mathrm{pt}\). Across Chapter 5 the
+total blank space moved by \(9\,\mathrm{pt}\) and the page count did not change.
+The worst single page improved, from \(338\) to \(196\,\mathrm{pt}\), which is
+what the change buys. **Measure the whole chapter before and after, not the one
+page**, and say which of the two outcomes was obtained.
+
+**A shorter panel drops tick labels, and that has to be checked.** Cutting the
+contact-wrench canvas took the automatic locator on the force panel from four
+labels to two, `0` and \(-50\), which left the settled force near
+\(-80\,\mathrm{N}\) with no tick to be read against. The panel carries
+`MaxNLocator(nbins=4)` for that reason and now reads `0`, \(-30\), \(-60\),
+\(-90\). Read the axis strings out of the regenerated file with `pdftotext`
+before installing it: a dropped tick is invisible in the script and easy to miss
+in a thumbnail.
+
 **Measure it in the compiled PDF.** Render the page and find the last row of
 ink between the running head and the folio; a page whose body ends more than
 about \(120\,\mathrm{pt}\) short of \(769\,\mathrm{pt}\) is either a chapter
