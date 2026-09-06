@@ -1068,7 +1068,7 @@ circulation, the settled choices are:
   \(\theta_{\mathrm{offset},t_1}\to\theta_{\mathrm{init},t_1}\to\gamma_{t_1}\).
 
   In Chapter 3 the configured vector and its rotation are
-  \(\theta_{\mathrm{offset}}=\theta_{\mathrm{offset},t_1}t_1+
+  \(\theta_{\mathrm{offset}}\approx\theta_{\mathrm{offset},t_1}t_1+
   \theta_{\mathrm{offset},t_2}t_2\),
   \(u_{\mathrm{offset}}=\theta_{\mathrm{offset}}/
   \lVert\theta_{\mathrm{offset}}\rVert\), and
@@ -1079,100 +1079,125 @@ circulation, the settled choices are:
   \(\theta_{\mathrm{cmd}}\), \(u_{\mathrm{cmd}}\),
   \(R_{\mathrm{cmd}}\) forms are withdrawn.
 
-  **The three angular families are \(\theta\), \(\theta_{\mathrm{offset}}\)
-  and \(\theta_{\mathrm{init}}\).** Settled 2026-09-04, replacing
-  \(\theta_a\) and \(\theta_{0,t_1}\):
+  **The two tangent quantities are rotational contributions, and the sum is a
+  first-order representation of a composition.** Settled 2026-09-06 on the
+  author's correction, and this is what Section 3.2.2 now says. Two rotations
+  about \(t_1\) and \(t_2\) are *composed*, not added: the exact combined
+  orientation is \(R(t_2,\theta_{\mathrm{offset},t_2})
+  R(t_1,\theta_{\mathrm{offset},t_1})\), and it depends on which rotation is
+  applied first. Only to first order in small angles do the two contributions
+  add, which is what Equation 3.2 states and why it carries `\approx`.
+
+  Three consequences bind. The settled sentences before the equation are `The
+  configured orientation offset combines small rotations about the two surface
+  tangents.` and `Composing the two rotation matrices gives the exact combined
+  orientation, which depends on the order in which the rotations are applied.`
+  The sentence after it reads `Here \(t_1\) and \(t_2\) are the rotation axes,
+  and each product is the first-order contribution of one rotation, expressed
+  in radians.` And **`the components of this rotation vector along the two
+  surface tangents` is withdrawn**, written here as a literal string: it called
+  an approximate sum an exact decomposition, and it contradicted the `\approx`
+  printed one line above it. `TODOS.md` carried that contradiction as an open
+  item until this correction closed it.
+
+  **Do not describe the sum as rotating \(t_1\) and \(t_2\) and adding the
+  results.** The tangents are the rotation axes; \(\theta_{\mathrm{offset},t_1}t_1\)
+  and \(\theta_{\mathrm{offset},t_2}t_2\) are the first-order contributions of
+  the two rotations. The symbol-list rows say the same: the offset is `formed
+  to first order from its two tangent contributions`, and its two scalars are
+  the `First-order contributions of the configured rotations about \(t_1\) and
+  \(t_2\)`. The earlier row that printed the sum with an equals sign is
+  withdrawn with the sentence it matched.
+
+  **The two angular families are \(\theta_{\mathrm{offset}}\) and
+  \(\theta_{\mathrm{init}}\).** Settled 2026-09-06, replacing the three-family
+  table that carried a general \(\theta\) for Section 2.7.2:
 
   | Symbol | Is |
   |---|---|
-  | \(\theta\), \(\theta_{t_i}\) | the general small angular offset of the compliance-centre derivation, Section 2.7.2 |
   | \(\theta_{\mathrm{offset}}\), \(\theta_{\mathrm{offset},t_i}\) | the configured pre-contact angular offset |
   | \(\theta_{\mathrm{init}}\), \(\theta_{\mathrm{init},t_i}\) | the achieved initial angular offset at contact entry |
 
-  **\(\theta_a\) and \(\theta_{a,S}\) are withdrawn**, written here as literal
-  strings so a rename cannot revive them. The generic offset carries no index
-  at all: the derivation needs only one angular quantity, and the index named
-  nothing a reader could look up.
+  **\(\theta_a\), \(\theta_{a,S}\), \(\theta_S\), \(\theta_{t_1}\),
+  \(\theta_{t_2}\), \(\mathbf{a}\), \(a_S\), \(u_\theta\) and \(u_\alpha\) are
+  all withdrawn**, written here as literal strings so a rename cannot revive
+  them. They were the successive attempts to give Section 2.7.2 a general
+  angular-offset *vector* and to resolve it onto the two tangents. The
+  construction that replaced them needs none of them, and the reasoning is the
+  author's: a finite orientation belongs to \(SO(3)\) and is not an ordinary
+  spatial vector, so an equation that adds two tangent components as though they
+  were one is only justified by declaring them exponential coordinates, which
+  the compliance-centre rule never needs.
 
-  **The surface-frame column is \(\theta_S\), and it sits inside
-  Equation 2.51.** Instructed 2026-09-06, restoring in the settled spelling the
-  round-bracket column that went out with \(\theta_{a,S}\) on 2026-09-04. The
-  equation reads
-  \(\theta\approx\theta_{t_1}t_1+\theta_{t_2}t_2=R_{\mathrm{surface}}\theta_S\),
-  with \(\theta_S=[\,\theta_{t_1},\;\theta_{t_2},\;0\,]^\top\) beside it, so the
-  offset appears both along the tangents and as coordinates. It is set as a
-  `bmatrix` column in the \([t_1,t_2,n_s]\) order \(r_{c,S}\) already uses, and
-  the two sentences after it say that \(\theta_S\) holds the surface
-  coordinates of the offset in that column order and that its entry about
-  \(n_s\) is zero, because a rotation about the surface normal leaves the
-  inclination of the tool face unchanged.
+  **Section 2.7.2 is built on the shortest rotation between two directions.**
+  Settled 2026-09-06 and supplied by the author. A tool face parallel to the
+  surface carries its normal along \(n_d=-n_s\), the actual tool-face normal is
+  \(n_{\mathrm{Tool}}\), and Equation 2.51 gives the angle and the unit axis of
+  the shortest rotation that takes the first to the second,
+  \(\phi=\operatorname{atan2}(\lVert n_d\times n_{\mathrm{Tool}}\rVert,
+  n_d^\top n_{\mathrm{Tool}})\) and
+  \(u_a=(n_d\times n_{\mathrm{Tool}})/\lVert n_d\times n_{\mathrm{Tool}}\rVert\).
+  A cross product is perpendicular to both its factors, so \(u_a\) lies in the
+  surface tangent plane without anything being assumed, and its direction
+  cosines \(c_1=t_1^\top u_a\) and \(c_2=t_2^\top u_a\) give the direction angle
+  \(\alpha=\operatorname{atan2}(c_2,c_1)\) and
+  \(u_a=\cos\alpha\,t_1+\sin\alpha\,t_2\) in one unnumbered display.
+
+  **What each name means, in one line each.** \(\phi\) is the size of the
+  angular mismatch that contact should reduce; \(u_a\) is the axis about which
+  the tool face is inclined, and is an ordinary unit direction rather than a
+  rotation; \(\alpha\) locates that axis in the tangent plane, measured from
+  \(+t_1\) towards \(+t_2\), and is not a rotation of the tool. \(c_1\) and
+  \(c_2\) appear in one display and take no symbol-list row; the list row is
+  `\(\phi,\ u_a,\ \alpha\)`, `[rad], [-], [rad]`.
+
+  **`angular mismatch` is the name of this quantity, and the `mismatch` ban does
+  not reach it.** That ban is written against the *configured* orientation
+  offset, and Section 4.5 already calls \(\phi_0\) the total angular mismatch at
+  contact entry, so the two sections now use one word for one kind of quantity.
+  The final checklist greps for `mismatch` where a configured tool orientation
+  offset is meant; these hits are not that.
+
+  **\(n_d\) enters Chapter 2 as the inward surface normal.** Section 2.7.2 uses
+  \(n_d=-n_s\) for the direction a parallel tool face points along, which is the
+  zero-offset case of the Chapter 3 construction
+  \(n_d=R_{\mathrm{offset}}(-n_s)\). The symbol carries one meaning in both
+  places: the desired tool-normal direction. Chapter 2 needs the parallel target
+  because the mismatch it reduces is measured against parallel alignment, not
+  against a configured offset.
+
+  **The three exact statements the construction buys.** The axis is exact for
+  any mismatch angle, the selection \(r_{c,t}=\lVert r_{c,t}\rVert(n_s\times
+  u_a)\) is exact, and the moment
+  \(r_{c,t}\times f_n=\lVert r_{c,t}\rVert F_nu_a\) follows from
+  \((n_s\times u_a)\times n_s=u_a\) for \(u_a\perp n_s\). Section 2.7.2
+  therefore carries no small-angle approximation and no `\approx`; see the
+  approximation rule under *Evidence and claims*. Do not reintroduce a
+  first-order representation to justify a step that is already exact.
+
+  **The degenerate case is stated as a parallel face.** For
+  \(n_d\times n_{\mathrm{Tool}}=\mathbf{0}\) no axis is defined and the
+  directional selection rule is not applied. This replaces the withdrawn
+  \(\theta_{t_1}=\theta_{t_2}=0\) form and says the same thing about the
+  geometry rather than about two components.
+
+  **Equation 2.50 is written as \(n_s\times t_1\) and \(n_s\times t_2\).**
+  Reoriented 2026-09-06, from \(t_2\times n_s\) and \(t_1\times n_s\), because
+  the selection rule and the two principal cases now read the cross product in
+  that order and the reader should not have to anticommute it. The relations are
+  \(t_1\times t_2=n_s\), \(n_s\times t_1=t_2\) and \(n_s\times t_2=-t_1\), and
+  they are cited once, where the principal cases are specialised.
 
   **The figure comes before Equation 2.51 and is cited there.** Instructed
   2026-09-06. The sentence introducing it names what each panel shows, and the
-  figure then stands between that sentence and the supplied lead-in, so a
-  reader meets the geometry before the algebra. A second reference, after
-  Equation 2.52, points at panel~(b) for the perpendicular selection.
-
-  **The components are named as rotation angles, and \(\theta\) carries a
-  symbol-list row.** Added 2026-09-06, after the drawing alone left it unclear
-  whether \(\theta_{t_1}\) and \(\theta_{t_2}\) were angles or lengths and in
-  what unit. The prose after Equation 2.51 says that they are rotation angles
-  about the two surface tangents, in radians, and that \(\theta\) is therefore a
-  rotation vector whose direction is the rotation axis. The list row is
-  `\(\theta,\ \theta_{t_1},\ \theta_{t_2}\)`, `[rad]`, which overturns the
-  earlier treatment of the general offset as a derivation-local quantity with no
-  entry. \(\theta_S\) still takes none: it appears in one equation.
-
-  Three things keep the addition local. The column stays inside Equation 2.51
-  rather than taking a display of its own, so Equations 2.52 and 2.53 keep the
-  numbers this guide and Chapter 5 cite. The second equality is a change of
-  basis and is exact, so the `\approx` count is unchanged. And \(\theta_S\)
-  appears in one equation, so it takes no symbol-list entry.
-
-  **The general offset vector is \(\mathbf{a}\); its components stay
-  \(\theta_{t_1}\) and \(\theta_{t_2}\).** Settled 2026-09-06 over two
-  instructions, and this is the standing form. Section 2.7.2 carries the small
-  angular-offset vector \(\mathbf{a}\), the signed angular components
-  \(\theta_{t_1}\) and \(\theta_{t_2}\) about the two tangents, the magnitude
-  \(\lVert\mathbf{a}\rVert\), the surface-coordinate column \(a_S\), and the
-  direction angle \(\alpha\), measured from \(+t_1\) towards \(+t_2\) and given
-  by \(\alpha=\operatorname{atan2}(\theta_{t_2},\theta_{t_1})\).
-
-  The split is the point. A Greek \(\theta\), bold or not, reads as an angle, so
-  the vector takes a Latin letter and bold; the scalars are angles and keep
-  \(\theta\). An intermediate revision renamed the components to \(a_{t_1}\)
-  and \(a_{t_2}\), which lost that reading and is withdrawn. \(u_\theta\) is
-  withdrawn with it: \(u\) is the unit rotation axis of the axis--angle pairs
-  \(u_0\) and \(u_{\mathrm{CE}}\), so a second \(u\) three sections away would
-  collide, and the direction now reaches the reader through
-  \(\theta_{t_1}=\lVert\mathbf{a}\rVert\cos\alpha\) and
-  \(\theta_{t_2}=\lVert\mathbf{a}\rVert\sin\alpha\).
-
-  **What each name means, in one line each.** \(\mathbf{a}\) represents the
-  small angular mismatch; \(\theta_{t_1}\) and \(\theta_{t_2}\) are its
-  first-order angular coordinates in radians; \(\alpha\) is the direction of
-  \(\mathbf{a}\) in the tangent plane and is not a rotation of the tool. For a
-  pure offset about one tangent the corresponding component equals the tool-tilt
-  angle about that tangent, and Section 2.7.2 says so; with both components
-  present they are coordinates of one mismatch, not two rotations performed in
-  turn.
+  figure then stands between that sentence and the construction, so a reader
+  meets the geometry before the algebra. A second reference, after
+  Equation 2.52, points at panel~(c) for the perpendicular selection.
 
   **The experimental families are untouched.** \(\theta_{\mathrm{offset},t_1}\)
-  and \(\theta_{\mathrm{init},t_1}\) stay as they are, because they are scalar
-  angular quantities whose `offset` and `init` indices already separate them.
-
-  **\(\mathbf{a}\) is set bold and its components are not**, which is the
-  second exception to *One typeface: plain italic*, after the zero vector. An
-  earlier form of that exception, \(\boldsymbol{\theta}\), is withdrawn with the
-  symbol it marked.
-
-  **\(\theta_{t_1}\) and \(\theta_{t_2}\) were live again**, and the  **\(\theta_{t_1}\) and \(\theta_{t_2}\) were live again**, and the
-  earlier withdrawal of those two spellings is lifted. They now name the
-  components of the *general* offset in Section 2.7.2, not the configured one,
-  which keeps its `offset` index everywhere. A reader of an older draft could
-  read \(\theta_{t_1}\) as the configured offset; the two never appear in the
-  same section, and Chapter 2 introduces the general quantity by name where it
-  is defined.
+  and \(\theta_{\mathrm{init},t_1}\) stay as they are. They are scalar angular
+  quantities about one named tangent, they belong to the reported campaign, and
+  the general construction of Section 2.7.2 does not have to be built from them.
 
   **\(\theta_{0,t_1}\) is withdrawn**, written here as a literal string so a
   rename cannot revive it. It named the achieved entry condition with a
@@ -1230,8 +1255,9 @@ circulation, the settled choices are:
   the selected surface tangents.
 
   Keep the three chapter roles separate. Chapter 2 derives the directional
-  compliance-centre rule from the generic tangent-plane angular offset
-  \(\theta\) that contact should reduce. Chapter 3 defines the configured
+  compliance-centre rule from the angular mismatch \(\phi\) between the tool
+  face and the surface, and from its tangent-plane axis \(u_a\), which contact
+  should reduce. Chapter 3 defines the configured
   pre-contact offset and constructs \(n_d=R_{\mathrm{offset}}(-n_s)\).
   Chapter 4 explains how varying that setting supplied reproducible
   reference-relative entry conditions, then distinguishes it from the achieved
@@ -1482,7 +1508,10 @@ Chapter 3, and with the appendices bolding matrices the chapters set plain. The
 majority form was already plain, and plain is what the symbol list now shows.
 
 The **one exception** is the zero vector \(\mathbf{0}\), where the bold
-distinguishes it from the scalar zero. Keep that.
+distinguishes it from the scalar zero. Keep that. The second exception recorded
+on 2026-09-06, the bold angular-offset vector \(\mathbf{a}\) of Section 2.7.2,
+went with the symbol later the same day: the section now builds no offset
+vector at all, so the thesis is back to one bold symbol.
 
 **Do not mark design values with a star.** Reuse the symbol already defined for
 the physical quantity and state in prose that the value is used for sizing. If
@@ -2471,7 +2500,7 @@ Cartesian pose-hold account either.
 
 **What Chapter 3 must keep**, because these are what was designed rather than
 what was derived: the architecture figure; the configured surface-relative
-offset \(\theta_{\mathrm{offset}}=\theta_{\mathrm{offset},t_1}t_1+
+offset \(\theta_{\mathrm{offset}}\approx\theta_{\mathrm{offset},t_1}t_1+
 \theta_{\mathrm{offset},t_2}t_2\) and the
 inward normal it rotates; the tool geometry and the selection of
 \(p_{\mathrm{Tool}}\); the tool-fixed against surface-fixed compliance-centre
@@ -3522,87 +3551,58 @@ instantaneous opposing torque at identical joint configurations.
   \(r_c\) shapes the **commanded** wrench through \(\mathrm{Ad}(r_c)\);
   \(r_{\mathrm{Tool}}\) belongs to the physical contact geometry.
 - **Section 2.7.2 derives the perpendicular direction; it does not assert it.**
-  Supplied by the author on 2026-09-04, simplified by the author on 2026-09-06,
-  and applied as given on both dates. The jump from
-  \(\theta\approx\theta_{t_1}t_1+\theta_{t_2}t_2\) straight to the selection
-  rule was too abrupt: the text said the displacement is selected perpendicular
-  to the offset without showing why \(\theta_{t_1}t_2-\theta_{t_2}t_1\) is that
-  perpendicular direction. Three steps now carry the reader across, in this
-  order:
+  Supplied by the author on 2026-09-04, simplified on 2026-09-06, and rebuilt on
+  the axis--angle construction later the same day. Four steps carry the reader,
+  in this order:
 
-  1. The displacement is chosen perpendicular to the angular-offset vector
-     within the surface plane, and its direction is given by the unnumbered
-     display \(n_s\times\theta\approx\theta_{t_1}t_2-\theta_{t_2}t_1\).
-  2. Equation 2.52 scales that direction by the prescribed
-     \(\lVert r_{c,t}\rVert\), and the sentence after it names the fraction as
-     the unit perpendicular direction and the magnitude as a selectable
-     controller parameter.
-  3. \(f_n=F_nn_s\) is stated before Equation 2.53, so the reader can see the
-     cross-product relations produce the moment.
+  1. Equation 2.51 gives the shortest rotation from \(n_d=-n_s\) to
+     \(n_{\mathrm{Tool}}\) as the angle \(\phi\) and the unit axis \(u_a\).
+  2. An unnumbered display resolves that axis in the tangent plane, through
+     \(\alpha=\operatorname{atan2}(c_2,c_1)\) and
+     \(u_a=\cos\alpha\,t_1+\sin\alpha\,t_2\).
+  3. Equation 2.52 selects the displacement perpendicular to the axis,
+     \(r_{c,t}=\lVert r_{c,t}\rVert(n_s\times u_a)\), after the sentence naming
+     the \(90^\circ\) rotation about \(n_s\) that produces it and the magnitude
+     as a selectable controller parameter.
+  4. \(f_n=F_nn_s\) is stated before Equation 2.53, with
+     \((n_s\times u_a)\times n_s=u_a\) named in the same sentence, so the reader
+     can see where the moment comes from.
 
-  **The rotation is shown, not narrated.** Withdrawn on 2026-09-06: `A
-  \(90^\circ\) rotation within the tangent plane about \(n_s\) is obtained from
-  the cross product with \(n_s\)` and `Using the right-handed surface frame`
-  are both gone, because the cross-product display states the same relation
-  mathematically and Figure 2.3 marks the right angle. Two wordings changed
-  with them, and are the settled ones: `is chosen perpendicular to the
-  angular-offset vector within the surface plane`, replacing `is selected
-  perpendicular to this angular-offset direction`, and `For the prescribed`,
-  replacing `For a prescribed`.
+  **The component substitution is not shown.** Writing Equation 2.52 out as
+  \(\lVert r_{c,t}\rVert(\cos\alpha\,t_2-\sin\alpha\,t_1)\) is correct and was
+  withdrawn on 2026-09-06: the cross product states the rule, the two principal
+  cases state what it gives, and the expansion in between only asks the reader
+  to check a sign they can read off Equation 2.50.
 
-  **The magnitude display went with it.** The unnumbered
-  \(\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}\) and its lead-in, `Since \(t_1\) and
-  \(t_2\) are orthonormal, the magnitude of this direction is`, were withdrawn
-  on the same date. The square root now reaches the reader through
-  Equation 2.52 itself and the sentence naming its fraction as the unit
-  direction.
-
-  **The remaining display is unnumbered**, which is what keeps Equations 2.52
-  and 2.53 at the numbers this guide and Chapter 5 already cite. Do not promote
-  it to a numbered equation.
-
-  **Equation 2.51 carries the surface-frame column as well**, added on
-  2026-09-06 and recorded under *Naming a technical quantity*. It is part of
-  that equation rather than a further display, so the four steps above and the
-  numbering below them are unaffected.
-
-  **The degenerate case is stated.** For \(\theta_{t_1}=\theta_{t_2}=0\) no
-  preferred tangential \abbr{CoC} direction is defined and the directional
-  selection rule is not applied. It sits with the \(F_n<0\) sentence, closing
-  the general rule before the principal directions specialise it.
-
-  Three sentences went with the rewrite and are withdrawn: `the displacement
-  used to reduce this offset is selected perpendicular to its direction`, which
-  asserted the step the derivation now takes; `The choice fixes the direction;
-  the magnitude remains a free parameter of the configuration`, replaced by the
-  sentence naming the fraction; and `During the contact-establishment press
-  \(F_n<0\), so this contribution acts opposite to \(\theta\) and tends to
-  reduce the offset`, replaced by the two-sentence form.
+  **The withdrawn steps.** The first-order display
+  \(n_s\times\theta\approx\theta_{t_1}t_2-\theta_{t_2}t_1\), the magnitude
+  display \(\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}\), the sentence naming the
+  fraction as the unit perpendicular direction, and the narrated
+  \(90^\circ\)-rotation sentences all went with the vector they were built on.
+  Two wordings survive them and are the settled ones: `is chosen perpendicular
+  to` the axis `within the surface plane`, and `For the prescribed`.
 
 - **The direction-selected lever rule uses the following cross-product
-  orientation.** For the tangent-plane angular-offset vector
-  \(\mathbf{a}\approx\theta_{t_1}t_1+\theta_{t_2}t_2\), it is
-  \(r_{c,t}=\lVert r_{c,t}\rVert(\theta_{t_1}t_2-
-  \theta_{t_2}t_1)/\sqrt{\theta_{t_1}^2+
-  \theta_{t_2}^2}\). It reduces to
-  \(r_{c,t}=+\lVert r_{c,t}\rVert t_2\) when \(\theta_{t_1}>0\) and
-  \(r_{c,t}=-\lVert r_{c,t}\rVert t_1\) when \(\theta_{t_2}>0\).
-  The exact normal-press contribution is
-  \(r_{c,t}\times f_n=\lVert r_{c,t}\rVert F_n
-  (\theta_{t_1}t_1+\theta_{t_2}t_2)/
-  \sqrt{\theta_{t_1}^2+\theta_{t_2}^2}\). With \(F_n<0\), it acts
-  opposite to \(\mathbf{a}\). In Case D, the direction generated by the
-  \(+10^\circ\) configured offset uses \(r_{c,t_2}>0\) for the outer position
-  that produced the larger response.
+  orientation.** For the tangent-plane axis \(u_a\) of the angular mismatch, it
+  is \(r_{c,t}=\lVert r_{c,t}\rVert(n_s\times u_a)\). It reduces to
+  \(r_{c,t}=+\lVert r_{c,t}\rVert t_2\) for \(u_a=t_1\) and to
+  \(r_{c,t}=-\lVert r_{c,t}\rVert t_1\) for \(u_a=t_2\). The normal-press
+  contribution is \(r_{c,t}\times f_n=\lVert r_{c,t}\rVert F_nu_a\), and with
+  \(F_n<0\) it acts opposite to \(u_a\). In Case D, the direction generated by
+  the \(+10^\circ\) configured offset uses \(r_{c,t_2}>0\) for the outer
+  position that produced the larger response.
 
-  **The reversed numerator
-  \(\theta_{\mathrm{offset},t_2}t_1-
-  \theta_{\mathrm{offset},t_1}t_2\) is wrong and was
-  removed** from Chapter 2 and Chapter 5 on 2026-08-25. It survived the \(r_c\)
-  redefinition because it sits two equations away from the moment it feeds, and
-  in both chapters it contradicted the moment printed immediately below it.
-  Any future change to the lever convention is checked against both
-  anchors above, not against the formula alone.
+  **The rule is unchanged by the 2026-09-06 rebuild**, and the two principal
+  cases are what proves it: the withdrawn first-order form gave
+  \(+\lVert r_{c,t}\rVert t_2\) for a positive component about \(t_1\), which is
+  \(u_a=t_1\), and \(-\lVert r_{c,t}\rVert t_1\) for a positive component about
+  \(t_2\), which is \(u_a=t_2\). Nothing in Chapter 5 or Appendix D moves with
+  the notation. Check any future change to the lever convention against both
+  cases and against the moment printed below them, never against the formula
+  alone. The reversed numerator of the withdrawn form,
+  \(\theta_{\mathrm{offset},t_2}t_1-\theta_{\mathrm{offset},t_1}t_2\), was wrong
+  and was removed from Chapters 2 and 5 on 2026-08-25.
+
 - **The desired tool-normal direction is \(n_d=R_{\mathrm{offset}}(-n_s)\), and
   for zero configured offset \(n_d=-n_s\), never \(+n_s\).** A tool face
   parallel to the surface requires the tool normal to point into the plane, so
@@ -3654,120 +3654,30 @@ instantaneous opposing torque at identical joint configurations.
   interaction, which can in turn change the model-estimated external wrench.
   The estimated external moment is the result of that interaction, not an
   algebraic sum of commanded terms.
-- **`\approx` appears three times: Equations 2.51 and 3.2, and the unnumbered
-  \(n_s\times\mathbf{a}\) display in Section 2.7.2.** The count went to one on
-  2026-09-06, when the approximation was moved into the sentence and the
-  resolution written as exact, and back to three later the same day: the author
-  keeps the symbol on the first-order representation
-  \(\mathbf{a}\approx\theta_{t_1}t_1+\theta_{t_2}t_2\), because that relation
-  is where the small-angle qualification lives. The cross-product display
-  inherits it. Grep across `chapters/`, `frontmatter/`, `backmatter/` and
-  `figures/` before submitting; the expected count is three, plus the two
-  retired uncompiled appendix files `TODOS.md` already tracks.
+- **`\approx` appears once, in Equation 3.2.** The count reached three on
+  2026-09-06, when Section 2.7.2 carried a first-order angular-offset vector and
+  a cross-product display that inherited its approximation, and fell to one
+  later the same day, when the axis--angle construction replaced both. Nothing
+  in Chapter 2 is approximate any longer: the shortest rotation, the
+  perpendicular selection and the resulting moment are exact for any mismatch
+  angle. Grep across `chapters/`, `frontmatter/`, `backmatter/` and `figures/`
+  before submitting; the expected count is one, plus the two retired uncompiled
+  appendix files `TODOS.md` already tracks. Use `grep -F`, since an unescaped
+  pattern also matches every `approximately`.
 
-  The paragraphs below record how the rule reached three, and are kept for the
-  reasoning rather than as current counts.
-
-- **The three-occurrence version of the rule, superseded on 2026-09-06.** Narrowed
-  2026-09-04 on the author's instruction, replacing a blanket ban, and widened
-  by one the same day when the supplied Section 2.7.2 derivation added the
-  cross-product display. That third one is not an independent approximation:
-  it inherits Equation 2.51's, because \(n_s\times\theta\) is exact given
-  \(\theta\) and the first-order decomposition is what carries the symbol. The generic
-  tangent-plane angular offset is now written
-  \(\theta\approx\theta_{t_1}t_1+\theta_{t_2}t_2\), because
-  \(\theta_{t_1}\) and \(\theta_{t_2}\) read as rotation angles about
-  \(t_1\) and \(t_2\), and finite rotations about different axes do not add.
-  The sentence before it already scopes the relation to a **small** angular
-  offset, which is the condition the approximation needs. The same equation
-  **The lead-in states the first-order scope, and it opens on `Considering`.**
-  Supplied 2026-09-04 as `Consider a small angular offset \(\theta\) that the
-  contact response should reduce. For small rotations, its components about the
-  two surface tangents are represented to first order by`, and rewritten on
-  2026-09-06 to introduce the magnitude and the direction first. It now reads
-  `Considering a small angular offset \(\theta\) that the contact response
-  should reduce, its direction in the surface tangent plane forms an angle
-  \(\alpha\) with \(t_1\) and is written`, followed by the unnumbered
-  \(u_\theta=\cos\alpha\,t_1+\sin\alpha\,t_2\), then `For small rotations, the
-  angular offset is represented to first order by` and Equation 2.51.
-  **`Considering` is the author's wording and is kept**, which lifts the
-  withdrawal of that opener recorded on 2026-09-04; the earlier plural
-  `Considering small angular offsets …` stays withdrawn, and so does
-  `its non-zero tangent-plane direction is written as`. `For small rotations`
-  and `to first order` still carry the approximation in words, so the symbol
-  and the sentence say the same thing. The round-bracket surface-frame column
-  \(\theta_{a,S}\) went with the 2026-09-04 revision.
-
-  **The components are derived, not asserted.** Equation 2.51 now reads
-  \(\theta\approx\lVert\theta\rVert u_\theta=\theta_{t_1}t_1+\theta_{t_2}t_2
-  =R_{\mathrm{surface}}\theta_S\), and an unnumbered display after it defines
-  \(\theta_{t_1}=\lVert\theta\rVert\cos\alpha\) and
-  \(\theta_{t_2}=\lVert\theta\rVert\sin\alpha\). The reason is that the earlier
-  form jumped to the resolved components, which left a reader asking where the
-  sine and the cosine had gone: they are inside the two component values. Both
-  new displays are unnumbered and take equals signs, so Equations 2.52 and 2.53
-  keep their numbers and the `\approx` count stays at three.
-
-  **The angular-offset vector is set bold, and its components are not.**
-  Instructed 2026-09-06: \(\boldsymbol{\theta}\) against \(\theta_{t_1}\) and
-  \(\theta_{t_2}\), so that a reader cannot take the vector for a third scalar
-  angle. This is the second exception to *One typeface: plain italic* under
-  *Mathematical notation*, after the zero vector, and it is deliberate rather
-  than drift: the distinction it draws is between one symbol and its own
-  components, which no other vector in the thesis has to make. Every other
-  vector stays plain, including \(\theta_S\), \(u_\theta\), \(r_{c,t}\) and the
-  wrench quantities, and `TODOS.md` carries the question of whether the rule
-  should be widened.
-
-  **The components paragraph is the author's wording of 2026-09-06.** It reads
-  `The quantities \(\theta_{t_1}\) and \(\theta_{t_2}\) are the first-order
-  angular components about the surface tangents, expressed in radians.
-  Together, they define the magnitude and direction of the small angular
-  offset.` `rotation angles about the two surface tangents` is withdrawn from
-  that sentence, because it could be read as two independent finite rotations.
-  The sentence on the third entry is settled with it: `The component about
-  \(n_s\) is set to zero in this alignment construction because rotation about
-  the surface normal changes the in-plane tool orientation but not the
-  inclination of the tool face relative to the surface.` It says which quantity
-  such a rotation would change, which matters because the thesis controls the
-  in-plane orientation elsewhere.
-
-  **The \(90^\circ\) rotation is named again, in one clause.** Restored
-  2026-09-06 as `Its direction follows from a \(90^\circ\) rotation about
-  \(n_s\),` immediately before the cross-product display, which replaces the
-  two withdrawn sentences of the same date rather than restoring them.
-  Equation 2.52 now opens `For a non-zero angular offset and a prescribed
-  tangential \abbr{CoC} magnitude`, and the square root is stated as its own
-  unnumbered display, \(\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}
-  =\lVert\boldsymbol{\theta}\rVert\), before the sentence naming the fraction
-  as the unit direction.
-
-  **The magnitude is \(\lVert\boldsymbol{\theta}\rVert\), and \(\phi\) is not used for it.**
-  The author's formulation of 2026-09-06 wrote the magnitude \(\phi\), which is
-  already the orientation-error angle in the symbol list and in Section 2.2 of
-  the same chapter, so the two would have shared one name three sections apart.
-  The norm says the same thing, needs no symbol-list row, and follows the
-  precedent that withdrew `\rho_c`: a vector already has a norm. The direction
-  angle \(\alpha\) is introduced where it is used and takes no row either;
-  \(\alpha_{\mathrm{probe}}\) is a different symbol and is unaffected. The
-  sentence after Equation 2.52 now names the square root as
-  \(\lVert\theta\rVert\), which is where that denominator comes from.
-
-  **Equation 3.2 carries `\approx` as well.** Instructed 2026-09-04, and this
-  overturns the earlier sentence here that Chapter 3 keeps its equals sign. The
-  configured offset is now
-  \(\theta_{\mathrm{offset}}\approx\theta_{\mathrm{offset},t_1}t_1+
+  **Equation 3.2 keeps it.** Instructed 2026-09-04, and this overturns the
+  earlier sentence that Chapter 3 keeps its equals sign. The configured offset
+  is \(\theta_{\mathrm{offset}}\approx\theta_{\mathrm{offset},t_1}t_1+
   \theta_{\mathrm{offset},t_2}t_2\), under the lead-in `For small configured
   angular offsets, the pre-contact orientation offset is represented to first
-  order in the surface tangent plane by`. The reason is the same one: the two
-  scalars read as rotation angles about \(t_1\) and \(t_2\), and finite
-  rotations about different axes do not add. Every reported experiment set one
-  component only, so the tested conditions are exact rotations about the
-  selected tangent either way.
-
-  This does not reopen the rule further. The four routes below stay the first
-  resort everywhere else, and the expected count outside those three places is
-  still zero.
+  order in the surface tangent plane by`. The reason, stated exactly by the
+  author on 2026-09-06, is that two rotations about different axes are composed
+  rather than added: the exact combined orientation is
+  \(R(t_2,\theta_{\mathrm{offset},t_2})R(t_1,\theta_{\mathrm{offset},t_1})\),
+  which is order dependent, and the sum is its first-order representation.
+  Section 3.2.2 now says both, and *Naming a technical quantity* carries the
+  settled wording. Every reported experiment set one component only, so the
+  tested conditions are exact rotations about the selected tangent either way.
 
   **The rest of this rule stands.** Every other displayed and inline relation
   is written with an equals sign.
@@ -3797,10 +3707,7 @@ instantaneous opposing torque at identical joint configurations.
   The hedging words stay: `approximately`, `about`, and `of the order of` are
   required by *Hedge to the evidence* in
   [THESIS_VOICE.md](THESIS_VOICE.md) and are unaffected by this rule, which
-  governs the symbol alone. Grep for `\approx` across `chapters/`,
-  `frontmatter/`, `backmatter/` and `figures/` before submitting; the expected
-  count is three, in Equations 2.51 and 3.2 and the \(n_s\times\theta\) display,
-  plus the two retired uncompiled appendix files `TODOS.md` already tracks.
+  governs the symbol alone.
 - **\(m=m_R+r_c\times f\) is an identity, and is written with an equals
   sign.** It holds exactly for the shifted \(6\times6\) law, provided \(f\) is
   the translational part of the same commanded wrench \(F=[f^\top,m^\top]^\top\)
@@ -4064,7 +3971,7 @@ logged field names and bias columns. That is the whole of it.
   at once — the physical tool tilt, the configured offset, and the measured
   response — while the prose ban on `tilt` under *Naming a technical quantity*
   had already removed it everywhere else. The settled chain is
-  \(\theta_{\mathrm{offset}}=\theta_{\mathrm{offset},t_1}t_1+
+  \(\theta_{\mathrm{offset}}\approx\theta_{\mathrm{offset},t_1}t_1+
   \theta_{\mathrm{offset},t_2}t_2\), its magnitude
   \(\lVert\theta_{\mathrm{offset}}\rVert\) as the configured offset angle, the
   unit axis \(u_{\mathrm{offset}}=\theta_{\mathrm{offset}}/

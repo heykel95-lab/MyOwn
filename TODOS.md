@@ -33,62 +33,6 @@ predates the change — the old Abstract expanded TCP as well — so this is
 tidying rather than a fault. Drop the parenthesis in Chapter 2 and leave the
 words.
 
-## Reconcile the sentence after Equation 3.2 with its `\approx`
-
-Equation 3.2 became
-\(\theta_{\mathrm{offset}}\approx\theta_{\mathrm{offset},t_1}t_1+
-\theta_{\mathrm{offset},t_2}t_2\) on 2026-09-04, under the supplied lead-in
-`For small configured angular offsets, the pre-contact orientation offset is
-represented to first order in the surface tangent plane by`. The instruction
-named the equation and the sentence before it, so the sentence *after* it was
-left as it stood: `The scalars \(\theta_{\mathrm{offset},t_1}\) and
-\(\theta_{\mathrm{offset},t_2}\) are the components of this rotation vector
-along the two surface tangents.`
-
-Those two statements disagree. If the scalars are exactly the components of one
-rotation vector, the sum is exact and the equation takes an equals sign; that
-is the reason the equation carried `=` until now. Either the following sentence
-becomes `are the surface-tangent components used to construct the offset`, or
-the equation goes back to `=`. Not resolved here because the instruction named
-neither.
-
-## Decide whether the \(n_s\times\theta\) display is boxed
-
-The Section 2.7.2 rewrite supplied on 2026-09-04 gave the cross-product step as
-a plain display, and that is how it was applied. The message that carried it
-closed by singling the step out — `the particularly useful addition is
-\(\boxed{n_s\times\theta}\), because it immediately explains where your
-numerator comes from` — which reads as emphasis on which addition matters
-rather than as typesetting instruction, since the rewrite block itself showed
-the relation unboxed.
-
-The reason to ask is that Section 3.2.5 does carry a `\boxed` display, added on
-the author's instruction two days earlier, so a box here would not be foreign
-to the document. The reason not to is that the two do different jobs: the
-Chapter 3 box summarises a chain of five position symbols, whereas this is one
-step of a derivation whose result is already set as a numbered equation two
-displays later. Box it only if the author wants the derivation's turning point
-marked.
-
-## Two words in the supplied Section 2.7.2 text cross standing rules
-
-Applied as supplied on 2026-09-06 and logged here rather than resolved.
-
-- `The signed angular components about the two surface tangents` and `the
-  signed tool-tilt angle about that tangent` both use `signed` as a modifier,
-  which *Style* rules out: the defining equation and the displayed positive and
-  negative values are supposed to establish the direction. The smallest change
-  that satisfies both is `angular components ... which may be positive or
-  negative`, which the guide already uses for \(r_{c,t_1}\) and
-  \(r_{c,t_2}\).
-- `tool-tilt angle` carries `tilt`, which the final checklist greps for. The
-  ban is written against the *configured* orientation offset, and this sentence
-  describes the physical tool angle in a pure single-tangent offset, so it is
-  arguably outside it. `tool inclination about that tangent` would avoid the
-  grep.
-
-Both are the author's wording and stand until changed.
-
 ## Reconcile the Tool Orientation timeout with the run archive
 
 Changed to \(5.0\,\mathrm{s}\) on 2026-09-02 by the author's decision, in
@@ -362,23 +306,20 @@ positions instead. `the subscript \(\mathrm{est}\)` became `the
 \(\mathrm{est}\) index`, because `subscript` is not used in thesis prose.
 Restore either if the supplied wording is meant to stand.
 
-## Decide whether the bold-vector notation stays local to Section 2.7.2
+## \(\phi\) now names two different rotations
 
-The general angular offset became \(\mathbf{a}\) on 2026-09-06, on the author's
-instruction, so that the vector cannot be read as a third scalar beside
-\(a_{t_1}\) and \(a_{t_2}\). Bold crosses *One typeface: plain italic* in
-`THESIS_WRITING_GUIDE.md`, which sets every symbol plain and admits only the
-zero vector as an exception. Applied as instructed and recorded there as a
-second exception.
+The Section 2.7.2 construction of 2026-09-06 defines the angular mismatch
+through the shortest rotation from \(n_d=-n_s\) to \(n_{\mathrm{Tool}}\), whose
+angle is \(\phi\) and whose unit axis is \(u_a\). The author supplied both
+symbols and both were applied. \(\phi\) is already the orientation-error angle
+of \(\Delta R\), in Section 2.2 and in its own symbol-list row, so the List of
+Symbols now carries two rows headed \(\phi\), and one chapter uses the letter
+for two different rotations five sections apart.
 
-Two things are open. The scope: the thesis now has one bold vector and about
-thirty plain ones, including \(f\), \(m\), \(e_p\), \(r_c\) and \(a_S\) in the
-same section. Either the exception stays local, with the guide saying why this
-symbol alone needs it, or the convention widens to every Cartesian vector,
-which is a pass over every chapter, the symbol list and the figures.
-
-And the letter: a plain \(a\) is already the surface tilt angle about the base
-\(x_0\)-axis, in Chapter 4 and the parameter appendix, beside \(b\). Bold
-\(\mathbf{a}\) and italic \(a\) are different symbols and never meet in one
-equation, but a reader who has met the tilt angles may pause at the letter.
-Renaming the tilt angles, or accepting the pair, is a decision for the author.
+The smallest change that satisfies both is \(\phi_a\), which pairs with
+\(u_a\) exactly as \(\phi_0\) pairs with \(u_0\) in Section 4.5 and
+\(\phi_{\mathrm{CE}}\) with \(u_{\mathrm{CE}}\) in Chapter 3, and leaves the
+mathematics untouched. Every other axis--angle instance in the thesis is
+indexed that way; the bare pair \(\phi,u\) belongs to the generic construction
+of Section 2.3. Two files change: `chapters/02_theoretical_background.tex`, in
+Equation 2.51 and the sentences around it, and the symbol-list row.

@@ -461,84 +461,59 @@ physical object. Both dimensions carry the same weight, since neither is
 subordinate to the other. A datum drawn heavier than the objects it is compared
 with inverts the reading, which is how this figure first compiled.
 
-**The Section 2.7.2 direction figure has two panels, and the elevation comes
-first.** Added 2026-09-06 as a plan view alone, and given panel~(a) the same
-day: drawn only in plan, the offset reads as a displacement in the tangent
-plane, and nothing in the figure said that its components are angles. Panel~(a)
-is now an elevation along \(t_1\) carrying the surface, the tool face standing
-at the offset, and \(\theta_{t_1}\) as the arc between them, so the component is
-seen as an angle before the plan view resolves it. Panel~(b) is the plan view:
-the two tangents, \(n_s\) as an out-of-page marker, the angular offset in red
-with its two projections, and the selected displacement in blue. No moment is
-drawn in either, because the elevation figure two pages later carries
-\(r_{c,t}\times f_n\) and a second drawing of it would duplicate that one.
+**The Section 2.7.2 direction figure has three panels, one question each.**
+Rebuilt 2026-09-06 with the derivation it illustrates, which now constructs the
+angular mismatch as the shortest rotation from \(n_d=-n_s\) to
+\(n_{\mathrm{Tool}}\). Each panel answers one question and carries nothing else:
 
-**Panel~(b) draws the components on the axes, and marks the two points.**
-Redrawn 2026-09-06 after the first version was read as unclear. What it had:
-both components labelled beside the axes with only a dashed rectangle to tie
-them to anything, an offset with a negative \(t_2\) component that sprawled the
-construction across two quadrants, and two arrows leaving a bare origin, one an
-angle and one a length. What it has now:
+- **(a) Angular mismatch.** An elevation with the surface, the inclined tool
+  face, the two normals leaving one point of that face, and the red arc
+  \(\phi\) between them. The out-of-page marker labelled \(u_a\) says that the
+  rotation axis is perpendicular to the plane of the drawing, which is what ties
+  the elevation to the two plan views.
+- **(b) Axis in the tangent plane.** The two tangents, \(u_a\) as the one solid
+  arrow, and the arc \(\alpha\) from \(+t_1\). Nothing is drawn on the axes.
+- **(c) Selected displacement.** The same axis, \(r_{c,t}\) perpendicular to it
+  between a black TCP dot and a blue \(p_c\) dot, \(n_s\) as an out-of-page
+  marker, and the right-angle marker.
 
-- both components positive, so the construction is one rectangle in the first
-  quadrant;
-- each component drawn as a red arrow lying on the axis it belongs to, with its
-  name at the arrow tip, so the reader sees which segment is which;
-- a double arrowhead on \(\theta\), the ordinary notation for a rotation
-  vector, against the single head on the displacement;
-- the displacement running between two marked points, a black TCP dot and a
-  blue \(p_c\) dot, which is what separates a length in the plane from an angle
-  about an axis.
+**No angular components are drawn on the tangent axes.** Every earlier version
+resolved an offset vector onto \(t_1\) and \(t_2\) — as two red arrows, then as
+two dashed projections, then as a dashed ray through them — and each time the
+reader was left unable to tell an angle from a length in the plane. The
+construction that needed them is withdrawn from the thesis, and the drawing
+follows: one axis direction, one arc for the angle it makes with \(+t_1\), and
+one displacement.
 
-**The figure has three panels, one question each.** Settled 2026-09-06 after a
-two-panel version carried the offset, its components, the direction angle, the
-TCP, \(p_c\) and the displacement in one drawing. Panel~(a) is the elevation
-along \(t_1\), where the component appears as an angle between the tool face
-and the surface. Panel~(b) answers what the offset vector is: the two tangents,
-the vector \(\mathbf{a}\), its magnitude, the direction angle \(\alpha\) as an
-arc from \(+t_1\), and the two dashed projections marking \(a_{t_1}\) and
-\(a_{t_2}\). Panel~(c) answers how the displacement follows: the same
-direction, \(r_{c,t}\) perpendicular to it between a black TCP dot and a blue
-\(p_c\) dot, \(n_s\) as an out-of-page marker, and the right-angle marker.
+**A narrow sector needs the arrows longer than the label radius.** The
+\(\phi\) arc spans \(28^\circ\), so the wedge at radius \(r\) is only about
+\(0.49r\) wide and the angle name has to sit at roughly \(0.8\) to clear both
+lines. Panel~(a) compiled three times before the two normals were made long
+enough — \(1.18\) against a label at \(0.80\) — for the name to sit between them
+rather than among the arrowheads. Where an angle is drawn between two nearly
+parallel directions, size the arrows from the label outwards, not the other way
+round.
 
-**The components are projections, not arrows.** Panel~(b) labels the segments
-the dashed lines mark and draws no arrow on either axis. An arrow on each
-tangent reads as a second and a third rotation, where the geometry is one
-small-angle vector with two coordinates, and an earlier version that drew them
-as arrows had to label them \(\theta_{t_1}t_1\) and \(\theta_{t_2}t_2\) to stay honest.
-The offset itself carries one arrowhead: a double head was tried, as the
-notation for a rotation vector, and dropped once the vector was set bold and
-named \(\mathbf{a}\).
+**The tool face is drawn clear of the surface.** The panel states a relation
+between two directions, not a contact, and a face touching the plane leaves no
+room for the normals that are the point of the drawing. Its lowest corner sits
+about one normal-length above the surface line.
 
-The magnitude label is placed off the shaft on the free side rather than
-anchored above it, because an anchored label still printed across the arrow at
-this size.
+**Colour follows the two neighbouring figures**, `compliance_lever_moment.tex`
+and `case_c_direction_rule.tex`: black for the surface, the tool and the frame
+directions \(n_d\) and \(n_{\mathrm{Tool}}\), red for the angular mismatch and
+the axis it defines, blue for the compliance-centre displacement. The
+right-angle marker is drawn in a scope rotated by the *axis* direction, per the
+rule above, and the \(+t_2\) axis passes through it, which is the geometry and
+is left alone.
 
-Three things were settled by compiling panel~(a). The angle is drawn at the
-vertex, at a radius of about \(0.8\): a first version marked it at \(1.45\), out
-along the face, where it read as a stray arrow rather than as the angle between
-two lines. The \(t_1\) out-of-page marker doubles as the contact, and its name
-goes above the surface and left of the tool, the one corner neither the face nor
-the normal reaches. And an elevation is inherently wider than it is tall, so the
-panel is drawn at its own scale with its name placed outside the scaled scope,
-level with the plan view's name; forcing the two drawings to one shape would
-shrink the geometry to buy nothing.
-
-The offset is drawn with a positive \(t_1\) component and a negative \(t_2\)
-one, so the drawing shows the general rule rather than one of the principal
-directions of Equation 2.54. Colour follows `case_c_direction_rule.tex`, whose
-plan view of the same rule it inherits: red for the offset, blue for the
-displacement, black for the frame and the two dashed projections. The
-right-angle marker is drawn in a scope rotated by the *offset* direction, per
-the rule above, and the \(+t_1\) axis passes through it, which is the geometry
-and is left alone.
-
-Three placements were settled by compiling it. Each component label sits at the
-foot of its own projection rather than beside the axis, so it names the
-coordinate the projection marks. Both axis names sit beyond their arrowheads,
-after a first version put the \(t_2\) label on its own arrow. And only the
-negative \(t_2\) half is drawn: a negative \(t_1\) half was drawn once and read
-as a stray segment, since nothing in the geometry reaches it.
+Three placements were settled by compiling it. Each panel is placed so that
+about \(0.95\) of drawing units separates it from its neighbour, measured from
+the outermost label rather than the outermost line. The two blue labels of
+panel~(c) are separated, the point name at the tip and the vector name on the
+free side of the shaft, after a version that stacked both at the arrowhead. And
+each name in panel~(a) is checked against the face above it and the surface
+line below it, since both run diagonally past the labels.
 
 **The Chapter 4 surface-reference geometry keeps three orientations distinct.**
 The physical surface is blue, the configured surface reference is red, and the

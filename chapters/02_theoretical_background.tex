@@ -1070,154 +1070,118 @@ The right-handed surface frame satisfies
 \begin{equation}
 t_1\times t_2=n_s,
 \qquad
-t_2\times n_s=t_1,
+n_s\times t_1=t_2,
 \qquad
-t_1\times n_s=-t_2.
+n_s\times t_2=-t_1.
 \label{eq:surface_frame_cross_product_relations}
 \end{equation}
 
-\mbox{\Cref{fig:lever_direction_selection}} shows the angular offset in three
-views. Panel~(a) is an elevation along \mbox{\(t_1\)}, in which the component
-\mbox{\(\theta_{t_1}\)} appears as the angle between the tool face and the
-surface. Panel~(b) is a view along \mbox{\(n_s\)}, in which the small
-angular-offset vector \mbox{\(\mathbf{a}\)} is resolved in the surface
-tangent plane: its magnitude is \mbox{\(\lVert\mathbf{a}\rVert\)}, its
-direction forms the angle \mbox{\(\alpha\)} with \mbox{\(t_1\)}, and the two
-projections mark \mbox{\(\theta_{t_1}\)} and \mbox{\(\theta_{t_2}\)}.
-Panel~(c) carries the displacement selected from that direction.
+\mbox{\Cref{fig:lever_direction_selection}} shows the construction in three
+views. Panel~(a) is an elevation carrying the angular mismatch between the tool
+face and the surface. Panel~(b) is a view along \mbox{\(n_s\)}, in which the
+axis of that mismatch lies in the surface tangent plane. Panel~(c) carries the
+displacement selected perpendicular to the axis.
 
 \begin{figure}[H]
   \centering
   \input{figures/lever_direction_selection.tex}
-  \caption{Angular offset components and the selected tangential displacement.}
+  \caption{Angular mismatch, its rotation axis, and the selected tangential displacement.}
   \label{fig:lever_direction_selection}
 \end{figure}
 
-Considering a small angular mismatch of the tool relative to the surface, its
-first-order representation is described by the angular-offset vector
-\mbox{\(\mathbf{a}\)} in the surface tangent plane. The signed angular
-components about the two surface tangents are denoted by
-\mbox{\(\theta_{t_1}\)} and \mbox{\(\theta_{t_2}\)}. Thus,
+A tool face parallel to the surface carries its normal along the inward
+surface normal \mbox{\(n_d=-n_s\)}. The actual tool-face normal is
+\mbox{\(n_{\mathrm{Tool}}\)}. The shortest rotation that takes \mbox{\(n_d\)}
+to \mbox{\(n_{\mathrm{Tool}}\)} has the angle \mbox{\(\phi\)} and the unit
+axis \mbox{\(u_a\)},
 
 \begin{equation}
-\mathbf{a}
-\approx
-\theta_{t_1}t_1+\theta_{t_2}t_2
+\phi
 =
-R_{\mathrm{surface}}a_S,
+\operatorname{atan2}\!\left(
+\lVert n_d\times n_{\mathrm{Tool}}\rVert,\
+n_d^\top n_{\mathrm{Tool}}
+\right),
 \qquad
-a_S
+u_a
 =
-\begin{bmatrix}
-\theta_{t_1}\\
-\theta_{t_2}\\
-0
-\end{bmatrix},
-\label{eq:alignment_deviation_surface_components}
+\frac{n_d\times n_{\mathrm{Tool}}}
+     {\lVert n_d\times n_{\mathrm{Tool}}\rVert}.
+\label{eq:alignment_mismatch_axis_angle}
 \end{equation}
 
-where \mbox{\(\theta_{t_1}\)} and \mbox{\(\theta_{t_2}\)} are expressed in
-radians. For a pure offset about one tangent, the corresponding component
-equals the signed tool-tilt angle about that tangent. When both components are
-present, they represent the first-order angular coordinates of the combined
-small orientation mismatch.
-
-The direction of \mbox{\(\mathbf{a}\)} within the tangent plane is described by
-\mbox{\(\alpha\)}, measured from \mbox{\(+t_1\)} towards \mbox{\(+t_2\)},
-
-\[
-\alpha=\operatorname{atan2}(\theta_{t_2},\theta_{t_1}),
-\]
-
-and consequently
+The angle \mbox{\(\phi\)} is the angular mismatch that the contact response
+should reduce, and \mbox{\(u_a\)} is the axis about which the tool face is
+inclined. Because \mbox{\(u_a\)} is perpendicular to \mbox{\(n_d\)}, and
+therefore to \mbox{\(n_s\)}, it lies in the surface tangent plane. Its
+direction cosines along the two tangents are \mbox{\(c_1=t_1^\top u_a\)} and
+\mbox{\(c_2=t_2^\top u_a\)}, with \mbox{\(c_1^2+c_2^2=1\)}, and they give the
+direction angle
 
 \[
-\theta_{t_1}=\lVert\mathbf{a}\rVert\cos\alpha,
+\alpha=\operatorname{atan2}(c_2,c_1),
 \qquad
-\theta_{t_2}=\lVert\mathbf{a}\rVert\sin\alpha.
+u_a=\cos\alpha\,t_1+\sin\alpha\,t_2,
 \]
 
-The vector \mbox{\(a_S\)} contains the two components in surface coordinates,
-in the column order of
-\mbox{\Cref{eq:coc_surface_components}}. The component about \mbox{\(n_s\)} is
-set to zero in this alignment construction because rotation about the surface
-normal changes the in-plane tool orientation but not the inclination of the
-tool face relative to the surface.
+measured from \mbox{\(+t_1\)} towards \mbox{\(+t_2\)}. The angle
+\mbox{\(\alpha\)} locates the axis within the tangent plane, while the size of
+the inclination is carried by \mbox{\(\phi\)}.
 
-The tangential \abbr{CoC} displacement is chosen perpendicular to the
-angular-offset vector within the surface plane. Its direction follows from a
-\mbox{\(90^\circ\)} rotation about \mbox{\(n_s\)},
-
-\[
-n_s\times\mathbf{a}
-\approx
-\theta_{t_1}t_2-\theta_{t_2}t_1.
-\]
-
-For a non-zero angular offset and a prescribed tangential \abbr{CoC} magnitude
-\mbox{\(\lVert r_{c,t}\rVert\)}, the displacement is therefore
+The tangential \abbr{CoC} displacement is chosen perpendicular to
+\mbox{\(u_a\)} within the surface plane, which a \mbox{\(90^\circ\)}
+rotation about \mbox{\(n_s\)} produces. For the prescribed tangential
+\abbr{CoC} magnitude \mbox{\(\lVert r_{c,t}\rVert\)}, the displacement is
+therefore
 
 \begin{equation}
 r_{c,t}
 =
-\lVert r_{c,t}\rVert
-\frac{
-\theta_{t_1}t_2-\theta_{t_2}t_1
-}{
-\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}
-}.
+\lVert r_{c,t}\rVert(n_s\times u_a).
 \label{eq:general_compliance_lever_selection}
 \end{equation}
 
-Since
+The magnitude \mbox{\(\lVert r_{c,t}\rVert\)} remains a selectable controller
+parameter, and panel~(c) of
+\mbox{\Cref{fig:lever_direction_selection}} draws the displacement against the
+axis it is perpendicular to.
 
-\[
-\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}=\lVert\mathbf{a}\rVert,
-\]
-
-the fraction in \mbox{\Cref{eq:general_compliance_lever_selection}} is the unit
-direction perpendicular to the angular offset in the surface tangent plane. The
-magnitude \mbox{\(\lVert r_{c,t}\rVert\)} remains a selectable controller
-parameter. Panel~(b) of \mbox{\Cref{fig:lever_direction_selection}} draws that
-displacement against the offset it is perpendicular to.
-
-The normal commanded force is \mbox{\(f_n=F_nn_s\)}. Using the cross-product
-relations of \mbox{\Cref{eq:surface_frame_cross_product_relations}}, the
-corresponding \abbr{CoC}-induced moment becomes
+The normal commanded force is \mbox{\(f_n=F_nn_s\)}. Since \mbox{\(u_a\)} is a
+unit vector perpendicular to \mbox{\(n_s\)}, the triple product gives
+\mbox{\((n_s\times u_a)\times n_s=u_a\)}, and the corresponding
+\abbr{CoC}-induced moment becomes
 
 \begin{equation}
 r_{c,t}\times f_n
 =
-\lVert r_{c,t}\rVert F_n
-\frac{
-\theta_{t_1}t_1+\theta_{t_2}t_2
-}{
-\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}
-}.
+\lVert r_{c,t}\rVert F_nu_a.
 \label{eq:general_compliance_lever_moment}
 \end{equation}
 
-During Contact Establishment, \mbox{\(F_n<0\)}. The resulting moment therefore
-points opposite to the angular-offset direction and supports its reduction. For
-\mbox{\(\theta_{t_1}=\theta_{t_2}=0\)}, no preferred tangential \abbr{CoC}
-direction is defined and the directional selection rule is not applied.
+The contribution therefore acts along \mbox{\(u_a\)}. During Contact
+Establishment, \mbox{\(F_n<0\)}, so the resulting moment points opposite to
+\mbox{\(u_a\)} and supports the reduction of the angular mismatch. Both
+relations hold for any mismatch angle, because only the axis direction enters
+the selection. For a tool face already parallel to the surface,
+\mbox{\(n_d\times n_{\mathrm{Tool}}=\mathbf{0}\)}, no axis is defined and the
+directional selection rule is not applied.
 
-For the two principal directions, the rule
-reduces to
+For the two principal axis directions, the cross-product relations of
+\mbox{\Cref{eq:surface_frame_cross_product_relations}} reduce the rule to
 
 \begin{equation}
 r_{c,t}=+\lVert r_{c,t}\rVert t_2
-\quad\text{for }+\theta_{t_1},
+\quad\text{for }u_a=t_1,
 \qquad
 r_{c,t}=-\lVert r_{c,t}\rVert t_1
-\quad\text{for }+\theta_{t_2},
+\quad\text{for }u_a=t_2,
 \label{eq:principal_lever_selection}
 \end{equation}
 
 giving \mbox{\(r_{c,t}\times f_n=\lVert r_{c,t}\rVert F_nt_1\)} and
 \mbox{\(r_{c,t}\times f_n=\lVert r_{c,t}\rVert F_nt_2\)} respectively.
-Reversing the direction of the angular offset reverses \mbox{\(r_{c,t}\)} and
-the resulting contribution.
+Reversing the direction of the inclination reverses \mbox{\(u_a\)},
+\mbox{\(r_{c,t}\)} and the resulting contribution.
 \mbox{\Cref{fig:compliance_lever_moment}} depicts the selected displacement in
 panel~(a) and its reversal in panel~(b).
 

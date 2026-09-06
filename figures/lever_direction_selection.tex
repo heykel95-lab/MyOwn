@@ -1,93 +1,90 @@
-% Three views of one angular offset, for Section 2.7.2. Each panel answers one
-% question, because an earlier two-panel version carried the offset, its
-% components, the direction angle, the TCP, p_c and the displacement in a single
-% drawing and was hard to read:
+% Three views of the compliance-centre direction rule, for Section 2.7.2. The
+% section builds the rule on the shortest rotation that takes the inward
+% surface normal to the tool-face normal, so the figure separates the three
+% quantities that construction produces:
 %
-%   (a) what the offset is physically   an angle between the tool face and the
-%                                       surface, seen in the elevation along t_1
-%   (b) what the offset vector is       one arrow in the tangent plane, resolved
-%                                       into two coordinates by projection
-%   (c) how the displacement follows    the tangential displacement drawn
-%                                       perpendicular to that arrow
+%   (a) how large the mismatch is   phi, the angle between n_d = -n_s and
+%                                   n_Tool, seen in an elevation whose plane is
+%                                   perpendicular to the rotation axis
+%   (b) where its axis lies         u_a in the surface tangent plane, located by
+%                                   the direction angle alpha from +t_1
+%   (c) how the displacement        r_{c,t} = ||r_{c,t}||(n_s x u_a), drawn
+%       follows                     between the TCP and p_c
 %
-% Panel (b) draws the components as dashed projections and labels the segments
-% they mark, not as arrows: an arrow on each axis reads as a second and third
-% rotation, when there is one small-angle vector with two coordinates. The
-% vector carries one arrowhead like any other: a double head was tried, as the
-% notation for a rotation vector, and dropped once the symbol was set bold. The
-% offset itself is bold, matching the prose, and its components are not.
+% u_a is an ordinary unit direction vector, not a rotation, so it carries one
+% arrowhead and no angular components are drawn on the tangent axes. Earlier
+% versions resolved a rotation vector onto t_1 and t_2, which left the reader
+% unable to tell an angle from a length; that construction is gone.
 %
-% Panel (a) looks along t_1, drawn out of the page as a dotted circle, so a
-% positive rotation runs counter-clockwise, matching rotation_sign_convention.tex.
-% Panels (b) and (c) look along n_s, which is drawn out of the page in (c) where
-% the cross product needs it.
+% Because n_d and n_Tool both lie in the plane of panel (a), their cross product
+% is perpendicular to it, so u_a points out of the page there. The dotted circle
+% marks that direction and ties the elevation to the two plan views.
 %
 % Uses only tikz + arrows.meta, which config/packages.tex loads.
 %
 % Colour follows compliance_lever_moment.tex and case_c_direction_rule.tex: the
-% surface and the tool are black with a light fill, red carries the angular
-% offset and everything resolved from it, blue the compliance-centre
-% displacement. Solid lines are quantities; the projections are construction and
-% are dashed and thinner.
+% surface, the tool and the frame directions are black, red carries the angular
+% mismatch and the axis it defines, blue the compliance-centre displacement.
 \begin{tikzpicture}[
     scale=1.1,
     font=\small,
     ax/.style={-{Latex[length=1.8mm]}, black},
-    off/.style={-{Latex[length=2.2mm]}, thick, red},
+    nrm/.style={-{Latex[length=2.0mm]}, thick, black},
+    dir/.style={-{Latex[length=2.2mm]}, thick, red},
     lev/.style={-{Latex[length=2.2mm]}, thick, blue},
     arc/.style={-{Latex[length=1.6mm]}, red},
     surf/.style={draw=black, fill=black!8},
     tool/.style={draw=black, fill=black!4},
-    prj/.style={densely dashed, black, line width=0.7pt},
     lbl/.style={font=\footnotesize, inner sep=1.8pt},
     pt/.style={circle, fill=black, inner sep=0pt, minimum size=3.0pt},
     cpt/.style={circle, fill=blue, inner sep=0pt, minimum size=3.0pt},
   ]
 
-% ============ (a) the offset as an angle at the contact =====================
-\begin{scope}[shift={(-5.60,0.30)}]
-  \fill[surf] (-1.45,-0.22) rectangle (1.45,0);
-  \draw[black] (-1.45,0) -- (1.45,0);
-  \draw[ax] (-1.30,0) -- (-1.30,0.80) node[lbl, above] {$n_s$};
+% ============ (a) the angular mismatch between the two normals ==============
+\begin{scope}[shift={(-5.05,0)}]
+  \fill[surf] (-1.90,-0.22) rectangle (1.30,0);
+  \draw[black] (-1.90,0) -- (1.30,0);
 
-  \begin{scope}[shift={(-0.70,0)}, rotate=16]
-    \draw[tool] (0,0) rectangle (1.75,0.21);
+  \begin{scope}[shift={(-1.15,1.10)}, rotate=28]
+    \draw[tool] (0,0) rectangle (1.35,0.16);
   \end{scope}
 
-  \draw[black, fill=white] (-0.70,0) circle (0.13);
-  \fill[black] (-0.70,0) circle (0.04);
-  \node[lbl, anchor=south east] at (-0.78,0.06) {$t_1$};
+  % Both normals leave one point of the tool face, so the arc between them is
+  % the angle of the rotation that takes the first to the second. The sector is
+  % narrow, so the angle name sits well inside the two arrowheads, and each
+  % direction name clears the face above it and the surface below it.
+  \draw[nrm] (-0.709,1.335) -- (-0.709,0.155);
+  \node[lbl, anchor=east] at (-0.80,0.75) {$n_d=-n_s$};
+  \draw[nrm] (-0.709,1.335) -- (-0.155,0.293);
+  \node[lbl, anchor=west] at (-0.19,0.94) {$n_{\mathrm{Tool}}$};
 
-  \draw[arc] ([shift=(0:0.80)]-0.70,0) arc (0:16:0.80);
-  \node[lbl, red] at ([shift=(7:1.32)]-0.70,0) {$\theta_{t_1}$};
+  \draw[arc] ([shift=(270:0.55)]-0.709,1.335) arc (270:298:0.55);
+  \node[lbl, red] at ([shift=(284:0.80)]-0.709,1.335) {$\phi$};
+
+  % The plane of the drawing is perpendicular to the rotation axis.
+  \draw[red, fill=white] (0.72,0.62) circle (0.13);
+  \fill[red] (0.72,0.62) circle (0.04);
+  \node[lbl, red, anchor=west] at (0.89,0.62) {$u_a$};
 \end{scope}
-\node[lbl] at (-5.60,-1.55) {(a) Angle about $t_1$};
+\node[lbl] at (-5.35,-1.55) {(a) Angular mismatch};
 
-% ============ (b) the offset vector and its two coordinates =================
-\begin{scope}[shift={(-1.55,0)}]
+% ============ (b) the axis, located in the surface tangent plane ============
+\begin{scope}[shift={(-2.45,0)}]
   \draw[ax] (0,0) -- (1.80,0);
   \node[lbl, anchor=west]  at (1.94,0) {$t_1$};
   \draw[ax] (0,0) -- (0,1.60);
   \node[lbl, anchor=south] at (0,1.72) {$t_2$};
 
-  \draw[prj] (35:1.55) -- (1.270,0);
-  \draw[prj] (35:1.55) -- (0,0.889);
-  \draw[off] (0,0) -- (35:1.55);
-  \node[lbl, red, anchor=west] at (35:1.80) {$\mathbf{a}$};
-  % Set clear of the shaft on the free side, not merely anchored above it: at
-  % this size an anchored label still printed across the arrow.
-  \node[lbl, red, rotate=35] at ([shift=(125:0.26)]35:0.82) {$\lVert\mathbf{a}\rVert$};
+  \draw[dir] (0,0) -- (35:1.10);
+  \node[lbl, red, anchor=south west] at (35:1.16) {$u_a$};
 
-  \draw[arc] (0.42,0) arc (0:35:0.42);
-  \node[lbl, red] at (17.5:0.62) {$\alpha$};
-
-  \node[lbl, red, anchor=north] at (0.635,-0.08) {$\theta_{t_1}$};
-  \node[lbl, red, anchor=east] at (-0.08,0.445) {$\theta_{t_2}$};
+  \draw[arc] (0.48,0) arc (0:35:0.48);
+  \node[lbl, red] at (17.5:0.72) {$\alpha$};
 \end{scope}
-\node[lbl] at (-0.70,-1.55) {(b) Offset vector in the tangent plane};
+\node[lbl] at (-1.58,-1.55) {(b) Axis in the tangent plane};
 
-% ============ (c) the displacement selected from that direction =============
-\begin{scope}[shift={(3.95,0)}]
+% ============ (c) the displacement selected from that axis ==================
+\begin{scope}[shift={(2.35,0)}]
   \draw[ax] (0,0) -- (1.45,0);
   \node[lbl, anchor=west]  at (1.58,0) {$t_1$};
   \draw[ax] (0,0) -- (0,1.45);
@@ -97,22 +94,22 @@
   \fill[black] (-1.05,-0.75) circle (0.04);
   \node[lbl, anchor=east] at (-1.25,-0.75) {$n_s$};
 
-  \draw[off] (0,0) -- (35:1.40);
-  \node[lbl, red, anchor=west] at (35:1.62) {$\mathbf{a}$};
+  \draw[dir] (0,0) -- (35:1.15);
+  \node[lbl, red, anchor=west] at (35:1.35) {$u_a$};
 
   \draw[lev] (0,0) -- (125:1.40);
   \node[cpt] at (125:1.40) {};
-  \node[lbl, blue, anchor=east] at (-0.92,1.07) {$p_c$};
-  \node[lbl, blue] at (125:1.76) {$r_{c,t}$};
+  \node[lbl, blue, anchor=east] at (-0.90,1.15) {$p_c$};
+  \node[lbl, blue, anchor=east] at (-0.62,0.42) {$r_{c,t}$};
   \node[pt] at (0,0) {};
   \node[lbl, anchor=north west] at (0.08,-0.10) {TCP};
 
   % The square spans the quadrant between the two, so it is rotated by the
-  % offset direction, the first of them.
+  % axis direction, the first of them.
   \begin{scope}[rotate=35]
     \draw[black, thin] (0.30,0) -- (0.30,0.30) -- (0,0.30);
   \end{scope}
 \end{scope}
-\node[lbl] at (3.95,-1.55) {(c) Selected displacement};
+\node[lbl] at (2.43,-1.55) {(c) Selected displacement};
 
 \end{tikzpicture}

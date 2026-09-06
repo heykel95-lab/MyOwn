@@ -176,7 +176,10 @@ n_{\mathrm{Tool}}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}.
 \label{eq:implementation_current_tool_normal}
 \end{equation}
 
-For small configured angular offsets, the pre-contact orientation offset is
+The configured orientation offset combines small rotations about the two
+surface tangents. Composing the two rotation matrices gives the exact combined
+orientation, which depends on the order in which the rotations are applied. For
+small configured angular offsets, the pre-contact orientation offset is
 represented to first order in the surface tangent plane by
 
 \begin{equation}
@@ -187,12 +190,11 @@ represented to first order in the surface tangent plane by
 \label{eq:implementation_tilt_rotation_vector}
 \end{equation}
 
-The scalars \mbox{\(\theta_{\mathrm{offset},t_1}\)} and
-\mbox{\(\theta_{\mathrm{offset},t_2}\)} are the components of this rotation
-vector along the two surface tangents. The direction of
-\mbox{\(\theta_{\mathrm{offset}}\)} defines the rotation axis, while its
-magnitude \mbox{\(\lVert\theta_{\mathrm{offset}}\rVert\)} defines the rotation
-angle. For a non-zero offset, the corresponding unit rotation axis is
+Here \mbox{\(t_1\)} and \mbox{\(t_2\)} are the rotation axes, and each product
+is the first-order contribution of one rotation, expressed in radians. The
+direction of \mbox{\(\theta_{\mathrm{offset}}\)} defines the rotation axis of
+the combined offset, while its magnitude
+\mbox{\(\lVert\theta_{\mathrm{offset}}\rVert\)} defines its rotation angle. For a non-zero offset, the corresponding unit rotation axis is
 
 \begin{equation}
 u_{\mathrm{offset}}
@@ -212,8 +214,8 @@ R\!\left(u_{\mathrm{offset}},
 \lVert\theta_{\mathrm{offset}}\rVert\right).
 \]
 
-This parameterisation defines a single axis--angle rotation from the rotation
-vector.
+This parameterisation gives a single axis--angle rotation, so the controller
+applies one rotation rather than a sequence of two.
 
 A tool face parallel to the configured surface has the tool-normal direction
 \mbox{\(-n_s\)}. Applying the configured rotation gives the desired tool-normal
