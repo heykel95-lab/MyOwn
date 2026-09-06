@@ -147,6 +147,45 @@ once, Section 3.2.2 once, Section 4.5.2 twice, and Chapter 5 four times.
 Both are defensible, but one quantity now has two names. Decide which survives.
 Section 1.1 and Section 1.4 carry the two forms two pages apart.
 
+## Restore the one-recording statement to Section 4.6.2
+
+The supplied Section 4.6.2 of 2026-09-07 dropped the sentence `Both come from
+one trial, so no between-trial variability is evaluated`, and the words `in one
+trial` from the sentence above it. Nothing else in the thesis says it: the only
+other hits for a single trial are Section 4.6.1, which says the wrench
+comparison used one trial, and the two are now stated asymmetrically.
+
+`THESIS_WRITING_GUIDE.md` requires it twice -- under *A single trial does not
+carry a \(\pm\) sample standard deviation*, which asks a single-trial evaluation
+to state that between-trial variability was not evaluated, and under *Settled
+compression and evidence hierarchy*, whose `Section 5.1 is one trial per test
+and states so` has been amended to record the gap rather than assert a rule the
+thesis no longer meets.
+
+The author's instruction that produced the change says the opposite of the text
+it supplied: `I would, however, not pretend that they were physically recorded
+as two different trials. They came from one recording.` Presenting the two
+evaluations separately is what the supplied text does; saying they come from one
+recording is what it no longer does. One sentence after the reset-to-zero
+sentence would satisfy both -- `Both evaluations come from one recording, so no
+between-trial variability is evaluated` -- and it would not disturb the separate
+presentation. Applied as supplied under the verbatim rule; the decision is the
+author's.
+
+## Decide the centred dot in the Section 4.6.2 predictions
+
+`THESIS_WRITING_GUIDE.md` requires scalar multiplication in a displayed
+calculation to carry a centred dot, `\(K\mathbin{\cdot}e\)`. The supplied
+predictions of 2026-09-07 write `K_{p,n}\,n_s^\top(e_p-e_{p,0})` and
+`K_{R,t_1}\,t_1^\top(e_R-e_{R,0})` with a thin space, where the withdrawn
+display used `\mathbin{\cdot}`. Applied as supplied.
+
+The two forms are one edit apart and the choice is the author's. Restoring the
+dot would leave the visible sentence and the mathematics unchanged; keeping the
+thin space means the rule should say that a product of a gain with a projected
+error is an exception, since this is now the only displayed product in Chapter 4
+that omits it.
+
 ## Bring the determiner openers down
 
 Pattern 9 in `THESIS_VOICE.md` asks for sentences opening with `The`, `This`,

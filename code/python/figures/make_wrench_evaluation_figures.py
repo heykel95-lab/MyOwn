@@ -6,9 +6,9 @@ Two evaluations are kept apart, and so are their figures.
   MAIN_WR_contact_wrench.pdf     commanded against model-estimated wrench
                                  during one Contact Establishment trial
   MAIN_WR_force_plausibility.pdf quasi-static check of the translational
-                                 impedance, normal-force increment
+                                 impedance, normal force
   MAIN_WR_moment_plausibility.pdf quasi-static check of the rotational
-                                 impedance, moment increment about t1
+                                 impedance, moment about t1
 
 The first reads the plotted pairs written by
 professoremail/plot_fn_mt1_comparison.py, which resolved the commanded wrench on
@@ -21,8 +21,10 @@ assembles one from the archived parameters and the controller log committed
 beside the thesis.
 
 The combined 0-35 s plot that analysis writes is deliberately not reused: the
-two tests are separated here, and each figure carries a local time reference
-starting at its own test interval.
+two evaluations are presented separately here, and each figure resets time to
+zero at the beginning of its own evaluation, so both carry an ordinary t axis.
+Each series is referenced to the stationary state immediately preceding its
+perturbation, which Section 4.6.2 states, so no axis or legend entry repeats it.
 """
 
 import argparse
@@ -167,9 +169,9 @@ def plausibility_figure(run, keys, ylabel, xlabel, span, start, end, out_path):
     figure, axis = plt.subplots(1, 1, figsize=(6.15, 2.55))
     axis.axvspan(span[0] - start, span[1] - start,
                  color=REFERENCE_GREY, alpha=0.13, linewidth=0)
-    axis.plot(t, cmd, color=SERIES_BLACK, label="Commanded increment")
-    axis.plot(t, est, color=SERIES_RED, label="Model-estimated increment")
-    axis.plot(t, qs, color=SERIES_BLUE, label="Quasi-static spring prediction")
+    axis.plot(t, cmd, color=SERIES_BLACK, label="Commanded")
+    axis.plot(t, est, color=SERIES_RED, label="Model-estimated")
+    axis.plot(t, qs, color=SERIES_BLUE, label="Quasi-static prediction")
     axis.set_ylabel(ylabel)
     axis.set_xlabel(xlabel)
     axis.set_xlim(0.0, float(local[-1]))
@@ -206,16 +208,16 @@ def main():
     written.append(plausibility_figure(
         run,
         ("fn_commanded", "fn_estimated", "fn_spring"),
-        "Normal Force Increment,\n" r"$\Delta F_n$ [N]",
-        r"Time After Force-Test Start, $t_F$ [s]",
+        "Normal Force,\n" r"$F_n$ [N]",
+        r"Time, $t$ [s]",
         WINDOWS["force"], FORCE_TEST_START, FORCE_TEST_END,
         os.path.join(args.out_dir, "MAIN_WR_force_plausibility.pdf")))
 
     written.append(plausibility_figure(
         run,
         ("mt1_commanded", "mt1_estimated", "mt1_spring"),
-        "Moment Increment About $t_1$,\n" r"$\Delta M_{t_1}$ [N m]",
-        r"Time After Rotation-Test Start, $t_M$ [s]",
+        "Moment About $t_1$,\n" r"$M_{t_1}$ [N m]",
+        r"Time, $t$ [s]",
         WINDOWS["moment"], MOMENT_TEST_START, float(run["time"][-1]),
         os.path.join(args.out_dir, "MAIN_WR_moment_plausibility.pdf")))
 

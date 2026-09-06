@@ -568,33 +568,33 @@ inactive and the configured damping in use. The evaluated stiffness entries
 were \mbox{\(K_{p,n}=1000\,\mathrm{N/m}\)} and
 \mbox{\(K_{R,t_1}=15\,\mathrm{N\,m/rad}\)}.
 
-Two perturbations were applied in one trial while the controller held its
-captured Cartesian reference. A translational perturbation was applied to the
-tool along the surface normal and held, and a rotational perturbation about
-\mbox{\(t_1\)} followed while the normal load remained applied. Both were
-applied manually, so their magnitude is a measured outcome of the trial rather
-than a configured value.
+Two perturbations were applied while the controller held its captured Cartesian
+reference. The translational evaluation displaced the tool along the surface
+normal and held the displaced position. The rotational evaluation rotated the
+tool about \mbox{\(t_1\)} while the normal load remained applied. Both
+perturbations were applied manually, so their achieved displacement and
+rotation were measured from the recorded pose.
 
-Each perturbation is evaluated as an increment from the stationary state that
-preceded it. The force increment is referenced to the unloaded baseline before
-the translational perturbation, and the moment increment to the loaded
-stationary state before the rotational one, which removes the contact moment
-already present under load. The quasi-static prediction follows from the
-configured stiffness and the measured pose error,
+The translational and rotational evaluations are treated separately. For each
+evaluation, the stationary condition immediately before the perturbation defines
+the reference state. The translational evaluation therefore uses the unloaded
+state as its reference, whereas the rotational evaluation uses the loaded state
+before rotation. This removes the moment already present under the normal load
+from the rotational comparison.
+
+The quasi-static predictions follow from the configured stiffness and the change
+in measured pose relative to the corresponding reference state,
 
 \[
-\Delta F_{n,\mathrm{qs}}=K_{p,n}\mathbin{\cdot}n_s^\top e_p,
+F_{n,\mathrm{qs}}=K_{p,n}\,n_s^\top\left(e_p-e_{p,0}\right),
 \qquad
-\Delta M_{t_1,\mathrm{qs}}=K_{R,t_1}\mathbin{\cdot}t_1^\top e_R.
+M_{t_1,\mathrm{qs}}=K_{R,t_1}\,t_1^\top\left(e_R-e_{R,0}\right),
 \]
 
-The stationary intervals are \mbox{\(8\)} to \mbox{\(13\,\mathrm{s}\)} for the
-force and \mbox{\(28.5\)} to \mbox{\(31\,\mathrm{s}\)} for the moment, and the
-reported values are means over them. Because the two perturbations occupy
-different parts of one recording, the force and the moment are displayed
-separately, each against a local time reference starting at the beginning of
-its own perturbation. Both come from one trial, so no between-trial
-variability is evaluated.
+where \mbox{\(e_{p,0}\)} and \mbox{\(e_{R,0}\)} denote the pose-error values at
+the respective reference states. Time is reset to \mbox{\(t=0\)} at the
+beginning of each evaluation, and the reported values are obtained from the
+stationary part of the corresponding response.
 
 
 % ============================================================================

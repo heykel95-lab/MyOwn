@@ -859,13 +859,26 @@ are single-panel and carry three series each -- commanded increment in black,
 model-estimated increment in red, quasi-static spring prediction in blue --
 with their own stationary interval shaded.
 
-**A split test gets a local time axis, named like the disturbance axis.** The
-force figure reads `Time After Force-Test Start, \(t_F\) [s]` and the moment
-figure `Time After Rotation-Test Start, \(t_M\) [s]`, each starting at zero at
-the beginning of its own test. This follows
-`Time After Disturbance Onset, \(t_d\) [s]`, and it is why the combined
-\(0\)--\(35\,\mathrm{s}\) plot the analysis script writes is not used: two tests
-on one axis leave the second one compressed against the right-hand edge.
+**Both plausibility figures use the ordinary `Time, \(t\) [s]` axis.**
+Instructed 2026-09-07, withdrawing `Time After Force-Test Start, \(t_F\) [s]`
+and `Time After Rotation-Test Start, \(t_M\) [s]`, written here as literal
+strings so a rename cannot revive them. Time is reset to zero at the beginning
+of each evaluation, which Section 4.6.2 states, so the axis needs no symbol of
+its own; two local time symbols made one recording read as two instrumented
+tests. The combined \(0\)--\(35\,\mathrm{s}\) plot the analysis script writes is
+still not used, for the reason it never was: two evaluations on one axis leave
+the second compressed against the right-hand edge.
+
+**The legend entries are `Commanded`, `Model-estimated` and `Quasi-static
+prediction`.** Changed the same day, withdrawing `Commanded increment`,
+`Model-estimated increment` and `Quasi-static spring prediction`. The y axes
+read `Normal Force, \(F_n\) [N]` and `Moment About \(t_1\), \(M_{t_1}\) [N m]`,
+withdrawing `Normal Force Increment, \(\Delta F_n\) [N]` and `Moment Increment
+About \(t_1\), \(\Delta M_{t_1}\) [N m]`. Section 4.6.2 already says that each
+series is referenced to the stationary state preceding its perturbation, so no
+axis or legend entry repeats it. The shaded stationary band stays: it is what
+shows the reader which interval the reported means were taken over, now that the
+text no longer gives the interval in seconds.
 
 **The Case-D mechanism figure carries the model-estimated wrench.** Changed
 2026-09-06 in `plot_coc_case.py`, which now resolves \(F_{n,\mathrm{est}}=n_s^\top

@@ -416,15 +416,27 @@ and rotation against a known stiffness. Naming both the same thing was what the
 split was made to prevent.
 
 **Each of the two tests keeps its own figure, and the plausibility test keeps
-two.** The force and the moment are separate figures with local time
-references, \(t_F\) and \(t_M\), each starting at its own test interval; the
-combined \(0\) to \(35\,\mathrm{s}\) plot is not used. The wrench comparison
-stays one figure of two panels, because force and moment come from the same
-five-second trial.
+two.** The combined \(0\) to \(35\,\mathrm{s}\) plot is not used. The wrench
+comparison stays one figure of two panels, because force and moment come from
+the same five-second trial.
 
-**Section 5.1 is one trial per test and states so.** No sample standard
-deviation is given, under *A single trial does not carry a \(\pm\) sample
-standard deviation*. Its trials are **not** added to the 19 settings and 57
+**The plausibility figures use an ordinary \(t\) axis, and \(t_F\) and \(t_M\)
+are withdrawn.** Instructed 2026-09-07, written here as literal strings so a
+rename cannot revive them, together with the axis names
+`Time After Force-Test Start` and `Time After Rotation-Test Start`. Both figures
+now read `Time, \(t\) [s]`, because Section 4.6.2 presents the translational and
+the rotational evaluation separately and resets time to zero at the beginning of
+each. Two local time symbols made one recording look like two instrumented
+tests, and a reader met a third and fourth time symbol for an axis that carries
+seconds like every other.
+
+**Section 5.1 gives no sample standard deviation**, under *A single trial does
+not carry a \(\pm\) sample standard deviation*. The earlier half of this rule,
+that Section 5.1 *states* it is one trial per test, was dropped by the supplied
+Section 4.6.2 of 2026-09-07: the sentence `Both come from one trial, so no
+between-trial variability is evaluated` went with the paragraph that carried it,
+and the words `in one trial` went from the sentence above it. `TODOS.md` carries
+the gap as a decision for the author. Its trials are **not** added to the 19 settings and 57
 surface-contact trials of Cases A--D, nor to the 69-trial total: those counts
 cover the main contact study and the pose-hold study, and Section 5.1 is
 neither.
@@ -434,9 +446,9 @@ they show.** Settled 2026-09-06, replacing the first arrangement, which left
 the setup in the results chapter. Section 4.6, `Cartesian Wrench Evaluation`,
 carries the estimator definition, the TCP transport, the two subsections
 `Commanded--Estimated Wrench Comparison` and `Quasi-Static Plausibility
-Assessment`, the stationary intervals, and the statement that the force and the
-moment are displayed against separate local time references. The null-space
-experiment moved to Section 4.7 with that insertion. Section 5.1 then carries
+Assessment`, the stationary interval of the wrench comparison, and the reference
+state each perturbation of the plausibility assessment is evaluated against. The
+null-space experiment moved to Section 4.7 with that insertion. Section 5.1 then carries
 the figures, the numerical differences and the interpretation, and points at
 Section 4.6 rather than restating it.
 
@@ -2933,6 +2945,38 @@ is `A trial satisfied the Cartesian position-retention criterion when`, not
 `Cartesian position retention is defined by`. The distinction matters because
 the quantity being thresholded, the peak position error, is defined elsewhere.
 
+**Section 4.6.2 presents two evaluations, not one trial with two increments.**
+Supplied by the author on 2026-09-07 and applied as given. The settled shape is:
+the two perturbations, then the statement that the translational and rotational
+evaluations are treated separately, then the reference state each uses -- the
+unloaded state for the translational evaluation and the loaded state before
+rotation for the rotational one -- then the two quasi-static predictions, then
+the reset of time to \(t=0\) at the beginning of each evaluation.
+
+**`increment` is withdrawn from this assessment, and so is the \(\Delta\)
+notation.** Written here as literal strings so a rename cannot revive them:
+`force increment`, `moment increment`, `Commanded increment`,
+`Model-estimated increment`, `Normal Force Increment`,
+`Moment Increment About \(t_1\)`, `\Delta F_{n,\mathrm{qs}}` and
+`\Delta M_{t_1,\mathrm{qs}}`. The subtraction stays visible in the mathematics
+instead, which is the point of the change: the predictions are
+\(F_{n,\mathrm{qs}}=K_{p,n}\,n_s^\top(e_p-e_{p,0})\) and
+\(M_{t_1,\mathrm{qs}}=K_{R,t_1}\,t_1^\top(e_R-e_{R,0})\), with \(e_{p,0}\) and
+\(e_{R,0}\) the pose-error values at the respective reference states. Writing
+\(e_R-e_{R,0}\) is what a bare \(e_R\) could not say, because the rotational
+evaluation starts from an already loaded state and the moment present under that
+load has to be removed. \(e_{p,0}\) and \(e_{R,0}\) are local to the subsection
+and take no symbol-list row.
+
+**The original recording times are withdrawn.** `The stationary intervals are
+\(8\) to \(13\,\mathrm{s}\) for the force and \(28.5\) to \(31\,\mathrm{s}\) for
+the moment` is written here as a literal string so it cannot come back. Those
+positions belong to the single long recording, and once each evaluation is
+presented on its own axis from zero they are implementation detail. The settled
+form is that the reported values are obtained from the stationary part of the
+corresponding response; the shaded band in each figure shows which interval that
+was.
+
 **Table 4.4's second column is `Comparison parameter`.** `Varied quantity` did
 not fit the Case-A row, which is a baseline condition rather than a varied
 parameter.
@@ -4531,10 +4575,10 @@ it from the measured cases however carefully it is labelled.
 never called an informal test.** Settled 2026-09-06. What the rule excludes is
 an unlogged demonstration offered as evidence. That assessment is the opposite
 of one: it applies a defined translational perturbation and a defined
-rotational perturbation, against configured stiffness entries, with its
-increments referenced to stated stationary baselines, its means read over
-stated intervals, and an analysis that refuses a log whose parameters do not
-match the prepared configuration. Present it as what it is, a quasi-static
+rotational perturbation, against configured stiffness entries, each referenced
+to the stationary state immediately preceding it, its means read over the
+stationary part of each response, and an analysis that refuses a log whose
+parameters do not match the prepared configuration. Present it as what it is, a quasi-static
 plausibility assessment supplementary to Cases A--D, and say that the
 perturbations were applied manually where the method is described, in
 Section 4.6.2. Do not describe it in the results as something done by hand, and
