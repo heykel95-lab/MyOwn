@@ -505,6 +505,99 @@ orientation with the held contact-entry reference. The captured reference gives
 
 
 % ============================================================================
+\section{Cartesian Wrench Evaluation}
+\label{sec:wrench_evaluation_method}
+% ============================================================================
+
+Two evaluations of the Cartesian wrench were carried out beside the main
+experimental matrix. Both are supplementary to Cases~A--D and add no settings
+to that matrix. The first compares the commanded wrench with the
+model-estimated external wrench during contact establishment. The second
+applies a defined translational perturbation and a defined rotational
+perturbation, and compares the commanded wrench with the quasi-static
+impedance prediction.
+
+Both evaluations use the model-estimated external wrench supplied by libfranka.
+It is obtained from the robot's dynamic model rather than from a force/torque
+sensor, which is what the \mbox{\(\mathrm{est}\)} index records. The estimator
+returns the spatial wrench acting on the stiffness frame \mbox{\(\{K\}\)},
+expressed in the base frame, so its base-frame moment carries the lever from
+the base origin to that frame. In the experimental configuration
+\mbox{\({}^{\mathrm{EE}}T_K=I\)}, so \mbox{\(\{K\}\)} coincides with the TCP
+and the moment is expressed about the TCP by subtracting that lever,
+
+\[
+m_{\mathrm{est,TCP}}=m_{\mathrm{est}}-p_{\mathrm{TCP}}\times f_{\mathrm{est}}.
+\]
+
+The evaluated components are the normal force and the moment about the first
+surface tangent,
+
+\[
+F_{n,\mathrm{est}}=n_s^\top f_{\mathrm{est}},
+\qquad
+M_{t_1,\mathrm{est}}=t_1^\top m_{\mathrm{est,TCP}}.
+\]
+
+The commanded components \mbox{\(F_n=n_s^\top f\)} and
+\mbox{\(M_{t_1}=t_1^\top m\)} are resolved on the same configured surface axes,
+so command and estimate are compared at one reference point and in one frame.
+
+
+\subsection{Commanded--Estimated Wrench Comparison}
+\label{subsec:wrench_comparison_method}
+
+The first evaluation used one trial of the TCP-centred positive-offset
+condition, taken from the main contact matrix and evaluated without changing
+any setting. Both wrenches were resolved over the complete
+\mbox{\(5\,\mathrm{s}\)} of Contact Establishment. The comparison is read over
+the stationary interval from \mbox{\(4\)} to \mbox{\(5\,\mathrm{s}\)}, in which
+the press has settled and the references are constant. Each quantity is
+reported as the mean over that interval, and the estimate is compared with the
+command as a percentage of the commanded mean.
+
+
+\subsection{Quasi-Static Plausibility Assessment}
+\label{subsec:plausibility_method}
+
+The second evaluation tested the implemented impedance relation directly,
+against the stiffness values it was configured with. It ran in
+Contact-Impedance Hold with the compliance centre at the TCP, so
+\mbox{\(r_c=0\)} and no point-shift coupling acted, with the null-space torque
+inactive and the configured damping in use. The evaluated stiffness entries
+were \mbox{\(K_{p,n}=1000\,\mathrm{N/m}\)} and
+\mbox{\(K_{R,t_1}=15\,\mathrm{N\,m/rad}\)}.
+
+Two perturbations were applied in one trial while the controller held its
+captured Cartesian reference. A translational perturbation was applied to the
+tool along the surface normal and held, and a rotational perturbation about
+\mbox{\(t_1\)} followed while the normal load remained applied. Both were
+applied manually, so their magnitude is a measured outcome of the trial rather
+than a configured value.
+
+Each perturbation is evaluated as an increment from the stationary state that
+preceded it. The force increment is referenced to the unloaded baseline before
+the translational perturbation, and the moment increment to the loaded
+stationary state before the rotational one, which removes the contact moment
+already present under load. The quasi-static prediction follows from the
+configured stiffness and the measured pose error,
+
+\[
+\Delta F_{n,\mathrm{qs}}=K_{p,n}\mathbin{\cdot}n_s^\top e_p,
+\qquad
+\Delta M_{t_1,\mathrm{qs}}=K_{R,t_1}\mathbin{\cdot}t_1^\top e_R.
+\]
+
+The stationary intervals are \mbox{\(8\)} to \mbox{\(13\,\mathrm{s}\)} for the
+force and \mbox{\(28.5\)} to \mbox{\(31\,\mathrm{s}\)} for the moment, and the
+reported values are means over them. Because the two perturbations occupy
+different parts of one recording, the force and the moment are displayed
+separately, each against a local time reference starting at the beginning of
+its own perturbation. Both come from one trial, so no between-trial
+variability is evaluated.
+
+
+% ============================================================================
 \section{Secondary Null-Space Pose-Hold Experiment}
 \label{sec:nullspace_hold_study}
 \label{subsec:nullspace_automatic_method}

@@ -1076,6 +1076,19 @@ t_1\times n_s=-t_2.
 \label{eq:surface_frame_cross_product_relations}
 \end{equation}
 
+\mbox{\Cref{fig:lever_direction_selection}} shows an angular offset in two
+views. Panel~(a) is an elevation along \mbox{\(t_1\)}, in which the component
+\mbox{\(\theta_{t_1}\)} appears as the angle between the tool face and the
+surface. Panel~(b) is the plan view along \mbox{\(n_s\)}, in which the same
+offset appears as a vector in the tangent plane.
+
+\begin{figure}[H]
+  \centering
+  \input{figures/lever_direction_selection.tex}
+  \caption{Angular offset components and the selected tangential displacement.}
+  \label{fig:lever_direction_selection}
+\end{figure}
+
 \Added{Consider a small angular offset \mbox{\(\theta\)} that the contact
 response should reduce. For small rotations, its components about the two
 surface tangents are represented to first order by}
@@ -1083,14 +1096,30 @@ surface tangents are represented to first order by}
 \begin{equation}
 \theta
 \approx
-\theta_{t_1}t_1+\theta_{t_2}t_2.
+\theta_{t_1}t_1+\theta_{t_2}t_2
+=
+R_{\mathrm{surface}}\theta_S,
+\qquad
+\theta_S
+=
+\begin{bmatrix}
+\theta_{t_1}\\
+\theta_{t_2}\\
+0
+\end{bmatrix}.
 \label{eq:alignment_deviation_surface_components}
 \end{equation}
 
-The tangential \abbr{CoC} displacement is selected perpendicular to this
-angular-offset direction. A \mbox{\(90^\circ\)} rotation within the tangent
-plane about \mbox{\(n_s\)} is obtained from the cross product with
-\mbox{\(n_s\)}. Using the right-handed surface frame,
+The components \mbox{\(\theta_{t_1}\)} and \mbox{\(\theta_{t_2}\)} are
+rotation angles about the two surface tangents, in radians, so
+\mbox{\(\theta\)} is a rotation vector whose direction is the rotation axis.
+Here \mbox{\(\theta_S\)} holds its surface coordinates, in the column order of
+\mbox{\Cref{eq:coc_surface_components}}. The entry about \mbox{\(n_s\)} is
+zero, because a rotation about the surface normal leaves the inclination of the
+tool face unchanged.
+
+The tangential \abbr{CoC} displacement is chosen perpendicular to the
+angular-offset vector within the surface plane. Its direction is given by
 
 \[
 n_s\times\theta
@@ -1098,15 +1127,8 @@ n_s\times\theta
 \theta_{t_1}t_2-\theta_{t_2}t_1.
 \]
 
-Since \mbox{\(t_1\)} and \mbox{\(t_2\)} are orthonormal, the magnitude of this
-direction is
-
-\[
-\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}.
-\]
-
-For a prescribed tangential \abbr{CoC} magnitude
-\mbox{\(\lVert r_{c,t}\rVert\)}, the corresponding displacement is therefore
+For the prescribed tangential \abbr{CoC} magnitude
+\mbox{\(\lVert r_{c,t}\rVert\)}, the displacement therefore becomes
 
 \begin{equation}
 r_{c,t}
@@ -1123,7 +1145,8 @@ r_{c,t}
 The fraction in \mbox{\Cref{eq:general_compliance_lever_selection}} is the unit
 direction perpendicular to the angular offset in the surface tangent plane; the
 magnitude \mbox{\(\lVert r_{c,t}\rVert\)} remains a selectable controller
-parameter.
+parameter. Panel~(b) of \mbox{\Cref{fig:lever_direction_selection}} draws that
+displacement against the offset it is perpendicular to.
 
 The normal commanded force is \mbox{\(f_n=F_nn_s\)}. Using the cross-product
 relations of \mbox{\Cref{eq:surface_frame_cross_product_relations}}, the

@@ -25,6 +25,9 @@ comparing it against the file in `figures/`.
 | `MAIN_DQ_metric_comparison.pdf` | same name | `compare_angle_metrics.py` |
 | `MAIN_DQ_metric_summary.pdf` | same name | `compare_angle_metrics.py --summary-only` |
 | `MAIN_NS_nullspace_automatic.pdf` | same name | `make_nullspace_figure.py` |
+| `MAIN_WR_contact_wrench.pdf` | same name | `make_wrench_evaluation_figures.py` |
+| `MAIN_WR_force_plausibility.pdf` | same name | `make_wrench_evaluation_figures.py` |
+| `MAIN_WR_moment_plausibility.pdf` | same name | `make_wrench_evaluation_figures.py` |
 
 `make_coc_figures.py` also writes `MAIN_D_contact.pdf`, `MAIN_G_toolaxis.pdf`
 and `MAIN_H_magnitude.pdf`, which are in `figures/` as `MAIN_A_contact.pdf`,
@@ -71,10 +74,10 @@ they came from, and only run beside that data:
         --metrics /path/to/Thesis_Final_Control/experiments/derived/metrics.csv \
         --out-dir OUT
     python3 plot_coc_case.py \
-        "P2_t1_pos_m040/r01=centre -40 mm" \
-        "P2_t1_pos_p000/r01=centre 0 mm" \
-        "P2_t1_pos_p040/r01=centre +40 mm" \
-        --axis t1 --out MAIN_E_wrench \
+        "P2_t1_pos_m040/r01=CoC Position, \$r_{c,t_2}=-40\,\mathrm{mm}\$" \
+        "P2_t1_pos_p000/r01=CoC at TCP, \$r_{c,t_2}=0\$" \
+        "P2_t1_pos_p040/r01=CoC Position, \$r_{c,t_2}=40\,\mathrm{mm}\$" \
+        --axis t1 --out MAIN_D_wrench \
         --results /path/to/Thesis_Final_Control/experiments/results \
         --out-dir OUT
     python3 make_nullspace_figure.py \
@@ -82,7 +85,30 @@ they came from, and only run beside that data:
         --out-dir OUT
 
 `plot_coc_case.py` takes its trials on the command line; the three above are
-the ones the reported figure uses. `plot_setup_diagnostics.py` has its two
+the ones the reported figure uses, and the legend text comes from those
+arguments. Two things changed on 2026-09-06. Its panels (b) and (c) carry the
+model-estimated external wrench instead of the commanded wrench, so
+\(F_{n,\mathrm{est}}\) and \(M_{t_1,\mathrm{est}}\) are what Figure 5.5 now
+compares, and the call writes `MAIN_D_wrench` directly rather than the old case
+letter. It also writes a PNG beside the PDF; only the PDF belongs in
+`figures/`.
+
+`make_wrench_evaluation_figures.py` writes the three Section 5.1 figures under
+their final names and needs no renaming:
+
+    python3 make_wrench_evaluation_figures.py \
+        --tmode-run /path/to/Thesis_Final_Control/experiments/results/T_MODE_MANUAL_D_REPEAT/r01 \
+        --out-dir /path/to/MyOwn-thesis/figures
+
+The contact-wrench figure reads the plotted pairs in
+`professoremail/fn_mt1_commanded_vs_estimated.csv`, so it runs without the
+archive. The two plausibility figures call
+`professoremail/analyse_t_mode_consistency.py`, which needs the archived
+`params_effective` of that run; the controller log itself is committed under
+`professoremail/`, and the generator assembles a temporary run directory from
+the two. The analysis reproduces the reported means exactly, and the generator
+prints them, so a run that does not print \(-19.650\), \(-19.640\) and
+\(-22.292\,\mathrm{N}\) for the force is a signal to stop. `plot_setup_diagnostics.py` has its two
 trials as defaults in the file.
 
 `figure_style.py` and `extract_metrics.py` are imported by the

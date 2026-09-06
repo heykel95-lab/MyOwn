@@ -1,0 +1,128 @@
+% Two views of the same angular offset, for Section 2.7.2.
+%
+% Panel (a) is an elevation along t_1, so the plane of the page is the one
+% spanned by t_2 and n_s. The tool face stands at the offset, and the arc
+% between the surface line and the face is theta_{t_1}: that is what the
+% component is, an angle about t_1, and drawing it removes the reading that the
+% components are lengths in the tangent plane.
+%
+% Panel (b) is the plan view along n_s. The same offset appears as the rotation
+% vector theta, whose direction is the rotation axis and whose components along
+% the tangents are the two angles. The tangential CoC displacement is drawn
+% perpendicular to it, which is what the cross product with n_s produces.
+%
+% Panel (b) draws theta with a positive t_1 component and a negative t_2 one, so
+% it shows the general rule rather than one of the principal directions of
+% Equation (2.54). Panel (a) shows the t_1 component of that same offset. With
+% t_1 out of the page and t_2 to the right, t_1 x t_2 = n_s points up, so a
+% positive rotation about t_1 runs counter-clockwise and lifts the far side of
+% the tool face.
+%
+% Uses only tikz + arrows.meta, which config/packages.tex loads.
+%
+% Colour follows compliance_lever_moment.tex and case_c_direction_rule.tex: the
+% surface and the tool are black with a light fill, red carries the angular
+% offset in both panels, and blue carries the compliance-centre displacement.
+% Every drawn quantity is solid; the two component projections are construction
+% and are dashed and thinner, per the datum rule in FIGURE_STYLE.md.
+%
+% Layout note. Each component label sits at the foot of its own projection, so
+% it names the coordinate the projection marks. Only the negative t_2 half is
+% drawn in panel (b), because that is the half the offset reaches. The axes are
+% broken at 0.36 so that the two vectors and the right-angle marker, whose outer
+% corner reaches 0.31, have the origin to themselves.
+%
+% Clearance note. The picture is drawn at unit size and set with scale, not
+% resized, so these gaps hold at the size it is printed. Both axis names are
+% placed beyond their arrowheads rather than beside them. The offset label of
+% panel (b) is placed 0.30 beyond its arrowhead along its own direction, which
+% keeps it clear of the vertical projection that ends at the same point.
+\begin{tikzpicture}[
+    scale=1.25,
+    font=\small,
+    ax/.style={-{Latex[length=1.8mm]}, black},
+    half/.style={black},
+    off/.style={-{Latex[length=2.2mm]}, thick, red},
+    lev/.style={-{Latex[length=2.2mm]}, thick, blue},
+    arc/.style={-{Latex[length=1.6mm]}, red},
+    surf/.style={draw=black, fill=black!8},
+    tool/.style={draw=black, fill=black!4},
+    prj/.style={densely dashed, black, line width=0.7pt},
+    lbl/.style={font=\footnotesize, inner sep=1.8pt},
+  ]
+
+% ================= (a) the offset as an inclination of the tool face =========
+% An elevation is inherently wider than it is tall, so the panel is drawn at its
+% own scale and raised, and its name is placed outside the scope at the height
+% the plan-view name uses. That keeps the two panel names on one line without
+% forcing the two drawings to the same shape.
+\begin{scope}[shift={(-5.35,-0.35)}, scale=1.30]
+
+  % ---- surface, seen edge on --------------------------------------------
+  \fill[surf] (-1.55,-0.95) rectangle (1.55,-0.72);
+  \draw[black] (-1.55,-0.72) -- (1.55,-0.72);
+
+  % ---- surface normal ----------------------------------------------------
+  \draw[ax] (-1.36,-0.72) -- (-1.36,0.16) node[lbl, above] {$n_s$};
+
+  % ---- tool face, standing at the offset about t_1 ------------------------
+  \begin{scope}[shift={(-0.74,-0.72)}, rotate=20]
+    \draw[tool] (0,0) rectangle (1.70,0.24);
+  \end{scope}
+
+  % ---- t_1, out of the page, through the contact --------------------------
+  % Its name goes above the surface and left of the tool, the one corner of
+  % this panel that neither the face nor the normal reaches.
+  \draw[black, fill=white] (-0.74,-0.72) circle (0.12);
+  \fill[black] (-0.74,-0.72) circle (0.04);
+  \node[lbl, anchor=south east] at (-0.82,-0.66) {$t_1$};
+
+  % ---- the angle between them is the component ----------------------------
+  % Drawn at the vertex, so it reads as the angle between the surface line and
+  % the tool face rather than as a mark somewhere along the face.
+  \draw[arc] ([shift=(0:0.78)]-0.74,-0.72) arc (0:20:0.78);
+  \node[lbl, red] at ([shift=(10:1.02)]-0.74,-0.72) {$\theta_{t_1}$};
+\end{scope}
+
+% The panel name sits outside the scaled scope, level with the one below (b).
+\node[lbl] at (-5.35,-1.95) {(a) Offset about $t_1$};
+
+% ================= (b) the offset resolved in the tangent plane =============
+\begin{scope}
+
+  % ---- surface tangents, broken at the origin ----------------------------
+  \draw[ax]   (0.36,0) -- (2.35,0);
+  \node[lbl, anchor=west]  at (2.50,0) {$t_1$};
+  \draw[ax]   (0,0.36) -- (0,1.85);
+  \node[lbl, anchor=south] at (0,1.97) {$t_2$};
+  \draw[half] (0,-0.36) -- (0,-1.50);
+
+  % ---- n_s, out of the page ----------------------------------------------
+  \draw[black, fill=white] (-1.10,1.30) circle (0.15);
+  \fill[black] (-1.10,1.30) circle (0.05);
+  \node[lbl, anchor=east] at (-1.32,1.30) {$n_s$};
+
+  % ---- the offset as a rotation vector, and its two components ------------
+  \draw[off] (0,0) -- (-40:1.85);
+  \node[lbl, red, anchor=west] at (-40:2.15) {$\theta$};
+
+  \draw[prj] (-40:1.85) -- (1.417,0);
+  \draw[prj] (-40:1.85) -- (0,-1.189);
+  \node[lbl, anchor=south] at (1.417,0.10) {$\theta_{t_1}$};
+  \node[lbl, anchor=east]  at (-0.16,-1.189) {$\theta_{t_2}$};
+
+  % ---- displacement selected perpendicular to it --------------------------
+  \draw[lev] (0,0) -- (50:1.75);
+  \node[lbl, blue] at (50:2.07) {$r_{c,t}$};
+
+  % ---- right angle between the offset and the displacement ----------------
+  % Rotated by the offset direction, the first of the two, so the square spans
+  % the quadrant between them rather than the one beyond the displacement.
+  \begin{scope}[rotate=-40]
+    \draw[black, thin] (0.22,0) -- (0.22,0.22) -- (0,0.22);
+  \end{scope}
+
+  \node[lbl] at (0.45,-1.95) {(b) Selection in the tangent plane};
+\end{scope}
+
+\end{tikzpicture}

@@ -461,6 +461,44 @@ physical object. Both dimensions carry the same weight, since neither is
 subordinate to the other. A datum drawn heavier than the objects it is compared
 with inverts the reading, which is how this figure first compiled.
 
+**The Section 2.7.2 direction figure has two panels, and the elevation comes
+first.** Added 2026-09-06 as a plan view alone, and given panel~(a) the same
+day: drawn only in plan, the offset reads as a displacement in the tangent
+plane, and nothing in the figure said that its components are angles. Panel~(a)
+is now an elevation along \(t_1\) carrying the surface, the tool face standing
+at the offset, and \(\theta_{t_1}\) as the arc between them, so the component is
+seen as an angle before the plan view resolves it. Panel~(b) is the plan view:
+the two tangents, \(n_s\) as an out-of-page marker, the angular offset in red
+with its two projections, and the selected displacement in blue. No moment is
+drawn in either, because the elevation figure two pages later carries
+\(r_{c,t}\times f_n\) and a second drawing of it would duplicate that one.
+
+Three things were settled by compiling panel~(a). The angle is drawn at the
+vertex, at a radius of about \(0.8\): a first version marked it at \(1.45\), out
+along the face, where it read as a stray arrow rather than as the angle between
+two lines. The \(t_1\) out-of-page marker doubles as the contact, and its name
+goes above the surface and left of the tool, the one corner neither the face nor
+the normal reaches. And an elevation is inherently wider than it is tall, so the
+panel is drawn at its own scale with its name placed outside the scaled scope,
+level with the plan view's name; forcing the two drawings to one shape would
+shrink the geometry to buy nothing.
+
+The offset is drawn with a positive \(t_1\) component and a negative \(t_2\)
+one, so the drawing shows the general rule rather than one of the principal
+directions of Equation 2.54. Colour follows `case_c_direction_rule.tex`, whose
+plan view of the same rule it inherits: red for the offset, blue for the
+displacement, black for the frame and the two dashed projections. The
+right-angle marker is drawn in a scope rotated by the *offset* direction, per
+the rule above, and the \(+t_1\) axis passes through it, which is the geometry
+and is left alone.
+
+Three placements were settled by compiling it. Each component label sits at the
+foot of its own projection rather than beside the axis, so it names the
+coordinate the projection marks. Both axis names sit beyond their arrowheads,
+after a first version put the \(t_2\) label on its own arrow. And only the
+negative \(t_2\) half is drawn: a negative \(t_1\) half was drawn once and read
+as a stray segment, since nothing in the geometry reaches it.
+
 **The Chapter 4 surface-reference geometry keeps three orientations distinct.**
 The physical surface is blue, the configured surface reference is red, and the
 tool face at the start of Contact Establishment is dark green. The inner arc
@@ -783,6 +821,57 @@ horizontal axis reads `Configured Orientation-Offset Direction,
 Figure 5.2.** Its measured span is only \(0.03^\circ\), so a narrow axis around
 the three means would visually exaggerate the cross-axis stiffness effect.
 
+### The Section 5.1 wrench figures, and what Figure 5.5 now carries
+
+**Three figures were added on 2026-09-06 under the `WR` tag**, written by
+`make_wrench_evaluation_figures.py`. The contact-wrench comparison keeps two
+panels, because force and moment come from the same five-second trial: (a) the
+normal force and (b) the TCP moment about \(t_1\), each with the commanded
+series in black and the model-estimated series in red, and the stationary
+interval from \(4\) to \(5\,\mathrm{s}\) shaded. The two quasi-static figures
+are single-panel and carry three series each -- commanded increment in black,
+model-estimated increment in red, quasi-static spring prediction in blue --
+with their own stationary interval shaded.
+
+**A split test gets a local time axis, named like the disturbance axis.** The
+force figure reads `Time After Force-Test Start, \(t_F\) [s]` and the moment
+figure `Time After Rotation-Test Start, \(t_M\) [s]`, each starting at zero at
+the beginning of its own test. This follows
+`Time After Disturbance Onset, \(t_d\) [s]`, and it is why the combined
+\(0\)--\(35\,\mathrm{s}\) plot the analysis script writes is not used: two tests
+on one axis leave the second one compressed against the right-hand edge.
+
+**The Case-D mechanism figure carries the model-estimated wrench.** Changed
+2026-09-06 in `plot_coc_case.py`, which now resolves \(F_{n,\mathrm{est}}=n_s^\top
+f_{\mathrm{est}}\) and \(M_{t_1,\mathrm{est}}=t_1^\top m_{\mathrm{est,TCP}}\)
+from the logged estimator columns instead of the commanded wrench. The axes
+read `Model-Estimated Normal Force, \(F_{n,\mathrm{est}}\) [N]` and
+`Model-Estimated TCP Moment About \(t_1\), \(M_{t_1,\mathrm{est}}\) [N m]`;
+panel~(a) and the three legend entries are unchanged. The moment is
+transported to the TCP before the tangent is projected, so the three
+compliance-centre positions are compared at one reference point. The zero
+reference line stays on panels~(a) and~(c) and is kept off the force panel,
+which is now selected by panel index rather than by searching the label text
+for `F_`.
+
+**Its y labels were re-broken at the same time.** `Model-Estimated Normal
+Force,` and `Model-Estimated TCP Moment About \(t_1\),` are longer than the
+commanded lines they replaced, and on the old two-line break they overran their
+panels and collided with one another in the left margin of the compiled page.
+Panel~(b) now breaks after `Normal` and panel~(c) runs to three lines, so no
+line exceeds about twenty-three characters -- the limit further down this file,
+which exists for exactly this failure. Three lines read well here; the earlier
+note that they read worse was written against the shorter commanded labels.
+
+**`pdffonts` shows the Computer Modern faces alone on this machine, and that
+matches the committed figures.** The check above asks for `LMRoman*` beside
+`Cmr/Cmmi/Cmsy`; Latin Modern Roman is not installed for matplotlib here, so
+the serif list falls through to `cmr10`. Verified on 2026-09-06 against
+`MAIN_D_wrench.pdf` as committed, which carries the same three subsets. A new
+figure showing `Cmmi10`, `Cmr10` and `Cmsy10` is therefore consistent with the
+rest of the document rather than a fault; one showing DejaVu is the failure to
+watch for.
+
 ### Every generated plot has a generator, kept in `code/python/figures/`
 
 The scripts are in the repository, with a name map and running instructions in
@@ -953,6 +1042,7 @@ file name still carries its acquisition-campaign identifier:
 | `MAIN_H_direction.pdf` | Withdrawn intermediate-direction check; retained archive identifier |
 | `MAIN_DQ_descent.pdf`, `MAIN_DQ_metric_comparison.pdf`, `MAIN_DQ_metric_summary.pdf` | Data quality |
 | `MAIN_NS_nullspace_automatic.pdf` | Null-space results |
+| `MAIN_WR_contact_wrench.pdf`, `MAIN_WR_force_plausibility.pdf`, `MAIN_WR_moment_plausibility.pdf` | Section 5.1 wrench evaluation |
 
 A figure spanning several main cases carries their letters in order. A figure
 that serves a section rather than a case carries a two-letter tag for that

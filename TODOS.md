@@ -364,3 +364,19 @@ surface reference. They do not contain an independently measured physical plane
 normal or the tool face's motion relative to the end effector under load. A
 follow-on experiment must record both before a run-wise physical tool--surface
 angle can be evaluated.
+
+## Confirm two supplied sentences in Section 5.1
+
+The four rule crossings logged on 2026-09-06 were settled by the author the
+same day and are done: the plausibility assessment stays and is presented as a
+defined perturbation test, the three captions were shortened to the supplied
+forms, Appendix B regained the model-estimated wrench group, and Chapter 4
+gained Section 4.6 with the methodology for both evaluations.
+
+What remains is two fragments of the supplied text that were not applied
+exactly, each a clause or a word. `as in the original time-history evaluation`
+would put draft history into the thesis, which the repository rules forbid, so
+the sentence before the Case-D mechanism figure names the three compliance-centre
+positions instead. `the subscript \(\mathrm{est}\)` became `the
+\(\mathrm{est}\) index`, because `subscript` is not used in thesis prose.
+Restore either if the supplied wording is meant to stand.

@@ -39,6 +39,76 @@ deviations.} At the TCP-centred condition, the zero-offset case had
 respectively. These two are named the positive-offset and negative-offset
 conditions throughout this chapter.
 
+\section{Controller Wrench Evaluation}
+\label{sec:results_wrench_evaluation}
+
+Both evaluations follow the procedure of
+\mbox{\Cref{sec:wrench_evaluation_method}}, which defines the model-estimated
+components and the stationary intervals they are read over. Each figure below
+shades the interval its values are taken from. Their results are supplementary
+to Cases~A--D.
+
+\subsection{Commanded and Model-Estimated Wrench Comparison}
+\label{subsec:results_wrench_comparison}
+
+\mbox{\Cref{fig:results_contact_wrench}} compares the commanded and
+model-estimated Cartesian wrench during one TCP-centred Contact Establishment
+trial. In the stationary interval, the model-estimated normal force differed
+from the commanded value by \mbox{\(2.32\,\%\)}, while the model-estimated
+moment about the first surface tangent differed by \mbox{\(4.87\,\%\)}. The
+commanded and estimated quantities therefore showed close agreement in sign and
+magnitude during the stationary contact condition. Panel~(a) carries the normal
+force and panel~(b) the moment about \mbox{\(t_1\)}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{figures/MAIN_WR_contact_wrench.pdf}
+  \caption{Commanded and model-estimated wrench during Contact
+  Establishment.}
+  \label{fig:results_contact_wrench}
+\end{figure}
+
+\subsection{Quasi-Static Plausibility Assessment}
+\label{subsec:results_plausibility}
+
+The applied perturbations reached \mbox{\(-19.65\,\mathrm{mm}\)} along the
+surface normal and \mbox{\(6.565^\circ\)} about \mbox{\(t_1\)} in their
+stationary intervals. These are the increments the quasi-static prediction is
+evaluated at, against \mbox{\(K_{p,n}=1000\,\mathrm{N/m}\)} and
+\mbox{\(K_{R,t_1}=15\,\mathrm{N\,m/rad}\)}.
+
+The quasi-static prediction of the normal force is
+\mbox{\(-19.650\,\mathrm{N}\)}, against a commanded mean of
+\mbox{\(-19.640\,\mathrm{N}\)} and a model-estimated mean of
+\mbox{\(-22.292\,\mathrm{N}\)}. In the stationary interval, the quasi-static
+spring prediction differed from the commanded force by \mbox{\(0.05\,\%\)},
+while the model-estimated force differed from the command by
+\mbox{\(13.50\,\%\)}. The close agreement between the spring prediction and the
+commanded value supports the plausibility of the implemented translational
+impedance relation.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{figures/MAIN_WR_force_plausibility.pdf}
+  \caption{Quasi-static normal-force plausibility assessment.}
+  \label{fig:results_force_plausibility}
+\end{figure}
+
+For the rotation, the quasi-static prediction and the commanded mean are both
+\mbox{\(1.719\,\mathrm{N\,m}\)}, and the model-estimated mean is
+\mbox{\(1.852\,\mathrm{N\,m}\)}. The quasi-static spring prediction and the
+commanded moment agreed to the reported precision, while the model-estimated
+moment differed from the command by \mbox{\(7.75\,\%\)}. This comparison
+supports the plausibility of the implemented rotational impedance relation.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{figures/MAIN_WR_moment_plausibility.pdf}
+  \caption{Quasi-static moment plausibility assessment about the first
+  surface tangent.}
+  \label{fig:results_moment_plausibility}
+\end{figure}
+
 \section{Main Surface-Contact Results}
 \label{sec:results_main_contact_cases}
 
@@ -186,8 +256,9 @@ angular offset. \Added{The largest Case-D sample standard deviation was
 \mbox{\(0.44^\circ\)}, for the positive-offset condition at
 \mbox{\(r_{c,t_2}=-20\,\mathrm{mm}\)}.}
 
-To relate this direction dependence to the commanded wrench, the
-positive-offset condition was examined in the time domain. All three
+To relate the direction-dependent contact response to the measured interaction
+wrench, the model-estimated external wrench was evaluated for the
+positive-offset condition. All three
 \abbr{CoC} positions were tested with a configured pre-contact orientation
 offset of \mbox{\(\theta_{\mathrm{offset},t_1}=10^\circ\)}, corresponding to a
 mean achieved initial angular offset of
@@ -195,42 +266,53 @@ mean achieved initial angular offset of
 \mbox{\(r_{c,t_2}=-40\)}, \mbox{\(0\)}, and \mbox{\(40\,\mathrm{mm}\)}. Each
 trace shows one measured repetition for the corresponding centre position.
 
-The commanded Cartesian wrench \mbox{\(F=[f^\top,m^\top]^\top\)} was resolved
-for the time histories as
+The model-estimated external force and moment supplied by libfranka are
+evaluated as the measured interaction wrench available from the robot. The
+\mbox{\(\mathrm{est}\)} index is retained because they are obtained from the
+robot's model-based external-wrench estimator rather than from a separate
+force/torque sensor. The estimated moment is expressed about the TCP before
+being resolved about the surface tangent, so the three \abbr{CoC} positions are
+compared at one reference point. The estimated normal-force component and the
+estimated TCP moment about the first surface tangent are
 
 \[
-F_n=n_s^\top f,
+F_{n,\mathrm{est}}=n_s^\top f_{\mathrm{est}},
 \qquad
-M_{t_1}=t_1^\top m.
+M_{t_1,\mathrm{est}}=t_1^\top m_{\mathrm{est,TCP}}.
 \]
 
 The normal-force component is negative while the tool presses into the
-surface. Both quantities are controller commands.
+surface.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figures/MAIN_D_wrench.pdf}
-\caption[Contact response and commanded wrench.]{\Added{Contact response and commanded wrench.}}
+\caption[Contact response and model-estimated interaction wrench]{Contact
+response and model-estimated interaction wrench for the three \abbr{CoC}
+positions.}
 \label{fig:results_case_d_wrench}
 \end{figure}
 
-\Cref{fig:results_case_d_wrench} places the contact response
-\mbox{\(\gamma_{t_1}\)} in panel~(a), the commanded normal force
-\mbox{\(F_n\)} in panel~(b), and the commanded TCP moment
-\mbox{\(M_{t_1}\)} in panel~(c), on a common time axis for the three centre
-positions. The commanded normal force settled
-between approximately \mbox{\(-77\)} and \mbox{\(-82\,\mathrm{N}\)} for all
-three positions. The commanded TCP moment about \mbox{\(t_1\)} settled at
-approximately \mbox{\(3.28\,\mathrm{N\,m}\)} at
-\mbox{\(-40\,\mathrm{mm}\)}, \mbox{\(0.66\,\mathrm{N\,m}\)} at the TCP, and
-\mbox{\(-2.44\,\mathrm{N\,m}\)} at \mbox{\(40\,\mathrm{mm}\)}.
+\Cref{fig:results_case_d_wrench} compares the contact response
+\mbox{\(\gamma_{t_1}\)} in panel~(a), the model-estimated normal force
+\mbox{\(F_{n,\mathrm{est}}\)} in panel~(b), and the model-estimated TCP moment
+about the first surface tangent \mbox{\(M_{t_1,\mathrm{est}}\)} in panel~(c),
+on a common time axis for the three centre positions. Over the final second of
+contact establishment, the estimated normal force settled at approximately
+\mbox{\(-82.9\,\mathrm{N}\)} at \mbox{\(-40\,\mathrm{mm}\)},
+\mbox{\(-79.0\,\mathrm{N}\)} at the TCP, and \mbox{\(-78.0\,\mathrm{N}\)} at
+\mbox{\(40\,\mathrm{mm}\)}. The estimated TCP moment about \mbox{\(t_1\)}
+settled at approximately \mbox{\(4.07\,\mathrm{N\,m}\)},
+\mbox{\(0.73\,\mathrm{N\,m}\)} and \mbox{\(-2.54\,\mathrm{N\,m}\)} at the same
+three positions.
 
-The commanded normal force changed only slightly between the three \abbr{CoC}
-positions, whereas the commanded moment changed substantially and reversed
-direction between the two displaced positions. The measured
-contact response \mbox{\(\gamma_{t_1}\)} changed accordingly,
-indicating that the response variation was mainly associated with the
-additional moment generated by the displaced \abbr{CoC}. Panel~(a) also shows
+The estimated normal-force response remained similar for the three \abbr{CoC}
+positions, whereas the estimated moment changed substantially with the
+\abbr{CoC} displacement and reversed direction between the two displaced
+positions. The measured contact response \mbox{\(\gamma_{t_1}\)} changed
+accordingly. This relation shows that the direction-dependent effect of the
+displaced \abbr{CoC} is reflected primarily in the contact moment rather than
+in the normal contact force. Panel~(a) also shows
 the rotation towards alignment developing more quickly at
 \mbox{\(r_{c,t_2}=40\,\mathrm{mm}\)} than at the TCP. That trace reaches its
 approximately steady response at about \mbox{\(2.3\,\mathrm{s}\)}, and the

@@ -392,6 +392,109 @@ Cases A--D and nothing else**: 19 settings and 57 trials, with the
 trials. The tool-axis comparison was withdrawn on 2026-09-01; see
 *Appendix D* below for why, and do not reinstate its counts.
 
+**Chapter 5 opens on Section 5.1, `Controller Wrench Evaluation`.** Added
+2026-09-06 on the author's instruction, with the captions and the result
+sentences supplied. It carries two evaluations that are not part of the
+parameter study and are kept apart from each other:
+
+- `5.1.1 Commanded and Model-Estimated Wrench Comparison` compares the
+  commanded wrench with the model-estimated external wrench during one
+  TCP-centred Contact Establishment trial, over the stationary interval from
+  \(4\) to \(5\,\mathrm{s}\). The estimate differs from the command by
+  \(2.32\,\%\) in normal force and \(4.87\,\%\) in the moment about \(t_1\).
+- `5.1.2 Quasi-Static Plausibility Assessment` applies a known displacement and
+  a known rotation in Contact-Impedance Hold with the compliance centre at the
+  TCP, and compares the commanded wrench with the quasi-static impedance
+  prediction. The prediction differs from the command by \(0.05\,\%\) in force
+  and agrees to the reported precision in moment, while the model-estimated
+  values differ from the command by \(13.50\,\%\) and \(7.75\,\%\).
+
+**Do not call the first one a plausibility assessment.** It is a
+command-against-estimate comparison during the contact sequence itself; the
+plausibility assessment is the dedicated test that drives a known displacement
+and rotation against a known stiffness. Naming both the same thing was what the
+split was made to prevent.
+
+**Each of the two tests keeps its own figure, and the plausibility test keeps
+two.** The force and the moment are separate figures with local time
+references, \(t_F\) and \(t_M\), each starting at its own test interval; the
+combined \(0\) to \(35\,\mathrm{s}\) plot is not used. The wrench comparison
+stays one figure of two panels, because force and moment come from the same
+five-second trial.
+
+**Section 5.1 is one trial per test and states so.** No sample standard
+deviation is given, under *A single trial does not carry a \(\pm\) sample
+standard deviation*. Its trials are **not** added to the 19 settings and 57
+surface-contact trials of Cases A--D, nor to the 69-trial total: those counts
+cover the main contact study and the pose-hold study, and Section 5.1 is
+neither.
+
+**Chapter 4 says how both evaluations were performed and Chapter 5 says what
+they show.** Settled 2026-09-06, replacing the first arrangement, which left
+the setup in the results chapter. Section 4.6, `Cartesian Wrench Evaluation`,
+carries the estimator definition, the TCP transport, the two subsections
+`Commanded--Estimated Wrench Comparison` and `Quasi-Static Plausibility
+Assessment`, the stationary intervals, and the statement that the force and the
+moment are displayed against separate local time references. The null-space
+experiment moved to Section 4.7 with that insertion. Section 5.1 then carries
+the figures, the numerical differences and the interpretation, and points at
+Section 4.6 rather than restating it.
+
+**Section 4.6 sets its relations as unnumbered displays.** The estimator
+transport and the two component definitions are used only inside that section
+and nothing cross-references them, and numbering them would renumber
+Equations 4.7 and 4.10, which this guide names. Prefer an unnumbered display
+wherever a Chapter 4 addition would otherwise shift those two.
+
+**The three Section 5.1 captions are settled and short.** Supplied 2026-09-06,
+replacing the first set, which ran to three and four lines: `Commanded and
+model-estimated wrench during Contact Establishment.`, `Quasi-static
+normal-force plausibility assessment.`, and `Quasi-static moment plausibility
+assessment about the first surface tangent.` The stationary interval, the local
+time reference and the panel contents moved into the body text, where the rule
+under *Figures and tables* sends them. None carries an optional short caption
+any longer: a caption that is already a noun phrase has nothing to shorten.
+
+**The renumbering that came with it.** `Main Surface-Contact Results` is now
+Section 5.2 and `Null-Space Pose-Hold Results` Section 5.3, so the case
+subsections are 5.2.1 to 5.2.3 and the null-space subsections 5.3.1 and 5.3.2.
+Entries elsewhere in this file that name Section 5.1.3, 5.2.1 or 5.2.2 were
+written against the earlier numbering and refer to the Case-D time course and
+the two null-space subsections respectively. Cross-references inside the thesis
+use `\Cref`, so the document itself is unaffected.
+
+**The model-estimated external wrench is a reported quantity again.** This
+overturns three earlier rulings, and they are withdrawn rather than left
+standing beside it: that the estimate `enters no reported figure or value`,
+that it `is assigned no thesis-wide mathematical symbol`, and that a local
+`est` notation exists only for a standalone supporting report. The reported
+symbols are \(F_{n,\mathrm{est}}=n_s^\top f_{\mathrm{est}}\) and
+\(M_{t_1,\mathrm{est}}=t_1^\top m_{\mathrm{est,TCP}}\), both with symbol-list
+rows. What does **not** change: the estimate is still model based and is never
+called a measured wrench without that qualification, the moment is transported
+to the TCP before the tangent is projected, and Chapter 2 still carries no
+estimated wrench.
+
+**The Case-D mechanism figure carries the model-estimated wrench, not the
+command.** Instructed 2026-09-06. It is Figure 5.8 now that Section 5.1 has
+added three figures ahead of it, and was Figure 5.5 before that date. Panel~(a) keeps the contact response \(\gamma_{t_1}\); panels~(b)
+and~(c) carry \(F_{n,\mathrm{est}}\) and \(M_{t_1,\mathrm{est}}\), so the
+figure relates the compliance-centre position to the interaction wrench rather
+than to the command. The reason is that the direction-dependent effect is a
+statement about the contact, and the commanded moment is what the controller
+asked for. Over the final second the estimated force settles at approximately
+\(-82.9\), \(-79.0\) and \(-78.0\,\mathrm{N}\) and the estimated TCP moment at
+\(4.07\), \(0.73\) and \(-2.54\,\mathrm{N\,m}\), at \(r_{c,t_2}=-40\), \(0\)
+and \(40\,\mathrm{mm}\). The settled chain is *\abbr{CoC} position →
+model-estimated contact moment → measured rotational response*, and the
+Chapter 6 sentence that carried the commanded pair moved with it.
+
+**The prose may call it the measured interaction wrench available from the
+robot**, provided the paragraph before that figure states once that the
+quantities come from the robot's model-based external-wrench estimator rather
+than from a force/torque sensor. The `est` index stays in every symbol, axis
+label and legend entry.
+
 State the experimental exclusion once in Chapter 4: the contact evaluation
 uses the \(t_1\) data set, which provided repeatable comparisons, whereas the
 \(t_2\) measurements showed greater variability. Section 6.2.2 gives the full
@@ -989,9 +1092,42 @@ circulation, the settled choices are:
   **\(\theta_a\) and \(\theta_{a,S}\) are withdrawn**, written here as literal
   strings so a rename cannot revive them. The generic offset carries no index
   at all: the derivation needs only one angular quantity, and the index named
-  nothing a reader could look up. The round-bracket surface-frame column
-  \(\theta_{a,S}\), added earlier the same day, went with it — the supplied
-  replacement paragraph does not carry it.
+  nothing a reader could look up.
+
+  **The surface-frame column is \(\theta_S\), and it sits inside
+  Equation 2.51.** Instructed 2026-09-06, restoring in the settled spelling the
+  round-bracket column that went out with \(\theta_{a,S}\) on 2026-09-04. The
+  equation reads
+  \(\theta\approx\theta_{t_1}t_1+\theta_{t_2}t_2=R_{\mathrm{surface}}\theta_S\),
+  with \(\theta_S=[\,\theta_{t_1},\;\theta_{t_2},\;0\,]^\top\) beside it, so the
+  offset appears both along the tangents and as coordinates. It is set as a
+  `bmatrix` column in the \([t_1,t_2,n_s]\) order \(r_{c,S}\) already uses, and
+  the two sentences after it say that \(\theta_S\) holds the surface
+  coordinates of the offset in that column order and that its entry about
+  \(n_s\) is zero, because a rotation about the surface normal leaves the
+  inclination of the tool face unchanged.
+
+  **The figure comes before Equation 2.51 and is cited there.** Instructed
+  2026-09-06. The sentence introducing it names what each panel shows, and the
+  figure then stands between that sentence and the supplied lead-in, so a
+  reader meets the geometry before the algebra. A second reference, after
+  Equation 2.52, points at panel~(b) for the perpendicular selection.
+
+  **The components are named as rotation angles, and \(\theta\) carries a
+  symbol-list row.** Added 2026-09-06, after the drawing alone left it unclear
+  whether \(\theta_{t_1}\) and \(\theta_{t_2}\) were angles or lengths and in
+  what unit. The prose after Equation 2.51 says that they are rotation angles
+  about the two surface tangents, in radians, and that \(\theta\) is therefore a
+  rotation vector whose direction is the rotation axis. The list row is
+  `\(\theta,\ \theta_{t_1},\ \theta_{t_2}\)`, `[rad]`, which overturns the
+  earlier treatment of the general offset as a derivation-local quantity with no
+  entry. \(\theta_S\) still takes none: it appears in one equation.
+
+  Three things keep the addition local. The column stays inside Equation 2.51
+  rather than taking a display of its own, so Equations 2.52 and 2.53 keep the
+  numbers this guide and Chapter 5 cite. The second equality is a change of
+  basis and is exact, so the `\approx` count is unchanged. And \(\theta_S\)
+  appears in one equation, so it takes no symbol-list entry.
 
   **\(\theta_{t_1}\) and \(\theta_{t_2}\) are therefore live again**, and the
   earlier withdrawal of those two spellings is lifted. They now name the
@@ -2779,12 +2915,22 @@ state sequence a reader needs. It belongs with the recorded data, not in the
 appendix. The remaining section is `Evaluation Signals`.
 
 **Appendix B lists the signals the reported results are calculated from, not
-the file schema.** The external-wrench group, its stored reference values and
-its corrected forms were removed on 2026-09-01, together with the
-clearance-capture positions, the press coordinate, and the final commanded
-torque: the model-estimated wrench fed only the optional termination condition,
-and every experiment ended through the timeout instead, so none of them enters
-a reported figure or value. Say once that the complete schemas are documented
+the file schema.** The clearance-capture positions, the press coordinate and
+the final commanded torque were removed on 2026-09-01, because no reported
+result uses them.
+
+**The external-wrench group came back on 2026-09-06**, and the reason it left
+no longer holds: the model-estimated force and moment now feed Section 5.1 and
+the Case-D mechanism figure, so the appendix would otherwise document neither
+of the signals those figures are drawn from. Its row names `external_force` and
+`external_moment`, says that the wrench acts on the stiffness frame \(\{K\}\)
+and is expressed in the base frame, and states that the recorded moment is
+referenced to the base origin. A short paragraph after the table then gives the
+transport the evaluation applies,
+\(m_{\mathrm{est,TCP}}=m_{\mathrm{est}}-p_{\mathrm{TCP}}\times
+f_{\mathrm{est}}\), before \(M_{t_1,\mathrm{est}}\) is resolved about the
+tangent. The stored reference values and the clearance-referenced forms stay
+out: the reported evaluations use the absolute estimate. Say once that the complete schemas are documented
 with the recorded data.
 
 **A wrench row names the frame it acts on, the frame it is expressed in, and
@@ -3339,28 +3485,49 @@ instantaneous opposing torque at identical joint configurations.
   \(r_c\) shapes the **commanded** wrench through \(\mathrm{Ad}(r_c)\);
   \(r_{\mathrm{Tool}}\) belongs to the physical contact geometry.
 - **Section 2.7.2 derives the perpendicular direction; it does not assert it.**
-  Supplied by the author on 2026-09-04 and applied as given. The jump from
+  Supplied by the author on 2026-09-04, simplified by the author on 2026-09-06,
+  and applied as given on both dates. The jump from
   \(\theta\approx\theta_{t_1}t_1+\theta_{t_2}t_2\) straight to the selection
   rule was too abrupt: the text said the displacement is selected perpendicular
   to the offset without showing why \(\theta_{t_1}t_2-\theta_{t_2}t_1\) is that
-  perpendicular direction or where the square root comes from. Four steps now
-  carry the reader across, in this order:
+  perpendicular direction. Three steps now carry the reader across, in this
+  order:
 
-  1. A \(90^\circ\) rotation within the tangent plane about \(n_s\) is the
-     cross product with \(n_s\), giving the unnumbered display
-     \(n_s\times\theta\approx\theta_{t_1}t_2-\theta_{t_2}t_1\).
-  2. Because \(t_1\) and \(t_2\) are orthonormal, that direction has magnitude
-     \(\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}\), also unnumbered.
-  3. Equation 2.52 then scales the normalised direction by the prescribed
+  1. The displacement is chosen perpendicular to the angular-offset vector
+     within the surface plane, and its direction is given by the unnumbered
+     display \(n_s\times\theta\approx\theta_{t_1}t_2-\theta_{t_2}t_1\).
+  2. Equation 2.52 scales that direction by the prescribed
      \(\lVert r_{c,t}\rVert\), and the sentence after it names the fraction as
      the unit perpendicular direction and the magnitude as a selectable
      controller parameter.
-  4. \(f_n=F_nn_s\) is stated before Equation 2.53, so the reader can see the
+  3. \(f_n=F_nn_s\) is stated before Equation 2.53, so the reader can see the
      cross-product relations produce the moment.
 
-  **The two new displays are unnumbered**, which is what keeps Equations 2.52
+  **The rotation is shown, not narrated.** Withdrawn on 2026-09-06: `A
+  \(90^\circ\) rotation within the tangent plane about \(n_s\) is obtained from
+  the cross product with \(n_s\)` and `Using the right-handed surface frame`
+  are both gone, because the cross-product display states the same relation
+  mathematically and Figure 2.3 marks the right angle. Two wordings changed
+  with them, and are the settled ones: `is chosen perpendicular to the
+  angular-offset vector within the surface plane`, replacing `is selected
+  perpendicular to this angular-offset direction`, and `For the prescribed`,
+  replacing `For a prescribed`.
+
+  **The magnitude display went with it.** The unnumbered
+  \(\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}\) and its lead-in, `Since \(t_1\) and
+  \(t_2\) are orthonormal, the magnitude of this direction is`, were withdrawn
+  on the same date. The square root now reaches the reader through
+  Equation 2.52 itself and the sentence naming its fraction as the unit
+  direction.
+
+  **The remaining display is unnumbered**, which is what keeps Equations 2.52
   and 2.53 at the numbers this guide and Chapter 5 already cite. Do not promote
-  either to a numbered equation.
+  it to a numbered equation.
+
+  **Equation 2.51 carries the surface-frame column as well**, added on
+  2026-09-06 and recorded under *Naming a technical quantity*. It is part of
+  that equation rather than a further display, so the four steps above and the
+  numbering below them are unaffected.
 
   **The degenerate case is stated.** For \(\theta_{t_1}=\theta_{t_2}=0\) no
   preferred tangential \abbr{CoC} direction is defined and the directional
@@ -4251,7 +4418,20 @@ thesis.** This overturns an earlier ruling that admitted the pre-grinding hold
 observation as labelled qualitative evidence. That paragraph has been removed
 from Chapter 5. The reason for the change is that a hand-applied check carries
 no controlled condition and no measured quantity, so a reader cannot separate
-it from the measured cases however carefully it is labelled. The
+it from the measured cases however carefully it is labelled.
+
+**The quasi-static plausibility assessment is not covered by this rule, and is
+never called an informal test.** Settled 2026-09-06. What the rule excludes is
+an unlogged demonstration offered as evidence. That assessment is the opposite
+of one: it applies a defined translational perturbation and a defined
+rotational perturbation, against configured stiffness entries, with its
+increments referenced to stated stationary baselines, its means read over
+stated intervals, and an analysis that refuses a log whose parameters do not
+match the prepared configuration. Present it as what it is, a quasi-static
+plausibility assessment supplementary to Cases A--D, and say that the
+perturbations were applied manually where the method is described, in
+Section 4.6.2. Do not describe it in the results as something done by hand, and
+do not attach `informal`, `qualitative` or `demonstration` to it anywhere. The
   sustained-contact argument does not need it: it rests on the mechanism, that
   \(r_c\times f\) persists while the press is present, and on the
 Case-D measurements.
