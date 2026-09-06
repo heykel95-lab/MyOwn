@@ -467,6 +467,25 @@ time reference and the panel contents moved into the body text, where the rule
 under *Figures and tables* sends them. None carries an optional short caption
 any longer: a caption that is already a noun phrase has nothing to shorten.
 
+**The Case-D mechanism caption is `Contact response and model-estimated
+interaction wrench.`** Shortened 2026-09-07, dropping `for the three \abbr{CoC}
+positions` and the optional short caption with it. The longer form wrapped to
+two rendered lines, which the one-line rule under *Figures and tables* forbids,
+and the sentence after the figure already says the comparison is over the three
+centre positions, so nothing left the thesis. This follows the three Section 5.1
+captions: once the visible caption is a noun phrase that fits, a second shorter
+form for the list of figures has nothing to shorten.
+
+**A wrapping caption is a layout fault as well as a style one.** The two-line
+caption was what pushed this figure past the space left on its page: the graphic,
+its legend and a two-line caption came to about \(515\,\mathrm{pt}\) against the
+\(515\,\mathrm{pt}\) remaining after the paragraph above it, so the `[H]`
+placement moved the whole float to the next page and left two thirds of the
+previous one blank. Removing the second caption line recovered about
+\(11\,\mathrm{pt}\), the figure now sits under the text that introduces it, and
+the document lost a page. Check a tall figure against the space its page has
+left, not only against the caption rule.
+
 **The renumbering that came with it.** `Main Surface-Contact Results` is now
 Section 5.2 and `Null-Space Pose-Hold Results` Section 5.3, so the case
 subsections are 5.2.1 to 5.2.3 and the null-space subsections 5.3.1 and 5.3.2.

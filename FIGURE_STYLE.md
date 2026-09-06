@@ -1319,6 +1319,45 @@ writes a generated file names it, so regeneration must preserve this mapping.
   axes, which the author prefers as they read. Do not invent a symbol to
   satisfy this rule.
 
+## A tall figure has to fit the page it is placed on
+
+Every figure in this thesis uses `[H]`, so LaTeX places it exactly where the
+source puts it and cannot float it. A figure that does not fit in the space
+remaining on the page is therefore moved whole to the next page, and the text
+above it stops early: the reader meets a page that ends after one paragraph.
+That is a layout fault the source does not show and no warning reports.
+
+**The arithmetic to check.** The usable text band is about
+\(695\,\mathrm{pt}\) of ink, from \(73.9\) to \(769.4\,\mathrm{pt}\) down the
+sheet at the current geometry. A figure block consumes the graphic's printed
+height, which is `\textwidth` times its aspect ratio, plus roughly
+\(16\,\mathrm{pt}\) above the caption, about \(11\,\mathrm{pt}\) per caption
+line, and `\intextsep` above and below. `MAIN_D_wrench.pdf` is
+\(417.6\times446.4\,\mathrm{pt}\), so at `width=\textwidth` it prints
+\(486\,\mathrm{pt}\) tall and its block runs to about \(504\,\mathrm{pt}\) with
+a one-line caption.
+
+**A wrapping caption is what usually tips one over.** Figure 5.8 missed its page
+by about \(11\,\mathrm{pt}\) on 2026-09-07, which is exactly one caption line.
+Shortening the caption to the one-line noun phrase the rule already required put
+the figure back under its own introduction and removed a page from the document.
+Fix the caption first; it is free, and it is required anyway.
+
+**What not to reach for.** Do not change `[H]` to a floating specifier for one
+figure -- the chapter's nine figures all use `[H]` and a single float would
+separate one figure from the text that introduces it. Do not shrink the graphic
+with `\includegraphics[width=0.9\textwidth]`, which scales the label text below
+the sizes under *Generated plots* as surely as `\resizebox` does. If a caption
+is already one line and the figure still does not fit, reduce `figsize` in the
+generator and re-run it, so the fonts keep their size while the canvas loses
+height.
+
+**Measure it in the compiled PDF.** Render the page and find the last row of
+ink between the running head and the folio; a page whose body ends more than
+about \(120\,\mathrm{pt}\) short of \(769\,\mathrm{pt}\) is either a chapter
+end, a section end before a figure, or this fault. Check which before changing
+anything.
+
 ## Checking a figure
 
 Inspect the compiled document, not the standalone file. Whether a label
