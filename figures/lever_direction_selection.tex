@@ -42,13 +42,16 @@
     font=\small,
     ax/.style={-{Latex[length=1.8mm]}, black},
     half/.style={black},
-    off/.style={-{Latex[length=2.2mm]}, thick, red},
+    off/.style={-{Latex[length=2.2mm] Latex[length=2.2mm]}, thick, red},
     lev/.style={-{Latex[length=2.2mm]}, thick, blue},
     arc/.style={-{Latex[length=1.6mm]}, red},
     surf/.style={draw=black, fill=black!8},
     tool/.style={draw=black, fill=black!4},
     prj/.style={densely dashed, black, line width=0.7pt},
+    cmp/.style={-{Latex[length=1.6mm]}, red, line width=0.7pt},
     lbl/.style={font=\footnotesize, inner sep=1.8pt},
+    pt/.style={circle, fill=black, inner sep=0pt, minimum size=3.0pt},
+    cpt/.style={circle, fill=blue, inner sep=0pt, minimum size=3.0pt},
   ]
 
 % ================= (a) the offset as an inclination of the tool face =========
@@ -88,38 +91,57 @@
 \node[lbl] at (-5.35,-1.95) {(a) Offset about $t_1$};
 
 % ================= (b) the offset resolved in the tangent plane =============
+% Both components are drawn positive, so the construction is one rectangle in
+% the first quadrant. The components are drawn as red arrows lying on the two
+% axes, because the earlier version marked them with labels beside the axes and
+% left the reader to work out which segment each named.
+%
+% The offset carries a double arrowhead, the ordinary notation for a rotation
+% vector, and the displacement carries a single one and runs between two marked
+% points, the TCP and p_c. That is the distinction the panel has to make: one
+% arrow is an angle about an axis, the other a length in the plane.
 \begin{scope}
 
   % ---- surface tangents, broken at the origin ----------------------------
-  \draw[ax]   (0.36,0) -- (2.35,0);
-  \node[lbl, anchor=west]  at (2.50,0) {$t_1$};
-  \draw[ax]   (0,0.36) -- (0,1.85);
-  \node[lbl, anchor=south] at (0,1.97) {$t_2$};
-  \draw[half] (0,-0.36) -- (0,-1.50);
+  \draw[ax] (0.36,0) -- (2.15,0);
+  \node[lbl, anchor=west]  at (2.32,0) {$t_1$};
+  \draw[ax] (0,0.36) -- (0,1.95);
+  \node[lbl, anchor=south] at (0,2.08) {$t_2$};
 
   % ---- n_s, out of the page ----------------------------------------------
-  \draw[black, fill=white] (-1.10,1.30) circle (0.15);
-  \fill[black] (-1.10,1.30) circle (0.05);
-  \node[lbl, anchor=east] at (-1.32,1.30) {$n_s$};
+  \draw[black, fill=white] (-1.10,-1.10) circle (0.15);
+  \fill[black] (-1.10,-1.10) circle (0.05);
+  \node[lbl, anchor=east] at (-1.32,-1.10) {$n_s$};
 
-  % ---- the offset as a rotation vector, and its two components ------------
-  \draw[off] (0,0) -- (-40:1.85);
-  \node[lbl, red, anchor=west] at (-40:2.15) {$\theta$};
+  % ---- the two components, lying on the axes they belong to ---------------
+  \draw[cmp] (0,0) -- (1.556,0);
+  \draw[cmp] (0,0) -- (0,1.090);
+  \node[lbl, red, anchor=north] at (1.556,-0.12) {$\theta_{t_1}$};
+  \node[lbl, red, anchor=north west] at (0.13,0.98) {$\theta_{t_2}$};
 
-  \draw[prj] (-40:1.85) -- (1.417,0);
-  \draw[prj] (-40:1.85) -- (0,-1.189);
-  \node[lbl, anchor=south] at (1.417,0.10) {$\theta_{t_1}$};
-  \node[lbl, anchor=east]  at (-0.16,-1.189) {$\theta_{t_2}$};
+  % ---- the offset, as a rotation vector -----------------------------------
+  \draw[prj] (1.556,0) -- (35:1.90);
+  \draw[prj] (0,1.090) -- (35:1.90);
+  \draw[off] (0,0) -- (35:1.90);
+  \node[lbl, red, anchor=west] at (35:2.18) {$\theta$};
 
   % ---- displacement selected perpendicular to it --------------------------
-  \draw[lev] (0,0) -- (50:1.75);
-  \node[lbl, blue] at (50:2.07) {$r_{c,t}$};
+  % The point name sits left of the tip and the vector name beyond it, on
+  % opposite sides of the arrowhead: stacked, the two ran together.
+  \draw[lev] (0,0) -- (125:1.70);
+  \node[cpt] at (125:1.70) {};
+  \node[lbl, blue, anchor=east] at (-1.12,1.31) {$p_c$};
+  \node[lbl, blue] at (125:2.10) {$r_{c,t}$};
+  \node[pt] at (0,0) {};
+  \node[lbl, anchor=north west] at (0.10,-0.14) {TCP};
 
   % ---- right angle between the offset and the displacement ----------------
   % Rotated by the offset direction, the first of the two, so the square spans
-  % the quadrant between them rather than the one beyond the displacement.
-  \begin{scope}[rotate=-40]
-    \draw[black, thin] (0.22,0) -- (0.22,0.22) -- (0,0.22);
+  % the quadrant between them rather than the one beyond the displacement. It
+  % is drawn last and at a radius that clears the component arrow, which would
+  % otherwise cover it.
+  \begin{scope}[rotate=35]
+    \draw[black, thin] (0.34,0) -- (0.34,0.34) -- (0,0.34);
   \end{scope}
 
   \node[lbl] at (0.45,-1.95) {(b) Selection in the tangent plane};

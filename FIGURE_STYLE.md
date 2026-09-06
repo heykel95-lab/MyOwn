@@ -473,6 +473,29 @@ with its two projections, and the selected displacement in blue. No moment is
 drawn in either, because the elevation figure two pages later carries
 \(r_{c,t}\times f_n\) and a second drawing of it would duplicate that one.
 
+**Panel~(b) draws the components on the axes, and marks the two points.**
+Redrawn 2026-09-06 after the first version was read as unclear. What it had:
+both components labelled beside the axes with only a dashed rectangle to tie
+them to anything, an offset with a negative \(t_2\) component that sprawled the
+construction across two quadrants, and two arrows leaving a bare origin, one an
+angle and one a length. What it has now:
+
+- both components positive, so the construction is one rectangle in the first
+  quadrant;
+- each component drawn as a red arrow lying on the axis it belongs to, with its
+  name at the arrow tip, so the reader sees which segment is which;
+- a double arrowhead on \(\theta\), the ordinary notation for a rotation
+  vector, against the single head on the displacement;
+- the displacement running between two marked points, a black TCP dot and a
+  blue \(p_c\) dot, which is what separates a length in the plane from an angle
+  about an axis.
+
+Two placements were settled by compiling it. The point name sits left of the
+arrowhead and the vector name beyond it, on opposite sides: stacked, `\(p_c\)`
+and `\(r_{c,t}\)` ran together. And the right-angle marker is drawn last and at
+\(0.34\) rather than \(0.22\), because the component arrow along \(t_2\) passes
+through the marked quadrant and covered the smaller square.
+
 Three things were settled by compiling panel~(a). The angle is drawn at the
 vertex, at a radius of about \(0.8\): a first version marked it at \(1.45\), out
 along the face, where it read as a stray arrow rather than as the angle between
