@@ -490,13 +490,29 @@ angle and one a length. What it has now:
   blue \(p_c\) dot, which is what separates a length in the plane from an angle
   about an axis.
 
-**Panel~(b) also carries the magnitude and the direction angle.** Added
-2026-09-06 with the derivation that introduces them: an arc at the origin from
-\(t_1\) to the offset, named \(\alpha\), and \(\lVert\theta\rVert\) beside the
-offset arrow. A panel that draws only the resolved components hides where they
-come from, which is the magnitude taken through the cosine and the sine of that
-angle. The arc sits below the offset and the right-angle marker above it, so
-the two never meet.
+**Panel~(b) draws the triangle the two components close, and states what it
+means.** Settled 2026-09-06 over three passes. It carries the direction angle
+\(\alpha\) as an arc at the origin, the magnitude
+\(\lVert\boldsymbol{\theta}\rVert\) beside the offset arrow, the two dashed
+projections with a right-angle marker at the foot of the vertical one, and the
+two relations \(\theta_{t_1}=\lVert\boldsymbol{\theta}\rVert\cos\alpha\) and
+\(\theta_{t_2}=\lVert\boldsymbol{\theta}\rVert\sin\alpha\) set below the panel.
+A panel that draws only the resolved components hides where they come from, and
+the triangle is what makes the cosine and the sine visible rather than merely
+stated in the paragraph below.
+
+**The axis arrows carry the products, and the vector is bold.** The arrows are
+labelled \(\theta_{t_1}t_1\) and \(\theta_{t_2}t_2\), because that is what they
+are; an earlier version labelled them \(\theta_{t_1}\) and \(\theta_{t_2}\), so
+one name stood for an arc in panel~(a) and an arrow in panel~(b), which is the
+fault this figure exists to prevent. \(\boldsymbol{\theta}\) is set bold in
+every figure label, matching the prose, and its components and \(u_\theta\)
+stay plain.
+
+The relation block sits below the panel rather than beside the arrows: placed
+level with them it landed on `TCP` and on the \(\theta_{t_1}t_1\) label, and
+the space between the \(t_2\) axis and the offset is too narrow for a line of
+that length.
 
 Two placements were settled by compiling it. The point name sits left of the
 arrowhead and the vector name beyond it, on opposite sides: stacked, `\(p_c\)`

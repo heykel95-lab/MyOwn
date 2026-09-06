@@ -1,162 +1,118 @@
-% Two views of the same angular offset, for Section 2.7.2.
+% Two views of one angular offset, for Section 2.7.2. The figure exists to keep
+% two kinds of object apart, because they wear almost the same name:
 %
-% Panel (a) is an elevation along t_1, so the plane of the page is the one
-% spanned by t_2 and n_s. The tool face stands at the offset, and the arc
-% between the surface line and the face is theta_{t_1}: that is what the
-% component is, an angle about t_1, and drawing it removes the reading that the
-% components are lengths in the tangent plane.
+%   theta_{t_1}, theta_{t_2}   two scalars, the first-order angular components
+%                              about the surface tangents. Panel (a) shows the
+%                              first as an angle between the tool face and the
+%                              surface.
+%   theta_{t_1} t_1, ...       the two vectors those scalars scale. Panel (b)
+%                              draws them along the tangents, where they add to
+%                              the angular-offset vector.
 %
-% Panel (b) is the plan view along n_s. The same offset appears as the rotation
-% vector theta, whose direction is the rotation axis and whose components along
-% the tangents are the two angles. The tangential CoC displacement is drawn
-% perpendicular to it, which is what the cross product with n_s produces.
+% An earlier version labelled the axis arrows of panel (b) theta_{t_1} and
+% theta_{t_2}, so one name stood for an arc in one panel and an arrow in the
+% other. The arrows carry the products now, which is what they are, and the
+% offset vector is set bold to separate it from its scalar components.
 %
-% Panel (b) draws theta with a positive t_1 component and a negative t_2 one, so
-% it shows the general rule rather than one of the principal directions of
-% Equation (2.54). Panel (a) shows the t_1 component of that same offset. With
-% t_1 out of the page and t_2 to the right, t_1 x t_2 = n_s points up, so a
-% positive rotation about t_1 runs counter-clockwise and lifts the far side of
-% the tool face.
+% Panel (b) is also where the two components come from: the offset, its
+% magnitude, the direction angle alpha and the right triangle closing on the
+% tangents are all drawn, so cos and sin are visible as the projection they
+% describe rather than only stated in the text below.
+%
+% Panel (a) looks along t_1, drawn out of the page as a dotted circle, so a
+% positive rotation runs counter-clockwise, matching rotation_sign_convention.tex.
 %
 % Uses only tikz + arrows.meta, which config/packages.tex loads.
 %
 % Colour follows compliance_lever_moment.tex and case_c_direction_rule.tex: the
 % surface and the tool are black with a light fill, red carries the angular
-% offset in both panels, and blue carries the compliance-centre displacement.
-% Every drawn quantity is solid; the two component projections are construction
-% and are dashed and thinner, per the datum rule in FIGURE_STYLE.md.
-%
-% Layout note. Each component label sits at the foot of its own projection, so
-% it names the coordinate the projection marks. Only the negative t_2 half is
-% drawn in panel (b), because that is the half the offset reaches. The axes are
-% broken at 0.36 so that the two vectors and the right-angle marker, whose outer
-% corner reaches 0.31, have the origin to themselves.
-%
-% Clearance note. The picture is drawn at unit size and set with scale, not
-% resized, so these gaps hold at the size it is printed. Both axis names are
-% placed beyond their arrowheads rather than beside them. The offset label of
-% panel (b) is placed 0.30 beyond its arrowhead along its own direction, which
-% keeps it clear of the vertical projection that ends at the same point.
+% offset and everything resolved from it, blue the compliance-centre
+% displacement. Solid lines are quantities; the projections are construction and
+% are dashed and thinner.
 \begin{tikzpicture}[
-    scale=1.25,
+    scale=1.15,
     font=\small,
     ax/.style={-{Latex[length=1.8mm]}, black},
-    half/.style={black},
     off/.style={-{Latex[length=2.2mm] Latex[length=2.2mm]}, thick, red},
+    cmp/.style={-{Latex[length=1.6mm]}, red, line width=0.7pt},
     lev/.style={-{Latex[length=2.2mm]}, thick, blue},
     arc/.style={-{Latex[length=1.6mm]}, red},
     surf/.style={draw=black, fill=black!8},
     tool/.style={draw=black, fill=black!4},
     prj/.style={densely dashed, black, line width=0.7pt},
-    cmp/.style={-{Latex[length=1.6mm]}, red, line width=0.7pt},
     lbl/.style={font=\footnotesize, inner sep=1.8pt},
     pt/.style={circle, fill=black, inner sep=0pt, minimum size=3.0pt},
     cpt/.style={circle, fill=blue, inner sep=0pt, minimum size=3.0pt},
   ]
 
-% ================= (a) the offset as an inclination of the tool face =========
-% An elevation is inherently wider than it is tall, so the panel is drawn at its
-% own scale and raised, and its name is placed outside the scope at the height
-% the plan-view name uses. That keeps the two panel names on one line without
-% forcing the two drawings to the same shape.
-\begin{scope}[shift={(-5.35,-0.35)}, scale=1.30]
+% ============ (a) the component about t_1, seen as an angle =================
+\begin{scope}[shift={(-4.15,0.55)}, scale=1.15]
+  \fill[surf] (-1.50,-0.22) rectangle (1.50,0);
+  \draw[black] (-1.50,0) -- (1.50,0);
+  \draw[ax] (-1.34,0) -- (-1.34,0.82) node[lbl, above] {$n_s$};
 
-  % ---- surface, seen edge on --------------------------------------------
-  \fill[surf] (-1.55,-0.95) rectangle (1.55,-0.72);
-  \draw[black] (-1.55,-0.72) -- (1.55,-0.72);
-
-  % ---- surface normal ----------------------------------------------------
-  \draw[ax] (-1.36,-0.72) -- (-1.36,0.16) node[lbl, above] {$n_s$};
-
-  % ---- tool face, standing at the offset about t_1 ------------------------
-  \begin{scope}[shift={(-0.74,-0.72)}, rotate=20]
-    \draw[tool] (0,0) rectangle (1.70,0.24);
+  \begin{scope}[shift={(-0.72,0)}, rotate=16]
+    \draw[tool] (0,0) rectangle (1.80,0.22);
   \end{scope}
 
-  % ---- t_1, out of the page, through the contact --------------------------
-  % Its name goes above the surface and left of the tool, the one corner of
-  % this panel that neither the face nor the normal reaches.
-  \draw[black, fill=white] (-0.74,-0.72) circle (0.12);
-  \fill[black] (-0.74,-0.72) circle (0.04);
-  \node[lbl, anchor=south east] at (-0.82,-0.66) {$t_1$};
+  \draw[black, fill=white] (-0.72,0) circle (0.13);
+  \fill[black] (-0.72,0) circle (0.04);
+  \node[lbl, anchor=south east] at (-0.80,0.06) {$t_1$};
 
-  % ---- the angle between them is the component ----------------------------
-  % Drawn at the vertex, so it reads as the angle between the surface line and
-  % the tool face rather than as a mark somewhere along the face.
-  \draw[arc] ([shift=(0:0.78)]-0.74,-0.72) arc (0:20:0.78);
-  \node[lbl, red] at ([shift=(10:1.02)]-0.74,-0.72) {$\theta_{t_1}$};
+  \draw[arc] ([shift=(0:0.82)]-0.72,0) arc (0:16:0.82);
+  \node[lbl, red] at ([shift=(8:1.07)]-0.72,0) {$\theta_{t_1}$};
 \end{scope}
 
-% The panel name sits outside the scaled scope, level with the one below (b).
-\node[lbl] at (-5.35,-1.95) {(a) Offset about $t_1$};
+\node[lbl] at (-4.15,-1.75) {(a) Angle about $t_1$};
 
-% ================= (b) the offset resolved in the tangent plane =============
-% Both components are drawn positive, so the construction is one rectangle in
-% the first quadrant. The components are drawn as red arrows lying on the two
-% axes, because the earlier version marked them with labels beside the axes and
-% left the reader to work out which segment each named.
-%
-% The offset carries a double arrowhead, the ordinary notation for a rotation
-% vector, and the displacement carries a single one and runs between two marked
-% points, the TCP and p_c. That is the distinction the panel has to make: one
-% arrow is an angle about an axis, the other a length in the plane.
-%
-% The magnitude and the direction angle are drawn as well, since the components
-% are the magnitude taken through the cosine and the sine of that angle. Panel
-% (b) therefore carries the whole of theta = ||theta|| u_theta, not only its
-% resolved parts.
+% ============ (b) the offset resolved in the tangent plane ==================
 \begin{scope}
+  \draw[ax] (0.36,0) -- (2.05,0);
+  \node[lbl, anchor=west]  at (2.22,0) {$t_1$};
+  \draw[ax] (0,0.36) -- (0,1.85);
+  \node[lbl, anchor=south] at (0,1.98) {$t_2$};
 
-  % ---- surface tangents, broken at the origin ----------------------------
-  \draw[ax] (0.36,0) -- (2.15,0);
-  \node[lbl, anchor=west]  at (2.32,0) {$t_1$};
-  \draw[ax] (0,0.36) -- (0,1.95);
-  \node[lbl, anchor=south] at (0,2.08) {$t_2$};
+  \draw[black, fill=white] (-1.32,-0.95) circle (0.13);
+  \fill[black] (-1.32,-0.95) circle (0.04);
+  \node[lbl, anchor=east] at (-1.52,-0.95) {$n_s$};
 
-  % ---- n_s, out of the page ----------------------------------------------
-  \draw[black, fill=white] (-1.10,-1.10) circle (0.15);
-  \fill[black] (-1.10,-1.10) circle (0.05);
-  \node[lbl, anchor=east] at (-1.32,-1.10) {$n_s$};
+  % ---- the two component vectors, on the tangents they lie along ----------
+  \draw[cmp] (0,0) -- (1.474,0);
+  \draw[cmp] (0,0) -- (0,1.032);
+  \node[lbl, red, anchor=north] at (1.474,-0.10) {$\theta_{t_1}t_1$};
+  \node[lbl, red, anchor=north west] at (0.13,0.94) {$\theta_{t_2}t_2$};
 
-  % ---- the two components, lying on the axes they belong to ---------------
-  \draw[cmp] (0,0) -- (1.556,0);
-  \draw[cmp] (0,0) -- (0,1.090);
-  \node[lbl, red, anchor=north] at (1.556,-0.12) {$\theta_{t_1}$};
-  \node[lbl, red, anchor=north west] at (0.13,0.98) {$\theta_{t_2}$};
+  % ---- their sum, with the right triangle the two components close ---------
+  \draw[prj] (1.474,0) -- (35:1.80);
+  \draw[prj] (0,1.032) -- (35:1.80);
+  \draw[black, thin] (1.314,0) -- (1.314,0.16) -- (1.474,0.16);
+  \draw[off] (0,0) -- (35:1.80);
+  \node[lbl, red, anchor=west] at (35:2.08) {$\boldsymbol{\theta}$};
+  \draw[arc] (0.52,0) arc (0:35:0.52);
+  \node[lbl, red] at (17.5:0.74) {$\alpha$};
+  \node[lbl, red] at (1.12,0.45) {$\lVert\boldsymbol{\theta}\rVert$};
 
-  % ---- the offset, as a rotation vector -----------------------------------
-  % Its magnitude and its direction angle are both drawn, because the two
-  % components are that magnitude resolved through the cosine and the sine of
-  % that angle, and a panel that shows only the components hides where they
-  % come from.
-  \draw[prj] (1.556,0) -- (35:1.90);
-  \draw[prj] (0,1.090) -- (35:1.90);
-  \draw[off] (0,0) -- (35:1.90);
-  \node[lbl, red, anchor=west] at (35:2.18) {$\theta$};
-  \draw[arc] (0.55,0) arc (0:35:0.55);
-  \node[lbl, red] at (17.5:0.75) {$\alpha$};
-  \node[lbl, red] at (1.26,0.50) {$\lVert\theta\rVert$};
+  % ---- what the triangle states, in the two relations it stands for -------
+  \node[lbl, red, align=left] at (1.30,-1.12)
+    {$\theta_{t_1}=\lVert\boldsymbol{\theta}\rVert\cos\alpha$\\
+     $\theta_{t_2}=\lVert\boldsymbol{\theta}\rVert\sin\alpha$};
 
-  % ---- displacement selected perpendicular to it --------------------------
-  % The point name sits left of the tip and the vector name beyond it, on
-  % opposite sides of the arrowhead: stacked, the two ran together.
-  \draw[lev] (0,0) -- (125:1.70);
-  \node[cpt] at (125:1.70) {};
-  \node[lbl, blue, anchor=east] at (-1.12,1.31) {$p_c$};
-  \node[lbl, blue] at (125:2.10) {$r_{c,t}$};
+  % ---- the displacement selected perpendicular to it ----------------------
+  \draw[lev] (0,0) -- (125:1.60);
+  \node[cpt] at (125:1.60) {};
+  \node[lbl, blue, anchor=east] at (-1.05,1.23) {$p_c$};
+  \node[lbl, blue] at (125:1.98) {$r_{c,t}$};
   \node[pt] at (0,0) {};
-  \node[lbl, anchor=north west] at (0.10,-0.14) {TCP};
+  \node[lbl, anchor=north west] at (0.10,-0.13) {TCP};
 
   % ---- right angle between the offset and the displacement ----------------
   % Rotated by the offset direction, the first of the two, so the square spans
-  % the quadrant between them rather than the one beyond the displacement. It
-  % is drawn last and at a radius that clears the component arrow, which would
-  % otherwise cover it.
+  % the quadrant between them.
   \begin{scope}[rotate=35]
     \draw[black, thin] (0.34,0) -- (0.34,0.34) -- (0,0.34);
   \end{scope}
 
-  \node[lbl] at (0.45,-1.95) {(b) Selection in the tangent plane};
+  \node[lbl] at (0.35,-1.75) {(b) Offset resolved in the tangent plane};
 \end{scope}
 
 \end{tikzpicture}

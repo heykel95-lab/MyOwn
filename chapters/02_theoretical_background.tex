@@ -1076,13 +1076,15 @@ t_1\times n_s=-t_2.
 \label{eq:surface_frame_cross_product_relations}
 \end{equation}
 
-\mbox{\Cref{fig:lever_direction_selection}} shows an angular offset in two
+\mbox{\Cref{fig:lever_direction_selection}} shows the angular offset in two
 views. Panel~(a) is an elevation along \mbox{\(t_1\)}, in which the component
 \mbox{\(\theta_{t_1}\)} appears as the angle between the tool face and the
-surface. Panel~(b) is the plan view along \mbox{\(n_s\)}, in which the same
-offset appears as a vector of magnitude \mbox{\(\lVert\theta\rVert\)} at the
-angle \mbox{\(\alpha\)} from \mbox{\(t_1\)}, with its two components as the
-projections of that vector on the tangents.
+surface. Panel~(b) is a view along \mbox{\(n_s\)}, in which the small
+angular-offset vector \mbox{\(\boldsymbol{\theta}\)} is resolved in the surface
+tangent plane. Its magnitude is \mbox{\(\lVert\boldsymbol{\theta}\rVert\)}, its
+direction forms the angle \mbox{\(\alpha\)} with \mbox{\(t_1\)}, and its
+components along the surface tangents are \mbox{\(\theta_{t_1}\)} and
+\mbox{\(\theta_{t_2}\)}.
 
 \begin{figure}[H]
   \centering
@@ -1091,9 +1093,8 @@ projections of that vector on the tangents.
   \label{fig:lever_direction_selection}
 \end{figure}
 
-Considering a small angular offset \mbox{\(\theta\)} that the contact response
-should reduce, its direction in the surface tangent plane forms an angle
-\mbox{\(\alpha\)} with \mbox{\(t_1\)} and is written
+Considering a small angular offset \mbox{\(\boldsymbol{\theta}\)} that the
+contact response should reduce, its direction in the surface tangent plane is
 
 \[
 u_\theta=\cos\alpha\,t_1+\sin\alpha\,t_2.
@@ -1102,9 +1103,9 @@ u_\theta=\cos\alpha\,t_1+\sin\alpha\,t_2.
 For small rotations, the angular offset is represented to first order by
 
 \begin{equation}
-\theta
+\boldsymbol{\theta}
 \approx
-\lVert\theta\rVert u_\theta
+\lVert\boldsymbol{\theta}\rVert u_\theta
 =
 \theta_{t_1}t_1+\theta_{t_2}t_2
 =
@@ -1123,30 +1124,33 @@ R_{\mathrm{surface}}\theta_S,
 where
 
 \[
-\theta_{t_1}=\lVert\theta\rVert\cos\alpha,
+\theta_{t_1}=\lVert\boldsymbol{\theta}\rVert\cos\alpha,
 \qquad
-\theta_{t_2}=\lVert\theta\rVert\sin\alpha.
+\theta_{t_2}=\lVert\boldsymbol{\theta}\rVert\sin\alpha.
 \]
 
-The two components are therefore rotation angles about the surface tangents, in
-radians, and they carry the magnitude and the direction of the offset between
-them. Here \mbox{\(\theta_S\)} holds its surface coordinates, in the column
-order of
-\mbox{\Cref{eq:coc_surface_components}}. The entry about \mbox{\(n_s\)} is
-zero, because a rotation about the surface normal leaves the inclination of the
-tool face unchanged.
+The quantities \mbox{\(\theta_{t_1}\)} and \mbox{\(\theta_{t_2}\)} are the
+first-order angular components about the surface tangents, expressed in
+radians. Together, they define the magnitude and direction of the small angular
+offset. The vector \mbox{\(\theta_S\)} contains these components in surface
+coordinates, in the column order of
+\mbox{\Cref{eq:coc_surface_components}}. The component about \mbox{\(n_s\)} is
+set to zero in this alignment construction because rotation about the surface
+normal changes the in-plane tool orientation but not the inclination of the
+tool face relative to the surface.
 
 The tangential \abbr{CoC} displacement is chosen perpendicular to the
-angular-offset vector within the surface plane. Its direction is given by
+angular-offset vector within the surface plane. Its direction follows from a
+\mbox{\(90^\circ\)} rotation about \mbox{\(n_s\)},
 
 \[
-n_s\times\theta
+n_s\times\boldsymbol{\theta}
 \approx
 \theta_{t_1}t_2-\theta_{t_2}t_1.
 \]
 
-For the prescribed tangential \abbr{CoC} magnitude
-\mbox{\(\lVert r_{c,t}\rVert\)}, the displacement therefore becomes
+For a non-zero angular offset and a prescribed tangential \abbr{CoC} magnitude
+\mbox{\(\lVert r_{c,t}\rVert\)}, the displacement is therefore
 
 \begin{equation}
 r_{c,t}
@@ -1160,9 +1164,14 @@ r_{c,t}
 \label{eq:general_compliance_lever_selection}
 \end{equation}
 
-The square root is the offset magnitude \mbox{\(\lVert\theta\rVert\)}, so the
-fraction in \mbox{\Cref{eq:general_compliance_lever_selection}} is the unit
-direction perpendicular to the angular offset in the surface tangent plane; the
+Since
+
+\[
+\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}=\lVert\boldsymbol{\theta}\rVert,
+\]
+
+the fraction in \mbox{\Cref{eq:general_compliance_lever_selection}} is the unit
+direction perpendicular to the angular offset in the surface tangent plane. The
 magnitude \mbox{\(\lVert r_{c,t}\rVert\)} remains a selectable controller
 parameter. Panel~(b) of \mbox{\Cref{fig:lever_direction_selection}} draws that
 displacement against the offset it is perpendicular to.

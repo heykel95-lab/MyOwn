@@ -3658,7 +3658,41 @@ instantaneous opposing torque at identical joint configurations.
   new displays are unnumbered and take equals signs, so Equations 2.52 and 2.53
   keep their numbers and the `\approx` count stays at three.
 
-  **The magnitude is \(\lVert\theta\rVert\), and \(\phi\) is not used for it.**
+  **The angular-offset vector is set bold, and its components are not.**
+  Instructed 2026-09-06: \(\boldsymbol{\theta}\) against \(\theta_{t_1}\) and
+  \(\theta_{t_2}\), so that a reader cannot take the vector for a third scalar
+  angle. This is the second exception to *One typeface: plain italic* under
+  *Mathematical notation*, after the zero vector, and it is deliberate rather
+  than drift: the distinction it draws is between one symbol and its own
+  components, which no other vector in the thesis has to make. Every other
+  vector stays plain, including \(\theta_S\), \(u_\theta\), \(r_{c,t}\) and the
+  wrench quantities, and `TODOS.md` carries the question of whether the rule
+  should be widened.
+
+  **The components paragraph is the author's wording of 2026-09-06.** It reads
+  `The quantities \(\theta_{t_1}\) and \(\theta_{t_2}\) are the first-order
+  angular components about the surface tangents, expressed in radians.
+  Together, they define the magnitude and direction of the small angular
+  offset.` `rotation angles about the two surface tangents` is withdrawn from
+  that sentence, because it could be read as two independent finite rotations.
+  The sentence on the third entry is settled with it: `The component about
+  \(n_s\) is set to zero in this alignment construction because rotation about
+  the surface normal changes the in-plane tool orientation but not the
+  inclination of the tool face relative to the surface.` It says which quantity
+  such a rotation would change, which matters because the thesis controls the
+  in-plane orientation elsewhere.
+
+  **The \(90^\circ\) rotation is named again, in one clause.** Restored
+  2026-09-06 as `Its direction follows from a \(90^\circ\) rotation about
+  \(n_s\),` immediately before the cross-product display, which replaces the
+  two withdrawn sentences of the same date rather than restoring them.
+  Equation 2.52 now opens `For a non-zero angular offset and a prescribed
+  tangential \abbr{CoC} magnitude`, and the square root is stated as its own
+  unnumbered display, \(\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}
+  =\lVert\boldsymbol{\theta}\rVert\), before the sentence naming the fraction
+  as the unit direction.
+
+  **The magnitude is \(\lVert\boldsymbol{\theta}\rVert\), and \(\phi\) is not used for it.**
   The author's formulation of 2026-09-06 wrote the magnitude \(\phi\), which is
   already the orientation-error angle in the symbol list and in Section 2.2 of
   the same chapter, so the two would have shared one name three sections apart.

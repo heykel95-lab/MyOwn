@@ -380,3 +380,19 @@ the sentence before the Case-D mechanism figure names the three compliance-centr
 positions instead. `the subscript \(\mathrm{est}\)` became `the
 \(\mathrm{est}\) index`, because `subscript` is not used in thesis prose.
 Restore either if the supplied wording is meant to stand.
+
+## Decide whether the bold-vector notation stays local to Section 2.7.2
+
+\(\boldsymbol{\theta}\) was set bold on 2026-09-06, on the author's
+instruction, so that the vector cannot be read as a third scalar beside
+\(\theta_{t_1}\) and \(\theta_{t_2}\). It crosses *One typeface: plain italic*
+in `THESIS_WRITING_GUIDE.md`, which sets every symbol plain and admits only the
+zero vector as an exception.
+
+Applied as instructed and recorded there as a second exception. What is open is
+the scope: the thesis now has one bold vector and about thirty plain ones,
+including \(f\), \(m\), \(e_p\), \(r_c\) and \(\theta_S\) in the same chapter.
+Either the exception stays local, and the guide says why this symbol alone
+needs it, or the convention widens to every Cartesian vector, which is a pass
+over every chapter, the symbol list and the figures. The first is what is
+written now.
