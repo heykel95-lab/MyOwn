@@ -198,8 +198,10 @@ def main():
     parser.add_argument("--wrench-csv", default=DEFAULT_WRENCH_CSV)
     parser.add_argument("--tmode-run", default=DEFAULT_TMODE_RUN)
     parser.add_argument("--tmode-log", default=DEFAULT_TMODE_LOG)
+    # All three figures belong to Chapter 5, and figures/ is organised by
+    # chapter, so the default writes there rather than into figures/ itself.
     parser.add_argument("--out-dir",
-                        default=os.path.join(THESIS_ROOT, "figures"))
+                        default=os.path.join(THESIS_ROOT, "figures", "ch05"))
     args = parser.parse_args()
 
     os.makedirs(args.out_dir, exist_ok=True)

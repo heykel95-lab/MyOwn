@@ -1,9 +1,9 @@
 # Run records for the two generated figures
 
 The thesis includes five figures drawn by a script rather than typeset in
-`pgfplots`: `figures/MAIN_D_wrench.pdf`,
-`figures/MAIN_NS_nullspace_automatic.pdf` and the three
-`figures/MAIN_WR_*.pdf`. This directory holds exactly the run records those
+`pgfplots`: `figures/ch05/MAIN_D_wrench.pdf`,
+`figures/ch05/MAIN_NS_nullspace_automatic.pdf` and the three
+`figures/ch05/MAIN_WR_*.pdf`. This directory holds exactly the run records those
 scripts read and cannot find elsewhere in the repository, so all five redraw
 from a checkout with no argument and no access to the lab machine. The
 remaining inputs, one wrench CSV and one controller log, are committed under

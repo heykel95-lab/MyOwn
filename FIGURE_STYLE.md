@@ -11,7 +11,18 @@ screenshot is a last resort and never carries text the reader must read.
 
 ## Drawn diagrams (TikZ)
 
-Write the diagram as `figures/<name>.tex` containing one `tikzpicture`, with no
+**`figures/` is organised by chapter.** Reorganised 2026-09-07. A figure lives
+in the folder of the chapter that includes it -- `figures/ch01/` to
+`figures/ch05/` -- with `figures/frontmatter/` for the title-page logo and the
+declaration signature, and `figures/withdrawn/` for everything no chapter
+includes any more. Chapter 6 has no figures, so it has no folder. A new figure
+goes straight into its chapter's folder, and a figure whose section is removed
+moves to `figures/withdrawn/` rather than being deleted, since several of them
+still have generators in `code/python/figures/`. `\graphicspath` in
+`config/settings.tex` lists every folder, so a bare `\includegraphics{name}`
+still resolves, but write the full path as the chapters do.
+
+Write the diagram as `figures/<chapter>/<name>.tex` containing one `tikzpicture`, with no
 preamble of its own, and include it with
 
 ```tex
@@ -837,7 +848,8 @@ still commanded. Keeping the name on one line fixes the mode boxes at
 ## Generated plots (matplotlib)
 
 Plots come from the scripts in `analysis/` in the controller repository, are
-written to its `figures/` directory, and are copied into `figures/` here as
+written to its `figures/` directory, and are copied into the chapter folder
+under `figures/` here as
 vector PDF.
 
 **The active contact-result plots report configured orientation offsets about
@@ -959,8 +971,9 @@ data series, an axis, or a case letter is now changeable, which a direct PDF
 edit could never do.
 
 One caution when re-running. The scripts still write the old case letters, so
-the output has to be renamed on the way into `figures/` here, and a script run
-straight into `figures/` will leave the old names behind rather than replacing
+the output has to be renamed on the way into its chapter folder here, and a
+script run straight into `figures/` will leave the old names behind rather than
+replacing
 the figure it was meant to update.
 
 ### How to regenerate a plot, in practice
@@ -1006,7 +1019,8 @@ text comes from those arguments, so the legend convention is applied at the
 call, not in the script.
 
 **Rename on the way in.** The scripts still write the old case letters; the map
-is in `code/python/figures/README.md`. Copying a fresh output into `figures/`
+is in `code/python/figures/README.md`. Copying a fresh output into its chapter
+folder
 under its generated name leaves the figure the thesis includes untouched and
 adds an orphan.
 

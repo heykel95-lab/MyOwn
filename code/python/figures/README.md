@@ -12,6 +12,11 @@ nothing; the scripts still write the old case letters. The map below is the
 missing link, and every row was checked by regenerating the figure and
 comparing it against the file in `figures/`.
 
+`figures/` is organised by chapter as of 2026-09-07. The two generated
+figures the thesis includes are in `figures/ch05/`, and everything this
+file calls no longer included is in `figures/withdrawn/`. A regenerated PDF
+is copied to whichever of the two the name below belongs to.
+
 ## Which script writes which figure
 
 | Figure in `figures/` | Written by the script as | Script |
@@ -146,9 +151,9 @@ are not in the thesis.
 
 Chapter 5 includes nine figures, and all nine redraw from a checkout alone.
 
-Four are `pgfplots` sources in `figures/` whose coordinates are written into the
-`.tex` file, so they carry their own data and redraw wherever the thesis
-compiles: `results_case_a_bars.tex`, `results_case_b_stiffness.tex`,
+Four are `pgfplots` sources in `figures/ch05/` whose coordinates are written
+into the `.tex` file, so they carry their own data and redraw wherever the
+thesis compiles: `results_case_a_bars.tex`, `results_case_b_stiffness.tex`,
 `results_case_c_stiffness.tex` and `results_case_d_panels.tex`.
 
 The other five are drawn here:
