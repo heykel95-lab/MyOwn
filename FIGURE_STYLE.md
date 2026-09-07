@@ -539,7 +539,7 @@ the panels further -- `(a) Rotations about the tangents` became
 **The Chapter 4 surface-reference geometry keeps three orientations distinct.**
 The physical surface is blue, the configured surface reference is red, and the
 tool face at the start of Contact Establishment is dark green. The inner arc
-shows the achieved pose-based initial angular offset \(\theta_{\mathrm{ach},t_1}\), drawn from the
+shows the achieved angular offset \(\theta_{\mathrm{ach},t_1}\), drawn from the
 configured reference to the achieved tool face. No angle is drawn from the
 physical surface, and no symbol is assigned to its unknown difference from the
 configured reference. The drawing is a principal-tangent cross-section and
@@ -1251,7 +1251,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
   `Rotational Stiffness About \(t_1\), \(K_{R,t_1}\) [N m/rad]`,
   `Cross-Axis Translational Stiffness, \(K_{p,t_2}\) [N/m]`,
   `Tangential CoC Position, \(r_{c,t_2}\) [mm]`,
-  `Achieved Initial Angular Offset, \(\theta_{\mathrm{ach},t_1}\) [°]`,
+  `Achieved Angular Offset, \(\theta_{\mathrm{ach},t_1}\) [°]`,
   `Commanded Normal Force, \(F_n\) [N]`,
   `Commanded TCP Moment About \(t_1\), \(M_{t_1}\) [N m]`.
 
@@ -1302,7 +1302,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
 - **A legend names the experimental condition, and gives its symbol and value
   where one exists:** `Descriptive Condition, Symbol = Value`. It never repeats
   the \(y\)-axis quantity and never carries a unit already on the axis.
-  Settled forms: `Achieved Initial Offset, \(\theta_{\mathrm{ach},t_1}=+9.32^\circ\)` for an
+  Settled forms: `Achieved Angular Offset, \(\theta_{\mathrm{ach},t_1}=9.32^\circ\)` for an
   achieved contact-entry condition; `Projected Damping, \(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\)`
   for a controller parameter; `CoC Position, \(r_{c,t_2}=40\,\mathrm{mm}\)`
   and `CoC at TCP, \(r_{c,t_2}=0\)` for a compliance-centre position. A bare
@@ -1363,7 +1363,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
   column is reported by the magnitude \(\phi_0\), because residual components
   about \(t_2\) remain in the achieved orientation and the \(t_1\) component
   alone does not describe it, while the two directional columns carry
-  \(\theta_{\mathrm{ach},t_1}\). The axis therefore reads `Achieved Initial
+  \(\theta_{\mathrm{ach},t_1}\). The axis therefore reads `Achieved
   Angular Offset, \(\phi_0\) and \(\theta_{\mathrm{ach},t_1}\) [°]`.
 
   Naming both is what keeps the rule and the chapter in step. A single

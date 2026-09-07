@@ -399,3 +399,64 @@ Section 3.2.2 -- and the bare \(u\) belongs to the generic axis--angle
 construction of Section 2.3. Two files change:
 `chapters/02_theoretical_background.tex`, in Equations 2.54 to 2.58 and the
 sentences around them, and the symbol-list row.
+
+## Two figure generators still print a leading plus
+
+`code/python/figures/make_coc_figures.py` formats its legend values with
+`{value:+.2f}`, so an entry reads `Achieved Angular Offset,
+\(\theta_{\mathrm{ach},t_1}=+9.32^\circ\)`. *Positive values carry no explicit
+sign*, agreed 2026-09-02 in `THESIS_WRITING_GUIDE.md` and applied to the
+figures, means the plus should not be printed. The four Chapter 5 figure
+sources were corrected on that date and are right; the generator was not,
+because it draws no figure any chapter includes. Change the format to `.2f`
+and keep the minus that a negative value carries on its own, or record that the
+generator is out of scope for figure rules.
+
+`make_figures.py` was left alone on the same reasoning. Check it for the same
+format before either generator is used again.
+
+## The Case-A axis names two symbols and one of them is not the settled one
+
+`figures/ch05/results_case_a_bars.tex` reads `Achieved Angular Offset,
+\(\phi_0\) and \(\theta_{\mathrm{ach},t_1}\) [°]`, which `FIGURE_STYLE.md`
+settles on 2026-09-07 because the zero-offset column is reported by
+\(\phi_0\). The 2026-09-07 name change shortened the words on that axis and
+left the two symbols as they are, which is correct but leaves the axis the one
+place in the thesis where an `Achieved Angular Offset` label does not carry
+\(\theta_{\mathrm{ach},t_1}\) alone. Nothing is wrong; confirm the axis still
+reads clearly in the compiled figure now that the label is three words shorter,
+since it was laid out for the longer form.
+
+## \(\phi_0\) has no constructive definition in the thesis
+
+Section 4.5.1 defines the pair implicitly, in Equation 4.2:
+\(R(u_0,\phi_0)n_{\mathrm{Tool}}(t_{\mathrm{start}})=-n_s\), with `shortest
+rotation` in the sentence above it as what makes the pair unique. Nothing in
+the thesis says how to obtain \(\phi_0\) from the two directions. It is the
+only quantity in the chain
+\(\theta_{\mathrm{offset},t_1}\to\theta_{\mathrm{ach},t_1}\to\gamma_{t_1}\)
+without a constructive route, and it carries a reported value,
+\(\phi_0=0.74^\circ\) in Table 4.4, Section 5.2, Appendix D and the Case-A
+figure.
+
+Two routes existed and neither is available now. The closed form
+\(\phi=\operatorname{atan2}(\lVert n_d\times n_{\mathrm{Tool}}\rVert,
+n_d^\top n_{\mathrm{Tool}})\) was in Section 2.7.2 and was withdrawn on
+2026-09-06 with \(n_d\), \(\phi\) and \(u_a\); `THESIS_WRITING_GUIDE.md`
+records it as a literal string so a rename cannot revive it. The Section 2.2.1
+extraction, \(\phi=\arccos((\operatorname{tr}\Delta R-1)/2)\) with \(u\) from
+the skew-symmetric part, is available and unwithdrawn, but it takes a rotation
+matrix rather than a pair of directions, and Section 4.5.1 does not
+cross-reference it.
+
+The decision is the author's, and there are three ways to close it: accept
+Equation 4.2 as a sufficient implicit definition and record that here; add one
+clause to Section 4.5.1 pointing at the Section 2.2.1 extraction and saying
+which rotation matrix it applies to; or restore the two-vector closed form as a
+Section 4.5.1 display, which would require lifting the 2026-09-06 withdrawal
+for \(\phi_0\) alone.
+
+Note also that no script in this repository computes \(\phi_0\).
+`extract_metrics.py` parses it out of the controller's own report text, as
+`deviation: before=`, so the calculation lives in the C++ controller in
+`Thesis_Final_Control` and cannot be checked from this repository.
