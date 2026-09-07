@@ -481,6 +481,14 @@ schematic angular difference from it, marked by a second black arc labelled
 `Desired--achieved difference`. The two labels are parallel in form because
 they name the two contributions the figure exists to separate.
 
+**The tool face carries a short perpendicular tip.** Added 2026-09-07. It is
+drawn in the same green as the face, at the point the datum crosses it, and
+inside the same rotation, so it stays perpendicular if the schematic tilt is
+retuned. It is what makes the green object read as the end of a tool rather
+than as a third surface lying across the drawing. It takes no label and no
+arc: the legend's `Tool face` already names the object it belongs to, and the
+figure's two arcs are reserved for the two contributions it exists to separate.
+
 **The configured surface is drawn as a continuous line.** Agreed 2026-09-01,
 superseding the dashed red line the figure carried until then. Once the
 desired-direction datum was added, the drawing held two dashed elements and the
