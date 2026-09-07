@@ -119,16 +119,19 @@ letter. It also writes a PNG beside the PDF; only the PDF belongs in
 their final names and needs no renaming:
 
     python3 make_wrench_evaluation_figures.py \
-        --tmode-run /path/to/Thesis_Final_Control/experiments/results/T_MODE_MANUAL_D_REPEAT/r01 \
         --out-dir /path/to/MyOwn-thesis/figures
 
 The contact-wrench figure reads the plotted pairs in
-`professoremail/fn_mt1_commanded_vs_estimated.csv`, so it runs without the
-archive. The two plausibility figures call
-`professoremail/analyse_t_mode_consistency.py`, which needs the archived
-`params_effective` of that run; the controller log itself is committed under
-`professoremail/`, and the generator assembles a temporary run directory from
-the two. The analysis reproduces the reported means exactly, and the generator
+`professoremail/fn_mt1_commanded_vs_estimated.csv`. The two plausibility
+figures call `professoremail/analyse_t_mode_consistency.py`, which needs the
+run's `params_effective` and its `terminal.log`, the second because the
+analysis refuses a run whose setup-impedance hold it cannot confirm. Both are
+published under
+`code/python/experiments/results/T_MODE_MANUAL_D_REPEAT/r01/`, which is where
+`--tmode-run` now resolves, and the controller log is committed under
+`professoremail/`; the generator assembles a temporary run directory from
+them. Pass `--tmode-run` only to read the original directory in the lab
+archive instead. The analysis reproduces the reported means exactly, and the generator
 prints them, so a run that does not print \(-19.650\), \(-19.640\) and
 \(-22.292\,\mathrm{N}\) for the force is a signal to stop. `plot_setup_diagnostics.py` has its two
 trials as defaults in the file.
@@ -141,24 +144,27 @@ are not in the thesis.
 
 ## What Chapter 5 needs
 
-Chapter 5 includes six figures, and all six now redraw from a checkout alone.
+Chapter 5 includes nine figures, and all nine redraw from a checkout alone.
 
 Four are `pgfplots` sources in `figures/` whose coordinates are written into the
 `.tex` file, so they carry their own data and redraw wherever the thesis
 compiles: `results_case_a_bars.tex`, `results_case_b_stiffness.tex`,
 `results_case_c_stiffness.tex` and `results_case_d_panels.tex`.
 
-The other two are drawn here, from the run records under
-`code/python/experiments/results/`:
+The other five are drawn here:
 
 | Figure | Script | Reads |
 |---|---|---|
-| `MAIN_D_wrench.pdf` | `plot_coc_case.py` | `P2_t1_pos_{m040,p000,p040}/r01/`, each trial's log and its `params_effective/` |
-| `MAIN_NS_nullspace_automatic.pdf` | `make_nullspace_figure.py` | the twelve `MAIN_NS{7,8}_*_20N_200mm/r0{1,2,3}/` logs |
+| `MAIN_D_wrench.pdf` | `plot_coc_case.py` | `experiments/results/P2_t1_pos_{m040,p000,p040}/r01/`, each trial's log and its `params_effective/` |
+| `MAIN_NS_nullspace_automatic.pdf` | `make_nullspace_figure.py` | the twelve `experiments/results/MAIN_NS{7,8}_*_20N_200mm/r0{1,2,3}/` logs |
+| `MAIN_WR_contact_wrench.pdf` | `make_wrench_evaluation_figures.py` | `professoremail/fn_mt1_commanded_vs_estimated.csv` |
+| `MAIN_WR_force_plausibility.pdf` | `make_wrench_evaluation_figures.py` | that run's log under `professoremail/`, with `experiments/results/T_MODE_MANUAL_D_REPEAT/r01/` |
+| `MAIN_WR_moment_plausibility.pdf` | `make_wrench_evaluation_figures.py` | the same two |
 
-That directory is where both scripts resolve by default, so neither needs
-`--results` any more. `code/python/experiments/README.md` says what was copied
-and what was left behind.
+Every one of those paths is inside the repository and is where the script
+resolves by default, so none of the three generators needs a data argument.
+`code/python/experiments/README.md` says what was copied and what was left
+behind.
 
 The generators for the withdrawn figures are a different matter.
 `make_coc_figures.py`, `compare_angle_metrics.py`, `plot_setup_diagnostics.py`

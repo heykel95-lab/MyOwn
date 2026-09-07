@@ -548,7 +548,9 @@ they name the two contributions the figure exists to separate.
 **The tool face carries a short perpendicular tip.** Added 2026-09-07. It is
 drawn in the same green as the face, at the point the datum crosses it, and
 inside the same rotation, so it stays perpendicular if the schematic tilt is
-retuned. It is what makes the green object read as the end of a tool rather
+retuned. It stands on the side away from the surfaces, agreed 2026-09-07:
+drawn on the surface side it reaches into the gap the two arcs annotate and
+reads as a contact that has already been made. It is what makes the green object read as the end of a tool rather
 than as a third surface lying across the drawing. It takes no label and no
 arc: the legend's `Tool face` already names the object it belongs to, and the
 figure's two arcs are reserved for the two contributions it exists to separate.

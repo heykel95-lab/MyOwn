@@ -1,10 +1,13 @@
 # Run records for the two generated figures
 
-The thesis includes two figures drawn by a script rather than typeset in
-`pgfplots`: `figures/MAIN_D_wrench.pdf` and
-`figures/MAIN_NS_nullspace_automatic.pdf`. This directory holds exactly the run
-records those two scripts read, so both redraw from a checkout with no argument
-and no access to the lab machine.
+The thesis includes five figures drawn by a script rather than typeset in
+`pgfplots`: `figures/MAIN_D_wrench.pdf`,
+`figures/MAIN_NS_nullspace_automatic.pdf` and the three
+`figures/MAIN_WR_*.pdf`. This directory holds exactly the run records those
+scripts read and cannot find elsewhere in the repository, so all five redraw
+from a checkout with no argument and no access to the lab machine. The
+remaining inputs, one wrench CSV and one controller log, are committed under
+`professoremail/`.
 
     python3 ../figures/plot_coc_case.py \
         'P2_t1_pos_m040/r01=CoC Position, $r_{c,t_2} = -40$ mm' \
@@ -27,6 +30,8 @@ but redraws the figures slightly differently, which
 | `results/P2_t1_pos_{m040,p000,p040}/r01/logs/surface_grinding_controller_log.csv` | `plot_coc_case.py` | the three Case-D contact traces |
 | `results/P2_t1_pos_{m040,p000,p040}/r01/params_effective/*.conf` | `plot_coc_case.py` | the surface tilt the traces are resolved on |
 | `results/MAIN_NS{7,8}_*_20N_200mm/r0{1,2,3}/surface_grinding_controller_log.csv` | `make_nullspace_figure.py` | twelve pose-hold runs, three per condition |
+| `results/T_MODE_MANUAL_D_REPEAT/r01/params_effective/*.conf` | `make_wrench_evaluation_figures.py` | the parameters of the plausibility run |
+| `results/T_MODE_MANUAL_D_REPEAT/r01/terminal.log` | `make_wrench_evaluation_figures.py` | confirms the setup-impedance hold; the analysis refuses a run without it |
 | `derived/MAIN_NS_automatic_summary.csv` | written, not read | the table `make_nullspace_figure.py` regenerates |
 
 The Case-D records come from `Thesis_Final_Control`, the null-space records from

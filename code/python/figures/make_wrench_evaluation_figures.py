@@ -92,8 +92,11 @@ FORCE_TEST_START = 0.0
 FORCE_TEST_END = 13.5
 MOMENT_TEST_START = 13.0
 
+# Only params_effective is taken from this directory, so the copy published
+# under code/python/experiments/ carries it and the script runs from a checkout.
+# Point --tmode-run at the lab archive to read the original run instead.
 DEFAULT_TMODE_RUN = os.path.abspath(os.path.join(
-    THESIS_ROOT, "..", "Thesis_Final_Control", "experiments", "results",
+    THESIS_ROOT, "code", "python", "experiments", "results",
     "T_MODE_MANUAL_D_REPEAT", "r01"))
 DEFAULT_TMODE_LOG = os.path.join(
     PROFESSOR_EMAIL, "T_MODE_MANUAL_D_REPEAT_r01_controller_log.csv")
