@@ -115,34 +115,29 @@ are not in the thesis.
 
 ## What Chapter 5 needs
 
-Chapter 5 includes six figures. Four are `pgfplots` sources in `figures/` whose
-coordinates are written into the `.tex` file, so they carry their own data and
-redraw wherever the thesis compiles:
+Chapter 5 includes six figures, and all six now redraw from a checkout alone.
 
-  * `results_case_a_bars.tex`
-  * `results_case_b_stiffness.tex`
-  * `results_case_c_stiffness.tex`
-  * `results_case_d_panels.tex`
+Four are `pgfplots` sources in `figures/` whose coordinates are written into the
+`.tex` file, so they carry their own data and redraw wherever the thesis
+compiles: `results_case_a_bars.tex`, `results_case_b_stiffness.tex`,
+`results_case_c_stiffness.tex` and `results_case_d_panels.tex`.
 
-The other two are drawn here and read run records that are not in this
-repository:
+The other two are drawn here, from the run records under
+`code/python/experiments/results/`:
 
 | Figure | Script | Reads |
 |---|---|---|
-| `MAIN_D_wrench.pdf` | `plot_coc_case.py` | `Thesis_Final_Control/experiments/results/P2_t1_pos_{m040,p000,p040}/r01/`, about 27 MB: each trial's `logs/*.csv` and its `params_effective/` |
-| `MAIN_NS_nullspace_automatic.pdf` | `make_nullspace_figure.py` | `MyController/experiments/results/MAIN_NS{7,8}_*_20N_200mm/r0{1,2,3}/surface_grinding_controller_log.csv`, twelve files of about 27 MB each |
+| `MAIN_D_wrench.pdf` | `plot_coc_case.py` | `P2_t1_pos_{m040,p000,p040}/r01/`, each trial's log and its `params_effective/` |
+| `MAIN_NS_nullspace_automatic.pdf` | `make_nullspace_figure.py` | the twelve `MAIN_NS{7,8}_*_20N_200mm/r0{1,2,3}/` logs |
 
-A checkout on its own therefore redraws four of the six. The remaining two need
-the directories above copied across, and the `--results` argument then points
-at wherever they were put.
+That directory is where both scripts resolve by default, so neither needs
+`--results` any more. `code/python/experiments/README.md` says what was copied
+and what was left behind.
 
-Two cautions when copying the null-space records. `MyController`'s
-`plane_calibration_*`, `plane_profile.txt`, `tool_axis_calibration_*`,
-`tool_mount_status.txt` and `tool_profile.txt` are not to be published, and
-`make_nullspace_figure.py` reads none of them, so they can be left behind.
-And `MyController/experiments/analysis/make_nullspace_figure.py` is the
-superseded two-panel generator; the copy in this directory is the authoritative
-one.
+The generators for the withdrawn figures are a different matter.
+`make_coc_figures.py`, `compare_angle_metrics.py`, `plot_setup_diagnostics.py`
+and `plot_angle_descent.py` draw plots no chapter includes, and the records they
+read were not copied, so they still need a path into the lab archive.
 
 ## What the null-space script gained
 

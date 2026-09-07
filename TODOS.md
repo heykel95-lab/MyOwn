@@ -184,34 +184,23 @@ running it silently reverts the figure. Either overwrite it from
 the authoritative generator, or delete it and leave a pointer here. Not done
 because it changes a second repository.
 
-## Publish enough data to reproduce the figures
+## Publish the records the withdrawn figure generators read
 
-The run CSV files and derived contact metrics remain outside the repository, so
-a fresh clone redraws four of the six Chapter 5 figures and not the other two.
-The four `pgfplots` sources carry their coordinates inline and need nothing.
-The decision left is how much of the archive to publish, now measured:
+The records behind the two figures the thesis includes are now in
+`code/python/experiments/results/`, and both scripts redraw from a checkout
+with no arguments. What remains is the other four generators.
+`make_coc_figures.py` and `compare_angle_metrics.py` read
+`Thesis_Final_Control/experiments/derived/metrics.csv`, 141 kB, and
+`plot_setup_diagnostics.py`, `plot_angle_descent.py` and the two-panel mode of
+`compare_angle_metrics.py` read raw run directories from the same archive. They
+draw `MAIN_B_KR`, `MAIN_C_KP`, `MAIN_H_direction`, `MAIN_D_sign`,
+`MAIN_D_diagnostics`, `MAIN_DQ_metric_comparison`, `MAIN_DQ_metric_summary` and
+`MAIN_DQ_descent`, none of which any chapter now includes.
 
-- `MAIN_D_wrench.pdf` needs `P2_t1_pos_{m040,p000,p040}/r01/` from
-  `Thesis_Final_Control`, both the `logs/*.csv` and the `params_effective/`
-  directory beside it. About 27 MB in total.
-- `MAIN_NS_nullspace_automatic.pdf` needs all twelve
-  `MAIN_NS{7,8}_*_20N_200mm/r0{1,2,3}/surface_grinding_controller_log.csv` from
-  `MyController`, about 27 MB each and about 324 MB together. The script
-  averages the three repetitions per condition, so a single run does not stand
-  in for a condition.
-- `make_coc_figures.py` and `compare_angle_metrics.py` draw appendix figures
-  from `Thesis_Final_Control/experiments/derived/metrics.csv`, 141 kB.
-
-Preserve `MyController`'s calibration exclusion: its `plane_calibration_*`,
-`plane_profile.txt`, `tool_axis_calibration_*`, `tool_mount_status.txt` and
-`tool_profile.txt` are not to be published. `make_nullspace_figure.py` reads
-none of them, so excluding them costs nothing. If the data are placed in this
-repository, the scripts that read run directories take a `--results` path, so
-the location is free; without it they resolve to `code/python/experiments/`.
-
-The environment half of this is done: `code/python/figures/requirements.txt`
-pins matplotlib 3.9.2, and the README carries the figure-by-figure inventory
-and the exact commands. Only the decision about publishing the records is open.
+Nothing is broken while they stay withdrawn. Copying `metrics.csv` alone would
+restore most of them for the cost of a small file, and is worth doing if any of
+those figures is brought back. Preserve `MyController`'s calibration exclusion
+in anything further that is copied.
 
 ## Decide whether the null-space figure should print its minus sign
 
