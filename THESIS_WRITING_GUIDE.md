@@ -392,6 +392,140 @@ Cases A--D and nothing else**: 19 settings and 57 trials, with the
 trials. The tool-axis comparison was withdrawn on 2026-09-01; see
 *Appendix D* below for why, and do not reinstate its counts.
 
+**Chapter 5 opens on Section 5.1, `Controller Wrench Evaluation`.** Added
+2026-09-06 on the author's instruction, with the captions and the result
+sentences supplied. It carries two evaluations that are not part of the
+parameter study and are kept apart from each other:
+
+- `5.1.1 Commanded and Model-Estimated Wrench Comparison` compares the
+  commanded wrench with the model-estimated external wrench during one
+  TCP-centred Contact Establishment trial, over the stationary interval from
+  \(4\) to \(5\,\mathrm{s}\). The estimate differs from the command by
+  \(2.32\,\%\) in normal force and \(4.87\,\%\) in the moment about \(t_1\).
+- `5.1.2 Quasi-Static Plausibility Assessment` applies a known displacement and
+  a known rotation in Contact-Impedance Hold with the compliance centre at the
+  TCP, and compares the commanded wrench with the quasi-static impedance
+  prediction. The prediction differs from the command by \(0.05\,\%\) in force
+  and agrees to the reported precision in moment, while the model-estimated
+  values differ from the command by \(13.50\,\%\) and \(7.75\,\%\).
+
+**Do not call the first one a plausibility assessment.** It is a
+command-against-estimate comparison during the contact sequence itself; the
+plausibility assessment is the dedicated test that drives a known displacement
+and rotation against a known stiffness. Naming both the same thing was what the
+split was made to prevent.
+
+**Each of the two tests keeps its own figure, and the plausibility test keeps
+two.** The combined \(0\) to \(35\,\mathrm{s}\) plot is not used. The wrench
+comparison stays one figure of two panels, because force and moment come from
+the same five-second trial.
+
+**The plausibility figures use an ordinary \(t\) axis, and \(t_F\) and \(t_M\)
+are withdrawn.** Instructed 2026-09-07, written here as literal strings so a
+rename cannot revive them, together with the axis names
+`Time After Force-Test Start` and `Time After Rotation-Test Start`. Both figures
+now read `Time, \(t\) [s]`, because Section 4.6.2 presents the translational and
+the rotational evaluation separately and resets time to zero at the beginning of
+each. Two local time symbols made one recording look like two instrumented
+tests, and a reader met a third and fourth time symbol for an axis that carries
+seconds like every other.
+
+**Section 5.1 gives no sample standard deviation**, under *A single trial does
+not carry a \(\pm\) sample standard deviation*. The earlier half of this rule,
+that Section 5.1 *states* it is one trial per test, was dropped by the supplied
+Section 4.6.2 of 2026-09-07: the sentence `Both come from one trial, so no
+between-trial variability is evaluated` went with the paragraph that carried it,
+and the words `in one trial` went from the sentence above it. `TODOS.md` carries
+the gap as a decision for the author. Its trials are **not** added to the 19 settings and 57
+surface-contact trials of Cases A--D, nor to the 69-trial total: those counts
+cover the main contact study and the pose-hold study, and Section 5.1 is
+neither.
+
+**Chapter 4 says how both evaluations were performed and Chapter 5 says what
+they show.** Settled 2026-09-06, replacing the first arrangement, which left
+the setup in the results chapter. Section 4.6, `Cartesian Wrench Evaluation`,
+carries the estimator definition, the TCP transport, the two subsections
+`Commanded--Estimated Wrench Comparison` and `Quasi-Static Plausibility
+Assessment`, the stationary interval of the wrench comparison, and the reference
+state each perturbation of the plausibility assessment is evaluated against. The
+null-space experiment moved to Section 4.7 with that insertion. Section 5.1 then carries
+the figures, the numerical differences and the interpretation, and points at
+Section 4.6 rather than restating it.
+
+**Section 4.6 sets its relations as unnumbered displays.** The estimator
+transport and the two component definitions are used only inside that section
+and nothing cross-references them, and numbering them would renumber
+Equations 4.7 and 4.10, which this guide names. Prefer an unnumbered display
+wherever a Chapter 4 addition would otherwise shift those two.
+
+**The three Section 5.1 captions are settled and short.** Supplied 2026-09-06,
+replacing the first set, which ran to three and four lines: `Commanded and
+model-estimated wrench during Contact Establishment.`, `Quasi-static
+normal-force plausibility assessment.`, and `Quasi-static moment plausibility
+assessment about the first surface tangent.` The stationary interval, the local
+time reference and the panel contents moved into the body text, where the rule
+under *Figures and tables* sends them. None carries an optional short caption
+any longer: a caption that is already a noun phrase has nothing to shorten.
+
+**The Case-D mechanism caption is `Contact response and model-estimated
+interaction wrench.`** Shortened 2026-09-07, dropping `for the three \abbr{CoC}
+positions` and the optional short caption with it. The longer form wrapped to
+two rendered lines, which the one-line rule under *Figures and tables* forbids,
+and the sentence after the figure already says the comparison is over the three
+centre positions, so nothing left the thesis. This follows the three Section 5.1
+captions: once the visible caption is a noun phrase that fits, a second shorter
+form for the list of figures has nothing to shorten.
+
+**A wrapping caption is a layout fault as well as a style one.** The two-line
+caption was what pushed this figure past the space left on its page: the graphic,
+its legend and a two-line caption came to about \(515\,\mathrm{pt}\) against the
+\(515\,\mathrm{pt}\) remaining after the paragraph above it, so the `[H]`
+placement moved the whole float to the next page and left two thirds of the
+previous one blank. Removing the second caption line recovered about
+\(11\,\mathrm{pt}\), the figure now sits under the text that introduces it, and
+the document lost a page. Check a tall figure against the space its page has
+left, not only against the caption rule.
+
+**The renumbering that came with it.** `Main Surface-Contact Results` is now
+Section 5.2 and `Null-Space Pose-Hold Results` Section 5.3, so the case
+subsections are 5.2.1 to 5.2.3 and the null-space subsections 5.3.1 and 5.3.2.
+Entries elsewhere in this file that name Section 5.1.3, 5.2.1 or 5.2.2 were
+written against the earlier numbering and refer to the Case-D time course and
+the two null-space subsections respectively. Cross-references inside the thesis
+use `\Cref`, so the document itself is unaffected.
+
+**The model-estimated external wrench is a reported quantity again.** This
+overturns three earlier rulings, and they are withdrawn rather than left
+standing beside it: that the estimate `enters no reported figure or value`,
+that it `is assigned no thesis-wide mathematical symbol`, and that a local
+`est` notation exists only for a standalone supporting report. The reported
+symbols are \(F_{n,\mathrm{est}}=n_s^\top f_{\mathrm{est}}\) and
+\(M_{t_1,\mathrm{est}}=t_1^\top m_{\mathrm{est,TCP}}\), both with symbol-list
+rows. What does **not** change: the estimate is still model based and is never
+called a measured wrench without that qualification, the moment is transported
+to the TCP before the tangent is projected, and Chapter 2 still carries no
+estimated wrench.
+
+**The Case-D mechanism figure carries the model-estimated wrench, not the
+command.** Instructed 2026-09-06. It is Figure 5.8 now that Section 5.1 has
+added three figures ahead of it, and was Figure 5.5 before that date. Panel~(a) keeps the contact response \(\gamma_{t_1}\); panels~(b)
+and~(c) carry \(F_{n,\mathrm{est}}\) and \(M_{t_1,\mathrm{est}}\), so the
+figure relates the compliance-centre position to the interaction wrench rather
+than to the command. The reason is that the direction-dependent effect is a
+statement about the contact, and the commanded moment is what the controller
+asked for. Over the final second the estimated force settles at approximately
+\(-82.9\), \(-79.0\) and \(-78.0\,\mathrm{N}\) and the estimated TCP moment at
+\(4.07\), \(0.73\) and \(-2.54\,\mathrm{N\,m}\), at \(r_{c,t_2}=-40\), \(0\)
+and \(40\,\mathrm{mm}\). The settled chain is *\abbr{CoC} position →
+model-estimated contact moment → measured rotational response*, and the
+Chapter 6 sentence that carried the commanded pair moved with it.
+
+**The prose may call it the measured interaction wrench available from the
+robot**, provided the paragraph before that figure states once that the
+quantities come from the robot's model-based external-wrench estimator rather
+than from a force/torque sensor. The `est` index stays in every symbol, axis
+label and legend entry.
+
 State the experimental exclusion once in Chapter 4: the contact evaluation
 uses the \(t_1\) data set, which provided repeatable comparisons, whereas the
 \(t_2\) measurements showed greater variability. Section 6.2.2 gives the full
@@ -965,7 +1099,7 @@ circulation, the settled choices are:
   \(\theta_{\mathrm{offset},t_1}\to\theta_{\mathrm{init},t_1}\to\gamma_{t_1}\).
 
   In Chapter 3 the configured vector and its rotation are
-  \(\theta_{\mathrm{offset}}=\theta_{\mathrm{offset},t_1}t_1+
+  \(\theta_{\mathrm{offset}}\approx\theta_{\mathrm{offset},t_1}t_1+
   \theta_{\mathrm{offset},t_2}t_2\),
   \(u_{\mathrm{offset}}=\theta_{\mathrm{offset}}/
   \lVert\theta_{\mathrm{offset}}\rVert\), and
@@ -976,30 +1110,195 @@ circulation, the settled choices are:
   \(\theta_{\mathrm{cmd}}\), \(u_{\mathrm{cmd}}\),
   \(R_{\mathrm{cmd}}\) forms are withdrawn.
 
-  **The three angular families are \(\theta\), \(\theta_{\mathrm{offset}}\)
-  and \(\theta_{\mathrm{init}}\).** Settled 2026-09-04, replacing
-  \(\theta_a\) and \(\theta_{0,t_1}\):
+  **The two tangent quantities are rotational contributions, and the sum is a
+  first-order representation of a composition.** Settled 2026-09-06 on the
+  author's correction, and this is what Section 3.2.2 now says. Two rotations
+  about \(t_1\) and \(t_2\) are *composed*, not added: the exact combined
+  orientation is \(R(t_2,\theta_{\mathrm{offset},t_2})
+  R(t_1,\theta_{\mathrm{offset},t_1})\), and it depends on which rotation is
+  applied first. Only to first order in small angles do the two contributions
+  add, which is what Equation 3.2 states and why it carries `\approx`.
+
+  Three consequences bind. The settled sentences before the equation are `The
+  configured orientation offset combines small rotations about the two surface
+  tangents.` and `Composing the two rotation matrices gives the exact combined
+  orientation, which depends on the order in which the rotations are applied.`
+  The sentence after it reads `Here \(t_1\) and \(t_2\) are the rotation axes,
+  and each product is the first-order contribution of one rotation, expressed
+  in radians.` And **`the components of this rotation vector along the two
+  surface tangents` is withdrawn**, written here as a literal string: it called
+  an approximate sum an exact decomposition, and it contradicted the `\approx`
+  printed one line above it. `TODOS.md` carried that contradiction as an open
+  item until this correction closed it.
+
+  **Do not describe the sum as rotating \(t_1\) and \(t_2\) and adding the
+  results.** The tangents are the rotation axes; \(\theta_{\mathrm{offset},t_1}t_1\)
+  and \(\theta_{\mathrm{offset},t_2}t_2\) are the first-order contributions of
+  the two rotations. The symbol-list rows say the same: the offset is `formed
+  to first order from its two tangent contributions`, and its two scalars are
+  the `First-order contributions of the configured rotations about \(t_1\) and
+  \(t_2\)`. The earlier row that printed the sum with an equals sign is
+  withdrawn with the sentence it matched.
+
+  **The angular families are \(\theta_{t_i}\), \(\theta_{\mathrm{offset}}\) and
+  \(\theta_{\mathrm{init}}\).** Settled 2026-09-06, in two steps: the general
+  family was withdrawn with the axis--angle construction earlier that day, and
+  restored with the composition that replaced it.
 
   | Symbol | Is |
   |---|---|
-  | \(\theta\), \(\theta_{t_i}\) | the general small angular offset of the compliance-centre derivation, Section 2.7.2 |
+  | \(\theta_{t_1}\), \(\theta_{t_2}\) | the two rotations of a general angular tool offset, in the Section 2.7.2 derivation only |
   | \(\theta_{\mathrm{offset}}\), \(\theta_{\mathrm{offset},t_i}\) | the configured pre-contact angular offset |
   | \(\theta_{\mathrm{init}}\), \(\theta_{\mathrm{init},t_i}\) | the achieved initial angular offset at contact entry |
 
-  **\(\theta_a\) and \(\theta_{a,S}\) are withdrawn**, written here as literal
-  strings so a rename cannot revive them. The generic offset carries no index
-  at all: the derivation needs only one angular quantity, and the index named
-  nothing a reader could look up. The round-bracket surface-frame column
-  \(\theta_{a,S}\), added earlier the same day, went with it — the supplied
-  replacement paragraph does not carry it.
+  The first is general and belongs to the theory. The other two are the reported
+  campaign's, and Section 2.7.2 is not built from them. Do not substitute one
+  family for another to shorten a sentence.
 
-  **\(\theta_{t_1}\) and \(\theta_{t_2}\) are therefore live again**, and the
-  earlier withdrawal of those two spellings is lifted. They now name the
-  components of the *general* offset in Section 2.7.2, not the configured one,
-  which keeps its `offset` index everywhere. A reader of an older draft could
-  read \(\theta_{t_1}\) as the configured offset; the two never appear in the
-  same section, and Chapter 2 introduces the general quantity by name where it
-  is defined.
+  **\(\theta_a\), \(\theta_{a,S}\), \(\theta_S\), \(\mathbf{a}\), \(a_S\),
+  \(u_\theta\) and \(u_\alpha\) are all withdrawn**, written here as literal
+  strings so a rename cannot revive them. They were the successive attempts to
+  give Section 2.7.2 a general angular-offset *vector* and to resolve it onto
+  the two tangents, and the objection to them stands: a finite orientation
+  belongs to \(SO(3)\) and is not an ordinary spatial vector, so an equation
+  that adds two tangent components as though they were one has to be earned
+  rather than asserted.
+
+  **\(\theta_{t_1}\) and \(\theta_{t_2}\) are restored, and their withdrawal is
+  lifted.** Settled 2026-09-06 on supplied text. They are no longer the
+  components of an asserted vector. They are the two rotations that
+  Section 2.7.2 *composes*, and the sum \(\theta_{t_1}t_1+\theta_{t_2}t_2\) is
+  derived from that composition rather than written down ahead of it. That
+  derivation is what the earlier construction was missing, and it is why the two
+  symbols may come back.
+
+  **Section 2.7.2 composes the two tangent rotations, then reduces the
+  composition to first order.** Settled 2026-09-06 and supplied by the author,
+  replacing the axis--angle construction of earlier the same day. The exact
+  statement comes first and the approximation is derived from it, so that
+  \(\theta_{t_1}t_1+\theta_{t_2}t_2\) is seen to follow rather than to appear
+  from nowhere. The order is fixed:
+
+  1. Equation 2.51 gives Rodrigues' formula in vector form, for a unit axis
+     \(t_i\) acting on any vector \(v\):
+     \(R(t_i,\theta_{t_i})v=v\cos\theta_{t_i}+(t_i\times v)\sin\theta_{t_i}
+     +t_i(t_i^\top v)(1-\cos\theta_{t_i})\).
+  2. Equation 2.52 gives the exact composition,
+     \(v'=R(t_2,\theta_{t_2})R(t_1,\theta_{t_1})v\), for the rotation about
+     \(t_1\) applied first. It is not expanded further.
+  3. Unnumbered displays carry the small-angle substitutions
+     \(\sin\theta_{t_i}\approx\theta_{t_i}\),
+     \(\cos\theta_{t_i}\approx1\) and \(1-\cos\theta_{t_i}\approx0\); the
+     reduced form \(R(t_i,\theta_{t_i})v\approx v+\theta_{t_i}(t_i\times v)\);
+     the two rotations applied in turn; and the substitution that produces the
+     \(\theta_{t_1}\theta_{t_2}\) term.
+  4. Equation 2.53 states the first-order result,
+     \(v'\approx v+(\theta_{t_1}t_1+\theta_{t_2}t_2)\times v\), after the
+     sentence saying that the remaining term is second order and is neglected.
+  5. Equation 2.54 normalises that combination into the unit direction
+     \(u=(\theta_{t_1}t_1+\theta_{t_2}t_2)/
+     \sqrt{\theta_{t_1}^2+\theta_{t_2}^2}\).
+
+  **The vector form is used, never the matrix form.** Instructed 2026-09-06.
+  The thesis already carries Rodrigues' formula as a matrix in Section 2.2.1,
+  and Section 2.7.2 writes the equivalent vector form and says so. Two
+  skew-symmetric matrices multiplied out is the version this replaced: it is
+  longer, it hides the physical meaning, and it leaves the reader checking an
+  expansion instead of following a rotation. **Do not restore the matrix
+  product**
+  `[I+\sin\theta_{t_2}[t_2]_\times+(1-\cos\theta_{t_2})[t_2]^2_\times]`
+  `[I+\sin\theta_{t_1}[t_1]_\times+(1-\cos\theta_{t_1})[t_1]^2_\times]`,
+  written here as literal strings, and do not expand Equation 2.52.
+
+  **The order-dependence sentence stays with Equation 2.53.** Supplied
+  2026-09-06: `The exact composition depends on the order of the two finite
+  rotations, whereas this difference enters only through second- and
+  higher-order terms and therefore disappears in the first-order small-angle
+  representation.` It is what licenses the additive form, and the
+  \(\theta_{t_1}\theta_{t_2}\) term two displays above it is the term the
+  sentence names.
+
+  **What each name means, in one line each.** \(\theta_{t_1}\) and
+  \(\theta_{t_2}\) are rotations of a general angular tool offset about the two
+  surface tangents; \(u\) is the unit direction of their first-order
+  combination in the surface tangent plane, and is an ordinary unit direction
+  rather than a rotation; \(v\) is any vector the composition acts on, and
+  \(v_1\) is its value after the first rotation. \(v\) and \(v_1\) are local to
+  the derivation and take no symbol-list row; the list row is
+  `\(\theta_{t_1},\ \theta_{t_2},\ u\)`, `[rad], [rad], [-]`.
+
+  **\(n_d\), \(\phi\), \(u_a\), \(\alpha\), \(c_1\) and \(c_2\) are withdrawn
+  from Section 2.7.2**, written here as literal strings so a rename cannot
+  revive them, together with the `angular mismatch` name for \(\phi\) and the
+  shortest-rotation construction
+  \(\phi=\operatorname{atan2}(\lVert n_d\times n_{\mathrm{Tool}}\rVert,
+  n_d^\top n_{\mathrm{Tool}})\) they belonged to. The section no longer measures
+  an offset against the tool-face normal, so Chapter 2 needs no desired
+  tool-normal direction at all. \(\phi_0\) and \(u_0\) in Section 4.5, and
+  \(\phi\) and \(u\) as the axis--angle pair of Section 2.2.1, are different
+  quantities and are untouched.
+
+  **The symbol-list row is \(n_{\mathrm{Tool},d}\), not \(n_d\).** Corrected
+  2026-09-06 with that withdrawal. Chapter 3 has always written the desired
+  tool-normal direction \(n_{\mathrm{Tool},d}=R_{\mathrm{offset}}(-n_s)\), and
+  \(n_d\) survived only in Section 2.7.2 and in the symbol-list row beside it.
+  Entries elsewhere in this file that write \(n_d\) for that direction mean
+  \(n_{\mathrm{Tool},d}\).
+
+  **Which half of the section is exact.** The selection
+  \(r_{c,t}=\lVert r_{c,t}\rVert(n_s\times u)\) is exact for the direction
+  \(u\) it is given, the moment
+  \(r_{c,t}\times f_n=\lVert r_{c,t}\rVert F_nu\) follows from
+  \((n_s\times u)\times n_s=u\) for \(u\perp n_s\), and the two principal cases
+  follow from Equation 2.50. What is approximate is only the step that produces
+  \(u\), the first-order reduction of the composition, and nothing after it.
+  Say which half is which; do not describe the selection rule or the moment as
+  approximate.
+
+  **The degenerate case is stated as two zero offsets.** For
+  \(\theta_{t_1}=\theta_{t_2}=0\) no preferred direction \(u\) exists and the
+  directional compliance-centre selection rule is not applied. This replaces the
+  parallel-face form \(n_d\times n_{\mathrm{Tool}}=\mathbf{0}\), which is
+  withdrawn with the construction it belonged to.
+
+  **Equation 2.50 is written as \(n_s\times t_1\) and \(n_s\times t_2\).**
+  Reoriented 2026-09-06, from \(t_2\times n_s\) and \(t_1\times n_s\), because
+  the selection rule and the two principal cases read the cross product in that
+  order and the reader should not have to anticommute it. The relations are
+  \(t_1\times t_2=n_s\), \(n_s\times t_1=t_2\) and \(n_s\times t_2=-t_1\), and
+  they are cited where the component form of the displacement is derived and
+  where the principal cases are specialised.
+
+  **Equation 2.56 gives the component form, and it is not withdrawn a second
+  time.** Supplied 2026-09-06:
+  \(r_{c,t}=\lVert r_{c,t}\rVert(\theta_{t_1}t_2-\theta_{t_2}t_1)/
+  \sqrt{\theta_{t_1}^2+\theta_{t_2}^2}\), obtained by substituting
+  Equation 2.54 into Equation 2.55 and applying Equation 2.50. The earlier
+  ruling that the component substitution is not shown belonged to the
+  axis--angle construction, where the expansion was in \(\cos\alpha\) and
+  \(\sin\alpha\) and added nothing. Here it is what ties the selection rule back
+  to the two rotations the section started from.
+
+  **The figure comes before Equation 2.51 and is cited there.** Instructed
+  2026-09-06. The sentence introducing it names what each panel shows, and the
+  figure then stands between that sentence and the construction, so a reader
+  meets the geometry before the algebra. The second figure reference,
+  to `fig:compliance_lever_moment`, sits after Equation 2.58 where the reversal
+  is stated.
+
+  **`angular mismatch` names the physical tool--surface angle, and the
+  `mismatch` ban does not reach it.** That ban is written against the
+  *configured* orientation offset. Section 4.5 calls \(\phi_0\) the total
+  angular mismatch at contact entry, and Chapter 1, Chapter 5 and the Abstract
+  use the word for the same physical quantity. Section 2.7.2 no longer uses it
+  at all: the quantity it named there is withdrawn with the axis--angle
+  construction. The final checklist greps for `mismatch` where a configured tool
+  orientation offset is meant; these hits are not that.
+
+  **The experimental families are untouched.** \(\theta_{\mathrm{offset},t_1}\)
+  and \(\theta_{\mathrm{init},t_1}\) stay as they are. They are scalar angular
+  quantities about one named tangent, they belong to the reported campaign, and
+  the general construction of Section 2.7.2 does not have to be built from them.
 
   **\(\theta_{0,t_1}\) is withdrawn**, written here as a literal string so a
   rename cannot revive it. It named the achieved entry condition with a
@@ -1057,8 +1356,9 @@ circulation, the settled choices are:
   the selected surface tangents.
 
   Keep the three chapter roles separate. Chapter 2 derives the directional
-  compliance-centre rule from the generic tangent-plane angular offset
-  \(\theta\) that contact should reduce. Chapter 3 defines the configured
+  compliance-centre rule from the angular mismatch \(\phi\) between the tool
+  face and the surface, and from its tangent-plane axis \(u_a\), which contact
+  should reduce. Chapter 3 defines the configured
   pre-contact offset and constructs \(n_d=R_{\mathrm{offset}}(-n_s)\).
   Chapter 4 explains how varying that setting supplied reproducible
   reference-relative entry conditions, then distinguishes it from the achieved
@@ -1262,7 +1562,7 @@ in the Coriolis section, \(\tau_{\mathrm{cmd,cart}}=\tau_{\mathrm{cart}}+
 2026-09-03 below: once the compensation section sits immediately before the
 complete torque command, a partial sum stated one page earlier is a second
 assembly the reader has to hold. The contributions are named individually and
-assembled once, in Equation 2.69.
+assembled once, in Equation 2.73.
 
 **A direction that exists in two frames carries the non-default frame in its
 subscript.** The tool-face normal is \(n_{\mathrm{Tool,EE}}\) in
@@ -1309,7 +1609,10 @@ Chapter 3, and with the appendices bolding matrices the chapters set plain. The
 majority form was already plain, and plain is what the symbol list now shows.
 
 The **one exception** is the zero vector \(\mathbf{0}\), where the bold
-distinguishes it from the scalar zero. Keep that.
+distinguishes it from the scalar zero. Keep that. The second exception recorded
+on 2026-09-06, the bold angular-offset vector \(\mathbf{a}\) of Section 2.7.2,
+went with the symbol later the same day: the section now builds no offset
+vector at all, so the thesis is back to one bold symbol.
 
 **Do not mark design values with a star.** Reuse the symbol already defined for
 the physical quantity and state in prose that the value is used for sizing. If
@@ -1904,26 +2207,31 @@ command.
 
 Section 2.9 states what the Franka Control Interface compensates internally and
 what the controller adds, and stops there. It carries no equation: the
-contributions are assembled once, in Equation 2.69, which is the section that
+contributions are assembled once, in Equation 2.73, which is the section that
 follows it. The `libfrankaCartesianExample` attribution moved with the
 structure it credits and now sits beside that assembly, scoped to the Cartesian
 and Coriolis terms, since the null-space torque is this thesis's own.
 
-**Equation 2.69 expands the null-space torque on its right-hand side.** Agreed
+**Equation 2.73 expands the null-space torque on its right-hand side.** Agreed
 2026-09-03. The first equality names the three contributions,
 \(\tau_{\mathrm{cmd}}=\tau_{\mathrm{cart}}+\tau_{\mathrm{null}}+
 \tau_c(q,\dot q)\); the second writes each of them out, so the null-space term
 appears as \(\tau_d+\tau_\sigma\) rather than as \(\tau_{\mathrm{null}}\)
 repeated. The expanded form then shows every torque the controller actually
-adds, and the equation states the decomposition of Equation 2.68 where the
+adds, and the equation states the decomposition of Equation 2.72 where the
 command is assembled. The paragraph beneath it names the two terms once and
 cross-references that equation rather than restating the algebra.
 
 The removed equation shifted every later number down by one, which made three
 numeric references in this guide correct rather than stale: the point-shift
-blocks are Equations 2.39 and 2.40, the rotational-impedance contribution is
-Equation 2.41, and the complete torque command is Equation 2.69. Do not
-"correct" them back.
+blocks are Equations 2.39 and 2.40, and the rotational-impedance contribution is
+Equation 2.41. Do not "correct" them back.
+
+**The complete torque command moved from 2.69 to 2.73 on 2026-09-06**, when the
+Section 2.7.2 rebuild added four numbered equations after Equation 2.50. Every
+number this guide gives above 2.50 was raised by four on that date; the ones
+below it did not move. The thesis itself cross-references by `\Cref`, so no
+chapter, appendix or figure changed with the renumbering -- only this file.
 
 **Tooling built only for your own analysis is not thesis content.** A second
 diagnostic log existed to support offline inspection and appeared in three
@@ -2280,14 +2588,14 @@ cross-referenced from Chapter 3 in a clause:
 | The construction of \(R_{\mathrm{surface}}\) from \(a_s\) and \(n_s\) | Section 2.5 |
 | \(e_p=p_d-p_{\mathrm{EE}}\), \(\Delta R=R_{\mathrm{EE}}^\top R_d\), \(e_R\) | Section 2.2 |
 | The impedance wrench \(F=K\Delta x+D\Delta v\) | Section 2.4 |
-| A standalone \(\tau_{\mathrm{cart}}=J^\top F\) | Equation 2.69 within the complete torque command |
+| A standalone \(\tau_{\mathrm{cart}}=J^\top F\) | Equation 2.73 within the complete torque command |
 | \(G_0=R_{\mathrm{surface}}G_{\mathrm{surface}}R_{\mathrm{surface}}^\top\) | Section 2.6 |
 | Why a displaced centre produces an aligning moment | Section 2.7, and Chapter 5 for the measurement |
 | The null-space projector, damping and conditioning derivations | Section 2.8 |
 | \(M(q)Y(q)=J^\top(q)\), \(Y=M^{-1}J^\top\), \(\Lambda=(JY+\varepsilon I)^{-1}\) | reduced to one sentence; the damping implementation is not a contribution of this thesis |
 
 **The nominal controller equation is defined once in Chapter 2.** Chapter 3
-references Equation 2.69 rather than repeating
+references Equation 2.73 rather than repeating
 \(\tau_{\mathrm{cmd}}=J^\top(q)F+\tau_{\mathrm{null}}+\tau_c(q,\dot q)\).
 The disturbance is an experimental input rather than part of the controller,
 so its definition belongs to Section 4.6 alone, where
@@ -2298,7 +2606,7 @@ Cartesian pose-hold account either.
 
 **What Chapter 3 must keep**, because these are what was designed rather than
 what was derived: the architecture figure; the configured surface-relative
-offset \(\theta_{\mathrm{offset}}=\theta_{\mathrm{offset},t_1}t_1+
+offset \(\theta_{\mathrm{offset}}\approx\theta_{\mathrm{offset},t_1}t_1+
 \theta_{\mathrm{offset},t_2}t_2\) and the
 inward normal it rotates; the tool geometry and the selection of
 \(p_{\mathrm{Tool}}\); the tool-fixed against surface-fixed compliance-centre
@@ -2656,6 +2964,38 @@ is `A trial satisfied the Cartesian position-retention criterion when`, not
 `Cartesian position retention is defined by`. The distinction matters because
 the quantity being thresholded, the peak position error, is defined elsewhere.
 
+**Section 4.6.2 presents two evaluations, not one trial with two increments.**
+Supplied by the author on 2026-09-07 and applied as given. The settled shape is:
+the two perturbations, then the statement that the translational and rotational
+evaluations are treated separately, then the reference state each uses -- the
+unloaded state for the translational evaluation and the loaded state before
+rotation for the rotational one -- then the two quasi-static predictions, then
+the reset of time to \(t=0\) at the beginning of each evaluation.
+
+**`increment` is withdrawn from this assessment, and so is the \(\Delta\)
+notation.** Written here as literal strings so a rename cannot revive them:
+`force increment`, `moment increment`, `Commanded increment`,
+`Model-estimated increment`, `Normal Force Increment`,
+`Moment Increment About \(t_1\)`, `\Delta F_{n,\mathrm{qs}}` and
+`\Delta M_{t_1,\mathrm{qs}}`. The subtraction stays visible in the mathematics
+instead, which is the point of the change: the predictions are
+\(F_{n,\mathrm{qs}}=K_{p,n}\,n_s^\top(e_p-e_{p,0})\) and
+\(M_{t_1,\mathrm{qs}}=K_{R,t_1}\,t_1^\top(e_R-e_{R,0})\), with \(e_{p,0}\) and
+\(e_{R,0}\) the pose-error values at the respective reference states. Writing
+\(e_R-e_{R,0}\) is what a bare \(e_R\) could not say, because the rotational
+evaluation starts from an already loaded state and the moment present under that
+load has to be removed. \(e_{p,0}\) and \(e_{R,0}\) are local to the subsection
+and take no symbol-list row.
+
+**The original recording times are withdrawn.** `The stationary intervals are
+\(8\) to \(13\,\mathrm{s}\) for the force and \(28.5\) to \(31\,\mathrm{s}\) for
+the moment` is written here as a literal string so it cannot come back. Those
+positions belong to the single long recording, and once each evaluation is
+presented on its own axis from zero they are implementation detail. The settled
+form is that the reported values are obtained from the stationary part of the
+corresponding response; the shaded band in each figure shows which interval that
+was.
+
 **Table 4.4's second column is `Comparison parameter`.** `Varied quantity` did
 not fit the Case-A row, which is a baseline condition rather than a varied
 parameter.
@@ -2779,12 +3119,22 @@ state sequence a reader needs. It belongs with the recorded data, not in the
 appendix. The remaining section is `Evaluation Signals`.
 
 **Appendix B lists the signals the reported results are calculated from, not
-the file schema.** The external-wrench group, its stored reference values and
-its corrected forms were removed on 2026-09-01, together with the
-clearance-capture positions, the press coordinate, and the final commanded
-torque: the model-estimated wrench fed only the optional termination condition,
-and every experiment ended through the timeout instead, so none of them enters
-a reported figure or value. Say once that the complete schemas are documented
+the file schema.** The clearance-capture positions, the press coordinate and
+the final commanded torque were removed on 2026-09-01, because no reported
+result uses them.
+
+**The external-wrench group came back on 2026-09-06**, and the reason it left
+no longer holds: the model-estimated force and moment now feed Section 5.1 and
+the Case-D mechanism figure, so the appendix would otherwise document neither
+of the signals those figures are drawn from. Its row names `external_force` and
+`external_moment`, says that the wrench acts on the stiffness frame \(\{K\}\)
+and is expressed in the base frame, and states that the recorded moment is
+referenced to the base origin. A short paragraph after the table then gives the
+transport the evaluation applies,
+\(m_{\mathrm{est,TCP}}=m_{\mathrm{est}}-p_{\mathrm{TCP}}\times
+f_{\mathrm{est}}\), before \(M_{t_1,\mathrm{est}}\) is resolved about the
+tangent. The stored reference values and the clearance-referenced forms stay
+out: the reported evaluations use the absolute estimate. Say once that the complete schemas are documented
 with the recorded data.
 
 **A wrench row names the frame it acts on, the frame it is expressed in, and
@@ -3339,66 +3689,66 @@ instantaneous opposing torque at identical joint configurations.
   \(r_c\) shapes the **commanded** wrench through \(\mathrm{Ad}(r_c)\);
   \(r_{\mathrm{Tool}}\) belongs to the physical contact geometry.
 - **Section 2.7.2 derives the perpendicular direction; it does not assert it.**
-  Supplied by the author on 2026-09-04 and applied as given. The jump from
-  \(\theta\approx\theta_{t_1}t_1+\theta_{t_2}t_2\) straight to the selection
-  rule was too abrupt: the text said the displacement is selected perpendicular
-  to the offset without showing why \(\theta_{t_1}t_2-\theta_{t_2}t_1\) is that
-  perpendicular direction or where the square root comes from. Four steps now
-  carry the reader across, in this order:
+  Supplied by the author on 2026-09-04, simplified on 2026-09-06, rebuilt on an
+  axis--angle construction later the same day, and rebuilt again on the
+  composition of the two tangent rotations. Five steps carry the reader, in this
+  order:
 
-  1. A \(90^\circ\) rotation within the tangent plane about \(n_s\) is the
-     cross product with \(n_s\), giving the unnumbered display
-     \(n_s\times\theta\approx\theta_{t_1}t_2-\theta_{t_2}t_1\).
-  2. Because \(t_1\) and \(t_2\) are orthonormal, that direction has magnitude
-     \(\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}\), also unnumbered.
-  3. Equation 2.52 then scales the normalised direction by the prescribed
-     \(\lVert r_{c,t}\rVert\), and the sentence after it names the fraction as
-     the unit perpendicular direction and the magnitude as a selectable
-     controller parameter.
-  4. \(f_n=F_nn_s\) is stated before Equation 2.53, so the reader can see the
-     cross-product relations produce the moment.
+  1. Equations 2.51 to 2.53 compose the two tangent rotations and reduce the
+     composition to first order, giving
+     \(v'\approx v+(\theta_{t_1}t_1+\theta_{t_2}t_2)\times v\). The full order
+     is under *Naming a technical quantity*.
+  2. Equation 2.54 normalises that combination into the unit direction \(u\).
+  3. Equation 2.55 selects the displacement perpendicular to \(u\),
+     \(r_{c,t}=\lVert r_{c,t}\rVert(n_s\times u)\), after the sentences deriving
+     the required moment direction from \(F_n<0\) and naming
+     \((n_s\times u)\times n_s=u\).
+  4. Equation 2.56 substitutes Equation 2.54 and Equation 2.50 to give the
+     displacement in components, and the sentence after it names
+     \(\lVert r_{c,t}\rVert\) as a selectable controller parameter.
+  5. Equation 2.57 gives the normal-force contribution, and Equation 2.58 the
+     two principal cases.
 
-  **The two new displays are unnumbered**, which is what keeps Equations 2.52
-  and 2.53 at the numbers this guide and Chapter 5 already cite. Do not promote
-  either to a numbered equation.
+  **The moment direction is derived before the displacement is selected.**
+  Supplied 2026-09-06. The section states \(f_n=F_nn_s\) with \(F_n<0\), says
+  that the desired compliance-centre moment must therefore point opposite to
+  \(u\), writes \(r_{c,t}\times f_n=F_n(r_{c,t}\times n_s)\), and concludes that
+  \(r_{c,t}\times n_s\) has to point along \(u\). Only then does
+  \((n_s\times u)\times n_s=u\) produce Equation 2.55. Do not restore the
+  narrated \(90^\circ\)-rotation sentences that stated the perpendicularity
+  without deriving its sense; the sign of \(F_n\) is what fixes which
+  perpendicular is taken.
 
-  **The degenerate case is stated.** For \(\theta_{t_1}=\theta_{t_2}=0\) no
-  preferred tangential \abbr{CoC} direction is defined and the directional
-  selection rule is not applied. It sits with the \(F_n<0\) sentence, closing
-  the general rule before the principal directions specialise it.
-
-  Three sentences went with the rewrite and are withdrawn: `the displacement
-  used to reduce this offset is selected perpendicular to its direction`, which
-  asserted the step the derivation now takes; `The choice fixes the direction;
-  the magnitude remains a free parameter of the configuration`, replaced by the
-  sentence naming the fraction; and `During the contact-establishment press
-  \(F_n<0\), so this contribution acts opposite to \(\theta\) and tends to
-  reduce the offset`, replaced by the two-sentence form.
+  **The withdrawn steps.** The first-order display
+  \(n_s\times\theta\approx\theta_{t_1}t_2-\theta_{t_2}t_1\) and the sentence
+  naming a fraction as the unit perpendicular direction are withdrawn, together
+  with the axis--angle displays \(\alpha=\operatorname{atan2}(c_2,c_1)\) and
+  \(u_a=\cos\alpha\,t_1+\sin\alpha\,t_2\), and the expansion
+  \(\lVert r_{c,t}\rVert(\cos\alpha\,t_2-\sin\alpha\,t_1)\). The magnitude
+  \(\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}\) is back, inside Equations 2.54 and
+  2.56.
 
 - **The direction-selected lever rule uses the following cross-product
-  orientation.** For the generic tangent-plane angular offset
-  \(\theta\approx\theta_{t_1}t_1+\theta_{t_2}t_2\), it is
-  \(r_{c,t}=\lVert r_{c,t}\rVert(\theta_{t_1}t_2-
-  \theta_{t_2}t_1)/\sqrt{\theta_{t_1}^2+
-  \theta_{t_2}^2}\). It reduces to
-  \(r_{c,t}=+\lVert r_{c,t}\rVert t_2\) when \(\theta_{t_1}>0\) and
-  \(r_{c,t}=-\lVert r_{c,t}\rVert t_1\) when \(\theta_{t_2}>0\).
-  The exact normal-press contribution is
-  \(r_{c,t}\times f_n=\lVert r_{c,t}\rVert F_n
-  (\theta_{t_1}t_1+\theta_{t_2}t_2)/
-  \sqrt{\theta_{t_1}^2+\theta_{t_2}^2}\). With \(F_n<0\), it acts
-  opposite to \(\theta\). In Case D, the direction generated by the
-  \(+10^\circ\) configured offset uses \(r_{c,t_2}>0\) for the outer position
-  that produced the larger response.
+  orientation.** For the first-order direction \(u\) of the angular offset, it
+  is \(r_{c,t}=\lVert r_{c,t}\rVert(n_s\times u)\). It reduces to
+  \(r_{c,t}=+\lVert r_{c,t}\rVert t_2\) for \(u=t_1\) and to
+  \(r_{c,t}=-\lVert r_{c,t}\rVert t_1\) for \(u=t_2\). The normal-press
+  contribution is \(r_{c,t}\times f_n=\lVert r_{c,t}\rVert F_nu\), and with
+  \(F_n<0\) it acts opposite to \(u\). In Case D, the direction generated by
+  the \(+10^\circ\) configured offset uses \(r_{c,t_2}>0\) for the outer
+  position that produced the larger response.
 
-  **The reversed numerator
-  \(\theta_{\mathrm{offset},t_2}t_1-
-  \theta_{\mathrm{offset},t_1}t_2\) is wrong and was
-  removed** from Chapter 2 and Chapter 5 on 2026-08-25. It survived the \(r_c\)
-  redefinition because it sits two equations away from the moment it feeds, and
-  in both chapters it contradicted the moment printed immediately below it.
-  Any future change to the lever convention is checked against both
-  anchors above, not against the formula alone.
+  **The rule survived both 2026-09-06 rebuilds unchanged**, and the two
+  principal cases are what prove it: every version has given
+  \(+\lVert r_{c,t}\rVert t_2\) for a positive rotation about \(t_1\) and
+  \(-\lVert r_{c,t}\rVert t_1\) for a positive rotation about \(t_2\). Nothing
+  in Chapter 5 or Appendix D moves with the notation. Check any future change to
+  the lever convention against both cases and against the moment printed below
+  them, never against the formula alone. The reversed numerator
+  \(\theta_{\mathrm{offset},t_2}t_1-\theta_{\mathrm{offset},t_1}t_2\) was wrong
+  and was removed from Chapters 2 and 5 on 2026-08-25; Equation 2.56 carries the
+  correct order, \(\theta_{t_1}t_2-\theta_{t_2}t_1\).
+
 - **The desired tool-normal direction is \(n_d=R_{\mathrm{offset}}(-n_s)\), and
   for zero configured offset \(n_d=-n_s\), never \(+n_s\).** A tool face
   parallel to the surface requires the tool normal to point into the plane, so
@@ -3450,44 +3800,34 @@ instantaneous opposing torque at identical joint configurations.
   interaction, which can in turn change the model-estimated external wrench.
   The estimated external moment is the result of that interaction, not an
   algebraic sum of commanded terms.
-- **`\approx` appears three times: Equations 2.51 and 3.2, and the unnumbered
-  \(n_s\times\theta\) display in Section 2.7.2.** Narrowed
-  2026-09-04 on the author's instruction, replacing a blanket ban, and widened
-  by one the same day when the supplied Section 2.7.2 derivation added the
-  cross-product display. That third one is not an independent approximation:
-  it inherits Equation 2.51's, because \(n_s\times\theta\) is exact given
-  \(\theta\) and the first-order decomposition is what carries the symbol. The generic
-  tangent-plane angular offset is now written
-  \(\theta\approx\theta_{t_1}t_1+\theta_{t_2}t_2\), because
-  \(\theta_{t_1}\) and \(\theta_{t_2}\) read as rotation angles about
-  \(t_1\) and \(t_2\), and finite rotations about different axes do not add.
-  The sentence before it already scopes the relation to a **small** angular
-  offset, which is the condition the approximation needs. The same equation
-  **The lead-in states the first-order scope.** Supplied 2026-09-04 and applied
-  as given: `Consider a small angular offset \(\theta\) that the contact
-  response should reduce. For small rotations, its components about the two
-  surface tangents are represented to first order by`. `For small rotations`
-  and `to first order` are what carry the approximation in words, so the symbol
-  and the sentence say the same thing. Two earlier lead-ins are withdrawn with
-  it: the plural `Considering small angular offsets …` form and, before that,
-  `its non-zero tangent-plane direction is written as`. The round-bracket
-  surface-frame column \(\theta_{a,S}\) went at the same time.
+- **`\approx` is confined to two places: Equation 3.2, and the first-order
+  reduction of Section 2.7.2.** The count was one for part of 2026-09-06, while
+  Section 2.7.2 carried the axis--angle construction, and that ruling is
+  withdrawn with the construction. The section now composes two tangent
+  rotations exactly and reduces the composition to first order, so the
+  small-angle substitutions, the reduced Rodrigues form, the two intermediate
+  vectors and Equation 2.53 all carry the symbol, and they are the only
+  Chapter 2 uses. What follows the reduction is exact and takes an equals sign:
+  the selection rule, its component form, the moment, and the principal cases.
+  Grep across `chapters/`, `frontmatter/`, `backmatter/` and `figures/` before
+  submitting; the expected hits are Equation 3.2 and the Section 2.7.2
+  derivation, plus the two retired uncompiled appendix files `TODOS.md` already
+  tracks. Use `grep -F`, since an unescaped pattern also matches every
+  `approximately`.
 
-  **Equation 3.2 carries `\approx` as well.** Instructed 2026-09-04, and this
-  overturns the earlier sentence here that Chapter 3 keeps its equals sign. The
-  configured offset is now
-  \(\theta_{\mathrm{offset}}\approx\theta_{\mathrm{offset},t_1}t_1+
+  **Equation 3.2 keeps it.** Instructed 2026-09-04, and this overturns the
+  earlier sentence that Chapter 3 keeps its equals sign. The configured offset
+  is \(\theta_{\mathrm{offset}}\approx\theta_{\mathrm{offset},t_1}t_1+
   \theta_{\mathrm{offset},t_2}t_2\), under the lead-in `For small configured
   angular offsets, the pre-contact orientation offset is represented to first
-  order in the surface tangent plane by`. The reason is the same one: the two
-  scalars read as rotation angles about \(t_1\) and \(t_2\), and finite
-  rotations about different axes do not add. Every reported experiment set one
-  component only, so the tested conditions are exact rotations about the
-  selected tangent either way.
-
-  This does not reopen the rule further. The four routes below stay the first
-  resort everywhere else, and the expected count outside those three places is
-  still zero.
+  order in the surface tangent plane by`. The reason, stated exactly by the
+  author on 2026-09-06, is that two rotations about different axes are composed
+  rather than added: the exact combined orientation is
+  \(R(t_2,\theta_{\mathrm{offset},t_2})R(t_1,\theta_{\mathrm{offset},t_1})\),
+  which is order dependent, and the sum is its first-order representation.
+  Section 3.2.2 now says both, and *Naming a technical quantity* carries the
+  settled wording. Every reported experiment set one component only, so the
+  tested conditions are exact rotations about the selected tangent either way.
 
   **The rest of this rule stands.** Every other displayed and inline relation
   is written with an equals sign.
@@ -3517,10 +3857,7 @@ instantaneous opposing torque at identical joint configurations.
   The hedging words stay: `approximately`, `about`, and `of the order of` are
   required by *Hedge to the evidence* in
   [THESIS_VOICE.md](THESIS_VOICE.md) and are unaffected by this rule, which
-  governs the symbol alone. Grep for `\approx` across `chapters/`,
-  `frontmatter/`, `backmatter/` and `figures/` before submitting; the expected
-  count is three, in Equations 2.51 and 3.2 and the \(n_s\times\theta\) display,
-  plus the two retired uncompiled appendix files `TODOS.md` already tracks.
+  governs the symbol alone.
 - **\(m=m_R+r_c\times f\) is an identity, and is written with an equals
   sign.** It holds exactly for the shifted \(6\times6\) law, provided \(f\) is
   the translational part of the same commanded wrench \(F=[f^\top,m^\top]^\top\)
@@ -3784,7 +4121,7 @@ logged field names and bias columns. That is the whole of it.
   at once — the physical tool tilt, the configured offset, and the measured
   response — while the prose ban on `tilt` under *Naming a technical quantity*
   had already removed it everywhere else. The settled chain is
-  \(\theta_{\mathrm{offset}}=\theta_{\mathrm{offset},t_1}t_1+
+  \(\theta_{\mathrm{offset}}\approx\theta_{\mathrm{offset},t_1}t_1+
   \theta_{\mathrm{offset},t_2}t_2\), its magnitude
   \(\lVert\theta_{\mathrm{offset}}\rVert\) as the configured offset angle, the
   unit axis \(u_{\mathrm{offset}}=\theta_{\mathrm{offset}}/
@@ -4251,7 +4588,20 @@ thesis.** This overturns an earlier ruling that admitted the pre-grinding hold
 observation as labelled qualitative evidence. That paragraph has been removed
 from Chapter 5. The reason for the change is that a hand-applied check carries
 no controlled condition and no measured quantity, so a reader cannot separate
-it from the measured cases however carefully it is labelled. The
+it from the measured cases however carefully it is labelled.
+
+**The quasi-static plausibility assessment is not covered by this rule, and is
+never called an informal test.** Settled 2026-09-06. What the rule excludes is
+an unlogged demonstration offered as evidence. That assessment is the opposite
+of one: it applies a defined translational perturbation and a defined
+rotational perturbation, against configured stiffness entries, each referenced
+to the stationary state immediately preceding it, its means read over the
+stationary part of each response, and an analysis that refuses a log whose
+parameters do not match the prepared configuration. Present it as what it is, a quasi-static
+plausibility assessment supplementary to Cases A--D, and say that the
+perturbations were applied manually where the method is described, in
+Section 4.6.2. Do not describe it in the results as something done by hand, and
+do not attach `informal`, `qualitative` or `demonstration` to it anywhere. The
   sustained-contact argument does not need it: it rests on the mechanism, that
   \(r_c\times f\) persists while the press is present, and on the
 Case-D measurements.

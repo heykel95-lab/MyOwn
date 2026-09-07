@@ -33,81 +33,6 @@ predates the change — the old Abstract expanded TCP as well — so this is
 tidying rather than a fault. Drop the parenthesis in Chapter 2 and leave the
 words.
 
-## Reconcile the sentence after Equation 3.2 with its `\approx`
-
-Equation 3.2 became
-\(\theta_{\mathrm{offset}}\approx\theta_{\mathrm{offset},t_1}t_1+
-\theta_{\mathrm{offset},t_2}t_2\) on 2026-09-04, under the supplied lead-in
-`For small configured angular offsets, the pre-contact orientation offset is
-represented to first order in the surface tangent plane by`. The instruction
-named the equation and the sentence before it, so the sentence *after* it was
-left as it stood: `The scalars \(\theta_{\mathrm{offset},t_1}\) and
-\(\theta_{\mathrm{offset},t_2}\) are the components of this rotation vector
-along the two surface tangents.`
-
-Those two statements disagree. If the scalars are exactly the components of one
-rotation vector, the sum is exact and the equation takes an equals sign; that
-is the reason the equation carried `=` until now. Either the following sentence
-becomes `are the surface-tangent components used to construct the offset`, or
-the equation goes back to `=`. Not resolved here because the instruction named
-neither.
-
-## Check the revived \(\theta_{t_1}\) and \(\theta_{t_2}\) against older drafts
-
-Dropping the index \(a\) on 2026-09-04 made \(\theta_{t_1}\) and
-\(\theta_{t_2}\) the components of the general offset in Section 2.7.2. Both
-spellings were previously **withdrawn** names for the *configured* offset, and
-`THESIS_WRITING_GUIDE.md` carried that withdrawal until the same day.
-
-Nothing in the current thesis is ambiguous: the configured quantity keeps its
-`offset` index in all 21 of its uses, and the two families never meet in one
-section. The risk is external — a supervisor or examiner holding an earlier
-draft will have met \(\theta_{t_1}\) as the configured offset. If any circulated
-version used the old spelling, say once in Section 2.7.2 which quantity the
-symbol names there.
-
-## Decide whether the \(n_s\times\theta\) display is boxed
-
-The Section 2.7.2 rewrite supplied on 2026-09-04 gave the cross-product step as
-a plain display, and that is how it was applied. The message that carried it
-closed by singling the step out — `the particularly useful addition is
-\(\boxed{n_s\times\theta}\), because it immediately explains where your
-numerator comes from` — which reads as emphasis on which addition matters
-rather than as typesetting instruction, since the rewrite block itself showed
-the relation unboxed.
-
-The reason to ask is that Section 3.2.5 does carry a `\boxed` display, added on
-the author's instruction two days earlier, so a box here would not be foreign
-to the document. The reason not to is that the two do different jobs: the
-Chapter 3 box summarises a chain of five position symbols, whereas this is one
-step of a derivation whose result is already set as a numbered equation two
-displays later. Box it only if the author wants the derivation's turning point
-marked.
-
-## Decide whether the three `\approx` relations stay
-
-Instructed on 2026-09-04 and applied. The symbol now appears in three places:
-Equation 2.51, \(\theta\approx\theta_{t_1}t_1+\theta_{t_2}t_2\); Equation 3.2,
-the same construction for \(\theta_{\mathrm{offset}}\); and the unnumbered
-\(n_s\times\theta\approx\theta_{t_1}t_2-\theta_{t_2}t_1\) display added to
-Section 2.7.2 later the same day. The ground is that the two scalars read as
-rotation angles about \(t_1\) and \(t_2\), and finite rotations about different
-axes do not add. `THESIS_WRITING_GUIDE.md` records the blanket ban as narrowed
-to these three rather than lifted.
-
-The third is not an independent decision. \(n_s\times\theta\) is exact given
-\(\theta\), so its symbol is inherited: if Equation 2.51 goes back to `=`, that
-display does too, and if 2.51 keeps `\approx` the display keeps it. Decide 2.51
-and 3.2, and the third follows.
-
-The smallest change that would satisfy the old rule is the route the guide
-gives first: state that \(\theta_{t_1}\) and \(\theta_{t_2}\) are the
-components of the one rotation vector \(\theta\) along the two tangents, which
-makes the sum exact and restores the equals sign. That route is now closed on
-both sides — Chapter 3 took it until 2026-09-04 and no longer does — so the
-thesis is at least self-consistent. What remains is the single question of
-which reading it uses.
-
 ## Reconcile the Tool Orientation timeout with the run archive
 
 Changed to \(5.0\,\mathrm{s}\) on 2026-09-02 by the author's decision, in
@@ -248,6 +173,45 @@ once, Section 3.2.2 once, Section 4.5.2 twice, and Chapter 5 four times.
 Both are defensible, but one quantity now has two names. Decide which survives.
 Section 1.1 and Section 1.4 carry the two forms two pages apart.
 
+## Restore the one-recording statement to Section 4.6.2
+
+The supplied Section 4.6.2 of 2026-09-07 dropped the sentence `Both come from
+one trial, so no between-trial variability is evaluated`, and the words `in one
+trial` from the sentence above it. Nothing else in the thesis says it: the only
+other hits for a single trial are Section 4.6.1, which says the wrench
+comparison used one trial, and the two are now stated asymmetrically.
+
+`THESIS_WRITING_GUIDE.md` requires it twice -- under *A single trial does not
+carry a \(\pm\) sample standard deviation*, which asks a single-trial evaluation
+to state that between-trial variability was not evaluated, and under *Settled
+compression and evidence hierarchy*, whose `Section 5.1 is one trial per test
+and states so` has been amended to record the gap rather than assert a rule the
+thesis no longer meets.
+
+The author's instruction that produced the change says the opposite of the text
+it supplied: `I would, however, not pretend that they were physically recorded
+as two different trials. They came from one recording.` Presenting the two
+evaluations separately is what the supplied text does; saying they come from one
+recording is what it no longer does. One sentence after the reset-to-zero
+sentence would satisfy both -- `Both evaluations come from one recording, so no
+between-trial variability is evaluated` -- and it would not disturb the separate
+presentation. Applied as supplied under the verbatim rule; the decision is the
+author's.
+
+## Decide the centred dot in the Section 4.6.2 predictions
+
+`THESIS_WRITING_GUIDE.md` requires scalar multiplication in a displayed
+calculation to carry a centred dot, `\(K\mathbin{\cdot}e\)`. The supplied
+predictions of 2026-09-07 write `K_{p,n}\,n_s^\top(e_p-e_{p,0})` and
+`K_{R,t_1}\,t_1^\top(e_R-e_{R,0})` with a thin space, where the withdrawn
+display used `\mathbin{\cdot}`. Applied as supplied.
+
+The two forms are one edit apart and the choice is the author's. Restoring the
+dot would leave the visible sentence and the mathematics unchanged; keeping the
+thin space means the rule should say that a product of a gain with a projected
+error is an exception, since this is now the only displayed product in Chapter 4
+that omits it.
+
 ## Bring the determiner openers down
 
 Pattern 9 in `THESIS_VOICE.md` asks for sentences opening with `The`, `This`,
@@ -321,12 +285,12 @@ Section 3.2.5 already writes \(\dot p_d=0\), so Chapter 3 uses the plain zero
 for the same kind of quantity that Chapter 2 sets bold. Decide which the thesis
 uses and apply it to all four places at once.
 
-## Decide two long supplied sentences
+## Decide three long supplied sentences
 
-Both were supplied by the user on 2026-09-02 and applied as given, under the
-rule that supplied wording is not altered for style. Each is over the 28-word
-limit in the register baseline, and each is the longest sentence its revision
-added. Confirm whether they stand as written or may be split.
+All three were supplied by the user and applied as given, under the rule that
+supplied wording is not altered for style. Each is over the 28-word limit in the
+register baseline, and each is the longest sentence its revision added. Confirm
+whether they stand as written or may be split.
 
 - Chapter 1, Motivation, 34 words: `Together, the difference between the
   configured and physical surfaces and the difference between the desired and
@@ -341,6 +305,13 @@ added. Confirm whether they stand as written or may be split.
   rewrite of the whole subsection, replacing the 38-word sentence previously
   listed here. Splitting after `desired orientation` would bring it under the
   28-word limit without changing the mechanism it states.
+- Section 2.7.2, 30 words: `The exact composition depends on the order of the
+  two finite rotations, whereas this difference enters only through second- and
+  higher-order terms and therefore disappears in the first-order small-angle
+  representation.` Supplied on 2026-09-06 and offered as an optional addition
+  after Equation 2.53, where it is what licenses the additive form. Splitting
+  after `finite rotations` would bring it under the limit and leave both halves
+  standing.
 
 ## Finish the Appendix C reduction
 
@@ -390,3 +361,41 @@ surface reference. They do not contain an independently measured physical plane
 normal or the tool face's motion relative to the end effector under load. A
 follow-on experiment must record both before a run-wise physical tool--surface
 angle can be evaluated.
+
+## Confirm two supplied sentences in Section 5.1
+
+The four rule crossings logged on 2026-09-06 were settled by the author the
+same day and are done: the plausibility assessment stays and is presented as a
+defined perturbation test, the three captions were shortened to the supplied
+forms, Appendix B regained the model-estimated wrench group, and Chapter 4
+gained Section 4.6 with the methodology for both evaluations.
+
+What remains is two fragments of the supplied text that were not applied
+exactly, each a clause or a word. `as in the original time-history evaluation`
+would put draft history into the thesis, which the repository rules forbid, so
+the sentence before the Case-D mechanism figure names the three compliance-centre
+positions instead. `the subscript \(\mathrm{est}\)` became `the
+\(\mathrm{est}\) index`, because `subscript` is not used in thesis prose.
+Restore either if the supplied wording is meant to stand.
+
+## \(u\) now names two different directions
+
+The Section 2.7.2 construction of 2026-09-06 defines the first-order direction
+of a general angular tool offset as
+\(u=(\theta_{t_1}t_1+\theta_{t_2}t_2)/\sqrt{\theta_{t_1}^2+\theta_{t_2}^2}\).
+The author supplied the symbol and it was applied. \(u\) is already the
+base-frame orientation-error axis of \(\Delta R\), in Section 2.2 and in its own
+symbol-list row, so the List of Symbols now carries two rows containing \(u\),
+and one chapter uses the letter for two different directions five sections
+apart.
+
+This is the same collision the withdrawn axis--angle construction had with
+\(\phi\), and it has the same smallest fix: an index. \(u_\theta\) is
+withdrawn by name in `THESIS_WRITING_GUIDE.md` and would have to be un-withdrawn
+to be used, so \(u_t\) for the tangent-plane direction is the free candidate.
+Every other axis or direction in the thesis is indexed that way -- \(u_0\) in
+Section 4.5, \(u_{\mathrm{CE}}\) in Chapter 3, \(u_{\mathrm{offset}}\) in
+Section 3.2.2 -- and the bare \(u\) belongs to the generic axis--angle
+construction of Section 2.3. Two files change:
+`chapters/02_theoretical_background.tex`, in Equations 2.54 to 2.58 and the
+sentences around them, and the symbol-list row.

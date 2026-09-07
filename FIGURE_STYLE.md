@@ -461,6 +461,70 @@ physical object. Both dimensions carry the same weight, since neither is
 subordinate to the other. A datum drawn heavier than the objects it is compared
 with inverts the reading, which is how this figure first compiled.
 
+**The Section 2.7.2 direction figure has three panels, one step each.** Rebuilt
+2026-09-06 with the derivation it illustrates, which now composes two small
+rotations about the surface tangents and reduces the composition to first order.
+Each panel carries one step of that and nothing else:
+
+- **(a) Tangent rotations.** An oblique view with \(t_1\), \(t_2\) and \(n_s\)
+  from one origin, a small patch of the surface the two tangents span, and one
+  red curl about each tangent, labelled \(\theta_{t_1}\) and
+  \(\theta_{t_2}\).
+- **(b) First-order direction.** The two tangents, the first-order
+  contributions \(\theta_{t_1}t_1\) and \(\theta_{t_2}t_2\) drawn along them,
+  the dashed parallelogram closing them, and the resultant whose unit direction
+  is \(u\).
+- **(c) Selected displacement.** The same direction \(u\), \(r_{c,t}\)
+  perpendicular to it between a black TCP dot and a blue \(p_c\) dot, \(n_s\) as
+  an out-of-page marker, and the right-angle marker.
+
+**A curl is centred on its own axis, so that it wraps it.** A rotation about
+\(t_1\) is drawn as an arc in the plane spanned by \(t_2\) and \(n_s\), centred
+on a point of the \(t_1\) axis, so the arc crosses that axis and reads as a
+rotation about it rather than as an angle between two directions. The sense
+follows from \(t_1\times t_2=n_s\): the curl about \(t_1\) runs from \(t_2\)
+towards \(n_s\), and the curl about \(t_2\) from \(n_s\) towards \(t_1\).
+Sweeping about \(190^\circ\) is what makes the wrap visible; a short arc reads
+as a hook. Both curls sit beyond the drawn patch of surface, which is kept small
+for that reason, and each label sits perpendicular to its own axis on the free
+side, about \(0.55\) to \(0.72\) units out.
+
+**The withdrawn ban on angular components in the tangent plane.** This file used
+to read `No angular components are drawn on the tangent axes`, because every
+earlier version resolved an offset vector onto \(t_1\) and \(t_2\) without the
+thesis having derived that resolution, and the reader could not tell an angle
+from a length. **That ban is lifted**, because Section 2.7.2 now derives the
+combination it draws. What survives of it is the labelling rule: panel~(b)
+labels its two contributions as the products \(\theta_{t_1}t_1\) and
+\(\theta_{t_2}t_2\), never as bare \(\theta_{t_1}\) and \(\theta_{t_2}\), so a
+length in the tangent plane is never read as an angle in it. The two bare
+symbols belong to panel~(a), on the curls, where they are rotations.
+
+**The quantities the figure may carry are \(t_1\), \(t_2\), \(n_s\),
+\(\theta_{t_1}\), \(\theta_{t_2}\), \(u\), \(r_{c,t}\), TCP and \(p_c\).**
+Instructed 2026-09-06. \(n_d\), \(n_{\mathrm{Tool}}\), \(\phi\), \(u_a\) and
+\(\alpha\) are withdrawn from the drawing with the construction that produced
+them, and so is the tool face: the panel that carried it measured an offset
+against the tool-face normal, which the section no longer does.
+
+**Colour follows the two neighbouring figures**, `compliance_lever_moment.tex`
+and `case_c_direction_rule.tex`: black for the surface and the frame
+directions, red for the angular offsets and the direction they combine to, blue
+for the compliance-centre displacement. The right-angle marker of panel~(c) is
+drawn in a scope rotated by \(u\), the first of the two directions it spans, per
+the rule above, and the \(+t_2\) axis passes through it, which is the geometry
+and is left alone.
+
+**Each panel's horizontal span is listed at the head of the file, and the shifts
+are computed from it.** The panels are placed so that about \(0.95\) units
+separate one panel's outermost label from the next, measured from the label and
+not from the outermost line. This is what the first compiled version got wrong:
+the panels alone cleared one another while the panel labels beneath them
+overlapped, because a label can be wider than the drawing it names. Check the
+labels as well as the drawings, and shorten a panel label rather than spreading
+the panels further -- `(a) Rotations about the tangents` became
+`(a) Tangent rotations` on that ground.
+
 **The Chapter 4 surface-reference geometry keeps three orientations distinct.**
 The physical surface is blue, the configured surface reference is red, and the
 tool face at the start of Contact Establishment is dark green. The inner arc
@@ -791,6 +855,70 @@ horizontal axis reads `Configured Orientation-Offset Direction,
 Figure 5.2.** Its measured span is only \(0.03^\circ\), so a narrow axis around
 the three means would visually exaggerate the cross-axis stiffness effect.
 
+### The Section 5.1 wrench figures, and what Figure 5.5 now carries
+
+**Three figures were added on 2026-09-06 under the `WR` tag**, written by
+`make_wrench_evaluation_figures.py`. The contact-wrench comparison keeps two
+panels, because force and moment come from the same five-second trial: (a) the
+normal force and (b) the TCP moment about \(t_1\), each with the commanded
+series in black and the model-estimated series in red, and the stationary
+interval from \(4\) to \(5\,\mathrm{s}\) shaded. The two quasi-static figures
+are single-panel and carry three series each -- commanded increment in black,
+model-estimated increment in red, quasi-static spring prediction in blue --
+with their own stationary interval shaded.
+
+**Both plausibility figures use the ordinary `Time, \(t\) [s]` axis.**
+Instructed 2026-09-07, withdrawing `Time After Force-Test Start, \(t_F\) [s]`
+and `Time After Rotation-Test Start, \(t_M\) [s]`, written here as literal
+strings so a rename cannot revive them. Time is reset to zero at the beginning
+of each evaluation, which Section 4.6.2 states, so the axis needs no symbol of
+its own; two local time symbols made one recording read as two instrumented
+tests. The combined \(0\)--\(35\,\mathrm{s}\) plot the analysis script writes is
+still not used, for the reason it never was: two evaluations on one axis leave
+the second compressed against the right-hand edge.
+
+**The legend entries are `Commanded`, `Model-estimated` and `Quasi-static
+prediction`.** Changed the same day, withdrawing `Commanded increment`,
+`Model-estimated increment` and `Quasi-static spring prediction`. The y axes
+read `Normal Force, \(F_n\) [N]` and `Moment About \(t_1\), \(M_{t_1}\) [N m]`,
+withdrawing `Normal Force Increment, \(\Delta F_n\) [N]` and `Moment Increment
+About \(t_1\), \(\Delta M_{t_1}\) [N m]`. Section 4.6.2 already says that each
+series is referenced to the stationary state preceding its perturbation, so no
+axis or legend entry repeats it. The shaded stationary band stays: it is what
+shows the reader which interval the reported means were taken over, now that the
+text no longer gives the interval in seconds.
+
+**The Case-D mechanism figure carries the model-estimated wrench.** Changed
+2026-09-06 in `plot_coc_case.py`, which now resolves \(F_{n,\mathrm{est}}=n_s^\top
+f_{\mathrm{est}}\) and \(M_{t_1,\mathrm{est}}=t_1^\top m_{\mathrm{est,TCP}}\)
+from the logged estimator columns instead of the commanded wrench. The axes
+read `Model-Estimated Normal Force, \(F_{n,\mathrm{est}}\) [N]` and
+`Model-Estimated TCP Moment About \(t_1\), \(M_{t_1,\mathrm{est}}\) [N m]`;
+panel~(a) and the three legend entries are unchanged. The moment is
+transported to the TCP before the tangent is projected, so the three
+compliance-centre positions are compared at one reference point. The zero
+reference line stays on panels~(a) and~(c) and is kept off the force panel,
+which is now selected by panel index rather than by searching the label text
+for `F_`.
+
+**Its y labels were re-broken at the same time.** `Model-Estimated Normal
+Force,` and `Model-Estimated TCP Moment About \(t_1\),` are longer than the
+commanded lines they replaced, and on the old two-line break they overran their
+panels and collided with one another in the left margin of the compiled page.
+Panel~(b) now breaks after `Normal` and panel~(c) runs to three lines, so no
+line exceeds about twenty-three characters -- the limit further down this file,
+which exists for exactly this failure. Three lines read well here; the earlier
+note that they read worse was written against the shorter commanded labels.
+
+**`pdffonts` shows the Computer Modern faces alone on this machine, and that
+matches the committed figures.** The check above asks for `LMRoman*` beside
+`Cmr/Cmmi/Cmsy`; Latin Modern Roman is not installed for matplotlib here, so
+the serif list falls through to `cmr10`. Verified on 2026-09-06 against
+`MAIN_D_wrench.pdf` as committed, which carries the same three subsets. A new
+figure showing `Cmmi10`, `Cmr10` and `Cmsy10` is therefore consistent with the
+rest of the document rather than a fault; one showing DejaVu is the failure to
+watch for.
+
 ### Every generated plot has a generator, kept in `code/python/figures/`
 
 The scripts are in the repository, with a name map and running instructions in
@@ -961,6 +1089,7 @@ file name still carries its acquisition-campaign identifier:
 | `MAIN_H_direction.pdf` | Withdrawn intermediate-direction check; retained archive identifier |
 | `MAIN_DQ_descent.pdf`, `MAIN_DQ_metric_comparison.pdf`, `MAIN_DQ_metric_summary.pdf` | Data quality |
 | `MAIN_NS_nullspace_automatic.pdf` | Null-space results |
+| `MAIN_WR_contact_wrench.pdf`, `MAIN_WR_force_plausibility.pdf`, `MAIN_WR_moment_plausibility.pdf` | Section 5.1 wrench evaluation |
 
 A figure spanning several main cases carries their letters in order. A figure
 that serves a section rather than a case carries a two-letter tag for that
@@ -1197,6 +1326,68 @@ writes a generated file names it, so regeneration must preserve this mapping.
   one symbol spans; and the time
   axes, which the author prefers as they read. Do not invent a symbol to
   satisfy this rule.
+
+## A tall figure has to fit the page it is placed on
+
+Every figure in this thesis uses `[H]`, so LaTeX places it exactly where the
+source puts it and cannot float it. A figure that does not fit in the space
+remaining on the page is therefore moved whole to the next page, and the text
+above it stops early: the reader meets a page that ends after one paragraph.
+That is a layout fault the source does not show and no warning reports.
+
+**The arithmetic to check.** The usable text band is about
+\(695\,\mathrm{pt}\) of ink, from \(73.9\) to \(769.4\,\mathrm{pt}\) down the
+sheet at the current geometry. A figure block consumes the graphic's printed
+height, which is `\textwidth` times its aspect ratio, plus roughly
+\(16\,\mathrm{pt}\) above the caption, about \(11\,\mathrm{pt}\) per caption
+line, and `\intextsep` above and below. `MAIN_D_wrench.pdf` is
+\(417.6\times446.4\,\mathrm{pt}\), so at `width=\textwidth` it prints
+\(486\,\mathrm{pt}\) tall and its block runs to about \(504\,\mathrm{pt}\) with
+a one-line caption.
+
+**A wrapping caption is what usually tips one over.** Figure 5.8 missed its page
+by about \(11\,\mathrm{pt}\) on 2026-09-07, which is exactly one caption line.
+Shortening the caption to the one-line noun phrase the rule already required put
+the figure back under its own introduction and removed a page from the document.
+Fix the caption first; it is free, and it is required anyway.
+
+**What not to reach for.** Do not change `[H]` to a floating specifier for one
+figure -- the chapter's nine figures all use `[H]` and a single float would
+separate one figure from the text that introduces it. Do not shrink the graphic
+with `\includegraphics[width=0.9\textwidth]`, which scales the label text below
+the sizes under *Generated plots* as surely as `\resizebox` does. If a caption
+is already one line and the figure still does not fit, reduce `figsize` in the
+generator and re-run it, so the fonts keep their size while the canvas loses
+height.
+
+**Shrinking a figure moves whitespace; it only removes it when a page is
+saved.** Recorded 2026-09-07 after the second application of this rule, so the
+next reader does not expect the first outcome twice. Figure 5.8 gained a page
+for the document, because the figure and the paragraph above it then shared one
+page that had held only the paragraph. Figure 5.1 did not: the contact-wrench
+canvas was cut from \(4.30\) to \(3.90\,\mathrm{in}\), which closed the
+\(338\,\mathrm{pt}\) gap on page 62 to \(17\,\mathrm{pt}\), but every later
+`[H]` figure in the chapter then landed differently and pages 63, 64, 66, 67
+and 70 each gained between \(20\) and \(120\,\mathrm{pt}\). Across Chapter 5 the
+total blank space moved by \(9\,\mathrm{pt}\) and the page count did not change.
+The worst single page improved, from \(338\) to \(196\,\mathrm{pt}\), which is
+what the change buys. **Measure the whole chapter before and after, not the one
+page**, and say which of the two outcomes was obtained.
+
+**A shorter panel drops tick labels, and that has to be checked.** Cutting the
+contact-wrench canvas took the automatic locator on the force panel from four
+labels to two, `0` and \(-50\), which left the settled force near
+\(-80\,\mathrm{N}\) with no tick to be read against. The panel carries
+`MaxNLocator(nbins=4)` for that reason and now reads `0`, \(-30\), \(-60\),
+\(-90\). Read the axis strings out of the regenerated file with `pdftotext`
+before installing it: a dropped tick is invisible in the script and easy to miss
+in a thumbnail.
+
+**Measure it in the compiled PDF.** Render the page and find the last row of
+ink between the running head and the folio; a page whose body ends more than
+about \(120\,\mathrm{pt}\) short of \(769\,\mathrm{pt}\) is either a chapter
+end, a section end before a figure, or this fault. Check which before changing
+anything.
 
 ## Checking a figure
 

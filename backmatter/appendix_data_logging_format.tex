@@ -15,9 +15,9 @@ frames, and model-estimated quantities explicit.}
 
 \Added{\mbox{Table~\ref{tab:csv_column_groups}} lists the recorded signal
 groups used to calculate the reported surface-contact and null-space results.
-The surface-contact schema supplies the contact-geometry and commanded-wrench
-groups, and the Cartesian pose-hold schema supplies the singular-value,
-projected-motion, and disturbance groups. The complete file schemas, including
+The surface-contact schema supplies the contact-geometry, commanded-wrench and
+model-estimated wrench groups, and the Cartesian pose-hold schema supplies the
+singular-value, projected-motion, and disturbance groups. The complete file schemas, including
 the diagnostic fields that no reported result uses, are documented with the
 recorded data.}
 
@@ -64,6 +64,11 @@ for every surface-contact trial, including the TCP-centred condition
 \texttt{f}, \texttt{m} &
 Complete commanded Cartesian force and TCP moment, in the base frame [N],
 [N\,m].\\
+\texttt{external\_force},\newline
+\texttt{external\_moment} &
+Model-estimated external wrench supplied by libfranka. It acts on the
+stiffness frame \(\{K\}\) and is expressed in the base frame, and the recorded
+moment is referenced to the base origin [N], [N\,m].\\
 \texttt{nullspace\_mode} &
 Selected null-space law.\\
 \texttt{sigma\_current} &
@@ -95,3 +100,13 @@ position of the selected point on link~3 [m].\\
 Components of the equivalent joint disturbance torque
 \(\tau_{\mathrm{dist}}=J_p^\top f_{\mathrm{dist}}\) [N\,m].\\
 \end{longtable}
+
+The Cartesian wrench evaluation of
+\mbox{\Cref{sec:wrench_evaluation_method}} reads the model-estimated group.
+Because the recorded moment is referenced to the base origin, the evaluation
+expresses it about the TCP,
+\mbox{\(m_{\mathrm{est,TCP}}=m_{\mathrm{est}}-p_{\mathrm{TCP}}\times
+f_{\mathrm{est}}\)}, before resolving \mbox{\(M_{t_1,\mathrm{est}}\)} about the
+first surface tangent. In the experimental configuration
+\mbox{\({}^{\mathrm{EE}}T_K=I\)}, so the stiffness frame coincides with the TCP
+and no further frame change is required.

@@ -5,11 +5,11 @@
 
 Every case is read the same way, top to bottom:
 
-  1  contact rotation   the signed current-to-reference rotation
-                       over contact establishment about the investigated tangent.
-  2  normal force      the controller-commanded press along n_s.
-  3  alignment moment  the controller-commanded moment about the commanded
-                       surface tangent.
+  1  contact rotation   the current-to-reference rotation over contact
+                       establishment about the investigated tangent.
+  2  normal force      the model-estimated external force along n_s.
+  3  alignment moment  the model-estimated external moment at the TCP about
+                       the investigated tangent.
 
 The contact rotation is the same controller-response quantity used by every
 case-comparison plot. It comes from the robot orientation error referenced at
@@ -17,13 +17,23 @@ the clearance transition and is resolved on the configured surface axes. It ther
 no absolute flat-tool zero and is not affected by play between tool and
 gripper.
 
-The commanded wrench is used consistently for force and moment. The force is
-the commanded Cartesian force resolved along the surface normal. The moment is
-the commanded Cartesian moment at the TCP resolved about the selected tangent.
-No model-estimated wrench is mixed into this controller-response comparison.
+The wrench panels carry the interaction wrench rather than the command, so the
+compliance-centre position is related to what the robot estimates at the
+contact rather than to what the controller asked for. Libfranka's
+O_F_ext_hat_K is the spatial wrench on stiffness frame K expressed in the base
+frame, and its base-frame moment carries the base-to-K force lever. K is
+coincident with the controller TCP here, so the TCP moment follows from
+subtracting p_TCP x f before the tangent is projected:
+
+  F_n,est  = n_s . f_est
+  M_t1,est = t1 . (m_est - p_TCP x f_est)
+
+Both panels therefore compare the three compliance-centre positions at one
+reference point. The estimate is model based rather than a force/torque
+measurement, which is what the 'est' index records.
 
 The normal force is negative while the tool presses. n_s points out of the
-plate, so the commanded press runs along -n_s.
+plate, so the press runs along -n_s.
 
 One shared legend identifies the compliance-centre position of each curve.
 """
@@ -67,7 +77,7 @@ def curve_label(detail):
 
 
 def load(results, trial, axis):
-    """Return time, contact rotation, commanded force and moment."""
+    """Return time, contact rotation, estimated force and TCP moment."""
     directory = os.path.join(results, trial)
     logs = glob.glob(os.path.join(directory, "logs", "*.csv"))
     if not logs:
@@ -82,15 +92,18 @@ def load(results, trial, axis):
         rows = [r for r in csv.DictReader(f)
                 if float(r["phase"]) == CONTACT_ESTABLISHMENT_STATE]
 
-    time, rotation, fn_cmd, m_cmd = [], [], [], []
+    time, rotation, fn_est, m_est = [], [], [], []
     for row in rows:
         time.append(float(row["time"]))
         rotation.append(float(np.degrees(vec(row, "e_R")) @ tangent_axis))
-        fn_cmd.append(float(normal @ vec(row, "f")))
-        m_cmd.append(float(tangent_axis @ vec(row, "m")))
+        force = vec(row, "external_force")
+        moment_tcp = (vec(row, "external_moment")
+                      - np.cross(vec(row, "p_EE"), force))
+        fn_est.append(float(normal @ force))
+        m_est.append(float(tangent_axis @ moment_tcp))
 
     t = np.array(time)
-    return (t - t[0], np.array(rotation), np.array(fn_cmd), np.array(m_cmd))
+    return (t - t[0], np.array(rotation), np.array(fn_est), np.array(m_est))
 
 
 def main():
@@ -108,11 +121,11 @@ def main():
 
     for (trial, detail), colour in zip(selected, SERIES_COLOURS):
         label = curve_label(detail)
-        t, rotation, fn_cmd, m_cmd = thin(*load(args.results, trial, args.axis))
-        for ax, series in zip(axes, (rotation, fn_cmd, m_cmd)):
+        t, rotation, fn_est, m_est = thin(*load(args.results, trial, args.axis))
+        for ax, series in zip(axes, (rotation, fn_est, m_est)):
             ax.plot(t, series, color=colour, label=label)
         print(f"{trial:26s} gamma_{args.axis} {rotation[-1]:+6.2f} deg | "
-              f"Fn_cmd {fn_cmd[-1]:7.1f} N | M_cmd {m_cmd[-1]:+6.2f} N m")
+              f"Fn_est {fn_est[-1]:7.1f} N | M_est {m_est[-1]:+6.2f} N m")
 
     sub = AXIS_SUBSCRIPT[args.axis]
     # A y label is set rotated, so its longest line has to fit the panel
@@ -122,19 +135,22 @@ def main():
     # than the single-line labels of the typeset figures beside this one.
     labels = [rf"Contact Response About ${sub}$," "\n"
               rf"$\gamma_{{{sub}}}$ [$^\circ$]",
-              "Commanded Normal Force,\n" r"$F_n$ [N]",
-              rf"Commanded TCP Moment" "\n"
-              rf"About ${sub}$, $M_{{{sub}}}$ [N m]"]
+              "Model-Estimated Normal\n"
+              r"Force, $F_{n,\mathrm{est}}$ [N]",
+              rf"Model-Estimated TCP" "\n"
+              rf"Moment About ${sub}$," "\n"
+              rf"$M_{{{sub},\mathrm{{est}}}}$ [N m]"]
     # The panel letters are drawn here rather than added over the PDF, so the
     # thesis includes the file directly instead of overlaying it.
     for ax, letter in zip(axes, "abc"):
         ax.text(0.012, 0.95, f"({letter})", transform=ax.transAxes,
                 ha="left", va="top")
-    for ax, text in zip(axes, labels):
+    for index, (ax, text) in enumerate(zip(axes, labels)):
         ax.set_ylabel(text)
         # Zero separates a flat tool from a tilted one, and a restoring moment
-        # from a driving one. The press panels are left without a line.
-        if "F_" not in text:
+        # from a driving one. The force panel is left without a line, because a
+        # zero line on a load axis forces the axis down to zero.
+        if index != 1:
             reference_line(ax)
         ax.margins(y=0.3)
     handles, legend_labels = axes[0].get_legend_handles_labels()

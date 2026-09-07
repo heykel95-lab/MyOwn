@@ -78,6 +78,7 @@ frame.}
 \symrow{$f,\ m$}{Complete commanded Cartesian force / moment at the TCP}{[N], [N\,m]}
 \symrow{$F_n,\ f_n,\ f_t$}{Commanded normal-force component, $F_n=n_s^\top f$ / normal force vector, $f_n=F_nn_s$ / tangential force vector, $f_t=f-f_n$}{[N]}
 \symrow{$M_{t_1}$}{Commanded TCP moment component about $t_1$, $M_{t_1}=t_1^\top m$}{[N\,m]}
+\symrow{$F_{n,\mathrm{est}},\ M_{t_1,\mathrm{est}}$}{Model-estimated external normal-force component, $F_{n,\mathrm{est}}=n_s^\top f_{\mathrm{est}}$ / model-estimated external TCP moment about $t_1$, $M_{t_1,\mathrm{est}}=t_1^\top m_{\mathrm{est,TCP}}$}{[N], [N\,m]}
 \symrow{$\tau$}{Joint torque vector}{[N\,m]}
 \symrow{$\tau_c$}{Coriolis and centrifugal compensation torque}{[N\,m]}
 \symrow{$\tau_{\mathrm{cart}}$}{Cartesian impedance torque, $J^\top(q)F$}{[N\,m]}
@@ -89,9 +90,9 @@ frame.}
 \symrow{$n_{\mathrm{phys}}$}{Physical surface normal}{[-]}
 \symrow{$t_1,\ t_2$}{Surface tangent directions (unit)}{[-]}
 \symrow{$R_{\mathrm{surface}}$}{Surface-frame orientation $[\,t_1\;\;t_2\;\;n_s\,]$ in the base frame}{[-]}
-\symrow{$n_{\mathrm{Tool,EE}},\ n_{\mathrm{Tool}},\ n_d$}{Tool-face normal expressed in the EE frame, obtained from calibration / the same direction expressed in the base frame, $n_{\mathrm{Tool}}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}$ / desired tool-normal direction used by the controller}{[-]}
+\symrow{$n_{\mathrm{Tool,EE}},\ n_{\mathrm{Tool}},\ n_{\mathrm{Tool},d}$}{Tool-face normal expressed in the EE frame, obtained from calibration / the same direction expressed in the base frame, $n_{\mathrm{Tool}}=R_{\mathrm{EE}}n_{\mathrm{Tool,EE}}$ / desired tool-normal direction used by the controller}{[-]}
 \symrow{$r_{\mathrm{face,EE}}$}{Calibrated tool-face-centre offset from the TCP in end-effector coordinates}{[m]}
-\symrow{$\theta_{\mathrm{offset}}$}{Configured pre-contact orientation offset that sets the desired tool direction, $\theta_{\mathrm{offset}}=\theta_{\mathrm{offset},t_1}t_1+\theta_{\mathrm{offset},t_2}t_2$}{[rad]}
+\symrow{$\theta_{\mathrm{offset}}$}{Configured pre-contact orientation offset that sets the desired tool direction, formed to first order from its two tangent contributions}{[rad]}
 \symrow{$p_s$}{Point on the configured surface}{[m]}
 \symrow{$e_{x_0},\ e_{z_0}$}{Unit vectors along the base-frame axes $x_0$ and $z_0$}{[-]}
 \symrow{$p_c$}{Centre of compliance}{[m]}
@@ -118,7 +119,8 @@ frame.}
 \symrow{$\mathrm{Ad}(r_c)$}{TCP-to-compliance-centre point-shift adjoint}{Diagonal blocks: [-]; point-shift block: [m/rad]}
 \symrow{$K_c,D_c$}{Block-diagonal stiffness / damping at the centre of compliance}{$K$: [N/m], [N\,m/rad]; $D$: [N\,s/m], [N\,m\,s/rad]}
 \symrow{$K_{\mathrm{TCP}},D_{\mathrm{TCP}}$}{Centre-of-compliance stiffness and damping mapped to the TCP by $\mathrm{Ad}(r_c)$}{$K$: [N/m], [N/rad], [N\,m/m], [N\,m/rad]; $D$: [N\,s/m], [N\,s/rad], [N\,m\,s/m], [N\,m\,s/rad]}
-\symrow{$\theta_{\mathrm{offset},t_1},\ \theta_{\mathrm{offset},t_2}$}{Surface-frame components of the configured orientation offset about $t_1$ and $t_2$}{[rad]}
+\symrow{$\theta_{t_1},\ \theta_{t_2},\ u$}{Rotations of a general angular tool offset about $t_1$ and $t_2$ in the compliance-centre direction rule / the unit direction of their first-order combination in the surface tangent plane}{[rad], [rad], [-]}
+\symrow{$\theta_{\mathrm{offset},t_1},\ \theta_{\mathrm{offset},t_2}$}{First-order contributions of the configured rotations about $t_1$ and $t_2$}{[rad]}
 \symrow{$\phi_0,\ u_0$}{Magnitude and unit axis of the shortest rotation from the contact-entry tool normal to the inward configured surface normal; $\phi_0u_0$ is that rotation vector}{[rad], [-]}
 \symrow{$\theta_{\mathrm{init},t_1}$}{Achieved pose-based initial angular offset about $t_1$, relative to the configured reference}{[rad]}
 \symrow{$R_{\mathrm{CE}},\ u_{\mathrm{CE}},\ \phi_{\mathrm{CE}}$}{Relative rotation from the measured end orientation back to the held entry reference, and its axis and angle; the contact response is $\gamma=\phi_{\mathrm{CE}}u_{\mathrm{CE}}$}{[-], [-], [rad]}
