@@ -528,7 +528,7 @@ the panels further -- `(a) Rotations about the tangents` became
 **The Chapter 4 surface-reference geometry keeps three orientations distinct.**
 The physical surface is blue, the configured surface reference is red, and the
 tool face at the start of Contact Establishment is dark green. The inner arc
-shows the achieved pose-based initial angular offset \(\theta_{0,t_1}\), drawn from the
+shows the achieved pose-based initial angular offset \(\theta_{\mathrm{ach},t_1}\), drawn from the
 configured reference to the achieved tool face. No angle is drawn from the
 physical surface, and no symbol is assigned to its unknown difference from the
 configured reference. The drawing is a principal-tangent cross-section and
@@ -736,7 +736,7 @@ frame \((t_1,n_s)\). It assigns no measured angle to the unknown difference.
 
 **The Chapter 4 sign-convention figure is a view along \(t_1\).** Added
 2026-09-02 at the opening of Section 4.5, where
-\(\theta_{\mathrm{offset},t_1}\), \(\theta_{0,t_1}\) and
+\(\theta_{\mathrm{offset},t_1}\), \(\theta_{\mathrm{ach},t_1}\) and
 \(\gamma_{t_1}\) are introduced together and all three take their sign from
 one rotational direction. It draws the surface-frame plane spanned by
 \(t_2\) and \(n_s\), \(t_1\) out of the page as a dotted circle, and one
@@ -1237,7 +1237,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
   `Rotational Stiffness About \(t_1\), \(K_{R,t_1}\) [N m/rad]`,
   `Cross-Axis Translational Stiffness, \(K_{p,t_2}\) [N/m]`,
   `Tangential CoC Position, \(r_{c,t_2}\) [mm]`,
-  `Achieved Initial Angular Offset, \(\theta_{0,t_1}\) [°]`,
+  `Achieved Initial Angular Offset, \(\theta_{\mathrm{ach},t_1}\) [°]`,
   `Commanded Normal Force, \(F_n\) [N]`,
   `Commanded TCP Moment About \(t_1\), \(M_{t_1}\) [N m]`.
 
@@ -1288,7 +1288,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
 - **A legend names the experimental condition, and gives its symbol and value
   where one exists:** `Descriptive Condition, Symbol = Value`. It never repeats
   the \(y\)-axis quantity and never carries a unit already on the axis.
-  Settled forms: `Achieved Initial Offset, \(\theta_{0,t_1}=+9.32^\circ\)` for an
+  Settled forms: `Achieved Initial Offset, \(\theta_{\mathrm{ach},t_1}=+9.32^\circ\)` for an
   achieved contact-entry condition; `Projected Damping, \(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\)`
   for a controller parameter; `CoC Position, \(r_{c,t_2}=40\,\mathrm{mm}\)`
   and `CoC at TCP, \(r_{c,t_2}=0\)` for a compliance-centre position. A bare
@@ -1309,7 +1309,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
   where the symbol alone would be cryptic, as in
   `Cumulative projected null-space motion \(E_N\) [°]`. The pass that applied
   this set the active contact axes to \(r_{c,t_2}\),
-  \(\gamma_{t_1}\), \(\theta_{0,t_1}\), \(E_N\) and
+  \(\gamma_{t_1}\), \(\theta_{\mathrm{ach},t_1}\), \(E_N\) and
   \(\Delta\sigma_{\min}\). The pose-based appendix comparison
   uses descriptive labels instead of promoting its local quantities to the
   thesis-wide symbol list.
@@ -1336,14 +1336,27 @@ writes a generated file names it, so regeneration must preserve this mapping.
   the same pattern: `Commanded normal force, \(F_n\) [N]` and `Commanded TCP
   moment about \(t_1\), \(M_{t_1}\) [N m]`.
 
-  **Where no symbol is assigned to what the axis means, the words stay.** Three
-  axes kept their prose for that reason: the supporting tool-axis comparison, whose \(x\)
+  **Where no symbol is assigned to what the axis means, the words stay.** Two
+  axes keep their prose for that reason: the supporting tool-axis comparison, whose \(x\)
   carries a tangential displacement on one series and a tool-axis displacement
-  on the other, so no single component symbol covers it; the categorical axis of
-  the Case-A bars, whose ticks name three different initial conditions that no
-  one symbol spans; and the time
+  on the other, so no single component symbol covers it; and the time
   axes, which the author prefers as they read. Do not invent a symbol to
   satisfy this rule.
+
+  **An axis that spans two quantities names both.** Instructed 2026-09-07 for
+  the Case-A bars, which previously kept prose alone under the rule above and
+  were its third example. Their three ticks carry two symbols: the zero-offset
+  column is reported by the magnitude \(\phi_0\), because residual components
+  about \(t_2\) remain in the achieved orientation and the \(t_1\) component
+  alone does not describe it, while the two directional columns carry
+  \(\theta_{\mathrm{ach},t_1}\). The axis therefore reads `Achieved Initial
+  Angular Offset, \(\phi_0\) and \(\theta_{\mathrm{ach},t_1}\) [°]`.
+
+  Naming both is what keeps the rule and the chapter in step. A single
+  \(\theta_{\mathrm{ach},t_1}\) would have matched the Case-B, Case-C and
+  Case-D axes exactly and labelled the first column with a symbol Section 5.2.1
+  explicitly says does not report it. This is not licence to invent a symbol:
+  both already exist, both are in the symbol list, and each tick prints its own.
 
 ## A tall figure has to fit the page it is placed on
 
