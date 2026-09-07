@@ -140,10 +140,14 @@ def contact_wrench_figure(csv_path, out_path):
     axes[0].set_title("(a)", loc="left")
     axes[1].plot(t, mt1_cmd, color=SERIES_BLACK, label="Commanded")
     axes[1].plot(t, mt1_est, color=SERIES_RED, label="Model-estimated")
-    axes[1].set_ylabel("TCP Moment About $t_1$,\n" r"$M_{t_1}$ [N m]")
+    axes[1].set_ylabel("Moment About $t_1$,\n" r"$M_{t_1}$ [N m]")
     axes[1].set_title("(b)", loc="left")
     axes[1].set_xlabel(r"Time, $t$ [s]")
     panel_legend(figure, axes, reserve=0.08)
+    # The two panels carry different tick-label widths, so each y label is set
+    # at its own distance from the axis and the pair reads as misaligned. Align
+    # them on one line, as the other stacked figures do.
+    figure.align_ylabels(axes)
     figure.savefig(out_path)
     plt.close(figure)
     return out_path

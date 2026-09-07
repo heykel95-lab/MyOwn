@@ -862,7 +862,7 @@ the three means would visually exaggerate the cross-axis stiffness effect.
 **Three figures were added on 2026-09-06 under the `WR` tag**, written by
 `make_wrench_evaluation_figures.py`. The contact-wrench comparison keeps two
 panels, because force and moment come from the same five-second trial: (a) the
-normal force and (b) the TCP moment about \(t_1\), each with the commanded
+normal force and (b) the moment about \(t_1\), each with the commanded
 series in black and the model-estimated series in red, and the stationary
 interval from \(4\) to \(5\,\mathrm{s}\) shaded. The two quasi-static figures
 are single-panel and carry three series each -- commanded increment in black,
@@ -889,6 +889,22 @@ series is referenced to the stationary state preceding its perturbation, so no
 axis or legend entry repeats it. The shaded stationary band stays: it is what
 shows the reader which interval the reported means were taken over, now that the
 text no longer gives the interval in seconds.
+
+**The contact-wrench figure names no reference point on its y axis, and the two
+labels are aligned.** Instructed 2026-09-07. Panel (b) read `TCP Moment About
+\(t_1\)` while the two plausibility figures beside it already read `Moment
+About \(t_1\)`, so one Section 5.1 figure named the reference point and two
+did not. Section 4.6 defines where the moment is resolved, and the prose of
+Section 5.1.1 calls it the moment about the first surface tangent, so the axis
+need not repeat it. This governs the Section 5.1 figures only: the Case-D
+mechanism figure keeps `Model-Estimated TCP Moment About \(t_1\)`, because the
+reference point is what that figure is about and its own text says so.
+
+**A stacked figure aligns its y labels.** The panels carry different
+tick-label widths, so each label is otherwise set at its own distance from the
+axis and the pair reads as displaced. `figure.align_ylabels(axes)` after the
+layout is fixed puts them on one line, which the other stacked generators in
+`code/python/figures/` already did and this one did not.
 
 **The Case-D mechanism figure carries the model-estimated wrench.** Changed
 2026-09-06 in `plot_coc_case.py`, which now resolves \(F_{n,\mathrm{est}}=n_s^\top
