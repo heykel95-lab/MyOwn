@@ -53,6 +53,28 @@ panels, the Case-D-against-Case-F comparison and the Case-G panels — have no
 generator here. They are `.tex` sources in `figures/` and are drawn from the
 means already tabulated in the thesis.
 
+## Environment
+
+The committed PDFs were drawn with **matplotlib 3.9.2**, read from the
+`/Creator` and `/Producer` metadata of the files themselves rather than from a
+record of the session. `requirements.txt` pins it:
+
+    python3 -m venv .venv && . .venv/bin/activate
+    pip install -r requirements.txt
+
+The version matters more than it looks. Under matplotlib 3.1.2 every script
+below still runs, every printed number is identical, and the curves are the
+same, but two things in the drawing change. The tick locator chooses fewer
+ticks, so a panel of `MAIN_D_wrench.pdf` carries ticks every 5 rather than
+every 2.5. And the net-displacement label in panel (c) of
+`MAIN_NS_nullspace_automatic.pdf` renders as `-0.006` rather than the `0.006`
+in the committed file: `_net_value_label()` writes U+2212, which the committed
+figure's embedded face silently drops. Section 5.5 reads
+`the measured net displacement was negative, so its absolute value was 0.006`,
+which is written against the committed rendering. Regenerating that figure in a
+pinned environment keeps the sentence and the label in step; regenerating it in
+an older one does not.
+
 ## Running them
 
 `make_coc_figures.py` reads the campaign metrics. On the lab machine, pass the
@@ -71,9 +93,9 @@ they came from, and only run beside that data:
         --metrics /path/to/Thesis_Final_Control/experiments/derived/metrics.csv \
         --out-dir OUT
     python3 plot_coc_case.py \
-        "P2_t1_pos_m040/r01=centre -40 mm" \
-        "P2_t1_pos_p000/r01=centre 0 mm" \
-        "P2_t1_pos_p040/r01=centre +40 mm" \
+        'P2_t1_pos_m040/r01=CoC Position, $r_{c,t_2} = -40$ mm' \
+        'P2_t1_pos_p000/r01=CoC at TCP, $r_{c,t_2} = 0$' \
+        'P2_t1_pos_p040/r01=CoC Position, $r_{c,t_2} = 40$ mm' \
         --axis t1 --out MAIN_E_wrench \
         --results /path/to/Thesis_Final_Control/experiments/results \
         --out-dir OUT
@@ -90,6 +112,37 @@ trials as defaults in the file.
 `make_nullspace_figure.py` for its colours and its `save` helper; the figures
 `make_figures.py` writes when run on its own belong to the superseded set and
 are not in the thesis.
+
+## What Chapter 5 needs
+
+Chapter 5 includes six figures. Four are `pgfplots` sources in `figures/` whose
+coordinates are written into the `.tex` file, so they carry their own data and
+redraw wherever the thesis compiles:
+
+  * `results_case_a_bars.tex`
+  * `results_case_b_stiffness.tex`
+  * `results_case_c_stiffness.tex`
+  * `results_case_d_panels.tex`
+
+The other two are drawn here and read run records that are not in this
+repository:
+
+| Figure | Script | Reads |
+|---|---|---|
+| `MAIN_D_wrench.pdf` | `plot_coc_case.py` | `Thesis_Final_Control/experiments/results/P2_t1_pos_{m040,p000,p040}/r01/`, about 27 MB: each trial's `logs/*.csv` and its `params_effective/` |
+| `MAIN_NS_nullspace_automatic.pdf` | `make_nullspace_figure.py` | `MyController/experiments/results/MAIN_NS{7,8}_*_20N_200mm/r0{1,2,3}/surface_grinding_controller_log.csv`, twelve files of about 27 MB each |
+
+A checkout on its own therefore redraws four of the six. The remaining two need
+the directories above copied across, and the `--results` argument then points
+at wherever they were put.
+
+Two cautions when copying the null-space records. `MyController`'s
+`plane_calibration_*`, `plane_profile.txt`, `tool_axis_calibration_*`,
+`tool_mount_status.txt` and `tool_profile.txt` are not to be published, and
+`make_nullspace_figure.py` reads none of them, so they can be left behind.
+And `MyController/experiments/analysis/make_nullspace_figure.py` is the
+superseded two-panel generator; the copy in this directory is the authoritative
+one.
 
 ## What the null-space script gained
 
