@@ -768,6 +768,11 @@ A bare symbol vector as a heading also leaves the reader to work out what the
 components are of; naming them costs two words. Grep for a unit in round
 brackets before submitting.
 
+**Repeat the CoC position in every table row.** Instructed 2026-09-08.
+All rows in Tables D.2 and D.3 use the CoC at the TCP and therefore print
+`TCP` in the position column. Blank cells must not stand for a shared CoC
+setting, because they leave the individual conditions unclear.
+
 Never use “tangential stiffness” for a parameter sweep without naming the
 axis. State \(t_1\), \(t_2\), or explicitly state that both entries were
 changed together. The calibrated-plane campaign varies the rotational
@@ -1944,6 +1949,11 @@ position is in the base frame; in \(r_{c,\mathrm{EE}}\) the index after the
 comma says which coordinate frame the components are in. Chapter 2 states this
 distinction in its opening, because it is the one place the convention can be
 misread.
+
+The List of Symbols gives only the default base-frame convention and the
+suffixes \(,S\) and \(,\mathrm{EE}\), in two sentences supplied on 2026-09-08.
+The point-or-body example stays in Chapter 2 and is not repeated in the list's
+opening.
 
 **Do not run this as a substitution.** Three families of index look like a
 base-frame index and are not: the base *axis* names \(e_{x_0}\),
