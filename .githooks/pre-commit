@@ -6,7 +6,30 @@
 
 set -e
 
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File sync_agent_docs.ps1
+if command -v powershell.exe >/dev/null 2>&1; then
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -File sync_agent_docs.ps1
+elif command -v pwsh >/dev/null 2>&1; then
+    pwsh -NoProfile -File sync_agent_docs.ps1
+else
+    # Match sync_agent_docs.ps1 on hosts without PowerShell.
+    python3 - <<'PY'
+from pathlib import Path
+
+for source in (Path("AGENTS.md"), Path("code/AGENTS.md")):
+    target = source.with_name("CLAUDE.md")
+    banner = (
+        "<!-- GENERATED FILE - DO NOT EDIT.\n"
+        f"     Regenerated from {source.as_posix()} by sync_agent_docs.ps1 and by the\n"
+        f"     pre-commit hook. Edit {source.as_posix()} instead; any change made here\n"
+        "     is overwritten on the next commit. The two files are kept identical\n"
+        "     so that an agent reading either one gets the same rules. -->\n\n"
+    ).encode("utf-8")
+    content = banner + source.read_bytes()
+    if not target.exists() or target.read_bytes() != content:
+        target.write_bytes(content)
+        print(f"synced: {target}")
+PY
+fi
 
 # Stage the regenerated copies only if they are actually tracked and changed.
 for f in CLAUDE.md code/CLAUDE.md; do
