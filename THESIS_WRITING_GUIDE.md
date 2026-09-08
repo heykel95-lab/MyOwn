@@ -3345,6 +3345,12 @@ before the table carries it. The optional short caption was dropped from these
 tables at the same time: once the caption is a noun phrase, a second shorter
 form for the list of tables has nothing left to shorten.
 
+**Appendix D captions omit the mean and standard-deviation description.**
+Instructed 2026-09-08. The introductory text already states the reporting
+convention for all four tables, so the captions retain only their case and
+comparison names. The numerical entries keep their mean \(\pm\) sample
+standard deviation.
+
 ## Evidence and claims
 
 Never invent measurements, repetitions, fitted values, confidence intervals,
