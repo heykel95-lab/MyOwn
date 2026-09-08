@@ -256,7 +256,7 @@ support a phrase; write the phrase without it.
 named by their offset direction where one has to be identified repeatedly.**
 Throughout the thesis, the configured orientation offset
 \(\theta_{\mathrm{offset},t_1}\) defines the desired pre-contact tool direction,
-the achieved pose-based initial angular offset \(\theta_{\mathrm{ach},t_1}\) gives the
+the measured pose-based angular offset \(\theta_{\mathrm{meas},t_1}\) gives the
 condition reached at contact entry, and the contact response
 \(\gamma_{t_1}\) gives the measured outcome. Use `both directions of rotation`
 or `both rotational directions` for aggregate comparisons. The plus and minus
@@ -270,7 +270,7 @@ offset`, which was accurate and unreadable: eleven words, repeated nine times in
 Chapter 5 alone, forcing the reader to re-derive the condition at every
 comparison. **This overturns the earlier ban on `positive condition`**, which is
 what produced the long form. Define the pair once, at the chapter opening,
-against the achieved offsets it names -- at the TCP-centred condition,
+against the measured offsets it names -- at the TCP-centred condition,
 \(+9.31^\circ\) and \(-9.41^\circ\) about \(t_1\) -- then use the short
 names. The Abstract and the Kurzfassung do not use the two condition names,
 because a first-time reader has not met the definition; they write `positive and
@@ -285,7 +285,7 @@ established.
 
 **Compliance-centre selection is described through displacement and rotational
 directions.** Write `the displacement direction selected for the corresponding
-initial angular-offset direction` for the aligned case, which names the offset
+angular-offset direction` for the aligned case, which names the offset
 the displacement is matched to instead of leaving the rotation unqualified.
 When the other outer position is meant, write `the outer position in the other
 displacement direction`. Phrases such as `the
@@ -379,6 +379,12 @@ Methodology, metric definition, or Results.
 Explain a concept authoritatively once. In particular, avoid repeating
 Cartesian impedance, point-shift derivations, gain transformations, damping,
 null-space projection, or energy/passivity arguments across chapters.
+
+**Cartesian Pose Error is written as continuous prose.** Instructed
+2026-09-08. Introduce the position and orientation errors through the
+translational and rotational blocks of the relative transformation. Use
+ordinary sentences to connect these definitions, without bold `Position error`
+or `Orientation error` paragraph headings. Keep the equations and derivation.
 
 ### Settled compression and evidence hierarchy
 
@@ -488,11 +494,17 @@ left, not only against the caption rule.
 
 **The renumbering that came with it.** `Main Surface-Contact Results` is now
 Section 5.2 and `Null-Space Pose-Hold Results` Section 5.3, so the case
-subsections are 5.2.1 to 5.2.3 and the null-space subsections 5.3.1 and 5.3.2.
+subsections are 5.2.1 to 5.2.4 and the null-space subsections 5.3.1 and 5.3.2.
 Entries elsewhere in this file that name Section 5.1.3, 5.2.1 or 5.2.2 were
 written against the earlier numbering and refer to the Case-D time course and
 the two null-space subsections respectively. Cross-references inside the thesis
 use `\Cref`, so the document itself is unaffected.
+
+**Each main case has its own subsection.** Instructed 2026-09-08.
+Cases A, B, C and D occupy the same heading level within `Main
+Surface-Contact Results`. Cases B and C are separate subsections for
+rotational stiffness and translational stiffness along \(t_2\). Do not place
+them beneath a shared Cartesian-stiffness heading as subsubsections.
 
 **The model-estimated external wrench is a reported quantity again.** This
 overturns three earlier rulings, and they are withdrawn rather than left
@@ -1092,11 +1104,11 @@ circulation, the settled choices are:
   prescribe the rotation measured during contact.** It is applied during Tool
   Orientation before Surface Approach and sets the desired pre-contact tool
   direction. At the start of Contact Establishment, the achieved condition is
-  the **pose-based initial angular offset**
-  \(\theta_{\mathrm{ach},t_1}\). Contact Establishment holds the captured orientation
+  the **pose-based angular offset**
+  \(\theta_{\mathrm{meas},t_1}\). Contact Establishment holds the captured orientation
   reference and produces the **contact response**
   \(\gamma_{t_1}\). The chain is therefore
-  \(\theta_{\mathrm{offset},t_1}\to\theta_{\mathrm{ach},t_1}\to\gamma_{t_1}\).
+  \(\theta_{\mathrm{offset},t_1}\to\theta_{\mathrm{meas},t_1}\to\gamma_{t_1}\).
 
   In Chapter 3 the configured vector and its rotation are
   \(\theta_{\mathrm{offset}}\approx\theta_{\mathrm{offset},t_1}t_1+
@@ -1141,7 +1153,7 @@ circulation, the settled choices are:
   withdrawn with the sentence it matched.
 
   **The angular families are \(\theta_{t_i}\), \(\theta_{\mathrm{offset}}\) and
-  \(\theta_{\mathrm{ach}}\).** Settled 2026-09-06, in two steps: the general
+  \(\theta_{\mathrm{meas}}\).** Settled 2026-09-06, in two steps: the general
   family was withdrawn with the axis--angle construction earlier that day, and
   restored with the composition that replaced it. The third family was renamed
   from \(\theta_{\mathrm{init}}\) on 2026-09-07; see the ruling below.
@@ -1150,7 +1162,7 @@ circulation, the settled choices are:
   |---|---|
   | \(\theta_{t_1}\), \(\theta_{t_2}\) | the two rotations of a general angular tool offset, in the Section 2.7.2 derivation only |
   | \(\theta_{\mathrm{offset}}\), \(\theta_{\mathrm{offset},t_i}\) | the configured pre-contact angular offset |
-  | \(\theta_{\mathrm{ach}}\), \(\theta_{\mathrm{ach},t_i}\) | the achieved initial angular offset at contact entry |
+  | \(\theta_{\mathrm{meas}}\), \(\theta_{\mathrm{meas},t_i}\) | the measured angular offset at contact entry |
 
   The first is general and belongs to the theory. The other two are the reported
   campaign's, and Section 2.7.2 is not built from them. Do not substitute one
@@ -1235,9 +1247,9 @@ circulation, the settled choices are:
   \(\phi=\operatorname{atan2}(\lVert n_d\times n_{\mathrm{Tool}}\rVert,
   n_d^\top n_{\mathrm{Tool}})\) they belonged to. The section no longer measures
   an offset against the tool-face normal, so Chapter 2 needs no desired
-  tool-normal direction at all. \(\phi_0\) and \(u_0\) in Section 4.5, and
-  \(\phi\) and \(u\) as the axis--angle pair of Section 2.2.1, are different
-  quantities and are untouched.
+  tool-normal direction at all. The achieved-offset construction in Section 4.5
+  and \(\phi\) and \(u\) as the axis--angle pair of Section 2.2.1 are
+  different quantities.
 
   **The symbol-list row is \(n_{\mathrm{Tool},d}\), not \(n_d\).** Corrected
   2026-09-06 with that withdrawal. Chapter 3 has always written the desired
@@ -1289,20 +1301,20 @@ circulation, the settled choices are:
 
   **`angular mismatch` names the physical tool--surface angle, and the
   `mismatch` ban does not reach it.** That ban is written against the
-  *configured* orientation offset. Section 4.5 calls \(\phi_0\) the total
-  angular mismatch at contact entry, and Chapter 1, Chapter 5 and the Abstract
-  use the word for the same physical quantity. Section 2.7.2 no longer uses it
+  *configured* orientation offset. The pose-based entry condition in Section 4.5
+  is named the measured angular offset, relative to the configured
+  surface reference. Section 2.7.2 no longer uses `angular mismatch`
   at all: the quantity it named there is withdrawn with the axis--angle
   construction. The final checklist greps for `mismatch` where a configured tool
   orientation offset is meant; these hits are not that.
 
   **The experimental families are untouched.** \(\theta_{\mathrm{offset},t_1}\)
-  and \(\theta_{\mathrm{ach},t_1}\) stay as they are. They are scalar angular
+  and \(\theta_{\mathrm{meas},t_1}\) stay as they are. They are scalar angular
   quantities about one named tangent, they belong to the reported campaign, and
   the general construction of Section 2.7.2 does not have to be built from them.
 
   **\(\theta_{0,t_1}\) is withdrawn**, written here as a literal string so a
-  rename cannot revive it. It named the achieved entry condition with a
+  rename cannot revive it. It named the measured entry condition with a
   \(0\) index that reads as *zero offset*, which is the one thing the quantity
   is not: it is the offset actually reached at Contact Establishment entry, and
   in the reported campaign it is \(9.31^\circ\) or \(-9.41^\circ\), never
@@ -1311,47 +1323,81 @@ circulation, the settled choices are:
   Appendix D, the seven figure sources that carry the axis label, and the two
   Python figure generators.
 
-  **\(\theta_{\mathrm{init},t_1}\) is withdrawn in turn, and the index is
-  `ach`.** Instructed 2026-09-07, and written here as a literal string so a
-  rename cannot revive it. The quantity is the *achieved* condition at contact
-  entry, which is what separates it from the configured
-  \(\theta_{\mathrm{offset},t_1}\) that produced it, and every name the thesis
-  gives it in prose already says so: `the achieved pose-based initial angular
-  offset`. `init` named the instant instead, which the tangent index and the
-  surrounding sentence already fix, so the index repeated the position in the
-  chain rather than saying which of the two angular conditions it is. The
-  settled chain reads
-  \(\theta_{\mathrm{offset},t_1}\to\theta_{\mathrm{ach},t_1}\to\gamma_{t_1}\),
-  in which the index of each symbol now names what the quantity is: configured,
-  achieved, response.
+  **The measured entry angle is \(\theta_{\mathrm{meas},t_1}\).** Instructed
+  2026-09-08. It replaces `\theta_{\mathrm{ach},t_1}` and the earlier
+  `\theta_{\mathrm{init},t_1}`; both spellings are withdrawn. The rotation
+  vector is \(\theta_{\mathrm{meas}}\). The prose name is `measured pose-based
+  angular offset`, and quantitative axes and table headings use
+  `Measured Angular Offset`.
 
-  **The prose name is unchanged.** It remains the `achieved pose-based initial
-  angular offset`, a quantitative axis remains `Achieved Initial Angular
-  Offset`, and the Table 4.4 condition column keeps its heading. Only the index
-  moved. Renaming the words as well would have reached the symbol-list
-  description, five figure axes and every sentence that introduces the quantity,
-  for a change the author asked of the notation alone.
+  **Omit `initial` from the measured angular-offset name.** Instructed
+  2026-09-08. Use `measured angular offset` in prose and `Measured Angular
+  Offset` in headings, tables, axes and legends, including the presentation.
+  `Pose-based` may qualify the measurement where its source matters. The
+  definition already fixes contact entry, so `initial` adds no distinction.
+  Keep \(\theta_{\mathrm{meas},t_1}\), its reference and its values unchanged.
 
-  The 2026-09-07 rename covered 35 occurrences: Chapters 4, 5 and 6, Appendix D,
-  the symbol list, six figure sources, and `make_figures.py` and
-  `make_coc_figures.py`. Both generators draw figures no chapter now includes,
-  so no committed PDF changed.
+  **Both angular quantities are measured; their references distinguish them.**
+  \(\theta_{\mathrm{meas},t_1}\) compares the calibrated tool normal at contact
+  entry with the inward configured surface normal \(-n_s\). The contact
+  response \(\gamma_{t_1}\) compares the measured end-effector orientations at
+  entry and end. Its rotation runs from end back to entry, opposite to the
+  start-to-end end-effector motion. The entry angle requires the calibrated
+  tool normal; the response does not. Neither is an independent measurement of
+  the physical tool--surface angle under load.
+  Section 6.2.2 keeps the same distinction: both reported components depend on
+  the robot pose measurement and configured surface frame, but only the entry
+  offset additionally depends on tool-normal calibration.
 
-  **\(\phi_0\) and \(u_0\) keep their \(0\).** They are the axis--angle pair
-  used to calculate the entry condition, a different quantity from the offset
-  itself, and the rename does not reach them.
+  **Show both quantities in one figure beside their definitions in Section
+  4.5.** The former Section 4.2 geometry figure moves there and incorporates the
+  sign convention. The entry orientation is solid; the contact-end orientation
+  is dashed. For the schematic rotation about \(t_1\), both lines depict
+  pose-based tool-face directions reconstructed using the same calibration.
+  Draw \(\theta_{\mathrm{meas},t_1}\) directly from the configured plane trace
+  to the entry line. For the schematic pure \(t_1\) rotation, this is equal to
+  the angle between \(-n_s\) and the entry normal. The definition remains the
+  three-dimensional rotation-vector component, not a projected line angle.
+  The \(\gamma_{t_1}\) arc runs from end to entry. The extra left-hand
+  entry-to-end rotation arc is removed; the figure shows only the two reported
+  quantities. The physical plate is not used as either angular reference.
+  Section 4.2 retains the
+  calibration procedures and refers to the apparatus figure for the
+  physical/configured distinction.
 
-  A quantitative experimental axis uses `Achieved Initial Angular Offset`
-  followed by \(\theta_{\mathrm{ach},t_1}\) and its unit. A table condition column uses
+  **Every experimental condition uses \(\theta_{\mathrm{meas},t_1}\), including
+  zero configured offset.** Instructed 2026-09-08. The total-angle notation
+  \(\phi_0\) and its axis \(u_0\) are withdrawn from the thesis. Figure 5.4,
+  Table 4.4, Chapter 5 and Appendix D all identify the zero-offset condition by
+  the same measured component about \(t_1\) as the other conditions. Its value
+  is \(0.69^\circ\), the mean of \(0.70^\circ\), \(0.68^\circ\) and
+  \(0.68^\circ\) in `P6_zero_p000/r01`--`r03`. These are the negatives of
+  `deviation_before_t1` in the authoritative experiment metrics and terminal
+  reports. The former \(0.74^\circ\) was a total-angle magnitude and must not
+  be relabelled as a tangent component. The response remains
+  \(-0.97\pm0.02^\circ\).
+
+  **Section 4.5 defines the measured entry rotation directly.**
+  \(\theta_{\mathrm{meas}}\) represents the shortest rotation from the inward
+  configured surface normal \(-n_s\) to the entry tool normal.
+  Its component is \(\theta_{\mathrm{meas},t_1}=t_1^\top\theta_{\mathrm{meas}}\).
+  The vector is zero when the directions coincide. This is the same component
+  calculation as before, with the rotation direction reversed before projection;
+  no experimental metric or response changes. The generic axis--angle symbols
+  \(\phi\) and \(u\), and the contact-response pair
+  \(\phi_{\mathrm{CE}}\), \(u_{\mathrm{CE}}\), retain their separate meanings.
+
+  A quantitative experimental axis uses `Measured Angular Offset`
+  followed by \(\theta_{\mathrm{meas},t_1}\) and its unit. A table condition column uses
   the same name. The configured offset may be stated
   where the pre-contact setting, parameter file, or direction-selection rule
-  is the subject. It is never substituted for the achieved entry condition.
+  is the subject. It is never substituted for the measured entry condition.
 
   **The angular evaluation uses the configured surface and measured
   end-effector pose.** In Chapters 1--5, state that
-  \(\theta_{\mathrm{ach},t_1}\) is the achieved pose-based initial angular offset
+  \(\theta_{\mathrm{meas},t_1}\) is the measured pose-based angular offset
   calculated relative to the configured surface reference. Do not introduce a symbol or equation
-  for a physical entry angle, and do not call \(\theta_{\mathrm{ach},t_1}\) a measured
+  for a physical entry angle, and do not call \(\theta_{\mathrm{meas},t_1}\) a measured
   physical angle. Section 6.2.2 carries the consolidated limitation: the
   physical surface normal and instantaneous tool--surface angle were not
   measured independently in each experiment.
@@ -1389,7 +1435,7 @@ circulation, the settled choices are:
   pre-contact offset and constructs \(n_d=R_{\mathrm{offset}}(-n_s)\).
   Chapter 4 explains how varying that setting supplied reproducible
   reference-relative entry conditions, then distinguishes it from the achieved
-  \(\theta_{\mathrm{ach},t_1}\). It states in words that the physical surface may differ
+  \(\theta_{\mathrm{meas},t_1}\). It states in words that the physical surface may differ
   from the configured reference by an unknown angular amount. No equation is
   introduced for that unmeasured relation.
 
@@ -1902,7 +1948,7 @@ misread.
 **Do not run this as a substitution.** Three families of index look like a
 base-frame index and are not: the base *axis* names \(e_{x_0}\),
 \(e_{y_0}\), \(e_{z_0}\), \(x_0\), \(y_0\), \(z_0\); the *initial*
-or *reference* values \(\phi_0\), \(u_0\),
+or *reference* values
 \(t_{\mathrm{app},0}\), \(\Delta q_{\mathrm{null},0}\); and
 \(p_{\mathrm{Tool},0}\), whose \(0\) is the zero of the
 contact-establishment coordinate \(s_{\mathrm{CE}}\), not a frame. The last
@@ -2580,7 +2626,7 @@ is longer, sets prose inside mathematics, and leaves the reader to check that
 it means the instant already defined a few lines above.
 
 **Say which quantities in a comparison are fixed.** Agreed 2026-09-02 for the
-achieved initial angular offset. \(n_s\) is the configured surface normal and
+measured angular offset. \(n_s\) is the configured surface normal and
 does not change during a trial, so the subsection states that it is fixed and
 is *not* a surface normal evaluated at \(t_{\mathrm{CE,start}}\), and that
 the time dependence enters through the measured tool orientation. Without that
@@ -2867,8 +2913,8 @@ Section by section, as executed:
   reintroduce a second case table.
 - **Experimental condition and response quantity.** Keep one
   input--condition--response chain: the configured pre-contact input
-  \(\theta_{\mathrm{offset},t_1}\) produces the achieved pose-based condition
-  \(\theta_{\mathrm{ach},t_1}\), and Contact Establishment produces the measured response
+  \(\theta_{\mathrm{offset},t_1}\) produces the measured pose-based condition
+  \(\theta_{\mathrm{meas},t_1}\), and Contact Establishment produces the measured response
   \(\gamma_{t_1}\). Appendix D retains the Case A--D numerical values.
   Define wrench projections locally beside the Case-D mechanism figure rather
   than as a separate methodology subsection. **Remove the mean and sample
@@ -2893,11 +2939,10 @@ motion quantity answers -- was the pose held, how much total redundant motion
 occurred, how much net motion remained -- before the integrals. The equations,
 tables and chapter order did not change.
 
-**The minus sign of Equation 4.2 is explained where it appears.** The rotation
-vector \(\phi_0u_0\) points from the achieved entry direction towards the
-inward configured surface normal, and \(\theta_{\mathrm{ach},t_1}\) is reported in the
-opposite direction so that it follows the same rotational direction as the
-configured offset. Section 4.5.1 states that before the equation. Section 4.5.2
+**The measured angular offset follows the configured rotational direction.**
+Section 4.5.1 defines \(\theta_{\mathrm{meas}}\) from the inward configured
+surface normal towards the entry tool normal, then projects it onto
+\(t_1\). Section 4.5.2
 carries the matching statement for \(\gamma_{t_1}\): it is formed from the
 measured end orientation back to the held entry orientation, so its direction
 is opposite to the start-to-end rotation of the end effector. Both belong in
@@ -2917,8 +2962,8 @@ Section 4.2.1 is `Surface-Reference Construction`, matching the row headings of
 Figure 4.2. The heading was shortened from `Configured Surface Reference,
 Physical Surface, and Tool Calibration` on 2026-09-01: a heading that lists
 three things is doing the opening paragraph's work, and the configured-against-
-physical distinction is stated there instead. Section 4.5 is `Initial Angular
-Condition and Contact Response`, replacing `Experimental Condition and Response
+physical distinction is stated there instead. Section 4.5 is `Measured Angular
+Offset and Contact Response`, replacing `Experimental Condition and Response
 Quantity`, which named neither the condition nor the response. The
 upper procedure records one seated pose and takes \(n_s\) from the nominal
 \(+Z_{\mathrm{EE}}\) axis, so it constructs a configured geometric reference
@@ -3052,7 +3097,7 @@ trajectory values.
 
 **Table 4.3 has only `Quantity` and `Value`; Table 4.4 has no `Evaluated
 effect` column.** The removed columns repeated explanations already carried by
-Chapter 3 or by each case name. Retain the achieved \(\theta_{\mathrm{ach},t_1}\) values
+Chapter 3 or by each case name. Retain the measured \(\theta_{\mathrm{meas},t_1}\) values
 in Table 4.4 because they are measured experimental conditions.
 
 **The \(s_{c,\max}\) row of Table 4.3 reads `Virtual press endpoint`.**
@@ -3242,10 +3287,7 @@ cut on 2026-08-27, and must not come back: repeated definitions of tool-fixed
 and surface-fixed, of the leading-feature rule, and of the general
 compliance-centre direction rule; second paragraphs generalising a result the
 sentence above already stated; and the mounting-play qualification, which
-Chapter 6 carries. What stays because the appendix is the only place it exists:
-the \(\sin\phi_0\) projection that explains why a
-\(40\,\mathrm{mm}\) tool-axis displacement gives under \(7\,\mathrm{mm}\) of
-tangential lever.
+Chapter 6 carries.
 
 **The shifted centre may be glossed as a virtual lever arm.** Agreed
 2026-09-02. Beside the formal decomposition \(m=m_R+r_c\times f\), write that
@@ -3255,19 +3297,6 @@ lever arm \(r_c\) relative to the TCP, which generates the additional moment
 a second claim, so it carries no measurement and needs no citation. Keep the
 `as if`: no physical lever exists, and the displacement is a control-law
 quantity rather than a tool geometry.
-
-**The projection is an effective lever arm, not a moment.** `The tangential
-projection \(\lVert r_{c,t}\rVert=\lVert r_c\rVert\sin\phi_0\) supplies
-the normal-press moment` was withdrawn on 2026-09-01: the projection determines
-the lever arm, and the cross product produces the moment. Write that only the
-tangential projection contributes to the moment generated by the commanded
-normal press, and that at \(\phi_0=9.30^\circ\) and
-\(\lVert r_c\rVert=40\,\mathrm{mm}\) the **effective tangential lever
-arm** is \(6.47\,\mathrm{mm}\), substantially smaller than the
-\(40\,\mathrm{mm}\) tangential displacement of Case~D. The initial-angular-offset table and plot, the direction plots, the TCP-height classification,
-and the pose-based alignment consistency check are withdrawn because they
-duplicate the main response relation or introduce secondary outcomes outside
-the main \(\gamma_{t_1}\) comparison.
 
 Appendix D is settled. Its structure is the exact numerical values behind
 Cases A--D.
@@ -3340,19 +3369,19 @@ were removed. Name the chain instead: `alignment angle calculated from the
 end-effector pose`, `end-effector-based alignment angle`, or `pose-based
 alignment angle`.
 
-### Separate the desired offset, achieved initial offset, and response
+### Separate the desired offset, measured angular offset, and response
 
 The orientation chain has three symbol families. \(\theta_{\mathrm{offset},t_i}\)
 is a component of the configured orientation offset about surface tangent
 \(t_i\). It defines the desired pre-contact tool direction during Tool
 Orientation and does not prescribe the rotation during Contact Establishment.
-The achieved pose-based initial angular offset \(\theta_{\mathrm{ach},t_1}\) is the
+The measured pose-based angular offset \(\theta_{\mathrm{meas},t_1}\) is the
 contact-entry condition relative to the configured surface reference. The
 contact response \(\gamma_{t_1}\) is the measured response about
 that tangent.
 
 The experiment tables and comparison figures identify their angular condition
-with \(\theta_{\mathrm{ach},t_1}\), not with \(\theta_{\mathrm{offset},t_1}\). The
+with \(\theta_{\mathrm{meas},t_1}\), not with \(\theta_{\mathrm{offset},t_1}\). The
 configured offset remains in the methodology as the controller input that
 generated this condition. A physical
 initial tool--surface error is not substituted for either quantity unless an
@@ -3374,8 +3403,8 @@ depends on. The attributive form is `parallel to the configured surface`.
 
 **The withdrawn phrase covered two different things, and they take different
 replacements.** Where it named the *direction* \(-n_s\) -- in the
-\(\phi_0\) construction of Section 4.5, in its symbol-list row, and in the
-definition of \(\theta_{\mathrm{ach},t_1}\) -- write `the inward configured surface
+\(\theta_{\mathrm{meas}}\) construction of Section 4.5, in its symbol-list row, and in the
+definition of \(\theta_{\mathrm{meas},t_1}\) -- write `the inward configured surface
 normal`, which is what \(-n_s\) is and is already fixed by
 \(n_d=-n_s\). Where it named the *alignment state* the end effector rotates
 towards, write `parallel alignment with the configured surface`. Substituting
@@ -3384,7 +3413,7 @@ a state rather than to a direction, which is not what the equation does. For a
 start-to-end end-effector rotation towards parallel alignment with the
 configured surface,
 \(\gamma_{t_1}\) points in the same surface-tangent direction as the achieved
-initial angular offset \(\theta_{\mathrm{ach},t_1}\), and
+angular offset \(\theta_{\mathrm{meas},t_1}\), and
 \(\lvert\gamma_{t_1}\rvert\) gives its size. The plus and minus symbols remain
 on equations and data values. Running prose uses `both directions of rotation`
 for an aggregate comparison and the named conditions above for a single one;
@@ -3399,13 +3428,13 @@ R_{\mathrm{EE}}^\top(t_{\mathrm{CE,end}})\), with the reported component
 \(R_{\mathrm{EE,clearance}}\) is the **orientation reference held through
 contact establishment** and equals
 \(R_{\mathrm{EE}}(t_{\mathrm{CE,start}})\), which is why the logged
-\(e_R\) is exactly zero there. The achieved initial angular offset is
+\(e_R\) is exactly zero there. The measured angular offset is
 calculated from the current end-effector pose, calibrated tool normal and
-configured surface reference, giving \(\theta_{\mathrm{ach},t_1}\). `extract_metrics.py`
+configured surface reference, giving \(\theta_{\mathrm{meas},t_1}\). `extract_metrics.py`
 reads the response \(\gamma_{t_1}\) from the final \(e_R\).
 
 **State the direction relation at the opening of Chapter 5, before any number
-depends on it.** The opening gives the relation between \(\theta_{\mathrm{ach},t_1}\),
+depends on it.** The opening gives the relation between \(\theta_{\mathrm{meas},t_1}\),
 \(\gamma_{t_1}\), and the corresponding start-to-end end-effector rotation,
 including the reason: \(\gamma_{t_1}\) is calculated from the measured end
 orientation back to the held entry reference, so its direction is opposite to
@@ -3446,8 +3475,8 @@ an independent physical tool-orientation measurement. Do not restore
 or their logger-only aliases as reported thesis quantities.
 
 **Each main surface-contact comparison changes one controller parameter and
-reports one response.** The achieved pose-based initial angular offset is
-\(\theta_{\mathrm{ach},t_1}\), and the response is the measured contact-establishment
+reports one response.** The measured pose-based angular offset is
+\(\theta_{\mathrm{meas},t_1}\), and the response is the measured contact-establishment
 rotation \(\gamma_{t_1}\). Chapter 5 table headings name the changed parameter
 directly and call the output `Measured contact rotation`; generic columns such as
 `Varied entry` and `Value` are not used. Subsection titles, captions, axes and
@@ -3462,7 +3491,7 @@ restore its table, count, or classification language. The physical face angle
 was not measured under load.
 
 **Do not write that a lever was insufficient to align the tool**, or that it
-`did not remove the full initial angular offset`. Both read as claims about the
+`did not remove the full angular offset`. Both read as claims about the
 physical tool face, whose orientation under load was not tracked. Report the
 measured contact response about \(t_1\) and do not add an
 inferred final physical alignment.
@@ -3530,7 +3559,7 @@ translation–rotation coupling: the same normal press produces a different
 after. If \(p_c\) lies on the relevant line of action the moment contribution
 becomes small or zero. Reversing a tangential displacement reverses the moment
 direction. Whether that moment supports correction depends on the direction of
-the achieved initial angular offset.
+the measured angular offset.
 
 Use `model-estimated external wrench` for
 `O_F_ext_hat_K`. Do not call it a directly measured wrench. A location derived
@@ -4000,32 +4029,6 @@ instantaneous opposing torque at identical joint configurations.
   supporting check is between
   \(\lVert r_c\rVert\) and \(\lVert r_{c,t}\rVert\).
 
-  **The tool-axis supporting check reuses the initial angular-offset magnitude \(\phi_0\)
-  before using the sine.** This is the shortest-rotation magnitude from the
-  calibrated tool normal to the inward surface-normal direction \(-n_s\),
-  already defined with the pose-based entry condition. Do not introduce a
-  second angle for the same offset magnitude. State that a tool-axis displacement
-  contains normal and tangential components, and use
-  \(\lVert r_{c,t}\rVert=\lVert r_c\rVert\sin\phi_0\). At the
-  outer setting, \(40\,\mathrm{mm}\) is the configured total tool-axis
-  displacement \(\lVert r_c\rVert\), whereas \(6.47\,\mathrm{mm}\) is its
-  tangential projection at the achieved pose-based \(9.30^\circ\) initial
-  angular-offset magnitude,
-  stated to two decimal places. Never present the projection as a second
-  configured CoC magnitude.
-
-  **The reference direction is \(-n_s\), not \(n_s\)**, and the earlier wording
-  `the angle between the tool axis and \(n_s\)` was corrected on 2026-08-25.
-  A flat tool axis points into the surface, so measured from \(n_s\) the
-  nominal angle is \(170^\circ\) rather than \(10^\circ\). The arithmetic
-  would survive that direction error because
-  \(\sin(180^\circ-\alpha)=\sin\alpha\). The same sine therefore follows from
-  either reading. State the geometry the zero-offset target already fixes —
-  \(n_d=-n_s\), further up this list — rather than one that
-  happens to give the same number. Say which controller input generated the
-  condition, but evaluate the projection with the achieved pose-based initial
-  angular-offset magnitude rather than the configured value.
-
   **\(r_c\times f_n=r_{c,t}\times f_n\) is the load-bearing result.** The
   normal component of the displacement drops out of the normal-press moment,
   so only the tangential part acts. State it in the theory and cite it in
@@ -4247,7 +4250,7 @@ It should state:
 
 - robot, tool, surface, and relevant software stack;
 - configured and physical plane definitions;
-- configured orientation offset and achieved pose-based initial angular offset;
+- configured orientation offset and measured pose-based angular offset;
 - fixed gains and swept variables;
 - phase durations;
 - repetitions;
@@ -4504,7 +4507,7 @@ appear.
 The synthesis is that \(p_c=p_{\mathrm{TCP}}\) provides the neutral fixed centre
 for the reported \(t_1\) study because it selects no tangential lever direction.
 A displaced centre produces a larger alignment response when its position is
-selected for the corresponding initial angular-offset direction.
+selected for the corresponding angular-offset direction.
 
 The design sequence that follows from this — start at the TCP, evaluate the
 required alignment, introduce a direction-selected shift where more authority
@@ -4521,7 +4524,7 @@ completed adaptive functionality.
 orientation: as long as a normal press is present and \(r_c\neq0\), a fixed
 tangential lever keeps commanding rotation in one direction, whether or not
 alignment has already been achieved. A lever selected for one direction of the
-initial angular offset therefore carries its preferred rotational direction
+angular offset therefore carries its preferred rotational direction
 into the steady contact afterwards.
 
 The defensible summary separates two regimes:
@@ -4757,6 +4760,11 @@ ones stated against a named reference condition: \(81.3\), \(115.1\),
 Chapter 5. A further value appears only where it carries a physically
 meaningful bound, such as the largest measured position error against its
 acceptance limit.
+
+**The null-space conclusion states changes as percentages.** Instructed
+2026-09-08. Replace the three absolute from--to motion comparisons in
+Section 6.1 with percentage changes relative to the first value in each pair.
+Retain the other numerical values and the surrounding interpretation.
 
 **The conclusion explains the mechanism before the numbers.** As supplied on
 2026-09-02, it opens on what shifting the centre does to the stiffness and

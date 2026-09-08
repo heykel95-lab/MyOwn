@@ -69,7 +69,10 @@ they override the greyscale conventions above wherever the two disagree:
 - **White is not a colour either.** Do not fill a shape white to hide what
   passes behind it; order the drawing so nothing needs hiding, and leave the
   shape unfilled.
-- **Physical quantities and measured series are solid.** A dashed line is
+- **Physical quantities and measured series are solid.** The explicit exception
+  is the Section 4.5 orientation-comparison schematic: the author requested a
+  dashed contact-end orientation to distinguish the two measurement instants.
+  Elsewhere, a dashed line is
   reserved for a configured, projected, modelled, or bounded reference when
   that distinction carries the meaning of the figure. Figure 1.1 therefore
   draws every physical or configured object solid -- the configured surface in
@@ -536,14 +539,43 @@ labels as well as the drawings, and shorten a panel label rather than spreading
 the panels further -- `(a) Rotations about the tangents` became
 `(a) Tangent rotations` on that ground.
 
-**The Chapter 4 surface-reference geometry keeps three orientations distinct.**
-The physical surface is blue, the configured surface reference is red, and the
-tool face at the start of Contact Establishment is dark green. The inner arc
-shows the achieved pose-based initial angular offset \(\theta_{\mathrm{ach},t_1}\), drawn from the
-configured reference to the achieved tool face. No angle is drawn from the
-physical surface, and no symbol is assigned to its unknown difference from the
-configured reference. The drawing is a principal-tangent cross-section and
-carries no numerical value.
+**The Chapter 4 angular-comparison figure shows entry and response together.**
+Instructed 2026-09-08. `surface_reference_geometry.tex` belongs beside the
+Section 4.5 definitions, not in the calibration section. It shows the configured
+reference in red, the pose-based contact-entry orientation in solid dark green,
+and the pose-based contact-end orientation in dashed blue. The dashed endpoint
+is the author's explicit exception to the solid-measurement rule above.
+
+**Draw the entry angle directly between the plane traces.** Revised
+2026-09-08 after the normal-arrow construction was found unclear. Three rays
+share one origin: the horizontal configured reference, the solid entry line,
+and the dashed end line. The outer red arc for
+\(\theta_{\mathrm{meas},t_1}\) spans the configured reference to entry. The
+inner blue arc for \(\gamma_{t_1}\) spans end back to entry. Each arc and its
+symbol use the colour of the reference that distinguishes the comparison.
+Label the measured instants \(t_{\mathrm{start}}\) and
+\(t_{\mathrm{end}}\) beside the respective lines. The separate left-hand
+`Entry-to-end rotation` arc is withdrawn at the author's request; show only
+the two reported quantities. Omit the extra normal arrows.
+
+For the schematic pure \(t_1\) rotation, the angle between the plane traces
+equals the angle between their normals, so the drawing preserves the
+Section 4.5.1 definition. This planar illustration does not replace the
+three-dimensional rotation-vector component calculation. The lines compare
+orientations, and their common origin is not a measured contact point. Both
+tool-face directions use the measured end-effector poses and the same
+calibrated tool normal, as the body text states. Keep the surface-frame inset;
+give no numerical angle and draw no physical plate.
+
+**Shared presentation figures stay in step with the final deck and its PDF.**
+Instructed 2026-09-08. The presentation is
+`Presentation_new/two/Thesis_Presentation_Final_Package/Thesis_Presentation_Final/Thesis_Presentation_Final.pptx`,
+with its matching `Thesis_Presentation_Final.pdf` in the same directory.
+Use the approved Figure 4.2 and current Figure 5.4 there. Whenever a shared
+figure changes, update its presentation asset and embedded picture, then
+automatically regenerate the presentation PDF in the same task. The exact
+paths, slide mapping and preview-copy workflow are recorded in
+[the presentation guide](../Presentation_new/PRESENTATION.md).
 
 **The Chapter 1 surface-entry concept figure is one first-reader cross-section.**
 It separates two contributions to the angular relation at surface entry, and
@@ -555,6 +587,15 @@ black dashed datum through the tool, and the dark-green tool face lies at a
 schematic angular difference from it, marked by a second black arc labelled
 `Desired--achieved difference`. The two labels are parallel in form because
 they name the two contributions the figure exists to separate.
+
+**Both angle arcs and their labels sit on the right.** Instructed 2026-09-08.
+The desired--achieved arc spans the right-hand rays of the tool face and its
+horizontal datum. The configured--physical arc spans the right-hand surface
+rays. Both arcs carry an arrowhead at each end and use the same radius.
+Align the two labels by their left edges in one column to the right of the
+geometry. The label-to-arc pointer arrows are withdrawn at the author's
+request; retain only the arrowheads on the angle arcs. Keep the labels clear
+of the object lines and the shared legend.
 
 **The tool face carries a short perpendicular tip.** Added 2026-09-07. It is
 drawn in the same green as the face, at the point the datum crosses it, and
@@ -745,37 +786,12 @@ Panel (b) draws the physical surface and its conceptual normal
 \(n_{\mathrm{phys}}\) separately from the configured surface reference and its
 frame \((t_1,n_s)\). It assigns no measured angle to the unknown difference.
 
-**The Chapter 4 sign-convention figure is a view along \(t_1\).** Added
-2026-09-02 at the opening of Section 4.5, where
-\(\theta_{\mathrm{offset},t_1}\), \(\theta_{\mathrm{ach},t_1}\) and
-\(\gamma_{t_1}\) are introduced together and all three take their sign from
-one rotational direction. It draws the surface-frame plane spanned by
-\(t_2\) and \(n_s\), \(t_1\) out of the page as a dotted circle, and one
-counter-clockwise arc named `Positive rotation`. Nothing else: no tool, no
-surface, no angle symbol and no numerical angle, since the figure fixes a
-direction rather than a magnitude.
-
-It is the complementary view to the surface frame of `reference_frames.tex`,
-which draws \(t_1\) and \(n_s\) in the plane of the page and \(t_2\) into
-it as a crossed circle. **The two must stay consistent**, and the check is
-\(t_1\times t_2=n_s\): with \(t_1\) out of the page and \(t_2\) to the
-right, \(n_s\) points up and a positive rotation runs counter-clockwise,
-taking \(t_2\) towards \(n_s\). A drawing that reverses either in-plane
-axis reverses the sign of every reported response.
-
-Two placement rules were settled by compiling it. The negative half-axes are
-drawn at about half the length of the positive ones, because the named
-directions and the rotation all lie in the upper half and full-length halves
-left the lower half empty while giving the \(t_1\) label a long vertical line
-to be read against — which made the symbol look like the name of that line
-rather than of the marker at its top. And the four axis halves are broken at
-\(0.30\) around a marker of radius \(0.15\), so that the diagonals stay
-free for the \(t_1\) label and the arc's name.
-
-**Figure 4.2 is the only calibration-related figure retained in Section 4.2.**
-It shows the distinction between the configured reference, the unmeasured
-physical surface and the contact-entry angle. The separate calibration
-flowchart is withdrawn because it duplicated the two procedure subsections.
+**The Section 4.5 angular comparison also gives the rotation sign.** Its
+surface-frame inset places \(t_2\) rightwards, \(n_s\) upwards and \(t_1\)
+out of the page as a dotted circle. Thus \(t_1\times t_2=n_s\), and positive
+rotation is anticlockwise. The separate sign-only figure is withdrawn. The
+calibration section has no separate geometry or flowchart figure; Figure 4.1
+already separates the physical plane from the configured reference.
 
 The upper selection block is named `Controller State`. Do not append `Logic`.
 Its outgoing arrows show its parameter-selection role without another word in
@@ -1116,7 +1132,7 @@ file name still carries its acquisition-campaign identifier:
 | `MAIN_B_KR.pdf` | Case B |
 | `MAIN_C_KP.pdf` | Case C |
 | `MAIN_D_sign.pdf`, `MAIN_D_wrench.pdf`, `MAIN_D_diagnostics.pdf` | Case D |
-| `MAIN_G_magnitude.pdf` | Supporting initial angular-offset magnitude check; retained file identifier |
+| `MAIN_G_magnitude.pdf` | Supporting angular-offset magnitude check; retained file identifier |
 | `MAIN_F_toolaxis.pdf` | Supporting tool-axis check; retained file identifier |
 | `MAIN_H_direction.pdf` | Withdrawn intermediate-direction check; retained archive identifier |
 | `MAIN_DQ_descent.pdf`, `MAIN_DQ_metric_comparison.pdf`, `MAIN_DQ_metric_summary.pdf` | Data quality |
@@ -1251,9 +1267,14 @@ writes a generated file names it, so regeneration must preserve this mapping.
   `Rotational Stiffness About \(t_1\), \(K_{R,t_1}\) [N m/rad]`,
   `Cross-Axis Translational Stiffness, \(K_{p,t_2}\) [N/m]`,
   `Tangential CoC Position, \(r_{c,t_2}\) [mm]`,
-  `Achieved Initial Angular Offset, \(\theta_{\mathrm{ach},t_1}\) [°]`,
+  `Measured Angular Offset, \(\theta_{\mathrm{meas},t_1}\) [°]`,
   `Commanded Normal Force, \(F_n\) [N]`,
   `Commanded TCP Moment About \(t_1\), \(M_{t_1}\) [N m]`.
+
+  **Omit `Initial` from the measured angular-offset label.** Instructed
+  2026-09-08. Use `Measured Angular Offset` on every axis and legend, in the
+  thesis and final presentation. Contact entry is fixed by the definition;
+  the symbol remains \(\theta_{\mathrm{meas},t_1}\).
 
   **Figure 5.5 uses the first form exactly on its upper axis.** `Set-Up
   Rotation About \(t_1\)` is withdrawn from the plot; the axis reads
@@ -1302,7 +1323,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
 - **A legend names the experimental condition, and gives its symbol and value
   where one exists:** `Descriptive Condition, Symbol = Value`. It never repeats
   the \(y\)-axis quantity and never carries a unit already on the axis.
-  Settled forms: `Achieved Initial Offset, \(\theta_{\mathrm{ach},t_1}=+9.32^\circ\)` for an
+  Settled forms: `Measured Angular Offset, \(\theta_{\mathrm{meas},t_1}=+9.32^\circ\)` for an
   achieved contact-entry condition; `Projected Damping, \(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\)`
   for a controller parameter; `CoC Position, \(r_{c,t_2}=40\,\mathrm{mm}\)`
   and `CoC at TCP, \(r_{c,t_2}=0\)` for a compliance-centre position. A bare
@@ -1323,7 +1344,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
   where the symbol alone would be cryptic, as in
   `Cumulative projected null-space motion \(E_N\) [°]`. The pass that applied
   this set the active contact axes to \(r_{c,t_2}\),
-  \(\gamma_{t_1}\), \(\theta_{\mathrm{ach},t_1}\), \(E_N\) and
+  \(\gamma_{t_1}\), \(\theta_{\mathrm{meas},t_1}\), \(E_N\) and
   \(\Delta\sigma_{\min}\). The pose-based appendix comparison
   uses descriptive labels instead of promoting its local quantities to the
   thesis-wide symbol list.
@@ -1357,20 +1378,13 @@ writes a generated file names it, so regeneration must preserve this mapping.
   axes, which the author prefers as they read. Do not invent a symbol to
   satisfy this rule.
 
-  **An axis that spans two quantities names both.** Instructed 2026-09-07 for
-  the Case-A bars, which previously kept prose alone under the rule above and
-  were its third example. Their three ticks carry two symbols: the zero-offset
-  column is reported by the magnitude \(\phi_0\), because residual components
-  about \(t_2\) remain in the achieved orientation and the \(t_1\) component
-  alone does not describe it, while the two directional columns carry
-  \(\theta_{\mathrm{ach},t_1}\). The axis therefore reads `Achieved Initial
-  Angular Offset, \(\phi_0\) and \(\theta_{\mathrm{ach},t_1}\) [°]`.
-
-  Naming both is what keeps the rule and the chapter in step. A single
-  \(\theta_{\mathrm{ach},t_1}\) would have matched the Case-B, Case-C and
-  Case-D axes exactly and labelled the first column with a symbol Section 5.2.1
-  explicitly says does not report it. This is not licence to invent a symbol:
-  both already exist, both are in the symbol list, and each tick prints its own.
+  **The Case-A bars use one measured angular component for all three conditions.**
+  Instructed 2026-09-08. The axis reads `Measured Angular Offset,
+  \(\theta_{\mathrm{meas},t_1}\) [°]`, and the ticks are \(0.69\), \(9.31\)
+  and \(-9.41\). The symbol and unit appear once, on the axis. The zero-offset
+  value is the mean measured component about \(t_1\) from the experiment data.
+  The earlier mixed axis using \(\phi_0\) and \(\theta_{\mathrm{meas},t_1}\)
+  is withdrawn, together with its total-angle tick of \(0.74^\circ\).
 
 ## A tall figure has to fit the page it is placed on
 

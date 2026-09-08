@@ -7,13 +7,8 @@ removed in the turn in which they are finished.
 
 The supplied Abstract and Kurzfassung of 2026-09-04 dropped three things the
 previous versions carried, and each needs a home in the body or a decision that
-it is not needed. Two remain open.
+it is not needed. One remains open.
 
-- The angular-evaluation basis: `The angular conditions were defined relative to
-  the configured surface geometry, and the contact response was calculated from
-  the measured end-effector orientations.` Chapter 4 defines this, so this is
-  probably already covered; confirm the wording there is explicit enough to
-  carry the claim alone.
 - The rotational-stiffness interval that produced the \(64\,\%\) reduction.
   Chapter 5 reports it; confirm the Conclusion still states it, since the
   Abstract no longer does.
@@ -57,27 +52,17 @@ Either repeat the campaign at \(5.0\,\mathrm{s}\) and re-derive the reported
 values, or decide that the stated value describes the controller as it now
 stands rather than the runs, and say which in Section 4.3.
 
-## Decide `signed` in Sections 3.2.5 and 4.5
+## Decide `signed` in Section 3.2.5
 
 `THESIS_WRITING_GUIDE.md` bans `signed` as a modifier in prose, headings,
-captions, axes and tables, on the ground that the defining equation and the
-displayed positive and negative values already establish the algebraic
-direction. Three uses stand against it, in two places.
-
-`chapters/04_experimental_setup_and_evaluation.tex` uses `signed component
-about \(t_1\)` twice in Section 4.5.1, once before Equation 4.3 and once
-after it. Write `component about \(t_1\)`. Not done because the passage is
-settled text and the change was not asked for; the new Figure 4.3 beside it now
-states the direction convention, which is what those two uses were reaching
-for.
-
-`chapters/03_software_implementation.tex` uses `signed distance` once in
-Section 3.2.5, in the sentence after Equation 3.18 supplied on 2026-09-04 and
-applied verbatim. `the distance of the desired tool point from this plane along
-the surface-normal direction` would satisfy both, since Equation 3.16 already
-gives the negative initial value and Equation 3.18 fixes the direction. The two
-places are one decision: keeping the word in one and dropping it in the other
-would leave the ban half applied.
+captions, axes and tables, because the equation and displayed values establish
+the algebraic direction. One supplied use remains in Section 3.2.5:
+`chapters/03_software_implementation.tex` says `signed distance` in the sentence
+after Equation 3.18, supplied on 2026-09-04 and applied verbatim.
+`the distance of the desired tool point from this plane along the
+surface-normal direction` would satisfy the rule, since Equation 3.16 gives the
+negative initial value and Equation 3.18 fixes the direction. The author must
+settle this supplied wording.
 
 ## Reconcile the Chapter 3 state subscripts with the settled `CE` convention
 
@@ -393,8 +378,8 @@ This is the same collision the withdrawn axis--angle construction had with
 \(\phi\), and it has the same smallest fix: an index. \(u_\theta\) is
 withdrawn by name in `THESIS_WRITING_GUIDE.md` and would have to be un-withdrawn
 to be used, so \(u_t\) for the tangent-plane direction is the free candidate.
-Every other axis or direction in the thesis is indexed that way -- \(u_0\) in
-Section 4.5, \(u_{\mathrm{CE}}\) in Chapter 3, \(u_{\mathrm{offset}}\) in
+The other rotation axes are indexed that way --
+\(u_{\mathrm{CE}}\) in Chapter 3, \(u_{\mathrm{offset}}\) in
 Section 3.2.2 -- and the bare \(u\) belongs to the generic axis--angle
 construction of Section 2.3. Two files change:
 `chapters/02_theoretical_background.tex`, in Equations 2.54 to 2.58 and the

@@ -75,7 +75,7 @@ ALIGNMENT_IMPROVEMENT_LABEL = (
     r"$\theta_{\mathrm{initial}}-\theta_{\mathrm{final}}$ [$^\circ$]"
 )
 INITIAL_MISALIGNMENT_LABEL = (
-    r"Achieved initial angular offset $\theta_{\mathrm{ach},t_i}$ [$^\circ$]"
+    r"Measured angular offset $\theta_{\mathrm{meas},t_i}$ [$^\circ$]"
 )
 FINAL_MISALIGNMENT_LABEL = (
     r"Final misalignment $\theta_{\mathrm{final}}$ [$^\circ$]"
@@ -957,7 +957,7 @@ def fig_plane_validation(rows):
                 markeredgewidth=1.1,
             )
 
-    axes[0].set_ylabel("measured initial error [deg]")
+    axes[0].set_ylabel("measured angular offset [deg]")
     axes[1].set_ylabel("residual after contact establishment [deg]")
     for ax in axes:
         ax.set_xticks(x_base)

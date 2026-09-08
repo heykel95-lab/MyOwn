@@ -47,7 +47,7 @@ ROTATION_LABEL = ("Contact Response,\n"
 BAR_FILL_BLUE = SERIES_BLUE
 
 # The four groups of the sweep, in the order they are drawn. Their legend
-# labels name the achieved pose-based initial condition.
+# labels name the measured pose-based angular condition.
 GROUPS = [
     ("P2_t1_pos", "t1"),
     ("P2_t1_neg", "t1"),
@@ -98,17 +98,17 @@ def tag(position):
 
 
 def initial_deviation_label(groups, runs, axis, linebreak=False):
-    """Name a series by its mean achieved pose-based initial angular offset."""
+    """Name a series by its mean measured pose-based angular offset."""
     separator = "\n" if linebreak else " "
     tangent = "t_1" if axis == "t1" else "t_2"
     key = f"deviation_before_{axis}"
     values = [stat(groups, run, key)[0] for run in runs
               if stat(groups, run, key) is not None]
     if not values:
-        return f"Achieved Initial Offset About ${tangent}$"
+        return f"Measured Angular Offset About ${tangent}$"
     value = -statistics.mean(values)
-    return (f"Achieved Initial Offset,{separator}"
-            f"$\\theta_{{0,{tangent}}}={value:+.2f}^\\circ$")
+    return (f"Measured Angular Offset,{separator}"
+            f"$\\theta_{{\\mathrm{{meas}},{tangent}}}={value:+.2f}^\\circ$")
 
 
 def stiffness_label(case, axis, groups, runs):
@@ -131,7 +131,7 @@ def stiffness_label(case, axis, groups, runs):
                  if high - low < 0.005
                  else f"{low:.2f}\\text{{--}}{high:.2f}")
         return (f"About ${tangent}$, ${entry}$\n"
-                f"$\\theta_{{0,{tangent}}}={angle}^\\circ$")
+                f"$\\theta_{{\\mathrm{{meas}},{tangent}}}={angle}^\\circ$")
     return f"About ${tangent}$, ${entry}$"
 
 
@@ -281,7 +281,7 @@ def main():
     draw_sweep(entries, "Signed tangential CoC position [mm]",
                out("MAIN_E_sign.pdf"), figsize=(5.8, 3.8), top_headroom=0.45)
 
-    # F -- reported frame-definition comparison at two achieved entry angles.
+    # F -- reported frame-definition comparison at two measured entry angles.
     commands = [r"$+0.76^\circ$", r"$+9.30^\circ$ about $t_1$"]
     tool = np.array([-0.06, 7.87])
     tool_sd = np.array([0.01, 0.01])
@@ -298,7 +298,7 @@ def main():
     reference_line(ax)
     ax.set_xticks(x)
     ax.set_xticklabels(commands)
-    ax.set_xlabel(r"Achieved Initial Angular Offset, $\theta_{\mathrm{ach},t_1}$ [$^\circ$]")
+    ax.set_xlabel(r"Measured Angular Offset, $\theta_{\mathrm{meas},t_1}$ [$^\circ$]")
     ax.set_ylabel("Contact Response About $t_1$,\n"
                   r"$\gamma_{t_1}$ [$^\circ$]")
     ax.legend(loc="upper left")
