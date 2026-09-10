@@ -4919,7 +4919,9 @@ and state what each would improve.
 second priority is`, `The third priority is` was withdrawn on 2026-09-01: three
 paragraphs opening on the same frame is the templating that *The templated
 section* rules against, and the ordinal asserts a ranking the thesis does not
-defend. Give each retained proposal its own paragraph opening on its subject.
+defend. The supplied replacement of 2026-09-10 combines the two retained
+proposals in one paragraph, beginning with `For future work,` in regular text.
+The author explicitly removed bold emphasis from this opening.
 
 **Future Work retains tool mounting and adaptive compliance-centre selection.**
 Instructed 2026-09-10. Keep the proposal for a more rigid tool mount to improve
@@ -4929,6 +4931,12 @@ projected-damping and singular-value-conditioning study are withdrawn, together
 with the associated parameter-tuning and conditioning-law follow-ups. Do not
 restore these proposals because their measurement limitations remain in
 Section 6.2. A limitation does not require a corresponding future-work proposal.
+
+The replacement supplied later on 2026-09-10 states the tool-mount improvement
+first, then the adaptive sequence: begin at the TCP, determine the angular-offset
+direction, temporarily displace the CoC, and return it to the TCP after
+alignment. Preserve the supplied wording and its single-paragraph form. The
+closing proposal to evaluate further tangent-plane directions is withdrawn.
 
 Items in a bulleted or numbered list begin with a capital letter and are
 written as complete statements. Do not continue a lead-in sentence across the
