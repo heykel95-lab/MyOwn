@@ -339,14 +339,6 @@ Decide whether to restore a bound. One sentence in Section 6.2.4 would do it,
 or a fourth paragraph in Section 6.3. The alternative is to soften the claim
 itself in both places, which touches the Abstract and the Kurzfassung together.
 
-## Follow-on physical-angle measurement
-
-The reported logs define the contact-entry angle relative to the configured
-surface reference. They do not contain an independently measured physical plane
-normal or the tool face's motion relative to the end effector under load. A
-follow-on experiment must record both before a run-wise physical tool--surface
-angle can be evaluated.
-
 ## Confirm two supplied sentences in Section 5.1
 
 The four rule crossings logged on 2026-09-06 were settled by the author the

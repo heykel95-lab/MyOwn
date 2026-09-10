@@ -543,9 +543,8 @@ uses the \(t_1\) data set, which provided repeatable comparisons, whereas the
 \(t_2\) measurements showed greater variability. Section 6.2.2 gives the full
 limitation and may identify tool-mount play about \(y_{\mathrm{EE}}\),
 approximately aligned with \(t_2\), as one possible contributor. Future Work
-calls for repeating the evaluation with improved tool constraint and an
-independent physical-orientation measurement; it does not repeat the full
-limitation.
+calls for improving the tool constraint to support evaluation about \(t_2\);
+it does not repeat the full limitation.
 
 Chapter 5 carries one comparison figure for each main case and retains the
 Case-D commanded-wrench mechanism figure. It does not repeat those plots as
@@ -3729,8 +3728,7 @@ never as having `quantified the greater switching activity`. Describe the
 switching as the mechanism the controller implements, and the cumulative motion
 as the measurement consistent with it. The defensible finding is a parameter selection:
 \(k_\sigma=1.5\,\mathrm{N\,m}\) gave the same suppression of net
-displacement with substantially less redundant motion, and a smoother
-conditioning law is future work rather than a retrofit to these experiments.
+displacement with substantially less redundant motion.
 
 **The comparison is between complete modes, not isolated torques.** Because the
 conditioning torque was active before the disturbance, the sigma-only trials
@@ -4485,6 +4483,31 @@ experiment with a configured orientation offset about \(t_2\). The symbol
 where it denotes the second surface-frame axis or the perpendicular coordinate
 of a \(t_1\) experiment, including \(K_{p,t_2}\) and \(r_{c,t_2}\).
 
+Reaffirmed 2026-09-10: the tool-mount limitation keeps the archived
+\(t_2\)-offset trials outside the reported study. Do not restore them to add a
+\(K_{p,t_1}\) series beside Case C. The archived `B_trans_t2_*` trials vary
+\(K_{p,t_1}\) with an offset about \(t_2\); they do not supply a stiffness
+comparison under the retained \(t_1\) offset. Any added \(K_{p,t_1}\)
+comparison must use the same \(t_1\)-offset condition and otherwise matched
+settings. The present \(K_{p,t_2}\) result does not establish that
+\(K_{p,t_1}\) has no influence. Keep the mounting explanation within the
+evidence bounds stated for Section 6.2.2 above.
+
+Retain Case C as the variation of \(K_{p,t_2}\) under the positive
+\(t_1\)-offset condition. The author narrowed this edit on 2026-09-10 to
+one short explanation beside the Case-C description in Chapter 4. Explain
+the choice of \(K_{p,t_2}\) through the tangential motion associated with
+end-effector rotation about \(t_1\). State this as the experimental selection
+rationale, without claiming a measured translation or that \(K_{p,t_1}\)
+is irrelevant. The broader plan to revise the summaries, results, conclusion
+and limitations is withdrawn; no additional experiment is part of this edit.
+
+The Case-C explanation concerns tangential compliance and its influence on the
+angular contact response. Lower stiffness gives less restoring force for the
+same tangential position error. Do not describe this as measured contact slip:
+tangential end-effector motion can accompany rotation while contact sticks.
+Use the same distinction in the final presentation narration.
+
 ### What the contact study is investigating, and in which order
 
 The contact chapters are built on one open question, stated in running text and
@@ -4889,28 +4912,23 @@ reading a catalogue.
 
 **Prioritise Future Work; do not mirror the limitations one for one.** Deriving
 exactly one proposed experiment from each limitation produces a complete,
-evenly weighted list that reads as generated. State the three extensions
-considered most important, each with the question it would settle, then cover
-the remainder briefly in a single paragraph.
+evenly weighted list that reads as generated. Keep only the selected extensions
+and state what each would improve.
 
 **Do not number the priorities in the prose.** `The first priority is`, `The
 second priority is`, `The third priority is` was withdrawn on 2026-09-01: three
 paragraphs opening on the same frame is the templating that *The templated
 section* rules against, and the ordinal asserts a ranking the thesis does not
-defend. Name the three areas in one lead-in sentence, then give each its own
-paragraph opening on its subject.
+defend. Give each retained proposal its own paragraph opening on its subject.
 
-**Every limitation with a practical next step gets one.** Section 6.2.4 records
-that worst-case execution time and scheduling jitter were not measured, and
-that the assembled command carried no application-side saturation or
-torque-rate limiter. Future Work carries the corresponding paragraph: measure
-callback execution time and jitter at \(1\,\mathrm{kHz}\), and implement
-and evaluate a final saturation and rate-limiting stage alongside the
-robot-side monitoring. This is not a reversal of the rule above, which forbids
-a mechanical one-to-one mirror, not the inclusion of a real next step. For this thesis the three are a
-repeated \(t_2\) and additional tangent-plane evaluation with improved tool
-constraint, independent measurement of the tool-face angle, and a combined-mode
-null-space study with a physical disturbance.
+**Future Work retains tool mounting and adaptive compliance-centre selection.**
+Instructed 2026-09-10. Keep the proposal for a more rigid tool mount to improve
+evaluation about \(t_2\), followed by the adaptive compliance-centre strategy.
+The direct physical tool--surface angle measurement proposal and the combined
+projected-damping and singular-value-conditioning study are withdrawn, together
+with the associated parameter-tuning and conditioning-law follow-ups. Do not
+restore these proposals because their measurement limitations remain in
+Section 6.2. A limitation does not require a corresponding future-work proposal.
 
 Items in a bulleted or numbered list begin with a capital letter and are
 written as complete statements. Do not continue a lead-in sentence across the
