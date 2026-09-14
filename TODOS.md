@@ -13,12 +13,6 @@ it is not needed. One remains open.
   Chapter 5 reports it; confirm the Conclusion still states it, since the
   Abstract no longer does.
 
-The third is settled: Cartesian position retention left both
-summaries on 2026-09-05, and Section 5.2.2 was checked the same day — it
-carries \(0.889\) and \(0.983\,\mathrm{mm}\), the largest value of
-\(1.304\,\mathrm{mm}\), and the \(2\,\mathrm{mm}\) limit. Nothing was lost with
-the sentence.
-
 ## Remove the duplicate TCP expansion in Chapter 2
 
 `chapters/02_theoretical_background.tex:760` spells out `tool centre point
@@ -111,25 +105,6 @@ Nothing is broken while they stay withdrawn. Copying `metrics.csv` alone would
 restore most of them for the cost of a small file, and is worth doing if any of
 those figures is brought back. Preserve `MyController`'s calibration exclusion
 in anything further that is copied.
-
-## Decide whether the null-space figure should print its minus sign
-
-`make_figures.py` sets no `axes.unicode_minus`, unlike `figure_style.py`, which
-sets it `False` and explains why: the serif faces carry no U+2212, and a
-Type-42 subset then embeds a glyph the viewer cannot draw, so the sign
-disappears. `make_nullspace_figure.py` imports the former and its
-`_net_value_label()` writes U+2212 deliberately. The committed
-`MAIN_NS_nullspace_automatic.pdf` therefore prints the last bar of panel (c) as
-`0.006`, with the sign present in the text layer and absent from the drawing.
-Section 5.5 is written against that rendering: `the measured net displacement
-was negative, so its absolute value was 0.006`. The figure and the sentence
-agree as they stand, so nothing is wrong in the submitted document.
-
-Two ways to close it, and neither is free. Set `axes.unicode_minus = False` in
-`make_figures.py` and regenerate, which prints `-0.006` and lets the sentence
-report the signed value directly; or leave both and keep the workaround. The
-first changes a Chapter 5 figure and the text beside it, so it is not a
-tidying edit. Not done because it is an editorial decision, not a defect.
 
 ## Verify the controller on the lab machine
 

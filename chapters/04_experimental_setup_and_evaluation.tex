@@ -602,7 +602,7 @@ repeatable virtual disturbance.
 \subsection{Experimental Configuration}
 \label{subsec:nullspace_pose_hold_configuration}
 
-The pose-hold controller captured and maintained the initial TCP pose with
+The initial TCP pose was captured as the hold reference. The controller used
 the stiffness and damping of \Cref{tab:experimental_hold_gains}. The
 translational and rotational matrices were isotropic, so each matrix is the
 stated scalar value multiplied by the \(3\times3\) identity matrix. All
@@ -738,10 +738,14 @@ disturbance interval.
 \subsection{Evaluation Quantities}
 
 All quantities in this subsection are evaluated over the interval in which
-the virtual disturbance acts, \(t\in[5,9]\,\mathrm{s}\). The null-space
+the virtual disturbance acts, \(t\in[5,9]\,\mathrm{s}\). For the time-history
+plots, elapsed time from disturbance onset is \(t_d=t-5\,\mathrm{s}\),
+so the evaluated interval is displayed from \(0\) to \(4\,\mathrm{s}\).
+
+The null-space
 controller is intended to modify the redundant joint configuration while
-preserving the Cartesian pose. The Cartesian position error therefore verifies
-that this primary task remains effectively unchanged during the disturbance. A
+preserving the Cartesian pose. The Cartesian position error evaluates
+TCP position retention during the disturbance. A
 deviation below \(2\,\mathrm{mm}\) is treated as acceptable position
 retention, so a trial satisfies the criterion when
 
@@ -828,12 +832,20 @@ Projection onto \(v_{\mathrm{ref}}\) gives a common directional comparison acros
 tested settings. The unit of \(\Delta\eta\) is radians, and the values are
 expressed in degrees, as for \(E_N\).
 
-The singular-value change evaluates how the conditioning indicator
-\(\sigma_{\min}\) moves during the virtual disturbance alone. The selected
-null-space law was active from the start of every pose-hold trial. Taken on its
-own, \(\sigma_{\min}(9\,\mathrm{s})\) would therefore also carry the
-configuration reached during the preceding settling interval. Referencing it to
-the value at the start of the disturbance gives the change over that interval,
+The conditioning indicator \(\sigma_{\min}(t)\) was evaluated throughout
+the disturbance interval. Its time history shows how the local Jacobian
+conditioning changes while the disturbance acts. Each trial was also
+characterised by its lowest value over the interval,
+\[
+\min_{5\,\mathrm{s}\leq t\leq9\,\mathrm{s}}\sigma_{\min}(t).
+\]
+The minimum is calculated for each trial before the three-trial mean and
+sample standard deviation are formed.
+
+The selected null-space law was active from the start of every pose-hold trial.
+The trajectories therefore begin from the configuration reached during the
+preceding settling interval. The singular-value change
+\(\Delta\sigma_{\min}\) compares the two disturbance endpoints,
 
 \begin{equation}
 \Delta\sigma_{\min}

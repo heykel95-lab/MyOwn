@@ -2,7 +2,8 @@
 """Summarise and plot the final automatic Case-F null-space experiment.
 
 The point force is generated inside the controller, so this analysis uses the
-logged disturbance scale rather than a cue time to define the driven interval.
+fixed recorded interval from 5 to 9 s for every reported metric.
+The plot displays this interval as 0 to 4 s after disturbance onset.
 It writes both the small derived table used by the thesis and a vector PDF.
 
 The final campaign uses the clean 20 N, +200 mm records acquired after the
@@ -27,7 +28,6 @@ from make_figures import (  # noqa: E402
     SERIES_RED,
     SERIES_BLUE,
     SERIES_YELLOW,
-    save,
 )
 
 
@@ -42,6 +42,9 @@ EXP = (os.path.join(_PARENT, "experiments")
        else _PARENT)
 RESULTS = os.path.join(EXP, "results")
 SUMMARY = os.path.join(EXP, "derived", "MAIN_NS_automatic_summary.csv")
+
+EVAL_START_S = 5.0
+EVAL_END_S = 9.0
 
 CONDITIONS = (
     ("MAIN_NS7_baseline_20N_200mm", "damping", 0.0),
@@ -74,14 +77,22 @@ def read_run(run_dir):
     data = {name: np.array([_float(row, name) for row in rows])
             for name in names}
 
+    if any(not np.all(np.isfinite(values)) for values in data.values()):
+        raise ValueError(f"non-finite analysis input in {path}")
     time = data["time"]
-    scale = data["disturbance_scale"]
-    active = scale > 1.0e-3
-    if not np.any(active):
-        raise ValueError(f"no automatic disturbance in {path}")
-
-    first, last = np.flatnonzero(active)[[0, -1]]
+    if len(time) < 2 or np.any(np.diff(time) <= 0.0):
+        raise ValueError(f"timestamps must be strictly increasing in {path}")
+    window = (time >= EVAL_START_S) & (time <= EVAL_END_S)
+    indices = np.flatnonzero(window)
+    if (len(indices) < 2
+            or not np.isclose(time[indices[0]], EVAL_START_S, rtol=0, atol=1e-9)
+            or not np.isclose(time[indices[-1]], EVAL_END_S, rtol=0, atol=1e-9)):
+        raise ValueError(f"recorded 5 and 9 s endpoints are required in {path}")
+    first, last = indices[[0, -1]]
     driven = slice(first, last + 1)
+    active = (data["disturbance_scale"] > 1.0e-3) & window
+    if not np.any(active):
+        raise ValueError(f"no automatic disturbance in 5 to 9 s in {path}")
     t_driven = time[driven]
     speed = np.abs(data["nullspace_speed"][driven])
     dt = np.diff(t_driven)
@@ -108,19 +119,23 @@ def read_run(run_dir):
 
     return {
         "run_dir": run_dir,
-        "relative_time": t_driven - t_driven[0],
+        "relative_time": t_driven - EVAL_START_S,
+        "sigma_trace": data["sigma_current"][driven].copy(),
+        "sigma_start": float(data["sigma_current"][first]),
+        "sigma_end": float(data["sigma_current"][last]),
+        "sigma_minimum": float(np.min(data["sigma_current"][driven])),
         "cumulative_excursion": cumulative,
         "excursion_rad": float(cumulative[-1]),
         "net_vector_rad": net_vector,
-        "sigma_gain": float(data["sigma_current"][-1]
-                            - data["sigma_current"][0]),
-        "task_error_peak_mm": float(np.max(task_error_mm)),
-        "force_peak_N": float(np.max(force)),
-        "disturbance_tau_peak_Nm": float(np.max(tau)),
+        "sigma_gain": float(data["sigma_current"][last]
+                            - data["sigma_current"][first]),
+        "task_error_peak_mm": float(np.max(task_error_mm[driven])),
+        "force_peak_N": float(np.max(force[driven])),
+        "disturbance_tau_peak_Nm": float(np.max(tau[driven])),
         "torque_scale_min": float(np.min(
             data["disturbance_torque_scale"][active])),
         "nullspace_speed_peak_rad_s": float(np.max(
-            np.abs(data["nullspace_speed"]))),
+            np.abs(data["nullspace_speed"][driven]))),
     }
 
 
@@ -169,6 +184,9 @@ def write_summary(groups):
         "run_id", "study", "gain", "n", "provenance_status",
         "excursion_mean_rad", "excursion_sd_rad",
         "net_displacement_mean_rad", "net_displacement_sd_rad",
+        "sigma_start_mean", "sigma_start_sd",
+        "sigma_end_mean", "sigma_end_sd",
+        "sigma_minimum_mean", "sigma_minimum_sd", "sigma_minimum_min",
         "sigma_gain_mean",
         "sigma_gain_sd", "task_error_peak_mean_mm",
         "task_error_peak_sd_mm", "task_error_peak_max_mm",
@@ -198,6 +216,13 @@ def write_summary(groups):
                 "net_displacement_mean_rad": f"{np.mean(net):.9g}",
                 "net_displacement_sd_rad": (f"{sample_sd(net):.9g}"
                                             if len(runs) > 1 else ""),
+                "sigma_start_mean": f"{np.mean(values('sigma_start')):.12g}",
+                "sigma_start_sd": f"{sample_sd(values('sigma_start')):.9g}",
+                "sigma_end_mean": f"{np.mean(values('sigma_end')):.12g}",
+                "sigma_end_sd": f"{sample_sd(values('sigma_end')):.9g}",
+                "sigma_minimum_mean": f"{np.mean(values('sigma_minimum')):.12g}",
+                "sigma_minimum_sd": f"{sample_sd(values('sigma_minimum')):.9g}",
+                "sigma_minimum_min": f"{np.min(values('sigma_minimum')):.12g}",
                 "sigma_gain_mean": f"{np.mean(sigma):.9g}",
                 "sigma_gain_sd": (f"{sample_sd(sigma):.9g}"
                                   if len(runs) > 1 else ""),
@@ -216,10 +241,19 @@ def write_summary(groups):
 
 
 def damping_panel(ax, groups):
+    """Compare cumulative projected motion for all four null-space settings."""
     colours = (SERIES_BLACK, SERIES_RED, SERIES_BLUE, SERIES_YELLOW)
-    damping = [group for group in groups if group["study"] == "damping"]
-    common_t = np.linspace(0.0, 4.0, 161)
-    for group, colour in zip(damping, colours):
+    markers = ("o", "s", "^", "D")
+    labels = ("No Null-Space Torque",
+              r"Projected Damping, $d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}$",
+              r"Conditioning, $k_\sigma=1.5\,\mathrm{N\,m}$",
+              r"Conditioning, $k_\sigma=2.0\,\mathrm{N\,m}$")
+    common_t = np.linspace(0.0, EVAL_END_S - EVAL_START_S, 161)
+    for group, colour, marker, label in zip(groups, colours, markers, labels):
+        for run in group["runs"]:
+            if (common_t[0] < run["relative_time"][0]
+                    or common_t[-1] > run["relative_time"][-1]):
+                raise ValueError("plotting grid extends beyond recorded data")
         curves = np.vstack([
             np.interp(common_t, run["relative_time"],
                       run["cumulative_excursion"])
@@ -228,22 +262,14 @@ def damping_panel(ax, groups):
         mean = np.mean(curves, axis=0)
         sd = (np.std(curves, axis=0, ddof=1)
               if curves.shape[0] > 1 else np.zeros_like(mean))
-        # Legend: descriptive condition, then symbol = value.
-        gain = group["gain"]
-        if gain == 0.0:
-            label = (r"No Null-Space Damping, "
-                     r"$d_{\mathrm{null}}=0$")
-        else:
-            label = (r"Projected Damping, "
-                     rf"$d_{{\mathrm{{null}}}}={gain:g}"
-                     r"\,\mathrm{N\,m\,s/rad}$")
-        ax.plot(common_t, mean, color=colour, marker="o", markevery=40,
+        ax.plot(common_t, mean, color=colour, marker=marker, markevery=40,
                 linewidth=1.25,
                 markerfacecolor="white", markeredgecolor=colour,
                 markeredgewidth=1.1, label=label)
         ax.fill_between(common_t, mean - sd, mean + sd, color=colour,
                         alpha=0.10, linewidth=0)
-    ax.set_xlabel(r"Time, $t$ [s]")
+    ax.set_xlabel(r"Time After Disturbance Onset, $t_d$ [s]")
+    ax.set_xlim(0.0, EVAL_END_S - EVAL_START_S)
     ax.set_ylabel(
         "Cumulative Projected\n"
         r"Null-Space Motion, $E_N$ [$^\circ$]"
@@ -251,95 +277,64 @@ def damping_panel(ax, groups):
     ax.text(0.99, 0.03, "(a)", transform=ax.transAxes,
             ha="right", va="bottom")
     ax.margins(y=0.12)
-    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.30), ncol=2,
+    handles, legend_labels = ax.get_legend_handles_labels()
+    # Matplotlib fills legend columns first. Reorder only the legend so its
+    # two rows read no torque / damping, then the two conditioning settings.
+    order = (0, 2, 1, 3)
+    ax.legend([handles[i] for i in order], [legend_labels[i] for i in order],
+              loc="upper center", bbox_to_anchor=(0.5, -0.30), ncol=2,
               frameon=False, fontsize=8.5, handlelength=1.7,
               columnspacing=2.0, borderaxespad=0.0)
-    return ax.get_legend_handles_labels()
+    return handles, legend_labels
 
 
 def sigma_panel(ax, groups):
-    sigma_groups = [group for group in groups if group["study"] == "sigma"]
-    gains = np.array([group["gain"] for group in sigma_groups])
-    sigma_means = np.array([
-        np.mean([run["sigma_gain"] for run in group["runs"]])
-        for group in sigma_groups
-    ])
-    sigma_sd = np.array([
-        sample_sd([run["sigma_gain"] for run in group["runs"]])
-        for group in sigma_groups
-    ])
-    task_means = np.array([
-        np.mean([run["task_error_peak_mm"] for run in group["runs"]])
-        for group in sigma_groups
-    ])
-    task_sd = np.array([
-        sample_sd([run["task_error_peak_mm"] for run in group["runs"]])
-        for group in sigma_groups
-    ])
+    """Plot minimum-singular-value histories for the four settings."""
+    position = ax.get_position()
+    common_t = np.linspace(0.0, EVAL_END_S - EVAL_START_S, 401)
+    colours = (SERIES_BLACK, SERIES_RED, SERIES_BLUE, SERIES_YELLOW)
+    markers = ("o", "s", "^", "D")
+    labels = ("No Null-Space Torque",
+              r"Projected Damping, $d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}$",
+              r"Conditioning, $k_\sigma=1.5\,\mathrm{N\,m}$",
+              r"Conditioning, $k_\sigma=2.0\,\mathrm{N\,m}$")
+    for index, (group, colour, marker, label) in enumerate(
+            zip(groups, colours, markers, labels)):
+        curves = []
+        for run in group["runs"]:
+            if (common_t[0] < run["relative_time"][0]
+                    or common_t[-1] > run["relative_time"][-1]):
+                raise ValueError("plotting grid extends beyond recorded data")
+            curves.append(np.interp(common_t, run["relative_time"],
+                                    run["sigma_trace"]))
+        curves = np.vstack(curves)
+        mean = np.mean(curves, axis=0)
+        sd = np.std(curves, axis=0, ddof=1)
+        # Different marker times keep the nearly coincident conditioning
+        # traces identifiable without shifting the measured values.
+        ax.plot(common_t, mean, color=colour, marker=marker,
+                markevery=(50 if index == 3 else 0, 100), markersize=4.5,
+                markerfacecolor="white", markeredgecolor=colour,
+                markeredgewidth=1.0, linewidth=1.25, label=label)
+        ax.fill_between(common_t, mean-sd, mean+sd, color=colour,
+                        alpha=0.12, linewidth=0)
+    ax.set_xlim(0.0, EVAL_END_S - EVAL_START_S)
+    ax.set_xticks(np.arange(5))
+    ax.ticklabel_format(axis="y", style="plain", useOffset=False)
+    ax.set_xlabel(r"Time After Disturbance Onset, $t_d$ [s]")
+    ax.set_ylabel("Minimum Singular\n" + r"Value, $\sigma_{\min}$ [-]")
+    ax.margins(y=0.13)
+    ax.text(0.02, 0.03, "(b)", transform=ax.transAxes,
+            ha="left", va="bottom")
+    handles, legend_labels = ax.get_legend_handles_labels()
+    ax.legend(handles, legend_labels, loc="upper center", ncol=2,
+              bbox_to_anchor=(position.x0 + position.width/2,
+                              position.y0 - 0.082),
+              bbox_transform=ax.figure.transFigure,
+              fontsize=8.0, handlelength=1.7, columnspacing=1.6,
+              frameon=False, borderaxespad=0.0)
 
-    repeated = np.array([len(group["runs"]) > 1 for group in sigma_groups])
-    screening = ~repeated
-    sigma_handle = ax.errorbar(
-        gains[repeated], sigma_means[repeated],
-        yerr=sigma_sd[repeated], color=SERIES_BLACK, marker="o",
-        markerfacecolor="white", markeredgecolor=SERIES_BLACK,
-        markeredgewidth=1.1, linewidth=1.25, elinewidth=1.0,
-        capthick=1.0, capsize=3,
-        label=r"Singular-Value Change, "
-              r"$\Delta\sigma_{\min}$")
-    ax.plot(gains[screening], sigma_means[screening], color=SERIES_BLACK,
-            marker="D", markerfacecolor="white", markeredgewidth=1.1,
-            linestyle="none")
-    ax.axhline(0.0, color="0.45", linewidth=1.0)
-    ax.set_xlabel(r"Conditioning Torque Magnitude, $k_\sigma$ [N m]")
-    ax.set_ylabel(
-        "Change in Minimum Singular\n"
-        r"Value, $\Delta\sigma_{\min}$ [-]")
-    ax.set_xticks(gains)
-    ax.ticklabel_format(axis="y", style="sci", scilimits=(0, 0),
-                        useMathText=True)
-    ax.text(0.01, 0.82, "(b)", transform=ax.transAxes,
-            ha="left", va="top")
-    if np.any(screening):
-        ax.annotate("Single-run setting\n($n=1$)",
-                    xy=(gains[screening][0], sigma_means[screening][0]),
-                    xytext=(gains[screening][0] - 0.2,
-                            sigma_means[screening][0]),
-                    fontsize=7, ha="right",
-                    arrowprops={"arrowstyle": "-", "color": "0.35",
-                                "linewidth": 0.8})
-
-    task_ax = ax.twinx()
-    task_handle = task_ax.errorbar(
-        gains[repeated], task_means[repeated],
-        yerr=task_sd[repeated], color=SERIES_RED, marker="s",
-        markerfacecolor="white", markeredgecolor=SERIES_RED,
-        markeredgewidth=1.1, linewidth=1.25, elinewidth=1.0,
-        capthick=1.0, capsize=3,
-        label=r"Maximum Cartesian Position Error, $\|e_p\|_{\max}$")
-    task_ax.plot(gains[screening], task_means[screening], color=SERIES_RED,
-                 marker="D", markerfacecolor="white", markeredgewidth=1.1,
-                 linestyle="none")
-    criterion_handle = task_ax.axhline(
-        2.0, color="0.45", linewidth=1.0,
-        label=r"Position-Error Limit, $\|e_p\|_{\max}=2\,\mathrm{mm}$")
-    task_ax.set_ylabel(
-        "Maximum Cartesian Position\n"
-        r"Error, $\|e_p\|_{\max}$ [mm]",
-        color=SERIES_RED,
-    )
-    task_ax.tick_params(axis="y", colors=SERIES_RED)
-    task_ax.grid(False)
-
-    handles = [sigma_handle, task_handle, criterion_handle]
-    labels = [r"Singular-Value Change, $\Delta\sigma_{\min}$",
-              r"Maximum Cartesian Position Error, $\|e_p\|_{\max}$",
-              r"Position-Error Limit, $\|e_p\|_{\max}=2\,\mathrm{mm}$"]
-    ax.legend(handles, labels, loc="upper center",
-              bbox_to_anchor=(0.5, -0.26), ncol=2, frameon=False,
-              fontsize=8.5, handlelength=1.7, columnspacing=2.0,
-              borderaxespad=0.0)
-    return handles, labels
+    return handles, legend_labels
 
 
 NET_LABELS = (
@@ -351,15 +346,8 @@ NET_LABELS = (
 
 
 def _net_value_label(value):
-    """Print a net displacement at the precision Section 5.2 reports.
-
-    Three decimals throughout, matching the E_N values printed beside these in
-    the same section. In radians the four values needed two formats, because
-    0.0003 rounds to zero at three decimals; in degrees the smallest is 0.006
-    and one format covers the range. The sign takes the typographic minus the
-    tick labels use, so a printed value and an axis tick agree.
-    """
-    return f"{value:.3f}".replace("-", "\N{MINUS SIGN}")
+    """Use a mathematical minus and three decimals for every bar label."""
+    return f"${value:.3f}$"
 
 
 def net_displacement_panel(ax, groups):
@@ -374,7 +362,7 @@ def net_displacement_panel(ax, groups):
     it: panel (a) plots the cumulative motion, which is a path length, and
     panel (b) plots the singular value and the task error. The bars are printed
     with their values, as the Case-A bars are, because at a scale set by
-    7.517 degrees the two conditioning bars are the height of the axis line,
+    7.516 degrees the two conditioning bars are the height of the axis line,
     and a reader has no way to tell a suppressed value from a missing one.
     """
     order = {run_id: rank for rank, (run_id, _, _) in enumerate(CONDITIONS)}
@@ -409,7 +397,7 @@ def net_displacement_panel(ax, groups):
             ha="right", va="top")
 
 
-def make_figure(groups):
+def make_figure(groups, panel_dir=None):
     # Stacked rather than side by side: every panel carries a long descriptive
     # axis label, and at text width two columns left the data area too small
     # to read the curves against. The third panel is shorter than the other
@@ -426,7 +414,38 @@ def make_figure(groups):
     # no strip is reserved at the foot of the figure for one.
     fig._thesis_legend_bottom = 0.0
     fig.align_ylabels(axes)
-    return save(fig, "MAIN_NS_nullspace_automatic.pdf")
+    os.makedirs(make_figures.FIGURES, exist_ok=True)
+    # Preserve the established positions of all three panels.
+    output = os.path.join(make_figures.FIGURES, "MAIN_NS_nullspace_automatic.pdf")
+    fig.savefig(output, bbox_inches="tight")
+    if panel_dir:
+        from matplotlib.transforms import Bbox
+        os.makedirs(panel_dir, exist_ok=True)
+        fig.canvas.draw()
+        renderer = fig.canvas.get_renderer()
+        names = ("nullspace_damping_original", "nullspace_conditioning_original",
+                 "nullspace_net_displacement_original")
+        for main_ax, name in zip(axes, names):
+            related = [candidate for candidate in fig.axes
+                       if candidate is main_ax
+                       or candidate.get_shared_x_axes().joined(main_ax, candidate)]
+            if hasattr(main_ax, "_conditioning_task_ax"):
+                related.append(main_ax._conditioning_task_ax)
+            visibility = {candidate: candidate.get_visible()
+                          for candidate in fig.axes}
+            for candidate in fig.axes:
+                candidate.set_visible(candidate in related)
+            fig.canvas.draw()
+            renderer = fig.canvas.get_renderer()
+            bounds = Bbox.union([candidate.get_tightbbox(renderer)
+                                 for candidate in related])
+            bounds = bounds.transformed(fig.dpi_scale_trans.inverted()).padded(2/72)
+            fig.savefig(os.path.join(panel_dir, name + ".pdf"), bbox_inches=bounds)
+            for candidate, visible in visibility.items():
+                candidate.set_visible(visible)
+    plt.close(fig)
+    print(f"  wrote {output}")
+    return output
 
 
 def main():
@@ -442,6 +461,8 @@ def main():
                         help="directory the PDF is written to")
     parser.add_argument("--summary", default=SUMMARY,
                         help="path of the derived summary CSV")
+    parser.add_argument("--panel-dir", default=None,
+                        help="optional directory for individual vector panels")
     args = parser.parse_args()
 
     RESULTS = args.results
@@ -457,7 +478,7 @@ def main():
     print("  redundant axis from "
           f"{CONDITIONS[0][0]}: {np.array2string(axis, precision=3)}")
     write_summary(groups)
-    make_figure(groups)
+    make_figure(groups, args.panel_dir)
     return 0
 
 

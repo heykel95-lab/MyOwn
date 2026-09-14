@@ -117,10 +117,10 @@ generated Cartesian reference`; `Which definition holds a displacement is
 examined experimentally in …` became `The two definitions are compared
 experimentally in …`; `What varies inside this configuration is the secondary
 torque` became `Only the secondary torque varies inside this configuration`;
-and `Whether the commanded pose was in fact retained is consequently checked by
-\Cref{…} rather than assumed` became `\Cref{…} therefore checks that the
-commanded pose was retained rather than assuming it`. Run that grep over the
-chapters and the appendices before submitting; the expected count is zero.
+and the position-retention statement now names the measured position error
+directly. A position-only criterion does not establish full pose retention.
+Run that grep over the chapters and the appendices before submitting; the
+expected count is zero.
 
 State the investigated dependencies directly. For example:
 
@@ -162,10 +162,9 @@ throughout the tested conditions`, and its German counterpart, `Die kartesische
 Positionshaltung blieb dabei erhalten`, are both withdrawn. They were the last
 sentence of each summary, and an acceptance check is not a finding: it says
 that nothing went wrong rather than what was measured, so it closed both texts
-on the weakest statement they carried. Section 5.2.2 keeps the result, with
-\(\lVert e_p\rVert_{\max}\) of \(0.889\) and \(0.983\,\mathrm{mm}\), a largest
-value of \(1.304\,\mathrm{mm}\), and the \(2\,\mathrm{mm}\) limit they are read
-against. Both summaries now end on the null-space percentages.
+on the weakest statement they carried. Chapter 5 keeps only a brief note
+that measured TCP position error stayed below \(2\,\mathrm{mm}\), explicitly
+limited to position. Both summaries end on the null-space percentages.
 
 The percentages are rounded in the summaries and exact in the body: the
 Abstract writes `about \(64\,\%\)` where Chapter 5 reports \(63.9\,\%\), and
@@ -2943,9 +2942,9 @@ the definition arrived before the reason for it. Each of the three was
 reordered rather than reworded. Section 4.2.1 now says that the procedure
 constructs the configured reference from the nominal end-effector direction
 before giving the construction. Section 4.6.2 says what the force direction is
-chosen to excite before Equation 4.7 defines it. Section 4.6.3 says what each
-motion quantity answers -- was the pose held, how much total redundant motion
-occurred, how much net motion remained -- before the integrals. The equations,
+chosen to excite before Equation 4.7 defines it. Section 4.6.3 states the
+purpose of TCP position error and both redundant-motion quantities before
+the integrals. The equations,
 tables and chapter order did not change.
 
 **The measured angular offset follows the configured rotational direction.**
@@ -3635,6 +3634,42 @@ physical disturbances or contact response.
 
 ### The two null-space motion quantities, and what the sigma result says
 
+**All null-space results use the exact disturbance interval.** Confirmed
+2026-09-14. Evaluate the original log times \(5\leq t\leq9\,\mathrm{s}\),
+including both endpoints. Display elapsed disturbance time as
+\(t_d=t-5\,\mathrm{s}\), from \(0\) to \(4\,\mathrm{s}\). Apply the same
+interval to cumulative projected motion, net projected displacement,
+\(\sigma_{\min}(t)\), its trial minimum, \(\Delta\sigma_{\min}\), and
+maximum Cartesian position error. Recompute the
+common net-displacement direction from the baseline trials over that interval.
+Do not replace the endpoints with a disturbance-amplitude threshold or use
+full-trial endpoints for the singular-value change. The raw logs remain
+unchanged. Keep both analysis copies, their derived summaries, all three figure
+panels, thesis results, and presentation figures and narration synchronized.
+
+**The main conditioning comparison shows the absolute singular-value trajectories.**
+Agreed 2026-09-14. Panel (b) of the null-space figure shows
+\(\sigma_{\min}(t)\) for all four settings over the exact disturbance interval.
+The curves are three-trial means, with one sample standard deviation at each
+displayed time. Panel (a) also shows all four settings, including both
+conditioning magnitudes. Keep the panel order: cumulative motion,
+singular-value conditioning, then net displacement. The absolute traces
+are the main evidence for conditioning retained during the disturbance.
+The maximum Cartesian position-error plot is withdrawn. Keep one brief
+Chapter 5 note that measured TCP position error stayed below \(2\,\mathrm{mm}\)
+during the disturbance in all trials, qualified as position only. Do not
+restore the plot, extended error statistics, or their conclusion paragraph.
+A fixed pose reference describes the command. Position error alone does not
+establish retention of position and rotation together.
+The endpoint change \(\Delta\sigma_{\min}\) remains a supporting result in
+the text. Its larger sample standard deviation at \(2.0\,\mathrm{N\,m}\)
+describes variation between trials, not oscillation within a trial.
+Calculate the interval minimum separately in each trial before forming its
+mean and sample standard deviation. Never substitute the minimum of the mean
+curve. The preceding \(0\)--\(5\,\mathrm{s}\) settling interval need not be
+plotted, and its conditioning activity stays distinct from the disturbance
+response.
+
 **\(E_N\) is the cumulative projected null-space motion, not a
 displacement.** It integrates \(\lVert N_q\dot q\rVert_2\) over the
 disturbance interval, so it is a path length: a configuration that moves
@@ -3648,13 +3683,16 @@ that carry them can be read against one another. They are reported together,
 because for the sigma-only settings they differ by orders of magnitude, and
 that difference is the result.
 
-**The null-space subsections report means and the interpretation, not
-\(\pm\) SD.** Sections 5.2.1 and 5.2.2 carried a standard deviation on
-almost every value — nine of them across two subsections — which buried the
-result under its own scatter. They were removed on 2026-08-26 and the figure
-keeps them: the shaded bands and error bars of
-`fig:results_nullspace_automatic` already show the spread, and the appendix
-carries the numbers. The prose now states the mean and what follows from it.
+**The null-space subsections normally report means and the interpretation.**
+The figure carries the sample standard deviations, so do not repeat a
+\(\pm\) value beside every motion mean. Retain an explicit
+standard deviation when its spread affects the interpretation. The supporting
+\(\Delta\sigma_{\min}\) comparison is such a case: the endpoint changes have
+sample standard deviations of \(7.82\times10^{-8}\) and
+\(2.44\times10^{-7}\) at \(k_\sigma=1.5\) and
+\(2.0\,\mathrm{N\,m}\). Identify these as variation between the three
+trial-level endpoint changes. The exact summaries retain every mean and sample
+standard deviation.
 
 **Say `close to zero`, not `smaller than the scatter`.** The sigma-only net
 displacements were once described as having a magnitude `smaller than the
@@ -3662,7 +3700,7 @@ scatter across the three repetitions`, which forces the reader back into a
 standard-deviation discussion to understand a result that is simply near zero.
 `Both sigma-only settings ended the disturbance interval with a net
 displacement close to zero` states it directly, and the two-orders-of-magnitude
-relation against the uncontrolled \(7.517^\circ\) carries the size.
+relation against the uncontrolled \(7.516^\circ\) carries the size.
 
 Two things survive that compression and are not dropped with the deviations:
 the `\cref` to the figure panel the claim rests on, which every results
@@ -3690,11 +3728,14 @@ that wording is the one to keep.
 active from the start of every pose-hold trial, so the first
 \(5\,\mathrm{s}\) were a pre-disturbance settling interval and the
 conditioning torque was never switched on after a displacement had occurred.
-What the measurements show is that the redundant configuration was
-**prevented** from being displaced: the net displacement stayed near zero and
-\(\sigma_{\min}\) changed by about \(2\times10^{-5}\) across the
-disturbance interval, against \(-2\times10^{-3}\) without null-space torque.
-Chapter 4 states the timeline explicitly so the reading cannot drift back.
+The mean net displacement stayed close to zero, and the minimum singular
+value remained close to its disturbance-entry value. The mean changes
+over \(5\)--\(9\,\mathrm{s}\) were \(6.67\times10^{-8}\) and
+\(2.60\times10^{-8}\) for \(k_\sigma=1.5\) and
+\(2.0\,\mathrm{N\,m}\), against \(-2.13\times10^{-3}\) without
+null-space torque. Keep the pre-disturbance conditioning distinct from this
+four-second result. The former changes near \(2\times10^{-5}\) used
+full-trial endpoints and are withdrawn from the disturbance comparison.
 
 **The three modes behave differently in kind, and the prose says which kind.**
 Without null-space torque the disturbance displaces the redundant
@@ -3726,9 +3767,10 @@ cumulative projected motion, not a count of direction changes, so the larger
 value is written as `consistent with greater back-and-forth redundant motion`,
 never as having `quantified the greater switching activity`. Describe the
 switching as the mechanism the controller implements, and the cumulative motion
-as the measurement consistent with it. The defensible finding is a parameter selection:
-\(k_\sigma=1.5\,\mathrm{N\,m}\) gave the same suppression of net
-displacement with substantially less redundant motion.
+as the measurement consistent with it. Both settings left mean net
+displacements close to zero. The lower \(k_\sigma\) produced substantially
+less cumulative motion. Compare the measured means without declaring one
+setting generally better.
 
 **The comparison is between complete modes, not isolated torques.** Because the
 conditioning torque was active before the disturbance, the sigma-only trials
@@ -4303,8 +4345,8 @@ Section 4.6.3 and used unchanged in Chapters 5 and 6 and in the symbol list.
 The subscript restated the evaluation interval that the defining equation
 already fixes, and it made two short symbols long enough to break across lines.
 The maximum Cartesian position error is \(\lVert e_p\rVert_{\max}\), used in
-the figure paragraph and in Section 5.2.2 rather than the worded `peak
-Cartesian position error`. The waveform quantities \(f_{\mathrm{dist}}\),
+the brief position-only check in Chapter 5. The waveform quantities
+\(f_{\mathrm{dist}}\),
 \(\tau_{\mathrm{dist}}\), \(F_{\mathrm{dist}}\) and \(s_{\mathrm{dist}}\) keep
 their suffix: there the word distinguishes the commanded disturbance from the
 measured signals beside it.
@@ -4324,7 +4366,7 @@ read `\(0.131\,\mathrm{rad}\) (\(7.51^\circ\))`, which states one
 measurement twice and makes the reader choose. Worse, the bracketed degrees had
 been converted from the *rounded* radian value rather than from the data, so
 two of the four were wrong in the last digit: the inactive mode is
-\(7.517^\circ\) and not \(7.51^\circ\), and \(k_\sigma=1.5\,\mathrm{N\,m}\)
+\(7.516^\circ\) and not \(7.51^\circ\), and \(k_\sigma=1.5\,\mathrm{N\,m}\)
 is \(0.015^\circ\) and not \(0.017^\circ\). **Convert from the measurement,
 never from the printed value**, and check any surviving pair of units in the
 thesis against the derived summary before trusting it.
@@ -4373,17 +4415,17 @@ held constant through contact, stated against `a centre position changed during
 contact`, which the study did not cover. Check which sense is meant before
 removing the word.
 
-**State which setting won on which quantity.** Corrected 2026-09-02. The
-pose-hold conditioning comparison had read `\(1.5\,\mathrm{N\,m}\) achieved
-comparable suppression of net displacement with substantially less redundant
-motion`, in Section 5.2.2 and again in the conclusion. It is the wrong way
-round on the first quantity: \(2.0\,\mathrm{N\,m}\) left the smaller final
-displacement, \(0.006^\circ\) against \(0.015^\circ\), and reduced it by
-\(99.9\,\%\)
-against \(99.8\,\%\). What the higher magnitude cost was cumulative motion,
-\(E_N\) rising from \(0.283^\circ\) to \(1.619^\circ\). Both chapters now
-state the trade-off in that order. Where two settings differ on two quantities,
-name the quantity each one wins on rather than declaring one setting better.
+**Compare the two conditioning settings by the measured quantities.**
+Updated 2026-09-14 for the exact disturbance interval. At
+\(k_\sigma=1.5\) and \(2.0\,\mathrm{N\,m}\), the mean net displacements are
+\(0.015^\circ\) and \(-0.011^\circ\). The stronger setting gives the smaller
+magnitude of the mean net displacement, while cumulative projected motion
+increases from \(0.288^\circ\) to \(1.687^\circ\), or by \(486.6\,\%\).
+Both mean net displacements remain close to zero. State the comparison of
+means without claiming a statistically established advantage of either
+setting. The near-zero singular-value changes during the disturbance support
+retention of the local indicator, not a larger improvement at higher
+\(k_\sigma\).
 
 **A time-course observation is stated plainly, and may carry the times read
 off the traces.** Amended 2026-09-02, twice. The rule first required a sentence
@@ -4433,29 +4475,26 @@ compound built on it: the contact-establishment motion, press, trajectory,
 damping, reference and timeout all name the state and are unchanged. Only the
 response and the rotation were renamed.
 
-**A quantity is discussed where its figure shows it.** Agreed 2026-09-02.
-\(\Delta\sigma_{\min}\) appears in panel~(b) of the pose-hold figure, which
-carries only the two singular-value-conditioning settings, so it is discussed
-in Section 5.2.2 and not in the projected-damping subsection. Section 5.2.1
-reports what panel~(a) and panel~(c) show: the cumulative motion \(E_N\) and
-the net displacement \(\Delta\eta\). The withdrawn paragraph had explained
-that damping did not drive the robot towards a larger \(\sigma_{\min}\),
-which is a property of the conditioning term stated where that term is
-compared. Its \(-1.26\times10^{-3}\) damping-mode value left the thesis with
-it; the \(-2.13\times10^{-3}\) inactive-mode value remains in Section 5.2.2
-as the comparison baseline. \(\Delta\sigma_{\min}\) itself stays defined in
-Section 4.6.3, named in the figure paragraph, and listed in the symbol list.
+**A quantity is discussed where its figure shows it.** Updated 2026-09-14.
+The singular-value-conditioning subsection discusses the absolute
+\(\sigma_{\min}(t)\) traces for all four settings in panel (b), with their
+trial minima and the supporting endpoint changes. The projected-damping
+subsection
+discusses cumulative motion \(E_N\) in panel (a) and net displacement
+\(\Delta\eta\) in panel (c). Keep the two motion quantities distinct.
+\(\Delta\sigma_{\min}\) remains defined in Section 4.7.3 and in the symbol
+list, although its endpoint comparison is no longer the main conditioning plot.
 
 **Say `net displacement`, not `net redundant displacement`.** Agreed
 2026-09-02. \(\Delta\eta\) is already a projection onto the null-space
 reference direction, so `redundant` restates the projector.
 
-**A results paragraph does not narrate its own error bars.** Agreed 2026-09-02
-for the pose-hold figure paragraph. Say what each panel shows and what the
-shaded bands indicate in one clause -- `the spread across the repeated trials`
--- rather than repeating `\(\pm\) one standard deviation` once per panel. The
-sample standard deviations are tabulated in Appendix D, and the repetition
-count is stated once at the head of the chapter.
+**State the shared null-space uncertainty convention once beside the figure.**
+The curves and markers show means across three trials. Shaded bands and error
+bars show one sample standard deviation. Do not repeat this convention for
+each panel. A time-dependent band shows between-trial spread at each instant.
+The standard deviation of an endpoint change is a separate trial-level
+quantity, and its explicit comparison follows the rule above.
 
 ## Results and conclusion priorities
 
@@ -4797,8 +4836,7 @@ comparison is made. The percentages that stay exact in the conclusion are the
 ones stated against a named reference condition: \(81.3\), \(115.1\),
 \(63.9\) and \(0.4\,\%\). Standard deviations and the absolute values stay in
 Chapter 5. A further value appears only where it carries a physically
-meaningful bound, such as the largest measured position error against its
-acceptance limit.
+meaningful bound.
 
 **The null-space conclusion states changes as percentages.** Instructed
 2026-09-08. Replace the three absolute from--to motion comparisons in
