@@ -2059,8 +2059,7 @@ singular value of the geometric Jacobian is one number, so `[m/rad], [-]` says
 it carries two units at once, which it does not. The rows the \abbr{SVD}
 combines have different units, and the consequence is that the scalar's value
 depends on the Jacobian representation and the length unit rather than that it
-has two units. \(\sigma_i\), \(\sigma_{\min}\) and
-\(\Delta\sigma_{\min,\mathrm{dist}}\) therefore take `[-]`, and the
+has two units. \(\sigma_i\) and \(\sigma_{\min}\) therefore take `[-]`, and the
 representation dependence is stated in the description column, where the rule
 above already sends every qualification. Corrected on 2026-08-25. The same
 applies to any other scalar formed from a mixed-unit matrix: give the units
@@ -3641,13 +3640,11 @@ including both endpoints. Display the same interval from \(0\) to
 Use the compact axis label `Time, \(t\) [s]` in the thesis and presentation.
 The shortened label does not change the evaluated interval. Apply the same
 interval to cumulative projected motion, net projected displacement,
-\(\sigma_{\min}(t)\), its trial minimum, \(\Delta\sigma_{\min}\), and
-maximum Cartesian position error. Recompute the
-common net-displacement direction from the baseline trials over that interval.
-Do not replace the endpoints with a disturbance-amplitude threshold or use
-full-trial endpoints for the singular-value change. The raw logs remain
-unchanged. Keep both analysis copies, their derived summaries, all three figure
-panels, thesis results, and presentation figures and narration synchronized.
+\(\sigma_{\min}(t)\), its trial minimum, and maximum Cartesian position error.
+Recompute the common net-displacement direction from the baseline trials over that interval.
+Do not replace the endpoints with a disturbance-amplitude threshold. The raw
+logs remain unchanged. Keep both analysis copies, their derived summaries,
+all three figure panels, thesis results, and presentation figures and narration synchronized.
 
 **The main conditioning comparison shows the absolute singular-value trajectories.**
 Agreed 2026-09-14. Panel (b) of the null-space figure shows
@@ -3663,14 +3660,20 @@ during the disturbance in all trials, qualified as position only. Do not
 restore the plot, extended error statistics, or their conclusion paragraph.
 A fixed pose reference describes the command. Position error alone does not
 establish retention of position and rotation together.
-The endpoint change \(\Delta\sigma_{\min}\) remains a supporting result in
-the text. Its larger sample standard deviation at \(2.0\,\mathrm{N\,m}\)
-describes variation between trials, not oscillation within a trial.
 Calculate the interval minimum separately in each trial before forming its
 mean and sample standard deviation. Never substitute the minimum of the mean
 curve. The preceding \(0\)--\(5\,\mathrm{s}\) settling interval need not be
 plotted, and its conditioning activity stays distinct from the disturbance
 response.
+
+**The experimental endpoint change \(\Delta\sigma_{\min}\) is withdrawn.**
+Agreed 2026-09-14. Remove its Chapter 4 definition, Chapter 5 endpoint-change
+values and standard-deviation discussion, and global symbol-list entry.
+The conditioning comparison uses \(\sigma_{\min}(t)\) and the per-trial
+interval minima. Keep the controller's sampled difference
+\(\Delta_\sigma=\sigma_+-\sigma_-\), which determines the torque direction
+and is a separate quantity. The source logs and derived diagnostic columns
+remain unchanged by this editorial removal.
 
 **\(E_N\) is the cumulative projected null-space motion, not a
 displacement.** It integrates \(\lVert N_q\dot q\rVert_2\) over the
@@ -3688,13 +3691,8 @@ that difference is the result.
 **The null-space subsections normally report means and the interpretation.**
 The figure carries the sample standard deviations, so do not repeat a
 \(\pm\) value beside every motion mean. Retain an explicit
-standard deviation when its spread affects the interpretation. The supporting
-\(\Delta\sigma_{\min}\) comparison is such a case: the endpoint changes have
-sample standard deviations of \(7.82\times10^{-8}\) and
-\(2.44\times10^{-7}\) at \(k_\sigma=1.5\) and
-\(2.0\,\mathrm{N\,m}\). Identify these as variation between the three
-trial-level endpoint changes. The exact summaries retain every mean and sample
-standard deviation.
+standard deviation when its spread affects the interpretation. The exact
+summaries retain every mean and sample standard deviation.
 
 **Say `close to zero`, not `smaller than the scatter`.** The sigma-only net
 displacements were once described as having a magnitude `smaller than the
@@ -3731,13 +3729,8 @@ active from the start of every pose-hold trial, so the first
 \(5\,\mathrm{s}\) were a pre-disturbance settling interval and the
 conditioning torque was never switched on after a displacement had occurred.
 The mean net displacement stayed close to zero, and the minimum singular
-value remained close to its disturbance-entry value. The mean changes
-over \(5\)--\(9\,\mathrm{s}\) were \(6.67\times10^{-8}\) and
-\(2.60\times10^{-8}\) for \(k_\sigma=1.5\) and
-\(2.0\,\mathrm{N\,m}\), against \(-2.13\times10^{-3}\) without
-null-space torque. Keep the pre-disturbance conditioning distinct from this
-four-second result. The former changes near \(2\times10^{-5}\) used
-full-trial endpoints and are withdrawn from the disturbance comparison.
+value remained close to its disturbance-entry value. Keep the pre-disturbance
+conditioning distinct from this four-second result.
 
 **The three modes behave differently in kind, and the prose says which kind.**
 Without null-space torque the disturbance displaces the redundant
@@ -4342,10 +4335,9 @@ Hardware constraints belong in setup and operating constraints, not in the
 scientific purpose statement.
 
 **The disturbance-interval quantities carry no `dist` suffix.** Agreed
-2026-09-02. They are \(\Delta\sigma_{\min}\) and \(\Delta\eta\), defined once in
-Section 4.6.3 and used unchanged in Chapters 5 and 6 and in the symbol list.
-The subscript restated the evaluation interval that the defining equation
-already fixes, and it made two short symbols long enough to break across lines.
+2026-09-02. Net displacement is \(\Delta\eta\), defined once in Section 4.7.3
+and used unchanged in the results, conclusion and symbol list. The extra index
+restated the evaluation interval that the defining equation already fixes.
 The maximum Cartesian position error is \(\lVert e_p\rVert_{\max}\), used in
 the brief position-only check in Chapter 5. The waveform quantities
 \(f_{\mathrm{dist}}\),
@@ -4425,9 +4417,9 @@ magnitude of the mean net displacement, while cumulative projected motion
 increases from \(0.288^\circ\) to \(1.687^\circ\), or by \(486.6\,\%\).
 Both mean net displacements remain close to zero. State the comparison of
 means without claiming a statistically established advantage of either
-setting. The near-zero singular-value changes during the disturbance support
-retention of the local indicator, not a larger improvement at higher
-\(k_\sigma\).
+setting. The absolute singular-value trajectories support retention of the
+local indicator during the disturbance. They do not establish a larger
+improvement at higher \(k_\sigma\).
 
 **A time-course observation is stated plainly, and may carry the times read
 off the traces.** Amended 2026-09-02, twice. The rule first required a sentence
@@ -4480,12 +4472,9 @@ response and the rotation were renamed.
 **A quantity is discussed where its figure shows it.** Updated 2026-09-14.
 The singular-value-conditioning subsection discusses the absolute
 \(\sigma_{\min}(t)\) traces for all four settings in panel (b), with their
-trial minima and the supporting endpoint changes. The projected-damping
-subsection
-discusses cumulative motion \(E_N\) in panel (a) and net displacement
-\(\Delta\eta\) in panel (c). Keep the two motion quantities distinct.
-\(\Delta\sigma_{\min}\) remains defined in Section 4.7.3 and in the symbol
-list, although its endpoint comparison is no longer the main conditioning plot.
+trial minima. The projected-damping subsection discusses cumulative motion
+\(E_N\) in panel (a) and net displacement \(\Delta\eta\) in panel (c).
+Keep the two motion quantities distinct.
 
 **Say `net displacement`, not `net redundant displacement`.** Agreed
 2026-09-02. \(\Delta\eta\) is already a projection onto the null-space
@@ -4495,8 +4484,6 @@ reference direction, so `redundant` restates the projector.
 The curves and markers show means across three trials. Shaded bands and error
 bars show one sample standard deviation. Do not repeat this convention for
 each panel. A time-dependent band shows between-trial spread at each instant.
-The standard deviation of an endpoint change is a separate trial-level
-quantity, and its explicit comparison follows the rule above.
 
 ## Results and conclusion priorities
 

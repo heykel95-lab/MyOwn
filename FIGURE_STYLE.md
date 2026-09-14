@@ -1345,26 +1345,20 @@ writes a generated file names it, so regeneration must preserve this mapping.
   where the symbol alone would be cryptic, as in
   `Cumulative Motion, \(E_N\) [°]`. Use this concise label on the null-space
   motion figure in both the thesis and presentation. Its full definition stays
-  in the methodology. The pass that applied
-  this set the active contact axes to \(r_{c,t_2}\),
-  \(\gamma_{t_1}\), \(\theta_{\mathrm{meas},t_1}\), \(E_N\) and
-  \(\Delta\sigma_{\min}\). The pose-based appendix comparison
+  in the methodology. The active contact and null-space axes use
+  \(r_{c,t_2}\), \(\gamma_{t_1}\), \(\theta_{\mathrm{meas},t_1}\),
+  \(E_N\), \(\sigma_{\min}\) and \(\Delta\eta\). The pose-based appendix comparison
   uses descriptive labels instead of promoting its local quantities to the
   thesis-wide symbol list.
 
   **A figure carries the symbol the running text carries, with no extra
-  qualifying subscript.** The null-space quantities are
-  \(\Delta\sigma_{\min}\), \(\Delta\eta\) and
-  \(\lVert e_p\rVert_{\max}\) in every axis label, legend entry and value
-  annotation, matching Section 5.5. The earlier
-  \(\Delta\sigma_{\min,\mathrm{dist}}\) and \(\Delta\eta_{\mathrm{dist}}\)
-  forms are withdrawn: the disturbance is the only condition under which either
-  is measured, so the subscript distinguished nothing and left the figure
-  reading as a different quantity from the paragraph that interpreted it. The
-  words follow the symbol. `Singular-Value Change`, `Net Displacement` and
-  `Maximum Cartesian Position Error` replace `Net Redundant Displacement` and
-  every `Peak ...` form, and a legend entry uses the same words as the axis it
-  shares a panel with rather than a shortened variant of them.
+  qualifying index.** The three null-space panels show \(E_N\),
+  \(\sigma_{\min}(t)\) and \(\Delta\eta\), matching Section 5.3. Keep
+  `Cumulative Motion`, `Minimum Singular Value` and `Net Displacement` as
+  their axis names. A legend uses the same quantity names as its panel.
+  The experimental endpoint change \(\Delta\sigma_{\min}\) is withdrawn
+  from the thesis. Do not restore its plot or the maximum-position-error
+  plot. Net displacement retains \(\Delta\eta\) without a `dist` index.
 
   **Response axes pair words with the symbol.** Write `Measured contact rotation
   about \(t_1\), \(\gamma_{t_1}\) [°]`, not a bare symbol. A parameter axis
