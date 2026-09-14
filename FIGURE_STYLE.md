@@ -1310,11 +1310,12 @@ writes a generated file names it, so regeneration must preserve this mapping.
   English words only: \(t_1\), \(r_{c,t_2}\), \(K_{R,t_1}\) and \(F_n\)
   are never recased to match the surrounding capitals.
 
-  **Time is singular and carries its symbol:** `Time, \(t\) [s]` for an
-  ordinary controller or contact history, and
-  `Time After Disturbance Onset, \(t_d\) [s]` wherever time is shifted so the
-  disturbance begins at zero. Never `Times [s]`, and do not invent a third time
-  symbol for one plot.
+  **Time is singular and carries its symbol:** use `Time, \(t\) [s]` on
+  controller, contact, and null-space time histories. The null-space plots
+  retain the recorded 5--9 s interval displayed as 0--4 s, with time reset
+  at disturbance onset. The shorter axis label also applies to the presentation.
+  Do not restore `Time After Disturbance Onset` or \(t_d\) on these axes.
+  Never write `Times [s]` or introduce a separate time symbol for one plot.
 
   Where no symbol is assigned to what the axis means, the words stay and the
   unit still closes the label — the Case-F comparison axis and the categorical
@@ -1342,7 +1343,9 @@ writes a generated file names it, so regeneration must preserve this mapping.
   `Centre position along t_2` is the same thing. Where a symbol exists, the
   axis is that symbol and its unit; a descriptive phrase may stay in front of it
   where the symbol alone would be cryptic, as in
-  `Cumulative projected null-space motion \(E_N\) [°]`. The pass that applied
+  `Cumulative Motion, \(E_N\) [°]`. Use this concise label on the null-space
+  motion figure in both the thesis and presentation. Its full definition stays
+  in the methodology. The pass that applied
   this set the active contact axes to \(r_{c,t_2}\),
   \(\gamma_{t_1}\), \(\theta_{\mathrm{meas},t_1}\), \(E_N\) and
   \(\Delta\sigma_{\min}\). The pose-based appendix comparison

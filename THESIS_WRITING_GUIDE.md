@@ -3636,8 +3636,10 @@ physical disturbances or contact response.
 
 **All null-space results use the exact disturbance interval.** Confirmed
 2026-09-14. Evaluate the original log times \(5\leq t\leq9\,\mathrm{s}\),
-including both endpoints. Display elapsed disturbance time as
-\(t_d=t-5\,\mathrm{s}\), from \(0\) to \(4\,\mathrm{s}\). Apply the same
+including both endpoints. Display the same interval from \(0\) to
+\(4\,\mathrm{s}\), with the time origin reset at disturbance onset.
+Use the compact axis label `Time, \(t\) [s]` in the thesis and presentation.
+The shortened label does not change the evaluated interval. Apply the same
 interval to cumulative projected motion, net projected displacement,
 \(\sigma_{\min}(t)\), its trial minimum, \(\Delta\sigma_{\min}\), and
 maximum Cartesian position error. Recompute the

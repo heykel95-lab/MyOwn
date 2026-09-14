@@ -268,12 +268,9 @@ def damping_panel(ax, groups):
                 markeredgewidth=1.1, label=label)
         ax.fill_between(common_t, mean - sd, mean + sd, color=colour,
                         alpha=0.10, linewidth=0)
-    ax.set_xlabel(r"Time After Disturbance Onset, $t_d$ [s]")
+    ax.set_xlabel(r"Time, $t$ [s]")
     ax.set_xlim(0.0, EVAL_END_S - EVAL_START_S)
-    ax.set_ylabel(
-        "Cumulative Projected\n"
-        r"Null-Space Motion, $E_N$ [$^\circ$]"
-    )
+    ax.set_ylabel(r"Cumulative Motion, $E_N$ [$^\circ$]")
     ax.text(0.99, 0.03, "(a)", transform=ax.transAxes,
             ha="right", va="bottom")
     ax.margins(y=0.12)
@@ -321,7 +318,7 @@ def sigma_panel(ax, groups):
     ax.set_xlim(0.0, EVAL_END_S - EVAL_START_S)
     ax.set_xticks(np.arange(5))
     ax.ticklabel_format(axis="y", style="plain", useOffset=False)
-    ax.set_xlabel(r"Time After Disturbance Onset, $t_d$ [s]")
+    ax.set_xlabel(r"Time, $t$ [s]")
     ax.set_ylabel("Minimum Singular\n" + r"Value, $\sigma_{\min}$ [-]")
     ax.margins(y=0.13)
     ax.text(0.02, 0.03, "(b)", transform=ax.transAxes,
