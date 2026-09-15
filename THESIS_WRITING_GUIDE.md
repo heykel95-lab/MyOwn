@@ -1378,8 +1378,9 @@ circulation, the settled choices are:
 **Show entry and angular error in one figure beside Section 4.5.**
   Draw the configured reference in red, the entry tool-face direction in solid
   green, and the contact-end direction in dashed blue. Both arcs start at the
-  configured reference. The outer arc labels \(\theta_{\mathrm{meas},t_1}\)
-  and the inner arc labels \(\theta_{\mathrm{err},t_1}(t_{\mathrm{end}})\).
+  configured reference. The red arc labels \(\theta_{\mathrm{meas},t_1}\).
+  Place the blue \(\theta_{\mathrm{err},t_1}\) arc at a larger radius, to its
+  right, with the label beneath the arc and without the end-time argument.
   The planar sketch illustrates the exact three-dimensional component
   definition. Its common origin is an orientation-comparison datum.
 

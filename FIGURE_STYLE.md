@@ -560,11 +560,13 @@ points along the inward calibrated surface normal \(-n_s\) and carries
 calibrated tool normals calculated from measured end-effector orientation.
 The dashed arrow retains the author's exception for the contact-end instant.
 Keep these three descriptive labels, without the vector symbols or their time
-arguments. Do not relabel the inward red arrow as \(n_s\). The outer red arc
+arguments. Do not relabel the inward red arrow as \(n_s\). The red arc
 for \(\theta_{\mathrm{meas},t_1}\) runs from the red reference to the entry tool
-normal. The inner blue arc for \(\theta_{\mathrm{err},t_1}\) runs from the same
+normal. The blue arc for \(\theta_{\mathrm{err},t_1}\) runs from the same
 reference to the end tool normal. Omit the end-time argument from this angle
-label. Both arcs share the calibrated zero. Keep \(n_s\), \(t_1\), and \(t_2\)
+label. Place the blue angular-error arc at a larger radius, to the right of
+the red measured-offset arc, and keep its label beneath the arc. Both arcs
+share the calibrated zero. Keep \(n_s\), \(t_1\), and \(t_2\)
 in the separate coordinate-frame inset. Apply the same label treatment to the
 matching presentation figure.
 
