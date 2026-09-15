@@ -1492,12 +1492,15 @@ Then look at the rendered page and check:
 - the figure has no internal title and its caption is a one-line noun phrase.
 
 
-The surface-frame illustration includes the tool resting on the plane beside
-the frame origin. Use the shared `figures/ch02/surface_tool_frame.tikz` in
+The surface-frame illustration places the tool-face centre at the frame
+origin, with its long centreline on \(t_2\). Use the shared `figures/ch02/surface_tool_frame.tikz` in
 panel (a) of the direction-rule figure and the identical source in the
 presentation. Its 120 mm length follows \(t_2\), and its 40 mm width follows
 \(t_1\). Centre the shaft on the face, with equal half-lengths in the positive
-and negative \(t_2\) directions. Keep all three axes visible. Agreed 2026-09-15.
+and negative \(t_2\) directions about the origin. Draw the axes before the
+opaque tool faces so their internal portions are occluded. Keep the three
+axis arrows visible, with \(n_s\) continuing above the coaxial shaft.
+Agreed 2026-09-15.
 
 ## Joint-angle histories (2026-09-15)
 
