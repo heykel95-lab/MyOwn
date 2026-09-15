@@ -1217,12 +1217,12 @@ writes a generated file names it, so regeneration must preserve this mapping.
 
   **A single bar series is blue, not black.** The curve rule starts at black
   and the bar rule starts at blue, and a lone bar series follows the bar rule:
-  the Case-A bars set the precedent, and the net-displacement panel of the
+  the Case-A bars set the precedent, and the net joint motion panel of the
   null-space figure follows it. A filled black bar prints as a block of ink
   where a black curve prints as a line.
 
 - **Print the value above each bar where the series spans orders of
-  magnitude.** The net displacement runs from \(7.517^\circ\) down to
+  magnitude.** The net joint motion runs from \(7.517^\circ\) down to
   about \(0.006^\circ\), so on a linear axis the two conditioning bars are
   the height of the axis line — which is the finding, but leaves a reader
   unable to tell a suppressed value from a missing one. The printed value
@@ -1385,7 +1385,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
   `Centre position along t_2` is the same thing. Where a symbol exists, the
   axis is that symbol and its unit; a descriptive phrase may stay in front of it
   where the symbol alone would be cryptic, as in
-  `Cumulative Motion, \(E_N\) [°]`. Use this concise label on the null-space
+  `Cumulative Joint Motion, \(E_N\) [°]`. Use this concise label on the null-space
   motion figure in both the thesis and presentation. Its full definition stays
   in the methodology. The active contact and null-space axes use
   \(r_{c,t_2}\), \(\theta_{\mathrm{err},t_1}\), \(\theta_{\mathrm{meas},t_1}\),
@@ -1396,11 +1396,11 @@ writes a generated file names it, so regeneration must preserve this mapping.
   **A figure carries the symbol the running text carries, with no extra
   qualifying index.** The three null-space panels show \(E_N\),
   \(\sigma_{\min}(t)\) and \(\Delta\eta\), matching Section 5.3. Keep
-  `Cumulative Motion`, `Minimum Singular Value` and `Net Displacement` as
+  `Cumulative Joint Motion`, `Minimum Singular Value` and `Net Joint Motion` as
   their axis names. A legend uses the same quantity names as its panel.
   The experimental endpoint change \(\Delta\sigma_{\min}\) is withdrawn
   from the thesis. Do not restore its plot or the maximum-position-error
-  plot. Net displacement retains \(\Delta\eta\) without a `dist` index.
+  plot. Net joint motion retains \(\Delta\eta\) without a `dist` index.
 
   **Response axes pair words with the symbol.** Write `Angular Error
   About \(t_1\), \(\theta_{\mathrm{err},t_1}\) [°]`, not a bare symbol. A parameter axis
@@ -1528,3 +1528,16 @@ Keep black, red, blue and yellow for the existing four settings. Use Latin
 Modern text and mathematics, vector PDF, and at most two decimal places.
 Sources, portable samples, source hashes and checks are in
 code/python/figures/joint_motion/.
+
+## Consistent joint-motion names (2026-09-15)
+
+Use cumulative joint motion for E_N and net joint motion for Delta eta in
+plots, captions, text, the symbol list and the presentation. Retain cumulative
+and net because the quantities differ: the former accumulates projected
+velocity magnitude, while the latter projects the integrated joint velocity
+onto the common reference direction and permits cancellation. Use Net joint
+motion over time for its directional history, and Joint motion over time for
+the individual measured joint-angle histories. Define the projection and the
+measured angle change in the methodology. Do not alternate motion and
+displacement as short names for these quantities. Keep symbols, calculations,
+data, units, signs, uncertainty, filenames and internal identifiers unchanged.

@@ -270,7 +270,7 @@ def damping_panel(ax, groups):
                         alpha=0.10, linewidth=0)
     ax.set_xlabel(r"Time, $t$ [s]")
     ax.set_xlim(0.0, EVAL_END_S - EVAL_START_S)
-    ax.set_ylabel(r"Cumulative Motion, $E_N$ [$^\circ$]")
+    ax.set_ylabel("Cumulative Joint Motion,\n" + r"$E_N$ [$^\circ$]")
     ax.text(0.99, 0.03, "(a)", transform=ax.transAxes,
             ha="right", va="bottom")
     ax.margins(y=0.12)
@@ -381,7 +381,7 @@ def net_displacement_panel(ax, groups):
     ax.set_xticks(positions)
     ax.set_xticklabels(NET_LABELS[:len(ordered)])
     ax.set_ylabel(
-        "Net Displacement,\n"
+        "Net Joint Motion,\n"
         r"$\Delta\eta$ [$^\circ$]")
     ax.margins(y=0.28)
     for position, mean, sd in zip(positions, means, sds):

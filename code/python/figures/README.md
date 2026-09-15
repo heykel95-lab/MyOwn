@@ -87,11 +87,11 @@ The version matters more than it looks. Under matplotlib 3.1.2 every script
 below still runs, every printed number is identical, and the curves are the
 same, but two things in the drawing change. The tick locator chooses fewer
 ticks, so a panel of `MAIN_D_wrench.pdf` carries ticks every 5 rather than
-every 2.5. And the net-displacement label in panel (c) of
+every 2.5. And the net joint motion label in panel (c) of
 `MAIN_NS_nullspace_automatic.pdf` renders as `-0.006` rather than the `0.006`
 in the committed file: `_net_value_label()` writes U+2212, which the committed
 figure's embedded face silently drops. Section 5.5 reads
-`the measured net displacement was negative, so its absolute value was 0.006`,
+`the measured net joint motion was negative, so its absolute value was 0.006`,
 which is written against the committed rendering. Regenerating that figure in a
 pinned environment keeps the sentence and the label in step; regenerating it in
 an older one does not.
@@ -192,19 +192,19 @@ read were not copied, so they still need a path into the lab archive.
 
 `make_nullspace_figure.py` originally reported one redundant-motion quantity,
 the integral of the projected joint-velocity magnitude, which Chapter 4 now
-calls the **cumulative projected null-space motion**. That integral is a path
+calls the **cumulative joint motion**. That integral is a path
 length, so it cannot distinguish a configuration that was displaced from one
 that moved back and forth and ended where it started -- the difference between
 the two sigma settings turns on exactly that.
 
 The script now also integrates the projected joint velocity **without** the
-magnitude, giving the net displacement \(\Delta q_{\mathrm{null}}\), and
+magnitude, giving the net joint motion \(\Delta q_{\mathrm{null}}\), and
 resolves every run onto one signed axis in `net_displacements()`. The axis
 comes from the condition without null-space torque: the recorded null direction
 `sigma_n_best_*` is written only while the conditioning term is selecting a
 sign, so it is zero throughout the runs that have no conditioning torque, and
 the direction has to be recovered from the motion itself. At full row rank the
-null space is one dimensional, so every net displacement lies along that one
+null space is one dimensional, so every net joint motion lies along that one
 axis. Two columns were added to `derived/MAIN_NS_automatic_summary.csv`:
 `net_displacement_mean_rad` and `net_displacement_sd_rad`.
 
