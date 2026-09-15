@@ -1492,4 +1492,6 @@ Then look at the rendered page and check:
 The surface-frame illustration includes the tool resting on the plane beside
 the frame origin. Use the shared `figures/ch02/surface_tool_frame.tikz` in
 panel (a) of the direction-rule figure and the identical source in the
-presentation. Keep all three axes visible. Agreed 2026-09-15.
+presentation. Its 120 mm length follows \(t_2\), and its 40 mm width follows
+\(t_1\). Centre the shaft on the face, with equal half-lengths in the positive
+and negative \(t_2\) directions. Keep all three axes visible. Agreed 2026-09-15.
