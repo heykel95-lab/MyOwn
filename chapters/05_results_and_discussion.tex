@@ -2,35 +2,28 @@
 \label{ch:results_discussion}
 
 The surface-contact experiments measured how the controller parameters affected
-the end-effector rotation during Contact Establishment. The primary response
-quantity is the contact response \mbox{\(\gamma_{t_1}\)} about
-surface tangent \mbox{\(t_1\)}, defined in
+the angular error during Contact Establishment. The primary quantity is the
+angular-error component \mbox{\(\theta_{\mathrm{err},t_1}(t_{\mathrm{end}})\)}
+relative to the calibrated surface reference, defined in
 \mbox{\Cref{sec:experimental_evaluation}}.
+Its magnitude gives the remaining error about the first surface tangent.
+Positive and negative values identify the rotational direction relative to that
+reference. A change through zero reverses the first-tangent error direction.
 
 The measured pose-based angular offset \mbox{\(\theta_{\mathrm{meas},t_1}\)}
-describes the tool orientation at contact entry relative to the configured
-surface reference. The response \mbox{\(\gamma_{t_1}\)} is calculated from
-the measured end orientation back to the orientation held at contact entry. Its
-direction is therefore opposite to the start-to-end rotation of the end
-effector. When contact rotates the end effector towards parallel alignment with
-the configured surface, \mbox{\(\gamma_{t_1}\)} points in the same
-surface-tangent direction as \mbox{\(\theta_{\mathrm{meas},t_1}\)}. The magnitude
-\mbox{\(\lvert\gamma_{t_1}\rvert\)} gives the size of that response.
+is the value at contact entry and identifies every angular condition.
+At the TCP-centred condition, the nominal-zero command gave
+\mbox{\(\theta_{\mathrm{meas},t_1}=0.69^\circ\)}.
+The \mbox{\(10^\circ\)} and \mbox{\(-10^\circ\)} commands produced mean measured
+offsets of \mbox{\(9.31^\circ\)} and \mbox{\(-9.41^\circ\)}, respectively.
+These are named the positive-offset and negative-offset conditions throughout
+this chapter.
 
-The orientation reached at contact entry differed slightly from the
-configured offset \mbox{\(\theta_{\mathrm{offset},t_1}\)}. The response
-figures identify all test conditions by the measured offset
-\mbox{\(\theta_{\mathrm{meas},t_1}\)}, including the nominal zero-offset condition.
-
-\Added{Each contact parameter setting was repeated three times. The comparative
-response values in Cases~A--D are the arithmetic means over those repetitions,
-and \mbox{\Cref{app:additional_plots}} tabulates their sample standard
-deviations.} At the TCP-centred condition, the zero-offset case had
-\mbox{\(\theta_{\mathrm{meas},t_1}=0.69^\circ\)}. The \mbox{\(10^\circ\)} and
-\mbox{\(-10^\circ\)} commands produced mean measured offsets of
-\mbox{\(\theta_{\mathrm{meas},t_1}=9.31^\circ\)} and \mbox{\(-9.41^\circ\)},
-respectively. These two are named the positive-offset and negative-offset
-conditions throughout this chapter.
+Each contact parameter setting was repeated three times. The comparison values
+are arithmetic means of the angular errors from those repetitions.
+\Cref{app:additional_plots} tabulates the corresponding sample standard
+deviations. The endpoint components were stored to \mbox{\(0.01^\circ\)}, as
+described in \mbox{\Cref{subsec:experimental_supporting_metrics}}.
 
 \section{Controller Wrench Evaluation}
 \label{sec:results_wrench_evaluation}
@@ -106,7 +99,7 @@ supports the plausibility of the implemented rotational impedance relation.
 \section{Main Surface-Contact Results}
 \label{sec:results_main_contact_cases}
 
-\subsection{Baseline Contact Response with the CoC at the TCP: Case~A}
+\subsection{Baseline Angular Error with the CoC at the TCP: Case~A}
 \label{sec:results_case_a}
 
 In Case~A, the \abbr{CoC} was placed at the TCP, so \mbox{\(r_c=0\)} and the
@@ -119,35 +112,31 @@ the following stiffness and CoC-position comparisons.
 \begin{figure}[H]
 \centering
 \input{figures/ch05/results_case_a_bars.tex}
-\caption{Contact response with the CoC at the TCP.}
+\caption{Angular error with the CoC at the TCP.}
 \label{fig:results_case_a}
 \end{figure}
 
-For the positive-offset condition, with
-\mbox{\(\theta_{\mathrm{meas},t_1}=9.31^\circ\)}, the measured response was
-\mbox{\(7.57^\circ\)} in \mbox{\Cref{fig:results_case_a}}. For the
-negative-offset condition, with \mbox{\(\theta_{\mathrm{meas},t_1}=-9.41^\circ\)}, it was
-\mbox{\(-10.83^\circ\)}. Both responses corresponded to end-effector rotation
-towards parallel alignment with the configured surface.
+For the positive-offset condition, the angular error decreased from the entry
+value of \mbox{\(9.31^\circ\)} to \mbox{\(1.75^\circ\)} at contact end in
+\mbox{\Cref{fig:results_case_a}}.
+For the negative-offset condition, it changed from \mbox{\(-9.41^\circ\)} to
+\mbox{\(1.41^\circ\)}. The negative-offset component crossed zero and ended
+with a positive value.
+The angular error magnitudes were smaller than their respective entry magnitudes
+by \mbox{\(81.2\,\%\)} and \mbox{\(85.0\,\%\)}.
 
-For the zero-offset condition, the measured angular offset
-was \mbox{\(\theta_{\mathrm{meas},t_1}=0.69^\circ\)}.
-The measured response about \mbox{\(t_1\)} was \mbox{\(-0.97^\circ\)}.
-This value forms the measured zero-offset reference.
-For the positive- and negative-offset conditions, the
-response magnitude was \mbox{\(81.3\,\%\)} and \mbox{\(115.1\,\%\)} of the
-respective measured angular-offset magnitude.
-
-Case~A therefore shows that, with the \abbr{CoC} at the TCP, the
-contact-induced rotation towards the configured surface-parallel orientation
-was almost symmetrical with respect to the two rotational directions,
-although the measured response magnitudes were different.
+For the nominal-zero condition, the angular error increased from
+\mbox{\(0.69^\circ\)} to \mbox{\(1.65^\circ\)}.
+This condition therefore showed an increase in the first-tangent error.
+The TCP-centred condition reduced that error for both larger entry offsets,
+with different final values and a zero crossing in the negative-offset
+condition.
 
 \subsection{Rotational Stiffness: Case~B}
 \label{sec:results_case_b}
 
 Case~B investigated how the rotational stiffness about \mbox{\(t_1\)}
-affects the contact rotation. Contact Establishment was performed
+affects the angular error. Contact Establishment was performed
 with the positive \mbox{\(10^\circ\)} configured orientation offset while
 \mbox{\(K_{R,t_1}\)} was compared at \mbox{\(5\)}, \mbox{\(15\)}, and
 \mbox{\(50\,\mathrm{N\,m/rad}\)}. The \mbox{\(5\,\mathrm{N\,m/rad}\)}
@@ -157,20 +146,20 @@ controller settings were kept unchanged.
 \begin{figure}[H]
 \centering
 \input{figures/ch05/results_case_b_stiffness.tex}
-\caption{Contact response by rotational stiffness.}
+\caption{Angular error by rotational stiffness.}
 \label{fig:results_case_b}
 \end{figure}
 
 Increasing \mbox{\(K_{R,t_1}\)} from \mbox{\(5\)} to
-\mbox{\(50\,\mathrm{N\,m/rad}\)} reduced the measured response from
-\mbox{\(7.57^\circ\)} to \mbox{\(2.73^\circ\)} in
-\mbox{\Cref{fig:results_case_b}}. This is a reduction of
-\mbox{\(4.84^\circ\)}, or \mbox{\(63.9\,\%\)} of the response measured at
-\mbox{\(5\,\mathrm{N\,m/rad}\)}.
-
-Increasing the rotational stiffness about \mbox{\(t_1\)} therefore reduced the
-tool's ability to rotate towards the configured surface-parallel orientation
-during contact.
+\mbox{\(50\,\mathrm{N\,m/rad}\)} increased the angular error from
+\mbox{\(1.75^\circ\)} to \mbox{\(6.58^\circ\)} in
+\mbox{\Cref{fig:results_case_b}}.
+The intermediate stiffness of \mbox{\(15\,\mathrm{N\,m/rad}\)} gave
+\mbox{\(2.04^\circ\)}.
+The endpoint increase across the tested range was \mbox{\(4.83^\circ\)}, or
+\mbox{\(276.2\,\%\)} of the error at \mbox{\(5\,\mathrm{N\,m/rad}\)}.
+Higher rotational stiffness resisted the contact-induced end-effector rotation
+and left a larger angular error relative to the calibrated surface.
 
 \subsection{Translational Stiffness Along \texorpdfstring{\(t_2\)}{t2}: Case~C}
 \label{sec:results_case_c}
@@ -189,26 +178,25 @@ TCP-centred reference from Case~A.
 \begin{figure}[H]
 \centering
 \input{figures/ch05/results_case_c_stiffness.tex}
-\caption{Contact response by translational stiffness along \(t_2\).}
+\caption{Angular error by translational stiffness along \(t_2\).}
 \label{fig:results_case_c}
 \end{figure}
 
-Changing the translational stiffness \mbox{\(K_{p,t_2}\)} produced only a
-small change in the measured response. Across the tested values,
-\mbox{\(\gamma_{t_1}\)} ranged from \mbox{\(7.56^\circ\)} to
-\mbox{\(7.59^\circ\)} in \mbox{\Cref{fig:results_case_c}}, giving a span of
-\mbox{\(0.03^\circ\)}. This is \mbox{\(0.4\,\%\)} of the
-\mbox{\(7.57^\circ\)} TCP-centred reference and considerably smaller than the
-rotational-stiffness effect.
-
-The measured alignment response therefore remained nearly unchanged across the
-tested translational stiffness values along \mbox{\(t_2\)}.
+The angular errors were \mbox{\(1.68^\circ\)}, \mbox{\(1.69^\circ\)}
+and \mbox{\(1.75^\circ\)} at translational stiffnesses of
+\mbox{\(300\)}, \mbox{\(800\)} and \mbox{\(2000\,\mathrm{N/m}\)}, respectively,
+in \mbox{\Cref{fig:results_case_c}}.
+Their span was \mbox{\(0.07^\circ\)}, or \mbox{\(3.8\,\%\)} of the
+TCP-centred reference error at \mbox{\(2000\,\mathrm{N/m}\)}.
+This variation was considerably smaller than the rotational-stiffness effect.
+The result concerns translation along \mbox{\(t_2\)}, with the
+\mbox{\(t_1\)} translational stiffness held constant.
 
 \subsection{Effect of Tangential CoC Position: Case~D}
 \label{sec:results_case_d}
 
 Case~D investigated how the tangential \abbr{CoC} position affects the
-contact rotation. The \abbr{CoC} was displaced along
+angular error. The \abbr{CoC} was displaced along
 \mbox{\(t_2\)}, perpendicular to the measured rotation about \mbox{\(t_1\)},
 and Contact Establishment was performed for both the positive
 \mbox{\(10^\circ\)} and negative \mbox{\(-10^\circ\)} configured orientation
@@ -222,37 +210,45 @@ unchanged.
 \begin{figure}[H]
 \centering
 \input{figures/ch05/results_case_d_panels.tex}
-\caption[Contact response by tangential CoC position.]{\Added{Contact response by tangential CoC position.}}
+\caption{Angular error by tangential CoC position.}
 \label{fig:results_case_d}
 \end{figure}
 
-The effect of the \abbr{CoC} displacement depended on the direction of the
-measured angular offset. For the positive-offset condition,
-\mbox{\(\theta_{\mathrm{meas},t_1}=9.32^\circ\)}, \mbox{\Cref{fig:results_case_d}} shows
-the response increasing from \mbox{\(0.18^\circ\)} at
-\mbox{\(r_{c,t_2}=-40\,\mathrm{mm}\)} to \mbox{\(7.87^\circ\)} at
-\mbox{\(40\,\mathrm{mm}\)}. For the negative-offset condition,
-\mbox{\(\theta_{\mathrm{meas},t_1}=-9.36^\circ\)}, the response also increased
-numerically, from \mbox{\(-11.30^\circ\)} at \mbox{\(-40\,\mathrm{mm}\)} to
-\mbox{\(-0.09^\circ\)} at \mbox{\(40\,\mathrm{mm}\)}. Because the response is
-negative in this condition, its magnitude decreased as \mbox{\(r_{c,t_2}\)}
-increased.
+The angular error depended on the \abbr{CoC} position and entry
+direction. For the positive-offset condition,
+\mbox{\(\theta_{\mathrm{meas},t_1}=9.32^\circ\)},
+\mbox{\Cref{fig:results_case_d}} shows the angular error decreasing from
+\mbox{\(9.13^\circ\)} at \mbox{\(r_{c,t_2}=-40\,\mathrm{mm}\)} to
+\mbox{\(1.48^\circ\)} at \mbox{\(40\,\mathrm{mm}\)}.
+The latter was the smallest mean error magnitude among the tested positions
+for this entry direction. It was \mbox{\(15.4\,\%\)} below the
+\mbox{\(1.75^\circ\)} TCP-centred reference.
 
-Increasing \mbox{\(r_{c,t_2}\)} therefore increased the alignment response for
-the positive angular offset and reduced it for the negative
-angular offset. \Added{The largest Case-D sample standard deviation was
-\mbox{\(0.44^\circ\)}, for the positive-offset condition at
-\mbox{\(r_{c,t_2}=-20\,\mathrm{mm}\)}.}
+For the negative-offset condition,
+\mbox{\(\theta_{\mathrm{meas},t_1}=-9.36^\circ\)}, the angular error changed
+from \mbox{\(1.99^\circ\)} at \mbox{\(-40\,\mathrm{mm}\)} to
+\mbox{\(-9.24^\circ\)} at \mbox{\(40\,\mathrm{mm}\)}.
+The smallest measured mean magnitude was \mbox{\(0.94^\circ\)} at
+\mbox{\(10\,\mathrm{mm}\)}, which was \mbox{\(33.7\,\%\)} below the
+\mbox{\(1.41^\circ\)} TCP-centred reference.
+At \mbox{\(-40\,\mathrm{mm}\)}, the first-tangent error component crossed
+zero and ended with a larger magnitude than at the TCP.
+An increased contact-induced rotation therefore did not necessarily reduce
+the angular error.
 
-To relate the direction-dependent contact response to the measured interaction
-wrench, the model-estimated external wrench was evaluated for the
-positive-offset condition. All three
-\abbr{CoC} positions were tested with a configured pre-contact orientation
-offset of \mbox{\(\theta_{\mathrm{offset},t_1}=10^\circ\)}, corresponding to a
-mean measured angular offset of
-\mbox{\(\theta_{\mathrm{meas},t_1}=9.32^\circ\)}. The compared \abbr{CoC} positions were
-\mbox{\(r_{c,t_2}=-40\)}, \mbox{\(0\)}, and \mbox{\(40\,\mathrm{mm}\)}. Each
-trace shows one measured repetition for the corresponding centre position.
+The two entry directions gave their smallest measured mean error magnitudes
+at different tested positions. A \abbr{CoC} setting that reduces the error
+for one entry direction can leave a larger error for the other.
+The largest sample standard deviation was \mbox{\(0.42^\circ\)}, for the
+positive-offset condition at \mbox{\(r_{c,t_2}=-20\,\mathrm{mm}\)}.
+
+To relate the angular error to the interaction wrench, the model-estimated
+external wrench was evaluated for the positive-offset condition.
+The three \abbr{CoC} positions were tested with a configured pre-contact offset
+of \mbox{\(\theta_{\mathrm{offset},t_1}=10^\circ\)}.
+The compared positions were \mbox{\(r_{c,t_2}=-40\)}, \mbox{\(0\)} and
+\mbox{\(40\,\mathrm{mm}\)}. Each trace shows one measured repetition for
+the corresponding centre position.
 
 The model-estimated external force and moment supplied by libfranka are
 evaluated as the measured interaction wrench available from the robot. The
@@ -275,12 +271,12 @@ surface.
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figures/ch05/MAIN_D_wrench.pdf}
-\caption{Contact response and model-estimated interaction wrench.}
+\caption{Angular error and model-estimated interaction wrench.}
 \label{fig:results_case_d_wrench}
 \end{figure}
 
-\Cref{fig:results_case_d_wrench} compares the contact response
-\mbox{\(\gamma_{t_1}\)} in panel~(a), the model-estimated normal force
+\Cref{fig:results_case_d_wrench} compares the angular error
+\mbox{\(\theta_{\mathrm{err},t_1}(t)\)} in panel~(a), the model-estimated normal force
 \mbox{\(F_{n,\mathrm{est}}\)} in panel~(b), and the model-estimated TCP moment
 about the first surface tangent \mbox{\(M_{t_1,\mathrm{est}}\)} in panel~(c),
 on a common time axis for the three centre positions. Over the final second of
@@ -292,26 +288,30 @@ settled at approximately \mbox{\(4.07\,\mathrm{N\,m}\)},
 \mbox{\(0.73\,\mathrm{N\,m}\)} and \mbox{\(-2.54\,\mathrm{N\,m}\)} at the same
 three positions.
 
-The estimated normal-force response remained similar for the three \abbr{CoC}
-positions, whereas the estimated moment changed substantially with the
-\abbr{CoC} displacement and reversed direction between the two displaced
-positions. The measured contact response \mbox{\(\gamma_{t_1}\)} changed
-accordingly. This relation shows that the direction-dependent effect of the
-displaced \abbr{CoC} is reflected primarily in the contact moment rather than
-in the normal contact force. Panel~(a) also shows
-the rotation towards alignment developing more quickly at
-\mbox{\(r_{c,t_2}=40\,\mathrm{mm}\)} than at the TCP. That trace reaches its
-approximately steady response at about \mbox{\(2.3\,\mathrm{s}\)}, and the
-TCP trace at about \mbox{\(3.6\,\mathrm{s}\)}. With the \abbr{CoC}
-displaced, the rotation reaches that response roughly
-\mbox{\(1.3\,\mathrm{s}\)} earlier.
+The estimated normal force remained similar for the three \abbr{CoC}
+positions. The estimated TCP moment changed substantially and reversed
+direction between the two displaced positions.
+The angular errors in the illustrated trials were approximately
+\mbox{\(9.12^\circ\)}, \mbox{\(1.75^\circ\)} and \mbox{\(1.49^\circ\)},
+at \mbox{\(-40\,\mathrm{mm}\)}, the TCP and \mbox{\(40\,\mathrm{mm}\)}, respectively.
+The comparison links the changed angular error mainly to the changed contact
+moment, while the normal force remained similar.
 
-At the TCP, \mbox{\(r_c=0\)}, so no additional CoC-induced moment is generated
-and neither rotational direction is favoured. A displaced \abbr{CoC} instead
-favours one rotational direction and opposes the other. Its effect therefore
-depends on the direction of the angular offset, and the \abbr{CoC}
-displacement must be selected accordingly if the alignment response is to be
-increased.
+For the two traces in panel~(a) of \mbox{\Cref{fig:results_case_d_wrench}},
+the approach to the angular error was compared using a common band.
+The comparison time is the first recorded instant after which the component
+stays within \mbox{\(0.1^\circ\)} of its own final value through contact end.
+This condition was reached at about \mbox{\(2.5\,\mathrm{s}\)} for
+\mbox{\(r_{c,t_2}=40\,\mathrm{mm}\)} and \mbox{\(3.6\,\mathrm{s}\)} at the TCP.
+The displaced-centre trace reached the band approximately
+\mbox{\(1.1\,\mathrm{s}\)} earlier.
+
+At the TCP, \mbox{\(r_c=0\)}, so the additional CoC-induced moment vanishes.
+The rotational spring and damper remain active.
+A displaced \abbr{CoC} adds a preferred moment direction and changes the
+angular evolution during contact. Its angular error depends on both the entry
+direction and how far the measured tool-normal component moves relative to
+the calibrated reference.
 
 \section{Null-Space Pose-Hold Results}
 \label{sec:results_nullspace}

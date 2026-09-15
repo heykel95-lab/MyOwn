@@ -5,17 +5,18 @@
 
 Every case is read the same way, top to bottom:
 
-  1  contact rotation   the current-to-reference rotation over contact
-                       establishment about the investigated tangent.
+  1  angular error     calibrated reference-to-tool normal rotation-vector
+                       component about the investigated surface tangent.
   2  normal force      the model-estimated external force along n_s.
   3  alignment moment  the model-estimated external moment at the TCP about
                        the investigated tangent.
 
-The contact rotation is the same controller-response quantity used by every
-case-comparison plot. It comes from the robot orientation error referenced at
-the clearance transition and is resolved on the configured surface axes. It therefore has
-no absolute flat-tool zero and is not affected by play between tool and
-gripper.
+The angular error reverses the archived tool-to-reference shortest-rotation
+component. Its sign therefore agrees with the measured contact-entry offset.
+It uses the configured normal calibrated against the plate and the calibrated
+tool-face normal transformed by measured end-effector orientation. Zero refers
+to this calibrated reference. Calibration and mounting errors limit its
+interpretation as a physical tool--surface angular error.
 
 The wrench panels carry the interaction wrench rather than the command, so the
 compliance-centre position is related to what the robot estimates at the
@@ -77,7 +78,7 @@ def curve_label(detail):
 
 
 def load(results, trial, axis):
-    """Return time, contact rotation, estimated force and TCP moment."""
+    """Return time, calibrated angular error, estimated force and TCP moment."""
     directory = os.path.join(results, trial)
     logs = glob.glob(os.path.join(directory, "logs", "*.csv"))
     if not logs:
@@ -95,7 +96,13 @@ def load(results, trial, axis):
     time, rotation, fn_est, m_est = [], [], [], []
     for row in rows:
         time.append(float(row["time"]))
-        rotation.append(float(np.degrees(vec(row, "e_R")) @ tangent_axis))
+        # The archived direction is measured tool normal -> inward reference.
+        # Negating the rotation vector gives reference -> measured tool normal.
+        key = f"angular_deviation_{axis}_deg"
+        legacy_key = f"alignment_error_{axis}_deg"
+        if key not in row and legacy_key not in row:
+            raise ValueError(f"{trial}: no calibrated normal component for {axis}")
+        rotation.append(-float(row[key] if key in row else row[legacy_key]))
         force = vec(row, "external_force")
         moment_tcp = (vec(row, "external_moment")
                       - np.cross(vec(row, "p_EE"), force))
@@ -109,7 +116,7 @@ def load(results, trial, axis):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("trials", nargs="+", metavar="TRIAL=DETAIL")
-    p.add_argument("--axis", default="t1", choices=sorted(AXIS_COLUMN))
+    p.add_argument("--axis", default="t1", choices=("t1", "t2"))
     p.add_argument("--out", default="COC_case")
     p.add_argument("--out-dir", default=os.path.join(HERE, "..", "figures"))
     p.add_argument("--results", default=RESULTS)
@@ -124,7 +131,7 @@ def main():
         t, rotation, fn_est, m_est = thin(*load(args.results, trial, args.axis))
         for ax, series in zip(axes, (rotation, fn_est, m_est)):
             ax.plot(t, series, color=colour, label=label)
-        print(f"{trial:26s} gamma_{args.axis} {rotation[-1]:+6.2f} deg | "
+        print(f"{trial:26s} theta_err_{args.axis} {rotation[-1]:+6.2f} deg | "
               f"Fn_est {fn_est[-1]:7.1f} N | M_est {m_est[-1]:+6.2f} N m")
 
     sub = AXIS_SUBSCRIPT[args.axis]
@@ -133,8 +140,8 @@ def main():
     # panel, so each is broken once: the words on the first line and the symbol
     # with its unit on the second. Three lines were tried first and read worse
     # than the single-line labels of the typeset figures beside this one.
-    labels = [rf"Contact Response About ${sub}$," "\n"
-              rf"$\gamma_{{{sub}}}$ [$^\circ$]",
+    labels = [rf"Angular Error About ${sub}$," "\n"
+              rf"$\theta_{{\mathrm{{err}},{sub}}}$ [$^\circ$]",
               "Model-Estimated Normal\n"
               r"Force, $F_{n,\mathrm{est}}$ [N]",
               rf"Model-Estimated TCP" "\n"
@@ -147,7 +154,7 @@ def main():
                 ha="left", va="top")
     for index, (ax, text) in enumerate(zip(axes, labels)):
         ax.set_ylabel(text)
-        # Zero separates a flat tool from a tilted one, and a restoring moment
+        # Zero marks a zero calibrated tangent component, and a restoring moment
         # from a driving one. The force panel is left without a line, because a
         # zero line on a load axis forces the axis down to zero.
         if index != 1:

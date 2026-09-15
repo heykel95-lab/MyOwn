@@ -56,10 +56,23 @@ two-panel metric-comparison plot. The summary mode uses the archived derived
 metrics without requiring the absent raw time-series files and avoids the
 clipped label in the older figure.
 
-The four Chapter 5 figures drawn in `pgfplots` — the Case-A bars, the Case-D
-panels, the Case-D-against-Case-F comparison and the Case-G panels — have no
-generator here. They are `.tex` sources in `figures/` and are drawn from the
-means already tabulated in the thesis.
+The four active A--D comparisons are native `pgfplots` sources in
+`figures/ch05/`. `make_contact_angular_error_figures.py` regenerates them from
+`contact_angular_error/grouped_results.csv`. The input contains means and
+sample standard deviations from the three terminal endpoint reports at every
+setting. Those reports store the calibrated normal components to 0.01 degree.
+An SD that rounds to 0.00 degree does not establish zero measurement uncertainty.
+
+    python make_contact_angular_error_figures.py
+
+Use `--data-dir` or `--summary` to select another copy of the same audited
+summary, and `--out-dir` to stage regenerated sources. The original measured
+entry-offset convention is retained. Angular error is the shortest
+reference-to-tool normal rotation vector projected on the first tangent,
+equivalent to negating the archived tool-to-reference normal component.
+`contact_angular_error/README.md` documents the calculation and the terminal
+reports used. No result is formed by subtracting the previous finite
+contact-response angle from the entry offset.
 
 ## Environment
 
@@ -151,9 +164,8 @@ are not in the thesis.
 
 Chapter 5 includes nine figures, and all nine redraw from a checkout alone.
 
-Four are `pgfplots` sources in `figures/ch05/` whose coordinates are written
-into the `.tex` file, so they carry their own data and redraw wherever the
-thesis compiles: `results_case_a_bars.tex`, `results_case_b_stiffness.tex`,
+Four are `pgfplots` sources in `figures/ch05/` whose coordinates are generated from the archived calibrated-error endpoint
+summary, so they carry their own data and redraw wherever the thesis compiles: `results_case_a_bars.tex`, `results_case_b_stiffness.tex`,
 `results_case_c_stiffness.tex` and `results_case_d_panels.tex`.
 
 The other five are drawn here:
@@ -232,3 +244,21 @@ were renumbered, but the drawing and every string in it are the same.
 configured orientation-offset notation used by the thesis. Its horizontal axis
 therefore uses `Configured Orientation-Offset Direction` and
 \(\theta_{\mathrm{offset}}\), not the withdrawn commanded-rotation wording.
+
+## Calibrated-normal contact error
+
+The active A--D endpoints and the upper panel of `MAIN_D_wrench.pdf` now show
+angular error relative to the calibrated surface normal. The three-panel
+generator reads `angular_deviation_t1_deg` (or its archived alias
+`alignment_error_t1_deg`) and reverses its sign. Its lower force and moment
+panels retain the same model-estimated wrench calculation and data.
+
+The final normal error is a calibrated estimate of physical angular
+misalignment, with calibration and mounting limitations. Its tangent component
+does not establish that the complete normal-angle magnitude is zero.
+
+The 57 terminal endpoint reports reproduce all 19 main conditions. Only the
+three representative r01 time-history CSVs are needed to reproduce the
+mechanism plot. The grouped endpoints are consistently calculated from terminal
+reports rather than mixing their 0.01 degree resolution with full-precision
+logged samples.

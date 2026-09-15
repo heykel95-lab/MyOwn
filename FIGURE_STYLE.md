@@ -539,33 +539,43 @@ labels as well as the drawings, and shorten a panel label rather than spreading
 the panels further -- `(a) Rotations about the tangents` became
 `(a) Tangent rotations` on that ground.
 
-**The Chapter 4 angular-comparison figure shows entry and response together.**
-Instructed 2026-09-08. `surface_reference_geometry.tex` belongs beside the
-Section 4.5 definitions, not in the calibration section. It shows the configured
-reference in red, the pose-based contact-entry orientation in solid dark green,
-and the pose-based contact-end orientation in dashed blue. The dashed endpoint
-is the author's explicit exception to the solid-measurement rule above.
+**The Chapter 4 angular-comparison figure shows entry and final angular error.**
+The configured surface normal was calibrated against the physical plate. Draw
+the actual normal vectors rather than plane or tool-face traces. The red arrow
+points along the inward calibrated surface normal \(-n_s\) and carries
+`Calibrated surface normal`. The solid dark-green and dashed blue arrows show
+\(n_{\mathrm{Tool}}(t_{\mathrm{start}})\) and
+\(n_{\mathrm{Tool}}(t_{\mathrm{end}})\), respectively, calculated from measured
+end-effector orientation using the calibrated tool normal. The dashed arrow
+retains the author's exception for the contact-end instant. The outer red arc
+for \(\theta_{\mathrm{meas},t_1}\) runs from \(-n_s\) to the entry tool
+normal. The inner blue arc for
+\(\theta_{\mathrm{err},t_1}(t_{\mathrm{end}})\) runs from \(-n_s\) to the
+final tool normal. Both arcs share the calibrated zero.
 
-**Draw the entry angle directly between the plane traces.** Revised
-2026-09-08 after the normal-arrow construction was found unclear. Three rays
-share one origin: the horizontal configured reference, the solid entry line,
-and the dashed end line. The outer red arc for
-\(\theta_{\mathrm{meas},t_1}\) spans the configured reference to entry. The
-inner blue arc for \(\gamma_{t_1}\) spans end back to entry. Each arc and its
-symbol use the colour of the reference that distinguishes the comparison.
-Label the measured instants \(t_{\mathrm{start}}\) and
-\(t_{\mathrm{end}}\) beside the respective lines. The separate left-hand
-`Entry-to-end rotation` arc is withdrawn at the author's request; show only
-the two reported quantities. Omit the extra normal arrows.
+The main contact metric is the shortest rotation from the inward calibrated
+surface normal to the calibrated tool-face normal transformed by measured
+end-effector orientation, projected on \(t_1\). It is the negative of the
+archived `angular_deviation_t1_deg` component, not entry offset minus the old
+contact-response angle. Recompute every mean and sample standard deviation
+from the archived trial endpoints when the metric changes.
 
-For the schematic pure \(t_1\) rotation, the angle between the plane traces
-equals the angle between their normals, so the drawing preserves the
-Section 4.5.1 definition. This planar illustration does not replace the
-three-dimensional rotation-vector component calculation. The lines compare
-orientations, and their common origin is not a measured contact point. Both
-tool-face directions use the measured end-effector poses and the same
-calibrated tool normal, as the body text states. Keep the surface-frame inset;
-give no numerical angle and draw no physical plate.
+The schematic is a pure \(t_1\) rotation, with the normal arrows in the
+drawing plane. The common origin compares orientations and is not a contact
+point. Keep the sign inset with \(t_1\) out of the page and positive rotation
+from \(+t_2\) towards \(+n_s\).
+Zero angular error refers to the calibrated reference. It is an estimate of
+physical alignment subject to calibration and mounting errors, and a zero
+\(t_1\) component alone does not establish zero total normal mismatch.
+
+**Contact endpoint axes explicitly say `Final Angular Error`.** Use
+`Final Angular Error About \(t_1\), \(\theta_{\mathrm{err},t_1}\) [°]`
+on A--D endpoint comparisons and `Angular Error About \(t_1\)` with the same
+symbol on the time-history panel. Endpoint error bars use sample standard
+deviations over three archived terminal values, each recorded to 0.01 degree.
+The source data and methodology state that a displayed 0.00 degree SD is
+limited by that archive precision. Numerical labels above bars must clear
+their error-bar caps. B and C retain the same 0--10 degree vertical scale.
 
 **Shared presentation figures stay in step with the final deck and its PDF.**
 Instructed 2026-09-08. The presentation is
@@ -781,15 +791,22 @@ angle. Keep the control frequency out because the whole drawing is one loop.
 Every arrow is labelled, every secondary route stays visually subordinate, and
 every box, arrowhead and label retains visible separation after compilation.
 
+**The setup tool touches both custom fingers.** In the side elevation of
+Figure 4.1 and its shared presentation illustration, terminate both finger
+tips on the tilted tool upper edge. Preserve the tool pose and its
+leading-edge contact with the surface. Do not leave the tool floating below
+the fingers. The contact locations are schematic, not measured coordinates.
+
 **Figure 4.1 does not identify the configured normal with the physical plane.**
 Panel (b) draws the physical surface and its conceptual normal
 \(n_{\mathrm{phys}}\) separately from the configured surface reference and its
 frame \((t_1,n_s)\). It assigns no measured angle to the unknown difference.
 
 **The Section 4.5 angular comparison also gives the rotation sign.** Its
-surface-frame inset places \(t_2\) rightwards, \(n_s\) upwards and \(t_1\)
-out of the page as a dotted circle. Thus \(t_1\times t_2=n_s\), and positive
-rotation is anticlockwise. The separate sign-only figure is withdrawn. The
+surface-frame inset places \(t_2\) upwards, \(n_s\) leftwards and \(t_1\)
+out of the page as a dotted circle. The inward reference \(-n_s\) therefore
+points rightwards in the main drawing. Thus \(t_1\times t_2=n_s\), and positive
+rotation is anticlockwise, from \(+t_2\) towards \(+n_s\). The separate sign-only figure is withdrawn. The
 calibration section has no separate geometry or flowchart figure; Figure 4.1
 already separates the physical plane from the configured reference.
 
@@ -881,8 +898,8 @@ horizontal axis reads `Configured Orientation-Offset Direction,
 \(\theta_{\mathrm{offset}}\) [°]`. The withdrawn commanded-rotation wording and
 \(\theta_{\mathrm{cmd}}\) symbol must not return when the plot is regenerated.
 
-**Figure 5.3 uses the same \(0^\circ\) to \(10^\circ\) response scale as
-Figure 5.2.** Its measured span is only \(0.03^\circ\), so a narrow axis around
+**Figure 5.3 uses the same \(0^\circ\) to \(10^\circ\) angular-error scale as
+Figure 5.2.** The endpoint means differ by only about \(0.07^\circ\), so a narrow axis around
 the three means would visually exaggerate the cross-axis stiffness effect.
 
 ### The Section 5.1 wrench figures, and what Figure 5.5 now carries
@@ -1263,7 +1280,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
   Case.** The English description comes first so a reader who does not remember
   the symbol list can still read the figure; the symbol follows so the figure
   ties back to the notation; the unit closes it in square brackets. Settled
-  examples: `Contact Response About \(t_1\), \(\gamma_{t_1}\) [°]`,
+  examples: `Angular Error About \(t_1\), \(\theta_{\mathrm{err},t_1}\) [°]`,
   `Rotational Stiffness About \(t_1\), \(K_{R,t_1}\) [N m/rad]`,
   `Cross-Axis Translational Stiffness, \(K_{p,t_2}\) [N/m]`,
   `Tangential CoC Position, \(r_{c,t_2}\) [mm]`,
@@ -1278,7 +1295,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
 
   **Figure 5.5 uses the first form exactly on its upper axis.** `Set-Up
   Rotation About \(t_1\)` is withdrawn from the plot; the axis reads
-  `Contact Response About \(t_1\), \(\gamma_{t_1}\) [°]`.
+  `Angular Error About \(t_1\), \(\theta_{\mathrm{err},t_1}\) [°]`.
 
   **It is set by the generator, not by an overlay.** The corrected axis label
   lived in `plot_coc_case.py` while the committed `MAIN_D_wrench.pdf` still
@@ -1346,7 +1363,7 @@ writes a generated file names it, so regeneration must preserve this mapping.
   `Cumulative Motion, \(E_N\) [°]`. Use this concise label on the null-space
   motion figure in both the thesis and presentation. Its full definition stays
   in the methodology. The active contact and null-space axes use
-  \(r_{c,t_2}\), \(\gamma_{t_1}\), \(\theta_{\mathrm{meas},t_1}\),
+  \(r_{c,t_2}\), \(\theta_{\mathrm{err},t_1}\), \(\theta_{\mathrm{meas},t_1}\),
   \(E_N\), \(\sigma_{\min}\) and \(\Delta\eta\). The pose-based appendix comparison
   uses descriptive labels instead of promoting its local quantities to the
   thesis-wide symbol list.
@@ -1360,8 +1377,8 @@ writes a generated file names it, so regeneration must preserve this mapping.
   from the thesis. Do not restore its plot or the maximum-position-error
   plot. Net displacement retains \(\Delta\eta\) without a `dist` index.
 
-  **Response axes pair words with the symbol.** Write `Measured contact rotation
-  about \(t_1\), \(\gamma_{t_1}\) [°]`, not a bare symbol. A parameter axis
+  **Response axes pair words with the symbol.** Write `Angular Error
+  About \(t_1\), \(\theta_{\mathrm{err},t_1}\) [°]`, not a bare symbol. A parameter axis
   likewise names the varied quantity before its symbol, for example
   `Rotational stiffness about \(t_1\), \(K_{R,t_1}\)` or
   `Tangential CoC position along \(t_2\), \(r_{c,t_2}\)`. Wrench panels follow
@@ -1462,3 +1479,9 @@ Then look at the rendered page and check:
 - every arrowhead lands on the node it belongs to;
 - the smallest text is still legible at final printed size;
 - the figure has no internal title and its caption is a one-line noun phrase.
+
+
+The surface-frame illustration includes the tool resting on the plane beside
+the frame origin. Use the shared `figures/ch02/surface_tool_frame.tikz` in
+panel (a) of the direction-rule figure and the identical source in the
+presentation. Keep all three axes visible. Agreed 2026-09-15.

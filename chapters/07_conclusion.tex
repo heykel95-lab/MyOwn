@@ -18,48 +18,43 @@ reference also gives the commanded press the virtual lever arm
 \mbox{\(r_c\)}, which generates the additional moment
 \mbox{\(r_c\times f\)} at the TCP.
 
-In the contact measurements, changing the \abbr{CoC} position had little effect
-on the model-estimated normal force but changed the model-estimated TCP moment
-strongly, including its direction. The contact response
-\mbox{\(\gamma_{t_1}\)} changed with this moment, indicating that the
-\abbr{CoC} mainly influenced the response through the additional moment at the
-TCP.
+In the contact measurements, changing the \abbr{CoC} position had little
+effect on the model-estimated normal force but changed the estimated TCP
+moment substantially. The angular error
+\mbox{\(\theta_{\mathrm{err},t_1}(t_{\mathrm{end}})\)} changed with this moment.
+The comparison indicates that the \abbr{CoC} mainly influenced the angular
+behaviour through its additional commanded moment at the TCP.
 
-With the \abbr{CoC} at the TCP, contact-induced rotation occurred towards the
-configured surface for both rotational directions. The response reached
-\mbox{\(81.3\,\%\)} and \mbox{\(115.1\,\%\)} of the respective
-angular-offset magnitudes. The TCP-centred condition therefore showed an almost
-symmetrical rotational behaviour with respect to the two rotational directions,
-although the measured response magnitudes were different. Since
-\mbox{\(r_c=0\)}, no additional CoC-induced moment favours either direction.
-The TCP-centred \abbr{CoC} is therefore suitable as the final configuration
-after alignment because it removes the directional preference introduced by a
-displaced \abbr{CoC} and allows compliant rotation in both directions.
+With the \abbr{CoC} at the TCP, the angular-error magnitude was smaller
+than the entry magnitude by \mbox{\(81.2\,\%\)} and \mbox{\(85.0\,\%\)}
+for the positive- and negative-offset conditions.
+The negative-offset component crossed zero.
+The nominal-zero condition instead showed an increase in angular error.
+At \mbox{\(r_c=0\)}, the additional CoC-induced moment vanishes while the
+rotational spring and damper remain active. The TCP provides a neutral
+impedance reference with respect to this added moment.
 
-The rotational stiffness strongly influenced the alignment response. Increasing
-\mbox{\(K_{R,t_1}\)} from \mbox{\(5\)} to \mbox{\(50\,\mathrm{N\,m/rad}\)}
-reduced the measured response by \mbox{\(63.9\,\%\)}, showing that increasing
-the stiffness about the rotation axis increasingly resists the contact-induced
-rotation required for alignment. In comparison, varying the translational
-stiffness along \mbox{\(t_2\)} produced a response span equal to only
-\mbox{\(0.4\,\%\)} of the TCP-centred reference. Within the investigated range,
-the alignment response was therefore considerably more sensitive to rotational
-stiffness than to translational stiffness along the surface.
+Higher rotational stiffness left a larger angular error.
+Increasing \mbox{\(K_{R,t_1}\)} from \mbox{\(5\)} to
+\mbox{\(50\,\mathrm{N\,m/rad}\)} increased the mean angular error by
+\mbox{\(276.2\,\%\)} relative to the lowest stiffness.
+The tested variation of translational stiffness along \mbox{\(t_2\)}
+produced a span of \mbox{\(3.8\,\%\)} of its TCP-centred reference error.
+The translational stiffness along \mbox{\(t_1\)} remained constant.
+Within these tested ranges, the angular error was more sensitive to
+rotational stiffness.
 
-The tangential \abbr{CoC} displacement produced a strongly direction-dependent
-response. A displaced \abbr{CoC} favoured alignment for one direction of the
-angular offset while opposing it for the other. Selecting the
-displacement direction according to the angular-offset direction
-increased the final response only slightly, by approximately
-\mbox{\(4\,\%\)}, while the measured time history also indicated a faster
-rotation towards alignment. Selecting the opposite displacement direction
-reduced the response by approximately \mbox{\(98\,\%\)} to
-\mbox{\(99\,\%\)}. The main effect of a displaced \abbr{CoC} was therefore to
-select the preferred rotational direction, while a suitably selected
-displacement could additionally accelerate the alignment response. An adaptive
-\abbr{CoC} strategy can therefore select a temporary tangential \abbr{CoC}
-displacement according to the angular-offset direction and return the
-\abbr{CoC} to the TCP once alignment has been established.
+The effect of \abbr{CoC} displacement depended on the entry direction.
+The smallest measured mean error magnitudes were approximately
+\mbox{\(15\,\%\)} and \mbox{\(34\,\%\)} below their respective TCP-centred
+references, at different tested positions.
+The first-tangent error component could cross zero.
+Further contact-induced rotation could increase its final magnitude.
+The illustrated positive-offset trace reached a band around its angular error
+earlier with a selected displacement than at the TCP.
+These results motivate selection based on the measured angular error and its
+evolution during contact. Returning the \abbr{CoC} to the TCP after alignment
+would remove the directional preference of the added moment.
 
 The secondary null-space functions were evaluated separately with a fixed
 Cartesian pose reference. Projected damping reduced the cumulative projected
@@ -105,22 +100,31 @@ motion.
 \subsection{Calibration and Measurement Scope}
 \label{subsec:conclusion_measurement_uncertainty}
 
-The measured angular offset \mbox{\(\theta_{\mathrm{meas},t_1}\)} was calculated from the
-measured end-effector orientation and the calibrated tool normal relative to
-the configured surface reference. The contact response
-\mbox{\(\gamma_{t_1}\)} was calculated from the measured end-effector
-orientations at the beginning and end of Contact Establishment.
-Both quantities depend on the robot pose measurement and the configured surface
-frame. Only the measured angular offset \mbox{\(\theta_{\mathrm{meas},t_1}\)}
-also depends on the tool-normal calibration.
+The measured angular offset \mbox{\(\theta_{\mathrm{meas},t_1}\)} and angular
+error \mbox{\(\theta_{\mathrm{err},t_1}(t)\)} use the calibrated surface
+reference and tool normal with the measured end-effector orientation.
+The surface reference was established with the tool face seated on the
+physical plate and provides an estimate of its normal.
+Its construction used the nominal end-effector axis, while the separate
+tool-normal calibration found a direction differing by approximately
+\mbox{\(1.56^\circ\)}.
+The configured reference retained its original construction.
 
-The physical tool--surface angle was not measured directly during contact. The
-reported angular quantities describe the pose-based entry condition and the
-subsequent end-effector response. Nevertheless, repeatable rotation
-towards the configured surface was observed without direct measurement of the
-physical contact angle. The physical pressure centre and instantaneous contact
-location were also not measured, so their contribution to the contact
-interaction could not be evaluated directly.
+The instantaneous physical tool--surface angle was not measured independently
+during contact. The calculated angular error therefore estimates physical
+misalignment subject to the surface-reference and tool-normal calibration.
+No numerical uncertainty bound for that estimate was established.
+The reported component about \mbox{\(t_1\)} also leaves the error about the
+other tangent outside the principal comparison.
+A zero first-tangent component alone does not establish complete normal
+alignment.
+
+The comparison endpoints were stored to \mbox{\(0.01^\circ\)}.
+A sample standard deviation of zero at this precision indicates unresolved
+variation in the stored endpoint values.
+The physical pressure centre and instantaneous contact location were not
+measured, so their individual contributions to the interaction remain
+unresolved.
 
 \subsection{Tool-Mount Compliance}
 \label{subsec:conclusion_tool_mount}
@@ -130,10 +134,11 @@ angular play about \mbox{\(y_{\mathrm{EE}}\)}, which is approximately aligned
 with \mbox{\(t_2\)} in the flat configuration. This mechanical play may have
 contributed to the greater variability of the \mbox{\(t_2\)} measurements.
 
-The reported response \mbox{\(\gamma_{t_1}\)} is calculated from the measured
-end-effector rotation. Because the tool can move slightly relative to the end
-effector, the physical tool-face rotation may differ from the measured
-end-effector rotation.
+The angular error \mbox{\(\theta_{\mathrm{err},t_1}(t)\)} assumes the
+calibrated tool normal remains fixed relative to the end effector.
+The instantaneous relative tool--gripper rotation was not tracked separately
+during contact. Motion within the mount can therefore make the physical
+tool-face direction differ from the direction calculated using that calibration.
 
 \subsection{Scope of the Null-Space Evaluation}
 \label{subsec:conclusion_nullspace_scope}

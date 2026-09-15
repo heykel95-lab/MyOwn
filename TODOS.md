@@ -3,15 +3,7 @@
 This file contains only agreed work that remains unfinished. Completed items are
 removed in the turn in which they are finished.
 
-## Confirm the material the new summaries dropped is carried elsewhere
 
-The supplied Abstract and Kurzfassung of 2026-09-04 dropped three things the
-previous versions carried, and each needs a home in the body or a decision that
-it is not needed. One remains open.
-
-- The rotational-stiffness interval that produced the \(64\,\%\) reduction.
-  Chapter 5 reports it; confirm the Conclusion still states it, since the
-  Abstract no longer does.
 
 ## Remove the duplicate TCP expansion in Chapter 2
 
@@ -122,16 +114,14 @@ used \(20\,\mathrm{N}\) at \(200\,\mathrm{mm}\). Add this distinction beside the
 repository-authority rules in `code/AGENTS.md` so later analysis does not mix
 the two configurations.
 
-## Decide on `parallel alignment` thesis-wide
+## Reconcile generic alignment wording outside the angular-result sections
 
-The Abstract, Section 1.4 and Section 6.1 describe the result as rotation
-`towards the configured surface`. The longer form it replaced, `towards
-parallel alignment with the configured surface`, and its variant `the
-configured surface-parallel orientation`, remain in eight places: Section 1.1
-once, Section 3.2.2 once, Section 4.5.2 twice, and Chapter 5 four times.
-
-Both are defensible, but one quantity now has two names. Decide which survives.
-Section 1.1 and Section 1.4 carry the two forms two pages apart.
+The contact-result revision uses angular error relative to the calibrated
+surface, with its definition and numerical claims synchronized in Chapters 4--6.
+Generic controller-mechanism wording still uses both `towards the configured
+surface` and `towards parallel alignment with the configured surface` in
+Chapters 1--3. This remains an editorial choice for those mechanism statements,
+not a second name for the measured angular-error metric.
 
 ## Restore the one-recording statement to Section 4.6.2
 

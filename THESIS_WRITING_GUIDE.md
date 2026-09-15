@@ -38,6 +38,61 @@ it in `TODOS.md` as a decision for the author, with the rule it crosses and the
 smallest change that would satisfy both. Do not resolve it silently in either
 direction.
 
+## Contact angular error relative to the calibrated surface
+
+Use the name `angular error` without the adjective `final`, including captions,
+axes, tables, notes and the presentation. The existing evaluation instant
+\(t_{\mathrm{end}}\) remains in the definition. Agreed 2026-09-15.
+
+
+The contact results use **angular error**, \(\theta_{\mathrm{err},t_1}(t)\),
+relative to the calibrated surface reference. Agreed 2026-09-15. This replaces
+the former contact-response metric in the thesis, presentation, notes and
+speaking text. The former end-to-entry rotation and its \(\gamma\) notation
+are not reported angular results.
+
+The tool normal is \(n_{\mathrm{Tool}}(t)=R_{\mathrm{EE}}(t)n_{\mathrm{Tool,EE}}\).
+The vector \(\theta_{\mathrm{err}}(t)\) is the shortest rotation from the
+inward configured surface normal \(-n_s\) to this measured pose-based tool
+normal. Its first-tangent component is
+\(\theta_{\mathrm{err},t_1}(t)=t_1^\top\theta_{\mathrm{err}}(t)\).
+The measured contact-entry angular offset remains
+\(\theta_{\mathrm{meas},t_1}=\theta_{\mathrm{err},t_1}(t_{\mathrm{start}})\).
+Preserve positive and negative directions. Zero on a first-tangent component
+axis is not a statement that the full three-dimensional normal error is zero.
+
+The controller evaluated the full normal-to-normal rotation from measured
+end-effector orientation. Its archived component points from tool normal to
+\(-n_s\), so the evaluation negates the recorded component. Read the exact
+terminal report or time-series field. Never form the new metric by subtracting
+the old finite contact rotation from the entry angle, and never substitute the
+controller tracking error \(e_R\). The rotational spring and damper retain
+their held-entry controller reference.
+
+All 57 comparison endpoints come from per-trial controller reports stored to
+\(0.01^\circ\). Calculate means and sample standard deviations from those
+trial-level endpoint components consistently. Three representative CSV files
+supply the time histories at their recorded precision. Their curves are
+individual repetitions, not averages. State this provenance in Chapter 4 and
+Appendix B. The report precision is not a calibrated uncertainty bound.
+
+The configured surface reference comes from contact with the physical plate
+during calibration and serves as an estimate of its normal. The recorded
+construction used the nominal end-effector axis at a seated pose, with a
+separate tool-normal calibration. Retain the experimental reference and
+calibration. State this construction positively in Chapter 4. Consolidate the
+remaining calibration and tool-mount uncertainty in Section 6.2. Do not call
+the reference exact, independently measured under load, or accurate to an
+invented small bound.
+
+Recalculate every endpoint, sample standard deviation and percentage when
+changing this metric. A first-tangent error component may cross zero, after which further
+contact rotation can increase its final magnitude. Interpret each Case-D direction using the final
+error rather than assuming that more rotation means better alignment.
+Percentages compare error magnitudes against an explicitly named reference.
+Avoid a percentage with a near-zero denominator or a change through zero.
+The old response percentages are not error percentages and must not be reused.
+
 ## Scientific narrative
 
 Write the thesis as one completed engineering investigation:
@@ -166,19 +221,15 @@ on the weakest statement they carried. Chapter 5 keeps only a brief note
 that measured TCP position error stayed below \(2\,\mathrm{mm}\), explicitly
 limited to position. Both summaries end on the null-space percentages.
 
-The percentages are rounded in the summaries and exact in the body: the
-Abstract writes `about \(64\,\%\)` where Chapter 5 reports \(63.9\,\%\), and
-`approximately \(98\,\%\) to \(99\,\%\)` where the chapter reports the two
-endpoints. Round in one direction only, so that no summary figure overstates a
-chapter figure.
+The summaries round the calibrated angular-error comparisons from Chapter 5.
+State the reference condition beside each percentage and keep the English and
+German values identical. Do not reuse percentages from the withdrawn
+contact-rotation metric.
 
-The reason for the change is that the qualitative wording could not state the
-main finding. `A displaced centre produced a slightly larger response` is true
-and says nothing about the result that matters, which is direction selection:
-the displacement selected for the offset direction raised the response by
-\(4.0\,\%\) and \(4.3\,\%\), while the opposite displacement reduced it
-by \(97.6\,\%\) and \(99.2\,\%\). Those four numbers *are* the finding,
-and a reader cannot infer the asymmetry from `slightly larger`.
+The summaries state the measured stiffness effect and the direction-dependent
+CoC result using the angular error. They distinguish a reduction of error magnitude
+from a first-tangent error component crossing zero. A suitable displacement for
+one entry direction is not automatically suitable for the other.
 
 **This is not a return to the exception withdrawn on 2026-08-25.** That one
 admitted a pair of per-condition means — `changed the measured
@@ -207,20 +258,15 @@ investigated scope. Prefer one claim per sentence — an Abstract in which every
 sentence carries a full conclusion reads as machine-polished however accurate
 it is.
 
-**The summaries no longer state how the angular conditions were evaluated.**
-The sentence `The angular conditions were defined relative to the configured
-surface geometry, and the contact response was calculated from the measured
-end-effector orientations` and its German counterpart were dropped by the
-supplied text of 2026-09-04. Where the reference basis has to be stated, state
-it in Chapter 4, which defines it against the configured surface. The
-physical-normal and instantaneous physical-angle limitations belong in
-Section 6.2.2 and are not repeated in either summary.
+**The summaries name the evaluated angular error without reproducing its
+construction.** The full calibrated-reference definition belongs in Chapter 4.
+Section 6.2 contains the physical-normal and instantaneous tool-angle
+measurement limitations.
 
-**The Abstract and Kurzfassung carry no symbols.** The supplied Abstract of
-2026-09-04 removed every symbol the 2026-09-02 text had introduced: \(t_1\),
-\(t_2\), \(r_c\), \(r_c\times f\) and \(\gamma_{t_1}\) are all gone, and the
-summaries again read as continuous prose. The permission granted on 2026-09-02
-is therefore spent; do not reintroduce a symbol into either text.
+**The Abstract and Kurzfassung carry no symbols.** Describe the angular error,
+rotational stiffness, tangential translational stiffness, centre of compliance,
+and tool centre point in words. Mathematical mode in the summaries is reserved
+for percentages.
 
 The cost that permission was granted to avoid has been paid in words instead.
 The 2026-09-02 rule argued that an Abstract naming no axis cannot say which
@@ -242,25 +288,16 @@ reader to hold a coordinate convention the summaries never state. This keeps
 continue to use the `positive-offset condition` and `negative-offset condition`
 names settled below.
 
-The settled summaries do not name the pair at all. The sentence that defined
-it — `positive and negative pre-contact angular offsets were investigated about
-\(t_1\)` — was dropped on 2026-09-04 along with the axis symbols, and the
-directional finding now reaches the reader through the compliance-centre
-result: a suitable displacement raised the response, the opposite displacement
-reduced it, and the displaced centre `acted mainly as a selector of the
-preferred rotational direction`. Do not restore the defining sentence to
-support a phrase; write the phrase without it.
+The summaries avoid local condition names and axis symbols. Describe the
+direction-dependent CoC result in words and reserve the named positive- and
+negative-offset conditions for the body chapters.
 
-**Angular test conditions are described as directions of rotation, and are
-named by their offset direction where one has to be identified repeatedly.**
-Throughout the thesis, the configured orientation offset
-\(\theta_{\mathrm{offset},t_1}\) defines the desired pre-contact tool direction,
-the measured pose-based angular offset \(\theta_{\mathrm{meas},t_1}\) gives the
-condition reached at contact entry, and the contact response
-\(\gamma_{t_1}\) gives the measured outcome. Use `both directions of rotation`
-or `both rotational directions` for aggregate comparisons. The plus and minus
-symbols remain in scalar equations and numerical values because they encode the
-coordinate direction.
+**Angular test conditions are described as directions of rotation and named
+by their offset direction where needed repeatedly.** The configured offset
+\(\theta_{\mathrm{offset},t_1}\) defines the desired pre-contact direction.
+The measured offset \(\theta_{\mathrm{meas},t_1}\) identifies the entry
+condition, and \(\theta_{\mathrm{err},t_1}(t_{\mathrm{end}})\) gives the angular error. Use `both directions of rotation` for aggregate comparisons.
+Positive and negative values retain the coordinate direction.
 
 **`positive-offset condition` and `negative-offset condition` are the settled
 names for the two directional test conditions.** Agreed 2026-09-01. They
@@ -472,14 +509,9 @@ time reference and the panel contents moved into the body text, where the rule
 under *Figures and tables* sends them. None carries an optional short caption
 any longer: a caption that is already a noun phrase has nothing to shorten.
 
-**The Case-D mechanism caption is `Contact response and model-estimated
-interaction wrench.`** Shortened 2026-09-07, dropping `for the three \abbr{CoC}
-positions` and the optional short caption with it. The longer form wrapped to
-two rendered lines, which the one-line rule under *Figures and tables* forbids,
-and the sentence after the figure already says the comparison is over the three
-centre positions, so nothing left the thesis. This follows the three Section 5.1
-captions: once the visible caption is a noun phrase that fits, a second shorter
-form for the list of figures has nothing to shorten.
+**The Case-D mechanism caption is `Angular error and model-estimated
+interaction wrench.`** Keep it as one concise rendered line. The surrounding
+text identifies the three CoC positions and the three panel contents.
 
 **A wrapping caption is a layout fault as well as a style one.** The two-line
 caption was what pushed this figure past the space left on its page: the graphic,
@@ -517,19 +549,16 @@ called a measured wrench without that qualification, the moment is transported
 to the TCP before the tangent is projected, and Chapter 2 still carries no
 estimated wrench.
 
-**The Case-D mechanism figure carries the model-estimated wrench, not the
-command.** Instructed 2026-09-06. It is Figure 5.8 now that Section 5.1 has
-added three figures ahead of it, and was Figure 5.5 before that date. Panel~(a) keeps the contact response \(\gamma_{t_1}\); panels~(b)
-and~(c) carry \(F_{n,\mathrm{est}}\) and \(M_{t_1,\mathrm{est}}\), so the
-figure relates the compliance-centre position to the interaction wrench rather
-than to the command. The reason is that the direction-dependent effect is a
-statement about the contact, and the commanded moment is what the controller
-asked for. Over the final second the estimated force settles at approximately
-\(-82.9\), \(-79.0\) and \(-78.0\,\mathrm{N}\) and the estimated TCP moment at
-\(4.07\), \(0.73\) and \(-2.54\,\mathrm{N\,m}\), at \(r_{c,t_2}=-40\), \(0\)
-and \(40\,\mathrm{mm}\). The settled chain is *\abbr{CoC} position →
-model-estimated contact moment → measured rotational response*, and the
-Chapter 6 sentence that carried the commanded pair moved with it.
+**The Case-D mechanism figure carries the angular error and model-estimated
+wrench.** Panel (a) shows \(\theta_{\mathrm{err},t_1}(t)\), panel (b) shows
+\(F_{n,\mathrm{est}}\), and panel (c) shows \(M_{t_1,\mathrm{est}}\).
+The wrench values retain the original estimator convention and TCP reference.
+Over the final second, normal force is approximately \(-82.9\), \(-79.0\)
+and \(-78.0\,\mathrm{N}\), and TCP moment is \(4.07\), \(0.73\) and
+\(-2.54\,\mathrm{N\,m}\), for CoC displacements \(-40\), \(0\) and
+\(40\,\mathrm{mm}\). Relate the changed angular error to this measured
+interaction without treating an estimated moment as a separately measured
+physical contact moment.
 
 **The prose may call it the measured interaction wrench available from the
 robot**, provided the paragraph before that figure states once that the
@@ -551,15 +580,11 @@ numeric tables. The complete numeric values belong in Appendix D. Uncertainty
 for Case D is shown directly on the main comparison figure, so the separate
 appendix spread plot is removed.
 
-**Every setting of the main Cases A--D carries its sample standard deviation,
-in its Appendix-D table.** The earlier arrangement gave means alone for Cases A
-to C and mean \(\pm\) SD for Case D only, while Section 4.3.3 said results were
-reported as the arithmetic mean and sample standard deviation. The Case A, B
-and C tables were completed on 2026-08-25 from
-`Thesis_Final_Control/experiments/derived/metrics.csv`, using the same
-`contact_rotation_t{1,2}_deg` column and the same sample standard deviation
-over three repetitions that `make_coc_figures.py` computes, and every mean
-already in those tables was reproduced before any spread was added.
+**Every setting of Cases A--D carries its sample standard deviation in its
+Appendix-D table.** Calculate the angular-error mean and sample standard
+deviation from the three terminal report endpoints, consistently for every
+setting. Preserve the displayed two-decimal precision. The figure and table
+numbers must be regenerated together when the angular metric changes.
 
 The division of labour is then: **the tables carry the spread, the figures
 carry the means.** Only the Case-D comparison also draws error bars, because
@@ -590,7 +615,7 @@ in its opening. Cases A--C proceed directly to their comparisons. Case D
 identifies the largest spread because that condition differs visibly from the
 rest: the direction generated by the \(+10^\circ\) configured offset at
 \(r_{c,t_2}=-20\,\mathrm{mm}\), with a sample
-standard deviation of \(0.44^\circ\). The generic sentence explaining that
+standard deviation of \(0.42^\circ\). The generic sentence explaining that
 markers are means and error bars are one sample standard deviation is omitted;
 the chapter opening and the figure convention already establish it.
 
@@ -600,13 +625,12 @@ deviation at the precision the rest of the table uses, and switching that one
 entry to a third decimal or to an inequality would break the column for no
 gain.
 
-The main contact evaluation uses the contact response
-\(\gamma_{t_1}\). Its positive and negative values retain the response
-direction. The commanded normal force \(F_n\) and commanded TCP
-moment \(M_{t_i}\) appear only in the Case-D mechanism plot. Selected-tool-point
-and TCP displacement metrics and the fully blocked spring-force scale are not
-reported quantities and are not defined. A quantity used in one local appendix
-equation remains local and does not receive a List-of-Symbols entry.
+The main contact evaluation uses the angular error
+\(\theta_{\mathrm{err},t_1}(t_{\mathrm{end}})\). Its positive and negative
+values retain the angular-error direction. The Case-D mechanism plot adds the
+time history and model-estimated wrench. Selected-tool-point and TCP
+displacement metrics and the fully blocked spring-force scale remain
+unreported quantities.
 
 Chapter 3 explains the controller signal path. It contains no subsystem,
 gain-frame, null-space-mode, or logged-signal table and no `robot.control`
@@ -658,7 +682,7 @@ generalisability boundary.
 **Do not use `signed` as a modifier in thesis prose, headings,
 captions, axes, or tables.** The defining equation and the displayed positive
 and negative values establish the algebraic direction. Name the quantity
-directly as the `contact response`, `normal-force component`,
+directly as the `angular error`, `normal-force component`,
 `clearance`, or `component along` a defined direction. State the meanings of
 positive and negative values once beside the definition when the reader needs
 them.
@@ -795,7 +819,7 @@ tangents` there; the plural reads as a sweep of both entries.
 
 **Positive values carry no explicit sign.** Agreed 2026-09-02 for Chapter 5 and
 its figures, and applied to the whole thesis. Write \(9.31^\circ\),
-\(7.57^\circ\), \(10^\circ\), \(40\,\mathrm{mm}\); keep the minus sign on
+\(1.75^\circ\), \(10^\circ\), \(40\,\mathrm{mm}\); keep the minus sign on
 negative quantities, so a directional pair reads \(10^\circ\) and
 \(-10^\circ\). A leading plus adds nothing where no sign is written on the
 positive member of the pair, and it makes a results table look as though two
@@ -828,8 +852,8 @@ circulation, the settled choices are:
   still name the ordered surface-contact path, and `configuration` may still
   distinguish the selectable null-space alternatives; neither replaces
   `state` for a runtime node. The contact-press state is **Contact
-  Establishment**, and its measured quantity is the **contact-establishment
-  response**. Visible quantities associated with that state use the
+  Establishment**, and its evaluated angular quantity is the **angular error**
+  relative to the calibrated surface. Visible quantities associated with that state use the
   `\mathrm{CE}` subscript. The older `set` form remains only in literal
   software keys and internal source labels.
 
@@ -856,8 +880,8 @@ circulation, the settled choices are:
 
   The displacement direction is checked against the active Case-D result: the
   direction generated by the \(+10^\circ\) configured offset about \(t_1\)
-  uses the outer position \(r_{c,t_2}=+40\,\mathrm{mm}\) for its largest
-  response.
+  has its smallest tested mean angular-error magnitude at
+  \(r_{c,t_2}=40\,\mathrm{mm}\).
 
   **The compliance-centre contribution is \(r_c\times f\), using the complete
   commanded force.** The point-shift blocks carry
@@ -1103,15 +1127,12 @@ circulation, the settled choices are:
   tilt`, `signed tilt`, `excitation`, or `mismatch` for this configured
   quantity.
 
-  **The configured offset establishes a pre-contact condition; it does not
-  prescribe the rotation measured during contact.** It is applied during Tool
-  Orientation before Surface Approach and sets the desired pre-contact tool
-  direction. At the start of Contact Establishment, the achieved condition is
-  the **pose-based angular offset**
-  \(\theta_{\mathrm{meas},t_1}\). Contact Establishment holds the captured orientation
-  reference and produces the **contact response**
-  \(\gamma_{t_1}\). The chain is therefore
-  \(\theta_{\mathrm{offset},t_1}\to\theta_{\mathrm{meas},t_1}\to\gamma_{t_1}\).
+**The configured offset establishes the pre-contact condition.** Tool
+  Orientation sets the desired direction, and
+  \(\theta_{\mathrm{meas},t_1}\) describes the measured contact-entry
+  condition. The final contact outcome is the calibrated angular error
+  \(\theta_{\mathrm{err},t_1}(t_{\mathrm{end}})\). Contact Establishment keeps
+  the captured orientation reference for the rotational spring and damper.
 
   In Chapter 3 the configured vector and its rotation are
   \(\theta_{\mathrm{offset}}\approx\theta_{\mathrm{offset},t_1}t_1+
@@ -1340,55 +1361,31 @@ circulation, the settled choices are:
   definition already fixes contact entry, so `initial` adds no distinction.
   Keep \(\theta_{\mathrm{meas},t_1}\), its reference and its values unchanged.
 
-  **Both angular quantities are measured; their references distinguish them.**
-  \(\theta_{\mathrm{meas},t_1}\) compares the calibrated tool normal at contact
-  entry with the inward configured surface normal \(-n_s\). The contact
-  response \(\gamma_{t_1}\) compares the measured end-effector orientations at
-  entry and end. Its rotation runs from end back to entry, opposite to the
-  start-to-end end-effector motion. The entry angle requires the calibrated
-  tool normal; the response does not. Neither is an independent measurement of
-  the physical tool--surface angle under load.
-  Section 6.2.2 keeps the same distinction: both reported components depend on
-  the robot pose measurement and configured surface frame, but only the entry
-  offset additionally depends on tool-normal calibration.
+**The entry offset and time-dependent angular error use the same
+  reference.** Both use measured end-effector orientation, the calibrated
+  tool normal and \(-n_s\). The entry offset is the error at
+  \(t_{\mathrm{start}}\). Section 6.2 states the shared calibration and
+  tool-mount limitations.
 
-  **Show both quantities in one figure beside their definitions in Section
-  4.5.** The former Section 4.2 geometry figure moves there and incorporates the
-  sign convention. The entry orientation is solid; the contact-end orientation
-  is dashed. For the schematic rotation about \(t_1\), both lines depict
-  pose-based tool-face directions reconstructed using the same calibration.
-  Draw \(\theta_{\mathrm{meas},t_1}\) directly from the configured plane trace
-  to the entry line. For the schematic pure \(t_1\) rotation, this is equal to
-  the angle between \(-n_s\) and the entry normal. The definition remains the
-  three-dimensional rotation-vector component, not a projected line angle.
-  The \(\gamma_{t_1}\) arc runs from end to entry. The extra left-hand
-  entry-to-end rotation arc is removed; the figure shows only the two reported
-  quantities. The physical plate is not used as either angular reference.
-  Section 4.2 retains the
-  calibration procedures and refers to the apparatus figure for the
-  physical/configured distinction.
+**Show entry and angular error in one figure beside Section 4.5.**
+  Draw the configured reference in red, the entry tool-face direction in solid
+  green, and the contact-end direction in dashed blue. Both arcs start at the
+  configured reference. The outer arc labels \(\theta_{\mathrm{meas},t_1}\)
+  and the inner arc labels \(\theta_{\mathrm{err},t_1}(t_{\mathrm{end}})\).
+  The planar sketch illustrates the exact three-dimensional component
+  definition. Its common origin is an orientation-comparison datum.
 
-  **Every experimental condition uses \(\theta_{\mathrm{meas},t_1}\), including
-  zero configured offset.** Instructed 2026-09-08. The total-angle notation
-  \(\phi_0\) and its axis \(u_0\) are withdrawn from the thesis. Figure 5.4,
-  Table 4.4, Chapter 5 and Appendix D all identify the zero-offset condition by
-  the same measured component about \(t_1\) as the other conditions. Its value
-  is \(0.69^\circ\), the mean of \(0.70^\circ\), \(0.68^\circ\) and
-  \(0.68^\circ\) in `P6_zero_p000/r01`--`r03`. These are the negatives of
-  `deviation_before_t1` in the authoritative experiment metrics and terminal
-  reports. The former \(0.74^\circ\) was a total-angle magnitude and must not
-  be relabelled as a tangent component. The response remains
-  \(-0.97\pm0.02^\circ\).
+**Every experimental condition uses \(\theta_{\mathrm{meas},t_1}\),
+  including zero configured offset.** The nominal-zero value is
+  \(0.69^\circ\), obtained from \(0.70^\circ\), \(0.68^\circ\) and
+  \(0.68^\circ\). The former total angle \(0.74^\circ\) is not a tangent
+  component and is not used as a condition label.
 
-  **Section 4.5 defines the measured entry rotation directly.**
-  \(\theta_{\mathrm{meas}}\) represents the shortest rotation from the inward
-  configured surface normal \(-n_s\) to the entry tool normal.
-  Its component is \(\theta_{\mathrm{meas},t_1}=t_1^\top\theta_{\mathrm{meas}}\).
-  The vector is zero when the directions coincide. This is the same component
-  calculation as before, with the rotation direction reversed before projection;
-  no experimental metric or response changes. The generic axis--angle symbols
-  \(\phi\) and \(u\), and the contact-response pair
-  \(\phi_{\mathrm{CE}}\), \(u_{\mathrm{CE}}\), retain their separate meanings.
+**Section 4.5 defines the measured entry rotation directly.**
+  \(\theta_{\mathrm{meas}}\) is the shortest rotation from \(-n_s\) to the
+  calibrated tool normal at entry. Its component is
+  \(\theta_{\mathrm{meas},t_1}=t_1^\top\theta_{\mathrm{meas}}\), and it is
+  the entry value of the angular-error component.
 
   A quantitative experimental axis uses `Measured Angular Offset`
   followed by \(\theta_{\mathrm{meas},t_1}\) and its unit. A table condition column uses
@@ -1396,14 +1393,12 @@ circulation, the settled choices are:
   where the pre-contact setting, parameter file, or direction-selection rule
   is the subject. It is never substituted for the measured entry condition.
 
-  **The angular evaluation uses the configured surface and measured
-  end-effector pose.** In Chapters 1--5, state that
-  \(\theta_{\mathrm{meas},t_1}\) is the measured pose-based angular offset
-  calculated relative to the configured surface reference. Do not introduce a symbol or equation
-  for a physical entry angle, and do not call \(\theta_{\mathrm{meas},t_1}\) a measured
-  physical angle. Section 6.2.2 carries the consolidated limitation: the
-  physical surface normal and instantaneous tool--surface angle were not
-  measured independently in each experiment.
+**The angular evaluation uses the calibrated surface reference and
+  measured end-effector orientation.** The stored \(n_s\) estimates the
+  physical plate normal through the seated-pose calibration. Use
+  `angular error relative to the calibrated surface` for the reported metric.
+  Section 6.2 consolidates the residual physical-reference and tool-mount
+  limitations.
 
   **State the physical problem before the configured offset.** Tool
   Orientation has access to the configured normal \(n_s\), not an independent
@@ -1746,14 +1741,11 @@ earns nothing. The Gram--Schmidt naming and its citation went with it: the
 projection is explained in words instead, which *Textbook restatement* in
 [THESIS_VOICE.md](THESIS_VOICE.md) prefers over naming the standard procedure.
 
-**The reference-direction caveat stays.** \(t_1\) is fixed by a configured
-choice rather than by the surface, so *an axis-specific result holds with
-respect to the configured reference direction*. Chapter 5's central findings
-are specific to rotation about \(t_1\): every tested non-zero centre position
-increased the response in one rotational direction and reduced it in the other
-relative to the TCP-centred condition. That sentence is what bounds them. It is
-a scientific commitment, not filler, and it is not dropped when the section is
-shortened.
+**The reference-direction qualification stays.** The configured first
+tangent fixes the component used for the reported angular-error comparison.
+The result concerns this component about \(t_1\), not every orientation
+direction. Retain the same tangent throughout calibration, extraction and
+plotting.
 
 **The tool clearance is defined from physical corner positions.** For each
 tool-face corner, Chapter 3 defines
@@ -2068,10 +2060,9 @@ column one entry, and explain the dependence in words beside it.
 The block rotation
 \(T_R=\operatorname{diag}(R_{\mathrm{surface}},R_{\mathrm{surface}})\)
 remains local to the inertia-scaled-damping derivation and has no global
-symbol-list entry. The global list names only the response component
-\(\gamma_{t_1}\) evaluated in the reported contact study. Other components
-remain local to generic surface-frame relations where they are mathematically
-required.
+symbol-list entry. The angular-error vector and its reported \(t_1\)
+component appear in the global list. Other components remain local where
+needed to state the complete normal-direction relation.
 
 The units column holds units and nothing else. Words such as `linear`,
 `angular`, `scale dependent` or `mixed` are not units, and a reader scanning
@@ -2619,18 +2610,16 @@ construction rather than stating a relation, so it takes no equation number and
 nothing cross-references it.
 
 Visible quantities associated with Contact Establishment use the subscript
-\(\mathrm{CE}\), including \(s_{\mathrm{CE}}\), \(t_{\mathrm{CE}}\),
-\(R_{\mathrm{CE}}\), \(u_{\mathrm{CE}}\), and \(\phi_{\mathrm{CE}}\).
+\(\mathrm{CE}\), including \(s_{\mathrm{CE}}\) and \(t_{\mathrm{CE}}\). The
+withdrawn contact-rotation symbols \(R_{\mathrm{CE}}\),
+\(u_{\mathrm{CE}}\) and \(\phi_{\mathrm{CE}}\) are not restored.
 The older set form remains only in literal software keys and internal source
 labels where renaming it would obscure traceability.
 
-**An evaluation instant is named by its symbol, not described in words.**
-Agreed 2026-09-02. Once \(t_{\mathrm{CE,start}}\) and
-\(t_{\mathrm{CE,end}}\) are defined in a subsection, every later reference
-uses them: write \(\gamma=\phi_{\mathrm{CE}}u_{\mathrm{CE}}=e_R(t_{\mathrm{CE,end}})\),
-not \(e_R\big|_{\text{end of Contact Establishment}}\). A worded subscript
-is longer, sets prose inside mathematics, and leaves the reader to check that
-it means the instant already defined a few lines above.
+**An evaluation instant is named by its symbol.** Use the start and end
+symbols defined in the subsection. In the angular evaluation, the final
+quantity is \(\theta_{\mathrm{err},t_1}(t_{\mathrm{end}})\). Do not replace
+the defined time with a worded mathematical index.
 
 **Say which quantities in a comparison are fixed.** Agreed 2026-09-02 for the
 measured angular offset. \(n_s\) is the configured surface normal and
@@ -2679,10 +2668,17 @@ references Equation 2.73 rather than repeating
 \(\tau_{\mathrm{cmd}}=J^\top(q)F+\tau_{\mathrm{null}}+\tau_c(q,\dot q)\).
 The disturbance is an experimental input rather than part of the controller,
 so its definition belongs to Section 4.6 alone, where
-\(\tau_{\mathrm{dist}}(t)=J_p(q(t))^\top f_d(t)\) already stands. Chapter 3
+\(\tau_{\mathrm{dist}}(t)=J(q(t))^\top f_d(t)\) already stands. Chapter 3
 carries one sentence saying an experiment-specific disturbance torque is added
 only for the null-space pose-hold experiment. It does not appear in the
 Cartesian pose-hold account either.
+
+**The disturbance Jacobian is written without a point index.** Agreed
+2026-09-15: use \(J(q)\) in the commanded-disturbance equations,
+their inline references, the symbol list and the data-logging appendix.
+In that context it denotes the translational Jacobian of the selected
+link point. Preserve this local definition and the distinction from the
+full end-effector geometric Jacobian used for the Cartesian task.
 
 **What Chapter 3 must keep**, because these are what was designed rather than
 what was derived: the architecture figure; the configured surface-relative
@@ -2760,7 +2756,7 @@ rule.
 it, so the chapter states that it maintains the normal contact-establishment
 reference while superimposing tangential motion with the decoupled impedance.
 The Grinding subsection itself carries the scope statement, that the
-experimental evaluation concerns the Contact Establishment response; Section
+experimental evaluation concerns the angular error during Contact Establishment; Section
 3.2.6 no longer says where the campaign stopped.
 
 **Section 3.2.5 is subdivided by unnumbered `\paragraph` headings.** Agreed
@@ -2921,8 +2917,8 @@ Section by section, as executed:
 - **Experimental condition and response quantity.** Keep one
   input--condition--response chain: the configured pre-contact input
   \(\theta_{\mathrm{offset},t_1}\) produces the measured pose-based condition
-  \(\theta_{\mathrm{meas},t_1}\), and Contact Establishment produces the measured response
-  \(\gamma_{t_1}\). Appendix D retains the Case A--D numerical values.
+  \(\theta_{\mathrm{meas},t_1}\), and Contact Establishment ends with the angular error
+  \(\theta_{\mathrm{err},t_1}(t_{\mathrm{end}})\). Appendix D retains the Case A--D numerical values.
   Define wrench projections locally beside the Case-D mechanism figure rather
   than as a separate methodology subsection. **Remove the mean and sample
   standard-deviation equations** and say instead that repeated settings are
@@ -2946,15 +2942,10 @@ purpose of TCP position error and both redundant-motion quantities before
 the integrals. The equations,
 tables and chapter order did not change.
 
-**The measured angular offset follows the configured rotational direction.**
-Section 4.5.1 defines \(\theta_{\mathrm{meas}}\) from the inward configured
-surface normal towards the entry tool normal, then projects it onto
-\(t_1\). Section 4.5.2
-carries the matching statement for \(\gamma_{t_1}\): it is formed from the
-measured end orientation back to the held entry orientation, so its direction
-is opposite to the start-to-end rotation of the end effector. Both belong in
-Chapter 4, so that Chapter 5 can report results without re-deriving either
-convention.
+**The measured angular offset and angular error follow the same rotational
+direction.** Section 4.5 defines both from the inward calibrated reference
+normal towards the measured pose-based tool normal. Chapter 5 interprets
+the component magnitude and its zero crossings using this definition.
 
 **A configuration table that only restates the prose around it goes.** The
 system table repeated the robot, the tool dimensions, the mounting play, the
@@ -2963,23 +2954,13 @@ had just said in sentences. Unlike the gain, phase and case tables, it did no
 analytical work. The prose stays and the table is gone; the exhaustive
 configuration lives in the parameter appendix.
 
-**The two procedures are not both calibrations, and the headings say so.**
-Section 4.2 is `Surface-Reference and Tool-Normal Calibration`, and
-Section 4.2.1 is `Surface-Reference Construction`, matching the row headings of
-Figure 4.2. The heading was shortened from `Configured Surface Reference,
-Physical Surface, and Tool Calibration` on 2026-09-01: a heading that lists
-three things is doing the opening paragraph's work, and the configured-against-
-physical distinction is stated there instead. Section 4.5 is `Measured Angular
-Offset and Contact Response`, replacing `Experimental Condition and Response
-Quantity`, which named neither the condition nor the response. The
-upper procedure records one seated pose and takes \(n_s\) from the nominal
-\(+Z_{\mathrm{EE}}\) axis, so it constructs a configured geometric reference
-rather than measuring the physical plane normal — which is what the section's
-own prose says. Calling it a `surface-plane calibration` contradicted that in
-the heading while the paragraph below it conceded the point. Section 4.2.2
-keeps `Tool Normal Calibration`, because that procedure does estimate a
-physical direction. The `\label{}` keys were left unchanged, since they reach
-no reader.
+**The calibration headings name their procedures.** Section 4.2 is
+`Surface-Reference and Tool-Normal Calibration`, with subsections
+`Surface-Reference Construction` and `Tool Normal Calibration`.
+The seated nominal end-effector axis supplies the physically grounded
+configured reference, while the yaw captures estimate the tool normal.
+Section 4.5 is `Measured Angular Offset and Angular Error`.
+Retain the original procedure and archived experimental reference.
 
 **\(T_4\) is removed from the thesis entirely.** The tool-normal calibration
 is reported as three seated yaw orientations, \(T_1\)--\(T_3\), and the
@@ -3129,11 +3110,10 @@ only. **Section 3.2.5 keeps its two sentences**, because Chapter 3 documents
 the implemented sequence rather than the reported campaign, and Chapter 6 keeps
 the sentence placing sustained grinding outside the evaluation.
 
-**\(\gamma_{t_1}\) is what Chapter 4 says was measured.** The contact establishment
-procedure once ended `so the measured alignment rotation is a response to
-contact`, which names a physical tool alignment the thesis does not measure.
-The settled wording is `the measured contact response results from the contact
-interaction rather than from tracking a time-varying orientation command`.
+**Chapter 4 defines the calibrated angular-error measurement.** The held
+controller orientation reference remains unchanged. The measured angular
+evolution during Contact Establishment results from contact interaction while
+the rotational spring and damper remain active.
 
 ## The appendices: document and support
 
@@ -3216,26 +3196,13 @@ tangent. The stored reference values and the clearance-referenced forms stay
 out: the reported evaluations use the absolute estimate. Say once that the complete schemas are documented
 with the recorded data.
 
-**A wrench row names the frame it acts on, the frame it is expressed in, and
-its moment reference point.** All three are needed, and the third was missing:
-libfranka's `O_F_ext_hat_K` acts on the stiffness frame \(\{K\}\), is
-expressed in the base frame \(\{0\}\), and its moment is referenced to the
-base origin. State all three, then that
-\({}^{\mathrm{EE}}T_K=I\) in the experimental configuration, so
-\(\{K\}=\{\mathrm{EE}\}\). It lists the groups needed to interpret and
-reproduce the reported evaluations. Derived angular-deviation aliases and the
-unused `t_align` field are omitted rather than documented only because the
-logger wrote them. A
-table cell is a definition, not a paragraph: name the quantity, its frame and
-its unit, and send anything longer to the section that owns it. The former
-`Evaluation Quantities` section was deleted on 2026-08-27 and **must not be
-restored**. The reported quantities already have their proper homes:
-\(\gamma_{t_1}\) in Section 4.5.2, and \(E_N\),
-\(\Delta\eta\) and the position-retention criterion in
-Section 4.6. The contact-establishment report markers
-`t_align_fraction`, `deviation_min` and `align_status` went with it: none feeds
-a state exit, a command, or a reported result, which is the rule under *What
-belongs in the thesis at all*.
+**A wrench row names its acting frame, expressed frame and moment reference.**
+The external wrench acts on \(\{K\}\), is expressed in the base frame and
+has its recorded moment about the base origin. State that
+\({}^{\mathrm{EE}}T_K=I\) in the experiment. Appendix B also documents the
+angular-deviation field used by the angular-error calculation, its sign
+reversal and the terminal endpoint precision. Keep each table cell concise.
+The unused `t_align`, status markers and unrelated diagnostics remain omitted.
 
 **Appendix C holds the parameters needed to reproduce the reported experiments.**
 It is the reproducibility record, so a parameter, its configuration key and its
@@ -3368,146 +3335,46 @@ Distinguish:
 2. model-based interpretation;
 3. hypothesis requiring another experiment.
 
-Trace every geometric metric through its measurement chain. The primary angular
-result is the contact response and does not require the calibrated
-tool normal. The appendix reconstructs a separate pose-based tool axis from the
-end-effector pose and a calibrated tool-to-end-effector transform. Because the
-mounted tool can rotate approximately ±2° about \(y_{EE}\), that secondary
-quantity is not a directly measured physical tool-face axis. Do not rename
-\(y_{EE}\) as \(t_2\) without transforming it into the configured surface
-frame.
+Trace each geometric metric through its measurement chain. The angular error
+uses the calibrated surface reference, measured end-effector orientation and
+calibrated tool normal. The fixed tool-to-end-effector relation is a calibrated
+model of the mounted tool. Its uncertainty is discussed in Section 6.2.
 
-**The word `inferred` is not used for it, and neither is `EE-inferred`.** Both
-were removed. Name the chain instead: `alignment angle calculated from the
-end-effector pose`, `end-effector-based alignment angle`, or `pose-based
-alignment angle`.
+**The word `inferred` is not used.** Name the source directly: `angular error
+calculated from measured end-effector orientation` or `pose-based angular
+error relative to the calibrated surface`.
 
-### Separate the desired offset, measured angular offset, and response
+### Separate the configured input, measured entry and angular error
 
-The orientation chain has three symbol families. \(\theta_{\mathrm{offset},t_i}\)
-is a component of the configured orientation offset about surface tangent
-\(t_i\). It defines the desired pre-contact tool direction during Tool
-Orientation and does not prescribe the rotation during Contact Establishment.
-The measured pose-based angular offset \(\theta_{\mathrm{meas},t_1}\) is the
-contact-entry condition relative to the configured surface reference. The
-contact response \(\gamma_{t_1}\) is the measured response about
-that tangent.
+Use \(\theta_{\mathrm{offset},t_1}\) for the desired pre-contact condition,
+\(\theta_{\mathrm{meas},t_1}\) for the measured entry condition and
+\(\theta_{\mathrm{err},t_1}(t_{\mathrm{end}})\) for the angular error.
+Conditions in tables and figures use the measured entry offset. The angular error
+retains its positive or negative direction, and its magnitude gives the
+remaining first-tangent error relative to the calibrated surface.
 
-The experiment tables and comparison figures identify their angular condition
-with \(\theta_{\mathrm{meas},t_1}\), not with \(\theta_{\mathrm{offset},t_1}\). The
-configured offset remains in the methodology as the controller input that
-generated this condition. A physical
-initial tool--surface error is not substituted for either quantity unless an
-independent physical surface normal and the tool orientation under load have
-both been measured.
+**Do not equate the angular error with the controller tracking error.** The
+rotational spring uses \(e_R\) relative to the held entry reference. The
+angular-error metric uses the calibrated surface. A zero initial \(e_R\)
+therefore coexists with a non-zero contact-entry angular offset.
 
-**\(\gamma_{t_1}\) is not the start-to-end end-effector rotation.** It
-represents the end-of-contact-establishment orientation change from the
-measured end orientation back to the held entry reference. The corresponding
-start-to-end end-effector rotation points in the opposite rotational direction.
-For the \(+10^\circ\) configured offset at the TCP,
-\(\gamma_{t_1}=+7.56^\circ\), while the start-to-end end-effector rotation
-points along \(-t_1\) with a magnitude of \(7.56^\circ\).
+**Interpret changes using the angular error and its reference.** Reducing an
+error magnitude indicates closer normal alignment in the reported component.
+A zero crossing reverses its direction, and continued rotation after the
+crossing can increase its magnitude. Do not claim that an increased rotation
+necessarily improves the angular error.
 
-**`configured flat direction` is withdrawn; write `parallel alignment with the
-configured surface`.** Agreed 2026-09-01, on the ground that `flat direction`
-names no defined quantity and reads as informal beside the surface frame it
-depends on. The attributive form is `parallel to the configured surface`.
+**Each main comparison reports one angular outcome.** The A--D comparison
+plots and appendix tables show the angular error. The Case-D mechanism
+figure additionally shows its time history with the model-estimated wrench.
+The archived total-angle scatter comparison and TCP-height classification
+remain outside the thesis.
 
-**The withdrawn phrase covered two different things, and they take different
-replacements.** Where it named the *direction* \(-n_s\) -- in the
-\(\theta_{\mathrm{meas}}\) construction of Section 4.5, in its symbol-list row, and in the
-definition of \(\theta_{\mathrm{meas},t_1}\) -- write `the inward configured surface
-normal`, which is what \(-n_s\) is and is already fixed by
-\(n_d=-n_s\). Where it named the *alignment state* the end effector rotates
-towards, write `parallel alignment with the configured surface`. Substituting
-the alignment wording for the direction vector produces a rotation measured to
-a state rather than to a direction, which is not what the equation does. For a
-start-to-end end-effector rotation towards parallel alignment with the
-configured surface,
-\(\gamma_{t_1}\) points in the same surface-tangent direction as the achieved
-angular offset \(\theta_{\mathrm{meas},t_1}\), and
-\(\lvert\gamma_{t_1}\rvert\) gives its size. The plus and minus symbols remain
-on equations and data values. Running prose uses `both directions of rotation`
-for an aggregate comparison and the named conditions above for a single one;
-`both signs` and `reversed condition` are still not used. State the physical
-motion explicitly; do not compress it into the label
-`correction-directed response`.
-
-The construction is \(\gamma=\phi_{\mathrm{CE}}u_{\mathrm{CE}}\) from
-\(R_{\mathrm{CE}}=R_{\mathrm{EE,clearance}}
-R_{\mathrm{EE}}^\top(t_{\mathrm{CE,end}})\), with the reported component
-\(\gamma_{t_1}=t_1^\top\gamma\).
-\(R_{\mathrm{EE,clearance}}\) is the **orientation reference held through
-contact establishment** and equals
-\(R_{\mathrm{EE}}(t_{\mathrm{CE,start}})\), which is why the logged
-\(e_R\) is exactly zero there. The measured angular offset is
-calculated from the current end-effector pose, calibrated tool normal and
-configured surface reference, giving \(\theta_{\mathrm{meas},t_1}\). `extract_metrics.py`
-reads the response \(\gamma_{t_1}\) from the final \(e_R\).
-
-**State the direction relation at the opening of Chapter 5, before any number
-depends on it.** The opening gives the relation between \(\theta_{\mathrm{meas},t_1}\),
-\(\gamma_{t_1}\), and the corresponding start-to-end end-effector rotation,
-including the reason: \(\gamma_{t_1}\) is calculated from the measured end
-orientation back to the held entry reference, so its direction is opposite to
-the start-to-end rotation. A reader who meets \(+7.57^\circ\) without that
-sentence takes it for a physical rotation of \(+7.57^\circ\), and deferring
-the explanation to the Case-D mechanism figure leaves three case sections
-misread before it arrives. Beside that figure, state that \(M_{t_1}\) points
-along
-\(-t_1\), \(\gamma_{t_1}\) points along \(+t_1\), and the start-to-end
-end-effector rotation points along \(-t_1\). This bridge prevents the response
-coordinate from being mistaken for the physical direction of motion.
-
-**Say what the quantity is; do not give the direction relation a convention
-name.** State that \(R_{\mathrm{CE}}\) rotates from the measured end orientation
-back to the held start orientation, or that \(e_R\) has that relation. Naming
-it `the current-to-reference convention` reads as *the convention currently in
-use* and invites a reader to look for a superseded one.
-
-**Do not coin an informal name for a defined quantity to carry a direction
-argument.** Section 4.5.2 said the metric was independent of `the plane-zero
-alignment`, which names nothing the thesis defines, and justified that
-independence by saying the tool axis `is known only to within a degree or two
-and shifts as the tool settles in the gripper`. Both were removed on
-2026-08-25. The second states a mechanical clearance as though it were a
-calibrated knowledge bound, which the \(\pm2^\circ\) rule below forbids, and
-asserts a motion during contact that was not tracked. The defensible statement
-names the chain instead: the calculation uses only the measured end-effector
-orientations and therefore does not require the instantaneous tool--gripper
-rotation. Do not call the response independent of relative tool--gripper
-motion, because that motion can still affect the contact dynamics and measured
-end-effector response. The surface frame enters only as the directions the
-rotation is resolved along.
-
-**The pose-based alignment consistency metric is withdrawn.** Its unsigned
-angle depended on the assumed fixed tool-to-end-effector relation and was not
-an independent physical tool-orientation measurement. Do not restore
-\(\theta_{\mathrm{align}}\), its before--after reduction, their scatter plot,
-or their logger-only aliases as reported thesis quantities.
-
-**Each main surface-contact comparison changes one controller parameter and
-reports one response.** The measured pose-based angular offset is
-\(\theta_{\mathrm{meas},t_1}\), and the response is the measured contact-establishment
-rotation \(\gamma_{t_1}\). Chapter 5 table headings name the changed parameter
-directly and call the output `Measured contact rotation`; generic columns such as
-`Varied entry` and `Value` are not used. Subsection titles, captions, axes and
-the surrounding prose use the same input--response vocabulary. The commanded
-wrench time history in Case D is the mechanism figure and remains the one
-exception to a response-only comparison plot.
-
-**The TCP-height flatness classification is withdrawn from the reported
-results.** It is derived from existing measurements, is not used in the Chapter
-5 comparison, and can be mistaken for a second response criterion. Do not
-restore its table, count, or classification language. The physical face angle
-was not measured under load.
-
-**Do not write that a lever was insufficient to align the tool**, or that it
-`did not remove the full angular offset`. Both read as claims about the
-physical tool face, whose orientation under load was not tracked. Report the
-measured contact response about \(t_1\) and do not add an
-inferred final physical alignment.
+**The calibrated-reference interpretation is stated accurately.** The
+reference is physically grounded in the plate-seated calibration. Physical
+alignment remains an estimate because the instantaneous tool-to-end-effector
+relation and exact physical normal under load were not tracked independently.
+Do not convert unloaded mount play into a calibrated error bound.
 
 ### Three distinct points: selected tool point, TCP, compliance centre
 
@@ -3629,7 +3496,7 @@ observed with the selected damping. Do not claim a measured damping effect.
 Matched free-space null-space trials compare the four selectable null-space
 modes under an internally commanded point-force equivalent. Claims from those
 trials remain limited to that hold condition and must not be extended to
-physical disturbances or contact response.
+physical disturbances or contact angular-error results.
 
 ### The two null-space motion quantities, and what the sigma result says
 
@@ -3843,7 +3710,7 @@ instantaneous opposing torque at identical joint configurations.
   contribution is \(r_{c,t}\times f_n=\lVert r_{c,t}\rVert F_nu\), and with
   \(F_n<0\) it acts opposite to \(u\). In Case D, the direction generated by
   the \(+10^\circ\) configured offset uses \(r_{c,t_2}>0\) for the outer
-  position that produced the larger response.
+  position with the smallest tested mean angular-error magnitude.
 
   **The rule survived both 2026-09-06 rebuilds unchanged**, and the two
   principal cases are what prove it: every version has given
@@ -4211,19 +4078,9 @@ logged field names and bias columns. That is the whole of it.
   \lVert\theta_{\mathrm{offset}}\rVert)\)
   through the Rodrigues relation of Section 2.3.
 
-  The index is what separates the configured input from the response
-  \(\gamma_{t_1}\)
-  and from the physical tool orientation, neither of which the thesis measures
-  in the same frame, so it distinguishes rather than decorates. That is the
-  difference from the withdrawn wrench indices: nothing was ever going to be
-  confused with `F_{n,\mathrm{cmd}}`, because no estimated normal force is
-  reported at all. The scalar components retain both `offset` and their tangent
-  index: \(\theta_{\mathrm{offset},t_1}\) and
-  \(\theta_{\mathrm{offset},t_2}\).
-- **The settled force and moment names.** `press` as a symbol name was
-  withdrawn, because \(f_{\mathrm{press}}\) read as the complete force pressing
-  against the surface when it was only the spring term. The subscript now says
-  which term it is:
+The `offset` index distinguishes the configured pre-contact input from
+  the measured entry condition and time-dependent angular error. Preserve the
+  tangent index on each scalar component.
 
   | Symbol | Is | Name |
   |---|---|---|
@@ -4421,25 +4278,21 @@ setting. The absolute singular-value trajectories support retention of the
 local indicator during the disturbance. They do not establish a larger
 improvement at higher \(k_\sigma\).
 
-**A time-course observation is stated plainly, and may carry the times read
-off the traces.** Amended 2026-09-02, twice. The rule first required a sentence
-marking the comparison qualitative, and that caveat was withdrawn from
-Section 5.1.3 the same day it was written. It then said the observation carried
-no rate metric at all, and that half is now withdrawn too: Section 5.1.3 states
-that the response at \(r_{c,t_2}=40\,\mathrm{mm}\) reaches its approximately
-steady value at about \(2.3\,\mathrm{s}\) and the TCP response at about
-\(3.6\,\mathrm{s}\), roughly \(1.3\,\mathrm{s}\) later. Section 6.1 keeps
-the qualitative form.
+**The representative timing comparison uses an explicit common band.**
+Updated 2026-09-15. For each of the two illustrated positive-offset traces,
+find the first recorded instant after which \(\theta_{\mathrm{err},t_1}\)
+remains within \(0.1^\circ\) of its own final recorded value through contact
+end, inclusive. The values are \(2.489\,\mathrm{s}\) at
+\(r_{c,t_2}=40\,\mathrm{mm}\) and \(3.601\,\mathrm{s}\) at the TCP.
+Show approximately \(2.5\) and \(3.6\,\mathrm{s}\), a difference of
+\(1.1\,\mathrm{s}\), and state the criterion beside the comparison.
+These are two individual trials. Do not generalise this difference to every
+trial or lever magnitude. The former visual estimates are withdrawn.
 
-Three conditions make such a reading admissible, and all three have to hold.
-The time is read from a plotted trace the section already cross-references, so
-the reader can check it against the figure. It is hedged to the digit the trace
-supports — `about`, and one decimal — because a settling time read off a curve
-is not a fitted quantity. And the paragraph has already said whether the traces
-are single repetitions or means. Do not promote such a reading to a defined
-metric, a table column, or a symbol; it stays a statement about what the figure
-shows. The scope of the campaign is set out in Section 6.2 rather than repeated
-beside each observation.
+Keep the time comparison tied to its plotted traces, endpoint-band
+criterion and single-repetition provenance. The conclusion may state that
+the displaced-centre trace reached this band earlier without adding a
+general settling-time law.
 
 **The two null-space terms were evaluated separately, and the text says so.**
 Corrected 2026-09-02. The third contribution bullet had read `a projected
@@ -4453,16 +4306,10 @@ damping and singular-value conditioning were implemented and evaluated
 separately in Cartesian pose hold`. Mode 3, where both act together, belongs to
 the surface-contact cases only.
 
-**The response quantity is the `contact response`.** Renamed 2026-09-03,
-withdrawing `contact-establishment response`. \(\gamma_{t_1}\) is the contact
-response about \(t_1\), in prose, in the symbol list, in every figure axis
-label and in the Appendix D column headings. The document had been carrying
-both forms: Chapters 1 to 3, the Section 4.5 heading and two Chapter 5 captions
-already said `contact response`, while Chapters 4 to 6, the Abstract and six
-figure axes said `contact-establishment response`. The short form won because
-the state is already named beside it in almost every sentence that reports the
-quantity, so the compound repeated the state name rather than distinguishing
-anything.
+**The reported quantity is `angular error`.** Use this name in prose,
+headings, tables, axes, captions, speaker notes and speaking text, with
+\(\theta_{\mathrm{err},t_1}\). The state name `Contact Establishment` and
+its trajectory, damping, reference and timeout terminology remain unchanged.
 
 `Contact Establishment` the state keeps its name, and so does every other
 compound built on it: the contact-establishment motion, press, trajectory,
@@ -4490,20 +4337,22 @@ each panel. A time-dependent band shows between-trial spread at each instant.
 The reported contact campaign is restricted to configured orientation offsets
 about \(t_1\). The principal experimental conclusions are:
 
-1. Within the tested range, tangential compliance-centre position produced the
-   largest response variation. Every tested non-zero tangential position
-   increased the response in one rotational direction and reduced it in the
-   other relative to the TCP-centred condition.
-2. Raising \(K_{R,t_1}\) reduced the measured response over the tested range.
-3. Varying the perpendicular translational stiffness \(K_{p,t_2}\) produced
-   only a \(0.03^\circ\) response span and was smaller than the rotational-
-   stiffness effect.
-4. At the TCP, the measured end-effector rotation was towards parallel
-   alignment with the configured surface in both tested directions of rotation
-   about \(t_1\). The TCP-centred condition added no CoC-induced moment and
-   therefore favoured neither rotation direction, while a displaced centre
-   produced a larger alignment response when selected for a known rotational
-   direction.
+1. The TCP-centred first-tangent error magnitude decreased by \(81.2\,\%\)
+   and \(85.0\,\%\) from the positive and negative entry conditions. The
+   negative-entry component crossed zero. The nominal-zero condition instead
+   increased from \(0.69^\circ\) to \(1.65^\circ\).
+2. Raising \(K_{R,t_1}\) from \(5\) to \(50\,\mathrm{N\,m/rad}\)
+   increased the angular error from \(1.75^\circ\) to \(6.58^\circ\),
+   or by \(276.2\,\%\) relative to the lowest stiffness.
+3. Varying \(K_{p,t_2}\) produced a \(0.07^\circ\) angular error span,
+   or \(3.8\,\%\) of the TCP-centred reference. \(K_{p,t_1}\) remained
+   constant.
+4. The smallest tested mean error magnitudes occurred at different CoC
+   positions for the two entry directions: \(1.48^\circ\) at
+   \(40\,\mathrm{mm}\) for positive entry and \(0.94^\circ\) at
+   \(10\,\mathrm{mm}\) for negative entry. These are \(15.4\,\%\) and
+   \(33.7\,\%\) below their respective TCP-centred references. Greater
+   rotation after a zero crossing can increase angular error magnitude.
 
 No result comparison, conclusion, caption, table, or active plot reports an
 experiment with a configured orientation offset about \(t_2\). The symbol
@@ -4531,7 +4380,7 @@ is irrelevant. The broader plan to revise the summaries, results, conclusion
 and limitations is withdrawn; no additional experiment is part of this edit.
 
 The Case-C explanation concerns tangential compliance and its influence on the
-angular contact response. Lower stiffness gives less restoring force for the
+angular error during contact. Lower stiffness gives less restoring force for the
 same tangential position error. Do not describe this as measured contact slip:
 tangential end-effector motion can accompany rotation while contact sticks.
 Use the same distinction in the final presentation narration.
@@ -4555,12 +4404,12 @@ checks, and Chapter 6 states the result.
 
 The purposes of the main cases are settled and are stated in this order:
 
-| Case | What it establishes |
+| Case | Evaluated dependence |
 |---|---|
-| A | The contact-induced response with \(p_c=p_{\mathrm{TCP}}\), \(r_c=0\): the zero-coupling reference, not yet an answer. |
-| B | Whether rotational stiffness changes the response about \(t_1\). It reduces the response magnitude over the tested range. |
-| C | Whether cross-axis translational stiffness changes the response about \(t_1\). Its influence is smaller over the tested range. |
-| D | Whether one fixed non-zero tangential centre can increase the response in both directions of rotation about \(t_1\). It cannot: every tested non-zero position increased one direction and reduced the other relative to the TCP. This is the central experiment. |
+| A | Final calibrated angular error with the CoC at the TCP for the three measured entry conditions. |
+| B | Angular error by rotational stiffness about \(t_1\). |
+| C | Angular error by translational stiffness along \(t_2\), with \(K_{p,t_1}\) constant. |
+| D | Angular error by tangential CoC position for both entry directions, including zero crossings. |
 
 Appendix D carries no supporting check; the tool-axis comparison was
 withdrawn on 2026-09-01.
@@ -4571,10 +4420,10 @@ settings and 12 trials, giving 69 trials in the complete reported data set.
 Shared reference conditions are counted with the main case in which they first
 appear.
 
-The synthesis is that \(p_c=p_{\mathrm{TCP}}\) provides the neutral fixed centre
-for the reported \(t_1\) study because it selects no tangential lever direction.
-A displaced centre produces a larger alignment response when its position is
-selected for the corresponding angular-offset direction.
+The TCP-centred setting is neutral with respect to the added CoC moment
+because \(r_c=0\). This is a property of the controller reference, not a
+claim that its angular error is smallest. The measured error varies
+with CoC position and entry direction.
 
 The design sequence that follows from this — start at the TCP, evaluate the
 required alignment, introduce a direction-selected shift where more authority
@@ -4596,13 +4445,11 @@ into the steady contact afterwards.
 
 The defensible summary separates two regimes:
 
-- **Transient alignment.** A tangential displacement supplies a moment whose
-  direction depends on the displacement direction from the TCP. The \(t_1\)
-  measurements show that every tested non-zero position increased the response
-  in one rotational direction and reduced it in the other.
-- **Sustained contact.** \(r_c=0\) gives \(r_c\times f=0\), so the TCP is the
-  neutral centre: no preferred tangential direction, and the tool responds to
-  the actual contact geometry.
+- **Transient angular evolution.** A tangential CoC displacement supplies an
+  added moment whose direction depends on the displacement. The measured angular error depends on how far the component moves towards or through zero.
+- **Sustained contact.** At \(r_c=0\), the added moment \(r_c\times f\)
+  vanishes while the rotational spring, damper and physical contact remain.
+  The TCP is neutral with respect to this added moment.
 
 The implemented state structure already embodies this, and the thesis says so:
 the point-shifted impedance is used during Contact Establishment, while the Grinding state
@@ -4635,27 +4482,16 @@ frame definition or geometry, could be direction independent.
 it is qualified wherever it appears.** It denotes the TCP-centred condition
 \(r_c=0\), which selects no tangential lever direction.
 
-**Neutral means neutral with respect to \(r_c\times f\), never equal
-response magnitudes.** Agreed 2026-09-01. The TCP-centred responses were
-\(+7.57^\circ\) and \(-10.83^\circ\), so a bare `neutral fixed centre`
-invites a reader to infer a symmetry the measurements do not show. State the
-sense with the term: the condition is neutral because \(r_c=0\) gives
-\(r_c\times f=0\), so it adds no \abbr{CoC}-induced moment and favours
-neither rotation direction, and it is not neutral in measured response
-magnitude. Chapter 6 carries both halves in adjacent sentences. Do not use `sign-independent fixed centre`; the two angular
-conditions are described as directions of rotation. The claim is specific to
-one robot, one tool, one configured surface reference, one press trajectory,
-and the tested centre positions.
+**Neutral refers to the added moment \(r_c\times f\).** At the TCP this
+term vanishes, so the virtual centre adds no preferred direction. The measured
+angular errors can still differ between entry conditions. Do not equate
+neutrality with equal errors, perfect alignment, or a minimum-error setting.
 
-Where the claim is stated, scope it to rotation about \(t_1\). At the TCP, the
-measured end-effector rotation was towards parallel alignment with the
-configured surface in both tested rotational directions. Every tested non-zero position increased the response
-in one direction and reduced it in the other relative to the TCP-centred
-condition. The neutral default therefore avoids selecting one rotational
-direction in advance. Do not claim that it was the only tested position with a
-response towards parallel alignment with the configured surface in both
-directions; the small outer-position responses also represented rotation
-towards that alignment.
+Scope every measured contact claim to the first-tangent angular-error
+component and the tested positions. The TCP-centred setting reduced its
+magnitude for the two larger entry offsets, and the negative component crossed
+zero. A displaced centre can produce a smaller or larger final magnitude,
+depending on both position and entry direction.
 
 **`universally optimal centre` remains banned, as does `best` and `optimal` for
 any centre.** So does any statement extending the result to every robot, tool,
@@ -4664,21 +4500,14 @@ surface-contact campaign did not test a displacement held through sustained grin
 not vary the surface orientation during contact; say that where the claim is
 made.
 
-**Neutrality and a direction-specific alignment response are separate
-properties, and the thesis states the separation at least once in Chapter 5 and
-once in Chapter 6.** Write that the TCP provides the neutral fixed reference
-for the reported \(t_1\) study, and that a displaced centre produces a larger
-alignment response when its position is selected for a known direction of
-rotation.
+**Neutrality and angular error are separate properties.** Explain
+the zero added moment at the TCP when discussing the impedance reference.
+Use the measured angular error when comparing the experimental CoC settings.
 
-**`rotational authority` is withdrawn.** Agreed 2026-09-01: it names no measured
-quantity, and the thesis has two exact statements for what it reached at --
-`a larger alignment response` for the measured outcome, and `an additional
-commanded moment` for the mechanism. Use whichever the sentence is about.
-`neutral fixed reference with no direction-selected lever` goes with it: write
-that the TCP-centred condition adds no CoC-induced moment and therefore favours
-neither rotation direction. `neutral fixed centre` survives as the settled term
-for the condition itself.
+**`rotational authority` is withdrawn.** Use `an additional commanded
+moment` for the mechanism and `a smaller angular-error magnitude` for
+the measured outcome when supported by the data. Do not substitute one for
+the other.
 
 **No informal manual test, demonstration, or video is reported anywhere in the
 thesis.** This overturns an earlier ruling that admitted the pre-grinding hold
@@ -4705,24 +4534,20 @@ Case-D measurements.
 
 ### Scope of the reported tangent-axis result
 
-The reported contact results cover rotation about \(t_1\) only. The end
-effector rotated towards parallel alignment with the configured surface at the
-TCP for both tested directions of rotation, while the selected tangential lever changed the
-response only slightly for the direction generated by the \(+10^\circ\)
-configured offset. This is consistent with contact geometry and
-tool-mount compliance contributing to the response, but those contributions
-were not isolated. The conclusion must not claim that either mechanism was
-sufficient on its own, and it must not generalise the result to rotation about
-another tangent.
+The principal contact results cover the angular-error component about
+\(t_1\). At the TCP its magnitude decreased for the two larger entry
+offsets, while the nominal-zero condition increased. CoC displacement changed
+both the final value and whether the component passed through zero.
+Keep the tool-mount and physical-normal limitations in Section 6.2.
 
 **Every rotation claim names the body that rotated.** Because the physical tool
 orientation is never measured independently, a sentence may say the **end
 effector** rotated, never that "contact rotated the tool":
 
-When the direction of \(\gamma_{t_1}\) is contrasted with the motion it
-represents, write `the measured end-effector rotation from the start to the end
-of Contact Establishment`. Do not call that motion a physical rotation without
-naming the end effector.
+When describing motion separately from the angular-error metric, name it
+as measured end-effector rotation. A zero crossing of
+\(\theta_{\mathrm{err},t_1}\) concerns one angular-error component and does
+not establish coincidence of the complete normals.
 
 | Was | Now |
 |---|---|
@@ -4755,25 +4580,14 @@ an independent measurement of physical tool alignment**.
 
 Two claims must not be made from this:
 
-- **Not that the TCP is the best centre, or the optimal one.** The defensible
-  claim is that the TCP is the neutral fixed reference about \(t_1\), since it
-  adds no virtual coupling moment and selects no tangential direction. A
-  displaced centre may produce a larger alignment response for a known
-  direction of rotation.
-- **Not that the lever magnitude scales an alignment time.** Narrowed
-  2026-09-02, replacing a blanket ban on any timing claim. The contact
-  establishment interval was fixed at \(5\,\mathrm{s}\), and no
-  alignment-time metric was defined, tabulated, or compared across the tested
-  lever magnitudes, so no dependence of a settling time on
-  \(\lVert r_{c,t}\rVert\) may be asserted. What may be said about magnitude
-  is the model statement: for the same elastic press and a perpendicular lever,
-  the predicted contribution is proportional to \(\lVert r_{c,t}\rVert\).
+- **Do not call the TCP an optimal centre.** It supplies a neutral reference
+  for the added moment. The tested minimum-error position differs with entry
+  direction, and no continuous or universal optimum was established.
+- **Do not generalise the trace timing.** The explicitly defined
+  \(0.1^\circ\) endpoint-band comparison concerns two illustrated trials.
+  It does not establish a dependence of settling time on CoC magnitude.
 
-  What the ban had also been catching, and should not have been, is the reading
-  of a settling time off a plotted trace. Section 5.1.3 gives the two times of
-  the Case-D wrench figure under the conditions in *A time-course observation is
-  stated plainly* above. Those are two positions of one comparison, hedged and
-  traceable to the panel, not a metric fitted across the magnitude range.
+
 
 Basic settling, formulation-equivalence, and repeatability checks support the
 measurements but should not dominate the conclusion.
@@ -4783,24 +4597,15 @@ separate entry of equal length for every case repeats Chapter 5 and obscures the
 main ordering. Keep continuous prose, with one compact headline percentage for
 each main Case A--D result.
 
-**The opening sentence of Chapter 6 names the measured quantity, not an
-alignment.** `implemented for contact-induced alignment of a rectangular tool
-with a configured surface reference` was withdrawn on 2026-09-01: it claims a
-physical tool--surface alignment, which Section 6.2.2 states was never measured
-independently, so the chapter's first sentence contradicted its own
-limitations. The settled form is `implemented to generate compliant
-contact-induced end-effector rotation towards the configured surface-parallel
-orientation`. **`configured surface-parallel orientation` is the noun form**
-of the alignment wording settled above; `parallel alignment with the
-configured surface` remains the form used when the state is meant.
+**The conclusion opening names the controller and intended compliant
+contact-induced rotation.** State the measured result using angular error
+relative to the calibrated surface. Do not claim independently measured exact
+physical alignment.
 
-**The Case-D finding is stated as direction selection, before its
-percentages.** Within the tested range, a fixed displaced centre acted
-principally as a direction selector rather than as a means of increasing the
-response: it raised the response slightly in the favourable direction and
-reduced it almost entirely in the opposite one. A conclusion that opens on
-\(4.0\,\%\) and \(97.6\,\%\) leaves the reader to infer that finding
-from the arithmetic.
+**The Case-D finding is stated as an entry-dependent angular-error result.**
+The smallest measured mean magnitudes occurred at different tested positions.
+Additional rotation after a first-tangent zero crossing could increase the
+angular error. State this interpretation before summarising its percentages.
 
 **The conditioning result is qualified by when the term was active.** Write
 that the complete singular-value-conditioning modes were active before and
@@ -4808,24 +4613,19 @@ during the disturbance and produced net displacements close to zero.
 `conditioning kept the net displacement close to zero` reads as isolated
 disturbance rejection, which the timeline rules out.
 
-The conclusion instead states the main findings as continuous prose: the
-controller was implemented and active in every reported experiment;
-compliance-centre position had the largest measured influence; every tested
-non-zero position increased the response in one rotational direction and
-reduced it in the other about \(t_1\); and the stiffness effects were smaller. The isolated
-null-space result remains bounded to free-space hold under the commanded
-force-equivalent.
+The conclusion states the calibrated angular-error findings as continuous
+prose: the TCP baseline, rotational stiffness, translational stiffness with
+the other tangent held constant, and CoC position with the zero-crossing
+qualification. Preserve the separately evaluated null-space disturbance
+findings and their experimental scope.
 
-The conclusion supplied on 2026-09-02 replaced the earlier rule that it carry
-the Case A--D headline percentages with their reference conditions. It names no
-case at all, and rounds the direction-dependent figures to `approximately
-\(4\,\%\)` and `approximately \(98\,\%\) to \(99\,\%\)`, keeping the exact
-\(4.0\), \(4.3\), \(97.6\) and \(99.2\,\%\) values in Chapter 5 where the
-comparison is made. The percentages that stay exact in the conclusion are the
-ones stated against a named reference condition: \(81.3\), \(115.1\),
-\(63.9\) and \(0.4\,\%\). Standard deviations and the absolute values stay in
-Chapter 5. A further value appears only where it carries a physically
-meaningful bound.
+The conclusion uses the same angular-error percentages and reference
+conditions as Chapter 5. Baseline magnitude reductions are \(81.2\,\%\)
+and \(85.0\,\%\). The rotational-stiffness increase is \(276.2\,\%\),
+the translational-stiffness span is \(3.8\,\%\), and the reductions at the
+smallest tested mean CoC errors may be rounded to \(15\,\%\) and
+\(34\,\%\). The per-setting means and standard deviations stay in the
+results and appendix tables.
 
 **The null-space conclusion states changes as percentages.** Instructed
 2026-09-08. Replace the three absolute from--to motion comparisons in
@@ -4843,28 +4643,20 @@ centre for the offset direction and return it to the TCP once alignment is
 established. Those two sentences are conclusions drawn from the measurements,
 not future work, and they stay in Section 6.1.
 
-**Each case section explains its own case, and does not compare across cases.**
-Agreed 2026-09-02. Two cross-case paragraphs were removed from the end of
-Case~D: the one ranking the response variation of the tangential centre against
-the two stiffness effects, and the one giving the direction-dependent
-percentages relative to the TCP-centred magnitudes. Both compared Cases~B,
-C and D rather than explaining Case~D, and the conclusion already carries the
-ranking with its percentages. Nothing was lost by the removal: the
-\(4.84^\circ\) and \(0.03^\circ\) spans are stated in Cases~B and C where they
-are measured, and the \(7.69^\circ\) and \(11.21^\circ\) Case-D spans are the
-difference between endpoint values the case still reports. A case section ends
-on what its own measurement shows.
+**Each case section explains its own case.** The Case-B angular error
+increase is \(4.83^\circ\), and the Case-C span is \(0.07^\circ\).
+Case D compares the angular errors at its tested positions, including the
+TCP-centred reference. Keep detailed cross-case synthesis in the conclusion.
 
 **Target length.** Chapter 6 should sit at roughly half the length of the
 results chapter it summarises. The reduction comes from cutting duplication,
 not from dropping findings.
 
-The central findings the conclusion must carry are: the stiffness parameters
-had a relatively small effect; compliance-centre placement had the largest
-measured effect; its required displacement direction depended on the known
-direction of rotation about \(t_1\); and null-space conditioning was isolated in free-space
-Cartesian pose hold, while the combined mode and a physical disturbance remain
-untested.
+The conclusion must retain the calibrated angular-error findings for
+Cases A--D and the distinct null-space disturbance-response findings.
+Its CoC interpretation follows angular error and zero crossings, with the
+neutral TCP reference explained through the added moment. Preserve the
+experimental scope and the two selected future-work proposals.
 
 Settling, formulation-equivalence, and repeatability checks belong in Chapter 5.
 Do not restate them in the conclusion.

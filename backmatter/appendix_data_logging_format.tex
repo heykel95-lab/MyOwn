@@ -15,8 +15,8 @@ frames, and model-estimated quantities explicit.}
 
 \Added{\mbox{Table~\ref{tab:csv_column_groups}} lists the recorded signal
 groups used to calculate the reported surface-contact and null-space results.
-The surface-contact schema supplies the contact-geometry, commanded-wrench and
-model-estimated wrench groups, and the Cartesian pose-hold schema supplies the
+The surface-contact schema supplies the angular-error, contact-geometry,
+commanded-wrench and model-estimated wrench groups, and the Cartesian pose-hold schema supplies the
 singular-value, projected-motion, and disturbance groups. The complete file schemas, including
 the diagnostic fields that no reported result uses, are documented with the
 recorded data.}
@@ -57,6 +57,10 @@ Cartesian position and orientation errors, measured TCP velocity, desired TCP
 velocity, and measured end-effector angular velocity. During Contact
 Establishment, \texttt{e\_R} is calculated relative to the orientation
 captured at the clearance transition.\\
+\texttt{angular\_deviation\_}\newline\texttt{t1\_deg} &
+Normal-to-normal angular-error component about \(t_1\), calculated from the
+measured end-effector orientation and calibrated tool normal [${}^\circ$].
+Its recorded direction is from the tool normal towards \(-n_s\).\\
 \texttt{p\_CoC} &
 Base-frame \abbr{CoC} position \(p_c=p_{\mathrm{TCP}}+r_c\) [m], recorded
 for every surface-contact trial, including the TCP-centred condition
@@ -98,8 +102,18 @@ torque-limit scale, commanded base-frame point force [N], and the base-frame
 position of the selected point on link~3 [m].\\
 \texttt{tau\_disturbance\_1..7} &
 Components of the equivalent joint disturbance torque
-\(\tau_{\mathrm{dist}}=J_p^\top f_{\mathrm{dist}}\) [N\,m].\\
+\(\tau_{\mathrm{dist}}=J^\top f_{\mathrm{dist}}\) [N\,m].\\
 \end{longtable}
+
+The angular-error evaluation of
+\mbox{\Cref{subsec:experimental_supporting_metrics}} takes the negative of
+\texttt{angular\_\allowbreak deviation\_\allowbreak t1\_\allowbreak deg} to obtain
+\mbox{\(\theta_{\mathrm{err},t_1}\)} in degrees. Earlier contact files name the
+same quantity \texttt{alignment\_\allowbreak error\_\allowbreak t1\_\allowbreak deg}.
+The recorded component is evaluated directly at each instant.
+For the comparison tables, the terminal controller reports supply the
+contact-entry and contact-end components to \mbox{\(0.01^\circ\)}.
+Each report uses the same normal-to-normal calculation as the time-series field.
 
 The Cartesian wrench evaluation of
 \mbox{\Cref{sec:wrench_evaluation_method}} reads the model-estimated group.

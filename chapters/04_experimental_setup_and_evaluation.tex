@@ -100,10 +100,11 @@ Surface-reference construction determined \mbox{\(p_s\)}, \mbox{\(n_s\)}, and
 calibration determined \mbox{\(n_{\mathrm{Tool,EE}}\)} in end-effector
 coordinates.}
 
-The configured surface normal \mbox{\(n_s\)} defines the controller reference.
-The physical plate normal \mbox{\(n_{\mathrm{phys}}\)} was not measured independently.
-Their difference contributes to the physical tool--surface mismatch, as shown
-in panel~(b) of \mbox{\Cref{fig:experimental_setup_photo}}.
+The configured surface normal \mbox{\(n_s\)} was obtained from a pose with
+the tool face seated on the physical plate. It supplies the calibrated
+surface reference used by the controller and the angular evaluation.
+Panel~(b) of \mbox{\Cref{fig:experimental_setup_photo}} distinguishes this
+reference from the physical plate orientation.
 
 \subsection{Surface-Reference Construction}
 \label{subsec:plane_calibration_protocol}
@@ -273,7 +274,7 @@ conditioning remained active together in Mode~3, with
 throughout the surface-contact study and were therefore not experimental
 variables. The conditioning torque magnitude was kept at the comparatively low
 value of \mbox{\(1\,\mathrm{N\,m}\)} to limit its influence on the
-surface-contact response while keeping the null-space controller active.}
+angular behaviour during contact while keeping the null-space controller active.}
 
 
 \subsection{Repetitions and Data Recording}
@@ -303,8 +304,8 @@ Case~B varied the rotational stiffness \(K_{R,t_1}\), and Case~C the
 translational stiffness along \(t_2\), \(K_{p,t_2}\), in each instance with the
 other entry held constant. End-effector rotation about \(t_1\) can be
 accompanied by tangential motion along \(t_2\). The translational stiffness
-\(K_{p,t_2}\) was therefore selected to examine its influence on the contact
-response. Case~D varied the tangential compliance-centre position
+\(K_{p,t_2}\) was therefore selected to examine its influence on the angular
+error. Case~D varied the tangential compliance-centre position
 \(r_{c,t_2}\) for both directions of the measured angular offset
 \(\theta_{\mathrm{meas},t_1}\). Table~\ref{tab:experimental_test_cases} summarises the
 parameter variations. The TCP-centred reference points used in Cases~B--D
@@ -361,7 +362,7 @@ D & Tangential \abbr{CoC} position & \(9.32^\circ\) and
 \endgroup
 
 % ============================================================================
-\section{Measured Angular Offset and Contact Response}
+\section{Measured Angular Offset and Angular Error}
 \label{sec:experimental_evaluation}
 \label{sec:alignment_evaluation}
 % ============================================================================
@@ -373,31 +374,29 @@ surface reference. The orientation reached can differ from this command.
 The experimental comparisons therefore use the measured pose-based angular
 offset \mbox{\(\theta_{\mathrm{meas},t_1}\)} at contact entry.
 
-The two measured angular quantities compare different references.
-\mbox{\(\theta_{\mathrm{meas},t_1}\)} compares the entry tool-normal direction
-with the inward configured surface normal \mbox{\(-n_s\)}.
-The contact response \mbox{\(\gamma_{t_1}\)} compares the measured end-effector
-orientations at contact entry and contact end.
-Its rotation is defined from the end orientation back to the entry orientation.
-Both quantities are resolved about \mbox{\(t_1\)}.
+The angular error \mbox{\(\theta_{\mathrm{err},t_1}(t)\)} describes the tool-normal
+orientation relative to the calibrated surface reference throughout Contact
+Establishment. Both angular quantities use the inward configured surface normal
+\mbox{\(-n_s\)} as their reference and are resolved about \mbox{\(t_1\)}.
+The measured angular offset is the value of this error at contact entry.
 
 \Needspace{0.42\textheight}
-\Cref{fig:surface_reference_geometry} shows both angles for a schematic rotation
-about \mbox{\(t_1\)}. The solid green and dashed blue lines show the
-pose-based tool-face directions at contact entry and contact end, respectively.
-These directions are reconstructed from the measured end-effector orientations
-and the calibrated tool normal.
-The view places \mbox{\(t_1\)} out of the page; positive rotation is
+\Cref{fig:surface_reference_geometry} shows the entry offset and angular error
+for a schematic rotation about \mbox{\(t_1\)}. The solid green and dashed blue
+arrows show the calibrated tool normals at contact entry and contact end.
+They are calculated from measured end-effector orientation.
+Both angle arcs run from the red inward calibrated surface normal
+\mbox{\(-n_s\)} to the respective tool normal. The common origin compares orientations.
+The view places \mbox{\(t_1\)} out of the page, with positive rotation
 anticlockwise by the right-hand rule.
 
 \begin{figure}[H]
   \centering
   \input{figures/ch04/surface_reference_geometry.tex}
-  \caption{Measured angular offset and contact response.}
+  \caption{Measured angular offset and angular error.}
   \label{fig:surface_reference_geometry}
   \label{fig:rotation_sign_convention}
 \end{figure}
-
 
 \subsection{Measured Pose-Based Angular Offset}
 \label{subsec:initial_angular_deviation}
@@ -427,8 +426,7 @@ R\left(\frac{\theta_{\mathrm{meas}}}{\lVert\theta_{\mathrm{meas}}\rVert},
 \end{equation}
 
 When the two directions coincide, \mbox{\(\theta_{\mathrm{meas}}=\mathbf{0}\)}.
-The component about \mbox{\(t_1\)} follows the rotational direction of the
-configured offset and is given by
+Its component about \mbox{\(t_1\)} is
 
 \begin{equation}
 \theta_{\mathrm{meas},t_1}=t_1^\top\theta_{\mathrm{meas}}.
@@ -437,64 +435,68 @@ configured offset and is given by
 
 The component \mbox{\(\theta_{\mathrm{meas},t_1}\)} identifies the angular
 condition in every contact comparison, including the nominal zero-offset
-condition. The direction \mbox{\(n_s\)} is fixed; the time dependence enters
-through the measured tool orientation.
+condition. The direction \mbox{\(n_s\)} is fixed throughout each trial.
 
-
-\subsection{Contact Response}
+\subsection{Angular Error During Contact}
 \label{subsec:experimental_supporting_metrics}
 
-Let \(t_{\mathrm{start}}\) and \(t_{\mathrm{end}}\) denote the
-measurement instants at the beginning and end of contact establishment.
-Contact Establishment holds \mbox{\(R_{\mathrm{EE,clearance}}\)} as its
-rotational reference, with
-\mbox{\(R_{\mathrm{EE,clearance}}=R_{\mathrm{EE}}(t_{\mathrm{start}})\)}.
-The relative rotation from the measured end orientation back to this reference
-is
+The angular error was calculated throughout Contact Establishment from the
+measured end-effector orientation and the calibrated tool normal.
+At time \mbox{\(t\)}, the tool-normal direction in the base frame is
 
 \begin{equation}
-R_{\mathrm{CE}}
-=
-R_{\mathrm{EE,clearance}}
-R_{\mathrm{EE}}^\top(t_{\mathrm{end}}).
+n_{\mathrm{Tool}}(t)=R_{\mathrm{EE}}(t)n_{\mathrm{Tool,EE}}.
+\label{eq:measured_tool_normal_time}
 \end{equation}
 
-Writing this relative rotation in axis--angle form as
-\(R_{\mathrm{CE}}=R(u_{\mathrm{CE}},\phi_{\mathrm{CE}})\) gives the
-contact response vector \(\gamma\) in base coordinates:
+The angular-error vector \mbox{\(\theta_{\mathrm{err}}(t)\)} represents the
+shortest rotation from \mbox{\(-n_s\)} to \mbox{\(n_{\mathrm{Tool}}(t)\)}.
+For \mbox{\(\theta_{\mathrm{err}}(t)\neq\mathbf{0}\)}, it satisfies
 
 \begin{equation}
-\gamma
-=
-\phi_{\mathrm{CE}}u_{\mathrm{CE}}
-=
-e_R(t_{\mathrm{end}}).
-\label{eq:contact_induced_rotation}
+R\left(\frac{\theta_{\mathrm{err}}(t)}{\lVert\theta_{\mathrm{err}}(t)\rVert},
+\lVert\theta_{\mathrm{err}}(t)\rVert\right)(-n_s)
+=n_{\mathrm{Tool}}(t).
+\label{eq:angular_error_rotation}
 \end{equation}
 
-\Added{The response is calculated from the measured end-effector
-orientations and resolved about \mbox{\(t_1\)}:}
+The vector is zero when the normal directions coincide.
+The component about the first surface tangent is
 
 \begin{equation}
-\gamma_{t_1}=t_1^\top\gamma.
-\label{eq:surface_resolved_setup_rotation}
+\theta_{\mathrm{err},t_1}(t)=t_1^\top\theta_{\mathrm{err}}(t),
+\qquad
+\theta_{\mathrm{err},t_1}(t_{\mathrm{start}})
+=\theta_{\mathrm{meas},t_1}.
+\label{eq:surface_resolved_angular_error}
 \end{equation}
 
-The response \mbox{\(\gamma_{t_1}\)} has the opposite direction to the
-start-to-end end-effector rotation, as drawn in
-\mbox{\Cref{fig:surface_reference_geometry}}.
-For rotation towards parallel alignment with the configured surface, it has
-the same direction as \mbox{\(\theta_{\mathrm{meas},t_1}\)}.
-The magnitude \mbox{\(\lvert\gamma_{t_1}\rvert\)} gives the size of the response.
+Positive and negative values follow the right-hand rule about \mbox{\(t_1\)}.
+A smaller magnitude indicates a smaller angular-error component relative to
+the calibrated surface. A change through zero indicates that the component
+has crossed the reference orientation. The complete normal-direction error
+also contains the component about the other surface tangent.
 
-The calculation uses only the measured end-effector orientations and
-\mbox{\(t_1\)}; it does not require the calibrated tool normal.
-At contact entry, the captured reference gives \mbox{\(e_R=\mathbf{0}\)},
-even when \mbox{\(\theta_{\mathrm{meas},t_1}\)} is non-zero.
-At contact end, \mbox{\(\gamma=e_R(t_{\mathrm{end}})\)}.
+The controller evaluated the normal-to-normal rotation from the measured
+end-effector orientation during each control cycle. Its recorded vector points
+from the tool normal towards \mbox{\(-n_s\)}.
+The evaluation reverses this vector to obtain
+\mbox{\(\theta_{\mathrm{err}}(t)\)} with the same direction convention as the
+measured angular offset. \Cref{app:recorded_data} identifies the recorded fields.
+The comparison values were extracted from the controller's per-trial reports
+at the end of Contact Establishment, \mbox{\(t_{\mathrm{end}}\)}.
+Those endpoint components were stored to \mbox{\(0.01^\circ\)}.
+The arithmetic means and sample standard deviations were calculated from these
+trial-level values. The time histories use the recorded samples from the
+complete contact interval of each illustrated trial.
 
+The rotational spring continues to use the controller orientation error
+\mbox{\(e_R\)} relative to the held entry reference.
+At contact entry, \mbox{\(e_R=\mathbf{0}\)} while the surface-relative angular
+error can be non-zero.
 
 % ============================================================================
+
 \section{Cartesian Wrench Evaluation}
 \label{sec:wrench_evaluation_method}
 % ============================================================================
@@ -654,15 +656,15 @@ r_p
 At the initial posture \(q_{\mathrm{init}}\), the structural null direction
 \(v_7(q_{\mathrm{init}})\) is a joint-motion direction that preserves the
 end-effector pose to first order, and the translational point Jacobian
-\(J_p(q_{\mathrm{init}})\) maps it to the corresponding velocity of the
+\(J(q_{\mathrm{init}})\) maps it to the corresponding velocity of the
 selected link point. The fixed base-frame force direction was chosen along that
 velocity,
 
 \begin{equation}
 u_f
 =
-\frac{J_p(q_{\mathrm{init}})v_7(q_{\mathrm{init}})}
-{\lVert J_p(q_{\mathrm{init}})v_7(q_{\mathrm{init}})\rVert_2}.
+\frac{J(q_{\mathrm{init}})v_7(q_{\mathrm{init}})}
+{\lVert J(q_{\mathrm{init}})v_7(q_{\mathrm{init}})\rVert_2}.
 \label{eq:nullspace_disturbance_direction}
 \end{equation}
 
@@ -679,7 +681,7 @@ f_{\mathrm{dist}}(t)=F_{\mathrm{dist}}s_{\mathrm{dist}}(t)u_f,
 \qquad
 \tau_{\mathrm{dist}}(t)
 =
-J_p(q(t))^\top f_{\mathrm{dist}}(t).
+J(q(t))^\top f_{\mathrm{dist}}(t).
 \label{eq:nullspace_automatic_disturbance}
 \end{equation}
 
@@ -719,7 +721,7 @@ until \(8\,\mathrm{s}\), and decreased smoothly to zero by
 \]
 
 \Added{The controller generates a repeatable joint-torque excitation by mapping
-the commanded point force through \mbox{\(J_p^\top\)}. Its Cartesian component
+the commanded point force through \mbox{\(J^\top\)}. Its Cartesian component
 is opposed by the pose-hold impedance, and
 \mbox{\Cref{eq:nullspace_cartesian_retention_criterion}} evaluates the resulting
 position retention.}
