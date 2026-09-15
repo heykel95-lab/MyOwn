@@ -1498,3 +1498,16 @@ panel (a) of the direction-rule figure and the identical source in the
 presentation. Its 120 mm length follows \(t_2\), and its 40 mm width follows
 \(t_1\). Centre the shaft on the face, with equal half-lengths in the positive
 and negative \(t_2\) directions. Keep all three axes visible. Agreed 2026-09-15.
+
+## Joint-angle histories (2026-09-15)
+
+Use the same joint_motion_time.pdf in the thesis and presentation. Plot the
+measured change of joint 1 from disturbance onset for all twelve trials.
+Panel (a) shows all four settings over 0--4 s. Panel (b) enlarges the two
+conditioning settings over 0--1 s. Each solid trace is an individual trial,
+with markers at the original nominal-20-Hz samples. Preserve the positive and
+negative values. No interpolation, averaging or smoothing is applied.
+Keep black, red, blue and yellow for the existing four settings. Use Latin
+Modern text and mathematics, vector PDF, and at most two decimal places.
+Sources, portable samples, source hashes and checks are in
+code/python/figures/joint_motion/.

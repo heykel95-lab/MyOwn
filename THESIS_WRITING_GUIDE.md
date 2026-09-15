@@ -4904,3 +4904,18 @@ Before accepting a revision:
 The final test for every sentence is whether it belongs in a robotics/control
 thesis whose reader knows nothing about the author’s repository, coding
 history, or earlier drafts.
+
+## Individual joint motion over time (2026-09-15)
+
+The null-space results also show measured joint-1 angle change from disturbance
+onset, for all three trials of each of the four settings. Joint 1 is selected
+because its equivalent commanded disturbance torque is largest in all twelve
+trials. Use the original 20 Hz diagnostic samples and measured timestamps over
+5--9 s, displayed as 0--4 s. Retain each trial separately and include a
+conditioning close-up of the first second. Do not average, smooth, integrate,
+or take absolute values of the measured joint angle. This direct angle change
+is separate from the projected seven-joint quantities E_N and Delta eta.
+The first-second traces show repeated reversals at k_sigma = 2.0 N m.
+The sampling rate supports the displayed measured sequence, not a claim about
+an exact oscillation frequency. The selected null-space modes were active
+before disturbance onset, as already stated in the methodology and results.
