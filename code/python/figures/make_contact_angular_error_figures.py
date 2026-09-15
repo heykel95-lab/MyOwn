@@ -110,7 +110,7 @@ coordinates {
         series.append(r'\addplot['+colour+', mark='+marker+r''', mark options={fill=white},
          error bars/.cd, y dir=both, y explicit] coordinates {
 '''+points+'};\n'+r'\addlegendentry{Measured Angular Offset, \(\theta_{\mathrm{meas},t_1}='+entry+r'^\circ\)}')
-    d=d.replace('@COMMON@',COMMON.replace('xmajorgrids=false','xmajorgrids=true') + '    x grid style={gray!65, thin, densely dotted},\n    xticklabel style={rotate=45, anchor=north east},\n    xlabel style={yshift=6pt},\n')
+    d=d.replace('@COMMON@',COMMON.replace('xmajorgrids=false','xmajorgrids=true') + '    x grid style={gray!65, thin, densely dotted},\n    xticklabel style={rotate=0, anchor=north, font=\\fontsize{8}{10}\\selectfont},\n    xlabel style={yshift=0pt},\n')
     sources['results_case_d_panels.tex']=d.replace('@SERIES@','\n'.join(series))
     return {name:text.replace('@YLABEL@',YLABEL).replace('@COMMON@',COMMON) for name,text in sources.items()}
 

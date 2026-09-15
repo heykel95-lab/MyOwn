@@ -1087,7 +1087,9 @@ an error bar. The tested positions are -80, -40, -20, -10, 0, 10, 20,
 40 and 80 mm for both entry directions (agreed 2026-09-15). Use a proportional
 linear axis with a labelled tick and a visible dotted vertical gridline at every
 tested position, including -20, -10, 10 and 20 mm (clarified 2026-09-15).
-Angle the x tick labels at 45 degrees so -20 and -10 mm remain distinct.
+Keep the x tick labels horizontal and centred below their ticks. Use the
+8 pt x-axis tick font so -20 and -10 mm remain separate. Apply the
+same horizontal labels to the presentation CoC plot.
 Keep enough margin for the endpoint markers and error bars. Generate thesis and presentation
 coordinates from the same audited terminal-endpoint summary. The representative
 three-trace wrench figure retains its -40 mm, TCP and +40 mm trials.
