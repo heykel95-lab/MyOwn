@@ -539,19 +539,22 @@ labels as well as the drawings, and shorten a panel label rather than spreading
 the panels further -- `(a) Rotations about the tangents` became
 `(a) Tangent rotations` on that ground.
 
-**The Chapter 4 angular-comparison figure shows entry and final angular error.**
+**The Chapter 4 angular-comparison figure shows entry offset and angular error.**
 The configured surface normal was calibrated against the physical plate. Draw
 the actual normal vectors rather than plane or tool-face traces. The red arrow
 points along the inward calibrated surface normal \(-n_s\) and carries
-`Calibrated surface normal`. The solid dark-green and dashed blue arrows show
-\(n_{\mathrm{Tool}}(t_{\mathrm{start}})\) and
-\(n_{\mathrm{Tool}}(t_{\mathrm{end}})\), respectively, calculated from measured
-end-effector orientation using the calibrated tool normal. The dashed arrow
-retains the author's exception for the contact-end instant. The outer red arc
-for \(\theta_{\mathrm{meas},t_1}\) runs from \(-n_s\) to the entry tool
-normal. The inner blue arc for
-\(\theta_{\mathrm{err},t_1}(t_{\mathrm{end}})\) runs from \(-n_s\) to the
-final tool normal. Both arcs share the calibrated zero.
+`Calibrated surface normal`. The solid dark-green and dashed blue arrows carry
+`Tool normal at entry` and `Tool normal at end`, respectively. They show the
+calibrated tool normals calculated from measured end-effector orientation.
+The dashed arrow retains the author's exception for the contact-end instant.
+Keep these three descriptive labels, without the vector symbols or their time
+arguments. Do not relabel the inward red arrow as \(n_s\). The outer red arc
+for \(\theta_{\mathrm{meas},t_1}\) runs from the red reference to the entry tool
+normal. The inner blue arc for \(\theta_{\mathrm{err},t_1}\) runs from the same
+reference to the end tool normal. Omit the end-time argument from this angle
+label. Both arcs share the calibrated zero. Keep \(n_s\), \(t_1\), and \(t_2\)
+in the separate coordinate-frame inset. Apply the same label treatment to the
+matching presentation figure.
 
 The main contact metric is the shortest rotation from the inward calibrated
 surface normal to the calibrated tool-face normal transformed by measured
