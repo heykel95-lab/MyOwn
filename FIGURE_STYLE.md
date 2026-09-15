@@ -9,6 +9,18 @@ wording and evidence rules. Update this file when a new convention is agreed.
 editable. Data plots are generated to vector PDF with the same faces. A raster
 screenshot is a last resort and never carries text the reader must read.
 
+## Keep shared figures synchronized with the presentation
+
+A change to a plot or figure shared with the defense presentation applies to
+both documents by default. Update the corresponding editable sources and
+generators together, including geometry, data, uncertainty, symbols, labels,
+axes, tick orientation, limits, grid and visual conventions. Regenerate the
+affected assets and compiled documents, then inspect both the slide and the
+thesis page. This includes the symmetric tool drawing, the angular-error
+illustration and the angular-error result plots. Follow an explicit instruction
+that limits a change to one document. Check whether the matching figure is
+already current before rebuilding it. Agreed 2026-09-15.
+
 ## Drawn diagrams (TikZ)
 
 **`figures/` is organised by chapter.** Reorganised 2026-09-07. A figure lives
