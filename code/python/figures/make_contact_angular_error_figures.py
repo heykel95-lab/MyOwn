@@ -94,7 +94,7 @@ coordinates {
 \begin{axis}[
     width=11.5cm, height=7.0cm,
     xmin=-88, xmax=88, ymin=-11, ymax=11,
-    xtick={-80,-40,0,40,80}, ytick={-10,-8,-6,-4,-2,0,2,4,6,8,10},
+    xtick={-80,-40,-20,-10,0,10,20,40,80}, ytick={-10,-8,-6,-4,-2,0,2,4,6,8,10},
     xlabel={Tangential CoC Position, \(r_{c,t_2}\) [mm]},
     ylabel={@YLABEL@},
 @COMMON@  ]
@@ -110,6 +110,7 @@ coordinates {
         series.append(r'\addplot['+colour+', mark='+marker+r''', mark options={fill=white},
          error bars/.cd, y dir=both, y explicit] coordinates {
 '''+points+'};\n'+r'\addlegendentry{Measured Angular Offset, \(\theta_{\mathrm{meas},t_1}='+entry+r'^\circ\)}')
+    d=d.replace('@COMMON@',COMMON.replace('xmajorgrids=false','xmajorgrids=true') + '    x grid style={gray!65, thin, densely dotted},\n    xticklabel style={rotate=45, anchor=north east},\n    xlabel style={yshift=6pt},\n')
     sources['results_case_d_panels.tex']=d.replace('@SERIES@','\n'.join(series))
     return {name:text.replace('@YLABEL@',YLABEL).replace('@COMMON@',COMMON) for name,text in sources.items()}
 
