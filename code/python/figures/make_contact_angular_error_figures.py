@@ -93,8 +93,8 @@ coordinates {
 \begin{tikzpicture}
 \begin{axis}[
     width=11.5cm, height=7.0cm,
-    xmin=-48, xmax=48, ymin=-11, ymax=11,
-    xtick={-40,-20,0,20,40}, ytick={-10,-8,-6,-4,-2,0,2,4,6,8,10},
+    xmin=-88, xmax=88, ymin=-11, ymax=11,
+    xtick={-80,-40,0,40,80}, ytick={-10,-8,-6,-4,-2,0,2,4,6,8,10},
     xlabel={Tangential CoC Position, \(r_{c,t_2}\) [mm]},
     ylabel={@YLABEL@},
 @COMMON@  ]
@@ -103,9 +103,10 @@ coordinates {
 \end{tikzpicture}
 '''
     series=[]
-    for sign,colour,marker,entry in [('pos','black','o','9.32'),('neg','blue!55!black','square','-9.36')]:
-        runs=[f'P2_t1_{sign}_{suffix}' for suffix in ['m040','m020','m010','p000','p010','p020','p040']]
-        points='\n'.join(point(groups,r,x) for r,x in zip(runs,[-40,-20,-10,0,10,20,40]))
+    for sign,colour,marker in [('pos','black','o'),('neg','blue!55!black','square')]:
+        runs=[f'P2_t1_{sign}_{suffix}' for suffix in ['m080','m040','m020','m010','p000','p010','p020','p040','p080']]
+        entry=f'{sum(fvalue(groups,r,"entry_t1_deg_mean") for r in runs)/len(runs):.2f}'
+        points='\n'.join(point(groups,r,x) for r,x in zip(runs,[-80,-40,-20,-10,0,10,20,40,80]))
         series.append(r'\addplot['+colour+', mark='+marker+r''', mark options={fill=white},
          error bars/.cd, y dir=both, y explicit] coordinates {
 '''+points+'};\n'+r'\addlegendentry{Measured Angular Offset, \(\theta_{\mathrm{meas},t_1}='+entry+r'^\circ\)}')

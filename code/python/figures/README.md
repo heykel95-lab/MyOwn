@@ -70,7 +70,7 @@ summary, and `--out-dir` to stage regenerated sources. The original measured
 entry-offset convention is retained. Angular error is the shortest
 reference-to-tool normal rotation vector projected on the first tangent,
 equivalent to negating the archived tool-to-reference normal component.
-`contact_angular_error/README.md` documents the calculation and the terminal
+`contact_angular_error/README.txt` documents the calculation and the terminal
 reports used. No result is formed by subtracting the previous finite
 contact-response angle from the entry offset.
 

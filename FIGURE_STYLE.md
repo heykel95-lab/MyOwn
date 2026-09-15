@@ -1080,7 +1080,13 @@ standard deviations they are drawn as error bars, as in the supporting
 tool-axis series.
 
 The main Case-D plot carries the sample standard deviation at every setting as
-an error bar. The earlier `MAIN_D_sign.pdf` appendix plot duplicated that
+an error bar. The tested positions are -80, -40, -20, -10, 0, 10, 20,
+40 and 80 mm for both entry directions (agreed 2026-09-15). Use a proportional
+linear axis with labelled ticks at -80, -40, 0, 40 and 80 mm and enough margin
+for the endpoint markers and error bars. Generate thesis and presentation
+coordinates from the same audited terminal-endpoint summary. The representative
+three-trace wrench figure retains its -40 mm, TCP and +40 mm trials.
+The earlier `MAIN_D_sign.pdf` appendix plot duplicated that
 information and is not included in the thesis.
 
 ### Correcting a label in a plot that has no generator

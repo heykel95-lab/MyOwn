@@ -40,6 +40,14 @@ direction.
 
 ## Contact angular error relative to the calibrated surface
 
+Case D includes the completed three-repeat conditions at both -80 and +80 mm
+for both retained entry directions (agreed 2026-09-15). The endpoint comparison
+uses nine positions from -80 to +80 mm, with the original intermediate points.
+The saved effective settings match the corresponding 40 mm trials apart from
+the intended CoC displacement. Keep the representative wrench time histories
+at -40 mm, TCP and +40 mm because complete time-series files are available for
+those trials. Wider endpoint coverage does not imply wider time-history coverage.
+
 Use the name `angular error` without the adjective `final`, including captions,
 axes, tables, notes and the presentation. The existing evaluation instant
 \(t_{\mathrm{end}}\) remains in the definition. Agreed 2026-09-15.
@@ -69,7 +77,7 @@ the old finite contact rotation from the entry angle, and never substitute the
 controller tracking error \(e_R\). The rotational spring and damper retain
 their held-entry controller reference.
 
-All 57 comparison endpoints come from per-trial controller reports stored to
+All 69 comparison endpoints come from per-trial controller reports stored to
 \(0.01^\circ\). Calculate means and sample standard deviations from those
 trial-level endpoint components consistently. Three representative CSV files
 supply the time histories at their recorded precision. Their curves are
@@ -429,8 +437,8 @@ rotational stiffness, cross-axis translational stiffness, and tangential
 compliance-centre position. Every reported contact comparison uses commanded
 rotation about \(t_1\); \(t_2\) remains only as the perpendicular stiffness or
 lever coordinate where required. **The reported surface-contact study is
-Cases A--D and nothing else**: 19 settings and 57 trials, with the
-12 Cartesian pose-hold trials bringing the complete reported data set to 69
+Cases A--D and nothing else**: 23 settings and 69 trials, with the
+12 Cartesian pose-hold trials bringing the complete reported data set to 81
 trials. The tool-axis comparison was withdrawn on 2026-09-01; see
 *Appendix D* below for why, and do not reinstate its counts.
 
@@ -478,8 +486,8 @@ that Section 5.1 *states* it is one trial per test, was dropped by the supplied
 Section 4.6.2 of 2026-09-07: the sentence `Both come from one trial, so no
 between-trial variability is evaluated` went with the paragraph that carried it,
 and the words `in one trial` went from the sentence above it. `TODOS.md` carries
-the gap as a decision for the author. Its trials are **not** added to the 19 settings and 57
-surface-contact trials of Cases A--D, nor to the 69-trial total: those counts
+the gap as a decision for the author. Its trials are **not** added to the 23 settings and 69
+surface-contact trials of Cases A--D, nor to the 81-trial total: those counts
 cover the main contact study and the pose-hold study, and Section 5.1 is
 neither.
 
@@ -601,9 +609,9 @@ interpretation; Case D therefore names its higher-spread condition explicitly.
 **Section 4.3.3 states the repetitions, the reporting form, and the totals,
 in that order.** Its settled wording is `Each parameter setting was evaluated
 in three repeated trials. The reported values are arithmetic means with sample
-standard deviations. Cases A--D comprised 19 parameter settings and 57
+standard deviations. Cases A--D comprised 23 parameter settings and 69
 surface-contact trials. The 12 Cartesian pose-hold trials bring the complete
-experimental data set reported in this thesis to 69 trials.` The earlier
+experimental data set reported in this thesis to 81 trials.` The earlier
 qualification `and where relevant in the supporting checks` went with the
 supporting check itself on 2026-09-01: every reported setting now carries its
 sample standard deviation in its Appendix-D table, so the unqualified form is
@@ -2906,8 +2914,8 @@ Section by section, as executed:
   held fixed so it did not become a variable.
 - **Data recording.** Do not list the signals a third time. One sentence
   pointing at Chapter 3 and the data-format appendix. What stays is the data
-  quality: three trials per retained setting, 57 reported surface-contact
-  trials over 19 settings, and all three trials retained within each
+  quality: three trials per retained setting, 69 reported surface-contact
+  trials over 23 settings, and all three trials retained within each
   reported setting.
 - **Case matrix.** The cases had been explained three times — a grouping
   table, a prose walk-through, and the master table. The grouping table was
@@ -4348,9 +4356,9 @@ about \(t_1\). The principal experimental conclusions are:
    or \(3.8\,\%\) of the TCP-centred reference. \(K_{p,t_1}\) remained
    constant.
 4. The smallest tested mean error magnitudes occurred at different CoC
-   positions for the two entry directions: \(1.48^\circ\) at
-   \(40\,\mathrm{mm}\) for positive entry and \(0.94^\circ\) at
-   \(10\,\mathrm{mm}\) for negative entry. These are \(15.4\,\%\) and
+   positions for the two entry directions: \(1.17^\circ\) at
+   \(80\,\mathrm{mm}\) for positive entry and \(0.94^\circ\) at
+   \(10\,\mathrm{mm}\) for negative entry. These are \(33.3\,\%\) and
    \(33.7\,\%\) below their respective TCP-centred references. Greater
    rotation after a zero crossing can increase angular error magnitude.
 
@@ -4414,9 +4422,9 @@ The purposes of the main cases are settled and are stated in this order:
 Appendix D carries no supporting check; the tool-axis comparison was
 withdrawn on 2026-09-01.
 
-The measurement hierarchy is fixed. The main A--D study contains 19 settings
-and 57 surface-contact trials. The null-space pose-hold study adds four
-settings and 12 trials, giving 69 trials in the complete reported data set.
+The measurement hierarchy is fixed. The main A--D study contains 23 settings
+and 69 surface-contact trials. The null-space pose-hold study adds four
+settings and 12 trials, giving 81 trials in the complete reported data set.
 Shared reference conditions are counted with the main case in which they first
 appear.
 
@@ -4623,7 +4631,7 @@ The conclusion uses the same angular-error percentages and reference
 conditions as Chapter 5. Baseline magnitude reductions are \(81.2\,\%\)
 and \(85.0\,\%\). The rotational-stiffness increase is \(276.2\,\%\),
 the translational-stiffness span is \(3.8\,\%\), and the reductions at the
-smallest tested mean CoC errors may be rounded to \(15\,\%\) and
+smallest tested mean CoC errors may be rounded to \(33\,\%\) and
 \(34\,\%\). The per-setting means and standard deviations stay in the
 results and appendix tables.
 

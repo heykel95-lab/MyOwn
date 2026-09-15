@@ -1,6 +1,6 @@
 """Recalculate main contact angular errors from archived controller records.
 
-All 57 contact trials have terminal reports containing entry and end normal-error
+All 69 contact trials have terminal reports containing entry and end normal-error
 vectors to 0.01 degrees. Use those consistent records for grouped statistics.
 Three representative trials additionally have complete per-sample CSV logs.
 
@@ -36,7 +36,7 @@ def find_control_root() -> Path:
 
 
 ROOT = find_control_root()
-POSITIONS = [-40, -20, -10, 0, 10, 20, 40]
+POSITIONS = [-80, -40, -20, -10, 0, 10, 20, 40, 80]
 TAG = lambda p: f"{'m' if p < 0 else 'p'}{abs(p):03d}"
 RUNS = ["P6_zero_p000", "A_rot_t1_15", "A_rot_t1_50",
         "B_trans_t1_0300", "B_trans_t1_0800"] + [
@@ -187,6 +187,8 @@ def report_endpoint(root: Path, run: str, repeat: str, old_metrics: pd.DataFrame
     total = re.search(r"(?:deviation|alignment):\s*before=([-\d.]+).*?after=([-\d.]+)", content)
     duration = re.search(r"stop:.*?\|\s*t=([-\d.]+)\s*s", content)
     old = old_metrics[(old_metrics.run_id == run) & (old_metrics.repeat == repeat)].iloc[0]
+    if int(old["exit_status"]) != 0 or "stop: time | t=5.0 s" not in content:
+        raise ValueError(f"Incomplete contact trial: {report}")
     p = params(trial / "params_effective")
     frame = frame_from_params(p)
     assert p["tool_axis_target_sign"] == -1.0
@@ -200,7 +202,7 @@ def report_endpoint(root: Path, run: str, repeat: str, old_metrics: pd.DataFrame
         source_axis = "normal" if axis == "n" else axis
         row[f"old_gamma_{axis}_deg"] = float(old[f"contact_rotation_{source_axis}_deg"])
         # The previously extracted metrics must independently reproduce every
-        # report component. This validates all 57 sources without fabrication.
+        # report component. This validates all 69 sources without fabrication.
         assert abs(entry[i] + float(old[f"deviation_before_{axis}"])) < 1e-9
         assert abs(final[i] + float(old[f"deviation_after_{axis}"])) < 1e-9
     row.update(entry_total_deg=float(total[1]), final_total_deg=float(total[2]),
@@ -233,7 +235,7 @@ def main():
                 trace_rows.append(trace_row)
         print(run, flush=True)
     data = pd.DataFrame(rows)
-    assert len(data) == 57
+    assert len(data) == 69
     data.to_csv(args.out / "per_trial_results.csv", index=False, float_format="%.12g")
     metric_columns = [c for c in data if c.endswith("_deg") or c.endswith("_N") or c.endswith("_Nm")]
     summaries = []
@@ -254,7 +256,7 @@ def main():
     comparison = trace_data.merge(prior[["run_id", "repeat", "contact_rotation_t1_deg"]], on=["run_id", "repeat"], validate="one_to_one")
     delta = float(np.max(np.abs(comparison.old_gamma_t1_deg - comparison.contact_rotation_t1_deg)))
     assert delta < 1e-8
-    audit = dict(trials=57, groups=19, repeats_per_group=3,
+    audit = dict(trials=69, groups=23, repeats_per_group=3,
         maximum_full_3d_reconstruction_difference_deg=float(trace_data.reconstruction_max_abs_deg.max()),
         maximum_old_gamma_endpoint_difference_deg=delta,
         shortest_contact_duration_s=float(data.duration_s.min()),
@@ -263,7 +265,7 @@ def main():
         logged_definition="angular_deviation: shortest rotation R_EE(t) n_Tool,EE -> -n_s, resolved on surface axes",
         source_precision="grouped statistics use original terminal report endpoints, rounded online to 0.01 degree; three raw trace normal angles have 9 decimal places in degree and e_R 9 decimal places in radians",
         endpoint="grouped statistics use contact-entry and contact-end vectors from each controller terminal report; traces use first and last phase==2 samples, matching original gamma endpoint",
-        raw_log_coverage="3 of 57 trials have complete CSV; all 57 have terminal vector endpoints",
+        raw_log_coverage="3 of 69 trials have complete CSV; all 69 have terminal vector endpoints",
         endpoint_band_time_definition="First recorded contact time after which theta_err,t1 stays within +/-0.1 degree of its own last recorded value through contact end, inclusive",
         endpoint_band_half_width_deg=0.1,
         endpoint_band_time_TCP_s=float(trace_data.loc[trace_data.run_id == "P2_t1_pos_p000", "within_0p1deg_of_endpoint_after_s"].iloc[0]),

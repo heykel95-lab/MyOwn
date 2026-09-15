@@ -33,11 +33,11 @@ The same normal formula exists in the recorded ae 031 cd code revision.
 
 Data availability and endpoint convention
 ----------------------------------------
-The selected main-contact archive has 57 trials across 19 unique settings.
-Each setting has three repetitions. All 57 controller terminal.log reports
+The selected main-contact archive has 69 trials across 23 unique settings.
+Each setting has three repetitions. All 69 controller terminal.log reports
 contain full normal-error components at contact entry and at contact end,
 reported to 0.01 degrees. Three representative r01 trials additionally have
-their complete CSV logs. The other 54 raw CSV files are absent from this clone.
+their complete CSV logs. The other 66 raw CSV files are absent from this clone.
 The script never imputes missing measurements or obtains them from old gamma.
 
 For consistency, every grouped mean and sample standard deviation uses the
@@ -58,8 +58,8 @@ gamma audit uses the last recorded phase==2 e_R sample, exactly reproducing
 the original metrics.csv endpoint. Force/moment final-second values use the
 recorded interval t_contact >= last_t_contact -1 s and include both endpoints.
 
-All 57 selected contact trials retain exactly these calibration parameters:
- tool_axis_ee = (0.026387057, -0.006678514, 0.999629492)
+All 69 selected contact trials retain exactly these calibration parameters:
+ tool_axis_ee = (0.026387069, -0.006678514, 0.999629492)
  tool_axis_target_sign = -1
  surface_tilt_x_deg = -1.585191335
  surface_tilt_y_deg = 0.988473281
@@ -78,7 +78,7 @@ full 3D reconstruction matches the negated logged normal vector within
 0.000078 degrees. Raw R_EE matrices are not themselves stored in these CSVs.
 The original online normal vectors are retained as the reported data.
 The raw endpoint versus terminal report differences for the three traces lie
-within the 0.005 degree report rounding interval. All 57 terminal components
+within the 0.005 degree report rounding interval. All 69 terminal components
 also exactly match the earlier extracted metrics.csv records. The three
 recomputed old gamma endpoints match the original extracted metric to 2 e-15
 degrees. audit.json and representative_trace_endpoints.csv preserve the checks.
@@ -94,12 +94,12 @@ recalculate_normal_error.py:
  the destination. Without --out it writes beside the script.
 
 grouped_results.csv / grouped_results.json:
- 19 rows, one per run_id. Columns include n, entry_t1_deg_mean/sd,
+ 23 rows, one per run_id. Columns include n, entry_t1_deg_mean/sd,
  final_t1_deg_mean/sd, final_total_deg_mean/sd. Unrounded arithmetic results
  are retained for reproducibility, but audience-facing values use 2 decimals.
 
 per_trial_results.csv:
- 57 rows with original report endpoints, source paths, SHA256 hashes,
+ 69 rows with original report endpoints, source paths, SHA256 hashes,
  source resolution and old_gamma_* audit columns.
 
 trace_P2_t1_pos_{m040,p000,p040}_r01.csv:
@@ -115,6 +115,11 @@ representative_trace_endpoints.csv:
 
 source_provenance.json:
  Every selected report hash, original run provenance and archived parameters.
+
+wider_coc_source_audit.json:
+ Checks all 12 added +/-80 mm trials against corresponding +/-40 mm settings.
+ Only compliance_center_offset_ee_y differs. All reports end by the five-second
+ timer and have exit status zero. Plot r_c,t2 is -1000 * offset_ee_y in mm.
 
 Main numerical interpretation
 -----------------------------
@@ -135,13 +140,17 @@ larger residual error in the tested direction.
 Tangential translational stiffness 300/800/2000 N/m gives final errors
 1.68/1.69/1.75 degrees. The span is 0.07 degrees, not the old gamma span 0.03.
 
-CoC positions[-40,-20,-10,0,10,20,40]mm give positive-entry final errors
-[9.13,8.33,1.89,1.75,1.68,1.60,1.48] degrees, and negative-entry final errors
-[1.99,1.86,1.82,1.41,0.94,-4.40,-9.24] degrees. Thus displacement strongly
+CoC positions[-80,-40,-20,-10,0,10,20,40,80]mm give positive-entry final errors
+[9.35,9.13,8.33,1.89,1.75,1.68,1.60,1.48,1.17] degrees, and negative-entry final errors
+[2.23,1.99,1.86,1.82,1.41,0.94,-4.40,-9.24,-9.56] degrees. Thus displacement strongly
 changes the endpoint, with direction-dependent zero crossing. The negative
 series does not have monotonically increasing absolute residual error over
 the entire tested range. The largest sample SD is 0.42 degrees, positive
 entry at-20 mm. Positive/negative Case-D mean entry angles remain 9.32/-9.36.
+
+The smallest positive-entry mean error is 1.17 degrees at +80 mm, 33.3%
+below the TCP reference. The negative-entry minimum remains 0.94 degrees
+at +10 mm, 33.7% below its TCP reference. Percentages use unrounded means.
 
 For representative r01 traces at-40/TCP/+40 mm, final t1 errors are
 9.11717/1.749733/1.486307 degrees. Total normal-angle magnitudes are
