@@ -21,6 +21,8 @@ illustration and the angular-error result plots. Follow an explicit instruction
 that limits a change to one document. Check whether the matching figure is
 already current before rebuilding it. Agreed 2026-09-15.
 
+**The shared compliance-centre moment sketch labels panel (a) Supporting moment and panel (b) Opposing moment.** Keep these labels synchronized with the presentation. The labels name the added moment, while the displacement arrows, force arrows, moment directions and geometry remain unchanged. Agreed 2026-09-16.
+
 ## Drawn diagrams (TikZ)
 
 **`figures/` is organised by chapter.** Reorganised 2026-09-07. A figure lives
@@ -820,9 +822,12 @@ Panel (b) draws the physical surface and its conceptual normal
 frame \((t_1,n_s)\). It assigns no measured angle to the unknown difference.
 
 **The Section 4.5 angular comparison also gives the rotation sign.** Its
-surface-frame inset places \(t_2\) upwards, \(n_s\) leftwards and \(t_1\)
-out of the page as a dotted circle. The inward reference \(-n_s\) therefore
-points rightwards in the main drawing. Thus \(t_1\times t_2=n_s\), and positive
+surface-frame inset places \(n_s\) upwards, \(t_2\) rightwards and \(t_1\)
+out of the page as a dotted circle. Rotate only this inset clockwise by 90
+degrees, including its positive-rotation arc. The inset uses a separate view
+from the unchanged main angular comparison, whose inward reference \(-n_s\)
+continues to point rightwards. Keep the main arrows, angle arcs, labels and
+figure bounds unchanged in both the thesis and presentation. Agreed 2026-09-16. Thus \(t_1\times t_2=n_s\), and positive
 rotation is anticlockwise, from \(+t_2\) towards \(+n_s\). The separate sign-only figure is withdrawn. The
 calibration section has no separate geometry or flowchart figure; Figure 4.1
 already separates the physical plane from the configured reference.
