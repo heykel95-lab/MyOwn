@@ -8,6 +8,7 @@ angles is used. The saved sources are included directly by the thesis.
 """
 import argparse
 import csv
+import math
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -88,13 +89,18 @@ coordinates {
         entry = [fvalue(groups,r,'entry_t1_deg_mean') for r in runs]
         text = line.replace('@LIMITS@',limits).replace('@XTICKS@',','.join(map(str,xs))).replace('@XLABEL@',xlabel).replace('@POINTS@','\n'.join(point(groups,r,x) for r,x in zip(runs,xs))).replace('@ENTRYMIN@',f'{min(entry):.2f}').replace('@ENTRYMAX@',f'{max(entry):.2f}')
         sources[f'results_case_{key}_stiffness.tex']=text
+    positions = [-100, -90, -80, -40, -20, -10, 0, 10, 20, 40, 80, 90, 100]
+    d_runs = [f"P2_t1_{sign}_{'m' if x < 0 else 'p'}{abs(x):03d}"
+              for sign in ('pos', 'neg') for x in positions]
+    ymax = max(11, math.ceil(max(abs(fvalue(groups,r,'final_t1_deg_mean')) + fvalue(groups,r,'final_t1_deg_sd') for r in d_runs)) + 1)
+    ystep = 10 if ymax > 25 else 5 if ymax > 15 else 2
     d=r'''% Generated from the archived contact-error endpoint summary.
 % Error bars show sample standard deviations across three repetitions.
 \begin{tikzpicture}
 \begin{axis}[
-    width=11.5cm, height=7.0cm,
-    xmin=-88, xmax=88, ymin=-11, ymax=11,
-    xtick={-80,-40,-20,-10,0,10,20,40,80}, ytick={-10,-8,-6,-4,-2,0,2,4,6,8,10},
+    width=15.5cm, height=7.0cm,
+    xmin=-108, xmax=108, ymin=-@YMAX@, ymax=@YMAX@,
+    xtick={@XTICKS@}, ytick={@YTICKS@},
     xlabel={Tangential CoC Position, \(r_{c,t_2}\) [mm]},
     ylabel={@YLABEL@},
 @COMMON@  ]
@@ -102,11 +108,12 @@ coordinates {
 \end{axis}
 \end{tikzpicture}
 '''
+    d=d.replace('@YMAX@',str(ymax)).replace('@XTICKS@',','.join(map(str,positions))).replace('@YTICKS@',','.join(map(str,range(-(ymax//ystep)*ystep,ymax,ystep))))
     series=[]
     for sign,colour,marker in [('pos','black','o'),('neg','blue!55!black','square')]:
-        runs=[f'P2_t1_{sign}_{suffix}' for suffix in ['m080','m040','m020','m010','p000','p010','p020','p040','p080']]
+        runs=[f"P2_t1_{sign}_{'m' if x < 0 else 'p'}{abs(x):03d}" for x in positions]
         entry=f'{sum(fvalue(groups,r,"entry_t1_deg_mean") for r in runs)/len(runs):.2f}'
-        points='\n'.join(point(groups,r,x) for r,x in zip(runs,[-80,-40,-20,-10,0,10,20,40,80]))
+        points='\n'.join(point(groups,r,x) for r,x in zip(runs,positions))
         series.append(r'\addplot['+colour+', mark='+marker+r''', mark options={fill=white},
          error bars/.cd, y dir=both, y explicit] coordinates {
 '''+points+'};\n'+r'\addlegendentry{Measured Angular Offset, \(\theta_{\mathrm{meas},t_1}='+entry+r'^\circ\)}')

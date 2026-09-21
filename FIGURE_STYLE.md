@@ -1097,8 +1097,10 @@ standard deviations they are drawn as error bars, as in the supporting
 tool-axis series.
 
 The main Case-D plot carries the sample standard deviation at every setting as
-an error bar. The tested positions are -80, -40, -20, -10, 0, 10, 20,
-40 and 80 mm for both entry directions (agreed 2026-09-15). Use a proportional
+an error bar. The tested positions are -100, -90, -80, -40, -20, -10, 0,
+10, 20, 40, 80, 90 and 100 mm for both entry directions (extended 2026-09-21).
+Use a 15.5 cm axis width and a vertical range containing every mean and SD.
+Use 10-degree y ticks for the extended range to keep labels separate. Use a proportional
 linear axis with a labelled tick and a visible dotted vertical gridline at every
 tested position, including -20, -10, 10 and 20 mm (clarified 2026-09-15).
 Keep the x tick labels horizontal and centred below their ticks. Use the
