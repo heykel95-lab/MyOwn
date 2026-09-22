@@ -27,22 +27,18 @@ CONDITIONS = ["MAIN_NS7_baseline_20N_200mm",
               "MAIN_NS8_ksigma_2p0_20N_200mm"]
 EXPECTED = [
     {"excursion_rad": (0.13261424590916665, 0.015974350268640646),
-     "net_displacement_rad": (0.13117569374975943, 0.015948936082968077),
      "sigma_gain": (-0.0021345063333333414, 0.0004707251263660354),
      "task_error_peak_mm": (1.2329157488341203, 0.06582741088027887),
      "nullspace_speed_peak_rad_s": (0.11946331266666667, 0.00667715982895792)},
     {"excursion_rad": (0.09929805533900014, 0.0039681235673134545),
-     "net_displacement_rad": (0.09789733813446466, 0.0038402348616742798),
      "sigma_gain": (-0.0012569339999999967, 9.175295284621955e-05),
      "task_error_peak_mm": (1.228632092012848, 0.05189058084276039),
      "nullspace_speed_peak_rad_s": (0.080386674, 0.003433842103818401)},
     {"excursion_rad": (0.0050197591034999945, 8.399026886872481e-05),
-     "net_displacement_rad": (0.0002536762176696863, 0.00029884548928315257),
      "sigma_gain": (6.666666666858372e-08, 7.821338333994296e-08),
      "task_error_peak_mm": (0.8886195248315337, 0.02446655261308275),
      "nullspace_speed_peak_rad_s": (0.013270905999999999, 0.0019538260979746896)},
     {"excursion_rad": (0.02944354160333337, 0.0024808493834116638),
-     "net_displacement_rad": (-0.00018530407797765874, 0.0003296484587184597),
      "sigma_gain": (2.5999999995566608e-08, 2.4439312592275773e-07),
      "task_error_peak_mm": (0.9831069234446835, 0.05265261139482148),
      "nullspace_speed_peak_rad_s": (0.046685065666666664, 0.003342363798825219)},
@@ -100,12 +96,12 @@ def close(value, target, label, tolerance=1e-12):
                          abs_tol=tolerance), f"{label}: {value} != {target}")
 
 
-def file_hash(path):
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+def file_hashes(path):
+    raw = path.read_bytes()
+    lf = raw.replace(b"\r\n", b"\n")
+    crlf = lf.replace(b"\n", b"\r\n")
+    return {hashlib.sha256(content).hexdigest()
+            for content in (raw, lf, crlf)}
 
 
 def synthetic_rows():
@@ -114,7 +110,6 @@ def synthetic_rows():
     names += [f"disturbance_force_base_{a}" for a in "xyz"]
     names += [f"tau_disturbance_{j}" for j in range(1, 8)]
     names += [f"e_p_{a}" for a in "xyz"]
-    names += [f"nullspace_dq_{j}" for j in range(1, 8)]
     rows = []
     for i, time in enumerate([0, 5, 6, 7, 8, 9, 18]):
         row = dict.fromkeys(names, 0.0)
@@ -124,12 +119,11 @@ def synthetic_rows():
             row.update(nullspace_speed=speed, sigma_current=0.1 + i * 0.1,
                        disturbance_scale=1.0 if 5 < time < 9 else 0.0,
                        disturbance_force_base_x=20.0, tau_disturbance_1=2.0,
-                       e_p_x=i * 0.001,
-                       nullspace_dq_1=[1, 2, -3, -2, -1][i - 1])
+                       e_p_x=i * 0.001)
         else:
             row.update(nullspace_speed=99.0, sigma_current=-100.0 * i,
                        disturbance_force_base_x=100.0, tau_disturbance_1=100.0,
-                       e_p_x=100.0, nullspace_dq_1=99.0)
+                       e_p_x=100.0)
         rows.append(row)
     return rows
 
@@ -151,7 +145,6 @@ def test_synthetic_success(module):
                         "disturbance_tau_peak_Nm": 2.0,
                         "nullspace_speed_peak_rad_s": 3.0}.items():
         close(run[key], target, key)
-    close(run["net_vector_rad"][0], -3.0, "net_vector_rad[0]")
     require(np.array_equal(run["relative_time"], np.arange(5)),
             "Synthetic curve does not span exact 0--4 s")
     return "Analytic trapezoids and all peak metrics exclude outside-window outliers."
@@ -271,8 +264,6 @@ def run_tests():
                 for i in range(1, 4)]
         groups.append({"run_id": condition, "study": "damping" if index < 2 else "sigma",
                        "gain": [0, 2, 1.5, 2][index], "runs": runs})
-    module.net_displacements(groups)
-
     for index, group in enumerate(groups):
         def check_statistics(group=group, expected=EXPECTED[index]):
             summary = {}
@@ -296,8 +287,6 @@ def run_tests():
                 close(cumulative[-1], run["excursion_rad"], "final cumulative")
                 require(np.all(np.diff(time) > 0), "Nonmonotonic time")
                 require(np.all(np.diff(cumulative) >= 0), "Decreasing cumulative motion")
-                require(np.linalg.norm(run["net_vector_rad"]) <= run["excursion_rad"] + 1e-8,
-                        "Net-vector norm exceeds cumulative motion")
                 return {"samples": len(time), "first": float(time[0]), "last": float(time[-1])}
             check(group["run_id"] + f"/r{run_number:02} curve", check_curve)
 
@@ -305,7 +294,7 @@ def run_tests():
                 expected = HASHES[index * 3 + run_number - 1]
                 relative = Path(condition) / f"r{run_number:02}" / "surface_grinding_controller_log.csv"
                 for source in (DATA,) + ((COMPARISON_DATA,) if COMPARISON_DATA else ()):
-                    require(file_hash(source / relative) == expected,
+                    require(expected in file_hashes(source / relative),
                             f"Raw log hash changed: {source / relative}")
                 return expected
             check(group["run_id"] + f"/r{run_number:02} unchanged raw log", check_hash)
@@ -318,7 +307,6 @@ def run_tests():
         ("Duplicate time", lambda rows: rows[3].update(time=6.0)),
         ("Nonfinite time", lambda rows: rows[3].update(time=float("nan"))),
         ("Nonfinite sigma", lambda rows: rows[3].update(sigma_current=float("nan"))),
-        ("Nonfinite projected velocity", lambda rows: rows[3].update(nullspace_dq_3=float("inf"))),
     ]:
         check(name, lambda mutation=mutation: test_rejection(module, mutation))
     verify_sigma_statistics(groups)

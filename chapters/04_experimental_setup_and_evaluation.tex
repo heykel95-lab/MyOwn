@@ -285,10 +285,10 @@ The recorded signals and \abbr{CSV} structure are documented in
 
 \Added{Each parameter setting was evaluated in three repeated trials. The
 reported values are arithmetic means with sample standard deviations.
-Cases~A--D comprised \mbox{\(23\)} parameter settings and \mbox{\(69\)}
+Cases~A--D comprised \mbox{\(31\)} parameter settings and \mbox{\(93\)}
 surface-contact trials. The \mbox{\(12\)} Cartesian pose-hold trials of
 \mbox{\Cref{sec:nullspace_hold_study}} bring the complete experimental data
-set reported in this thesis to \mbox{\(81\)} trials.}
+set reported in this thesis to \mbox{\(105\)} trials.}
 
 
 % ============================================================================
@@ -317,6 +317,8 @@ All non-zero compliance-centre displacements were configured in end-effector
 coordinates and therefore remained constant relative to the tool. The
 \(r_{c,t_2}\) values reported for Case~D are the surface-frame projections of
 those tool-fixed displacements in the flat target orientation.
+The positions \(\pm90\) and \(\pm100\,\mathrm{mm}\) were evaluated
+in a separate session with the same saved calibration and impedance parameters.
 
 \begingroup
 \small
@@ -354,9 +356,10 @@ C & Translational stiffness & \(9.24^\circ\) to \(9.31^\circ\) about
 \(t_1\) & \(K_{p,t_2}=300\) and \(800\,\mathrm{N/m}\). & 6\\
 \addlinespace
 
-D & Tangential \abbr{CoC} position & \(9.32^\circ\) and
-\(-9.36^\circ\) about \(t_1\) & \(r_{c,t_2}=-80\), \(-40\), \(-20\),
-\(-10\), \(10\), \(20\), \(40\), and \(80\,\mathrm{mm}\). & 48\\
+D & Tangential \abbr{CoC} position & \(9.33^\circ\) and
+\(-9.38^\circ\) about \(t_1\) & \(r_{c,t_2}=-100\), \(-90\), \(-80\),
+\(-40\), \(-20\), \(-10\), \(10\), \(20\), \(40\), \(80\), \(90\),
+and \(100\,\mathrm{mm}\). & 72\\
 
 \end{longtable}
 \endgroup
@@ -597,8 +600,8 @@ stationary part of the corresponding response.
 
 Projected null-space damping and singular-value conditioning were active
 together during the surface-contact experiments. A separate Cartesian pose-hold
-experiment therefore evaluated the two terms individually, under the same
-repeatable virtual disturbance.
+experiment therefore evaluated the terms individually and together under the
+same repeatable virtual disturbance.
 
 
 \subsection{Experimental Configuration}
@@ -608,7 +611,7 @@ The initial TCP pose was captured as the hold reference. The controller used
 the stiffness and damping of \Cref{tab:experimental_hold_gains}. The
 translational and rotational matrices were isotropic, so each matrix is the
 stated scalar value multiplied by the \(3\times3\) identity matrix. All
-twelve pose-hold trials used fixed Cartesian damping.
+twelve trials in this comparison used fixed Cartesian damping.
 
 \begin{table}[H]
 \centering
@@ -627,12 +630,15 @@ Rotational damping      & \(D_{R,\mathrm{hold}}\) & \(8\,\mathrm{N\,m\,s/rad}\)\
 \end{tabular}
 \end{table}
 
-Four null-space settings were evaluated in three trials each. These were no
-null-space torque, \(\tau_{\mathrm{null}}=0\); projected damping with
-\(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\); and singular-value
-conditioning at \(k_\sigma=1.5\) and \(2.0\,\mathrm{N\,m}\). The probe
-step, the singular-value deadband, and the relative \abbr{SVD} threshold remained at
-\(0.08\,\mathrm{rad}\), \(10^{-6}\), and \(10^{-4}\), respectively.
+The comparison comprised four null-space settings, with three trials per
+setting: no null-space torque, projected damping alone, singular-value
+conditioning alone, and both terms together. The enabled values were
+\(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\) and
+\(k_\sigma=2\,\mathrm{N\,m}\). The probe step, singular-value deadband,
+and relative \abbr{SVD} threshold remained at \(0.08\,\mathrm{rad}\),
+\(10^{-6}\), and \(10^{-4}\), respectively.
+The combined-control trials were acquired in a later session with the same
+controller revision and matching saved experimental settings.
 
 
 \subsection{Commanded Disturbance}
@@ -766,8 +772,7 @@ defined in \Cref{eq:nullspace_velocity_projector}. The vector
 \(\mathrm{rad/s}\) and represents the component of the measured joint
 velocity that lies in the instantaneous kinematic null space.
 
-Two complementary quantities are formed from this projected velocity. The
-first is the cumulative joint motion
+The cumulative joint motion is
 
 \begin{equation}
 E_N
@@ -778,61 +783,11 @@ E_N
 \end{equation}
 
 Taking the norm before integration makes motion in opposite directions
-accumulate. \(E_N\) measures the total redundant joint motion and is
-particularly relevant to the damping comparison. Its unit is radians, and the
-values are expressed in degrees.
-
-The second quantity measures the net joint motion, in which motion in
-opposite directions cancels. The vector integral of the projected velocity
-gives the net projected joint motion
-
-\begin{equation}
-\Delta q_{\mathrm{null}}
-=
-\int_{5\,\mathrm{s}}^{9\,\mathrm{s}}
-\dot q_{\mathrm{null}}(t)\,\mathrm{d}t
-=
-\int_{5\,\mathrm{s}}^{9\,\mathrm{s}}
-N_q(q(t))\dot q(t)\,\mathrm{d}t.
-\label{eq:nullspace_net_joint_displacement}
-\end{equation}
-
-The vector \(\Delta q_{\mathrm{null}}\in\mathbb{R}^7\) has units of radians.
-It describes the net projected joint motion over the disturbance interval. At
-full rank, the Panda has a one-dimensional instantaneous null space.
-
-To express this seven-dimensional net joint motion as one scalar component, a
-common direction is introduced. Let \(\Delta q_{\mathrm{null},0}\) denote
-the arithmetic mean of the three net projected joint motion vectors measured in
-the \(\tau_{\mathrm{null}}=0\) condition. The corresponding unit direction is
-
-\begin{equation}
-v_{\mathrm{ref}}
-=
-\frac{\Delta q_{\mathrm{null},0}}
-{\lVert\Delta q_{\mathrm{null},0}\rVert_2}.
-\label{eq:nullspace_reference_direction_metric}
-\end{equation}
-
-The vector \(v_{\mathrm{ref}}\) represents the redundant joint-space direction in
-which the commanded virtual disturbance moves the robot in the reference
-condition \(\tau_{\mathrm{null}}=0\). The same direction is used
-for all tested null-space settings. Their net joint motion along this
-common direction is
-
-\begin{equation}
-\Delta\eta
-=
-v_{\mathrm{ref}}^\top\Delta q_{\mathrm{null}}.
-\label{eq:nullspace_net_displacement_metric}
-\end{equation}
-
-A positive \(\Delta\eta\) denotes net motion along the reference
-disturbance direction; a negative value denotes motion against it. Values near
-zero indicate little remaining net joint motion along that direction.
-Projection onto \(v_{\mathrm{ref}}\) gives a common directional comparison across the four
-tested settings. The unit of \(\Delta\eta\) is radians, and the values are
-expressed in degrees, as for \(E_N\).
+accumulate. The cumulative projected joint motion \(E_N\) evaluates motion
+across all seven joints and is particularly relevant to the damping
+comparison. Its unit is radians, and the values are expressed in degrees. The
+cumulative time history evaluates the same integral from disturbance onset to
+each displayed instant.
 
 The conditioning indicator \(\sigma_{\min}(t)\) was evaluated throughout
 the disturbance interval. Its time history shows how the local Jacobian
@@ -844,14 +799,23 @@ characterised by its lowest value over the interval,
 The minimum is calculated for each trial before the three-trial mean and
 sample standard deviation are formed.
 
-The measured joint angle \(q_1\) was also evaluated to show motion reversals
-within individual trials. Joint~1 received the largest equivalent disturbance
-torque in each trial. Its angle was sampled at a nominal
-\(20\,\mathrm{Hz}\), using the measured timestamps. The joint-angle change
-\(\Delta q_1\) was calculated relative to disturbance onset:
+The measured joint angle \(q_1\) was also evaluated to compare the
+joint-angle histories. Joint 1 received the largest peak absolute component of
+the equivalent disturbance torque \(\tau_{\mathrm{dist}}\) in each of the
+twelve selected trials. Its angle was therefore used to illustrate the
+temporal response, while \(E_N\) provides the overall motion measure across all
+seven joints. The angle was sampled at a nominal \(20\,\mathrm{Hz}\), using
+the measured timestamps. The joint-angle change \(\Delta q_1\) was calculated
+relative to disturbance onset:
 \[
 \Delta q_1(t_d)=q_1(t_d+5\,\mathrm{s})-q_1(5\,\mathrm{s}).
 \]
-The values are expressed in degrees. Each curve shows one trial, with
-markers at the measured samples. Subtracting the onset angle preserves
-positive and negative motion in \(\Delta q_1\).
+The values are expressed in degrees. Each plotted curve is the mean of
+three trials at common measured timestamps. Shaded bands show one sample
+standard deviation. No interpolation or smoothing was applied.
+Subtracting each trial's onset angle preserves positive and negative motion
+in \(\Delta q_1\). A joint can move away from its onset angle and later return
+close to it while \(E_N\) remains positive. A near-zero final \(\Delta q_1\)
+establishes only that joint 1 returned near its onset angle; it does not
+establish that every joint returned or that little cumulative motion occurred.
+Both panels cover the full disturbance interval.

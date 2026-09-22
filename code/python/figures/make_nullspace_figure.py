@@ -70,9 +70,6 @@ def read_run(run_dir):
         "tau_disturbance_1", "tau_disturbance_2", "tau_disturbance_3",
         "tau_disturbance_4", "tau_disturbance_5", "tau_disturbance_6",
         "tau_disturbance_7", "e_p_x", "e_p_y", "e_p_z",
-        "nullspace_dq_1", "nullspace_dq_2", "nullspace_dq_3",
-        "nullspace_dq_4", "nullspace_dq_5", "nullspace_dq_6",
-        "nullspace_dq_7",
     )
     data = {name: np.array([_float(row, name) for row in rows])
             for name in names}
@@ -99,17 +96,6 @@ def read_run(run_dir):
     increments = 0.5 * (speed[:-1] + speed[1:]) * dt
     cumulative = np.concatenate(([0.0], np.cumsum(increments)))
 
-    # Same integrand as the cumulative motion, without the magnitude: the
-    # trapezoidal integral of the projected joint velocity is the net
-    # displacement of the redundant configuration over the driven interval.
-    # It is a 7-vector; because the null space is one-dimensional at full row
-    # rank it lies along +-v_7, so a single reference direction resolves every
-    # run onto one signed axis (see net_displacements below).
-    dq_null = np.column_stack([data[f"nullspace_dq_{joint}"][driven]
-                               for joint in range(1, 8)])
-    net_vector = np.sum(0.5 * (dq_null[:-1] + dq_null[1:]) * dt[:, None],
-                        axis=0)
-
     force = np.sqrt(sum(data[f"disturbance_force_base_{axis}"] ** 2
                         for axis in "xyz"))
     tau = np.sqrt(sum(data[f"tau_disturbance_{joint}"] ** 2
@@ -126,7 +112,6 @@ def read_run(run_dir):
         "sigma_minimum": float(np.min(data["sigma_current"][driven])),
         "cumulative_excursion": cumulative,
         "excursion_rad": float(cumulative[-1]),
-        "net_vector_rad": net_vector,
         "sigma_gain": float(data["sigma_current"][last]
                             - data["sigma_current"][first]),
         "task_error_peak_mm": float(np.max(task_error_mm[driven])),
@@ -141,30 +126,6 @@ def read_run(run_dir):
 
 def sample_sd(values):
     return float(np.std(values, ddof=1)) if len(values) > 1 else np.nan
-
-
-def net_displacements(groups, reference_id=CONDITIONS[0][0]):
-    """Resolve every run's net redundant displacement onto one signed axis.
-
-    The redundant direction v_7 is not in the log: the controller only records
-    it while the conditioning term is selecting a sign, so it is absent from
-    the runs without null-space torque. It is recovered from the data instead.
-    Every net displacement lies in the one-dimensional null space, so the
-    reference condition -- the one in which the disturbance moves the redundant
-    configuration furthest -- fixes that axis, and its own mean is the largest
-    signal available for the purpose. Each run is then projected onto it, which
-    keeps the sign of a displacement rather than its magnitude alone.
-    """
-    reference = [group for group in groups if group["run_id"] == reference_id]
-    if not reference:
-        raise ValueError(f"reference condition {reference_id} not loaded")
-    mean_vector = np.mean([run["net_vector_rad"]
-                           for run in reference[0]["runs"]], axis=0)
-    axis = mean_vector / np.linalg.norm(mean_vector)
-    for group in groups:
-        for run in group["runs"]:
-            run["net_displacement_rad"] = float(axis @ run["net_vector_rad"])
-    return axis
 
 
 def load_conditions():
@@ -183,7 +144,6 @@ def write_summary(groups):
     fields = (
         "run_id", "study", "gain", "n", "provenance_status",
         "excursion_mean_rad", "excursion_sd_rad",
-        "net_displacement_mean_rad", "net_displacement_sd_rad",
         "sigma_start_mean", "sigma_start_sd",
         "sigma_end_mean", "sigma_end_sd",
         "sigma_minimum_mean", "sigma_minimum_sd", "sigma_minimum_min",
@@ -201,7 +161,6 @@ def write_summary(groups):
             runs = group["runs"]
             values = lambda key: np.array([run[key] for run in runs])
             excursion = values("excursion_rad")
-            net = values("net_displacement_rad")
             sigma = values("sigma_gain")
             task = values("task_error_peak_mm")
             writer.writerow({
@@ -213,9 +172,6 @@ def write_summary(groups):
                 "excursion_mean_rad": f"{np.mean(excursion):.9g}",
                 "excursion_sd_rad": (f"{sample_sd(excursion):.9g}"
                                       if len(runs) > 1 else ""),
-                "net_displacement_mean_rad": f"{np.mean(net):.9g}",
-                "net_displacement_sd_rad": (f"{sample_sd(net):.9g}"
-                                            if len(runs) > 1 else ""),
                 "sigma_start_mean": f"{np.mean(values('sigma_start')):.12g}",
                 "sigma_start_sd": f"{sample_sd(values('sigma_start')):.9g}",
                 "sigma_end_mean": f"{np.mean(values('sigma_end')):.12g}",
@@ -334,77 +290,14 @@ def sigma_panel(ax, groups):
     return handles, legend_labels
 
 
-NET_LABELS = (
-    "No Null-Space\nTorque",
-    "Projected\nDamping",
-    "Conditioning\n$k_\\sigma=1.5$",
-    "Conditioning\n$k_\\sigma=2.0$",
-)
-
-
-def _net_value_label(value):
-    """Use a mathematical minus and three decimals for every bar label."""
-    return f"${value:.3f}$"
-
-
-def net_displacement_panel(ax, groups):
-    """Draw the net displacement of all four settings.
-
-    Plotted in degrees, as panel (a) is: the quantity is an angle in radians,
-    and the two panels are read against one another, so one unit is used for
-    both.
-
-    The suppression by more than two orders of magnitude is the strongest
-    result of the conditioning experiment and the other two panels do not carry
-    it: panel (a) plots the cumulative motion, which is a path length, and
-    panel (b) plots the singular value and the task error. The bars are printed
-    with their values, as the Case-A bars are, because at a scale set by
-    7.516 degrees the two conditioning bars are the height of the axis line,
-    and a reader has no way to tell a suppressed value from a missing one.
-    """
-    order = {run_id: rank for rank, (run_id, _, _) in enumerate(CONDITIONS)}
-    ordered = sorted(groups, key=lambda group: order[group["run_id"]])
-    means, sds = [], []
-    for group in ordered:
-        values = np.degrees([run["net_displacement_rad"]
-                             for run in group["runs"]])
-        means.append(float(np.mean(values)))
-        sds.append(sample_sd(values))
-    positions = np.arange(len(ordered))
-
-    ax.bar(positions, means, width=0.55, color=SERIES_BLUE,
-           edgecolor="#1a1a1a", linewidth=0.8,
-           yerr=sds, capsize=3, error_kw={"elinewidth": 1.0,
-                                          "capthick": 1.0,
-                                          "ecolor": "#1a1a1a"})
-    ax.axhline(0.0, color="0.45", linewidth=1.0)
-    ax.set_xticks(positions)
-    ax.set_xticklabels(NET_LABELS[:len(ordered)])
-    ax.set_ylabel(
-        "Net Joint Motion,\n"
-        r"$\Delta\eta$ [$^\circ$]")
-    ax.margins(y=0.28)
-    for position, mean, sd in zip(positions, means, sds):
-        offset = sd if np.isfinite(sd) else 0.0
-        ax.annotate(_net_value_label(mean),
-                    xy=(position, mean + offset),
-                    xytext=(0, 3), textcoords="offset points",
-                    ha="center", va="bottom", fontsize=7.5)
-    ax.text(0.99, 0.92, "(c)", transform=ax.transAxes,
-            ha="right", va="top")
-
-
 def make_figure(groups, panel_dir=None):
     # Stacked rather than side by side: every panel carries a long descriptive
     # axis label, and at text width two columns left the data area too small
-    # to read the curves against. The third panel is shorter than the other
-    # two: it holds four bars and needs no room for a legend.
-    fig, axes = plt.subplots(3, 1, figsize=(5.9, 8.4),
-                             gridspec_kw={"height_ratios": [1.0, 1.0, 0.8],
-                                          "hspace": 0.75})
+    # to read the curves against.
+    fig, axes = plt.subplots(2, 1, figsize=(5.9, 6.3),
+                             gridspec_kw={"hspace": 0.75})
     damping_handles, damping_labels = damping_panel(axes[0], groups)
     sigma_handles, sigma_labels = sigma_panel(axes[1], groups)
-    net_displacement_panel(axes[2], groups)
     handles = damping_handles + sigma_handles
     labels = damping_labels + sigma_labels
     # Each panel carries its own legend, so no figure-level legend is drawn and
@@ -412,7 +305,7 @@ def make_figure(groups, panel_dir=None):
     fig._thesis_legend_bottom = 0.0
     fig.align_ylabels(axes)
     os.makedirs(make_figures.FIGURES, exist_ok=True)
-    # Preserve the established positions of all three panels.
+    # Preserve the established positions of both panels.
     output = os.path.join(make_figures.FIGURES, "MAIN_NS_nullspace_automatic.pdf")
     fig.savefig(output, bbox_inches="tight")
     if panel_dir:
@@ -420,8 +313,7 @@ def make_figure(groups, panel_dir=None):
         os.makedirs(panel_dir, exist_ok=True)
         fig.canvas.draw()
         renderer = fig.canvas.get_renderer()
-        names = ("nullspace_damping_original", "nullspace_conditioning_original",
-                 "nullspace_net_displacement_original")
+        names = ("nullspace_damping_original", "nullspace_conditioning_original")
         for main_ax, name in zip(axes, names):
             related = [candidate for candidate in fig.axes
                        if candidate is main_ax
@@ -471,9 +363,6 @@ def main():
         found = {group["run_id"] for group in groups}
         missing = [run_id for run_id, _, _ in CONDITIONS if run_id not in found]
         raise SystemExit("missing Case-F data: " + ", ".join(missing))
-    axis = net_displacements(groups)
-    print("  redundant axis from "
-          f"{CONDITIONS[0][0]}: {np.array2string(axis, precision=3)}")
     write_summary(groups)
     make_figure(groups, args.panel_dir)
     return 0

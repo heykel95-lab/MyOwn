@@ -1,5 +1,25 @@
 # Figure Style
 
+## Null-space plots match the main presentation (2026-09-21)
+
+Only the null-space experiment is affected. Include exactly the three current
+main-presentation plots: nullspace_cumulative_main.pdf,
+nullspace_conditioning_main.pdf and joint_motion_mean_main.pdf. Do not include
+the older combined three-panel figure, individual-trial joint plot, or any
+backup-only null-space plot. Retain their archived sources and data.
+The four plotted settings are no torque, damping alone, conditioning alone,
+and combined control. Enabled values are k_sigma = 2 N m and
+d_null = 2 N m s/rad. All curves are three-trial means with one sample SD,
+using the measured 5–9 s interval displayed as 0–4 s. Both joint-motion panels
+show the full interval. Keep the exact presentation assets, colours, markers,
+legends, labels, limits and uncertainty bands. This supersedes the earlier
+two-conditioning-magnitude and individual-trial figure requirements, and the
+earlier restriction of combined-control results to the presentation.
+Keep related null-space methods, captions, results and summaries consistent.
+The combined trials were acquired later with matched settings and controller
+revision, so preserve that scope qualification. Other thesis plots and the
+presentation, speaking script and speaker notes remain unchanged.
+
 How figures are drawn for this thesis. Companion to
 [THESIS_WRITING_GUIDE.md](THESIS_WRITING_GUIDE.md), which owns captions,
 wording and evidence rules. Update this file when a new convention is agreed.
@@ -20,6 +40,14 @@ thesis page. This includes the symmetric tool drawing, the angular-error
 illustration and the angular-error result plots. Follow an explicit instruction
 that limits a change to one document. Check whether the matching figure is
 already current before rebuilding it. Agreed 2026-09-15.
+
+For the Angular quantities and Sources of angular offset backup figures, use
+complete figure crops directly from the compiled thesis PDF. Do not reconstruct
+them independently for the presentation. Make any requested shared geometry
+edit in the thesis TikZ source first, rebuild the thesis, then refresh the
+presentation images and both presentation PDFs from that exact rendering.
+Preserve the entire figure, including all labels and arrowheads, and scale it
+proportionally. Agreed 2026-09-22.
 
 **The shared compliance-centre moment sketch labels panel (a) Supporting moment and panel (b) Opposing moment.** Keep these labels synchronized with the presentation. The labels name the added moment, while the displacement arrows, force arrows, moment directions and geometry remain unchanged. Agreed 2026-09-16.
 
@@ -89,14 +117,16 @@ they override the greyscale conventions above wherever the two disagree:
   Elsewhere, a dashed line is
   reserved for a configured, projected, modelled, or bounded reference when
   that distinction carries the meaning of the figure. Figure 1.1 therefore
-  draws every physical or configured object solid -- the configured surface in
-  red, the physical surface in blue, the tool face in green -- and reserves the
-  dash for its one construction line. Never use a dash pattern merely to
-  distinguish otherwise identical objects. A construction datum that carries a direction to
-  where it is needed is **dashed black and thinner** than the objects compared
-  against it, so it joins the black annotation layer rather than the coloured
-  objects: Figure 1.1 draws its desired tool direction at \(0.8\,\mathrm{pt}\)
-  against their \(1.1\,\mathrm{pt}\).
+  draws the configured surface in solid red, the physical surface in solid blue,
+  and the achieved tool orientation in solid green. The desired tool orientation
+  is a black dashed reference, parallel to the configured surface and passing
+  through the tool pivot. Retain the original three-entry legend: `Configured
+  surface`, `Physical surface`, and `Tool face`. The desired datum has no
+  separate legend entry. Restored from the author-approved committed figure
+  on 2026-09-22. Never use a
+  dash pattern merely to distinguish otherwise identical objects. The desired
+  reference remains thinner, at \(0.8\,\mathrm{pt}\), than the
+  \(1.1\,\mathrm{pt}\) object lines.
 
 **One quantity, one colour, across every panel of a figure.** In the
 moment-bookkeeping figure \(r_c\) is blue and \(r_{\mathrm{Tool}}\) is green in both panels,
@@ -566,8 +596,10 @@ arguments. Do not relabel the inward red arrow as \(n_s\). The red arc
 for \(\theta_{\mathrm{meas},t_1}\) runs from the red reference to the entry tool
 normal. The blue arc for \(\theta_{\mathrm{err},t_1}\) runs from the same
 reference to the end tool normal. Omit the end-time argument from this angle
-label. Place the blue angular-error arc at a larger radius, to the right of
-the red measured-offset arc, and keep its label beneath the arc. Both arcs
+label. Place the blue angular-error arc inside the red measured-offset arc,
+at radius 2.8 rather than 6.3, and keep its label beneath the arc at
+(2.70, -0.18). This restores the appearance of the committed figure PDF,
+confirmed by the author on 2026-09-22. Both arcs
 share the calibrated zero. Keep \(n_s\), \(t_1\), and \(t_2\)
 in the separate coordinate-frame inset. Apply the same label treatment to the
 matching presentation figure.
@@ -612,8 +644,10 @@ It separates two contributions to the angular relation at surface entry, and
 line is the configured surface. The solid blue physical surface has a potential
 difference from it, marked by a black arc labelled `Configured--physical
 difference`. The desired parallel tool direction is drawn separately, as a
-black dashed datum through the tool, and the dark-green tool face lies at a
-schematic angular difference from it, marked by a second black arc labelled
+black dashed reference through the tool. The dark-green solid line is
+labelled `Tool face` in the original shared legend and lies at a schematic
+angular difference from that reference,
+marked by a second black arc labelled
 `Desired--achieved difference`. The two labels are parallel in form because
 they name the two contributions the figure exists to separate.
 
@@ -633,23 +667,34 @@ retuned. It stands on the side away from the surfaces, agreed 2026-09-07:
 drawn on the surface side it reaches into the gap the two arcs annotate and
 reads as a contact that has already been made. It is what makes the green object read as the end of a tool rather
 than as a third surface lying across the drawing. It takes no label and no
-arc: the legend's `Tool face` already names the object it belongs to, and the
+arc: the legend's `Tool face` names the green face, and the
 figure's two arcs are reserved for the two contributions it exists to separate.
 
 **The configured surface is drawn as a continuous line.** Agreed 2026-09-01,
 superseding the dashed red line the figure carried until then. Once the
 desired-direction datum was added, the drawing held two dashed elements and the
-dash no longer said anything: it is now the property of the one construction
-line in the figure, and the three objects are separated by colour alone, which
-the legend names. The general rule above was rewritten to match.
+dash no longer said anything. The dash now identifies the desired tool
+orientation, while the configured surface, physical surface and achieved tool
+orientation remain solid. The original legend names the two surfaces and
+the tool face.
+
+**Both surface segments end at the desired-direction datum's horizontal limits.**
+Agreed 2026-09-22 for Figure 1.1 and the matching Sources of angular offset
+backup slide. Shorten the red configured surface and blue physical surface
+so their left and right endpoints share the black dashed datum's x coordinates,
+-2.40 and +2.40. Retain the physical surface's schematic tilt, both angle arcs,
+the tool geometry, original single-row legend and all label positions. Keep
+the original canvas so this endpoint change does not resize or move the other
+figure elements or the surrounding thesis content.
 
 **The desired direction is not drawn in red.** It was carried by the red dashed
 line until 2026-09-01, which left the achieved--desired contribution as an
 unmarked tilt while the other contribution had an arc and a name. Repeating the
 red dash at the tool would state the relation correctly and still read as a
 second configured surface, so the datum is black and takes the colour of the
-arcs that annotate it. Nothing in the legend changes: the legend names the
-three objects, and a construction datum is not one of them.
+arcs that annotate it. The author restored the original three-entry legend
+on 2026-09-22. Keep the black dashed datum in the drawing without adding a
+fourth legend entry. The green entry reads `Tool face`.
 
 The tool tilt is drawn at \(10^\circ\) against the physical surface's
 \(19^\circ\). Both are schematic. The tilt was \(6^\circ\), which is too
@@ -657,8 +702,11 @@ shallow to mark: its arc compiled as a tick that read as a stray mark rather
 than an angle. Keep the tool angle visibly smaller than the physical one, so
 the drawing does not suggest the two contributions are equal, and visibly large
 enough for an arc. The figure contains no panel letters, local tangent-axis
-symbols, angular quantity symbols, or numerical angles. A single legend above
-the geometry names `Configured surface`, `Physical surface`, and `Tool face`.
+symbols, angular quantity symbols, or numerical angles. Restore the original
+single-row legend above the geometry: `Configured surface`, `Physical surface`,
+and `Tool face`. Preserve its original swatches, spacing and positions. The
+reference is the last committed Chapter 1 figure source. Apply the same
+restoration to the thesis and presentation backup B9. Agreed 2026-09-22.
 
 **Every operator connector reads `if operator types <key>`.** Settled
 2026-09-02 across Figures 3.1, 3.3 and 3.8, replacing the `key: verb` form
@@ -822,12 +870,9 @@ Panel (b) draws the physical surface and its conceptual normal
 frame \((t_1,n_s)\). It assigns no measured angle to the unknown difference.
 
 **The Section 4.5 angular comparison also gives the rotation sign.** Its
-surface-frame inset places \(n_s\) upwards, \(t_2\) rightwards and \(t_1\)
-out of the page as a dotted circle. Rotate only this inset clockwise by 90
-degrees, including its positive-rotation arc. The inset uses a separate view
-from the unchanged main angular comparison, whose inward reference \(-n_s\)
-continues to point rightwards. Keep the main arrows, angle arcs, labels and
-figure bounds unchanged in both the thesis and presentation. Agreed 2026-09-16. Thus \(t_1\times t_2=n_s\), and positive
+surface-frame inset places \(t_2\) upwards, \(n_s\) leftwards and \(t_1\)
+out of the page as a dotted circle. The inward reference \(-n_s\) therefore
+points rightwards in the main drawing. Thus \(t_1\times t_2=n_s\), and positive
 rotation is anticlockwise, from \(+t_2\) towards \(+n_s\). The separate sign-only figure is withdrawn. The
 calibration section has no separate geometry or flowchart figure; Figure 4.1
 already separates the physical plane from the configured reference.
@@ -1102,8 +1147,10 @@ standard deviations they are drawn as error bars, as in the supporting
 tool-axis series.
 
 The main Case-D plot carries the sample standard deviation at every setting as
-an error bar. The tested positions are -80, -40, -20, -10, 0, 10, 20,
-40 and 80 mm for both entry directions (agreed 2026-09-15). Use a proportional
+an error bar. The tested positions are -100, -90, -80, -40, -20, -10, 0,
+10, 20, 40, 80, 90 and 100 mm for both entry directions (extended 2026-09-21).
+Use a 15.5 cm axis width and a vertical range containing every mean and SD.
+Use 10-degree y ticks for the extended range to keep labels separate. Use a proportional
 linear axis with a labelled tick and a visible dotted vertical gridline at every
 tested position, including -20, -10, 10 and 20 mm (clarified 2026-09-15).
 Keep the x tick labels horizontal and centred below their ticks. Use the
@@ -1223,21 +1270,14 @@ writes a generated file names it, so regeneration must preserve this mapping.
   `\definecolor{barblue}{HTML}{0057B8}`.
 
   **A single bar series is blue, not black.** The curve rule starts at black
-  and the bar rule starts at blue, and a lone bar series follows the bar rule:
-  the Case-A bars set the precedent, and the net joint motion panel of the
-  null-space figure follows it. A filled black bar prints as a block of ink
+  and the bar rule starts at blue, and a lone bar series follows the bar rule.
+  The Case-A bars set the precedent. A filled black bar prints as a block of ink
   where a black curve prints as a line.
 
 - **Print the value above each bar where the series spans orders of
-  magnitude.** The net joint motion runs from \(7.517^\circ\) down to
-  about \(0.006^\circ\), so on a linear axis the two conditioning bars are
-  the height of the axis line — which is the finding, but leaves a reader
-  unable to tell a suppressed value from a missing one. The printed value
-  resolves it without a second axis. A log axis does not: one of the four
-  values is negative, and taking magnitudes would discard the sign the quantity
-  exists to carry. The Case-A bars print their values for the same reason, so
-  the two bar figures agree. Write the sign with the typographic minus the tick
-  labels use, not an ASCII hyphen.
+  magnitude.** The Case-A bars print their values where the comparison would
+  otherwise be difficult to read at plotted scale. Write the sign with the
+  typographic minus the tick labels use, not an ASCII hyphen.
 
   **Match the precision to the section that reports the values, not to the
   spread.** Three decimals throughout, which is what Section 5.2 prints for the
@@ -1396,18 +1436,18 @@ writes a generated file names it, so regeneration must preserve this mapping.
   motion figure in both the thesis and presentation. Its full definition stays
   in the methodology. The active contact and null-space axes use
   \(r_{c,t_2}\), \(\theta_{\mathrm{err},t_1}\), \(\theta_{\mathrm{meas},t_1}\),
-  \(E_N\), \(\sigma_{\min}\) and \(\Delta\eta\). The pose-based appendix comparison
+  \(E_N\), \(\sigma_{\min}\) and \(\Delta q_1\). The pose-based appendix comparison
   uses descriptive labels instead of promoting its local quantities to the
   thesis-wide symbol list.
 
   **A figure carries the symbol the running text carries, with no extra
-  qualifying index.** The three null-space panels show \(E_N\),
-  \(\sigma_{\min}(t)\) and \(\Delta\eta\), matching Section 5.3. Keep
-  `Cumulative Joint Motion`, `Minimum Singular Value` and `Net Joint Motion` as
+  qualifying index.** The three null-space figures show \(E_N\),
+  \(\sigma_{\min}(t)\) and \(\Delta q_1(t)\), matching Section 5.3. Keep
+  `Cumulative Joint Motion`, `Minimum Singular Value` and `Joint 1 Motion` as
   their axis names. A legend uses the same quantity names as its panel.
   The experimental endpoint change \(\Delta\sigma_{\min}\) is withdrawn
   from the thesis. Do not restore its plot or the maximum-position-error
-  plot. Net joint motion retains \(\Delta\eta\) without a `dist` index.
+  plot. The archived net-motion plots stay excluded.
 
   **Response axes pair words with the symbol.** Write `Angular Error
   About \(t_1\), \(\theta_{\mathrm{err},t_1}\) [°]`, not a bare symbol. A parameter axis
@@ -1523,28 +1563,23 @@ opaque tool faces so their internal portions are occluded. Keep the three
 axis arrows visible, with \(n_s\) continuing above the coaxial shaft.
 Agreed 2026-09-15.
 
-## Joint-angle histories (2026-09-15)
+## Joint-angle histories (2026-09-21)
 
-Use the same joint_motion_time.pdf in the thesis and presentation. Plot the
-measured change of joint 1 from disturbance onset for all twelve trials.
-Panel (a) shows all four settings over 0--4 s. Panel (b) enlarges the two
-conditioning settings over 0--1 s. Each solid trace is an individual trial,
-with markers at the original nominal-20-Hz samples. Preserve the positive and
-negative values. No interpolation, averaging or smoothing is applied.
-Keep black, red, blue and yellow for the existing four settings. Use Latin
-Modern text and mathematics, vector PDF, and at most two decimal places.
-Sources, portable samples, source hashes and checks are in
-code/python/figures/joint_motion/.
+Use the exact joint_motion_mean_main.pdf from the main presentation in the
+thesis. Both panels cover 0–4 s. Panel (a) shows all four selected settings,
+and panel (b) enlarges conditioning and combined control. Curves show
+three-trial means and bands show one sample SD, from the original nominal-20-Hz
+samples at common timestamps. Preserve the presentation colours, solid lines,
+spaced markers, axis labels and legends. No interpolation or smoothing is
+applied. The individual-trial figure is archived and excluded from the thesis.
+Sources, samples and provenance are in code/python/figures/nullspace_presentation_main/.
 
 ## Consistent joint-motion names (2026-09-15)
 
-Use cumulative joint motion for E_N and net joint motion for Delta eta in
-plots, captions, text, the symbol list and the presentation. Retain cumulative
-and net because the quantities differ: the former accumulates projected
-velocity magnitude, while the latter projects the integrated joint velocity
-onto the common reference direction and permits cancellation. Use Net joint
-motion over time for its directional history, and Joint motion over time for
-the individual measured joint-angle histories. Define the projection and the
-measured angle change in the methodology. Do not alternate motion and
-displacement as short names for these quantities. Keep symbols, calculations,
-data, units, signs, uncertainty, filenames and internal identifiers unchanged.
+Use cumulative joint motion for \(E_N\) and joint-1 angle change for
+\(\Delta q_1\) in plots, captions, text, the symbol list and the presentation.
+The former accumulates projected velocity magnitude across all seven joints.
+The latter illustrates one measured joint's temporal response and is referenced
+to that trial's disturbance-onset angle. Joint 1 is used because it receives
+the largest peak absolute equivalent disturbance-torque component in all twelve
+selected trials. Keep the archived net-motion plots excluded.

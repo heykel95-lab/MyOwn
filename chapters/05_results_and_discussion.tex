@@ -201,9 +201,10 @@ angular error. The \abbr{CoC} was displaced along
 and Contact Establishment was performed for both the positive
 \mbox{\(10^\circ\)} and negative \mbox{\(-10^\circ\)} configured orientation
 offsets. The compared \abbr{CoC} positions were
-\mbox{\(r_{c,t_2}=-80\)}, \mbox{\(-40\)}, \mbox{\(-20\)}, \mbox{\(-10\)},
-\mbox{\(0\)}, \mbox{\(10\)}, \mbox{\(20\)}, \mbox{\(40\)}, and
-\mbox{\(80\,\mathrm{mm}\)}, where
+\mbox{\(r_{c,t_2}=-100\)}, \mbox{\(-90\)}, \mbox{\(-80\)},
+\mbox{\(-40\)}, \mbox{\(-20\)}, \mbox{\(-10\)}, \mbox{\(0\)},
+\mbox{\(10\)}, \mbox{\(20\)}, \mbox{\(40\)}, \mbox{\(80\)},
+\mbox{\(90\)}, and \mbox{\(100\,\mathrm{mm}\)}, where
 \mbox{\(r_{c,t_2}=0\)} is the TCP-centred reference from Case~A. Cartesian
 stiffness, damping, and the remaining controller settings were kept
 unchanged.
@@ -217,22 +218,22 @@ unchanged.
 
 The angular error depended on the \abbr{CoC} position and entry
 direction. For the positive-offset condition,
-\mbox{\(\theta_{\mathrm{meas},t_1}=9.32^\circ\)},
+\mbox{\(\theta_{\mathrm{meas},t_1}=9.33^\circ\)},
 \mbox{\Cref{fig:results_case_d}} shows the angular error decreasing from
-\mbox{\(9.35^\circ\)} at \mbox{\(r_{c,t_2}=-80\,\mathrm{mm}\)} to
-\mbox{\(1.17^\circ\)} at \mbox{\(80\,\mathrm{mm}\)}.
+\mbox{\(31.77^\circ\)} at \mbox{\(r_{c,t_2}=-100\,\mathrm{mm}\)} to
+\mbox{\(0.83^\circ\)} at \mbox{\(100\,\mathrm{mm}\)}.
 The latter was the smallest mean error magnitude among the tested positions
-for this entry direction. It was \mbox{\(33.3\,\%\)} below the
+for this entry direction. It was \mbox{\(52.6\,\%\)} below the
 \mbox{\(1.75^\circ\)} TCP-centred reference.
 
 For the negative-offset condition,
-\mbox{\(\theta_{\mathrm{meas},t_1}=-9.36^\circ\)}, the angular error changed
-from \mbox{\(2.23^\circ\)} at \mbox{\(-80\,\mathrm{mm}\)} to
-\mbox{\(-9.56^\circ\)} at \mbox{\(80\,\mathrm{mm}\)}.
+\mbox{\(\theta_{\mathrm{meas},t_1}=-9.38^\circ\)}, the angular error changed
+from \mbox{\(2.76^\circ\)} at \mbox{\(-100\,\mathrm{mm}\)} to
+\mbox{\(-33.98^\circ\)} at \mbox{\(100\,\mathrm{mm}\)}.
 The smallest measured mean magnitude was \mbox{\(0.94^\circ\)} at
 \mbox{\(10\,\mathrm{mm}\)}, which was \mbox{\(33.7\,\%\)} below the
 \mbox{\(1.41^\circ\)} TCP-centred reference.
-At \mbox{\(-80\,\mathrm{mm}\)}, the first-tangent error component crossed
+At \mbox{\(-100\,\mathrm{mm}\)}, the first-tangent error component crossed
 zero and ended with a larger magnitude than at the TCP.
 An increased contact-induced rotation therefore did not necessarily reduce
 the angular error.
@@ -240,8 +241,8 @@ the angular error.
 The two entry directions gave their smallest measured mean error magnitudes
 at different tested positions. A \abbr{CoC} setting that reduces the error
 for one entry direction can leave a larger error for the other.
-The largest sample standard deviation was \mbox{\(0.42^\circ\)}, for the
-positive-offset condition at \mbox{\(r_{c,t_2}=-20\,\mathrm{mm}\)}.
+The largest sample standard deviation was \mbox{\(1.33^\circ\)}, for the
+positive-offset condition at \mbox{\(r_{c,t_2}=-100\,\mathrm{mm}\)}.
 
 To relate the angular error to the interaction wrench, the model-estimated
 external wrench was evaluated for the positive-offset condition.
@@ -317,114 +318,96 @@ the calibrated reference.
 \section{Null-Space Pose-Hold Results}
 \label{sec:results_nullspace}
 
-The redundant joint-space response was measured in the null-space pose-hold
-experiment with a fixed Cartesian pose reference. The selectable null-space terms
-were compared in matched trials under the same virtual disturbance. The commanded disturbance
-reached \mbox{\(20.00\,\mathrm{N}\)} in all twelve trials, with peak equivalent
-joint-torque norms between \mbox{\(2.17\)} and
-\mbox{\(2.45\,\mathrm{N\,m}\)}. A torque-limit scale of one preserved the
-complete waveform.
+The redundant joint-space response was measured with a fixed Cartesian pose
+reference under the same virtual disturbance. Four settings were compared:
+no null-space torque, projected damping, singular-value conditioning, and
+combined damping and conditioning. The enabled values were
+\mbox{\(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\)} and
+\mbox{\(k_\sigma=2\,\mathrm{N\,m}\)}.
+The commanded disturbance reached \mbox{\(20.00\,\mathrm{N}\)} in all twelve
+trials. Peak equivalent joint-torque norms ranged from
+\mbox{\(2.16\)} to \mbox{\(2.45\,\mathrm{N\,m}\)}, with a torque-limit
+scale of one throughout the disturbance.
+
+The figures show three-trial means and one sample standard deviation.
+The measured interval from \mbox{\(5\)} to \mbox{\(9\,\mathrm{s}\)} is
+displayed from \mbox{\(0\)} to \mbox{\(4\,\mathrm{s}\)}, relative to
+disturbance onset. In all twelve trials, the maximum measured TCP position
+error remained below \mbox{\(2\,\mathrm{mm}\)}. This criterion assesses
+position only.
+
+\subsection{Cumulative Joint Motion}
+\label{subsec:results_nullspace_damping}
+
+\Cref{fig:results_nullspace_cumulative} shows the cumulative joint motion
+\mbox{\(E_N(t)\)} during the disturbance. Its mean endpoint decreased from
+\mbox{\(7.60^\circ\)} without null-space torque to
+\mbox{\(5.69^\circ\)} with projected damping, a reduction of
+\mbox{\(25.1\,\%\)} relative to the inactive setting.
+At \mbox{\(k_\sigma=2\,\mathrm{N\,m}\)}, conditioning alone produced
+\mbox{\(1.69^\circ\)} of cumulative joint motion. Adding projected damping
+reduced this value to \mbox{\(0.83^\circ\)}, a reduction of
+\mbox{\(50.7\,\%\)} relative to conditioning alone.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.78\textwidth]{figures/ch05/MAIN_NS_nullspace_automatic.pdf}
-\caption{Null-space pose-hold response during the disturbance interval.}
+\includegraphics[width=\textwidth]{figures/ch05/nullspace_cumulative_main.pdf}
+\caption{Cumulative joint motion during the virtual disturbance.}
+\label{fig:results_nullspace_cumulative}
 \label{fig:results_nullspace_automatic}
 \end{figure}
 
-\Cref{fig:results_nullspace_automatic} summarises the Cartesian pose-hold
-disturbance test in three panels. Curves and markers show means across three
-trials. Shaded bands and error bars indicate one sample standard deviation.
-Panel~(a) shows the mean cumulative joint motion
-\mbox{\(E_N\)} for all four tested null-space settings.
-Panel~(b) shows the minimum singular value \mbox{\(\sigma_{\min}(t)\)}
-for all four settings. Panel~(c) shows the net joint motion
-\mbox{\(\Delta\eta\)} for all four tested null-space settings.
+Projected damping opposes the projected joint velocity. The conditioning term
+selects a torque direction from the sampled singular-value difference.
+Both terms act through the null-space torque projector.
+Their combination reduced the accumulated redundant motion in the tested
+pose-hold configuration.
 
-During the disturbance, the maximum measured TCP position error
-\mbox{\(\lVert e_p\rVert_{\max}\)} remained below
-\mbox{\(2\,\mathrm{mm}\)} in all trials. This criterion assesses position only.
-
-\subsection{Projected Null-Space Damping}
-\label{subsec:results_nullspace_damping}
-
-Panel~(a) of \Cref{fig:results_nullspace_automatic} shows the effect of
-projected damping on the cumulative joint motion
-\mbox{\(E_N\)}. It decreased from \mbox{\(7.598^\circ\)} in the inactive mode to
-\mbox{\(5.689^\circ\)} at
-\mbox{\(d_{\mathrm{null}}=2\,\mathrm{N\,m\,s/rad}\)}. The net joint motion
-decreased from \mbox{\(7.516^\circ\)} to \mbox{\(5.609^\circ\)}. The cumulative joint motion
-and net joint motion were nearly equal, which means that only a small part of
-the measured motion was cancelled by motion in the opposite direction.
-Projected damping therefore reduced the null-space motion generated by the
-disturbance.
-
-\subsection{Singular-Value Conditioning}
+\subsection{Jacobian Conditioning}
 \label{subsec:results_nullspace_sigma}
 
-In the two settings compared here, the singular-value term acted alone, without
-projected damping. Conditioning was active during the
-\mbox{\(5\,\mathrm{s}\)} preceding the disturbance and remained active
-throughout it. As a result, it shaped the redundant entry configuration and
-continued to drive the configuration during the disturbance. At
-\mbox{\(k_\sigma=1.5\,\mathrm{N\,m}\)}, the mean net joint motion
-\mbox{\(\Delta\eta\)} was \mbox{\(0.015^\circ\)}. At
-\mbox{\(k_\sigma=2.0\,\mathrm{N\,m}\)}, it was
-\mbox{\(-0.011^\circ\)}. Both
-settings therefore reduced the remaining net joint motion to nearly zero under
-the tested disturbance direction.
-
-Both magnitudes are more than two orders of magnitude smaller than the
-\mbox{\(7.516^\circ\)} measured in the inactive mode in panel~(c)
-of \mbox{\Cref{fig:results_nullspace_automatic}}.
-
-In panel~(b) of \Cref{fig:results_nullspace_automatic}, the minimum
-singular value \mbox{\(\sigma_{\min}(t)\)} decreased in the inactive and
-projected-damping modes. Both conditioning traces remained close to
-\mbox{\(0.21653\)} throughout the disturbance. The mean trial minima were
-\mbox{\(0.21438\)} without null-space torque and \mbox{\(0.21525\)} with
-projected damping. Both conditioning settings retained mean trial minima of
-approximately \mbox{\(0.21653\)}. These trajectories show retention of the
-local conditioning indicator during the tested disturbance.
-
-Despite the similar suppression of net joint motion, the two conditioning
-magnitudes produced substantially different cumulative joint motion in panel~(a)
-of \Cref{fig:results_nullspace_automatic}. At
-\mbox{\(k_\sigma=2.0\,\mathrm{N\,m}\)}, \mbox{\(E_N\)} was
-\mbox{\(1.687^\circ\)}, compared with \mbox{\(0.288^\circ\)} at
-\mbox{\(1.5\,\mathrm{N\,m}\)}, a factor of about six. The conditioning term
-switches a constant torque magnitude between the selected directions and zero,
-according to the sampled singular-value difference and its deadband. The larger
-cumulative joint motion at \mbox{\(2.0\,\mathrm{N\,m}\)} is therefore consistent with
-greater back-and-forth redundant motion around a similar final region.
-Of the two tested
-magnitudes, \mbox{\(2.0\,\mathrm{N\,m}\)} gave the smaller magnitude of the
-mean net joint motion, while producing considerably more null-space motion.
-
-
-\Cref{fig:results_joint_motion} shows the measured joint motion
-\mbox{\(\Delta q_1\)} for all three trials at each setting.
-Panel~(a) covers the complete disturbance interval. Panel~(b) enlarges the
-first second for both conditioning settings. At
-\mbox{\(k_\sigma=2.0\,\mathrm{N\,m}\)}, repeated motion reversals are
-visible in all three trials. The corresponding curves at
-\mbox{\(1.5\,\mathrm{N\,m}\)} increase more smoothly during this interval.
-These individual histories show the oscillatory joint motion associated
-with the larger tested conditioning torque magnitude.
+\Cref{fig:results_nullspace_conditioning} shows the minimum singular value
+\mbox{\(\sigma_{\min}(t)\)} for the same four settings.
+It decreased during the disturbance without null-space torque and with
+projected damping alone. With conditioning alone and with combined control,
+the curves remained close to their respective disturbance-entry values.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{figures/ch05/joint_motion_time.pdf}
-\caption{Measured joint motion during the virtual disturbance.}
+\includegraphics[width=\textwidth]{figures/ch05/nullspace_conditioning_main.pdf}
+\caption{Jacobian conditioning during the virtual disturbance.}
+\label{fig:results_nullspace_conditioning}
+\end{figure}
+
+Conditioning was active during the \mbox{\(5\,\mathrm{s}\)} preceding the
+disturbance and remained active throughout it. The comparison therefore
+includes the redundant configurations reached during this settling interval.
+The conditioning objective drives the configuration towards a local region
+with a larger minimum singular value. Adding damping reduced cumulative joint
+motion while retaining this behaviour in the measured trajectories.
+
+\subsection{Joint Motion Over Time}
+\label{subsec:results_joint_motion}
+
+\Cref{fig:results_joint_motion} shows the mean measured joint-1 angle change
+\mbox{\(\Delta q_1(t)\)} relative to disturbance onset.
+Panel~(a) compares all four settings over the complete disturbance interval.
+Panel~(b) enlarges the conditioning and combined-control traces over the same
+\mbox{\(0\)--\(4\,\mathrm{s}\)} interval.
+The mean joint-angle change was substantially smaller with either
+conditioning setting than without conditioning.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/ch05/joint_motion_mean_main.pdf}
+\caption{Joint motion during the virtual disturbance.}
 \label{fig:results_joint_motion}
 \end{figure}
 
-\Added{Projected damping dissipates existing redundant joint motion, whereas
-the singular-value term drives the configuration towards the sampled neighbour
-with the larger \mbox{\(\sigma_{\min}\)}. Both terms act through the
-null-space projector.}
-
-Relative to the \mbox{\(7.516^\circ\)} measured in the inactive mode,
-conditioning reduced the magnitude of net joint motion by approximately
-\mbox{\(99.8\,\%\)} at \mbox{\(k_\sigma=1.5\,\mathrm{N\,m}\)} and
-\mbox{\(99.9\,\%\)} at \mbox{\(2.0\,\mathrm{N\,m}\)}.
+The combined setting showed a smaller mean joint-angle change during the
+constant-force part of the disturbance than conditioning alone.
+Both means decreased towards their onset values as the disturbance was
+released. The shaded bands describe the spread between trials at each instant.
+The joint-1 trace illustrates the temporal response, while the cumulative
+projected joint motion in \Cref{fig:results_nullspace_cumulative} evaluates
+motion across all seven joints.
