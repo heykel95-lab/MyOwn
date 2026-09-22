@@ -120,10 +120,11 @@ they override the greyscale conventions above wherever the two disagree:
   draws the configured surface in solid red, the physical surface in solid blue,
   and the achieved tool orientation in solid green. The desired tool orientation
   is a black dashed reference, parallel to the configured surface and passing
-  through the tool pivot. Retain the original three-entry legend: `Configured
-  surface`, `Physical surface`, and `Tool face`. The desired datum has no
-  separate legend entry. Restored from the author-approved committed figure
-  on 2026-09-22. Never use a
+  through the tool pivot. Place the shared legend below the geometry in two
+  rows: `Configured surface` and `Physical surface`, followed by `Desired
+  orientation` and `Tool face`. The desired entry uses the same black dashed
+  swatch as the datum. Agreed 2026-09-23 for the thesis and presentation.
+  Never use a
   dash pattern merely to distinguish otherwise identical objects. The desired
   reference remains thinner, at \(0.8\,\mathrm{pt}\), than the
   \(1.1\,\mathrm{pt}\) object lines.
@@ -597,9 +598,14 @@ for \(\theta_{\mathrm{meas},t_1}\) runs from the red reference to the entry tool
 normal. The blue arc for \(\theta_{\mathrm{err},t_1}\) runs from the same
 reference to the end tool normal. Omit the end-time argument from this angle
 label. Place the blue angular-error arc inside the red measured-offset arc,
-at radius 2.8 rather than 6.3, and keep its label beneath the arc at
-(2.70, -0.18). This restores the appearance of the committed figure PDF,
-confirmed by the author on 2026-09-22. Both arcs
+with its label beneath it. Keep the three normal arrows compact: their lengths
+are 5.4 drawing units, reduced from 7.5 on 2026-09-23. The red and blue arc
+radii are 3.6 and 2.1, respectively, with the blue label at (2.00, -0.18).
+Move the descriptive labels and frame inset closer with the shorter arrows.
+Preserve the schematic angles, line styles and label sizes; do not enlarge
+the compact figure back to its former width in either document. This replaces
+the earlier fixed radii and label coordinates while retaining the inner blue
+arc approved on 2026-09-22. Both arcs
 share the calibrated zero. Keep \(n_s\), \(t_1\), and \(t_2\)
 in the separate coordinate-frame inset. Apply the same label treatment to the
 matching presentation figure.
@@ -630,8 +636,9 @@ their error-bar caps. B and C retain the same 0--10 degree vertical scale.
 
 **Shared presentation figures stay in step with the final deck and its PDF.**
 Instructed 2026-09-08. The presentation is
-`Presentation_new/two/Thesis_Presentation_Final_Package/Thesis_Presentation_Final/Thesis_Presentation_Final.pptx`,
-with its matching `Thesis_Presentation_Final.pdf` in the same directory.
+`Presentation_new/Final Presentation/Thesis_Defense_gg0_v3.pptx`,
+with its matching `Thesis_Defense_gg0_v3.pdf` and `Supplementary_slides.pdf`
+in the same directory. Figure 4.2 appears on backup B3, physical slide 29.
 Use the approved Figure 4.2 and current Figure 5.4 there. Whenever a shared
 figure changes, update its presentation asset and embedded picture, then
 automatically regenerate the presentation PDF in the same task. The exact
@@ -675,26 +682,25 @@ superseding the dashed red line the figure carried until then. Once the
 desired-direction datum was added, the drawing held two dashed elements and the
 dash no longer said anything. The dash now identifies the desired tool
 orientation, while the configured surface, physical surface and achieved tool
-orientation remain solid. The original legend names the two surfaces and
-the tool face.
+orientation remain solid. The legend names the two surfaces, the desired
+orientation and the tool face.
 
 **Both surface segments end at the desired-direction datum's horizontal limits.**
 Agreed 2026-09-22 for Figure 1.1 and the matching Sources of angular offset
 backup slide. Shorten the red configured surface and blue physical surface
 so their left and right endpoints share the black dashed datum's x coordinates,
 -2.40 and +2.40. Retain the physical surface's schematic tilt, both angle arcs,
-the tool geometry, original single-row legend and all label positions. Keep
-the original canvas so this endpoint change does not resize or move the other
-figure elements or the surrounding thesis content.
+the tool geometry and both difference labels. The endpoint edit originally
+retained the canvas; the legend change of 2026-09-23 retains its width and
+height and shifts its vertical bounds to fit the legend below the geometry.
 
 **The desired direction is not drawn in red.** It was carried by the red dashed
 line until 2026-09-01, which left the achieved--desired contribution as an
 unmarked tilt while the other contribution had an arc and a name. Repeating the
 red dash at the tool would state the relation correctly and still read as a
 second configured surface, so the datum is black and takes the colour of the
-arcs that annotate it. The author restored the original three-entry legend
-on 2026-09-22. Keep the black dashed datum in the drawing without adding a
-fourth legend entry. The green entry reads `Tool face`.
+arcs that annotate it. Name the black dashed datum `Desired orientation` in
+the shared legend. The green entry remains `Tool face`. Agreed 2026-09-23.
 
 The tool tilt is drawn at \(10^\circ\) against the physical surface's
 \(19^\circ\). Both are schematic. The tilt was \(6^\circ\), which is too
@@ -702,11 +708,13 @@ shallow to mark: its arc compiled as a tick that read as a stray mark rather
 than an angle. Keep the tool angle visibly smaller than the physical one, so
 the drawing does not suggest the two contributions are equal, and visibly large
 enough for an arc. The figure contains no panel letters, local tangent-axis
-symbols, angular quantity symbols, or numerical angles. Restore the original
-single-row legend above the geometry: `Configured surface`, `Physical surface`,
-and `Tool face`. Preserve its original swatches, spacing and positions. The
-reference is the last committed Chapter 1 figure source. Apply the same
-restoration to the thesis and presentation backup B9. Agreed 2026-09-22.
+symbols, angular quantity symbols, or numerical angles. Place the shared
+legend below the geometry, with `Configured surface` and `Physical surface`
+in the first row and `Desired orientation` and `Tool face` in the second.
+Use the existing colours and line styles without shrinking the label text.
+Keep the geometry and both difference arcs unchanged. Apply the same layout
+to Figure 1.1 and the presentation's Sources of angular offset backup.
+Agreed 2026-09-23, replacing the three-entry legend above the geometry.
 
 **Every operator connector reads `if operator types <key>`.** Settled
 2026-09-02 across Figures 3.1, 3.3 and 3.8, replacing the `key: verb` form

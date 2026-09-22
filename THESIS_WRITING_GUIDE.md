@@ -390,18 +390,20 @@ sentence for TCP. After any change to the summaries, confirm that every
 abbreviation they dropped is still expanded somewhere earlier than its first
 short-form use.
 
-**The single-page limit is suspended.** The Abstract and the Kurzfassung
-previously had to fit one page each, and neither was allowed to spill onto a
-second. That constraint was blocking ordinary revision of the Abstract, so it
-does not apply for now: do not cut material from either text, or decline a
-requested edit, on length grounds alone. Do not reinstate it without being
-asked.
+**The Kurzfassung must fit on one page.** Reinstated for the German summary
+on 2026-09-23. Retain the normal text size and page margins. A modest line-spacing
+adjustment local to the Kurzfassung may be used to preserve its complete text
+and paragraph structure. Check the compiled page after every revision.
 
-The reasoning is kept here so the rule can be restored later. It existed
-because an Abstract a reader cannot take in on one page stops working as a
-summary, and because the Abstract and the Kurzfassung were laid out to occupy
-one page each. When it is restored, the trade it forces is that new material
-displaces old rather than being added to it.
+**The English Abstract's single-page limit remains suspended.** The earlier
+requirement that both summaries occupy one page each was blocking ordinary
+revision of the Abstract. Do not cut material from the English text, or decline
+a requested edit, on length grounds alone. Reinstate its limit only when asked.
+
+The reason for the one-page requirement is retained: a summary that a reader
+can take in on one page serves its purpose better. If later additions exceed
+the Kurzfassung's readable one-page layout, condense the wording while keeping
+the two summaries matched in scientific content.
 
 The two are translations of one another and must stay matched in content,
 certainty, and structure. **This rule is not suspended.** A cut on one side is
@@ -415,14 +417,14 @@ space that would break the number in two. This corrects the earlier Kurzfassung,
 which carried English decimal points throughout.
 
 German needs roughly a fifth more space than English for the same statements,
-so the Kurzfassung will run longer than the Abstract it mirrors. That is
-accepted rather than weakening the German. Do not close such a gap by
+so the Kurzfassung may need more text space than the Abstract it mirrors.
+Accommodate that within its one-page layout without weakening the German.
+Do not close such a gap by
 compounding German nouns to shorten the word count: long compounds break lines
 badly and fit *fewer* words on the page, not more.
 
-Judge length in the compiled PDF rather than by word count. At the current
-settings roughly 520 words fills a page, which is worth knowing when deciding
-how a text will sit even while no limit is enforced.
+Judge length in the compiled PDF rather than by word count. Confirm that the
+complete Kurzfassung and its heading occupy one page without clipping or overflow.
 
 ## Roles of the chapters
 
@@ -832,6 +834,11 @@ and `CoC Components, \([r_{c,t_1},r_{c,t_2},r_{c,n}]\) \([\mathrm{mm}]\)`.
 A bare symbol vector as a heading also leaves the reader to work out what the
 components are of; naming them costs two words. Grep for a unit in round
 brackets before submitting.
+
+**Keep the angular-error heading on one line in Tables D.1--D.3.**
+Instructed 2026-09-23. Set `Angular Error`,
+\(\theta_{\mathrm{err},t_1}\) and \([{}^\circ]\) together on one line.
+Retain the table font size and adjust column spacing if needed to fit.
 
 **Repeat the CoC position in every table row.** Instructed 2026-09-08.
 All rows in Tables D.2 and D.3 use the CoC at the TCP and therefore print
