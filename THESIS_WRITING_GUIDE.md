@@ -1,5 +1,39 @@
 # Thesis Writing Guide
 
+## Null-space plots match the main presentation (2026-09-21)
+
+Only the null-space experiment is affected. Include exactly the three current
+main-presentation plots: nullspace_cumulative_main.pdf,
+nullspace_conditioning_main.pdf and joint_motion_mean_main.pdf. Do not include
+the older combined three-panel figure, individual-trial joint plot, or any
+backup-only null-space plot. Retain their archived sources and data.
+The four plotted settings are no torque, damping alone, conditioning alone,
+and combined control. Enabled values are k_sigma = 2 N m and
+d_null = 2 N m s/rad. All curves are three-trial means with one sample SD,
+using the measured 5–9 s interval displayed as 0–4 s. Both joint-motion panels
+show the full interval. Keep the exact presentation assets, colours, markers,
+legends, labels, limits and uncertainty bands. This supersedes the earlier
+two-conditioning-magnitude and individual-trial figure requirements, and the
+earlier restriction of combined-control results to the presentation.
+Keep related null-space methods, captions, results and summaries consistent.
+The combined trials were acquired later with matched settings and controller
+revision, so preserve that scope qualification. Other thesis plots and the
+presentation, speaking script and speaker notes remain unchanged.
+
+## Null-space evaluation uses cumulative motion and joint 1 (2026-09-22)
+
+The active thesis and presentation use cumulative projected joint motion
+\(E_N\) across all seven joints, the minimum singular value
+\(\sigma_{\min}\), and the measured joint-1 angle change \(\Delta q_1(t)\).
+Joint 1 illustrates the temporal response because it received the largest peak
+absolute component of the equivalent disturbance torque in every one of the
+twelve selected trials. The joint-1 trace remains an onset-referenced
+single-joint quantity. A final \(\Delta q_1\) close to zero establishes only
+that joint 1 returned near its onset angle. Cumulative motion \(E_N\) remains
+positive for projected motion that later reverses and provides the overall
+seven-joint measure. Keep the presentation order cumulative motion, Jacobian
+conditioning, then joint-1 history.
+
 This file is the standing editorial guide for this thesis. Update it whenever a
 new recurring preference, technical convention, or evidence rule is agreed.
 The current thesis contains one combined Results and Discussion chapter.
@@ -1959,7 +1993,7 @@ opening.
 base-frame index and are not: the base *axis* names \(e_{x_0}\),
 \(e_{y_0}\), \(e_{z_0}\), \(x_0\), \(y_0\), \(z_0\); the *initial*
 or *reference* values
-\(t_{\mathrm{app},0}\), \(\Delta q_{\mathrm{null},0}\); and
+\(t_{\mathrm{app},0}\); and
 \(p_{\mathrm{Tool},0}\), whose \(0\) is the zero of the
 contact-establishment coordinate \(s_{\mathrm{CE}}\), not a frame. The last
 of these sits one line from \(n_{\mathrm{Tool},0}\), which *was* a frame
@@ -3508,7 +3542,7 @@ modes under an internally commanded point-force equivalent. Claims from those
 trials remain limited to that hold condition and must not be extended to
 physical disturbances or contact angular-error results.
 
-### The two null-space motion quantities, and what the sigma result says
+### Cumulative joint motion, joint-1 motion, and what the sigma result says
 
 **All null-space results use the exact disturbance interval.** Confirmed
 2026-09-14. Evaluate the original log times \(5\leq t\leq9\,\mathrm{s}\),
@@ -3516,32 +3550,24 @@ including both endpoints. Display the same interval from \(0\) to
 \(4\,\mathrm{s}\), with the time origin reset at disturbance onset.
 Use the compact axis label `Time, \(t\) [s]` in the thesis and presentation.
 The shortened label does not change the evaluated interval. Apply the same
-interval to cumulative joint motion, net joint motion,
+interval to cumulative joint motion, joint-1 motion,
 \(\sigma_{\min}(t)\), its trial minimum, and maximum Cartesian position error.
-Recompute the common net joint motion direction from the baseline trials over that interval.
 Do not replace the endpoints with a disturbance-amplitude threshold. The raw
 logs remain unchanged. Keep both analysis copies, their derived summaries,
-all three figure panels, thesis results, and presentation figures and narration synchronized.
+the three main null-space figures and related thesis results synchronized.
+Presentation narration and notes remain frozen unless explicitly requested.
 
-**The main conditioning comparison shows the absolute singular-value trajectories.**
-Agreed 2026-09-14. Panel (b) of the null-space figure shows
-\(\sigma_{\min}(t)\) for all four settings over the exact disturbance interval.
-The curves are three-trial means, with one sample standard deviation at each
-displayed time. Panel (a) also shows all four settings, including both
-conditioning magnitudes. Keep the panel order: cumulative joint motion,
-singular-value conditioning, then net joint motion. The absolute traces
-are the main evidence for conditioning retained during the disturbance.
-The maximum Cartesian position-error plot is withdrawn. Keep one brief
-Chapter 5 note that measured TCP position error stayed below \(2\,\mathrm{mm}\)
-during the disturbance in all trials, qualified as position only. Do not
-restore the plot, extended error statistics, or their conclusion paragraph.
-A fixed pose reference describes the command. Position error alone does not
-establish retention of position and rotation together.
-Calculate the interval minimum separately in each trial before forming its
-mean and sample standard deviation. Never substitute the minimum of the mean
-curve. The preceding \(0\)--\(5\,\mathrm{s}\) settling interval need not be
-plotted, and its conditioning activity stays distinct from the disturbance
-response.
+**The main null-space comparison contains three figures.** Updated 2026-09-21.
+Use the exact main-presentation figures for cumulative joint motion,
+absolute minimum singular value and mean joint-1 motion. The four settings
+are no torque, damping alone, conditioning alone and combined control, with
+enabled k_sigma = 2 N m and d_null = 2 N m s/rad. Curves are three-trial
+means with one sample SD. Both joint-motion panels cover 0–4 s.
+The older net-motion and individual-trial figures are archived and excluded.
+Keep a brief position-only note that all twelve selected trials remained below
+2 mm during the disturbance. Do not restore the Cartesian-error plot.
+Conditioning was active before and during the disturbance. Preserve the
+later-session qualification for combined control in Section 6.2.
 
 **The experimental endpoint change \(\Delta\sigma_{\min}\) is withdrawn.**
 Agreed 2026-09-14. Remove its Chapter 4 definition, Chapter 5 endpoint-change
@@ -3554,16 +3580,20 @@ remain unchanged by this editorial removal.
 
 **\(E_N\) is the cumulative joint motion, not a
 displacement.** It integrates \(\lVert N_q\dot q\rVert_2\) over the
-disturbance interval, so it is a path length: a configuration that moves
-repeatedly in alternating directions accumulates \(E_N\) while ending where it
-started. The words `excursion` and `displacement` are wrong for it and have
-been removed. **The net joint motion is
-\(\Delta\eta=v_{\mathrm{ref}}^\top\Delta q_{\mathrm{null}}\)**, the
-scalar projection of the net projected joint motion onto one common direction.
-Both are angles in radians and both are reported in degrees, so the two panels
-that carry them can be read against one another. They are reported together,
-because for the sigma-only settings they differ by orders of magnitude, and
-that difference is the result.
+disturbance interval, so it is a path length across all seven joints: a
+configuration that moves repeatedly in alternating directions accumulates
+\(E_N\) while ending where it started. The words `excursion` and
+`displacement` are wrong for it and have been removed. The active plots show
+cumulative motion, Jacobian conditioning and mean joint-1 motion. The archived
+net-motion measurements are excluded from the thesis.
+
+**Joint 1 is a measured temporal example, not the whole-robot metric.** It
+received the largest peak absolute component of the equivalent disturbance
+torque in each of the twelve selected trials. Define
+\(\Delta q_1(t)\) relative to the measured joint-1 angle at disturbance onset.
+A value that returns near zero describes only joint 1. It does not establish
+that the other joints returned or that little cumulative motion occurred.
+Use \(E_N\) for the overall seven-joint motion comparison.
 
 **The null-space subsections normally report means and the interpretation.**
 The figure carries the sample standard deviations, so do not repeat a
@@ -3571,40 +3601,19 @@ The figure carries the sample standard deviations, so do not repeat a
 standard deviation when its spread affects the interpretation. The exact
 summaries retain every mean and sample standard deviation.
 
-**Say `close to zero`, not `smaller than the scatter`.** The sigma-only net joint motion values were once described as having a magnitude `smaller than the
-scatter across the three repetitions`, which forces the reader back into a
-standard-deviation discussion to understand a result that is simply near zero.
-`Both sigma-only settings ended the disturbance interval with a net joint motion close to zero` states it directly, and the two-orders-of-magnitude
-relation against the uncontrolled \(7.516^\circ\) carries the size.
-
-Two things survive that compression and are not dropped with the deviations:
-the `\cref` to the figure panel the claim rests on, which every results
-subsection must carry, and the relation `a factor of about six` between the two
-cumulative-motion values. Stripping uncertainty is not licence to strip the
-evidence pointer or the ratio.
-
-**\(v_{\mathrm{ref}}\) is recovered from the data, not read from the log**,
-and the earlier wording here —
-`\(\Delta\eta_{\mathrm{dist}}=v_7(q_5)^\top[q(9\,\mathrm{s})-q(5\,\mathrm{s})]\)`
-— was **wrong on both halves** and is withdrawn. Checked against
-`make_nullspace_figure.py` on 2026-08-26: \(v_7\) is absent from the experiments
-without null-space torque, because the controller records it only while the
-conditioning term is selecting a sign. The axis is therefore the normalised
-**arithmetic mean of the three net projected joint motion vectors of the
-baseline condition** \(\Delta q_{\mathrm{null},0}\), and what is projected is
-the trapezoidal integral of the projected joint velocity over
-\(t\in[5,9]\,\mathrm{s}\), not the raw joint difference between the two
-instants. Section 4.6 says `the arithmetic mean of the three net projected joint motion vectors measured in the condition without null-space torque`, and
-that wording is the one to keep.
+**Keep the reported comparison tied to the selected four settings.**
+The main result compares conditioning alone and combined control at the same
+conditioning torque magnitude. Do not restore the former 1.5-versus-2 N m
+comparison when updating captions or summaries.
 
 **Do not write that the conditioning term returned, recovered or restored
 \(\sigma_{\min}\) or the configuration.** The selected null-space law was
 active from the start of every pose-hold trial, so the first
 \(5\,\mathrm{s}\) were a pre-disturbance settling interval and the
 conditioning torque was never switched on after a displacement had occurred.
-The mean net joint motion stayed close to zero, and the minimum singular
-value remained close to its disturbance-entry value. Keep the pre-disturbance
-conditioning distinct from this four-second result.
+The minimum singular value remained close to its disturbance-entry value in
+the conditioning settings. Keep the pre-disturbance conditioning distinct from
+this four-second result.
 
 **The three modes behave differently in kind, and the prose says which kind.**
 Without null-space torque the disturbance displaces the redundant
@@ -3636,9 +3645,9 @@ cumulative joint motion, not a count of direction changes, so the larger
 value is written as `consistent with greater back-and-forth redundant motion`,
 never as having `quantified the greater switching activity`. Describe the
 switching as the mechanism the controller implements, and the cumulative joint motion
-as the measurement consistent with it. Both settings left mean net joint motion values close to zero. The lower \(k_\sigma\) produced substantially
-less cumulative joint motion. Compare the measured means without declaring one
-setting generally better.
+as the measurement consistent with it. The main comparison holds \(k_\sigma\)
+constant and evaluates the added damping. Keep conclusions specific to the
+measured settings and disturbance.
 
 **The comparison is between complete modes, not isolated torques.** Because the
 conditioning torque was active before the disturbance, the sigma-only trials
@@ -4198,25 +4207,21 @@ Hardware constraints belong in setup and operating constraints, not in the
 scientific purpose statement.
 
 **The disturbance-interval quantities carry no `dist` suffix.** Agreed
-2026-09-02. Net joint motion is \(\Delta\eta\), defined once in Section 4.7.3
-and used unchanged in the results, conclusion and symbol list. The extra index
-restated the evaluation interval that the defining equation already fixes.
-The maximum Cartesian position error is \(\lVert e_p\rVert_{\max}\), used in
-the brief position-only check in Chapter 5. The waveform quantities
+2026-09-02. The cumulative joint motion is \(E_N\), and the measured joint-1
+angle change is \(\Delta q_1\). Their defining equations fix the evaluation
+interval. The maximum Cartesian position error is
+\(\lVert e_p\rVert_{\max}\), used in the brief position-only check in
+Chapter 5. The waveform quantities
 \(f_{\mathrm{dist}}\),
 \(\tau_{\mathrm{dist}}\), \(F_{\mathrm{dist}}\) and \(s_{\mathrm{dist}}\) keep
 their suffix: there the word distinguishes the commanded disturbance from the
 measured signals beside it.
 
-**\(\Delta\eta\) is reported in degrees, like \(E_N\).** Agreed
-2026-09-02. Both are angles whose unit is the radian, and panel~(c) of the
-pose-hold figure is read against panel~(a), so one unit is used for both: the
-axis is `Net Joint Motion, \(\Delta\eta\) [°]`, the bar values are printed
-to three decimals as the \(E_N\) values in Section 5.2 are, and Chapters 5
-and 6 carry the degree value alone. Section 4.6.3 states the unit once, in the
-sentence \(E_N\) already carried — `The unit of \(\Delta\eta\) is radians,
-and the values are expressed in degrees` — and the symbol-list row keeps
-`[rad]` with the conversion named in its description, again as \(E_N\) does.
+**Motion quantities are expressed in degrees.** Cumulative projected motion
+and measured joint-angle change are distinct quantities. Retain their
+definitions and units. The net-motion definitions are excluded from the
+thesis, and their plots remain archived. The three main figures follow the
+2026-09-21 presentation selection.
 
 **The radian value is not kept in brackets beside it.** Chapters 5 and 6 had
 read `\(0.131\,\mathrm{rad}\) (\(7.51^\circ\))`, which states one
@@ -4272,17 +4277,12 @@ held constant through contact, stated against `a centre position changed during
 contact`, which the study did not cover. Check which sense is meant before
 removing the word.
 
-**Compare the two conditioning settings by the measured quantities.**
-Updated 2026-09-14 for the exact disturbance interval. At
-\(k_\sigma=1.5\) and \(2.0\,\mathrm{N\,m}\), the mean net joint motion values are
-\(0.015^\circ\) and \(-0.011^\circ\). The stronger setting gives the smaller
-magnitude of the mean net joint motion, while cumulative joint motion
-increases from \(0.288^\circ\) to \(1.687^\circ\), or by \(486.6\,\%\).
-Both mean net joint motion values remain close to zero. State the comparison of
-means without claiming a statistically established advantage of either
-setting. The absolute singular-value trajectories support retention of the
-local indicator during the disturbance. They do not establish a larger
-improvement at higher \(k_\sigma\).
+**Compare conditioning alone and combined control at the same magnitude.**
+At k_sigma = 2 N m, adding d_null = 2 N m s/rad reduced mean cumulative
+motion from 1.6869906678 to 0.8312711146 degrees, or 50.7 percent.
+The damping-only comparison reduces 7.5982365939 to 5.6893594848 degrees,
+or 25.1 percent. Calculate percentages from full-precision trial means.
+These comparisons supersede the earlier conditioning-magnitude comparison.
 
 **The representative timing comparison uses an explicit common band.**
 Updated 2026-09-15. For each of the two illustrated positive-offset traces,
@@ -4300,17 +4300,11 @@ criterion and single-repetition provenance. The conclusion may state that
 the displaced-centre trace reached this band earlier without adding a
 general settling-time law.
 
-**The two null-space terms were evaluated separately, and the text says so.**
-Corrected 2026-09-02. The third contribution bullet had read `a projected
-null-space controller combining joint damping and singular-value conditioning
-was implemented and evaluated separately`, which reads as one combined
-controller that was evaluated apart from the contact study. Section 4.6 lists
-four settings -- no null-space torque, projected damping alone, and
-conditioning at \(k_\sigma=1.5\) and \(2.0\,\mathrm{N\,m}\) -- so the two terms
-were never active together in the pose-hold trials. Write `Projected null-space
-damping and singular-value conditioning were implemented and evaluated
-separately in Cartesian pose hold`. Mode 3, where both act together, belongs to
-the surface-contact cases only.
+**The null-space terms were evaluated individually and together.**
+The main comparison now includes mode 3 at k_sigma = 2 N m and
+d_null = 2 N m s/rad, alongside no torque and each term alone.
+Update only the corresponding null-space statements in the methods, results,
+Introduction, Abstract, Kurzfassung and Conclusion. The contact study is unchanged.
 
 **The reported quantity is `angular error`.** Use this name in prose,
 headings, tables, axes, captions, speaker notes and speaking text, with
@@ -4322,15 +4316,11 @@ compound built on it: the contact-establishment motion, press, trajectory,
 damping, reference and timeout all name the state and are unchanged. Only the
 response and the rotation were renamed.
 
-**A quantity is discussed where its figure shows it.** Updated 2026-09-14.
-The singular-value-conditioning subsection discusses the absolute
-\(\sigma_{\min}(t)\) traces for all four settings in panel (b), with their
-trial minima. The projected-damping subsection discusses cumulative joint motion
-\(E_N\) in panel (a) and net joint motion \(\Delta\eta\) in panel (c).
-Keep the two motion quantities distinct.
-
-**Say `net joint motion`.** Updated 2026-09-15. \(\Delta\eta\) is already a projection onto the null-space
-reference direction, so `redundant` restates the projector.
+**A quantity is discussed where its figure shows it.**
+Use separate subsections for cumulative joint motion, Jacobian conditioning
+and joint motion over time. The last figure shows three-trial mean measured
+joint-1 angle change and one sample SD. Do not describe its curves as individual
+trials or call panel (b) a first-second view.
 
 **State the shared null-space uncertainty convention once beside the figure.**
 The curves and markers show means across three trials. Shaded bands and error
@@ -4614,9 +4604,9 @@ angular error. State this interpretation before summarising its percentages.
 
 **The conditioning result is qualified by when the term was active.** Write
 that the complete singular-value-conditioning modes were active before and
-during the disturbance and produced net joint motion values close to zero.
-`conditioning kept the net joint motion close to zero` reads as isolated
-disturbance rejection, which the timeline rules out.
+during the disturbance. Their minimum singular values remained close to their
+disturbance-entry values. Do not describe this as a recovery from an identical
+starting configuration, which the timeline rules out.
 
 The conclusion states the calibrated angular-error findings as continuous
 prose: the TCP baseline, rotational stiffness, translational stiffness with
@@ -4902,30 +4892,23 @@ The final test for every sentence is whether it belongs in a robotics/control
 thesis whose reader knows nothing about the author’s repository, coding
 history, or earlier drafts.
 
-## Individual joint motion over time (2026-09-15)
+## Mean joint motion over time (2026-09-21)
 
-The null-space results also show measured joint-1 angle change from disturbance
-onset, for all three trials of each of the four settings. Joint 1 is selected
-because its equivalent commanded disturbance torque is largest in all twelve
-trials. Use the original 20 Hz diagnostic samples and measured timestamps over
-5--9 s, displayed as 0--4 s. Retain each trial separately and include a
-conditioning close-up of the first second. Do not average, smooth, integrate,
-or take absolute values of the measured joint angle. This direct angle change
-is separate from the projected seven-joint quantities E_N and Delta eta.
-The first-second traces show repeated reversals at k_sigma = 2.0 N m.
-The sampling rate supports the displayed measured sequence, not a claim about
-an exact oscillation frequency. The selected null-space modes were active
-before disturbance onset, as already stated in the methodology and results.
+Use the exact joint_motion_mean_main.pdf from the main presentation.
+Both panels cover the complete 0–4 s disturbance interval. Panel (a) shows
+all four selected settings; panel (b) enlarges conditioning and combined control.
+Each trial is referenced to its own measured joint-1 angle at disturbance onset.
+Calculate means and one sample SD at common measured timestamps, without
+interpolation or smoothing. Preserve positive and negative values. Spaced
+markers follow the presentation. Retain individual-trial data in the archive.
 
 ## Consistent joint-motion names (2026-09-15)
 
-Use cumulative joint motion for E_N and net joint motion for Delta eta in
-plots, captions, text, the symbol list and the presentation. Retain cumulative
-and net because the quantities differ: the former accumulates projected
-velocity magnitude, while the latter projects the integrated joint velocity
-onto the common reference direction and permits cancellation. Use Net joint
-motion over time for its directional history, and Joint motion over time for
-the individual measured joint-angle histories. Define the projection and the
-measured angle change in the methodology. Do not alternate motion and
-displacement as short names for these quantities. Keep symbols, calculations,
-data, units, signs, uncertainty, filenames and internal identifiers unchanged.
+Use cumulative joint motion for \(E_N\) and joint-1 angle change for
+\(\Delta q_1\) in plots, captions, text, the symbol list and the presentation.
+The first accumulates projected velocity magnitude across all seven joints.
+The second is one measured joint angle relative to its disturbance-onset value.
+Use Joint motion over time for the measured joint-1 histories. Define both
+quantities in the methodology. Keep the removed net-motion analysis and plots
+only in the archive, without restoring their derivation or symbols to the
+thesis.
