@@ -792,6 +792,14 @@ How a figure is drawn or generated is in
 rules, plot settings, and how to check a figure in the compiled document. The
 rules below cover captions and what the text around a figure must carry.
 
+**Every figure must be referenced in the running text and support a specific
+point.** Instructed 2026-09-23. Use an explicit figure cross-reference beside
+the explanation, comparison, or result that the figure supports. The caption
+and List of Figures do not count as references in the text. Explain what the
+reader should learn from the figure; adding a reference alone does not justify
+keeping it. Where another figure already serves the same purpose, retain both
+only when their distinct contributions are clear.
+
 **Every visible figure caption and table caption must fit on one rendered
 line**, and should normally remain below about 12 words. Each corresponding
 entry in the List of Figures or List of Tables must also fit on one line. This
@@ -3770,10 +3778,11 @@ instantaneous opposing torque at identical joint configurations.
   commanded wrench \(F=[f^\top,m^\top]^\top\). The model-estimated external
   wrench is an implementation signal used only by the optional contact establishment
   termination condition and is assigned no thesis-wide mathematical symbol.
-  Figure 2.2 draws the commanded side only.
+  The retained compliance-centre moment sketch draws commanded quantities only.
 - **\(m_{r_{\mathrm{Tool}}}=r_{\mathrm{Tool}}\times\Delta\hat f_{\mathrm{ext}}\)
   does not appear anywhere in the thesis.** The symbol is deleted from the
-  symbol list, from Section 2.7, and from Figure 2.2. The earlier rules that
+  symbol list, from Section 2.7, and from the withdrawn commanded-wrench sketch.
+  The earlier rules that
   paired each lever with a viewpoint, that called the quantity a reconstruction
   rather than a measurement, and that forbade adding it to the commanded terms,
   are all withdrawn along with it — they existed to manage a quantity that is
@@ -4007,11 +4016,16 @@ instantaneous opposing torque at identical joint configurations.
   second derivation.
 - **The model-estimated external wrench is not theory, and Chapter 2 does not
   carry it.** The former Section 2.4.4 and the commanded-versus-model-estimated
-  half of Section 2.7 are deleted, and Figure 2.2 is a commanded-wrench figure
-  only. Neither was needed to derive the impedance law or the compliance-centre
+  half of Section 2.7 are deleted. Neither was needed to derive the impedance
+  law or the compliance-centre
   mechanism, and both interrupted the one narrative the chapter has to carry:
   \(r_c\to\mathrm{Ad}(r_c)\to K_{\mathrm{TCP}},D_{\mathrm{TCP}}\to
   m=m_R+r_c\times f\to\) the tangential direction rule.
+
+  The standalone commanded-wrench sketch is also withdrawn, as agreed on
+  2026-09-23. The moment decomposition and the retained normal-force contribution
+  sketch explain the mechanism. Its source is preserved as
+  `figures/withdrawn/moment_bookkeeping.tex`.
 
   **It survives as an implementation signal only.** The `Contact Establishment`
   subsection says in one short passage that libfranka
