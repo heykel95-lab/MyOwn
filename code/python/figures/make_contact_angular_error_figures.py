@@ -30,8 +30,9 @@ def point(groups, run, x):
     return f'  ({x},{mean:.9f}) +- (0,{sd:.9f})'
 
 YLABEL = r'Angular Error About \(t_1\), \(\theta_{\mathrm{err},t_1}\) [\(^\circ\)]'
-COMMON = r'''    ymajorgrids=true, xmajorgrids=false,
+COMMON = r'''    ymajorgrids=true, xmajorgrids=true,
     grid style={gray!25, very thin},
+    x grid style={gray!65, thin, densely dotted},
     tick label style={font=\footnotesize},
     label style={font=\footnotesize},
     legend style={font=\scriptsize, draw=none, fill=none,
@@ -59,9 +60,10 @@ def make_sources(groups):
     nodes near coords style={font=\scriptsize, yshift=5pt, /pgf/number format/fixed,
                              /pgf/number format/precision=2},
 @COMMON@  ]
-\addplot[draw=black, fill=barblue, error bars/.cd, y dir=both, y explicit]
+\addplot[draw=black, fill=barblue, area legend, error bars/.cd, y dir=both, y explicit]
 coordinates {
 @POINTS@};
+\addlegendentry{CoC at TCP, \(r_{c,t_2}=0\)}
 \end{axis}
 \end{tikzpicture}
 '''
@@ -117,7 +119,7 @@ coordinates {
         series.append(r'\addplot['+colour+', mark='+marker+r''', mark options={fill=white},
          error bars/.cd, y dir=both, y explicit] coordinates {
 '''+points+'};\n'+r'\addlegendentry{Measured Angular Offset, \(\theta_{\mathrm{meas},t_1}='+entry+r'^\circ\)}')
-    d=d.replace('@COMMON@',COMMON.replace('xmajorgrids=false','xmajorgrids=true') + '    x grid style={gray!65, thin, densely dotted},\n    xticklabel style={rotate=0, anchor=north, font=\\fontsize{8}{10}\\selectfont},\n    xlabel style={yshift=0pt},\n')
+    d=d.replace('@COMMON@',COMMON + '    xticklabel style={rotate=0, anchor=north, font=\\fontsize{8}{10}\\selectfont},\n    xlabel style={yshift=0pt},\n')
     sources['results_case_d_panels.tex']=d.replace('@SERIES@','\n'.join(series))
     return {name:text.replace('@YLABEL@',YLABEL).replace('@COMMON@',COMMON) for name,text in sources.items()}
 

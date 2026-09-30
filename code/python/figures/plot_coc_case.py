@@ -53,10 +53,21 @@ sys.path.insert(0, HERE)
 from extract_metrics import surface_frame, read_params  # noqa: E402
 from figure_style import (apply_style, reference_line,  # noqa: E402
                           thin, SERIES_COLOURS)
+from results_grid import apply_results_grid  # noqa: E402
 
 RESULTS = os.path.join(HERE, "..", "experiments", "results")
 
 apply_style()
+# Use the same LaTeX text and maths faces as the native pgfplots labels.
+# Render at the thesis text width, so TeX selects the same optical font sizes.
+PRINT_WIDTH = 160 / 25.4
+plt.rcParams.update({
+    "text.usetex": True,
+    "text.latex.preamble": r"\usepackage[T1]{fontenc}\usepackage{lmodern}",
+    "font.serif": ["Computer Modern Roman"],
+    "font.size": 10,
+    "axes.labelsize": 10,
+})
 
 CONTACT_ESTABLISHMENT_STATE = 2
 
@@ -124,7 +135,7 @@ def main():
     os.makedirs(args.out_dir, exist_ok=True)
 
     selected = [tuple(a.split("=", 1)) for a in args.trials]
-    fig, axes = plt.subplots(3, 1, figsize=(5.8, 6.2), sharex=True)
+    fig, axes = plt.subplots(3, 1, figsize=(PRINT_WIDTH, PRINT_WIDTH * 6.2 / 5.8), sharex=True)
 
     for (trial, detail), colour in zip(selected, SERIES_COLOURS):
         label = curve_label(detail)
@@ -136,10 +147,8 @@ def main():
 
     sub = AXIS_SUBSCRIPT[args.axis]
     # A y label is set rotated, so its longest line has to fit the panel
-    # height, not the figure width. The full label on one line overruns the
-    # panel, so each is broken once: the words on the first line and the symbol
-    # with its unit on the second. Three lines were tried first and read worse
-    # than the single-line labels of the typeset figures beside this one.
+    # height, not the figure width. Keep the complete quantity names and break
+    # long labels over two or three lines so adjacent panels remain separate.
     labels = [rf"Angular Error About ${sub}$," "\n"
               rf"$\theta_{{\mathrm{{err}},{sub}}}$ [$^\circ$]",
               "Model-Estimated Normal\n"
@@ -153,6 +162,7 @@ def main():
         ax.text(0.012, 0.95, f"({letter})", transform=ax.transAxes,
                 ha="left", va="top")
     for index, (ax, text) in enumerate(zip(axes, labels)):
+        apply_results_grid(ax)
         ax.set_ylabel(text)
         # Zero marks a zero calibrated tangent component, and a restoring moment
         # from a driving one. The force panel is left without a line, because a
@@ -165,15 +175,14 @@ def main():
     # figure, so it reads as part of the last panel the way a pgfplots legend
     # does in the figures beside it.
     axes[-1].set_xlabel(r"Time, $t$ [s]")
-    fig.tight_layout(rect=(0, 0.06, 1, 1))
     fig.align_ylabels(axes)
+    fig.tight_layout(rect=(0, 0.06, 1, 1))
     # The legend is built after the layout is fixed, so the panel geometry it
     # is measured against is final.
-    panel = axes[-1].get_position()
-    fig.legend(handles, legend_labels, loc="lower left", ncol=len(handles),
-               bbox_to_anchor=(panel.x0, 0.008, panel.width, 0.045),
-               mode="expand", frameon=False, fontsize=8.0, handlelength=1.6,
-               handletextpad=0.5, borderaxespad=0.0)
+    fig.legend(handles, legend_labels, loc="lower center", ncol=len(handles),
+               bbox_to_anchor=(0.5, 0.01), frameon=False, fontsize=8,
+               handlelength=1.6, handletextpad=0.5, columnspacing=1.5,
+               borderaxespad=0.0)
     out = os.path.join(args.out_dir, f"{args.out}.pdf")
     fig.savefig(out)
     fig.savefig(out.replace(".pdf", ".png"), dpi=160)

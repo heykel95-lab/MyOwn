@@ -47,6 +47,7 @@ from figure_style import (apply_style, thin,  # noqa: E402
                           SERIES_BLACK, SERIES_BLUE, SERIES_RED,
                           REFERENCE_GREY)
 import matplotlib.pyplot as plt  # noqa: E402
+from results_grid import apply_results_grid  # noqa: E402
 from matplotlib.ticker import MaxNLocator  # noqa: E402
 
 
@@ -129,6 +130,7 @@ def contact_wrench_figure(csv_path, out_path):
     plt.rcParams["axes.formatter.use_mathtext"] = True
     figure, axes = plt.subplots(2, 1, figsize=(6.15, 3.90), sharex=True)
     for axis in axes:
+        apply_results_grid(axis)
         axis.axvspan(4.0, 5.0, color=REFERENCE_GREY, alpha=0.13, linewidth=0)
     axes[0].plot(t, fn_cmd, color=SERIES_BLACK, label="Commanded")
     axes[0].plot(t, fn_est, color=SERIES_RED, label="Model-estimated")
@@ -179,6 +181,7 @@ def plausibility_figure(run, keys, ylabel, xlabel, span, start, end, out_path):
     apply_style()
     plt.rcParams["axes.formatter.use_mathtext"] = True
     figure, axis = plt.subplots(1, 1, figsize=(6.15, 2.55))
+    apply_results_grid(axis)
     axis.axvspan(span[0] - start, span[1] - start,
                  color=REFERENCE_GREY, alpha=0.13, linewidth=0)
     axis.plot(t, cmd, color=SERIES_BLACK, label="Commanded")

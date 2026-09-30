@@ -3,8 +3,6 @@
 This file contains only agreed work that remains unfinished. Completed items are
 removed in the turn in which they are finished.
 
-
-
 ## Remove the duplicate TCP expansion in Chapter 2
 
 `chapters/02_theoretical_background.tex:760` spells out `tool centre point

@@ -4,7 +4,8 @@ Follows MyOwn-thesis/FIGURE_STYLE.md, which owns the rules:
 
   Latin Modern with Computer Modern maths, so a figure carries the document's
   faces. Categorical colours begin black, red, blue, yellow, with grey reserved
-  for reference lines. Horizontal grid only. No internal title, because the
+  for reference lines. Active Results plots apply the Figure 5.7 grid through
+  results_grid.apply_results_grid. No internal title, because the
   caption already names the figure. One shared legend below a multi-panel
   figure, assembled from every panel so no series is dropped.
 

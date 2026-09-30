@@ -210,6 +210,20 @@ beside it.
 
 ## Plot-label edits
 
+All active Results figures use the grid of Figure 5.7: light solid horizontal
+lines and darker densely dotted vertical lines at existing major ticks.
+`results_grid.py` applies the same physical line weights to Matplotlib plots;
+the native A--D sources use the matching pgfplots settings. The portable
+null-space bundle includes its own identical copy of this helper. Matching
+presentation panels and embedded images use the same grid. The numerical
+and compiled-document checks are in `results_grid_20260930.json`.
+
+Figures 5.8--5.11 render labels with LaTeX and `lmodern`, at the final
+160 mm thesis width. This selects the same 10 pt text and mathematical faces
+as Figures 5.4 and 5.6, including subscripts and units. The generators need
+`latex` and `dvipng` on PATH. The final PDF font check is recorded in
+`nullspace_presentation_main/ylabels_20260930.json`.
+
 `compare_angle_metrics.py` labelled its first series `EE-inferred angular
 deviation`, a term banned in the thesis. The published PDF was corrected by
 patching the file itself, so the script and the figure had drifted apart. The

@@ -1,5 +1,44 @@
 # Figure Style
 
+## Results grid follows Figure 5.7 (2026-09-30)
+
+Every Results-chapter plot uses Figure 5.7's grid: light solid horizontal
+lines (`gray!25`, `very thin`) and darker densely dotted vertical lines
+(`gray!65`, `thin`). Draw major gridlines at the existing ticks, behind the
+data. Preserve the axis limits, tick locations, labels, colours and measured
+values. Apply the same grid to every corresponding presentation figure,
+including the individual panels of multi-panel plots. This replaces the
+earlier horizontal-only grid rule.
+
+## Consistent Results axes and legends (2026-09-30)
+
+Figures 5.4 and 5.6 are the visual reference for Results plots: thin complete
+rectangular axis frames, inward ticks on all four sides, and Latin Modern
+text with Latin Modern mathematics. Null-space plot axis labels
+and ticks print at about 10 pt, and legends at 8 pt, matching these references.
+Keep descriptive axis labels, symbols and units visible.
+Place a borderless legend below each complete plot, including the Case-A
+bar chart, whose entry identifies the CoC-at-TCP condition. Match the
+null-space legends across all three main plots.
+
+Figure 5.11 has two plotting areas of equal width and height, aligned at
+the top and bottom with matching title sizes and label margins. Both retain
+the full 0--4 s interval; the right panel keeps its enlarged vertical scale.
+Apply these style changes to the shared thesis and presentation assets,
+including the embedded PowerPoint images and both presentation PDFs.
+Measured values, uncertainty bands, series colours and markers are retained.
+
+**Match complete labels, including their mathematics.** Figures 5.8--5.11
+use LaTeX with `lmodern` for the descriptive name, symbol, subscripts and unit,
+as Figures 5.4 and 5.6 do. Loading a Latin Modern text font while retaining
+Matplotlib's Computer Modern maths leaves a visible mismatch. The printed
+y-axis labels are 10 pt. Preserve their quantity names and use aligned line
+breaks where the stacked panels of Figure 5.8 need them. The current system
+has `latex` and `dvipng`, and the PDF and PNG builds have been verified.
+Generate these figures at their final 160 mm width. Scaling a larger TeX plot
+down also scales a different optical font size; equal nominal point sizes
+alone do not give the same letterforms.
+
 ## Null-space plots match the main presentation (2026-09-21)
 
 Only the null-space experiment is affected. Include exactly the three current
@@ -11,14 +50,15 @@ The four plotted settings are no torque, damping alone, conditioning alone,
 and combined control. Enabled values are k_sigma = 2 N m and
 d_null = 2 N m s/rad. All curves are three-trial means with one sample SD,
 using the measured 5–9 s interval displayed as 0–4 s. Both joint-motion panels
-show the full interval. Keep the exact presentation assets, colours, markers,
-legends, labels, limits and uncertainty bands. This supersedes the earlier
+show the full interval. Keep the presentation and thesis assets identical,
+including colours, markers, labels, limits and uncertainty bands. Axes, fonts,
+legends and panel layout follow the Results styling rule above. This supersedes the earlier
 two-conditioning-magnitude and individual-trial figure requirements, and the
 earlier restriction of combined-control results to the presentation.
 Keep related null-space methods, captions, results and summaries consistent.
 The combined trials were acquired later with matched settings and controller
-revision, so preserve that scope qualification. Other thesis plots and the
-presentation, speaking script and speaker notes remain unchanged.
+revision, so preserve that scope qualification. Speaking script and speaker
+notes remain unchanged by figure updates.
 
 How figures are drawn for this thesis. Companion to
 [THESIS_WRITING_GUIDE.md](THESIS_WRITING_GUIDE.md), which owns captions,
@@ -1256,8 +1296,10 @@ writes a generated file names it, so regeneration must preserve this mapping.
 - **Fonts match the document.** `FONT_STYLE = "latex"` selects Latin Modern
   with Computer Modern maths. Verify in the output, not the configuration:
   `pdffonts` on the result should show `LMRoman*` and `Cmr/Cmmi/Cmsy`.
-  `usetex` is deliberately not used; it needs `dvipng`, which is not installed,
-  and it would tie every plot to a preamble kept elsewhere.
+  Figures 5.8--5.11 use `usetex` with an explicit `lmodern` preamble in their
+  generators, so both text and mathematics match the native LaTeX figures.
+  Their build requires `latex` and `dvipng`. Older generators retain their
+  previous Matplotlib font setup until they are revised.
 - **Ticks sit at the settings that were tested.** A sweep of three values does
   not justify a log scale, and a log decade fills itself with minor labels that
   collide at printed width. Linear spacing ticked at the tested values shows
@@ -1326,7 +1368,8 @@ writes a generated file names it, so regeneration must preserve this mapping.
   repetition each, and Chapter 5 states that. This is provenance rather than
   uncertainty: it goes in the text, not in the caption, which stays a short noun
   phrase.
-- **Grid is horizontal only.** It exists to compare values across panels.
+- **Grid follows Figure 5.7.** Use light solid horizontal lines and darker
+  densely dotted vertical lines at the major ticks, behind the data.
 - **Every plotted series is identified by one legend below the complete plot.**
   The Chapter 5 plots and the supporting comparison in Appendix D place a
   borderless, transparent legend centrally below the axes and above the figure
