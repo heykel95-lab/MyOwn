@@ -452,10 +452,12 @@ complete Kurzfassung and its heading occupy one page without clipping or overflo
   architecture.
 
 **Limitations have one chapter-level home.** Chapters 1--5 state what was done,
-calculated and measured in positive form. Section 6.2 contains every evidence
-gap, unevaluated case, unresolved measurement limit, and boundary on
-generalisability. Do not repeat a limitation in the Abstract, Introduction,
-Methodology, metric definition, or Results.
+calculated and measured in positive form. Section 6.2 states the experimental
+scope and the calibration and tool-mount assumptions positively. As instructed
+on 2026-09-29, it omits catalogues of unmeasured quantities and unevaluated
+cases. Keep claims tied to the tested conditions and the defined measurement
+chain. Do not repeat a limitation in the Abstract, Introduction, Methodology,
+metric definition, or Results.
 
 Explain a concept authoritatively once. In particular, avoid repeating
 Cartesian impedance, point-shift derivations, gain transformations, damping,
@@ -606,10 +608,11 @@ interaction without treating an estimated moment as a separately measured
 physical contact moment.
 
 **The prose may call it the measured interaction wrench available from the
-robot**, provided the paragraph before that figure states once that the
-quantities come from the robot's model-based external-wrench estimator rather
-than from a force/torque sensor. The `est` index stays in every symbol, axis
-label and legend entry.
+robot**, provided the paragraph before that figure identifies it as the
+model-estimated external wrench supplied by libfranka. As instructed on
+2026-09-29, state this source directly and omit explanations of why the `est`
+index is retained, including the comparison with a separate force/torque
+sensor. The `est` index stays in every symbol, axis label and legend entry.
 
 State the experimental exclusion once in Chapter 4: the contact evaluation
 uses the \(t_1\) data set, which provided repeatable comparisons, whereas the
@@ -3166,8 +3169,8 @@ end of Contact Establishment, and one closing sentence: every experiment ended
 at the \(5\,\mathrm{s}\) timeout, the enabled pre-grinding hold then retained the
 reached pose, and the measured data cover orientation, approach and contact establishment
 only. **Section 3.2.5 keeps its two sentences**, because Chapter 3 documents
-the implemented sequence rather than the reported campaign, and Chapter 6 keeps
-the sentence placing sustained grinding outside the evaluation.
+the implemented sequence rather than the reported campaign. Chapter 6 states
+positively that the quantitative evaluation focused on Contact Establishment.
 
 **Chapter 4 defines the calibrated angular-error measurement.** The held
 controller orientation reference remains unchanged. The measured angular
@@ -4512,9 +4515,9 @@ depending on both position and entry direction.
 **`universally optimal centre` remains banned, as does `best` and `optimal` for
 any centre.** So does any statement extending the result to every robot, tool,
 contact geometry, surface, grinding process, or impedance controller. The
-surface-contact campaign did not test a displacement held through sustained grinding, and did
-not vary the surface orientation during contact; say that where the claim is
-made.
+surface-contact findings concern Contact Establishment with one selected
+displacement per trial and one configured surface reference. State that scope
+positively wherever the claim needs it.
 
 **Neutrality and angular error are separate properties.** Explain
 the zero added moment at the TCP when discussing the impedance reference.
@@ -4577,19 +4580,21 @@ was not tracked. Write `additional rotation relative to the end effector`.
 **The \(\pm2^\circ\) is mechanical play, not measurement uncertainty.** Name its
 physical origin where it is introduced — clearance in the custom pads clamping
 the tool to the gripper fingers, about \(y_{\mathrm{EE}}\), which corresponds
-approximately to \(t_2\) in the flat configuration — and say that the robot
-does not measure that relative rotation. Never write `the angle measurement has
+approximately to \(t_2\) in the flat configuration. State the pose-based
+calculation's assumption that the calibrated tool normal remains fixed relative
+to the end effector. Never write `the angle measurement has
 an uncertainty of \(\pm2^\circ\)`, which claims a calibrated statistical bound
 the value does not carry.
 
-**Do not write that relative tool--gripper motion "was not measured".** It was:
-the mounting exhibits approximately \(\pm2^\circ\) of rotational play about
-\(y_{\mathrm{EE}}\), and the thesis reports that value. The precise
-limitation is narrower and must be stated as such — the play was characterised
-**in the unloaded condition**, and the **instantaneous** relative tool--gripper
-rotation was **not tracked separately during the contact experiments**. The blanket
-phrasing claims the measurement was never made, which is wrong and gives away a
-result the thesis actually has.
+**Describe tool-mount compliance through the measured play and the calibration
+assumption.** The mounting exhibits approximately \(\pm2^\circ\) of
+rotational play about \(y_{\mathrm{EE}}\), characterised in the unloaded
+condition. The angular-error calculation assumes that the calibrated tool
+normal remains fixed relative to the end effector; motion within the mount can
+make the physical direction differ. Following the 2026-09-29 conclusion
+ruling, omit the sentence stating that instantaneous relative rotation was not
+tracked during contact. Keep the measured unloaded play and its possible
+effect on the pose-based interpretation.
 
 The general point is that **an alignment-directed end-effector rotation is not
 an independent measurement of physical tool alignment**.
@@ -4647,6 +4652,13 @@ results and appendix tables.
 2026-09-08. Replace the three absolute from--to motion comparisons in
 Section 6.1 with percentage changes relative to the first value in each pair.
 Retain the other numerical values and the surrounding interpretation.
+
+**Name the null-space reference explicitly in the conclusion.** Instructed
+2026-09-29. Use `the setting with zero null-space torque` for the reference
+of the damping comparison; `inactive setting` leaves unclear which controller
+term is inactive. Within Chapter 6's null-space discussion, shorten `projected
+damping` to `damping`. The context supplies the null-space meaning, while the
+full term remains available where the projection is defined or explained.
 
 **The conclusion explains the mechanism before the numbers.** As supplied on
 2026-09-02, it opens on what shifting the centre does to the stiffness and
@@ -4736,11 +4748,11 @@ only, and summarises the limitations without restating the mechanisms.
 **Group the limitations under named subsections** rather than listing them as
 consecutive paragraphs of identical shape (state limitation, explain mechanism,
 state consequence, delimit interpretation). The settled grouping is:
-`Scope of the Surface-Contact Results`; `Calibration and Measurement Scope`;
-`Tool-Mount Compliance`; `Scope of Null-Space and Real-Time Validation`. The
-first, second and fourth were renamed on 2026-09-01 to say that each subsection
-bounds a scope rather than cataloguing faults, and each opens by stating what
-the measurement does cover before naming what lies outside it. The `\label{}`
+`Scope of the Surface-Contact Evaluation`; `Calibration and Measurement Scope`;
+`Tool-Mount Compliance`; `Scope of the Null-Space Evaluation`. Each states the
+evaluated conditions and the assumptions needed to interpret the measurements.
+As instructed on 2026-09-29, omit negative formulations listing what was not
+measured, evaluated or tracked; retain the scope in positive form. The `\label{}`
 keys were left unchanged, since they reach no reader. A reader can
 then find the limitation that bears on the result they are checking, instead of
 reading a catalogue.

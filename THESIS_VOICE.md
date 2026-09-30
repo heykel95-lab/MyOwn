@@ -233,16 +233,17 @@ statement of use over the abstract statement of property.
 An implementation account becomes difficult to follow when almost every step
 of an algorithm carries its own disclaimer. State the implemented operation
 first, then place the limits together where the chapter assigns them. Chapters
-1--5 state what was done, calculated and observed. Section 6.2 collects what
-was not measured or evaluated. Chapter 3 keeps only the
+1--5 state what was done, calculated and observed. Section 6.2 states the
+experimental scope and the assumptions behind the measurements positively.
+Chapter 3 keeps only the
 implementation-specific bridge from the null-space theory to Cartesian pose
 hold; the experimental bounds and unresolved limitations are not interleaved
 with that bridge.
 
 The same applies to theory: assumptions required by the derivation belong in
 Chapter 2, and implementation choices are stated directly in Chapter 3.
-Evidence gaps, unevaluated cases, and unresolved measurement limits belong
-only in Section 6.2.
+Section 6.2 gives the tested conditions and the calibration and tool-mount
+dependencies that bound interpretation, without cataloguing unperformed work.
 
 ### State the method, mechanism and result directly
 
@@ -255,8 +256,16 @@ The recurring defensive sequence is withdrawn:
 One occurrence may be accurate. Repetition across the Abstract, Introduction,
 Methodology, a metric definition and the Limitations gives the thesis a
 templated, self-defending rhythm. State the actual method, mechanism or result
-where it is used, and give the consolidated measurement limitation once in
-Section 6.2.
+where it is used, and give the measurement scope once in Section 6.2.
+
+**Chapter 6 states its scope positively.** Instructed 2026-09-29. Remove
+sentences listing what `was not measured`, `was not evaluated`, or `was not
+tracked`, including equivalent statements about unresolved quantities or
+uncontrolled effects. State the tested configuration, evaluated quantity and
+calibration assumption directly. Retain the bounds on the findings through
+those positive statements; deleting a disclaimer never licenses a broader
+claim. This replaces the earlier instruction to collect such negative
+statements in the conclusion's Limitations section.
 
 | Defensive | Direct |
 |---|---|
@@ -286,6 +295,11 @@ as `kept only as separate diagnostic quantities` describe how the analysis was
 organised instead of explaining the calculation. Where two signal definitions
 could be confused, identify the signal that supplies the result and state its
 equation. Stop once the comparison is defined.
+
+**State the quantity and its source without explaining notation choices.**
+Instructed 2026-09-29. Omit remarks such as `the est index is retained because`
+and `which is what the est index records`. Name the model-estimated wrench and
+its source directly; the prose need not justify retaining an index.
 
 Use `reported` only when it distinguishes the selected data set from archived
 or excluded material. Elsewhere name the thing directly: `experiments`,
@@ -390,7 +404,7 @@ alignment improvement was measured.
 | displacement along the normal produced no change | moving the centre along the surface normal produced no measurable change above the interpretation threshold |
 | the same lever assists both rotational directions | each non-zero centre position increased the response in one tested rotational direction and reduced it in the other |
 | the tool axis is known only to within a degree or two | the calibrated tool normal does not enter this quantity |
-| and shifts as the tool settles in the gripper | the relative tool--gripper rotation was not tracked during the contact experiments |
+| and shifts as the tool settles in the gripper | the pose-based angular error assumes the calibrated tool normal remains fixed relative to the end effector |
 
 The pattern: a verb implying an action on a quantity (`removed`, `cancelled`,
 `destroyed`, `beat`) where the log holds only a number near zero. Replace it
@@ -1031,13 +1045,12 @@ limits`:
 Confirm which assumptions the implementation actually makes before writing
 them; the two above are candidates, not established facts.
 
-### Say what was not analysed, then route it to Future Work
+### State the evaluated scope and the selected future work
 
-An honest scope boundary is stronger than silence, and it is where a limitation
-turns into a contribution to the next study.
-
-> Whether a shorter ramp shortens the whole sequence was not measured here,
-> because the phases were not timed independently. It is left to future work.
+Describe the configuration and interval that were evaluated. Chapter 6 keeps
+these scope statements positive and omits lists of unperformed measurements.
+Future Work contains the extensions selected by the author, with the purpose
+of each stated directly; it does not mirror every scope boundary.
 
 ### Justify what you leave out
 

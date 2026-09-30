@@ -288,37 +288,12 @@ Section 4.1.3 already carry. Three requested items remain:
   `backmatter/appendix_c_exp1_rotated_tracking.tex` still contain `\approx`.
   Apply the current approximation rule before either file is reinstated.
 
-## The real-time claim now carries no stated bound
+## Confirm the supplied time-history clause in the Case-D discussion
 
-The Abstract and Section 6.1 both open with `A real-time Cartesian impedance
-controller was implemented`. Until 2026-09-02 that claim was bounded twice: a
-limitations paragraph stating that worst-case callback execution time and
-scheduling jitter were not measured and that the assembled torque command
-carried no application-side saturation or torque-rate limiter, and a future-work
-paragraph proposing both. The supplied Sections 6.2 and 6.3 replaced the
-sections containing them, so neither survives, and no other chapter states the
-bound. Chapter 3 describes the callback structure but makes no claim about
-measured timing.
-
-Decide whether to restore a bound. One sentence in Section 6.2.4 would do it,
-or a fourth paragraph in Section 6.3. The alternative is to soften the claim
-itself in both places, which touches the Abstract and the Kurzfassung together.
-
-## Confirm two supplied sentences in Section 5.1
-
-The four rule crossings logged on 2026-09-06 were settled by the author the
-same day and are done: the plausibility assessment stays and is presented as a
-defined perturbation test, the three captions were shortened to the supplied
-forms, Appendix B regained the model-estimated wrench group, and Chapter 4
-gained Section 4.6 with the methodology for both evaluations.
-
-What remains is two fragments of the supplied text that were not applied
-exactly, each a clause or a word. `as in the original time-history evaluation`
-would put draft history into the thesis, which the repository rules forbid, so
-the sentence before the Case-D mechanism figure names the three compliance-centre
-positions instead. `the subscript \(\mathrm{est}\)` became `the
-\(\mathrm{est}\) index`, because `subscript` is not used in thesis prose.
-Restore either if the supplied wording is meant to stand.
+The supplied clause `as in the original time-history evaluation` would put
+draft history into the thesis, which the repository rules forbid. The sentence
+before the Case-D mechanism figure names the three compliance-centre positions
+instead. The author's decision on the supplied clause remains pending.
 
 ## \(u\) now names two different directions
 

@@ -878,10 +878,13 @@ Panel (b) draws the physical surface and its conceptual normal
 frame \((t_1,n_s)\). It assigns no measured angle to the unknown difference.
 
 **The Section 4.5 angular comparison also gives the rotation sign.** Its
-surface-frame inset places \(t_2\) upwards, \(n_s\) leftwards and \(t_1\)
-out of the page as a dotted circle. The inward reference \(-n_s\) therefore
-points rightwards in the main drawing. Thus \(t_1\times t_2=n_s\), and positive
-rotation is anticlockwise, from \(+t_2\) towards \(+n_s\). The separate sign-only figure is withdrawn. The
+surface-frame inset places \(n_s\) upwards, \(t_2\) rightwards and \(t_1\)
+out of the page as a dotted circle. This inset orientation was requested on
+2026-09-29 for both thesis Figure 4.2 and presentation backup B3. Rotate the
+inset's positive-rotation arc with the axes, from \(+t_2\) towards \(+n_s\),
+so \(t_1\times t_2=n_s\) remains clear. The main normal-arrow comparison
+keeps its existing orientation, angles, colours and labels; the inset is a
+separate frame illustration. The separate sign-only figure is withdrawn. The
 calibration section has no separate geometry or flowchart figure; Figure 4.1
 already separates the physical plane from the configured reference.
 
