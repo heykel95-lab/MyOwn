@@ -870,11 +870,13 @@ hardware the torque command reaches, and `Robot` added a second name for it.
 The feedback arrow out of it reads `Joint motion sensors`. The compact visible labels `Impedance Controller` and \(J^\top F\)
 are used where the full names would close the gaps between blocks; the mapping
 block names the operation it performs rather than being called `Mapping`, which
-is shorter and leaves the width the junctions need. A Desired Cartesian
-Reference enters the error junction **from the left**, so that the dominant
-path is one straight run and the feedback is the only input arriving from
-below. This ordering
-must be readable before any secondary branch is followed.
+is shorter and leaves the width the junctions need. The desired Cartesian
+reference enters the error junction **from the left on one horizontal
+arrow**, with no source box or vertical segment. Keep the four reference
+symbols above the arrow; omit the `Desired Cartesian Reference` title.
+The dominant path is one straight run and the feedback is the only input
+arriving from below. This ordering must be readable before any secondary
+branch is followed. Agreed 2026-10-06.
 
 The desired-reference arrow carries \(p_d\), \(R_d\), \(\dot p_d\) and
 \(\omega_d\). The measured Cartesian feedback carries \(p_{\mathrm{EE}}\),
@@ -1028,9 +1030,11 @@ panels, because force and moment come from the same five-second trial: (a) the
 normal force and (b) the moment about \(t_1\), each with the commanded
 series in black and the model-estimated series in red, and the stationary
 interval from \(4\) to \(5\,\mathrm{s}\) shaded. The two quasi-static figures
-are single-panel and carry three series each -- commanded increment in black,
-model-estimated increment in red, quasi-static spring prediction in blue --
-with their own stationary interval shaded.
+are single-panel and carry two series each: commanded increment in black and
+model-estimated increment in red, with their own stationary interval shaded.
+As requested on 2026-10-03, omit the quasi-static prediction curve from both
+figures and their presentation copies. Keep the numerical predictions,
+reported means and underlying analysis unchanged.
 
 **Both plausibility figures use the ordinary `Time, \(t\) [s]` axis.**
 Instructed 2026-09-07, withdrawing `Time After Force-Test Start, \(t_F\) [s]`
@@ -1042,9 +1046,11 @@ tests. The combined \(0\)--\(35\,\mathrm{s}\) plot the analysis script writes is
 still not used, for the reason it never was: two evaluations on one axis leave
 the second compressed against the right-hand edge.
 
-**The legend entries are `Commanded`, `Model-estimated` and `Quasi-static
-prediction`.** Changed the same day, withdrawing `Commanded increment`,
-`Model-estimated increment` and `Quasi-static spring prediction`. The y axes
+**The legend entries are `Commanded` and `Model-estimated`.** The
+`Quasi-static prediction` entry was removed with its curve on 2026-10-03.
+The shortened names retain the 2026-09-07 convention, withdrawing
+`Commanded increment`, `Model-estimated increment` and
+`Quasi-static spring prediction`. The y axes
 read `Normal Force, \(F_n\) [N]` and `Moment About \(t_1\), \(M_{t_1}\) [N m]`,
 withdrawing `Normal Force Increment, \(\Delta F_n\) [N]` and `Moment Increment
 About \(t_1\), \(\Delta M_{t_1}\) [N m]`. Section 4.6.2 already says that each
@@ -1378,6 +1384,8 @@ writes a generated file names it, so regeneration must preserve this mapping.
   axis, and a white cover is never placed over the data. Check the rendered
   figure, because the space required by a long entry changes when the plot is
   scaled.
+  Leave a visible gap below the x-axis label before the legend begins. Figure
+  5.4 uses an additional 6 pt downward legend offset to provide this clearance.
 - **Commanded and estimated quantities go in separate panels** when their
   magnitudes differ by an order or their signs disagree. Overlaying them makes
   the smaller unreadable and invites reading one curve as the other.

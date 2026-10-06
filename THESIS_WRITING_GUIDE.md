@@ -4660,6 +4660,22 @@ term is inactive. Within Chapter 6's null-space discussion, shorten `projected
 damping` to `damping`. The context supplies the null-space meaning, while the
 full term remains available where the projection is defined or explained.
 
+**Summarise joint motion directly in the conclusion.** Instructed
+2026-10-06. Name the measured joint-1 angle change rather than referring to
+`joint-angle histories`. Describe the illustrated joint-1 response to the
+virtual disturbance without ranking it against the other joints. State the
+damping and conditioning comparisons as percentage reductions in the peak
+magnitude of the plotted three-trial mean over the complete disturbance
+interval. These are distinct from the cumulative all-joint motion percentages.
+Relative to zero null-space torque, the joint-1 peak reductions are 24.8 percent
+with damping and 98.7 percent with conditioning. Adding damping to conditioning
+at the same magnitude reduces this peak by 30.1 percent. Calculate these ratios
+from unrounded values, as recorded by
+`code/python/figures/nullspace_presentation_main/sources/analyse_joint1_peaks.py`.
+Report the peak values beside the figure in Chapter 5 before summarising their
+percentage changes in the conclusion. A smaller angle-change peak does not
+establish dissipative behaviour of conditioning itself.
+
 **The conclusion explains the mechanism before the numbers.** As supplied on
 2026-09-02, it opens on what shifting the centre does to the stiffness and
 damping matrices -- the off-diagonal coupling, and the virtual lever arm that

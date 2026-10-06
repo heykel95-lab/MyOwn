@@ -44,7 +44,7 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, PROFESSOR_EMAIL)
 
 from figure_style import (apply_style, thin,  # noqa: E402
-                          SERIES_BLACK, SERIES_BLUE, SERIES_RED,
+                          SERIES_BLACK, SERIES_RED,
                           REFERENCE_GREY)
 import matplotlib.pyplot as plt  # noqa: E402
 from results_grid import apply_results_grid  # noqa: E402
@@ -186,7 +186,7 @@ def plausibility_figure(run, keys, ylabel, xlabel, span, start, end, out_path):
                  color=REFERENCE_GREY, alpha=0.13, linewidth=0)
     axis.plot(t, cmd, color=SERIES_BLACK, label="Commanded")
     axis.plot(t, est, color=SERIES_RED, label="Model-estimated")
-    axis.plot(t, qs, color=SERIES_BLUE, label="Quasi-static prediction")
+    # Quasi-static predictions remain numerical comparisons, not plotted curves.
     axis.set_ylabel(ylabel)
     axis.set_xlabel(xlabel)
     axis.set_xlim(0.0, float(local[-1]))

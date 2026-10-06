@@ -59,7 +59,8 @@ def make_sources(groups):
     nodes near coords,
     nodes near coords style={font=\scriptsize, yshift=5pt, /pgf/number format/fixed,
                              /pgf/number format/precision=2},
-@COMMON@  ]
+@COMMON@    legend style={yshift=-6pt},
+  ]
 \addplot[draw=black, fill=barblue, area legend, error bars/.cd, y dir=both, y explicit]
 coordinates {
 @POINTS@};
